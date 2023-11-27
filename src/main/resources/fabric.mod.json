@@ -32,7 +32,7 @@
 	],
 
 	"depends": {
-		"minecraft": ">1.20.3",
+		"minecraft": "1.20.3-beta.2",
 		"fabric-networking-api-v1": ">=3.1.0",
 		"fabric-resource-loader-v0": "*"
 	}
