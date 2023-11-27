@@ -2,8 +2,6 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.client.gui.DrawContext;
-
 import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -11,22 +9,24 @@ import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
+import net.minecraft.client.gui.DrawContext;
 
-public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<TYPE>
-{
+public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<TYPE> {
     protected final WidgetListConfigOptionsBase<?, ?> parent;
-    @Nullable protected TextFieldWrapper<? extends GuiTextFieldGeneric> textField = null;
-    @Nullable protected String initialStringValue;
+    @Nullable
+    protected TextFieldWrapper<? extends GuiTextFieldGeneric> textField = null;
+    @Nullable
+    protected String initialStringValue;
     protected int maxTextfieldTextLength = 65535;
     /**
      * The last applied value for any textfield-based configs.
-     * Button based (boolean, option-list) values get applied immediately upon clicking the button.
+     * Button based (boolean, option-list) values get applied immediately upon
+     * clicking the button.
      */
     protected String lastAppliedValue;
 
     public WidgetConfigOptionBase(int x, int y, int width, int height,
-            WidgetListConfigOptionsBase<?, ?> parent, TYPE entry, int listIndex)
-    {
+            WidgetListConfigOptionsBase<?, ?> parent, TYPE entry, int listIndex) {
         super(x, y, width, height, entry, listIndex);
 
         this.parent = parent;
@@ -34,10 +34,8 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
 
     public abstract boolean wasConfigModified();
 
-    public boolean hasPendingModifications()
-    {
-        if (this.textField != null)
-        {
+    public boolean hasPendingModifications() {
+        if (this.textField != null) {
             return this.textField.getTextField().getText().equals(this.lastAppliedValue) == false;
         }
 
@@ -46,20 +44,17 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
 
     public abstract void applyNewValueToConfig();
 
-    protected GuiTextFieldGeneric createTextField(int x, int y, int width, int height)
-    {
+    protected GuiTextFieldGeneric createTextField(int x, int y, int width, int height) {
         return new GuiTextFieldGeneric(x + 2, y, width, height, this.textRenderer);
     }
 
-    protected void addTextField(GuiTextFieldGeneric field, ConfigOptionChangeListenerTextField listener)
-    {
+    protected void addTextField(GuiTextFieldGeneric field, ConfigOptionChangeListenerTextField listener) {
         TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = new TextFieldWrapper<>(field, listener);
         this.textField = wrapper;
         this.parent.addTextField(wrapper);
     }
 
-    protected ButtonGeneric createResetButton(int x, int y, IConfigResettable config)
-    {
+    protected ButtonGeneric createResetButton(int x, int y, IConfigResettable config) {
         String labelReset = StringUtils.translate("malilib.gui.button.reset.caps");
         ButtonGeneric resetButton = new ButtonGeneric(x, y, -1, 20, labelReset);
         resetButton.setEnabled(config.isModified());
@@ -68,24 +63,19 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
-    {
-        if (super.onMouseClickedImpl(mouseX, mouseY, mouseButton))
-        {
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton) {
+        if (super.onMouseClickedImpl(mouseX, mouseY, mouseButton)) {
             return true;
         }
 
         boolean ret = false;
 
-        if (this.textField != null)
-        {
+        if (this.textField != null) {
             ret |= this.textField.getTextField().mouseClicked(mouseX, mouseY, mouseButton);
         }
 
-        if (this.subWidgets.isEmpty() == false)
-        {
-            for (WidgetBase widget : this.subWidgets)
-            {
+        if (this.subWidgets.isEmpty() == false) {
+            for (WidgetBase widget : this.subWidgets) {
                 ret |= widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton);
             }
         }
@@ -94,17 +84,12 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    public boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers)
-    {
-        if (this.textField != null && this.textField.isFocused())
-        {
-            if (keyCode == KeyCodes.KEY_ENTER)
-            {
+    public boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers) {
+        if (this.textField != null && this.textField.isFocused()) {
+            if (keyCode == KeyCodes.KEY_ENTER) {
                 this.applyNewValueToConfig();
                 return true;
-            }
-            else
-            {
+            } else {
                 return this.textField.onKeyTyped(keyCode, scanCode, modifiers);
             }
         }
@@ -113,10 +98,8 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    protected boolean onCharTypedImpl(char charIn, int modifiers)
-    {
-        if (this.textField != null && this.textField.onCharTyped(charIn, modifiers))
-        {
+    protected boolean onCharTypedImpl(char charIn, int modifiers) {
+        if (this.textField != null && this.textField.onCharTyped(charIn, modifiers)) {
             return true;
         }
 
@@ -124,16 +107,14 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    public boolean canSelectAt(int mouseX, int mouseY, int mouseButton)
-    {
+    public boolean canSelectAt(int mouseX, int mouseY, int mouseButton) {
         return false;
     }
 
-    protected void drawTextFields(int mouseX, int mouseY, DrawContext drawContext)
-    {
-        if (this.textField != null)
-        {
-            this.textField.getTextField().render(drawContext, mouseX, mouseY, 0f);
+    protected void drawTextFields(int mouseX, int mouseY, DrawContext drawContext) {
+        if (this.textField != null) {
+            // .renderZ replaces ".render() because it's marked as "final" now
+            this.textField.getTextField().renderZ(drawContext, mouseX, mouseY, 0f);
         }
     }
 }

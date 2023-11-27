@@ -8,3 +8,5 @@ logs/
 .project
 build.number
 Task
+libs/
+.vscode/
