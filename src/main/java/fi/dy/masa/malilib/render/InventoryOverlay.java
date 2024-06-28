@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.render;
 import java.util.ArrayList;
 import java.util.List;
 import com.mojang.blaze3d.systems.RenderSystem;
+import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
@@ -11,9 +12,11 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -265,14 +268,18 @@ public class InventoryOverlay
         {
             return InventoryRenderType.HOPPER;
         }
-        else if (inv.getClass() == SimpleInventory.class) // FIXME
+        else if (inv instanceof IEntityOwnedInventory inventory)
         {
-            return InventoryRenderType.HORSE;
+            if (inventory.malilib$getEntityOwner() instanceof AbstractHorseEntity)
+            {
+                return InventoryRenderType.HORSE;
+            }
+            else if (inventory.malilib$getEntityOwner() instanceof PiglinEntity)
+            {
+                return InventoryRenderType.VILLAGER;
+            }
         }
-        else
-        {
-            return InventoryRenderType.GENERIC;
-        }
+        return InventoryRenderType.GENERIC;
     }
 
     public static InventoryRenderType getInventoryType(ItemStack stack)
