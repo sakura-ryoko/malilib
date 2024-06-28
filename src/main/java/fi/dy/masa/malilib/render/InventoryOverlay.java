@@ -48,6 +48,8 @@ public class InventoryOverlay
             Identifier.ofVanilla("item/empty_armor_slot_chestplate"),
             Identifier.ofVanilla("item/empty_armor_slot_helmet") };
 
+    private static ItemStack hoveredStack = null;
+
     public static void renderInventoryBackground(InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc)
     {
         RenderUtils.setupBlend();
@@ -460,6 +462,12 @@ public class InventoryOverlay
                 y += 18;
             }
         }
+
+        if (hoveredStack != null)
+        {
+            drawContext.drawItemTooltip(mc.textRenderer, hoveredStack, (int) mouseX, (int) mouseY);
+            hoveredStack = null;
+        }
     }
 
     public static void renderEquipmentStacks(LivingEntity entity, int x, int y, MinecraftClient mc, DrawContext drawContext)
@@ -492,6 +500,12 @@ public class InventoryOverlay
         if (stack.isEmpty() == false)
         {
             renderStackAt(stack, x + 28, y + 3 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
+        }
+
+        if (hoveredStack != null)
+        {
+            drawContext.drawItemTooltip(mc.textRenderer, hoveredStack, (int) mouseX, (int) mouseY);
+            hoveredStack = null;
         }
     }
 
@@ -549,7 +563,7 @@ public class InventoryOverlay
         matrixStack.pop();
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
-            drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
+            hoveredStack = stack;
         }
     }
 
