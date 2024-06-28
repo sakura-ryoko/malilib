@@ -464,6 +464,11 @@ public class InventoryOverlay
 
     public static void renderEquipmentStacks(LivingEntity entity, int x, int y, MinecraftClient mc, DrawContext drawContext)
     {
+        renderEquipmentStacks(entity, x, y, mc, drawContext, 0, 0);
+    }
+
+    public static void renderEquipmentStacks(LivingEntity entity, int x, int y, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
+    {
         for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
         {
             final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
@@ -471,7 +476,7 @@ public class InventoryOverlay
 
             if (stack.isEmpty() == false)
             {
-                renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc, drawContext);
+                renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc, drawContext, mouseX, mouseY);
             }
         }
 
@@ -479,14 +484,14 @@ public class InventoryOverlay
 
         if (stack.isEmpty() == false)
         {
-            renderStackAt(stack, x + 28, y + 2 * 18 + 7 + 1, 1, mc, drawContext);
+            renderStackAt(stack, x + 28, y + 2 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
         }
 
         stack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
 
         if (stack.isEmpty() == false)
         {
-            renderStackAt(stack, x + 28, y + 3 * 18 + 7 + 1, 1, mc, drawContext);
+            renderStackAt(stack, x + 28, y + 3 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
         }
     }
 
@@ -544,7 +549,7 @@ public class InventoryOverlay
         matrixStack.pop();
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
-            renderStackToolTip((int) mouseX, (int) mouseY, stack, mc, drawContext);
+            drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
         }
     }
 
