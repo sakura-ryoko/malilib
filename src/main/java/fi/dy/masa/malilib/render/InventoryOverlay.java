@@ -412,19 +412,24 @@ public class InventoryOverlay
 
     public static void renderInventoryStacks(InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc, DrawContext drawContext)
     {
+        renderInventoryStacks(type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, mc, drawContext, 0, 0);
+    }
+
+    public static void renderInventoryStacks(InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
+    {
         if (type == InventoryRenderType.FURNACE)
         {
-            renderStackAt(inv.getStack(0), startX +   8, startY +  8, 1, mc, drawContext);
-            renderStackAt(inv.getStack(1), startX +   8, startY + 44, 1, mc, drawContext);
-            renderStackAt(inv.getStack(2), startX +  68, startY + 26, 1, mc, drawContext);
+            renderStackAt(inv.getStack(0), startX +   8, startY +  8, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(1), startX +   8, startY + 44, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(2), startX +  68, startY + 26, 1, mc, drawContext, mouseX, mouseY);
         }
         else if (type == InventoryRenderType.BREWING_STAND)
         {
-            renderStackAt(inv.getStack(0), startX +  47, startY + 42, 1, mc, drawContext);
-            renderStackAt(inv.getStack(1), startX +  70, startY + 49, 1, mc, drawContext);
-            renderStackAt(inv.getStack(2), startX +  93, startY + 42, 1, mc, drawContext);
-            renderStackAt(inv.getStack(3), startX +  70, startY +  8, 1, mc, drawContext);
-            renderStackAt(inv.getStack(4), startX +   8, startY +  8, 1, mc, drawContext);
+            renderStackAt(inv.getStack(0), startX +  47, startY + 42, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(1), startX +  70, startY + 49, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(2), startX +  93, startY + 42, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(3), startX +  70, startY +  8, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(4), startX +   8, startY +  8, 1, mc, drawContext, mouseX, mouseY);
         }
         else
         {
@@ -445,7 +450,7 @@ public class InventoryOverlay
 
                     if (stack.isEmpty() == false)
                     {
-                        renderStackAt(stack, x, y, 1, mc, drawContext);
+                        renderStackAt(stack, x, y, 1, mc, drawContext, mouseX, mouseY);
                     }
 
                     x += 18;
@@ -517,6 +522,11 @@ public class InventoryOverlay
 
     public static void renderStackAt(ItemStack stack, float x, float y, float scale, MinecraftClient mc, DrawContext drawContext)
     {
+        renderStackAt(stack, x, y, scale, mc, drawContext, 0, 0);
+    }
+
+    public static void renderStackAt(ItemStack stack, float x, float y, float scale, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
+    {
         MatrixStack matrixStack = drawContext.getMatrices();
         matrixStack.push();
         matrixStack.translate(x, y, 0.f);
@@ -532,6 +542,10 @@ public class InventoryOverlay
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
+        if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
+        {
+            renderStackToolTip((int) mouseX, (int) mouseY, stack, mc, drawContext);
+        }
     }
 
     public static void renderStackToolTip(int x, int y, ItemStack stack, MinecraftClient mc, DrawContext drawContext)
