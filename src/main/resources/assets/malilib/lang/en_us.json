@@ -1,4 +1,22 @@
 {
+    "malilib.config.name.ignoredKeys": "ignoredKeys",
+    "malilib.config.name.openGuiConfigs": "openGuiConfigs",
+    "malilib.config.name.realmsCommonConfig": "realmsCommonConfig",
+    "malilib.config.name.debugMessages": "debugMessages",
+    "malilib.config.name.inputCancellationDebugging": "inputCancellationDebugging",
+    "malilib.config.name.keybindDebugging": "keybindDebugging",
+    "malilib.config.name.keybindDebuggingIngame": "keybindDebuggingIngame",
+    "malilib.config.name.mouseScrollDebug": "mouseScrollDebug",
+
+    "malilib.config.comment.ignoredKeys": "Any keys set here will be completely ignored",
+    "malilib.config.comment.openGuiConfigs": "Open the in-game malilib config GUI",
+    "malilib.config.comment.realmsCommonConfig": "Whether or not to use a common config file name for all realms servers.\nIf this is disabled, then the server IP and port are used in the generated config file names.\nHowever, apparently the Realms server addresses change regularly, so the config names would change\nall the time and thus the configs wouldn't save properly.\nSo basically leave this enabled if you only play on one Realms server.\nIf you play on multiple Realms... then the configs will get mixed up regardless.\nUnless you play on the different servers on different Minecraft instances\nto keep the configs separated by the Minecraft instance.",
+    "malilib.config.comment.debugMessages": "When enabled, debug level events\nare printed to the game console/log",
+    "malilib.config.comment.inputCancellationDebugging": "When enabled, then the cancellation reason/source\nfor inputs (keyboard and mouse) is printed out",
+    "malilib.config.comment.keybindDebugging": "When enabled, key presses and held keys are\nprinted to the game console (and the action bar, if enabled)",
+    "malilib.config.comment.keybindDebuggingIngame": "If enabled, then the messages from 'keybindDebugging'\nare also printed to the in-game action bar",
+    "malilib.config.comment.mouseScrollDebug": "If enabled, some debug values from mouse scrolling\nare printed to the game console/log",
+
     "malilib.config.comment.keybind_settings.activate_on": "Does the keybind activate on press or release of the key combination",
     "malilib.config.comment.keybind_settings.allow_empty_keybind": "Is an empty keybind valid\n(will always be considered to be active)",
     "malilib.config.comment.keybind_settings.allow_extra_keys": "Are extra keys allowed to be held to still activate the keybind",
