@@ -1,4 +1,22 @@
 {
+    "malilib.config.name.ignoredKeys": "göz ardı edilenAnahtarlar",
+    "malilib.config.name.openGuiConfigs": "openGuiConfig'leri",
+    "malilib.config.name.realmsCommonConfig": "realmsCommonConfig",
+    "malilib.config.name.debugMessages": "hata ayıklamaMesajlar",
+    "malilib.config.name.inputCancellationDebugging": "Giriş İptali Hata Ayıklama",
+    "malilib.config.name.keybindDebugging": "tuş ataması hata ayıklaması",
+    "malilib.config.name.keybindDebuggingIngame": "tuş bağlamaHata ayıklamaOyun içi",
+    "malilib.config.name.mouseScrollDebug": "fareKaydırmaHata Ayıklama",
+
+    "malilib.config.comment.ignoredKeys": "Burada ayarlanan tuşlar tamamen göz ardı edilecek",
+    "malilib.config.comment.openGuiConfigs": "Oyun içi malilib yapılandırma GUI'sini açın",
+    "malilib.config.comment.realmsCommonConfig": "Tüm bölge sunucuları için ortak bir yapılandırma dosyası adının kullanılıp kullanılmayacağı.\nBu devre dışı bırakılırsa, oluşturulan yapılandırma dosyası adlarında sunucu IP'si ve bağlantı noktası kullanılır.\nAncak görünen o ki Realms sunucu adresleri düzenli olarak değişiyor, dolayısıyla yapılandırma adları da değişiyor\nher zaman ve bu nedenle yapılandırmalar düzgün şekilde kaydedilmez.\nDolayısıyla, yalnızca bir Realms sunucusunda oynuyorsanız, temel olarak bunu etkin bırakın.\nBirden fazla Bölgede oynuyorsanız... o zaman yapılandırmalar ne olursa olsun karışacaktır.\nFarklı Minecraft örneklerinde farklı sunucularda oynamadığınız sürece\nYapılandırmaları Minecraft örneğiyle ayrı tutmak için.",
+    "malilib.config.comment.debugMessages": "Etkinleştirildiğinde, hata ayıklama düzeyindeki olaylar\noyun konsoluna/günlüğe yazdırılır",
+    "malilib.config.comment.inputCancellationDebugging": "Etkinleştirildiğinde iptal nedeni/kaynağı\ngirişler için (klavye ve fare) yazdırılır",
+    "malilib.config.comment.keybindDebugging": "Etkinleştirildiğinde, tuşlara basılması ve basılı tutulan tuşlar\noyun konsoluna (ve etkinse işlem çubuğuna) yazdırılır",
+    "malilib.config.comment.keybindDebuggingIngame": "Etkinleştirilirse, 'keybindDebugging'den gelen mesajlar\nayrıca oyun içi aksiyon çubuğuna da yazdırılır",
+    "malilib.config.comment.mouseScrollDebug": "Etkinleştirilirse, fare kaydırmasından bazı hata ayıklama değerleri\noyun konsoluna/günlüğe yazdırılır",
+
     "malilib.config.comment.keybind_settings.activate_on": "Tuş ataması, tuş kombinasyonunun basımında mı yoksa bırakımında mı aktif oluyor",
     "malilib.config.comment.keybind_settings.allow_empty_keybind": "Boş tuş ataması geçerli mi\n(her zaman aktif olarak varsayılacak)",
     "malilib.config.comment.keybind_settings.allow_extra_keys": "Tuş atamasını etkileştirmek için ekstra tuşların basılı tutulması mı gerekiyor",
@@ -40,7 +58,7 @@
     "malilib.gui.label.keybind_settings.activate_on": "Etkin",
     "malilib.gui.label.keybind_settings.allow_empty_keybind": "Boş tuş atamaya izin ver",
     "malilib.gui.label.keybind_settings.allow_extra_keys": "Ekstra tuşlara izin ver",
-    "malilib.gui.label.keybind_settings.cancel_further": "Cancel further processing",
+    "malilib.gui.label.keybind_settings.cancel_further": "Daha fazla işlemi iptal et",
     "malilib.gui.label.keybind_settings.context": "Kullanım Alanı",
     "malilib.gui.label.keybind_settings.exclusive": "Özel",
     "malilib.gui.label.keybind_settings.order_sensitive": "Sıralama Hassasiyeti",
@@ -52,6 +70,10 @@
     "malilib.gui.label.layer_mode.all_below": "Hepsinin Altı",
     "malilib.gui.label.layer_mode.layer_range": "Katman Aralığı",
     "malilib.gui.label.layer_mode.single_layer": "Tek Katman",
+
+    "malilib.label.message_output_type.none": "Hiçbiri",
+    "malilib.label.message_output_type.actionbar": "Eylem Çubuğu",
+    "malilib.label.message_output_type.message": "İleti",
 
     "malilib.gui.label.no": "hayır",
     "malilib.gui.label.yes": "evet",
@@ -68,7 +90,9 @@
     "malilib.gui.title.generic": "Genel",
     "malilib.gui.title.keybind_settings.advanced": "%s için Gelişmiş Tuş Atama Ayarları",
     "malilib.gui.title.string_list_edit": "'%s' için dizilim listesini",
+    "malilib.gui.title.color_list_edit": "Şunun için renk listesini düzenle '%s'",
 
+    "malilib.hover.color_indicator.open_color_editor": "Renk Düzenleyiciyi Aç",
     "malilib.label.active_mode.always": "Her Zaman",
     "malilib.label.active_mode.never": "Asla",
     "malilib.label.active_mode.with_key": "Bir Tuş İle",
