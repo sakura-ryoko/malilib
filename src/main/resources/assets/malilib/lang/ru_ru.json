@@ -1,4 +1,22 @@
 {
+    "malilib.config.name.ignoredKeys": "игнорируютсяКлючи",
+    "malilib.config.name.openGuiConfigs": "openGuiConfigs",
+    "malilib.config.name.realmsCommonConfig": "областиCommonConfig",
+    "malilib.config.name.debugMessages": "отладочные сообщения",
+    "malilib.config.name.inputCancellationDebugging": "Отмена ввода Отладка",
+    "malilib.config.name.keybindDebugging": "привязка клавиш Отладка",
+    "malilib.config.name.keybindDebuggingIngame": "привязка клавишОтладкаВ игре",
+    "malilib.config.name.mouseScrollDebug": "мышьScrollDebug",
+
+    "malilib.config.comment.ignoredKeys": "Любые установленные здесь клавиши будут полностью игнорироваться",
+    "malilib.config.comment.openGuiConfigs": "Откройте внутриигровой графический интерфейс конфигурации Malilib",
+    "malilib.config.comment.realmsCommonConfig": "Следует ли использовать общее имя файла конфигурации для всех серверов областей.\nЕсли эта опция отключена, то IP-адрес и порт сервера используются в именах генерируемых файлов конфигурации.\nОднако, судя по всему, адреса серверов Realms регулярно меняются, поэтому имена конфигов будут меняться\nвсе время, и поэтому конфигурации не сохранялись должным образом.\nТак что в основном оставляйте это включенным, если вы играете только на одном сервере Realms.\nЕсли вы играете на нескольких Realms... то конфигурации все равно будут перепутаны.\nЕсли вы не играете на разных серверах в разных экземплярах Minecraft\nчтобы конфигурации были разделены экземпляром Minecraft.",
+    "malilib.config.comment.debugMessages": "Если этот параметр включен, события уровня отладки\nпечатаются в игровой консоли/журнале",
+    "malilib.config.comment.inputCancellationDebugging": "При включении отображается причина/источник отмены.\nдля ввода (клавиатура и мышь) распечатывается",
+    "malilib.config.comment.keybindDebugging": "Если эта функция включена, нажатия клавиш и удержание клавиш\nраспечатывается на игровой консоли (и на панели действий, если она включена)",
+    "malilib.config.comment.keybindDebuggingIngame": "Если включено, то сообщения от «keybindDebugging»\nтакже печатаются на внутриигровой панели действий.",
+    "malilib.config.comment.mouseScrollDebug": "Если включено, некоторые значения отладки при прокрутке мыши.\nпечатаются в игровой консоли/журнале",
+
     "malilib.config.comment.keybind_settings.activate_on": "Активируется ли действие при нажатии\nили отпускании сочетания клавиш",
     "malilib.config.comment.keybind_settings.allow_empty_keybind": "Если сочетание клавиш не задано, другие\nсочетания всегда будут считать его активным,\n если их срабатывание требует его активации",
     "malilib.config.comment.keybind_settings.allow_extra_keys": "Можно ли удерживать сторонние клавиши\nво время нажатия сочетания",
@@ -53,6 +71,10 @@
     "malilib.gui.label.layer_mode.layer_range": "Диапазон слоёв",
     "malilib.gui.label.layer_mode.single_layer": "Один слой",
 
+    "malilib.label.message_output_type.none": "Никто",
+    "malilib.label.message_output_type.actionbar": "Панель действий",
+    "malilib.label.message_output_type.message": "Сообщение",
+
     "malilib.gui.label.no": "Нет",
     "malilib.gui.label.yes": "Да",
 
@@ -67,8 +89,10 @@
     "malilib.gui.title.debug": "Отладка",
     "malilib.gui.title.generic": "Общие",
     "malilib.gui.title.keybind_settings.advanced": "Расширенные настройки клавиш для %s",
+    "malilib.gui.title.color_list_edit": "Изменить список цветов для '%s'",
     "malilib.gui.title.string_list_edit": "Изменить список строк для '%s'",
 
+    "malilib.hover.color_indicator.open_color_editor": "Открыть редактор цветов",
     "malilib.label.active_mode.always": "Всегда",
     "malilib.label.active_mode.never": "Никогда",
     "malilib.label.active_mode.with_key": "С клавишей",

@@ -18,9 +18,9 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static class Generic
     {
-        public static final ConfigHotkey    IGNORED_KEYS            = new ConfigHotkey("ignoredKeys", "", "Any keys set here will be completely ignored");
-        public static final ConfigHotkey    OPEN_GUI_CONFIGS        = new ConfigHotkey("openGuiConfigs", "A,C", "Open the in-game malilib config GUI");
-        public static final ConfigBoolean   REALMS_COMMON_CONFIG    = new ConfigBoolean("realmsCommonConfig", true, "Whether or not to use a common config file name for all realms servers.\nIf this is disabled, then the server IP and port are used in the generated config file names.\nHowever, apparently the Realms server addresses change regularly, so the config names would change\nall the time and thus the configs wouldn't save properly.\nSo basically leave this enabled if you only play on one Realms server.\nIf you play on multiple Realms... then the configs will get mixed up regardless.\nUnless you play on the different servers on different Minecraft instances\nto keep the configs separated by the Minecraft instance.");
+        public static final ConfigHotkey    IGNORED_KEYS            = new ConfigHotkey("ignoredKeys", "", "malilib.config.comment.ignoredKeys", "malilib.config.name.ignoredKeys");
+        public static final ConfigHotkey    OPEN_GUI_CONFIGS        = new ConfigHotkey("openGuiConfigs", "A,C", "malilib.config.comment.openGuiConfigs", "malilib.config.name.openGuiConfigs");
+        public static final ConfigBoolean   REALMS_COMMON_CONFIG    = new ConfigBoolean("realmsCommonConfig", true, "malilib.config.comment.realmsCommonConfig", "malilib.config.name.realmsCommonConfig");
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
                 IGNORED_KEYS,
@@ -31,11 +31,11 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static class Debug
     {
-        public static final ConfigBoolean DEBUG_MESSAGES            = new ConfigBoolean("debugMessages",false, "When enabled, debug level events\nare printed to the game console/log");
-        public static final ConfigBoolean INPUT_CANCELLATION_DEBUG  = new ConfigBoolean("inputCancellationDebugging", false, "When enabled, then the cancellation reason/source\nfor inputs (keyboard and mouse) is printed out");
-        public static final ConfigBoolean KEYBIND_DEBUG             = new ConfigBoolean("keybindDebugging", false, "When enabled, key presses and held keys are\nprinted to the game console (and the action bar, if enabled)");
-        public static final ConfigBoolean KEYBIND_DEBUG_ACTIONBAR   = new ConfigBoolean("keybindDebuggingIngame", false, "If enabled, then the messages from 'keybindDebugging'\nare also printed to the in-game action bar");
-        public static final ConfigBoolean MOUSE_SCROLL_DEBUG        = new ConfigBoolean("mouseScrollDebug", false, "If enabled, some debug values from mouse scrolling\nare printed to the game console/log");
+        public static final ConfigBoolean DEBUG_MESSAGES            = new ConfigBoolean("debugMessages",false, "malilib.config.comment.debugMessages", "malilib.config.name.debugMessages");
+        public static final ConfigBoolean INPUT_CANCELLATION_DEBUG  = new ConfigBoolean("inputCancellationDebugging", false, "malilib.config.comment.inputCancellationDebugging", "malilib.config.name.inputCancellationDebugging");
+        public static final ConfigBoolean KEYBIND_DEBUG             = new ConfigBoolean("keybindDebugging", false, "malilib.config.comment.keybindDebugging", "malilib.config.name.keybindDebugging");
+        public static final ConfigBoolean KEYBIND_DEBUG_ACTIONBAR   = new ConfigBoolean("keybindDebuggingIngame", false, "malilib.config.comment.keybindDebuggingIngame", "malilib.config.name.keybindDebuggingIngame");
+        public static final ConfigBoolean MOUSE_SCROLL_DEBUG        = new ConfigBoolean("mouseScrollDebug", false, "malilib.config.comment.mouseScrollDebug", "malilib.config.name.mouseScrollDebug");
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
                 DEBUG_MESSAGES,

@@ -55,6 +55,19 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
         return StringUtils.getTranslatedOrFallback("config.comment." + this.getName().toLowerCase(), this.comment);
     }
 
+    @Override
+    public String getConfigGuiDisplayName()
+    {
+        if (this.prettyName.equals(this.name))
+        {
+            return IConfigBase.super.getConfigGuiDisplayName();
+        }
+        else
+        {
+            return StringUtils.getTranslatedOrFallback(this.prettyName, this.name);
+        }
+    }
+
     public void setComment(String comment)
     {
         this.comment = comment;

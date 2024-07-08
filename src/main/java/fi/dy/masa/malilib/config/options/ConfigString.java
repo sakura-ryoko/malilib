@@ -14,7 +14,12 @@ public class ConfigString extends ConfigBase<ConfigString> implements IConfigVal
 
     public ConfigString(String name, String defaultValue, String comment)
     {
-        super(ConfigType.STRING, name, comment);
+        this(name, defaultValue, comment, name);
+    }
+
+    public ConfigString(String name, String defaultValue, String comment, String prettyName)
+    {
+        super(ConfigType.STRING, name, comment, prettyName);
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;

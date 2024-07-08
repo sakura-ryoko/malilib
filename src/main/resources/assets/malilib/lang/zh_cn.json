@@ -1,4 +1,22 @@
 {
+  "malilib.config.name.ignoredKeys": "忽略按键",
+  "malilib.config.name.openGuiConfigs": "打开设置界面",
+  "malilib.config.name.realmsCommonConfig": "领域服通用配置",
+  "malilib.config.name.debugMessages": "调试信息",
+  "malilib.config.name.inputCancellationDebugging": "按键取消调试信息",
+  "malilib.config.name.keybindDebugging": "按键调试信息",
+  "malilib.config.name.keybindDebuggingIngame": "游戏中显示按键调试信息",
+  "malilib.config.name.mouseScrollDebug": "鼠标滚轮调试信息",
+
+  "malilib.config.comment.ignoredKeys": "所有设置在这的按键将被完全忽略",
+  "malilib.config.comment.openGuiConfigs": "打开游戏内的 Malilib 设置界面",
+  "malilib.config.comment.realmsCommonConfig": "是否为所有领域服使用通用配置文件名。\n如果禁用此选项，则在生成的配置文件名称中使用服务器 IP 和端口。\n由于领域服的地址会定期修改，因此配置文件名会一直变化，从而导致配置无法正确保存和读取。\n因此，如果您只在一台领域服上玩游玩，请保持启用此功能。\n如果您在多个领域服上玩游玩...那么多个领域服的配置会混淆，\n除非您在登录不同的的领域服时使用不同的 Minecraft 实例，\n这样不同服务器的配置会分别保存在不同的 Minecraft 实例中。",
+  "malilib.config.comment.debugMessages": "在该选项开启的情况下，调试等级的日志会被打印到控制台/日志中",
+  "malilib.config.comment.inputCancellationDebugging": "在该选项开启的情况下，按键（键盘或鼠标）被取消时的原因/来源将会被打印出来",
+  "malilib.config.comment.keybindDebugging": "在该选项开启的情况下，按下按键时相关的调试信息将会被打印到到游戏控制台/日志中",
+  "malilib.config.comment.keybindDebuggingIngame": "在该选项开启的情况下，§6按键调试信息§r 打印的调试信息会显示在物品栏上方",
+  "malilib.config.comment.mouseScrollDebug": "在该选项开启的情况下，一些鼠标滚轮的调试信息将会被打印到游戏控制台/日志中",
+
   "malilib.config.comment.keybind_settings.activate_on": "设置在何时触发快捷键对应的功能。 \n注：\"按住\"实际上是在按下和松开时各触发一次，并不是真正的按下。",
   "malilib.config.comment.keybind_settings.allow_empty_keybind": "空按键是否有效(开启此项后，空按键=持续触发)。",
   "malilib.config.comment.keybind_settings.allow_extra_keys": "是否允许一个按键绑定多个功能。",
@@ -72,7 +90,9 @@
   "malilib.gui.title.generic": "通用",
   "malilib.gui.title.keybind_settings.advanced": "高级按键设置 %s",
   "malilib.gui.title.string_list_edit": "编辑字符串列表为 '%s'",
+  "malilib.gui.title.color_list_edit": "编辑颜色列表为 '%s'",
 
+  "malilib.hover.color_indicator.open_color_editor": "打开颜色编辑器",
   "malilib.label.active_mode.always": "总是",
   "malilib.label.active_mode.never": "从不",
   "malilib.label.active_mode.with_key": "按键",
@@ -113,20 +133,5 @@
   "malilib.message.moved_min_layer_to": "移动最低层至 %s",
   "malilib.message.set_layer_axis_to": "设置层轴（axis）为 %s",
   "malilib.message.set_layer_mode_to": "设置层模式为 %s",
-  "malilib.message.set_layer_to": "设置层至 %s",
-
-  "config.name.ignoredkeys": "忽略按键",
-  "config.comment.ignoredkeys": "所有设置在这的按键将被完全忽略",
-  "config.name.openguiconfigs": "打开设置界面",
-  "config.comment.openguiconfigs": "打开游戏内的 Malilib 设置界面",
-  "config.name.realmscommonconfig": "领域服通用配置",
-  "config.comment.realmscommonconfig": "是否为所有领域服使用通用配置文件名。\n如果禁用此选项，则在生成的配置文件名称中使用服务器 IP 和端口。\n由于领域服的地址会定期修改，因此配置文件名会一直变化，从而导致配置无法正确保存和读取。\n因此，如果您只在一台领域服上玩游玩，请保持启用此功能。\n如果您在多个领域服上玩游玩...那么多个领域服的配置会混淆，\n除非您在登录不同的的领域服时使用不同的 Minecraft 实例，\n这样不同服务器的配置会分别保存在不同的 Minecraft 实例中。",
-  "config.name.inputcancellationdebugging": "按键取消调试信息",
-  "config.comment.inputcancellationdebugging": "在该选项开启的情况下，按键（键盘或鼠标）被取消时的原因/来源将会被打印出来",
-  "config.name.keybinddebugging": "按键调试信息",
-  "config.comment.keybinddebugging": "在该选项开启的情况下，按下按键时相关的调试信息将会被打印到到游戏控制台/日志中",
-  "config.name.keybinddebuggingingame": "游戏中显示按键调试信息",
-  "config.comment.keybinddebuggingingame": "在该选项开启的情况下，§6按键调试信息§r 打印的调试信息会显示在物品栏上方",
-  "config.name.mousescrolldebug": "鼠标滚轮调试信息",
-  "config.comment.mousescrolldebug": "在该选项开启的情况下，一些鼠标滚轮的调试信息将会被打印到游戏控制台/日志中"
+  "malilib.message.set_layer_to": "设置层至 %s"
 }
