@@ -61,7 +61,9 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
         if (this.prettyName.equals(this.name))
         {
             return IConfigBase.super.getConfigGuiDisplayName();
-        } else {
+        }
+        else
+        {
             return StringUtils.getTranslatedOrFallback(this.prettyName, this.name);
         }
     }

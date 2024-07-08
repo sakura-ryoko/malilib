@@ -11,11 +11,16 @@ public class ConfigColor extends ConfigInteger
 {
     private Color4f color;
 
-    public ConfigColor(String name, String defaultValue, String comment)
+    public ConfigColor(String name, String defaultValue, String comment, String prettyName)
     {
-        super(name, StringUtils.getColor(defaultValue, 0), comment);
+        super(name, StringUtils.getColor(defaultValue, 0), comment, prettyName);
 
         this.color = Color4f.fromColor(this.getIntegerValue());
+    }
+
+    public ConfigColor(String name, String defaultValue, String comment)
+    {
+        this(name, defaultValue, comment, name);
     }
 
     @Override
