@@ -1,0 +1,137 @@
+{
+  "malilib.config.name.ignoredKeys": "Clés ignorées",
+  "malilib.config.name.openGuiConfigs": "openGuiConfigs",
+  "malilib.config.name.realmsCommonConfig": "domaineCommonConfig",
+  "malilib.config.name.debugMessages": "messages de débogage",
+  "malilib.config.name.inputCancellationDebugging": "inputCancellationDebugging",
+  "malilib.config.name.keybindDebugging": "keybindDébogage",
+  "malilib.config.name.keybindDebuggingIngame": "keybindDébogageEn jeu",
+  "malilib.config.name.mouseScrollDebug": "sourisScrollDebug",
+
+  "malilib.config.comment.ignoredKeys": "Toutes les clés définies ici seront complètement ignorées",
+  "malilib.config.comment.openGuiConfigs": "Ouvrez l'interface graphique de configuration de Malilib dans le jeu",
+  "malilib.config.comment.realmsCommonConfig": "S'il faut ou non utiliser un nom de fichier de configuration commun pour tous les serveurs de domaines.\nSi cette option est désactivée, l'adresse IP et le port du serveur sont utilisés dans les noms de fichiers de configuration générés.\nCependant, apparemment, les adresses des serveurs Realms changent régulièrement, donc les noms de configuration changent.\ntout le temps et donc les configurations ne seraient pas enregistrées correctement.\nDonc, laissez cette option activée si vous ne jouez que sur un seul serveur Realms.\nSi vous jouez sur plusieurs royaumes... alors les configurations seront mélangées de toute façon.\nSauf si vous jouez sur les différents serveurs sur différentes instances Minecraft\npour garder les configurations séparées par l'instance Minecraft.",
+  "malilib.config.comment.debugMessages": "Lorsqu'il est activé, les événements de niveau de débogage\nsont imprimés sur la console de jeu/le journal",
+  "malilib.config.comment.inputCancellationDebugging": "Lorsqu'il est activé, le motif/source de l'annulation\npour les entrées (clavier et souris) est imprimé",
+  "malilib.config.comment.keybindDebugging": "Lorsqu'elles sont activées, les pressions sur les touches et les touches maintenues sont\nimprimé sur la console de jeu (et la barre d'action, si activée)",
+  "malilib.config.comment.keybindDebuggingIngame": "Si activé, alors les messages de 'keybindDebugging'\nsont également imprimés sur la barre d'action du jeu",
+  "malilib.config.comment.mouseScrollDebug": "Si activé, certaines valeurs de débogage du défilement de la souris\nsont imprimés sur la console de jeu/le journal",
+
+  "malilib.config.comment.keybind_settings.activate_on": "Le raccourci clavier s'active-t-il en appuyant ou en relâchant la combinaison de touches",
+  "malilib.config.comment.keybind_settings.allow_empty_keybind": "Un raccourci clavier vide est-il valide\n(sera toujours considéré comme actif)",
+  "malilib.config.comment.keybind_settings.allow_extra_keys": "Les touches supplémentaires peuvent-elles être maintenues pour continuer à activer le raccourci clavier",
+  "malilib.config.comment.keybind_settings.cancel_further": "Annuler le traitement ultérieur (vanille) du\ndernière touche enfoncée, lorsque le raccourci clavier s'active",
+  "malilib.config.comment.keybind_settings.context": "Le raccourci clavier peut-il être activé dans le jeu ou dans une interface graphique",
+  "malilib.config.comment.keybind_settings.exclusive": "Si c'est vrai, alors aucun autre raccourci clavier ne peut avoir\nété activé avant le raccourci clavier en question.\nCette vérification est réinitialisée lorsque toutes les clés sont relâchées.",
+  "malilib.config.comment.keybind_settings.order_sensitive": "Faut-il appuyer sur les touches de raccourci\ndans l'ordre précis dans lequel ils ont été définis",
+
+  "malilib.error.failed_to_create_directory": "Échec de la création du répertoire '%s'",
+  "malilib.error.file_or_directory_already_exists": "Le fichier ou le répertoire '%s' existe déjà",
+  "malilib.error.invalid_directory": "Nom de répertoire non valide '%s'",
+  "malilib.error.invalid_block_blacklist_entry": "Blocage invalide dans une liste noire ou blanche: '%s'",
+  "malilib.error.invalid_item_blacklist_entry": "Nom d'élément non valide dans une liste noire ou blanche: '%s'",
+
+  "malilib.gui.button.cancel": "Annuler",
+  "malilib.gui.button.ok": "D'ACCORD",
+  "malilib.gui.button.reset": "Réinitialiser",
+  "malilib.gui.button.reset.caps": "RÉINITIALISER",
+
+  "malilib.gui.button.render_layers_gui.axis": "Axe: %s",
+  "malilib.gui.button.render_layers_gui.layers": "Couches: %s",
+  "malilib.gui.button.render_layers_gui.set_here": "Définir ici",
+
+  "malilib.gui.button.hover.directory_widget.create_directory": "Créer un nouveau répertoire",
+  "malilib.gui.button.hover.directory_widget.root": "Vers le répertoire racine/base",
+  "malilib.gui.button.hover.directory_widget.up": "Jusqu'au répertoire parent",
+  "malilib.gui.button.hover.hold_shift_for_info": "§oMaintenez Shift pour plus d'informations§r",
+  "malilib.gui.button.hover.plus_minus_tip": "Clic gauche pour augmenter\nClic droit pour diminuer\nShift et/ou Alt pour augmenter la taille du pas",
+
+  "malilib.gui.label.block_snap.center": "Centre",
+  "malilib.gui.label.block_snap.corner": "Coin",
+  "malilib.gui.label.block_snap.none": "Aucun",
+
+  "malilib.gui.label_colored.off": "§cDÉSACTIVÉ§r",
+  "malilib.gui.label_colored.on": "§aSUR§r",
+
+  "malilib.gui.label.color_editor.current_color": "Couleur actuelle :",
+
+  "malilib.gui.label.keybind_settings.activate_on": "Activer activé",
+  "malilib.gui.label.keybind_settings.allow_empty_keybind": "Autoriser les raccourcis clavier vides",
+  "malilib.gui.label.keybind_settings.allow_extra_keys": "Autoriser les clés supplémentaires",
+  "malilib.gui.label.keybind_settings.cancel_further": "Annuler la suite du traitement",
+  "malilib.gui.label.keybind_settings.context": "Contexte",
+  "malilib.gui.label.keybind_settings.exclusive": "Exclusif",
+  "malilib.gui.label.keybind_settings.order_sensitive": "Commande sensible",
+  "malilib.gui.label.keybind_settings.tips": "- Clic gauche pour configurer\n- Clic droit pour réinitialiser les valeurs par défaut",
+  "malilib.gui.label.keybind_settings.title_advanced_keybind_settings": "Paramètres avancés des raccourcis clavier",
+
+  "malilib.gui.label.layer_mode.all": "Tous",
+  "malilib.gui.label.layer_mode.all_above": "Tout ci-dessus",
+  "malilib.gui.label.layer_mode.all_below": "Tout ci-dessous",
+  "malilib.gui.label.layer_mode.layer_range": "Plage de couches",
+  "malilib.gui.label.layer_mode.single_layer": "Une seule couche",
+
+  "malilib.label.message_output_type.none": "Aucun",
+  "malilib.label.message_output_type.actionbar": "Barre d'action",
+  "malilib.label.message_output_type.message": "Message",
+
+  "malilib.gui.label.no": "Non",
+  "malilib.gui.label.yes": "Oui",
+
+  "malilib.gui.label.render_layers.layer": "Couche",
+  "malilib.gui.label.render_layers.layer_max": "Couche maximale",
+  "malilib.gui.label.render_layers.layer_min": "Couche minimale",
+
+  "malilib.gui.title.all_hotkeys": "Tous les raccourcis clavier enregistrés",
+  "malilib.gui.title.color_editor": "Éditeur de couleurs",
+  "malilib.gui.title.configs": "Configurations malilib - %s",
+  "malilib.gui.title.create_directory": "Créer un nouveau répertoire",
+  "malilib.gui.title.debug": "Déboguer",
+  "malilib.gui.title.generic": "Générique",
+  "malilib.gui.title.keybind_settings.advanced": "Paramètres de raccourci clavier avancés pour %s",
+  "malilib.gui.title.string_list_edit": "Modifier la liste de chaînes pour '%s'",
+  "malilib.gui.title.color_list_edit": "Modifier la liste des couleurs pour '%s'",
+
+  "malilib.hover.color_indicator.open_color_editor": "Ouvrir l'éditeur de couleurs",
+  "malilib.label.active_mode.always": "Toujours",
+  "malilib.label.active_mode.never": "Jamais",
+  "malilib.label.active_mode.with_key": "Avec clé",
+
+  "malilib.label.key_action.both": "LES DEUX",
+  "malilib.label.key_action.press": "PRESSE",
+  "malilib.label.key_action.release": "LIBÉRER",
+
+  "malilib.label.key_context.any": "N'importe lequel",
+  "malilib.label.key_context.gui": "Interface graphique",
+  "malilib.label.key_context.ingame": "En jeu",
+
+  "malilib.label.list_type.blacklist": "Liste noire",
+  "malilib.label.list_type.none": "Aucun",
+  "malilib.label.list_type.whitelist": "Liste blanche",
+
+  "malilib.label.alignment.top_left": "En haut à gauche",
+  "malilib.label.alignment.top_right": "En haut à droite",
+  "malilib.label.alignment.bottom_left": "En bas à gauche",
+  "malilib.label.alignment.bottom_right": "En bas à droite",
+  "malilib.label.alignment.center": "Centre",
+
+  "malilib.message.directory_created": "Répertoire '%s' créé",
+  "malilib.message.toggled": "Basculé %s %s",
+  "malilib.message.value.off": "DÉSACTIVÉ",
+  "malilib.message.value.on": "SUR",
+
+  "malilib.message.formatting_code.error": "§c",
+  "malilib.message.formatting_code.info": "§f",
+  "malilib.message.formatting_code.success": "§a",
+  "malilib.message.formatting_code.warning": "§6",
+
+  "malilib.message.layer_range.range_max": "maximum",
+  "malilib.message.layer_range.range_min": "min",
+  "malilib.message.moved_layer_range": "Déplacement de toute la plage de calques de §a%s§r sur l'axe §a%s§r",
+  "malilib.message.moved_layer_range_boundary": "Plage de couches déplacée §a%s§r de §a%s§r sur l'axe §a%s§r",
+  "malilib.message.moved_max_layer_to": "Couche maximale déplacée vers %s",
+  "malilib.message.moved_min_layer_to": "Couche minimale déplacée vers %s",
+  "malilib.message.set_layer_axis_to": "Définir l'axe du calque sur %s",
+  "malilib.message.set_layer_mode_to": "Définir le mode calque sur %s",
+  "malilib.message.set_layer_to": "Définir le calque sur %s"
+}
