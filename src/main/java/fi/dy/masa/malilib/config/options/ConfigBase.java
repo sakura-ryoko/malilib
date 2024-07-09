@@ -68,7 +68,7 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
     @Nullable
     public String getTranslatedName()
     {
-        return translatedName;
+        return this.translatedName;
     }
 
     public void setComment(String comment)
