@@ -18,9 +18,9 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static class Generic
     {
-        public static final ConfigHotkey    IGNORED_KEYS            = new ConfigHotkey("ignoredKeys", "", "malilib.config.comment.ignoredKeys", "malilib.config.name.ignoredKeys");
-        public static final ConfigHotkey    OPEN_GUI_CONFIGS        = new ConfigHotkey("openGuiConfigs", "A,C", "malilib.config.comment.openGuiConfigs", "malilib.config.name.openGuiConfigs");
-        public static final ConfigBoolean   REALMS_COMMON_CONFIG    = new ConfigBoolean("realmsCommonConfig", true, "malilib.config.comment.realmsCommonConfig", "malilib.config.name.realmsCommonConfig");
+        public static final ConfigHotkey    IGNORED_KEYS            = new ConfigHotkey("ignoredKeys", "", "malilib.config.comment.ignoredKeys").translatedName("malilib.config.name.ignoredKeys");
+        public static final ConfigHotkey    OPEN_GUI_CONFIGS        = new ConfigHotkey("openGuiConfigs", "A,C", "malilib.config.comment.openGuiConfigs").translatedName("malilib.config.name.openGuiConfigs");
+        public static final ConfigBoolean   REALMS_COMMON_CONFIG    = new ConfigBoolean("realmsCommonConfig", true, "malilib.config.comment.realmsCommonConfig").translatedName("malilib.config.name.realmsCommonConfig");
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
                 IGNORED_KEYS,
@@ -31,11 +31,11 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static class Debug
     {
-        public static final ConfigBoolean DEBUG_MESSAGES            = new ConfigBoolean("debugMessages",false, "malilib.config.comment.debugMessages", "malilib.config.name.debugMessages");
-        public static final ConfigBoolean INPUT_CANCELLATION_DEBUG  = new ConfigBoolean("inputCancellationDebugging", false, "malilib.config.comment.inputCancellationDebugging", "malilib.config.name.inputCancellationDebugging");
-        public static final ConfigBoolean KEYBIND_DEBUG             = new ConfigBoolean("keybindDebugging", false, "malilib.config.comment.keybindDebugging", "malilib.config.name.keybindDebugging");
-        public static final ConfigBoolean KEYBIND_DEBUG_ACTIONBAR   = new ConfigBoolean("keybindDebuggingIngame", false, "malilib.config.comment.keybindDebuggingIngame", "malilib.config.name.keybindDebuggingIngame");
-        public static final ConfigBoolean MOUSE_SCROLL_DEBUG        = new ConfigBoolean("mouseScrollDebug", false, "malilib.config.comment.mouseScrollDebug", "malilib.config.name.mouseScrollDebug");
+        public static final ConfigBoolean DEBUG_MESSAGES            = new ConfigBoolean("debugMessages",false, "malilib.config.comment.debugMessages").translatedName("malilib.config.name.debugMessages");
+        public static final ConfigBoolean INPUT_CANCELLATION_DEBUG  = new ConfigBoolean("inputCancellationDebugging", false, "malilib.config.comment.inputCancellationDebugging").translatedName("malilib.config.name.inputCancellationDebugging");
+        public static final ConfigBoolean KEYBIND_DEBUG             = new ConfigBoolean("keybindDebugging", false, "malilib.config.comment.keybindDebugging").translatedName("malilib.config.name.keybindDebugging");
+        public static final ConfigBoolean KEYBIND_DEBUG_ACTIONBAR   = new ConfigBoolean("keybindDebuggingIngame", false, "malilib.config.comment.keybindDebuggingIngame").translatedName("malilib.config.name.keybindDebuggingIngame");
+        public static final ConfigBoolean MOUSE_SCROLL_DEBUG        = new ConfigBoolean("mouseScrollDebug", false, "malilib.config.comment.mouseScrollDebug").translatedName("malilib.config.name.mouseScrollDebug");
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
                 DEBUG_MESSAGES,
