@@ -35,6 +35,12 @@ public class ConfigColor extends ConfigInteger
     }
 
     @Override
+    public ConfigColor translatedName(String translatedName)
+    {
+        return (ConfigColor) super.translatedName(translatedName);
+    }
+
+    @Override
     public String getStringValue()
     {
         return String.format("#%08X", this.getIntegerValue());
