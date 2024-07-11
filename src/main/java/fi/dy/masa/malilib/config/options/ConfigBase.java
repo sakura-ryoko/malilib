@@ -71,6 +71,12 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
         return this.translatedName;
     }
 
+    @Override
+    public void setTranslatedName(String translatedName)
+    {
+        this.translatedName = translatedName;
+    }
+
     public void setComment(String comment)
     {
         this.comment = comment;

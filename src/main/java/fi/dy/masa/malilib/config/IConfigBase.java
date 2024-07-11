@@ -46,9 +46,20 @@ public interface IConfigBase
         return StringUtils.getTranslatedOrFallback(this.getTranslatedName(), this.getName());
     }
 
-    default String getTranslatedName() {
+    /**
+     * Get translated name
+     * @return (Defaults to Name)
+     */
+    default String getTranslatedName()
+    {
         return this.getName();
     }
+
+    /**
+     * Set translatedName
+     * @param translatedName (Name to set)
+     */
+    default void setTranslatedName(String translatedName) { }
 
     /**
      * Set the value of this config option from a JSON element (is possible)
