@@ -20,12 +20,7 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
 
     public ConfigOptionList(String name, IConfigOptionListEntry defaultValue, String comment, String prettyName)
     {
-        this(name, defaultValue, comment, prettyName, name);
-    }
-
-    public ConfigOptionList(String name, IConfigOptionListEntry defaultValue, String comment, String prettyName, String translatedName)
-    {
-        super(ConfigType.OPTION_LIST, name, comment, prettyName, translatedName);
+        super(ConfigType.OPTION_LIST, name, comment, prettyName);
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
@@ -68,7 +63,7 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
         {
             return this.value.fromString(newValue) != this.defaultValue;
         }
-        catch (Exception ignored)
+        catch (Exception e)
         {
         }
 
