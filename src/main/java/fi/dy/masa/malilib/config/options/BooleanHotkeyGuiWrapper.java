@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.config.options;
 
+import javax.annotation.Nullable;
 import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 
@@ -31,6 +32,19 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
     public void setBooleanValue(boolean value)
     {
         this.booleanConfig.setBooleanValue(value);
+    }
+
+    @Override
+    public BooleanHotkeyGuiWrapper translatedName(String translatedName)
+    {
+        return (BooleanHotkeyGuiWrapper) super.translatedName(translatedName);
+    }
+
+    @Override
+    @Nullable
+    public String getTranslatedName()
+    {
+        return this.booleanConfig.getTranslatedName();
     }
 
     @Override
