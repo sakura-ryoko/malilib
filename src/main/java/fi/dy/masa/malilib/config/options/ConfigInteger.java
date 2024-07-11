@@ -22,37 +22,27 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
 
     public ConfigInteger(String name, int defaultValue, String comment, String prettyName)
     {
-        this(name, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE, comment, prettyName, name);
-    }
-
-    public ConfigInteger(String name, int defaultValue, String comment, String prettyName, String translatedName)
-    {
-        this(name, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE, comment, prettyName, translatedName);
+        this(name, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE, comment, prettyName);
     }
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, String comment)
     {
-        this(name, defaultValue, minValue, maxValue, false, comment, name, name);
+        this(name, defaultValue, minValue, maxValue, false, comment, name);
     }
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, String comment, String prettyName)
     {
-        this(name, defaultValue, minValue, maxValue, false, comment, prettyName, name);
-    }
-
-    public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, String comment, String prettyName, String translatedName)
-    {
-        this(name, defaultValue, minValue, maxValue, false, comment, prettyName, translatedName);
+        this(name, defaultValue, minValue, maxValue, false, comment, prettyName);
     }
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, boolean useSlider, String comment)
     {
-        this(name, defaultValue, minValue, maxValue, useSlider, comment, name, name);
+        this(name, defaultValue, minValue, maxValue, useSlider, comment, name);
     }
 
-    public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, boolean useSlider, String comment, String prettyName, String translatedName)
+    public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, boolean useSlider, String comment, String prettyName)
     {
-        super(ConfigType.INTEGER, name, comment, prettyName, translatedName);
+        super(ConfigType.INTEGER, name, comment, prettyName);
 
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -127,7 +117,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
         {
             return Integer.parseInt(newValue) != this.defaultValue;
         }
-        catch (Exception ignored)
+        catch (Exception e)
         {
         }
 

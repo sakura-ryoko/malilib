@@ -22,17 +22,12 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, String comment, String prettyName)
     {
-        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, comment, prettyName, name);
+        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, comment, prettyName);
     }
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings, String comment, String prettyName)
     {
-        this(name, defaultValue, defaultHotkey, settings, comment, prettyName, name);
-    }
-
-    public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings, String comment, String prettyName, String translatedName)
-    {
-        super(name, defaultValue, comment, prettyName, translatedName);
+        super(name, defaultValue, comment, prettyName);
 
         this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
         this.keybind.setCallback(new KeyCallbackToggleBooleanConfigWithMessage(this));

@@ -18,12 +18,7 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
 
     public ConfigBoolean(String name, boolean defaultValue, String comment, String prettyName)
     {
-        this(name, defaultValue, comment, prettyName, name);
-    }
-
-    public ConfigBoolean(String name, boolean defaultValue, String comment, String prettyName, String translatedName)
-    {
-        super(ConfigType.BOOLEAN, name, comment, prettyName, translatedName);
+        super(ConfigType.BOOLEAN, name, comment, prettyName);
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
