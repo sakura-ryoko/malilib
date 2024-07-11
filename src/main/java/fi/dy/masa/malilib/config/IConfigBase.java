@@ -55,11 +55,7 @@ public interface IConfigBase
         return this.getName();
     }
 
-    /**
-     * Set translatedName
-     * @param translatedName (Name to set)
-     */
-    default void setTranslatedName(String translatedName) { }
+    void setTranslatedName(String translatedName);
 
     /**
      * Set the value of this config option from a JSON element (is possible)

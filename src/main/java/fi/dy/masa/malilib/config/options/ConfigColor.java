@@ -11,16 +11,21 @@ public class ConfigColor extends ConfigInteger
 {
     private Color4f color;
 
-    public ConfigColor(String name, String defaultValue, String comment, String prettyName)
-    {
-        super(name, StringUtils.getColor(defaultValue, 0), comment, prettyName);
-
-        this.color = Color4f.fromColor(this.getIntegerValue());
-    }
-
     public ConfigColor(String name, String defaultValue, String comment)
     {
         this(name, defaultValue, comment, name);
+    }
+
+    public ConfigColor(String name, String defaultValue, String comment, String prettyName)
+    {
+        this(name, defaultValue, comment, prettyName, name);
+    }
+
+    public ConfigColor(String name, String defaultValue, String comment, String prettyName, String translatedName)
+    {
+        super(name, StringUtils.getColor(defaultValue, 0), comment, prettyName, translatedName);
+
+        this.color = Color4f.fromColor(this.getIntegerValue());
     }
 
     @Override
@@ -73,7 +78,7 @@ public class ConfigColor extends ConfigInteger
         {
             return StringUtils.getColor(newValue, 0) != this.getDefaultIntegerValue();
         }
-        catch (Exception e)
+        catch (Exception ignored)
         {
         }
 

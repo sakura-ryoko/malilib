@@ -25,11 +25,16 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
 
     public ConfigBase(ConfigType type, String name, String comment, String prettyName)
     {
+        this(type, name, comment, prettyName, name);
+    }
+
+    public ConfigBase(ConfigType type, String name, String comment, String prettyName, String translatedName)
+    {
         this.type = type;
         this.name = name;
-        this.prettyName = prettyName;
         this.comment = comment;
-        this.translatedName = name;
+        this.prettyName = prettyName;
+        this.translatedName = translatedName;
     }
 
     @Override

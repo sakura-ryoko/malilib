@@ -22,22 +22,32 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
 
     public ConfigDouble(String name, double defaultValue, String comment, String prettyName)
     {
-        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, comment, prettyName);
+        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, comment, prettyName, name);
+    }
+
+    public ConfigDouble(String name, double defaultValue, String comment, String prettyName, String translatedName)
+    {
+        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, comment, prettyName, translatedName);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, String comment)
     {
-        this(name, defaultValue, minValue, maxValue, false, comment, name);
+        this(name, defaultValue, minValue, maxValue, comment, name);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, String comment, String prettyName)
     {
-        this(name, defaultValue, minValue, maxValue, false, comment, prettyName);
+        this(name, defaultValue, minValue, maxValue, false, comment, prettyName, name);
     }
 
-    public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider, String comment, String prettyName)
+    public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, String comment, String prettyName, String translatedName)
     {
-        super(ConfigType.DOUBLE, name, comment, prettyName);
+        this(name, defaultValue, minValue, maxValue, false, comment, prettyName, translatedName);
+    }
+
+    public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider, String comment, String prettyName, String translatedName)
+    {
+        super(ConfigType.DOUBLE, name, comment, prettyName, translatedName);
 
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -112,7 +122,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
         {
             return Double.parseDouble(newValue) != this.defaultValue;
         }
-        catch (Exception e)
+        catch (Exception ignored)
         {
         }
 

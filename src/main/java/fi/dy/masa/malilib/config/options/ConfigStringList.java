@@ -22,7 +22,12 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
 
     public ConfigStringList(String name, ImmutableList<String> defaultValue, String comment, String prettyName)
     {
-        super(ConfigType.STRING_LIST, name, comment, prettyName);
+        this(name, defaultValue, comment, prettyName, name);
+    }
+
+    public ConfigStringList(String name, ImmutableList<String> defaultValue, String comment, String prettyName, String translatedName)
+    {
+        super(ConfigType.STRING_LIST, name, comment, prettyName, translatedName);
 
         this.defaultValue = defaultValue;
         this.strings.addAll(defaultValue);
