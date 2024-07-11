@@ -40,6 +40,12 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
     }
 
     @Override
+    public ConfigBooleanHotkeyed translatedName(String translatedName)
+    {
+        return (ConfigBooleanHotkeyed) super.translatedName(translatedName);
+    }
+
+    @Override
     public boolean isModified()
     {
         // Note: calling isModified() for the IHotkey here directly would not work
