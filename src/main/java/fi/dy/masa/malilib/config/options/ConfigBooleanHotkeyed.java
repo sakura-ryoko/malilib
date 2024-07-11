@@ -25,6 +25,11 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
         this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, comment, prettyName, name);
     }
 
+    public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings, String comment, String prettyName)
+    {
+        this(name, defaultValue, defaultHotkey, settings, comment, prettyName, name);
+    }
+
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings, String comment, String prettyName, String translatedName)
     {
         super(name, defaultValue, comment, prettyName, translatedName);
