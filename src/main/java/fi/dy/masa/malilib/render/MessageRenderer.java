@@ -150,7 +150,7 @@ public class MessageRenderer
             for (int i = 0; i < this.messages.size(); ++i)
             {
                 Message message = this.messages.get(i);
-                y = message.renderAt(x, y, 0xFFFFFFFF, messageBoxWidth, drawContext);
+                y = message.renderAt(x, y, 0xFFFFFFFF, drawContext);
 
                 if (message.hasExpired(currentTime))
                 {

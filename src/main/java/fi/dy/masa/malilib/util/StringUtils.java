@@ -416,7 +416,7 @@ public class StringUtils
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         for (OrderedText line : textRenderer.wrapLines(Text.literal(text), width)) {
             drawContext.drawText(textRenderer, line, x, y, color, false);
-            y += textRenderer.fontHeight;
+            y += textRenderer.fontHeight + 1;
         }
         return y;
     }
