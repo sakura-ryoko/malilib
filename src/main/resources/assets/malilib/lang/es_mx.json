@@ -1,0 +1,137 @@
+{
+    "malilib.config.name.ignoredKeys": "teclasIgnoradas",
+    "malilib.config.name.openGuiConfigs": "abrirConfiguracionGui", 
+    "malilib.config.name.realmsCommonConfig": "realmsConfiguracionComun",
+    "malilib.config.name.debugMessages": "debugMensajes",
+    "malilib.config.name.inputCancellationDebugging": "inputCancellationDebugging",
+    "malilib.config.name.keybindDebugging": "debugCombinacionTeclas",
+    "malilib.config.name.keybindDebuggingIngame": "debugCombinacionTeclasIngame",
+    "malilib.config.name.mouseScrollDebug": "debugScrolllRaton", 
+
+    "malilib.config.comment.ignoredKeys": "Todas las coniguraciones puestas aqui serán ignoradas",
+    "malilib.config.comment.openGuiConfigs": "Abre la configuracion de malilib dentro del juego",
+    "malilib.config.comment.realmsCommonConfig": "Si se debe usar o no un archivo de configuración generico para todos los servidores de realms.\nSi esta opción esta desativada, se usará la IP y puerto generico al generar los archivos.\nPero, al parecer, las direcciones de los srvidores Realms cambian frecuentemente, por lo que los nombres de las configuraciones, estarán cambiando todo el tiempo, y por tanto, las configuraciones no se guardaran correctamente.\nBásicamente, deja esto activado si solo juegas en un servidor de Realms.\nSi juegas en varios servidores, las configuraciones se mezclarán, independientemente.\nA menos que juegues en diferentes instancias\npara mantener separadas las configuraciones.",
+    "malilib.config.comment.debugMessages": "Cuando está activado, los eventos de depuracion por niveles\nse guardaran en la consola o resgisdtro del juego",
+    "malilib.config.comment.inputCancellationDebugging": "Cuando está activado, la razón/fuente de cancelación para las entradas (teclado y ratón) se imprime.",
+    "malilib.config.comment.keybindDebugging": "Cuando está activado, las pulsaciones de teclas y las teclas mantenidas\nse imprimen en la consola (y en la barra de acciónn, si esta activada)",
+    "malilib.config.comment.keybindDebuggingIngame": "Si está activado, los mensajes de 'keybindDebugging'\ntambién se imprimen en la barra de acción del juego.",
+    "malilib.config.comment.mouseScrollDebug": "Si está activado, algunos de los valores de depuración del ratón\nse imprimen en la consola/log del juego",
+
+    "malilib.config.comment.keybind_settings.activate_on": "La combinación de teclas se activa al presionar o al soltar la combinación",
+    "malilib.config.comment.keybind_settings.allow_empty_keybind": "Es valida una combinación de teclas vacias\n(se considerará siempre activado)",
+    "malilib.config.comment.keybind_settings.allow_extra_keys": "Se permite la combinación de teclas adicionales para mantener presionadas o activadas",
+    "malilib.config.comment.keybind_settings.cancel_further": "Cancelar en (vanilla) el procesamiento de\nde la última tecla presionada, cuando se active la combinación de teclas",
+    "malilib.config.comment.keybind_settings.context": "Se puede activar la combinación de teclas dentro del juego o dentro de la GUI",
+    "malilib.config.comment.keybind_settings.exclusive": "Si es cierto, ninguna otra combinacion de teclas puede\nantes de la combinación de teclas en cuestion.\nEsta verificación se reinicia cuando todas las teclas son soltadas.",
+    "malilib.config.comment.keybind_settings.order_sensitive": "Deben presionarse la combinación de teclas en el orden especifico que fuerón definidas",
+
+    "malilib.error.failed_to_create_directory": "Error al crear el directorio '%s'",
+    "malilib.error.file_or_directory_already_exists": "El archivo o directorio '%s' ya existe",
+    "malilib.error.invalid_directory": "Nombre para el directorio no valido '%s'",
+    "malilib.error.invalid_block_blacklist_entry": "Bloque invalido en la black- o whitelist: '%s'",
+    "malilib.error.invalid_item_blacklist_entry": "Nombre del objeto invalido la black- o whitelist: '%s'",
+
+    "malilib.gui.button.cancel": "Cancelar",
+    "malilib.gui.button.ok": "OK",
+    "malilib.gui.button.reset": "Resetear",
+    "malilib.gui.button.reset.caps": "RESETAR",
+
+    "malilib.gui.button.render_layers_gui.axis": "Eje: %s",
+    "malilib.gui.button.render_layers_gui.layers": "Capa: %s",
+    "malilib.gui.button.render_layers_gui.set_here": "Establecer aquí",
+
+    "malilib.gui.button.hover.directory_widget.create_directory": "Crear un nuevo directorio",
+    "malilib.gui.button.hover.directory_widget.root": "ir al directorio root/base",
+    "malilib.gui.button.hover.directory_widget.up": "Hasta el directorio padre",
+    "malilib.gui.button.hover.hold_shift_for_info": "§oManten Shift para más información§r",
+    "malilib.gui.button.hover.plus_minus_tip": "Click izquierdo para aumentar\nClick derecho para disminuir\nShift o Alt para incrementar el tamaño del paso",
+
+    "malilib.gui.label.block_snap.center": "Centro",
+    "malilib.gui.label.block_snap.corner": "Esquina",
+    "malilib.gui.label.block_snap.none": "None",
+
+    "malilib.gui.label_colored.off": "§cOFF§r",
+    "malilib.gui.label_colored.on": "§aON§r",
+
+    "malilib.gui.label.color_editor.current_color": "Color actual:",
+
+    "malilib.gui.label.keybind_settings.activate_on": "Activado On",
+    "malilib.gui.label.keybind_settings.allow_empty_keybind": "Permitir combinación de teclas vacías",
+    "malilib.gui.label.keybind_settings.allow_extra_keys": "Permitir teclas extra",
+    "malilib.gui.label.keybind_settings.cancel_further": "Cancelar el procesamiento adicional",
+    "malilib.gui.label.keybind_settings.context": "Contexto",
+    "malilib.gui.label.keybind_settings.exclusive": "Exclusivo",
+    "malilib.gui.label.keybind_settings.order_sensitive": "Sensible al orden",
+    "malilib.gui.label.keybind_settings.tips": "- Click izquierdo para configurar\n- Click derecho para resetear la configuración",
+    "malilib.gui.label.keybind_settings.title_advanced_keybind_settings": "Configuracion avanzada de la combinación de teclas",
+
+    "malilib.gui.label.layer_mode.all": "Todo",
+    "malilib.gui.label.layer_mode.all_above": "Todo lo anterior",
+    "malilib.gui.label.layer_mode.all_below": "Todo lo de abajo",
+    "malilib.gui.label.layer_mode.layer_range": "Rango de capa",
+    "malilib.gui.label.layer_mode.single_layer": "Capa única",
+
+    "malilib.label.message_output_type.none": "None",
+    "malilib.label.message_output_type.actionbar": "Barra accionadora",
+    "malilib.label.message_output_type.message": "Mensaje",
+
+    "malilib.gui.label.no": "no",
+    "malilib.gui.label.yes": "si",
+
+    "malilib.gui.label.render_layers.layer": "Capa",
+    "malilib.gui.label.render_layers.layer_max": "Capa máxima",
+    "malilib.gui.label.render_layers.layer_min": "Capa minima",
+
+    "malilib.gui.title.all_hotkeys": "Todas las teclas de acceso rápido guardadas",
+    "malilib.gui.title.color_editor": "Editor de color",
+    "malilib.gui.title.configs": "malilib Configuración - %s",
+    "malilib.gui.title.create_directory": "Crear un nuevo directorio",
+    "malilib.gui.title.debug": "Debug",
+    "malilib.gui.title.generic": "Generico",
+    "malilib.gui.title.keybind_settings.advanced": "Configuracion avanzada de la combinación de teclas para %s",
+    "malilib.gui.title.string_list_edit": "Editar la lista para '%s'",
+    "malilib.gui.title.color_list_edit": "Editar la lista de color para '%s'",
+
+    "malilib.hover.color_indicator.open_color_editor": "Abrir Editor De Color",
+    "malilib.label.active_mode.always": "Siempre",
+    "malilib.label.active_mode.never": "Nunca",
+    "malilib.label.active_mode.with_key": "Con la tecla",
+
+    "malilib.label.key_action.both": "AMBOS",
+    "malilib.label.key_action.press": "PRESIONAR",
+    "malilib.label.key_action.release": "LIBERAR",
+
+    "malilib.label.key_context.any": "Cuqluier",
+    "malilib.label.key_context.gui": "GUI",
+    "malilib.label.key_context.ingame": "Dentro del juego",
+
+    "malilib.label.list_type.blacklist": "Lista Negra",
+    "malilib.label.list_type.none": "None",
+    "malilib.label.list_type.whitelist": "Lista Blanca",
+
+    "malilib.label.alignment.top_left": "Arriba Izquierda",
+    "malilib.label.alignment.top_right": "Arriba Derecha",
+    "malilib.label.alignment.bottom_left": "Abajo Izquierda",
+    "malilib.label.alignment.bottom_right": "Abajo Derecha",
+    "malilib.label.alignment.center": "Centro",
+
+    "malilib.message.directory_created": "Directorio '%s' creado",
+    "malilib.message.toggled": "Activado/Desactivado %s %s",
+    "malilib.message.value.off": "OFF",
+    "malilib.message.value.on": "ON",
+
+    "malilib.message.formatting_code.error": "§c",
+    "malilib.message.formatting_code.info": "§f",
+    "malilib.message.formatting_code.success": "§a",
+    "malilib.message.formatting_code.warning": "§6",
+
+    "malilib.message.layer_range.range_max": "max",
+    "malilib.message.layer_range.range_min": "min",
+    "malilib.message.moved_layer_range": "Se movió todo el rango de la capa por §a%s§r en el eje §a%s§r",
+    "malilib.message.moved_layer_range_boundary": "Se movió todo el rango de la capa §a%s§r por §a%s§r en el eje §a%s§r ",
+    "malilib.message.moved_max_layer_to": "Movida la maxima capa a %s",
+    "malilib.message.moved_min_layer_to": "Movida la minima capa a %s",
+    "malilib.message.set_layer_axis_to": "Fijar el eje de la capa a %s",
+    "malilib.message.set_layer_mode_to": "Fijar el eje de la capa a %s",
+    "malilib.message.set_layer_to": "Fijar la capa en %s"
+}
