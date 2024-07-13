@@ -45,14 +45,13 @@ public class Message
      * Renders the lines for this message
      * @return the y coordinate of the next message
      */
-    public int renderAt(int x, int y, int textColor, DrawContext drawContext)
+    public int renderAt(int x, int y, int textColor, int width, DrawContext drawContext)
     {
         String format = this.getFormatCode();
 
         for (String text : this.messageLines)
         {
-            StringUtils.drawString(x, y, textColor, format + text + GuiBase.TXT_RST, drawContext);
-            y += StringUtils.getFontHeight() + 1;
+            y = StringUtils.drawStringWrapped(x, y, width - 8, textColor, format + text + GuiBase.TXT_RST, drawContext);
         }
 
         return y + 3;

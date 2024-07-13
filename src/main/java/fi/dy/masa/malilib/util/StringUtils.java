@@ -7,7 +7,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 
@@ -404,5 +409,15 @@ public class StringUtils
     public static void drawString(int x, int y, int color, String text, net.minecraft.client.gui.DrawContext drawContext)
     {
         drawContext.drawText(net.minecraft.client.MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
+    }
+
+    public static int drawStringWrapped(int x, int y, int width, int color, String text, DrawContext drawContext)
+    {
+        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        for (OrderedText line : textRenderer.wrapLines(Text.literal(text), width)) {
+            drawContext.drawText(textRenderer, line, x, y, color, false);
+            y += textRenderer.fontHeight;
+        }
+        return y;
     }
 }
