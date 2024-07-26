@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.commons.lang3.math.Fraction;
 
+import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -17,6 +19,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentType;
 import net.minecraft.component.DataComponentTypes;
@@ -28,6 +31,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -38,6 +42,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import fi.dy.masa.malilib.MaLiLib;
 
 public class InventoryUtils
 {
@@ -730,5 +735,33 @@ public class InventoryUtils
         }
 
         return null;
+    }
+
+    /**
+     * Create ItemStack from a string, using a Data Components aware method, wrapping the Vanilla ItemStringReader method
+     * @param stringIn (The string to parse)
+     * @param registry (Dynamic Registry)
+     * @return (The item stack with components, or null)
+     */
+    @Nullable
+    public static ItemStack getItemStackFromString(String stringIn, @Nonnull DynamicRegistryManager registry)
+    {
+        ItemStringReader itemStringReader = new ItemStringReader(registry);
+        ItemStringReader.ItemResult results;
+
+        try
+        {
+            results = itemStringReader.consume(new StringReader(stringIn));
+        }
+        catch (CommandSyntaxException e)
+        {
+            MaLiLib.logger.warn("getItemStackFromString(): Invalid NBT Syntax");
+            return null;
+        }
+
+        ItemStack stackOut = new ItemStack(results.item());
+        stackOut.applyComponentsFrom(results.components());
+
+        return stackOut;
     }
 }

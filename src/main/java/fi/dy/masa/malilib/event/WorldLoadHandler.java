@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.registry.DynamicRegistryManager;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
 
@@ -48,6 +49,20 @@ public class WorldLoadHandler implements IWorldLoadManager
     public void unregisterWorldLoadPostHandler(IWorldLoadListener listener)
     {
         this.worldLoadPostHandlers.remove(listener);
+    }
+
+    /**
+     * NOT PUBLIC API - DO NOT CALL
+     */
+    public void onWorldLoadImmutable(DynamicRegistryManager.Immutable immutable)
+    {
+        if (this.worldLoadPreHandlers.isEmpty() == false)
+        {
+            for (IWorldLoadListener listener : this.worldLoadPreHandlers)
+            {
+                listener.onWorldLoadImmutable(immutable);
+            }
+        }
     }
 
     /**

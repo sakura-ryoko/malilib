@@ -162,6 +162,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
     default void decodeNbtCompound(Identifier channel, NbtCompound data) {}
     default void decodeByteBuf(Identifier channel, MaLiLibBuf data) {}
     default <D> void decodeObject(Identifier channel, D data1) {}
+    default <P extends IClientPayloadData> void decodeClientData(Identifier channel, P data) {}
 
     /**
      * Payload Encoder wrapper function.
@@ -172,6 +173,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
     default void encodeNbtCompound(NbtCompound data) {}
     default void encodeByteBuf(MaLiLibBuf data) {}
     default <D> void encodeObject(D data1) {}
+    default <P extends IClientPayloadData> void encodeClientData(P data) {}
 
     /**
      * Used as an iterative "wrapper" for Payload Splitter to send individual Packets
