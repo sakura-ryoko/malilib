@@ -72,4 +72,19 @@ public abstract class MixinMinecraftClient
         ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, null, (MinecraftClient)(Object) this);
         this.worldBefore = null;
     }
+
+    //1.20.2+
+    @Inject(method = "enterReconfiguration(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("HEAD"))
+    private void onReconfigurationPre(Screen screen, CallbackInfo ci)
+    {
+        this.worldBefore = this.world;
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.worldBefore, null, (MinecraftClient)(Object) this);
+    }
+
+    @Inject(method = "enterReconfiguration(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("RETURN"))
+    private void onReconfigurationPost(Screen screen, CallbackInfo ci)
+    {
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, null, (MinecraftClient)(Object) this);
+        this.worldBefore = null;
+    }
 }
