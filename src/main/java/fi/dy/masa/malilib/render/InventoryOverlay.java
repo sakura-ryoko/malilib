@@ -2,8 +2,8 @@ package fi.dy.masa.malilib.render;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.mojang.blaze3d.systems.RenderSystem;
-import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
@@ -14,7 +14,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
@@ -26,7 +25,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
+
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 
 public class InventoryOverlay
 {
@@ -58,7 +59,7 @@ public class InventoryOverlay
         BuiltBuffer builtBuffer;
 
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
 
         if (type == InventoryRenderType.FURNACE)
         {
@@ -194,7 +195,7 @@ public class InventoryOverlay
         BuiltBuffer builtBuffer;
 
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
 
         RenderUtils.bindTexture(TEXTURE_DISPENSER);
 

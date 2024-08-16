@@ -266,7 +266,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         MatrixStack matrixStackIn = drawContext.getMatrices();
         matrixStackIn.push();
         matrixStackIn.translate(0, 0, 10);
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
 
         List<T> list = this.filteredEntries;
         int visibleEntries = Math.min(this.maxVisibleEntries, list.size());

@@ -13,6 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.class_10090;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -154,7 +155,7 @@ public class RenderUtils
         float b = (float) (color & 255) / 255.0F;
 
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
@@ -181,7 +182,7 @@ public class RenderUtils
     {
         float pixelWidth = 0.00390625F;
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         BuiltBuffer builtBuffer;
@@ -262,7 +263,7 @@ public class RenderUtils
             MatrixStack matrixStack = drawContext.getMatrices();
             matrixStack.push();
             matrixStack.translate(0, 0, 300);
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
 
             float zLevel = (float) 300;
             int borderColor = 0xF0100010;
@@ -288,7 +289,7 @@ public class RenderUtils
             }
 
             matrixStack.pop();
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
 
             //RenderSystem.enableDepthTest();
             //enableDiffuseLightingGui3D();
@@ -309,7 +310,7 @@ public class RenderUtils
 
         setupBlend();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -352,7 +353,8 @@ public class RenderUtils
         if (texture != null)
         {
             Sprite sprite = mc().getSpriteAtlas(atlas).apply(texture);
-            drawContext.drawSprite(x, y, 0, width, height, sprite);
+            // TODO --> method_62279() // guiTextured
+            drawContext.drawSprite(RenderLayer::method_62279, sprite, x, y, 0, width, height);
         }
     }
 
@@ -412,7 +414,7 @@ public class RenderUtils
 
             global4fStack.pushMatrix();
             global4fStack.scale((float) scale, (float) scale, 1.0f);
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
         }
 
         double posX = xOff + bgMargin;
@@ -452,7 +454,7 @@ public class RenderUtils
         if (scaled)
         {
             global4fStack.popMatrix();
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
         }
 
         return contentHeight + bgMargin * 2;
@@ -777,7 +779,7 @@ public class RenderUtils
         global4fStack.rotateYXZ((-yaw) * ((float) (Math.PI / 180.0)), pitch * ((float) (Math.PI / 180.0)), 0.0F);
 
         global4fStack.scale((-scale), (-scale), scale);
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
         RenderSystem.disableCull();
 
         setupBlend();
@@ -877,7 +879,7 @@ public class RenderUtils
         Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
         global4fStack.pushMatrix();
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
 
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
@@ -987,7 +989,7 @@ public class RenderUtils
         catch (Exception ignored) { }
 
         global4fStack.popMatrix();
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
     }
 
     public static void renderBlockTargetingOverlaySimple(Entity entity, BlockPos pos, Direction side,
@@ -1004,7 +1006,7 @@ public class RenderUtils
         global4fStack.pushMatrix();
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -1051,7 +1053,7 @@ public class RenderUtils
         catch (Exception ignored) { }
 
         global4fStack.popMatrix();
-        RenderSystem.applyModelViewMatrix();
+        //RenderSystem.applyModelViewMatrix();
     }
 
     /**
@@ -1115,7 +1117,7 @@ public class RenderUtils
             setupBlend();
 
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
             BuiltBuffer builtBuffer;
@@ -1148,7 +1150,12 @@ public class RenderUtils
                 matrixStack.push();
                 matrixStack.translate(x1, y1, z);
                 matrixStack.scale((float) scale, (float) scale, 0);
-                mc().gameRenderer.getMapRenderer().draw(matrixStack, consumer, mapId, mapState, false, 0xF000F0);
+                //mc().gameRenderer.getMapRenderer().draw(matrixStack, consumer, mapId, mapState, false, 0xF000F0);
+                // TODO --> MapRenderState.MapDecorationRenderState() // class_10090.class_10091()
+                // TODO --> MapTextureManager.MapTexture() // class_10093.MapTexture()
+                class_10090 mapRenderState = new class_10090();
+                mc().method_61965().method_62230(mapId, mapState, mapRenderState);
+                mc().method_61965().draw(mapRenderState, matrixStack, consumer, false, 0xF000F0);
                 consumer.draw();
                 matrixStack.pop();
             }
@@ -1191,7 +1198,7 @@ public class RenderUtils
             Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
             matrix4fStack.pushMatrix();
             matrix4fStack.translate(0, 0, 500);
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
 
             InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), mc());
 
@@ -1201,7 +1208,7 @@ public class RenderUtils
             InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, ShulkerBoxBlockEntity.INVENTORY_SIZE, mc(), drawContext);
 
             matrix4fStack.popMatrix();
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
         }
     }
 
@@ -1243,7 +1250,7 @@ public class RenderUtils
             Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
             matrix4fStack.pushMatrix();
             matrix4fStack.translate(0, 0, 500);
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
 
             InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), mc());
 
@@ -1253,7 +1260,7 @@ public class RenderUtils
             InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc(), drawContext);
 
             matrix4fStack.popMatrix();
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
         }
     }
 
@@ -1341,7 +1348,7 @@ public class RenderUtils
         if (model.isBuiltin() == false)
         {
             RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
-            RenderSystem.applyModelViewMatrix();
+            //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
             BuiltBuffer builtBuffer;

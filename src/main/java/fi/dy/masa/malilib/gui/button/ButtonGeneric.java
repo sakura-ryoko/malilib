@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
@@ -100,7 +101,8 @@ public class ButtonGeneric extends ButtonBase
 
             if (this.renderDefaultBackground)
             {
-                drawContext.drawGuiTexture(this.getTexture(this.hovered), this.x, this.y, this.width, this. height);
+                // TODO --> method_62279() // guiTextured
+                drawContext.drawGuiTexture(RenderLayer::method_62279, this.getTexture(this.hovered), this.x, this.y, this.width, this. height);
             }
 
             if (this.icon != null)
