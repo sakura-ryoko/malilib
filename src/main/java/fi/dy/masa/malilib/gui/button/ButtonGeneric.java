@@ -101,8 +101,7 @@ public class ButtonGeneric extends ButtonBase
 
             if (this.renderDefaultBackground)
             {
-                // TODO --> method_62279() // guiTextured
-                drawContext.drawGuiTexture(RenderLayer::method_62279, this.getTexture(this.hovered), this.x, this.y, this.width, this. height);
+                drawContext.drawGuiTexture(RenderLayer::getGuiTextured, this.getTexture(this.hovered), this.x, this.y, this.width, this.height);
             }
 
             if (this.icon != null)

@@ -54,8 +54,7 @@ public class WidgetSlider extends WidgetBase
 
         RenderUtils.color(1f, 1f, 1f, 1f);
 
-        // TODO --> method_62279() // guiTextured
-        drawContext.drawGuiTexture(RenderLayer::method_62279, WidgetSlider.BUTTON_DISABLE_TEXTURE, this.x + 1, this.y, this.width - 3, 20);
+        drawContext.drawGuiTexture(RenderLayer::getGuiTextured, WidgetSlider.BUTTON_DISABLE_TEXTURE, this.x + 1, this.y, this.width - 3, 20);
 
         double relPos = this.callback.getValueRelative();
         int sw = this.sliderWidth;
@@ -63,7 +62,7 @@ public class WidgetSlider extends WidgetBase
         int s = sw / 2;
 
 
-        drawContext.drawGuiTexture(RenderLayer::method_62279, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, 20);
+        drawContext.drawGuiTexture(RenderLayer::getGuiTextured, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, 20);
 
         String str = this.callback.getFormattedDisplayValue();
         int w = this.getStringWidth(str);

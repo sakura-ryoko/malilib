@@ -353,8 +353,8 @@ public class RenderUtils
         if (texture != null)
         {
             Sprite sprite = mc().getSpriteAtlas(atlas).apply(texture);
-            // TODO --> method_62279() // guiTextured
-            drawContext.drawSprite(RenderLayer::method_62279, sprite, x, y, 0, width, height);
+            //drawContext.drawSprite(RenderLayer::getGuiTextured, sprite, x, y, 0, width, height);
+            drawContext.drawSprite(RenderLayer::getGuiTextured, sprite, x, y, width, height, 0);
         }
     }
 
