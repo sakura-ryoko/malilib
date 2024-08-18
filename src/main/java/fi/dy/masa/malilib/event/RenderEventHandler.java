@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.event;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -51,9 +52,7 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
-    /**
-     * NOT PUBLIC API - DO NOT CALL
-     */
+    @ApiStatus.Internal
     public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)
     {
         mc.getProfiler().push("malilib_rendergameoverlaypost");
@@ -75,9 +74,7 @@ public class RenderEventHandler implements IRenderDispatcher
         mc.getProfiler().pop();
     }
 
-    /**
-     * NOT PUBLIC API - DO NOT CALL
-     */
+    @ApiStatus.Internal
     public void onRenderTooltipLast(DrawContext drawContext, ItemStack stack, int x, int y)
     {
         if (this.tooltipLastRenderers.isEmpty() == false)
@@ -89,11 +86,8 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
-    /**
-     * NOT PUBLIC API - DO NOT CALL
-     * --> Changed to Matrix4f for all Downstream Mods.
-     */
-    public void onRenderWorldLast(Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc)
+    @ApiStatus.Internal
+    public void onRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc)
     {
         if (this.worldLastRenderers.isEmpty() == false)
         {
@@ -109,7 +103,7 @@ public class RenderEventHandler implements IRenderDispatcher
             for (IRenderer renderer : this.worldLastRenderers)
             {
                 mc.getProfiler().push(renderer.getProfilerSectionSupplier());
-                renderer.onRenderWorldLast(matrix4f, projMatrix);
+                renderer.onRenderWorldLast(posMatrix, projMatrix);
                 mc.getProfiler().pop();
             }
 

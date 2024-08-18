@@ -23,11 +23,8 @@ import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 @Mixin(MinecraftClient.class)
 public abstract class MixinMinecraftClient
 {
-    @Shadow
-    public ClientWorld world;
-
-    @Unique
-    private ClientWorld worldBefore;
+    @Shadow public ClientWorld world;
+    @Unique private ClientWorld worldBefore;
 
     @Inject(method = "<init>(Lnet/minecraft/client/RunArgs;)V", at = @At("RETURN"))
     private void onInitComplete(RunArgs args, CallbackInfo ci)

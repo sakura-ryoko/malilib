@@ -2,5 +2,5 @@ package fi.dy.masa.malilib.util;
 
 public interface IF3KeyStateSetter
 {
-    void setF3KeyState(boolean value);
+    void malilib$setF3KeyState(boolean value);
 }

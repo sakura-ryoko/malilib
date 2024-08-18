@@ -175,7 +175,7 @@ public class KeybindMulti implements IKeybind
             if (this.keyCodes.contains(KeyCodes.KEY_F3))
             {
                 // Prevent the debug GUI from opening after the F3 key is released
-                ((IF3KeyStateSetter) MinecraftClient.getInstance().keyboard).setF3KeyState(true);
+                ((IF3KeyStateSetter) MinecraftClient.getInstance().keyboard).malilib$setF3KeyState(true);
             }
 
             KeyAction activateOn = this.settings.getActivateOn();
