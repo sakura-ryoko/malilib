@@ -16,7 +16,7 @@ public interface IRenderer
     /**
      * Called after vanilla world rendering
      */
-    default void onRenderWorldLast(Matrix4f matrix4f, Matrix4f projMatrix) {}
+    default void onRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix) {}
 
     /**
      * Called after the tooltip text of an item has been rendered

@@ -87,29 +87,42 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void onRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc)
+    public void onRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, boolean hasTransparency)
     {
         if (this.worldLastRenderers.isEmpty() == false)
         {
             mc.getProfiler().swap("malilib_renderworldlast");
 
-            Framebuffer fb = MinecraftClient.isFabulousGraphicsOrBetter() ? mc.worldRenderer.getTranslucentFramebuffer() : null;
-
-            if (fb != null)
+            // This is required to prevent crashes
+            if (hasTransparency)
             {
-                fb.beginWrite(false);
+                Framebuffer fb = MinecraftClient.isFabulousGraphicsOrBetter() ? mc.worldRenderer.getTranslucentFramebuffer() : null;
+
+                if (fb != null)
+                {
+                    fb.beginWrite(false);
+                }
+
+                for (IRenderer renderer : this.worldLastRenderers)
+                {
+                    mc.getProfiler().push(renderer.getProfilerSectionSupplier());
+                    renderer.onRenderWorldLast(posMatrix, projMatrix);
+                    mc.getProfiler().pop();
+                }
+
+                if (fb != null)
+                {
+                    mc.getFramebuffer().beginWrite(false);
+                }
             }
-
-            for (IRenderer renderer : this.worldLastRenderers)
+            else
             {
-                mc.getProfiler().push(renderer.getProfilerSectionSupplier());
-                renderer.onRenderWorldLast(posMatrix, projMatrix);
-                mc.getProfiler().pop();
-            }
-
-            if (fb != null)
-            {
-                mc.getFramebuffer().beginWrite(false);
+                for (IRenderer renderer : this.worldLastRenderers)
+                {
+                    mc.getProfiler().push(renderer.getProfilerSectionSupplier());
+                    renderer.onRenderWorldLast(posMatrix, projMatrix);
+                    mc.getProfiler().pop();
+                }
             }
         }
     }

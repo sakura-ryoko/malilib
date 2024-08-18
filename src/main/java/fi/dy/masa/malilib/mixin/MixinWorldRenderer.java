@@ -1,8 +1,10 @@
 package fi.dy.masa.malilib.mixin;
 
+import javax.annotation.Nullable;
 import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.ObjectAllocator;
 import org.spongepowered.asm.mixin.Final;
@@ -18,15 +20,16 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 public abstract class MixinWorldRenderer
 {
     @Shadow @Final private MinecraftClient client;
+    @Shadow @Nullable private PostEffectProcessor transparencyPostProcessor;
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/LightmapTextureManager;Lnet/minecraft/util/math/Vec3d;FLnet/minecraft/client/render/Fog;)V"))
-    private void onRenderWorldLastNormal(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
+                    target = "Lnet/minecraft/client/render/WorldRenderer;renderLateDebug(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/client/render/Fog;)V"))
+    private void malilib_onRenderWorldLast(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
                                          Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
                                          Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldLast(positionMatrix, projectionMatrix, this.client);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldLast(positionMatrix, projectionMatrix, this.client, this.transparencyPostProcessor != null);
     }
 
     // Was used for switching between regular and 'Fabulous' graphics, but we no longer need a second hook.
