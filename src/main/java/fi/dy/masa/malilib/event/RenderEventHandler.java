@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
+
 import fi.dy.masa.malilib.interfaces.IRenderDispatcher;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -19,6 +21,11 @@ public class RenderEventHandler implements IRenderDispatcher
     private final List<IRenderer> overlayRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
+
+    private Matrix4f posMatrix;
+    private Matrix4f projMatrix;
+    private MinecraftClient mc;
+    private boolean hasTransparency;
 
     public static IRenderDispatcher getInstance()
     {
@@ -86,43 +93,60 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
+    /**
+     * This configures / stores the required information for the Post Phase.
+     * @param posMatrix (Position Matrix)
+     * @param projMatrix (Projection Matrix)
+     * @param mc (Client)
+     * @param hasTransparency (Whether the transparency buffers are being utilized)
+     */
     @ApiStatus.Internal
-    public void onRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, boolean hasTransparency)
+    public void onRenderWorldPre(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, boolean hasTransparency)
+    {
+        if (this.mc == null)
+        {
+            this.mc = mc;
+        }
+
+        this.posMatrix = posMatrix;
+        this.projMatrix = projMatrix;
+        this.hasTransparency = hasTransparency;
+    }
+
+    /**
+     * This is the "Execution" phase of the new WorldRenderer system.
+     * @param cameraX (x)
+     * @param cameraY (y)
+     * @param cameraZ (z)
+     */
+    @ApiStatus.Internal
+    public void onRenderWorldPost(double cameraX, double cameraY, double cameraZ)
     {
         if (this.worldLastRenderers.isEmpty() == false)
         {
-            mc.getProfiler().swap("malilib_renderworldlast");
+            this.mc.getProfiler().swap("malilib_renderworldpost");
+            Framebuffer fb = null;
 
-            // This is required to prevent crashes
-            if (hasTransparency)
+            if (this.hasTransparency)
             {
-                Framebuffer fb = MinecraftClient.isFabulousGraphicsOrBetter() ? mc.worldRenderer.getTranslucentFramebuffer() : null;
-
-                if (fb != null)
-                {
-                    fb.beginWrite(false);
-                }
-
-                for (IRenderer renderer : this.worldLastRenderers)
-                {
-                    mc.getProfiler().push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldLast(posMatrix, projMatrix);
-                    mc.getProfiler().pop();
-                }
-
-                if (fb != null)
-                {
-                    mc.getFramebuffer().beginWrite(false);
-                }
+                fb = MinecraftClient.isFabulousGraphicsOrBetter() ? this.mc.worldRenderer.getTranslucentFramebuffer() : null;
             }
-            else
+
+            if (fb != null)
             {
-                for (IRenderer renderer : this.worldLastRenderers)
-                {
-                    mc.getProfiler().push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldLast(posMatrix, projMatrix);
-                    mc.getProfiler().pop();
-                }
+                fb.beginWrite(false);
+            }
+
+            for (IRenderer renderer : this.worldLastRenderers)
+            {
+                this.mc.getProfiler().push(renderer.getProfilerSectionSupplier());
+                renderer.onRenderWorldLast(this.posMatrix, this.projMatrix);
+                this.mc.getProfiler().pop();
+            }
+
+            if (fb != null)
+            {
+                this.mc.getFramebuffer().beginWrite(false);
             }
         }
     }

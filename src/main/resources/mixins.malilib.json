@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "fi.dy.masa.malilib.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
     "MixinClientConfigurationNetworkHandler",
@@ -15,6 +15,7 @@
     "MixinMinecraftClient",
     "MixinMinecraftServer",
     "MixinMouse",
+    "MixinParticleManager",
     "MixinPiglinEntity",
     "MixinSimpleInventory",
     "MixinWorldRenderer"

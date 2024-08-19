@@ -355,7 +355,7 @@ public class RenderUtils
         {
             Sprite sprite = mc().getSpriteAtlas(atlas).apply(texture);
             //drawContext.drawSprite(RenderLayer::getGuiTextured, sprite, x, y, 0, width, height);
-            drawContext.drawSprite(RenderLayer::getGuiTextured, sprite, x, y, width, height, 0);
+            drawContext.drawSprite(RenderLayer::getGuiTextured, sprite, x, y, width, height, -1);
         }
     }
 
@@ -867,7 +867,7 @@ public class RenderUtils
     }
 
     public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3d hitVec,
-            Color4f color, Matrix4f matrix4f, MinecraftClient mc)
+            Color4f color, Matrix4f posMatrix, MinecraftClient mc)
     {
         Direction playerFacing = entity.getHorizontalFacing();
         HitPart part = PositionUtils.getHitPart(side, playerFacing, pos, hitVec);
@@ -877,6 +877,8 @@ public class RenderUtils
         double y = (pos.getY() + 0.5d - cameraPos.y);
         double z = (pos.getZ() + 0.5d - cameraPos.z);
 
+        System.out.printf("malilib:renderBlockTargetingOverlay(): getGlobalStack\n");
+
         Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
         global4fStack.pushMatrix();
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
@@ -884,9 +886,13 @@ public class RenderUtils
 
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
+        System.out.printf("malilib:renderBlockTargetingOverlay():1: Tessellator (QUADS)\n");
+
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
+
+        System.out.printf("malilib:renderBlockTargetingOverlay():1: BufferBuilder (QUADS)\n");
 
         int quadAlpha = (int) (0.18f * 255f);
         int hr = (int) (color.r * 255f);
@@ -938,14 +944,21 @@ public class RenderUtils
 
         try
         {
+            System.out.printf("malilib:renderBlockTargetingOverlay():1: draw (QUADS)\n");
+
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
         }
-        catch (Exception ignored) { }
+        catch (Exception e)
+        {
+            System.out.printf("malilib:renderBlockTargetingOverlay():1: Exception: %s\n", e.getMessage());
+        }
 
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
+
+        System.out.printf("malilib:renderBlockTargetingOverlay():2: tessellator/buffer (DEBUG_LINE_STRIP)\n");
 
         buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
@@ -958,11 +971,18 @@ public class RenderUtils
 
         try
         {
+            System.out.printf("malilib:renderBlockTargetingOverlay():2: draw (DEBUG_LINE_STRIP)\n");
+
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
         }
-        catch (Exception ignored) { }
+        catch (Exception e)
+        {
+            System.out.printf("malilib:renderBlockTargetingOverlay():2: Exception: %s\n", e.getMessage());
+        }
+
+        System.out.printf("malilib:renderBlockTargetingOverlay():3: tessellator/buffer (DEBUG_LINES)\n");
 
         buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         // Bottom left
@@ -983,18 +1003,25 @@ public class RenderUtils
 
         try
         {
+            System.out.printf("malilib:renderBlockTargetingOverlay():3: draw (DEBUG_LINES)\n");
+
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
         }
-        catch (Exception ignored) { }
+        catch (Exception e)
+        {
+            System.out.printf("malilib:renderBlockTargetingOverlay():3: Exception: %s\n", e.getMessage());
+        }
 
         global4fStack.popMatrix();
         //RenderSystem.applyModelViewMatrix();
+
+        System.out.printf("malilib:renderBlockTargetingOverlay(): END\n");
     }
 
     public static void renderBlockTargetingOverlaySimple(Entity entity, BlockPos pos, Direction side,
-            Color4f color, Matrix4f matrix4f, MinecraftClient mc)
+            Color4f color, Matrix4f posMatrix, MinecraftClient mc)
     {
         Direction playerFacing = entity.getHorizontalFacing();
         Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();

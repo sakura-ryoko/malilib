@@ -37,17 +37,19 @@ public class InventoryOverlay
     public static final Identifier TEXTURE_DOUBLE_CHEST     = Identifier.ofVanilla("textures/gui/container/generic_54.png");
     public static final Identifier TEXTURE_FURNACE          = Identifier.ofVanilla("textures/gui/container/furnace.png");
     public static final Identifier TEXTURE_HOPPER           = Identifier.ofVanilla("textures/gui/container/hopper.png");
-    public static final Identifier TEXTURE_PLAYER_INV       = Identifier.ofVanilla("textures/gui/container/hopper.png");
+    public static final Identifier TEXTURE_PLAYER_INV       = Identifier.ofVanilla("textures/gui/container/inventory.png");
     public static final Identifier TEXTURE_SINGLE_CHEST     = Identifier.ofVanilla("textures/gui/container/shulker_box.png");
 
     private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
     public static final InventoryProperties INV_PROPS_TEMP = new InventoryProperties();
 
-    private static final Identifier[] EMPTY_SLOT_TEXTURES = new Identifier[] {
-            Identifier.ofVanilla("item/empty_armor_slot_boots"),
-            Identifier.ofVanilla("item/empty_armor_slot_leggings"),
-            Identifier.ofVanilla("item/empty_armor_slot_chestplate"),
-            Identifier.ofVanilla("item/empty_armor_slot_helmet") };
+    private static final Identifier[] EMPTY_SLOT_TEXTURES = new Identifier[]
+    {
+        Identifier.ofVanilla("item/empty_armor_slot_boots"),
+        Identifier.ofVanilla("item/empty_armor_slot_leggings"),
+        Identifier.ofVanilla("item/empty_armor_slot_chestplate"),
+        Identifier.ofVanilla("item/empty_armor_slot_helmet")
+    };
 
     private static ItemStack hoveredStack = null;
 

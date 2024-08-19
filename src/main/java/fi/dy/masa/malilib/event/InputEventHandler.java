@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.MinecraftClient;
@@ -134,9 +135,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
         this.mouseHandlers.remove(handler);
     }
 
-    /**
-     * NOT PUBLIC API - DO NOT CALL
-     */
+    @ApiStatus.Internal
     public boolean onKeyInput(int keyCode, int scanCode, int modifiers, int action)
     {
         boolean eventKeyState = action != GLFW.GLFW_RELEASE;
@@ -161,9 +160,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
         return cancel;
     }
 
-    /**
-     * NOT PUBLIC API - DO NOT CALL
-     */
+    @ApiStatus.Internal
     public boolean onMouseClick(int mouseX, int mouseY, int eventButton, int action)
     {
         boolean cancel = false;
@@ -203,9 +200,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
         }
     }
 
-    /**
-     * NOT PUBLIC API - DO NOT CALL
-     */
+    @ApiStatus.Internal
     public boolean onMouseScroll(final int mouseX, final int mouseY, final double xOffset, final double yOffset)
     {
         boolean discrete = this.mc.options.getDiscreteMouseScroll().getValue();
@@ -249,9 +244,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
         return false;
     }
 
-    /**
-     * NOT PUBLIC API - DO NOT CALL
-     */
+    @ApiStatus.Internal
     public void onMouseMove(final int mouseX, final int mouseY)
     {
         if (this.mouseHandlers.isEmpty() == false)
