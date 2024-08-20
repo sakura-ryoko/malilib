@@ -260,10 +260,8 @@ public class RenderUtils
                 textStartX = Math.max(2, maxWidth - maxLineLength - 8);
             }
 
-            // TODO --> DrawContext still uses MatrixStack,
-            MatrixStack matrixStack = drawContext.getMatrices();
-            matrixStack.push();
-            matrixStack.translate(0, 0, 300);
+            drawContext.getMatrices().push();
+            drawContext.getMatrices().translate(0, 0, 300);
             //RenderSystem.applyModelViewMatrix();
 
             float zLevel = (float) 300;
@@ -289,7 +287,7 @@ public class RenderUtils
                 textStartY += lineHeight;
             }
 
-            matrixStack.pop();
+            drawContext.getMatrices().pop();
             //RenderSystem.applyModelViewMatrix();
 
             //RenderSystem.enableDepthTest();
