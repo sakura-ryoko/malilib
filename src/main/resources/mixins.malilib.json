@@ -6,6 +6,7 @@
   "client": [
     "MixinClientConfigurationNetworkHandler",
     "MixinClientPlayNetworkHandler",
+    "MixinDefaultFramebufferSet",
     "MixinDrawContext",
     "MixinHandledScreen",
     "MixinHorseEntity",
@@ -15,7 +16,6 @@
     "MixinMinecraftClient",
     "MixinMinecraftServer",
     "MixinMouse",
-    "MixinParticleManager",
     "MixinPiglinEntity",
     "MixinSimpleInventory",
     "MixinWorldRenderer"
