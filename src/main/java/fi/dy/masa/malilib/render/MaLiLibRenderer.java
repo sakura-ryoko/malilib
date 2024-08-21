@@ -16,22 +16,24 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.event.FramebufferHandler;
 import fi.dy.masa.malilib.interfaces.IFramebufferFactory;
 
+import javax.annotation.Nullable;
+
 public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
 {
     //private final Identifier shaderPostProcessor = Identifier.of(MaLiLibReference.MOD_ID, "shaders/transparency.json");
     private final Identifier shaderPostProcessor = null;
-    private PostEffectProcessor transparencyPostProcessor;
     private RenderTarget renderPhase;
     private Framebuffer framebuffer;
     private class_9916 renderStageNode;
 
     private Matrix4f posMatrix = new Matrix4f();
     private Matrix4f projMatrix = new Matrix4f();
-    private boolean hasTransparency;
     private Camera camera;
     private Fog fog = Fog.DUMMY;
     private RenderTickCounter tickCounter;
     private Profiler profiler;
+    @Nullable
+    private PostEffectProcessor transparencyPostProcessor;
 
     @Override
     public String getName()
@@ -68,25 +70,7 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     {
         if (MinecraftClient.isFabulousGraphicsOrBetter())
         {
-            this.loadTransparencyPostProcessor(mc);
-        }
-    }
-
-    private void loadTransparencyPostProcessor(MinecraftClient mc)
-    {
-        if (this.shaderPostProcessor == null)
-        {
-            return;
-        }
-
-        // For Transparent layer rendering
-        try
-        {
-            this.transparencyPostProcessor = PostEffectProcessor.parseEffect(mc.getResourceManager(), mc.getTextureManager(), this.shaderPostProcessor, FramebufferHandler.getInstance().getStages());
-        }
-        catch (Exception e)
-        {
-            MaLiLib.logger.error("MaLiLibRenderer(): transparency post processor failure; Error: [{}]", e.getMessage());
+            //this.loadTransparencyPostProcessor(mc);
         }
     }
 
@@ -106,13 +90,13 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     }
 
     @Override
-    public void onFramebufferBasicSetup(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, boolean hasTransparency, DefaultFramebufferSet framebufferSet, FrameGraphBuilder frameGraphBuilder)
+    public void onFramebufferBasicSetup(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, @Nullable PostEffectProcessor postEffectProcessor, DefaultFramebufferSet framebufferSet, FrameGraphBuilder frameGraphBuilder)
     {
         this.framebuffer = this.createSimpleFramebuffer(mc, true);
         this.renderStageNode = this.createStageNode(frameGraphBuilder, this.getName());
         this.posMatrix = posMatrix;
         this.projMatrix = projMatrix;
-        this.hasTransparency = hasTransparency;
+        this.transparencyPostProcessor = postEffectProcessor;
     }
 
     @Override
@@ -138,7 +122,7 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
 
         if (this.transparencyPostProcessor != null)
         {
-            this.transparencyPostProcessor.method_62234(frameGraphBuilder, this.tickCounter, mc.getFramebuffer().textureWidth, mc.getFramebuffer().textureHeight, framebufferSet);
+            this.transparencyPostProcessor.method_62234(frameGraphBuilder, mc.getFramebuffer().textureWidth, mc.getFramebuffer().textureHeight, framebufferSet);
         }
     }
 
@@ -166,22 +150,17 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
         this.profiler.pop();
         this.posMatrix = new Matrix4f();
         this.projMatrix = new Matrix4f();
-        this.hasTransparency = false;
         this.camera = new Camera();
         this.fog = Fog.DUMMY;
         this.tickCounter = null;
         this.profiler = null;
         this.renderStageNode = null;
+        this.transparencyPostProcessor = null;
     }
 
     @Override
     public void close()
     {
-        if (this.transparencyPostProcessor != null)
-        {
-            this.transparencyPostProcessor.close();
-        }
-
         this.onRenderFinished();
     }
 }

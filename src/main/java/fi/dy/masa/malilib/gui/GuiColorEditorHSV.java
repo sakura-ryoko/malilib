@@ -523,7 +523,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
         catch (Exception ignored) { }
 
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // FIXME
+        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         int r = (int) (this.relR * 255f);

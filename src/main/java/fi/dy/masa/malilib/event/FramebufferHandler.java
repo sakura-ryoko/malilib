@@ -3,6 +3,8 @@ package fi.dy.masa.malilib.event;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.minecraft.client.gl.PostEffectProcessor;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
@@ -158,11 +160,11 @@ public class FramebufferHandler implements IFramebufferManager
     }
 
     @ApiStatus.Internal
-    public void onFramebufferSetup(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, boolean hasTransparency, DefaultFramebufferSet framebufferSet, FrameGraphBuilder frameGraphBuilder)
+    public void onFramebufferSetup(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, @Nullable PostEffectProcessor postEffectProcessor, DefaultFramebufferSet framebufferSet, FrameGraphBuilder frameGraphBuilder)
     {
         for (IFramebufferFactory handler : this.handlers)
         {
-            handler.onFramebufferBasicSetup(posMatrix, projMatrix, mc, hasTransparency, framebufferSet, frameGraphBuilder);
+            handler.onFramebufferBasicSetup(posMatrix, projMatrix, mc, postEffectProcessor, framebufferSet, frameGraphBuilder);
         }
     }
 

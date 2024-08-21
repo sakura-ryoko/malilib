@@ -60,7 +60,8 @@ public class InventoryOverlay
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         BuiltBuffer builtBuffer;
 
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        // FIXME
+        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         //RenderSystem.applyModelViewMatrix();
 
         if (type == InventoryRenderType.FURNACE)
@@ -196,7 +197,8 @@ public class InventoryOverlay
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         BuiltBuffer builtBuffer;
 
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        // FIXME
+        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         //RenderSystem.applyModelViewMatrix();
 
         RenderUtils.bindTexture(TEXTURE_DISPENSER);

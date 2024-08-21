@@ -27,7 +27,7 @@ import fi.dy.masa.malilib.event.FramebufferHandler;
 public abstract class MixinWorldRenderer
 {
     @Shadow @Final private MinecraftClient client;
-    @Shadow @Nullable private PostEffectProcessor transparencyPostProcessor;
+    //@Shadow @Nullable private PostEffectProcessor transparencyPostProcessor;
     @Shadow @Final private DefaultFramebufferSet framebufferSet;
     @Unique private SimpleFramebufferFactory factory = null;
 
@@ -37,7 +37,8 @@ public abstract class MixinWorldRenderer
     private void malilib_onRenderWorldPre(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
                                           Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
                                           Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
-                                          @Local FrameGraphBuilder frameGraphBuilder)
+                                          @Local FrameGraphBuilder frameGraphBuilder,
+                                          @Local PostEffectProcessor postEffectProcessor)
     {
         if (this.factory != null)
         {
@@ -46,11 +47,11 @@ public abstract class MixinWorldRenderer
 
         ((FramebufferHandler) FramebufferHandler.getInstance()).onFramebufferSetup(
                 positionMatrix, projectionMatrix,
-                this.client, this.transparencyPostProcessor != null,
+                this.client, postEffectProcessor,
                 this.framebufferSet,
                 frameGraphBuilder);
 
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldPre(positionMatrix, projectionMatrix, this.client, this.transparencyPostProcessor != null);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldPre(positionMatrix, projectionMatrix, this.client, postEffectProcessor != null);
     }
 
     @Inject(method = "renderLayer", at = @At("TAIL"))
@@ -63,15 +64,10 @@ public abstract class MixinWorldRenderer
         }
     }
 
-    @Inject(method = "loadTransparencyPostProcessor", at = @At("HEAD"))
-    private void malilib_onLoadTransparency(CallbackInfo ci)
-    {
-        IFramebufferSetRemap.malilib_remapStages();
-    }
-
     @Inject(method = "reload(Lnet/minecraft/resource/ResourceManager;)V", at = @At("TAIL"))
     private void malilib_onRenderWorldReload(ResourceManager manager, CallbackInfo ci)
     {
+        IFramebufferSetRemap.malilib_remapStages();
         ((FramebufferHandler) FramebufferHandler.getInstance()).onReload(this.client);
     }
 
@@ -88,10 +84,11 @@ public abstract class MixinWorldRenderer
     }
     @Inject(method = "renderMain",
             at = @At(value = "HEAD"))
-    private void malilib_onRenderWorldMain(FrameGraphBuilder frameGraphBuilder, Camera camera, Matrix4f positionMatrix, Matrix4f projectionMatrix,
-                                           Fog fog, boolean bl, boolean bl2, RenderTickCounter tickCounter, Profiler profiler, CallbackInfo ci)
+    private void malilib_onRenderWorldMain(FrameGraphBuilder frameGraphBuilder, Frustum frustum, Camera camera,
+                                           Matrix4f matrix4f, Matrix4f matrix4f2, Fog fog, boolean bl, boolean bl2,
+                                           RenderTickCounter renderTickCounter, Profiler profiler, CallbackInfo ci)
     {
-        ((FramebufferHandler) FramebufferHandler.getInstance()).onRenderMainCaptureLocals(this.client, camera, fog, tickCounter, profiler);
+        ((FramebufferHandler) FramebufferHandler.getInstance()).onRenderMainCaptureLocals(this.client, camera, fog, renderTickCounter, profiler);
     }
 
     @ModifyArg(method = "render",
@@ -116,7 +113,9 @@ public abstract class MixinWorldRenderer
     }
 
     @Inject(method = "render", at = @At("TAIL"))
-    private void malilib_onRenderWorldFinished(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci)
+    private void malilib_onRenderWorldFinished(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
+                                               Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
+                                               Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci)
     {
         ((FramebufferHandler) FramebufferHandler.getInstance()).onRenderFinished();
     }

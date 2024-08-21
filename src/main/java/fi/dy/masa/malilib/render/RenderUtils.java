@@ -155,7 +155,8 @@ public class RenderUtils
         float g = (float) (color >>  8 & 255) / 255.0F;
         float b = (float) (color & 255) / 255.0F;
 
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // FIXME
+        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -182,7 +183,8 @@ public class RenderUtils
     public static void drawTexturedRect(int x, int y, int u, int v, int width, int height, float zLevel)
     {
         float pixelWidth = 0.00390625F;
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        // FIXME
+        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
@@ -308,7 +310,8 @@ public class RenderUtils
         int eb = (endColor & 0xFF);
 
         setupBlend();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // FIXME
+        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -783,7 +786,8 @@ public class RenderUtils
 
         setupBlend();
 
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // FIXME
+        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
@@ -880,7 +884,8 @@ public class RenderUtils
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
         //RenderSystem.applyModelViewMatrix();
 
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // FIXME
+        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -1006,7 +1011,8 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
         //RenderSystem.applyModelViewMatrix();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // FIXME
+        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -1115,7 +1121,8 @@ public class RenderUtils
             bindTexture(bgTexture);
             setupBlend();
 
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+            // FIXME
+            //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
@@ -1346,7 +1353,8 @@ public class RenderUtils
 
         if (model.isBuiltin() == false)
         {
-            RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
+            // FIXME
+            //RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
             //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);

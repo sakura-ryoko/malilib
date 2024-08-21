@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.interfaces;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+
+import net.minecraft.client.gl.PostEffectProcessor;
 import org.joml.Matrix4f;
 
 import net.minecraft.class_9916;
@@ -53,7 +55,7 @@ public interface IFramebufferFactory
     void onReload(MinecraftClient mc);
     void onClose();
     void onResized(int w, int h);
-    void onFramebufferBasicSetup(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, boolean hasTransparency, DefaultFramebufferSet framebufferSet, FrameGraphBuilder frameGraphBuilder);
+    void onFramebufferBasicSetup(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, @Nullable PostEffectProcessor postEffectProcessor, DefaultFramebufferSet framebufferSet, FrameGraphBuilder frameGraphBuilder);
     void onFramebufferTranslucentFactorySetup(FrameGraphBuilder frameGraphBuilder, SimpleFramebufferFactory fbFactory, MinecraftClient mc);
     void onRenderMainCaptureLocals(MinecraftClient mc, Camera camera, Fog fog, RenderTickCounter counter, Profiler profiler);
     void onRenderNode(FrameGraphBuilder frameGraphBuilder, Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, Camera camera, DefaultFramebufferSet framebufferSet);
