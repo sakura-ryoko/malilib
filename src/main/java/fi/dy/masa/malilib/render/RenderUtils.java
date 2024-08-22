@@ -1353,7 +1353,7 @@ public class RenderUtils
 
         if (model.isBuiltin() == false)
         {
-            RenderSystem.setShader(ShaderPrograms.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+            RenderSystem.setShader(ShaderPrograms.RENDERTYPE_SOLID);
             //RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
             //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
