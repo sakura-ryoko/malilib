@@ -50,6 +50,7 @@ import net.minecraft.util.math.random.LocalRandom;
 
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.render.shader.ShaderPrograms;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.PositionUtils.HitPart;
 
@@ -157,8 +158,7 @@ public class RenderUtils
         float g = (float) (color >>  8 & 255) / 255.0F;
         float b = (float) (color & 255) / 255.0F;
 
-        // FIXME
-        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_color"), VertexFormats.POSITION_COLOR, class_10149.field_53930));
+        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
@@ -186,8 +186,7 @@ public class RenderUtils
     public static void drawTexturedRect(int x, int y, int u, int v, int width, int height, float zLevel)
     {
         float pixelWidth = 0.00390625F;
-        // FIXME
-        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_tex"), VertexFormats.POSITION_TEXTURE, class_10149.field_53930));
+        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR_TEX);
         //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
@@ -314,7 +313,7 @@ public class RenderUtils
         int eb = (endColor & 0xFF);
 
         setupBlend();
-        // FIXME
+        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
 
@@ -790,8 +789,7 @@ public class RenderUtils
 
         setupBlend();
 
-        // FIXME
-        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_color"), VertexFormats.POSITION_COLOR, class_10149.field_53930));
+        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -889,8 +887,7 @@ public class RenderUtils
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
         //RenderSystem.applyModelViewMatrix();
 
-        // FIXME
-        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_color"), VertexFormats.POSITION_COLOR, class_10149.field_53930));
+        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -1017,8 +1014,7 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
         //RenderSystem.applyModelViewMatrix();
-        // FIXME
-        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_color"), VertexFormats.POSITION_COLOR, class_10149.field_53930));
+        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -1128,8 +1124,7 @@ public class RenderUtils
             bindTexture(bgTexture);
             setupBlend();
 
-            // FIXME
-            RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_tex"), VertexFormats.POSITION_TEXTURE, class_10149.field_53930));
+            RenderSystem.setShader(ShaderPrograms.POSITION_COLOR_TEX);
             //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
@@ -1159,14 +1154,11 @@ public class RenderUtils
                 VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE));
                 double scale = (double) (dimensions - 16) / 128.0D;
 
-                // TODO -- MapRenderer still uses MatrixStack
                 MatrixStack matrixStack = new MatrixStack();
                 matrixStack.push();
                 matrixStack.translate(x1, y1, z);
                 matrixStack.scale((float) scale, (float) scale, 0);
                 //mc().gameRenderer.getMapRenderer().draw(matrixStack, consumer, mapId, mapState, false, 0xF000F0);
-                // TODO --> MapRenderState.MapDecorationRenderState() // class_10090.class_10091()
-                // TODO --> MapTextureManager.MapTexture() // class_10093.MapTexture()
                 MapRenderState mapRenderState = new MapRenderState();
                 mc().getMapRenderer().update(mapId, mapState, mapRenderState);
                 mc().getMapRenderer().draw(mapRenderState, matrixStack, consumer, false, 0xF000F0);
@@ -1361,8 +1353,7 @@ public class RenderUtils
 
         if (model.isBuiltin() == false)
         {
-            // FIXME
-            RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/terrain"), VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, class_10149.field_53930));
+            RenderSystem.setShader(ShaderPrograms.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
             //RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
             //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
