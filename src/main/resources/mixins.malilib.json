@@ -18,7 +18,8 @@
     "MixinMouse",
     "MixinPiglinEntity",
     "MixinSimpleInventory",
-    "MixinWorldRenderer"
+    "MixinWorldRenderer",
+    "MixinWorldRenderer_FramebufferFactory"
   ],
   "injectors": {
     "defaultRequire": 1

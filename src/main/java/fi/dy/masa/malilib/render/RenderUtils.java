@@ -14,6 +14,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.class_10149;
+import net.minecraft.class_10156;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -156,6 +158,7 @@ public class RenderUtils
         float b = (float) (color & 255) / 255.0F;
 
         // FIXME
+        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_color"), VertexFormats.POSITION_COLOR, class_10149.field_53930));
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
@@ -184,6 +187,7 @@ public class RenderUtils
     {
         float pixelWidth = 0.00390625F;
         // FIXME
+        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_tex"), VertexFormats.POSITION_TEXTURE, class_10149.field_53930));
         //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
@@ -787,6 +791,7 @@ public class RenderUtils
         setupBlend();
 
         // FIXME
+        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_color"), VertexFormats.POSITION_COLOR, class_10149.field_53930));
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -885,6 +890,7 @@ public class RenderUtils
         //RenderSystem.applyModelViewMatrix();
 
         // FIXME
+        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_color"), VertexFormats.POSITION_COLOR, class_10149.field_53930));
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -1012,6 +1018,7 @@ public class RenderUtils
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
         //RenderSystem.applyModelViewMatrix();
         // FIXME
+        RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_color"), VertexFormats.POSITION_COLOR, class_10149.field_53930));
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -1122,6 +1129,7 @@ public class RenderUtils
             setupBlend();
 
             // FIXME
+            RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/position_tex"), VertexFormats.POSITION_TEXTURE, class_10149.field_53930));
             //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
@@ -1354,6 +1362,7 @@ public class RenderUtils
         if (model.isBuiltin() == false)
         {
             // FIXME
+            RenderSystem.setShader(new class_10156(Identifier.ofVanilla("core/terrain"), VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, class_10149.field_53930));
             //RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
             //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();

@@ -82,7 +82,7 @@ public interface IFramebufferFactory
      */
     default RenderTarget createTarget()
     {
-        return this.createTarget(null, null);
+        return this.createTargetBasic(null, null);
     }
 
     /**
@@ -91,23 +91,54 @@ public interface IFramebufferFactory
      * @param endDrawing (Runnable for Drawing phase end)
      * @return (The RenderPhase Object alias)
      */
-    default RenderTarget createTarget(@Nullable Runnable startDrawing, @Nullable Runnable endDrawing)
+    default RenderTarget createTargetBasic(@Nullable Runnable startDrawing, @Nullable Runnable endDrawing)
     {
-        return new RenderTarget(this.getName(), startDrawing != null ? startDrawing : this.beginDrawing(this.getFramebuffer()), endDrawing != null ? endDrawing : this.endDrawing());
+        return new RenderTarget(this.getName(), startDrawing != null ? startDrawing : this.beginDrawingBasic(), endDrawing != null ? endDrawing : this.endDrawingBasic());
     }
 
     /**
-     * Default RenderPhase beginDrawing()
-     * @param fb (Framebuffer)
+     * Default RenderPhase beginDrawingBasic()
      * @return (Runnable)
      */
-    default Runnable beginDrawing(Framebuffer fb)
+    default Runnable beginDrawingBasic()
+    {
+        return () ->
+        {
+            MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
+        };
+    }
+
+    /**
+     * Default RenderPhase endDrawingBasic()
+     * @return (Runnable)
+     */
+    default Runnable endDrawingBasic()
+    {
+        return () -> { };
+    }
+
+    /**
+     * Creation for custom RenderPhase objects
+     * @param startDrawing (Runnable for Drawing phase start)
+     * @param endDrawing (Runnable for Drawing phase end)
+     * @return (The RenderPhase Object alias)
+     */
+    default RenderTarget createTargetWithFb(@Nullable Runnable startDrawing, @Nullable Runnable endDrawing)
+    {
+        return new RenderTarget(this.getName(), startDrawing != null ? startDrawing : this.beginDrawingWithFb(), endDrawing != null ? endDrawing : this.endDrawingWithFb());
+    }
+
+    /**
+     * Default RenderPhase beginDrawingWithFb()
+     * @return (Runnable)
+     */
+    default Runnable beginDrawingWithFb()
     {
         return () ->
         {
             if (MinecraftClient.isFabulousGraphicsOrBetter())
             {
-                fb.beginWrite(false);
+                this.getFramebuffer().beginWrite(false);
             }
             else
             {
@@ -117,10 +148,10 @@ public interface IFramebufferFactory
     }
 
     /**
-     * Default RenderPhase endDrawing()
+     * Default RenderPhase endDrawingWithFb()
      * @return (Runnable)
      */
-    default Runnable endDrawing()
+    default Runnable endDrawingWithFb()
     {
         return () ->
         {
