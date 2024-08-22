@@ -1,30 +1,23 @@
 package fi.dy.masa.malilib.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import org.joml.Matrix4f;
-
+import fi.dy.masa.malilib.event.RenderEventHandler;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.PostEffectProcessor;
-import net.minecraft.client.gl.SimpleFramebufferFactory;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.ObjectAllocator;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import fi.dy.masa.malilib.event.RenderEventHandler;
 
 @Mixin(value = WorldRenderer.class)
 public abstract class MixinWorldRenderer
 {
     @Shadow @Final private MinecraftClient client;
-    //@Shadow @Nullable private PostEffectProcessor transparencyPostProcessor;
-    @Shadow @Final private DefaultFramebufferSet framebufferSet;
-    @Unique private SimpleFramebufferFactory factory = null;
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",

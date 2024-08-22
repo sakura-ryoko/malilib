@@ -1,28 +1,27 @@
 package fi.dy.masa.malilib.render;
 
-import javax.annotation.Nullable;
-import org.joml.Matrix4f;
-
-import net.minecraft.class_10149;
-import net.minecraft.class_10156;
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.event.FramebufferHandler;
+import fi.dy.masa.malilib.interfaces.IFramebufferFactory;
+import fi.dy.masa.malilib.render.shader.ShaderEntry;
+import fi.dy.masa.malilib.render.shader.ShaderPrograms;
 import net.minecraft.class_9916;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.PostEffectProcessor;
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.SimpleFramebufferFactory;
 import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import org.joml.Matrix4f;
 
-import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.event.FramebufferHandler;
-import fi.dy.masa.malilib.interfaces.IFramebufferFactory;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
 {
-    //private final Identifier shaderPostProcessor = Identifier.of(MaLiLibReference.MOD_ID, "shaders/transparency.json");
-    private final Identifier shaderPostProcessor = null;
     private RenderTarget renderPhase;
     private Framebuffer framebuffer;
     private class_9916 renderStageNode;
@@ -33,14 +32,8 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     private Fog fog = Fog.DUMMY;
     private RenderTickCounter tickCounter;
     private Profiler profiler;
-    @Nullable
-    private PostEffectProcessor transparencyPostProcessor;
-    @Nullable
-    private class_10156 shader = new class_10156(Identifier.ofVanilla("core/terrain"), VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, class_10149.field_53930);
-    @Nullable
-    private ShaderProgram shaderProgram;
-    @Nullable
-    private PostEffectProcessor shaderPostEffects;
+    private final ShaderEntry vanillaTransparency = new ShaderEntry("vanilla_transparency", null, Identifier.ofVanilla("transparency"));
+    private final Map<String, ShaderEntry> shaders = new HashMap<>();
 
     @Override
     public String getName()
@@ -75,39 +68,73 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     @Override
     public void onReload(MinecraftClient mc)
     {
-        /*
-        if (MinecraftClient.isFabulousGraphicsOrBetter())
-        {
-            this.loadTransparencyPostProcessor(mc);
-        }
-         */
-
         this.clear();
+        this.buildShaders();
 
-        if (this.shader != null)
+        if (this.shaders.isEmpty() == false)
         {
-            this.loadShader();
+            this.loadShaders(mc);
         }
     }
 
-    private void loadShader()
+    private void buildShaders()
     {
-        // Load shader
-        /*
-        try
+        this.shaders.computeIfAbsent("position_color", (entry) -> new ShaderEntry(entry, ShaderPrograms.POSITION_COLOR, null));
+        this.shaders.computeIfAbsent("position_color_tex", (entry) -> new ShaderEntry(entry, ShaderPrograms.POSITION_COLOR_TEX, null));
+        this.shaders.computeIfAbsent("rendertype_solid", (entry) -> new ShaderEntry(entry, ShaderPrograms.RENDERTYPE_SOLID, null));
+    }
+
+    private void loadShaders(MinecraftClient mc)
+    {
+        for (ShaderEntry entry : this.shaders.values())
         {
-            ShaderProgram shaderProgram = RenderSystem.setShader(this.shader);
-            if (shaderProgram != null)
+            try
             {
-                this.shaderProgram = shaderProgram;
+                entry.load(mc.method_62887());
             }
-            //this.shaderPostEffects;
+            catch (Exception e)
+            {
+                MaLiLib.logger.error("MaLiLibRenderer: Error loading ShaderEntry \"{}\": [{}]", entry.getName(), e.getMessage());
+            }
         }
-        catch (Exception e)
+    }
+
+    private boolean startProgram(String name, MinecraftClient mc)
+    {
+        if (this.shaders.containsKey(name))
         {
-            // Ignored
+            return this.shaders.get(name).startProgram(mc.method_62887());
         }
-         */
+
+        return false;
+    }
+
+    private boolean runProgram(String name)
+    {
+        if (this.shaders.containsKey(name))
+        {
+            return this.shaders.get(name).runProgram();
+        }
+
+        return false;
+    }
+
+    private void runPostEffects(FrameGraphBuilder frameGraphBuilder, int width, int height, DefaultFramebufferSet framebufferSet)
+    {
+        for (ShaderEntry entry : this.shaders.values())
+        {
+            entry.runPostEffects(frameGraphBuilder, width, height, framebufferSet);
+        }
+    }
+
+    private void endShaders()
+    {
+        for (ShaderEntry entry : this.shaders.values())
+        {
+            entry.end();
+        }
+
+        this.vanillaTransparency.end();
     }
 
     @Override
@@ -135,7 +162,7 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
         this.renderStageNode = this.createStageNode(frameGraphBuilder, this.getName());
         this.posMatrix = posMatrix;
         this.projMatrix = projMatrix;
-        this.transparencyPostProcessor = postEffectProcessor;
+        this.vanillaTransparency.setPostEffects(postEffectProcessor);
     }
 
     @Override
@@ -160,15 +187,7 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     {
         this.profiler.push(this::getName);
         this.runStage(this.renderStageNode);
-
-        if (this.transparencyPostProcessor != null)
-        {
-            this.transparencyPostProcessor.method_62234(frameGraphBuilder, mc.getFramebuffer().textureWidth, mc.getFramebuffer().textureHeight, framebufferSet);
-        }
-        if (this.shaderPostEffects != null)
-        {
-            this.shaderPostEffects.method_62234(frameGraphBuilder, mc.getFramebuffer().textureWidth, mc.getFramebuffer().textureHeight, framebufferSet);
-        }
+        this.runPostEffects(frameGraphBuilder, mc.getFramebuffer().textureWidth, mc.getFramebuffer().textureHeight, framebufferSet);
     }
 
     @Override
@@ -181,6 +200,7 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     public void draw()
     {
         // Items for drawing go here
+        MaLiLib.logger.error("MaLiLibRenderer() --> draw()");
     }
 
     @Override
@@ -205,13 +225,7 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
         this.tickCounter = null;
         this.profiler = null;
         this.renderStageNode = null;
-        this.transparencyPostProcessor = null;
-        this.shaderPostEffects = null;
-        if (this.shaderProgram != null)
-        {
-            this.shaderProgram.close();
-            this.shaderProgram = null;
-        }
+        this.endShaders();
     }
 
     @Override
