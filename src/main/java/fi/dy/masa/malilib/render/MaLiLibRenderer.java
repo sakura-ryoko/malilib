@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.render;
 
+import javax.annotation.Nullable;
 import org.joml.Matrix4f;
 
 import net.minecraft.class_10149;
@@ -14,14 +15,9 @@ import net.minecraft.client.render.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
-import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.event.FramebufferHandler;
 import fi.dy.masa.malilib.interfaces.IFramebufferFactory;
-
-import javax.annotation.Nullable;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 
 public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
 {
