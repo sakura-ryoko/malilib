@@ -165,21 +165,25 @@ public abstract class WidgetBase
     public void drawString(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawText(this.textRenderer, text, x, y, color, false);
+        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawCenteredString(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawText(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
+        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawStringWithShadow(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
+        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawCenteredStringWithShadow(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawCenteredTextWithShadow(this.textRenderer, text, x, y, color);
+        RenderUtils.forceDraw(drawContext);
     }
 
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)

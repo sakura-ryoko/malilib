@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.render.shader.ShaderPrograms;
@@ -50,11 +51,12 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 public class RenderUtils
 {
-    public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.of("minecraft:textures/map/map_background.png");
-    public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.of("minecraft:textures/map/map_background_checkerboard.png");
+    public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.ofVanilla("textures/map/map_background.png");
+    public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.ofVanilla("textures/map/map_background_checkerboard.png");
 
     private static final LocalRandom RAND = new LocalRandom(0);
     //private static final Vec3d LIGHT0_POS = (new Vec3d( 0.2D, 1.0D, -0.7D)).normalize();
@@ -74,6 +76,37 @@ public class RenderUtils
     public static void bindTexture(Identifier texture)
     {
         RenderSystem.setShaderTexture(0, texture);
+    }
+
+    public static VertexConsumer bindTexture(Identifier texture, DrawContext drawContext)
+    {
+        return getVertexConsumer(getTextureLayer(RenderLayer::getGuiTexturedOverlay, texture), drawContext);
+    }
+
+    public static RenderLayer getTextureLayer(Function<Identifier, RenderLayer> function, Identifier texture)
+    {
+        return (RenderLayer) function.apply(texture);
+    }
+
+    public static VertexConsumer getVertexConsumer(RenderLayer textureLyaer, DrawContext drawContext)
+    {
+        return drawContext.getVertexConsumers().getBuffer(textureLyaer);
+    }
+
+    public static void forceDraw(DrawContext drawContext)
+    {
+        forceDraw(drawContext, false);
+    }
+
+    public static void forceDraw(DrawContext drawContext, boolean depthTest)
+    {
+        RenderSystem.disableDepthTest();
+        drawContext.getVertexConsumers().draw();
+
+        if (depthTest)
+        {
+            RenderSystem.enableDepthTest();
+        }
     }
 
     public static void color(float r, float g, float b, float a)
@@ -183,6 +216,7 @@ public class RenderUtils
     public static void drawTexturedRect(int x, int y, int u, int v, int width, int height, float zLevel)
     {
         float pixelWidth = 0.00390625F;
+
         RenderSystem.setShader(ShaderPrograms.POSITION_COLOR_TEX);
         //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         //RenderSystem.applyModelViewMatrix();
@@ -191,11 +225,12 @@ public class RenderUtils
         BuiltBuffer builtBuffer;
 
         setupBlend();
+        //RenderSystem.disableDepthTest();
 
-        buffer.vertex(x        , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth);
+        buffer.vertex(x           , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth);
         buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth);
-        buffer.vertex(x + width, y         , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth);
-        buffer.vertex(x        , y         , zLevel).texture( u          * pixelWidth,  v           * pixelWidth);
+        buffer.vertex(x + width, y            , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth);
+        buffer.vertex(x           , y            , zLevel).texture( u          * pixelWidth,  v           * pixelWidth);
 
         try
         {
@@ -203,7 +238,27 @@ public class RenderUtils
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
         }
-        catch (Exception ignored) { }
+        catch (Exception ignmored) { }
+    }
+
+    public static void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, DrawContext drawContext)
+    {
+        drawTexturedRect(texture, x, y, u, v, width, height, zLevel, -1, drawContext);
+    }
+
+    public static void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, int argb, DrawContext drawContext)
+    {
+        float pixelWidth = 0.00390625F;
+
+        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR_TEX);
+        setupBlend();
+        VertexConsumer vertexConsumer = bindTexture(texture, drawContext);
+        Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
+
+        vertexConsumer.vertex(matrix4f, x          , y + height   , zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth).color(argb);
+        vertexConsumer.vertex(matrix4f,x + width, y + height   , zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
+        vertexConsumer.vertex(matrix4f, x + width  , y            , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth).color(argb);
+        vertexConsumer.vertex(matrix4f, x             , y            , zLevel).texture( u          * pixelWidth,  v           * pixelWidth).color(argb);
     }
 
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, BufferBuilder buffer)
@@ -215,10 +270,10 @@ public class RenderUtils
     {
         float pixelWidth = 0.00390625F;
 
-        buffer.vertex(x        , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth);
+        buffer.vertex(x           , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth);
         buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth);
-        buffer.vertex(x + width, y         , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth);
-        buffer.vertex(x        , y         , zLevel).texture( u          * pixelWidth,  v           * pixelWidth);
+        buffer.vertex(x + width, y            , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth);
+        buffer.vertex(x           , y            , zLevel).texture( u          * pixelWidth,  v           * pixelWidth);
     }
 
     public static void drawHoverText(int x, int y, List<String> textLines, DrawContext drawContext)
@@ -286,6 +341,8 @@ public class RenderUtils
                 String str = textLines.get(i);
 
                 drawContext.drawText(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
+                //tryDraw(drawContext);
+
                 textStartY += lineHeight;
             }
 
@@ -310,6 +367,7 @@ public class RenderUtils
         int eb = (endColor & 0xFF);
 
         setupBlend();
+        //RenderSystem.enableBlend();
         RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
@@ -338,6 +396,7 @@ public class RenderUtils
     {
         TextRenderer textRenderer = mc().textRenderer;
         drawContext.drawCenteredTextWithShadow(textRenderer, text, x, y, color);
+        //tryDraw(drawContext);
     }
 
     public static void drawHorizontalLine(int x, int y, int width, int color)
@@ -355,7 +414,6 @@ public class RenderUtils
         if (texture != null)
         {
             Sprite sprite = mc().getSpriteAtlas(atlas).apply(texture);
-            //drawContext.drawSprite(RenderLayer::getGuiTextured, sprite, x, y, 0, width, height);
             drawContext.drawSprite(RenderLayer::getGuiTextured, sprite, x, y, width, height, -1);
         }
     }
@@ -368,6 +426,8 @@ public class RenderUtils
         for (String line : parts)
         {
             drawContext.drawText(textRenderer, line, x, y, color, true);
+            //tryDraw(drawContext);
+
             y += textRenderer.fontHeight + 1;
         }
     }
@@ -381,6 +441,8 @@ public class RenderUtils
             for (String line : lines)
             {
                 drawContext.drawText(textRenderer, line, x, y, color, false);
+                //tryDraw(drawContext);
+
                 y += textRenderer.fontHeight + 2;
             }
         }
@@ -414,6 +476,8 @@ public class RenderUtils
                 yOff = (int) (yOff * scale);
             }
 
+            //drawContext.getMatrices().push();
+            //drawContext.getMatrices().scale((float) scale, (float) scale, 1.0f);
             global4fStack.pushMatrix();
             global4fStack.scale((float) scale, (float) scale, 1.0f);
             //RenderSystem.applyModelViewMatrix();
@@ -455,7 +519,9 @@ public class RenderUtils
 
         if (scaled)
         {
+            //forceDraw(drawContext);
             global4fStack.popMatrix();
+            //drawContext.getMatrices().pop();
             //RenderSystem.applyModelViewMatrix();
         }
 
@@ -785,6 +851,7 @@ public class RenderUtils
         RenderSystem.disableCull();
 
         setupBlend();
+        //RenderSystem.enableBlend();
 
         RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
@@ -834,7 +901,6 @@ public class RenderUtils
         }
 
         Matrix4f modelMatrix = new Matrix4f();
-        BufferAllocator byteBufferBuilder = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
         modelMatrix.identity();
 
         for (String line : text)
@@ -843,14 +909,14 @@ public class RenderUtils
             {
                 RenderSystem.depthMask(false);
                 RenderSystem.disableDepthTest();
-                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(byteBufferBuilder);
+                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE));
                 textRenderer.draw(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFF), false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
                 immediate.draw();
                 RenderSystem.enableDepthTest();
                 RenderSystem.depthMask(true);
             }
 
-            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(byteBufferBuilder);
+            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE));
             textRenderer.draw(line, -strLenHalf, textY, textColor, false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
             immediate.draw();
             textY += textRenderer.fontHeight;
@@ -1155,7 +1221,7 @@ public class RenderUtils
                 matrixStack.push();
                 matrixStack.translate(x1, y1, z);
                 matrixStack.scale((float) scale, (float) scale, 0);
-                //mc().gameRenderer.getMapRenderer().draw(matrixStack, consumer, mapId, mapState, false, 0xF000F0);
+
                 MapRenderState mapRenderState = new MapRenderState();
                 mc().getMapRenderer().update(mapId, mapState, mapRenderState);
                 mc().getMapRenderer().draw(mapRenderState, matrixStack, consumer, false, 0xF000F0);
@@ -1201,6 +1267,8 @@ public class RenderUtils
             Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
             matrix4fStack.pushMatrix();
             matrix4fStack.translate(0, 0, 500);
+            //drawContext.getMatrices().push();
+            //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
 
             InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), mc());
@@ -1211,6 +1279,7 @@ public class RenderUtils
             InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, ShulkerBoxBlockEntity.INVENTORY_SIZE, mc(), drawContext);
 
             matrix4fStack.popMatrix();
+            //drawContext.getMatrices().pop();
             //RenderSystem.applyModelViewMatrix();
         }
     }
@@ -1253,6 +1322,8 @@ public class RenderUtils
             Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
             matrix4fStack.pushMatrix();
             matrix4fStack.translate(0, 0, 500);
+            //drawContext.getMatrices().push();
+            //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
 
             InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), mc());
@@ -1263,6 +1334,7 @@ public class RenderUtils
             InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc(), drawContext);
 
             matrix4fStack.popMatrix();
+            //drawContext.getMatrices().pop();
             //RenderSystem.applyModelViewMatrix();
         }
     }
@@ -1326,6 +1398,7 @@ public class RenderUtils
         matrix4fStack.scale(0.625f, 0.625f, 0.625f);
 
         renderModel(model, state);
+        //RenderSystem.disableBlend();
         matrix4fStack.popMatrix();
     }
 
@@ -1340,7 +1413,7 @@ public class RenderUtils
         matrix4fStack.scale((float) 16, (float) -16, (float) 16);
     }
 
-    private static void renderModel(BakedModel model, BlockState state)
+    public static void renderModel(BakedModel model, BlockState state)
     {
         Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
         matrix4fStack.pushMatrix();

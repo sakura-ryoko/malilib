@@ -22,9 +22,10 @@ import fi.dy.masa.malilib.interfaces.IFramebufferManager;
 
 /**
  * A New Frame buffer Compliant Rendering System.
- * This is made as an effort for a replacement for the RenderHandler process;
+ * This is made as an effort for a helper to the RenderHandler process;
  * and is designed to be able to be run at a lower level of the WorldRenderer.
  */
+@ApiStatus.Experimental
 public class FramebufferHandler implements IFramebufferManager
 {
     private static final FramebufferHandler INSTANCE = new FramebufferHandler();

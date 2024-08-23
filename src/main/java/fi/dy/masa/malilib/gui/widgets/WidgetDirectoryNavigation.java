@@ -104,9 +104,9 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
         {
             WidgetIcon hoveredIcon = this.getHoveredIcon(mouseX, mouseY);
 
-            this.iconRoot.render(false, hoveredIcon == this.iconRoot);
-            this.iconUp.render(false, hoveredIcon == this.iconUp);
-            this.iconCreateDir.render(false, hoveredIcon == this.iconCreateDir);
+            this.iconRoot.render(false, hoveredIcon == this.iconRoot, drawContext);
+            this.iconUp.render(false, hoveredIcon == this.iconUp, drawContext);
+            this.iconCreateDir.render(false, hoveredIcon == this.iconCreateDir, drawContext);
 
             int pathStartX = this.iconCreateDir.x + this.iconCreateDir.getWidth() + 6;
 

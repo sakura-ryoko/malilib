@@ -21,6 +21,6 @@ public class WidgetInfoIcon extends WidgetHoverInfo
     {
         RenderUtils.color(1f, 1f, 1f, 1f);
         this.bindTexture(this.icon.getTexture());
-        this.icon.renderAt(this.x, this.y, this.zLevel, false, selected);
+        this.icon.renderAt(this.x, this.y, this.zLevel, false, selected, drawContext);
     }
 }

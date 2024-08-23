@@ -4,11 +4,11 @@ import java.io.File;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import fi.dy.masa.malilib.config.ConfigUtils;
-import fi.dy.masa.malilib.config.IConfigHandler;
-import fi.dy.masa.malilib.config.IConfigValue;
-import fi.dy.masa.malilib.config.options.ConfigBoolean;
-import fi.dy.masa.malilib.config.options.ConfigHotkey;
+
+import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.config.options.*;
+import fi.dy.masa.malilib.util.test.ConfigTestOptList;
+import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 
@@ -46,6 +46,33 @@ public class MaLiLibConfigs implements IConfigHandler
         );
     }
 
+    public static class Test
+    {
+        public static final ConfigBoolean           TEST_CONFIG_BOOLEAN             = new ConfigBoolean("testBoolean", false, "Test Boolean");
+        public static final ConfigBooleanHotkeyed   TEST_CONFIG_BOOLEAN_HOTKEYED    = new ConfigBooleanHotkeyed("testBooleanHotkeyed", false, "", "Test Boolean Hotkeyed");
+        public static final ConfigColor             TEST_CONFIG_COLOR               = new ConfigColor("testColor", "0xFFFFFFFF", "Test Color");
+        public static final ConfigColorList         TEST_CONFIG_COLOR_LIST          = new ConfigColorList("testColorList", ImmutableList.of(new Color4f(0, 0, 0), new Color4f(255,255,255,255)), "Test Color List");
+        public static final ConfigDouble            TEST_CONFIG_DOUBLE              = new ConfigDouble("testDouble", 0, "Test Double");
+        public static final ConfigHotkey            TEST_CONFIG_HOTKEY              = new ConfigHotkey("testHotkey", "", "Test Hotkey");
+        public static final ConfigInteger           TEST_CONFIG_INTEGER             = new ConfigInteger("testInteger", 0, "Test Integer");
+        public static final ConfigOptionList        TEST_CONFIG_OPTIONS_LIST        = new ConfigOptionList("testOptionList", ConfigTestOptList.TEST1, "Test Option List");
+        public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "", "Test String");
+        public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of(), "Test String List");
+
+        public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
+                TEST_CONFIG_BOOLEAN,
+                TEST_CONFIG_BOOLEAN_HOTKEYED,
+                TEST_CONFIG_COLOR,
+                TEST_CONFIG_COLOR_LIST,
+                TEST_CONFIG_DOUBLE,
+                TEST_CONFIG_HOTKEY,
+                TEST_CONFIG_INTEGER,
+                TEST_CONFIG_OPTIONS_LIST,
+                TEST_CONFIG_STRING,
+                TEST_CONFIG_STRING_LIST
+        );
+    }
+
     public static void loadFromFile()
     {
         File configFile = new File(FileUtils.getConfigDirectory(), CONFIG_FILE_NAME);
@@ -60,6 +87,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
                 ConfigUtils.readConfigBase(root, "Generic", Generic.OPTIONS);
                 ConfigUtils.readConfigBase(root, "Debug", Debug.OPTIONS);
+                ConfigUtils.readConfigBase(root, "Test", Test.OPTIONS);
             }
         }
     }
@@ -74,6 +102,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
             ConfigUtils.writeConfigBase(root, "Generic", Generic.OPTIONS);
             ConfigUtils.writeConfigBase(root, "Debug", Debug.OPTIONS);
+            ConfigUtils.writeConfigBase(root, "Test", Test.OPTIONS);
 
             JsonUtils.writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
         }

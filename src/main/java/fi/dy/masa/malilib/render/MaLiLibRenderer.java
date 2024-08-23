@@ -1,30 +1,38 @@
 package fi.dy.masa.malilib.render;
 
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.event.FramebufferHandler;
-import fi.dy.masa.malilib.interfaces.IFramebufferFactory;
-import fi.dy.masa.malilib.render.shader.ShaderEntry;
-import fi.dy.masa.malilib.render.shader.ShaderPrograms;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.ApiStatus;
+import org.joml.Matrix4f;
+
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.class_9916;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gl.SimpleFramebufferFactory;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
-import org.joml.Matrix4f;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.event.FramebufferHandler;
+import fi.dy.masa.malilib.interfaces.IFramebufferFactory;
+import fi.dy.masa.malilib.render.shader.ShaderEntry;
+import fi.dy.masa.malilib.render.shader.ShaderPrograms;
 
+/**
+ * Experimental Class Only!!!
+ */
+@ApiStatus.Experimental
 public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
 {
     private RenderTarget renderPhase;
     private Framebuffer framebuffer;
-    private class_9916 renderStageNode;
 
     private Matrix4f posMatrix = new Matrix4f();
     private Matrix4f projMatrix = new Matrix4f();
@@ -159,7 +167,6 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
                                         FrameGraphBuilder frameGraphBuilder)
     {
         this.framebuffer = this.createSimpleFramebuffer(mc, true);
-        this.renderStageNode = this.createStageNode(frameGraphBuilder, this.getName());
         this.posMatrix = posMatrix;
         this.projMatrix = projMatrix;
         this.vanillaTransparency.setPostEffects(postEffectProcessor);
@@ -185,34 +192,31 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     public void onRenderNode(FrameGraphBuilder frameGraphBuilder, Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
                              Camera camera, DefaultFramebufferSet framebufferSet)
     {
-        this.profiler.push(this::getName);
-        this.runStage(this.renderStageNode);
+        this.render(framebufferSet, frameGraphBuilder);
+        //this.runStage(this.renderStageNode);
         this.runPostEffects(frameGraphBuilder, mc.getFramebuffer().textureWidth, mc.getFramebuffer().textureHeight, framebufferSet);
     }
 
-    @Override
-    public void preDraw()
+    public void render(DefaultFramebufferSet framebufferSet, FrameGraphBuilder frameGraphBuilder)
     {
-        // NO-OP
-    }
+        this.profiler.push(this::getName);
+        BlockState blockState = Blocks.COMMAND_BLOCK.getDefaultState();
+        BakedModel bakedModel = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(blockState);
 
-    @Override
-    public void draw()
-    {
-        // Items for drawing go here
-        MaLiLib.logger.error("MaLiLibRenderer() --> draw()");
-    }
-
-    @Override
-    public void postDraw()
-    {
-        // NO-OP
+        class_9916 stage = frameGraphBuilder.createStageNode(this.getName());
+        FramebufferHandler.getInstance().setFramebufferHandle(this, stage.method_61933(FramebufferHandler.getInstance().getFramebufferHandle(this)));
+        stage.method_61929(() ->
+        {
+            this.getRenderPhase().startDrawing(this.getName());
+            RenderUtils.renderModel(bakedModel, blockState);
+            this.getRenderPhase().endDrawing(this.getName());
+        });
+        this.profiler.pop();
     }
 
     @Override
     public void onRenderFinished()
     {
-        this.profiler.pop();
         this.clear();
     }
 
@@ -224,7 +228,6 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
         this.fog = Fog.DUMMY;
         this.tickCounter = null;
         this.profiler = null;
-        this.renderStageNode = null;
         this.endShaders();
     }
 

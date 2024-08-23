@@ -1,10 +1,13 @@
 package fi.dy.masa.malilib.render;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.client.render.RenderPhase;
 
 /**
  * Kind of a lame hack to create a Pseudo RenderPhase
  */
+@ApiStatus.Experimental
 public class RenderTarget extends RenderPhase
 {
     private final String targetName;
@@ -29,10 +32,5 @@ public class RenderTarget extends RenderPhase
         {
             this.endDrawing();
         }
-    }
-
-    public RenderPhase asRenderPhase()
-    {
-        return (RenderPhase) this;
     }
 }

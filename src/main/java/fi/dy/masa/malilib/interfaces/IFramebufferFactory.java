@@ -2,13 +2,12 @@ package fi.dy.masa.malilib.interfaces;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-
-import net.minecraft.client.gl.PostEffectProcessor;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
-import net.minecraft.class_9916;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gl.SimpleFramebufferFactory;
 import net.minecraft.client.render.*;
@@ -18,6 +17,7 @@ import net.minecraft.util.profiler.Profiler;
 
 import fi.dy.masa.malilib.render.RenderTarget;
 
+@ApiStatus.Experimental
 public interface IFramebufferFactory
 {
     /**
@@ -60,13 +60,6 @@ public interface IFramebufferFactory
     void onRenderMainCaptureLocals(MinecraftClient mc, Camera camera, Fog fog, RenderTickCounter counter, Profiler profiler);
     void onRenderNode(FrameGraphBuilder frameGraphBuilder, Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, Camera camera, DefaultFramebufferSet framebufferSet);
     void onRenderFinished();
-
-    /**
-     * Drawing phases
-     */
-    void preDraw();
-    void draw();
-    void postDraw();
 
     /**
      * Returns a supplier for the profiler section name that should be used for this renderer
@@ -194,32 +187,5 @@ public interface IFramebufferFactory
     default Handle<Framebuffer> createObjectNode(FrameGraphBuilder frameGraphBuilder, String name, Framebuffer framebuffer)
     {
         return frameGraphBuilder.createObjectNode(name, framebuffer);
-    }
-
-    /**
-     * Render Stage Node creation
-     * @param frameGraphBuilder (Required frameGraphBuilder Object from WorldRenderer)
-     * @param name (Name of the Frame Graph Object)
-     * @return (The Render Stage Execution Object)
-     */
-    default class_9916 createStageNode(FrameGraphBuilder frameGraphBuilder, String name)
-    {
-        return frameGraphBuilder.createStageNode(name);
-    }
-
-    /**
-     * The Render Phase Task
-     * @param stage (The Render Stage node)
-     */
-    default void runStage(class_9916 stage)
-    {
-        stage.method_61929(() ->
-        {
-            this.preDraw();
-            this.getRenderPhase().startDrawing(this.getName());
-            this.draw();
-            this.getRenderPhase().endDrawing(this.getName());
-            this.postDraw();
-        });
     }
 }

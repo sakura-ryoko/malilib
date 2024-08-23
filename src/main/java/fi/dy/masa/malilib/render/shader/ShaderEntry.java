@@ -12,7 +12,9 @@ import net.minecraft.client.render.FrameGraphBuilder;
 import net.minecraft.util.Identifier;
 
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Experimental
 public class ShaderEntry
 {
     private final String name;

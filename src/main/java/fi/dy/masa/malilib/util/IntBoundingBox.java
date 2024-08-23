@@ -1,12 +1,12 @@
 package fi.dy.masa.malilib.util;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 
 public class IntBoundingBox
@@ -113,7 +113,7 @@ public class IntBoundingBox
         int worldMinH = -30000000;
         int worldMaxH =  30000000;
         int worldMinY = world != null ? world.getBottomY() : -64;
-        int worldMaxY = world != null ? world.getTopY(Heightmap.Type.WORLD_SURFACE, 0, 0) - 1 : 319;
+        int worldMaxY = world != null ? world.getTopYInclusive() : 319;
 
         return new IntBoundingBox(worldMinH, worldMinY, worldMinH, worldMaxH, worldMaxY, worldMaxH);
     }

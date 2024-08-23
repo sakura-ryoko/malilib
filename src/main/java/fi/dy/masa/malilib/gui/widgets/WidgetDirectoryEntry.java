@@ -87,7 +87,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         {
             RenderUtils.color(1f, 1f, 1f, 1f);
             this.bindTexture(icon.getTexture());
-            icon.renderAt(this.x, this.y + (this.height - icon.getHeight()) / 2, this.zLevel + 10, false, false);
+            icon.renderAt(this.x, this.y + (this.height - icon.getHeight()) / 2, this.zLevel + 10, false, false, drawContext);
         }
 
         // Draw an outline if this is the currently selected entry

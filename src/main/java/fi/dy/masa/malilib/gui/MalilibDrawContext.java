@@ -4,6 +4,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 
+/**
+ * No longer required past 1.21
+ */
 public class MalilibDrawContext extends DrawContext
 {
     public MalilibDrawContext(MinecraftClient client, Immediate vertexConsumers)

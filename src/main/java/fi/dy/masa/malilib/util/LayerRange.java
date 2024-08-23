@@ -3,13 +3,14 @@ package fi.dy.masa.malilib.util;
 import javax.annotation.Nullable;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRangeChangeListener;
 
@@ -658,7 +659,7 @@ public class LayerRange
         int worldMinH = -30000000;
         int worldMaxH =  30000000;
         int worldMinY = world != null ? world.getBottomY() : -64;
-        int worldMaxY = world != null ? world.getTopY(Heightmap.Type.WORLD_SURFACE, 0, 0) - 1 : 319;
+        int worldMaxY = world != null ? world.getTopYInclusive() : 319;
         int minX = worldMinH;
         int minY = worldMinY;
         int minZ = worldMinH;

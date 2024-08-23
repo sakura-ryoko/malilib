@@ -88,6 +88,7 @@
     "malilib.gui.title.create_directory": "Create a new directory",
     "malilib.gui.title.debug": "Debug",
     "malilib.gui.title.generic": "Generic",
+    "malilib.gui.title.test": "Test",
     "malilib.gui.title.keybind_settings.advanced": "Advanced Keybind Settings for %s",
     "malilib.gui.title.string_list_edit": "Edit string list for '%s'",
     "malilib.gui.title.color_list_edit": "Edit color list for '%s'",
