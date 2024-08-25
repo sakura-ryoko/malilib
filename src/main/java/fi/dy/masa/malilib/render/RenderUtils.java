@@ -172,6 +172,11 @@ public class RenderUtils
 
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel)
     {
+        drawRect(x, y, width, height, color, zLevel, 1.0f);
+    }
+
+    public static void drawRect(int x, int y, int width, int height, int color, float zLevel, float scale)
+    {
         float a = (float) (color >> 24 & 255) / 255.0F;
         float r = (float) (color >> 16 & 255) / 255.0F;
         float g = (float) (color >>  8 & 255) / 255.0F;
@@ -186,10 +191,10 @@ public class RenderUtils
 
         setupBlend();
 
-        buffer.vertex(x           , y            , zLevel).color(r, g, b, a);
-        buffer.vertex(x           , y + height, zLevel).color(r, g, b, a);
-        buffer.vertex(x + width, y + height, zLevel).color(r, g, b, a);
-        buffer.vertex(x + width, y            , zLevel).color(r, g, b, a);
+        buffer.vertex(x * scale,           y * scale,            zLevel).color(r, g, b, a);
+        buffer.vertex(x * scale,           (y + height) * scale, zLevel).color(r, g, b, a);
+        buffer.vertex((x + width) * scale, (y + height) * scale, zLevel).color(r, g, b, a);
+        buffer.vertex((x + width) * scale, y * scale           , zLevel).color(r, g, b, a);
 
         try
         {
@@ -457,7 +462,7 @@ public class RenderUtils
         }
 
         // RenderSystem's 'modelViewStack' was changed to a Matrix4fStack method
-        Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
+        //Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
         boolean scaled = scale != 1.0;
 
         if (scaled)
@@ -468,10 +473,10 @@ public class RenderUtils
                 yOff = (int) (yOff * scale);
             }
 
-            //drawContext.getMatrices().push();
-            //drawContext.getMatrices().scale((float) scale, (float) scale, 1.0f);
-            global4fStack.pushMatrix();
-            global4fStack.scale((float) scale, (float) scale, 1.0f);
+            drawContext.getMatrices().push();
+            drawContext.getMatrices().scale((float) scale, (float) scale, 1.0f);
+            //global4fStack.pushMatrix();
+            //global4fStack.scale((float) scale, (float) scale, 1.0f);
             //RenderSystem.applyModelViewMatrix();
         }
 
@@ -507,13 +512,13 @@ public class RenderUtils
             }
 
             drawContext.drawText(fontRenderer, line, x, y, textColor, useShadow);
+            forceDraw(drawContext);
         }
 
         if (scaled)
         {
-            //forceDraw(drawContext);
-            global4fStack.popMatrix();
-            //drawContext.getMatrices().pop();
+            //global4fStack.popMatrix();
+            drawContext.getMatrices().pop();
             //RenderSystem.applyModelViewMatrix();
         }
 
