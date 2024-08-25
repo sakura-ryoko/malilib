@@ -476,7 +476,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public void bindTexture(Identifier texture)
     {
-        MaLiLib.logger.error("RenderUtils#bindTexture(): id [{}]", texture.toString());
         RenderUtils.bindTexture(texture);
     }
 
