@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 
 import fi.dy.masa.malilib.config.*;
 import fi.dy.masa.malilib.config.options.*;
-import fi.dy.masa.malilib.util.test.ConfigTestOptList;
+import fi.dy.masa.malilib.test.ConfigTestOptList;
 import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;

@@ -12,6 +12,8 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
@@ -474,7 +476,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public void bindTexture(Identifier texture)
     {
-        fi.dy.masa.malilib.render.RenderUtils.bindTexture(texture);
+        MaLiLib.logger.error("RenderUtils#bindTexture(): id [{}]", texture.toString());
+        RenderUtils.bindTexture(texture);
     }
 
     public <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)

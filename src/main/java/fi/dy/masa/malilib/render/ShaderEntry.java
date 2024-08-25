@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.render.shader;
+package fi.dy.masa.malilib.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import fi.dy.masa.malilib.event.FramebufferHandler;

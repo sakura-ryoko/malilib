@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.util.test;
+package fi.dy.masa.malilib.test;
 
 import com.google.common.collect.ImmutableList;
 

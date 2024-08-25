@@ -18,6 +18,13 @@ public class MaLiLibInitHandler implements IInitializationHandler
         InputEventHandler.getKeybindManager().registerKeybindProvider(MaLiLibInputHandler.getInstance());
         MaLiLibConfigs.Generic.OPEN_GUI_CONFIGS.getKeybind().setCallback(new CallbackOpenConfigGui());
 
+        /*
+        IRenderer renderer = new TestRenderHandler();
+        RenderEventHandler.getInstance().registerGameOverlayRenderer(renderer);
+        RenderEventHandler.getInstance().registerTooltipLastRenderer(renderer);
+        RenderEventHandler.getInstance().registerWorldLastRenderer(renderer);
+         */
+
         //FramebufferHandler.getInstance().registerFramebufferHandler(new MaLiLibRenderer());
     }
 

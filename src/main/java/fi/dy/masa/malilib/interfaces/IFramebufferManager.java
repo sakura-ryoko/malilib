@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 public interface IFramebufferManager
 {
     void registerFramebufferHandler(IFramebufferFactory handler);
-    void setFramebufferHandle(IFramebufferFactory handler, @Nonnull Handle<Framebuffer> framebufferHandle);
-    @Nullable Handle<Framebuffer> getFramebufferHandle(IFramebufferFactory handler);
+    void setFramebufferHandle(IFramebufferFactory handler, @Nonnull Handle<Framebuffer> framebufferHandle, Identifier name, boolean isPostProcessor);
+    @Nullable Handle<Framebuffer> getFramebufferHandle(IFramebufferFactory handler, Identifier name, boolean isPostProcessor);
     Set<Identifier> getStages();
 }

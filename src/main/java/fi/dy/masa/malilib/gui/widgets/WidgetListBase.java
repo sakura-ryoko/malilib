@@ -408,7 +408,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
 
         int scrollBarX = this.posX + this.browserWidth - 9;
         int scrollBarY = this.browserEntriesStartY + this.browserEntriesOffsetY;
-        this.scrollBar.render(mouseX, mouseY, partialTicks, scrollBarX, scrollBarY, 8, scrollbarHeight, totalHeight);
+        this.scrollBar.render(mouseX, mouseY, partialTicks, scrollBarX, scrollBarY, 8, scrollbarHeight, totalHeight, drawContext);
 
         // The value gets updated in the drawScrollBar() method above, if dragging
         if (this.scrollBar.getValue() != this.lastScrollbarPosition)

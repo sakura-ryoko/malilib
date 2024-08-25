@@ -15,8 +15,6 @@ import net.minecraft.client.util.Handle;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
-import fi.dy.masa.malilib.render.RenderTarget;
-
 @ApiStatus.Experimental
 public interface IFramebufferFactory
 {
@@ -33,6 +31,12 @@ public interface IFramebufferFactory
     Identifier getStage();
 
     /**
+     * Framebuffer Translucent Stage ID
+     * @return (Stage ID)
+     */
+    Identifier getPostProcessorStage();
+
+    /**
      * Callback for configuring the RenderPhase
      */
     void setupRenderPhase();
@@ -41,7 +45,7 @@ public interface IFramebufferFactory
      * Return the RenderPhase Target
      * @return (The Target)
      */
-    RenderTarget getRenderPhase();
+    RenderPhase getRenderPhase();
 
     /**
      * The Framebuffer Object
@@ -70,26 +74,6 @@ public interface IFramebufferFactory
     }
 
     /**
-     * Creation for custom RenderPhase objects
-     * @return (The RenderPhase Object alias)
-     */
-    default RenderTarget createTarget()
-    {
-        return this.createTargetBasic(null, null);
-    }
-
-    /**
-     * Creation for custom RenderPhase objects
-     * @param startDrawing (Runnable for Drawing phase start)
-     * @param endDrawing (Runnable for Drawing phase end)
-     * @return (The RenderPhase Object alias)
-     */
-    default RenderTarget createTargetBasic(@Nullable Runnable startDrawing, @Nullable Runnable endDrawing)
-    {
-        return new RenderTarget(this.getName(), startDrawing != null ? startDrawing : this.beginDrawingBasic(), endDrawing != null ? endDrawing : this.endDrawingBasic());
-    }
-
-    /**
      * Default RenderPhase beginDrawingBasic()
      * @return (Runnable)
      */
@@ -108,17 +92,6 @@ public interface IFramebufferFactory
     default Runnable endDrawingBasic()
     {
         return () -> { };
-    }
-
-    /**
-     * Creation for custom RenderPhase objects
-     * @param startDrawing (Runnable for Drawing phase start)
-     * @param endDrawing (Runnable for Drawing phase end)
-     * @return (The RenderPhase Object alias)
-     */
-    default RenderTarget createTargetWithFb(@Nullable Runnable startDrawing, @Nullable Runnable endDrawing)
-    {
-        return new RenderTarget(this.getName(), startDrawing != null ? startDrawing : this.beginDrawingWithFb(), endDrawing != null ? endDrawing : this.endDrawingWithFb());
     }
 
     /**

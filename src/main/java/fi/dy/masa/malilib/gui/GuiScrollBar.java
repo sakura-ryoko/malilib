@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.math.MathHelper;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -72,7 +73,7 @@ public class GuiScrollBar
         this.dragging = isDragging;
     }
 
-    public void render(int mouseX, int mouseY, float partialTicks, int xPosition, int yPosition, int width, int height, int totalHeight)
+    public void render(int mouseX, int mouseY, float partialTicks, int xPosition, int yPosition, int width, int height, int totalHeight, DrawContext drawContext)
     {
         if (this.renderScrollbarBackground)
         {
@@ -103,6 +104,8 @@ public class GuiScrollBar
             {
                 RenderUtils.drawRect(xPosition + 1, barPosition, width - 2, barHeight, this.foregroundColor);
             }
+
+            RenderUtils.forceDraw(drawContext);
 
             this.mouseOver = mouseX > xPosition && mouseX < xPosition + width && mouseY > barPosition && mouseY < barPosition + barHeight;
             this.handleDrag(mouseY, barTravel);

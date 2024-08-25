@@ -35,7 +35,7 @@ public class ButtonGeneric extends ButtonBase
         this.textCentered = true;
     }
 
-    public ButtonGeneric(int x, int y, int width, int height, String text, IGuiIcon icon, String... hoverStrings)
+    public ButtonGeneric(int x, int y, int width, int height, String text, @Nullable IGuiIcon icon, String... hoverStrings)
     {
         super(x, y, width, height, text);
 
@@ -112,7 +112,9 @@ public class ButtonGeneric extends ButtonBase
                 int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
                 this.bindTexture(this.icon.getTexture());
-                RenderUtils.drawTexturedRect(x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
+                //RenderUtils.drawTexturedRect(x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
+                RenderUtils.drawTexturedRect(this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight(), drawContext);
+                RenderUtils.forceDraw(drawContext);
             }
 
             if (StringUtils.isBlank(this.displayString) == false)

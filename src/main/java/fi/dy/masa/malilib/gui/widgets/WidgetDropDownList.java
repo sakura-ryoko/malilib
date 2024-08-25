@@ -323,7 +323,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
             RenderSystem.depthMask(true);
             RenderSystem.enableDepthTest();
-            this.scrollBar.render(mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
+            this.scrollBar.render(mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight, drawContext);
         }
         else
         {

@@ -12,9 +12,11 @@ import net.minecraft.class_9916;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.PostEffectProcessor;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gl.SimpleFramebufferFactory;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.util.Handle;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 
@@ -22,8 +24,6 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.event.FramebufferHandler;
 import fi.dy.masa.malilib.interfaces.IFramebufferFactory;
-import fi.dy.masa.malilib.render.shader.ShaderEntry;
-import fi.dy.masa.malilib.render.shader.ShaderPrograms;
 
 /**
  * Experimental Class Only!!!
@@ -31,6 +31,8 @@ import fi.dy.masa.malilib.render.shader.ShaderPrograms;
 @ApiStatus.Experimental
 public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
 {
+    private final Identifier renderStage = Identifier.of(MaLiLibReference.MOD_ID, "renderer");
+    private final Identifier postProcessStage = Identifier.of(MaLiLibReference.MOD_ID, "renderer_post");
     private RenderTarget renderPhase;
     private Framebuffer framebuffer;
 
@@ -52,17 +54,23 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     @Override
     public Identifier getStage()
     {
-        return Identifier.of(MaLiLibReference.MOD_ID, "renderer");
+        return this.renderStage;
+    }
+
+    @Override
+    public Identifier getPostProcessorStage()
+    {
+        return this.postProcessStage;
     }
 
     @Override
     public void setupRenderPhase()
     {
-        this.renderPhase = this.createTarget();
+        this.renderPhase = new RenderTarget(this.getName(), this.beginDrawingBasic(), this.endDrawingBasic());
     }
 
     @Override
-    public RenderTarget getRenderPhase()
+    public RenderPhase getRenderPhase()
     {
         return this.renderPhase;
     }
@@ -87,9 +95,9 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
 
     private void buildShaders()
     {
-        this.shaders.computeIfAbsent("position_color", (entry) -> new ShaderEntry(entry, ShaderPrograms.POSITION_COLOR, null));
-        this.shaders.computeIfAbsent("position_color_tex", (entry) -> new ShaderEntry(entry, ShaderPrograms.POSITION_COLOR_TEX, null));
-        this.shaders.computeIfAbsent("rendertype_solid", (entry) -> new ShaderEntry(entry, ShaderPrograms.RENDERTYPE_SOLID, null));
+        this.shaders.computeIfAbsent("position_color", (entry) -> new ShaderEntry(entry, ShaderProgramKeys.POSITION_COLOR, null));
+        this.shaders.computeIfAbsent("position_color_tex", (entry) -> new ShaderEntry(entry, ShaderProgramKeys.POSITION_TEX_COLOR, null));
+        this.shaders.computeIfAbsent("rendertype_solid", (entry) -> new ShaderEntry(entry, ShaderProgramKeys.RENDERTYPE_SOLID, null));
     }
 
     private void loadShaders(MinecraftClient mc)
@@ -176,7 +184,12 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     public void onFramebufferTranslucentFactorySetup(FrameGraphBuilder frameGraphBuilder, SimpleFramebufferFactory fbFactory,
                                                      MinecraftClient mc)
     {
-        FramebufferHandler.getInstance().setFramebufferHandle(this, frameGraphBuilder.method_61912(this.getName(), fbFactory));
+        //FramebufferHandler.getInstance().setFramebufferHandle(this, frameGraphBuilder.createStageNode(this.getName()), this.getStage(), false);
+
+        if (this.vanillaTransparency.getPostEffects() != null)
+        {
+            FramebufferHandler.getInstance().setFramebufferHandle(this, frameGraphBuilder.method_61912(this.getPostProcessorStage().toString(), fbFactory), this.getPostProcessorStage(), true);
+        }
     }
 
     @Override
@@ -192,24 +205,38 @@ public class MaLiLibRenderer implements IFramebufferFactory, AutoCloseable
     public void onRenderNode(FrameGraphBuilder frameGraphBuilder, Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
                              Camera camera, DefaultFramebufferSet framebufferSet)
     {
-        this.render(framebufferSet, frameGraphBuilder);
+        this.render(framebufferSet, frameGraphBuilder, camera);
         //this.runStage(this.renderStageNode);
-        this.runPostEffects(frameGraphBuilder, mc.getFramebuffer().textureWidth, mc.getFramebuffer().textureHeight, framebufferSet);
+        //this.runPostEffects(frameGraphBuilder, mc.getFramebuffer().textureWidth, mc.getFramebuffer().textureHeight, framebufferSet);
     }
 
-    public void render(DefaultFramebufferSet framebufferSet, FrameGraphBuilder frameGraphBuilder)
+    public void render(DefaultFramebufferSet framebufferSet, FrameGraphBuilder frameGraphBuilder, Camera camera)
     {
         this.profiler.push(this::getName);
         BlockState blockState = Blocks.COMMAND_BLOCK.getDefaultState();
         BakedModel bakedModel = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(blockState);
-
+        //boolean hasPostEffects = this.vanillaTransparency.getPostEffects() != null;
         class_9916 stage = frameGraphBuilder.createStageNode(this.getName());
-        FramebufferHandler.getInstance().setFramebufferHandle(this, stage.method_61933(FramebufferHandler.getInstance().getFramebufferHandle(this)));
+
+        Handle<Framebuffer> handleMain = FramebufferHandler.getInstance().getFramebufferHandle(this, this.getStage(), false);
+
+        /*
+        Handle<Framebuffer> handlePost;
+        if (hasPostEffects)
+        {
+            FramebufferHandler.getInstance().setFramebufferHandle(this,
+                    stage.method_61933(FramebufferHandler.getInstance().getFramebufferHandle(this,
+                            this.getPostProcessorStage(), true)),
+                    this.getPostProcessorStage(), true);
+            handlePost = FramebufferHandler.getInstance().getFramebufferHandle(this, this.getPostProcessorStage(), true);
+        }
+         */
+
         stage.method_61929(() ->
         {
-            this.getRenderPhase().startDrawing(this.getName());
+            this.getRenderPhase().startDrawing();
             RenderUtils.renderModel(bakedModel, blockState);
-            this.getRenderPhase().endDrawing(this.getName());
+            this.getRenderPhase().endDrawing();
         });
         this.profiler.pop();
     }

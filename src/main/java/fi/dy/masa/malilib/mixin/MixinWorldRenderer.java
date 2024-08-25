@@ -31,13 +31,14 @@ public abstract class MixinWorldRenderer
         ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldPre(positionMatrix, projectionMatrix, this.client, postEffectProcessor != null);
     }
 
+    /*
     @Inject(method = "renderLayer", at = @At("TAIL"))
     private void malilib_onRenderWorldPost(RenderLayer renderLayer, double x, double y, double z, Matrix4f viewMatrix, Matrix4f positionMatrix, CallbackInfo ci)
     {
-        // Final Stage of renderMain()
         if (renderLayer.equals(RenderLayer.getTripwire()))
         {
             ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldPost(x, y, z);
         }
     }
+     */
 }

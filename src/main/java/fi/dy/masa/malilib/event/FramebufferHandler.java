@@ -53,19 +53,38 @@ public class FramebufferHandler implements IFramebufferManager
     }
 
     @Override
-    public void setFramebufferHandle(IFramebufferFactory handler, @Nonnull Handle<Framebuffer> framebufferHandle)
+    public void setFramebufferHandle(IFramebufferFactory handler, @Nonnull Handle<Framebuffer> framebufferHandle, Identifier name, boolean isPostProcessor)
     {
         if (this.handlers.contains(handler))
         {
-            this.onFramebufferSet(handler.getStage(), framebufferHandle);
+            if (isPostProcessor)
+            {
+                this.onFramebufferSet(name, framebufferHandle);
+            }
+            else
+            {
+                this.onFramebufferSet(handler.getStage(), framebufferHandle);
+            }
         }
     }
 
     @Override
-    public @Nullable Handle<Framebuffer> getFramebufferHandle(IFramebufferFactory handler)
+    public @Nullable Handle<Framebuffer> getFramebufferHandle(IFramebufferFactory handler, Identifier name, boolean isPostProcessor)
     {
         if (this.handlers.contains(handler))
         {
+            if (isPostProcessor)
+            {
+                if (this.HANDLES.containsKey(name))
+                {
+                    return this.HANDLES.get(name);
+                }
+                if (this.HANDLES.containsKey(handler.getPostProcessorStage()))
+                {
+                    return this.HANDLES.get(handler.getPostProcessorStage());
+                }
+            }
+
             return this.HANDLES.get(handler.getStage());
         }
 

@@ -4,8 +4,10 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
+    "IMixinRenderPhase",
     "MixinClientConfigurationNetworkHandler",
     "MixinClientPlayNetworkHandler",
+    "MixinDebugRenderer",
     "MixinDefaultFramebufferSet",
     "MixinDrawContext",
     "MixinHandledScreen",
@@ -16,6 +18,7 @@
     "MixinMinecraftClient",
     "MixinMinecraftServer",
     "MixinMouse",
+    "MixinParticleManager",
     "MixinPiglinEntity",
     "MixinSimpleInventory",
     "MixinWorldRenderer",
@@ -23,5 +26,8 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "mixins": [
+    "test.IMixinAbstractHorseEntity"
+  ]
 }

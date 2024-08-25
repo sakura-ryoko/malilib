@@ -1,36 +1,37 @@
 package fi.dy.masa.malilib.render;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.client.render.RenderPhase;
 
-/**
- * Kind of a lame hack to create a Pseudo RenderPhase
- */
-@ApiStatus.Experimental
+import fi.dy.masa.malilib.mixin.IMixinRenderPhase;
+
 public class RenderTarget extends RenderPhase
 {
-    private final String targetName;
-
     public RenderTarget(String name, Runnable beginAction, Runnable endAction)
     {
         super(name, beginAction, endAction);
-        this.targetName = name;
     }
 
-    public void startDrawing(String name)
+    protected Target getTarget(String id)
     {
-        if (this.targetName.equals(name))
+        return switch (id)
         {
-            this.startDrawing();
-        }
+            case "outline" -> RenderPhase.OUTLINE_TARGET;
+            case "translucent" -> RenderPhase.TRANSLUCENT_TARGET;
+            case "particles" -> RenderPhase.PARTICLES_TARGET;
+            case "weather" -> RenderPhase.WEATHER_TARGET;
+            case "clouds" -> RenderPhase.CLOUDS_TARGET;
+            case "item_entity" -> RenderPhase.ITEM_ENTITY_TARGET;
+            default -> RenderPhase.MAIN_TARGET;
+        };
     }
 
-    public void endDrawing(String name)
+    public Runnable getBeginAction()
     {
-        if (this.targetName.equals(name))
-        {
-            this.endDrawing();
-        }
+        return ((IMixinRenderPhase) this).malilib_getBeginAction();
+    }
+
+    public Runnable getEndAction()
+    {
+        return ((IMixinRenderPhase) this).malilib_getEndAction();
     }
 }

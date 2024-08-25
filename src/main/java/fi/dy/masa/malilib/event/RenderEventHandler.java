@@ -10,6 +10,7 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.interfaces.IRenderDispatcher;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -127,9 +128,16 @@ public class RenderEventHandler implements IRenderDispatcher
             this.mc.getProfiler().swap("malilib_renderworldpost");
             Framebuffer fb = null;
 
-            if (this.hasTransparency)
+            if (this.hasTransparency && this.mc.worldRenderer != null)
             {
-                fb = MinecraftClient.isFabulousGraphicsOrBetter() ? this.mc.worldRenderer.getTranslucentFramebuffer() : null;
+                try
+                {
+                    fb = MinecraftClient.isFabulousGraphicsOrBetter() ? this.mc.worldRenderer.getTranslucentFramebuffer() : null;
+                }
+                catch (Exception e)
+                {
+                    MaLiLib.logger.warn("onRenderWorldPost: getTranslucentFramebuffer() throw: [{}]", e.getMessage());
+                }
             }
 
             if (fb != null)

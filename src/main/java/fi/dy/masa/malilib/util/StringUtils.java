@@ -1,18 +1,18 @@
 package fi.dy.masa.malilib.util;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Text;
+
 import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public class StringUtils
 {
@@ -407,6 +407,6 @@ public class StringUtils
     public static void drawString(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawText(net.minecraft.client.MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
-        RenderUtils.forceDraw(drawContext, true);
+        //RenderUtils.forceDraw(drawContext);
     }
 }

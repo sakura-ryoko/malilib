@@ -27,30 +27,8 @@ import fi.dy.masa.malilib.interfaces.IFramebufferSetRemap;
 public abstract class MixinWorldRenderer_FramebufferFactory
 {
     @Shadow @Final private MinecraftClient client;
-    //@Shadow @Nullable private PostEffectProcessor transparencyPostProcessor;
     @Shadow @Final private DefaultFramebufferSet framebufferSet;
     @Unique private SimpleFramebufferFactory factory = null;
-
-    @Inject(method = "render",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/FrameGraphBuilder;createStageNode(Ljava/lang/String;)Lnet/minecraft/class_9916;"))
-    private void malilib_onRenderWorldPre(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
-                                          Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
-                                          Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
-                                          @Local FrameGraphBuilder frameGraphBuilder,
-                                          @Local PostEffectProcessor postEffectProcessor)
-    {
-        if (this.factory != null)
-        {
-            ((FramebufferHandler) FramebufferHandler.getInstance()).onFramebufferTranslucentFactorySetup(frameGraphBuilder, this.factory, this.client);
-        }
-
-        ((FramebufferHandler) FramebufferHandler.getInstance()).onFramebufferSetup(
-                positionMatrix, projectionMatrix,
-                this.client, postEffectProcessor,
-                this.framebufferSet,
-                frameGraphBuilder);
-    }
 
     @Inject(method = "reload(Lnet/minecraft/resource/ResourceManager;)V", at = @At("TAIL"))
     private void malilib_onRenderWorldReload(ResourceManager manager, CallbackInfo ci)
@@ -70,14 +48,6 @@ public abstract class MixinWorldRenderer_FramebufferFactory
     {
         ((FramebufferHandler) FramebufferHandler.getInstance()).onResized(width, height);
     }
-    @Inject(method = "renderMain",
-            at = @At(value = "HEAD"))
-    private void malilib_onRenderWorldMain(FrameGraphBuilder frameGraphBuilder, Frustum frustum, Camera camera,
-                                           Matrix4f matrix4f, Matrix4f matrix4f2, Fog fog, boolean bl, boolean bl2,
-                                           RenderTickCounter renderTickCounter, Profiler profiler, CallbackInfo ci)
-    {
-        ((FramebufferHandler) FramebufferHandler.getInstance()).onRenderMainCaptureLocals(this.client, camera, fog, renderTickCounter, profiler);
-    }
 
     @ModifyArg(method = "render",
             at = @At(value = "INVOKE",
@@ -87,6 +57,36 @@ public abstract class MixinWorldRenderer_FramebufferFactory
     {
         this.factory = (SimpleFramebufferFactory) factory;
         return factory;
+    }
+
+    @Inject(method = "render",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/FrameGraphBuilder;createStageNode(Ljava/lang/String;)Lnet/minecraft/class_9916;"))
+    private void malilib_onRenderWorldPre(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
+                                          Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
+                                          Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+                                          @Local FrameGraphBuilder frameGraphBuilder,
+                                          @Local PostEffectProcessor postEffectProcessor)
+    {
+        ((FramebufferHandler) FramebufferHandler.getInstance()).onFramebufferSetup(
+                positionMatrix, projectionMatrix,
+                this.client, postEffectProcessor,
+                this.framebufferSet,
+                frameGraphBuilder);
+
+        if (this.factory != null)
+        {
+            ((FramebufferHandler) FramebufferHandler.getInstance()).onFramebufferTranslucentFactorySetup(frameGraphBuilder, this.factory, this.client);
+        }
+    }
+
+    @Inject(method = "renderMain",
+            at = @At(value = "HEAD"))
+    private void malilib_onRenderWorldMain(FrameGraphBuilder frameGraphBuilder, Frustum frustum, Camera camera,
+                                           Matrix4f matrix4f, Matrix4f matrix4f2, Fog fog, boolean bl, boolean bl2,
+                                           RenderTickCounter renderTickCounter, Profiler profiler, CallbackInfo ci)
+    {
+        ((FramebufferHandler) FramebufferHandler.getInstance()).onRenderMainCaptureLocals(this.client, camera, fog, renderTickCounter, profiler);
     }
 
     @Inject(method = "render",

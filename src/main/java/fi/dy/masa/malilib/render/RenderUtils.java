@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.render.shader.ShaderPrograms;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.PositionUtils.HitPart;
 import net.minecraft.block.BlockState;
@@ -14,6 +13,7 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
@@ -95,18 +95,7 @@ public class RenderUtils
 
     public static void forceDraw(DrawContext drawContext)
     {
-        forceDraw(drawContext, false);
-    }
-
-    public static void forceDraw(DrawContext drawContext, boolean depthTest)
-    {
-        RenderSystem.disableDepthTest();
         drawContext.getVertexConsumers().draw();
-
-        if (depthTest)
-        {
-            RenderSystem.enableDepthTest();
-        }
     }
 
     public static void color(float r, float g, float b, float a)
@@ -188,7 +177,7 @@ public class RenderUtils
         float g = (float) (color >>  8 & 255) / 255.0F;
         float b = (float) (color & 255) / 255.0F;
 
-        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
@@ -197,10 +186,10 @@ public class RenderUtils
 
         setupBlend();
 
-        buffer.vertex(x        , y         , zLevel).color(r, g, b, a);
-        buffer.vertex(x        , y + height, zLevel).color(r, g, b, a);
+        buffer.vertex(x           , y            , zLevel).color(r, g, b, a);
+        buffer.vertex(x           , y + height, zLevel).color(r, g, b, a);
         buffer.vertex(x + width, y + height, zLevel).color(r, g, b, a);
-        buffer.vertex(x + width, y         , zLevel).color(r, g, b, a);
+        buffer.vertex(x + width, y            , zLevel).color(r, g, b, a);
 
         try
         {
@@ -216,8 +205,7 @@ public class RenderUtils
     public static void drawTexturedRect(int x, int y, int u, int v, int width, int height, float zLevel)
     {
         float pixelWidth = 0.00390625F;
-
-        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR_TEX);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         //RenderSystem.applyModelViewMatrix();
         Tessellator tessellator = Tessellator.getInstance();
@@ -225,7 +213,6 @@ public class RenderUtils
         BuiltBuffer builtBuffer;
 
         setupBlend();
-        //RenderSystem.disableDepthTest();
 
         buffer.vertex(x           , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth);
         buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth);
@@ -238,7 +225,12 @@ public class RenderUtils
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
         }
-        catch (Exception ignmored) { }
+        catch (Exception ignored) { }
+    }
+
+    public static void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, DrawContext drawContext)
+    {
+        drawTexturedRect(texture, x, y, u, v, width, height, 0F, -1, drawContext);
     }
 
     public static void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, DrawContext drawContext)
@@ -250,7 +242,7 @@ public class RenderUtils
     {
         float pixelWidth = 0.00390625F;
 
-        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR_TEX);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         setupBlend();
         VertexConsumer vertexConsumer = bindTexture(texture, drawContext);
         Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
@@ -368,7 +360,7 @@ public class RenderUtils
 
         setupBlend();
         //RenderSystem.enableBlend();
-        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
 
@@ -853,7 +845,7 @@ public class RenderUtils
         setupBlend();
         //RenderSystem.enableBlend();
 
-        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -950,7 +942,7 @@ public class RenderUtils
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
         //RenderSystem.applyModelViewMatrix();
 
-        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -1077,7 +1069,7 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
         //RenderSystem.applyModelViewMatrix();
-        RenderSystem.setShader(ShaderPrograms.POSITION_COLOR);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -1187,7 +1179,7 @@ public class RenderUtils
             bindTexture(bgTexture);
             setupBlend();
 
-            RenderSystem.setShader(ShaderPrograms.POSITION_COLOR_TEX);
+            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
             //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();
@@ -1270,12 +1262,13 @@ public class RenderUtils
             //drawContext.getMatrices().push();
             //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
+            RenderSystem.backupProjectionMatrix();
 
             InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), mc());
 
             enableDiffuseLightingGui3D();
 
-            Inventory inv = fi.dy.masa.malilib.util.InventoryUtils.getAsInventory(items);
+            Inventory inv = InventoryUtils.getAsInventory(items);
             InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, ShulkerBoxBlockEntity.INVENTORY_SIZE, mc(), drawContext);
 
             matrix4fStack.popMatrix();
@@ -1394,7 +1387,6 @@ public class RenderUtils
 
         matrix4fStack.rotateX(matrix4fRotateFix(30));
         matrix4fStack.rotateY(matrix4fRotateFix(225));
-
         matrix4fStack.scale(0.625f, 0.625f, 0.625f);
 
         renderModel(model, state);
@@ -1423,7 +1415,7 @@ public class RenderUtils
 
         if (model.isBuiltin() == false)
         {
-            RenderSystem.setShader(ShaderPrograms.RENDERTYPE_SOLID);
+            RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
             //RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
             //RenderSystem.applyModelViewMatrix();
             Tessellator tessellator = Tessellator.getInstance();

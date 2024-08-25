@@ -84,6 +84,7 @@ public enum MaLiLibIcons implements IGuiIcon
             v += this.hoverOffV;
         }
 
+        //RenderUtils.drawTexturedRect(x, y, u, v, this.w, this.h, zLevel);
         RenderUtils.drawTexturedRect(this.getTexture(), x, y, u, v, this.w, this.h, zLevel, drawContext);
         RenderUtils.forceDraw(drawContext);
     }
