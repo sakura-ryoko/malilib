@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +37,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -817,25 +819,39 @@ public class InventoryUtils
             if (itemName != null)
             {
                 Identifier itemId = Identifier.tryParse(itemName);
-                Item item = Registries.ITEM.get(itemId);
-                RegistryEntry<Item> itemEntry = RegistryEntry.of(item);
 
-                if (item != Items.AIR && itemEntry.hasKeyAndValue())
+                //registries.getOptionalEntry(RegistryKeys.ITEM).getmatchesId(itemId);
+
+                Optional<RegistryEntry.Reference<Item>> opt = Registries.ITEM.get(itemId);
+
+                if (opt.isPresent())
                 {
-                    if (count < 0)
-                    {
-                        stackOut = new ItemStack(itemEntry);
-                    }
-                    else
-                    {
-                        stackOut = new ItemStack(itemEntry, count);
-                    }
-                    if (data.isEmpty() == false && data.equals(ComponentMap.EMPTY) == false)
-                    {
-                        stackOut.applyComponentsFrom(data);
-                    }
+                    //Item item = Registries.ITEM.get(itemId);
+                    //RegistryEntry<Item> itemEntry = RegistryEntry.of(item);
 
-                    return stackOut;
+                    RegistryEntry<Item> itemEntry = opt.get();
+
+                    if (itemEntry.hasKeyAndValue())
+                    {
+                        if (count < 0)
+                        {
+                            stackOut = new ItemStack(itemEntry);
+                        }
+                        else
+                        {
+                            stackOut = new ItemStack(itemEntry, count);
+                        }
+                        if (data.isEmpty() == false && data.equals(ComponentMap.EMPTY) == false)
+                        {
+                            stackOut.applyComponentsFrom(data);
+                        }
+
+                        return stackOut;
+                    }
+                }
+                else
+                {
+                    MaLiLib.logger.warn(StringUtils.translate("malilib.error.invalid_item_stack_entry.string", itemName));
                 }
             }
         }
@@ -861,7 +877,8 @@ public class InventoryUtils
         }
         catch (CommandSyntaxException e)
         {
-            MaLiLib.logger.warn("getItemStackFromString(): Invalid NBT Syntax");
+            //MaLiLib.logger.warn("getItemStackFromString(): Invalid NBT Syntax");
+            MaLiLib.logger.warn(StringUtils.translate("malilib.error.invalid_item_stack_entry.nbt_syntax", stringIn));
             return null;
         }
 

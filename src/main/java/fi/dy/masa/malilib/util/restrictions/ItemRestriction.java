@@ -1,10 +1,12 @@
 package fi.dy.masa.malilib.util.restrictions;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -25,11 +27,12 @@ public class ItemRestriction extends UsageRestriction<Item>
             }
             catch (Exception ignore) {}
 
-            Item item = rl != null ? Registries.ITEM.get(rl) : null;
+            //Item item = rl != null ? Registries.ITEM.get(rl) : null;
+            Optional<RegistryEntry.Reference<Item>> opt = Registries.ITEM.get(rl);
 
-            if (item != null)
+            if (opt.isPresent())
             {
-                set.add(item);
+                set.add(opt.get().value());
             }
             else
             {

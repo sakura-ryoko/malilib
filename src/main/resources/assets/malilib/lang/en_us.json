@@ -30,6 +30,8 @@
     "malilib.error.invalid_directory": "Invalid directory name '%s'",
     "malilib.error.invalid_block_blacklist_entry": "Invalid block in a black- or whitelist: '%s'",
     "malilib.error.invalid_item_blacklist_entry": "Invalid item name in a black- or whitelist: '%s'",
+    "malilib.error.invalid_item_stack_entry.string": "Invalid item stack string: '%s'",
+    "malilib.error.invalid_item_stack_entry.nbt_syntax": "Invalid item stack NBT syntax: '%s'",
 
     "malilib.gui.button.cancel": "Cancel",
     "malilib.gui.button.ok": "OK",
