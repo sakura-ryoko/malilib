@@ -24,8 +24,6 @@ public class MaLiLibInitHandler implements IInitializationHandler
         RenderEventHandler.getInstance().registerTooltipLastRenderer(renderer);
         RenderEventHandler.getInstance().registerWorldLastRenderer(renderer);
          */
-
-        //FramebufferHandler.getInstance().registerFramebufferHandler(new MaLiLibRenderer());
     }
 
     private static class CallbackOpenConfigGui implements IHotkeyCallback

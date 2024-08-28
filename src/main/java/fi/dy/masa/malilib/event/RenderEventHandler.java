@@ -127,6 +127,8 @@ public class RenderEventHandler implements IRenderDispatcher
         {
             this.mc.getProfiler().swap("malilib_renderworldpost");
             Framebuffer fb = null;
+            //Fog fog = RenderSystem.getShaderFog();
+            //RenderSystem.setShaderFog(Fog.DUMMY);
 
             if (this.hasTransparency && this.mc.worldRenderer != null)
             {
@@ -156,6 +158,8 @@ public class RenderEventHandler implements IRenderDispatcher
             {
                 this.mc.getFramebuffer().beginWrite(false);
             }
+
+            //RenderSystem.setShaderFog(fog);
         }
     }
 }
