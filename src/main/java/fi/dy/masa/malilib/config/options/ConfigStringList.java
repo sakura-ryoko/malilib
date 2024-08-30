@@ -9,20 +9,31 @@ import com.google.gson.JsonPrimitive;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigStringList;
+import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigStringList extends ConfigBase<ConfigStringList> implements IConfigStringList
 {
     private final ImmutableList<String> defaultValue;
     private final List<String> strings = new ArrayList<>();
 
+    public ConfigStringList(String name, ImmutableList<String> defaultValue)
+    {
+        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+    }
+
     public ConfigStringList(String name, ImmutableList<String> defaultValue, String comment)
     {
-        this(name, defaultValue, comment, name);
+        this(name, defaultValue, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigStringList(String name, ImmutableList<String> defaultValue, String comment, String prettyName)
     {
-        super(ConfigType.STRING_LIST, name, comment, prettyName);
+        this(name, defaultValue, comment, prettyName, name);
+    }
+
+    public ConfigStringList(String name, ImmutableList<String> defaultValue, String comment, String prettyName, String translatedName)
+    {
+        super(ConfigType.STRING_LIST, name, comment, prettyName, translatedName);
 
         this.defaultValue = defaultValue;
         this.strings.addAll(defaultValue);

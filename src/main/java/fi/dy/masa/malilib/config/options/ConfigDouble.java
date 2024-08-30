@@ -6,6 +6,7 @@ import net.minecraft.util.math.MathHelper;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigDouble;
+import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDouble
 {
@@ -15,34 +16,64 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
     private double value;
     private boolean useSlider;
 
+    public ConfigDouble(String name, double defaultValue)
+    {
+        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, name+" Comment?", StringUtils.splitCamelCase(name), name);
+    }
+
     public ConfigDouble(String name, double defaultValue, String comment)
     {
-        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, comment, name);
+        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, String comment, String prettyName)
     {
-        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, comment, prettyName);
+        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, comment, prettyName, name);
+    }
+
+    public ConfigDouble(String name, double defaultValue, String comment, String prettyName, String translatedName)
+    {
+        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, comment, prettyName, translatedName);
+    }
+
+    public ConfigDouble(String name, double defaultValue, double minValue, double maxValue)
+    {
+        this(name, defaultValue, minValue, maxValue, false, name+" Comment?", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, String comment)
     {
-        this(name, defaultValue, minValue, maxValue, false, comment, name);
+        this(name, defaultValue, minValue, maxValue, false, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, String comment, String prettyName)
     {
-        this(name, defaultValue, minValue, maxValue, false, comment, prettyName);
+        this(name, defaultValue, minValue, maxValue, false, comment, prettyName, name);
+    }
+
+    public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, String comment, String prettyName, String translatedName)
+    {
+        this(name, defaultValue, minValue, maxValue, false, comment, prettyName, translatedName);
+    }
+
+    public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider)
+    {
+        this(name, defaultValue, minValue, maxValue, useSlider, name+" Comment?", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider, String comment)
     {
-        this(name, defaultValue, minValue, maxValue, useSlider, comment, name);
+        this(name, defaultValue, minValue, maxValue, useSlider, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider, String comment, String prettyName)
     {
-        super(ConfigType.DOUBLE, name, comment, prettyName);
+        this(name, defaultValue, minValue, maxValue, useSlider, comment, prettyName, name);
+    }
+
+    public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider, String comment, String prettyName, String translatedName)
+    {
+        super(ConfigType.DOUBLE, name, comment, prettyName, translatedName);
 
         this.minValue = minValue;
         this.maxValue = maxValue;

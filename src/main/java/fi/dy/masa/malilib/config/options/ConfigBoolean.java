@@ -5,20 +5,31 @@ import com.google.gson.JsonPrimitive;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigBoolean;
+import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigBoolean
 {
     private final boolean defaultValue;
     private boolean value;
 
+    public ConfigBoolean(String name, boolean defaultValue)
+    {
+        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+    }
+
     public ConfigBoolean(String name, boolean defaultValue, String comment)
     {
-        this(name, defaultValue, comment, name);
+        this(name, defaultValue, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigBoolean(String name, boolean defaultValue, String comment, String prettyName)
     {
-        super(ConfigType.BOOLEAN, name, comment, prettyName);
+        this(name, defaultValue, comment, prettyName, name);
+    }
+
+    public ConfigBoolean(String name, boolean defaultValue, String comment, String prettyName, String translatedName)
+    {
+        super(ConfigType.BOOLEAN, name, comment, prettyName, translatedName);
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;

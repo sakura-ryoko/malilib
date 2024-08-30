@@ -17,7 +17,7 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
 
     public BooleanHotkeyGuiWrapper(String name, IConfigBoolean booleanConfig, IKeybind keybind)
     {
-        super(name, booleanConfig.getDefaultBooleanValue(), booleanConfig.getComment());
+        super(name, booleanConfig.getDefaultBooleanValue(), booleanConfig.getComment(), booleanConfig.getPrettyName(), booleanConfig.getTranslatedName());
         this.booleanConfig = booleanConfig;
         this.keybind = keybind;
     }
@@ -38,6 +38,12 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
     public BooleanHotkeyGuiWrapper translatedName(String translatedName)
     {
         return (BooleanHotkeyGuiWrapper) super.translatedName(translatedName);
+    }
+
+    @Override
+    public BooleanHotkeyGuiWrapper apply(String translatePrefix)
+    {
+        return (BooleanHotkeyGuiWrapper) super.apply(translatePrefix);
     }
 
     @Override

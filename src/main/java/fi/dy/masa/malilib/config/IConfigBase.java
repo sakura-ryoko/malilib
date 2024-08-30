@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.config;
 
+import java.util.Locale;
 import javax.annotation.Nullable;
 import com.google.gson.JsonElement;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -18,6 +19,32 @@ public interface IConfigBase
      * @return the name of this config
      */
     String getName();
+
+    /**
+     * Get the name of the config in lower-case
+     * @return (Name)
+     */
+    default String getLowerName()
+    {
+        return this.getName().toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * Get the name of the config without any '.'
+     * @return (Result)
+     */
+    default String getCleanName()
+    {
+        String result = this.getName();
+
+        // Swap any '.' with a '_'
+        if (result.contains("."))
+        {
+            result = result.replace('.', '_');
+        }
+
+        return result;
+    }
 
     /**
      * Returns the comment displayed when hovering over the config name in the config GUI.

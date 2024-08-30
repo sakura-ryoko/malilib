@@ -7,20 +7,31 @@ import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigOptionList;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.config.IStringRepresentable;
+import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IConfigOptionList, IStringRepresentable
 {
     private final IConfigOptionListEntry defaultValue;
     private IConfigOptionListEntry value;
 
+    public ConfigOptionList(String name, IConfigOptionListEntry defaultValue)
+    {
+        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+    }
+
     public ConfigOptionList(String name, IConfigOptionListEntry defaultValue, String comment)
     {
-        this(name, defaultValue, comment, name);
+        this(name, defaultValue, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigOptionList(String name, IConfigOptionListEntry defaultValue, String comment, String prettyName)
     {
-        super(ConfigType.OPTION_LIST, name, comment, prettyName);
+        this(name, defaultValue, comment, prettyName, name);
+    }
+
+    public ConfigOptionList(String name, IConfigOptionListEntry defaultValue, String comment, String prettyName, String translatedName)
+    {
+        super(ConfigType.OPTION_LIST, name, comment, prettyName, translatedName);
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;

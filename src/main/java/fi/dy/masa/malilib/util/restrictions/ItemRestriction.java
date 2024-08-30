@@ -28,7 +28,7 @@ public class ItemRestriction extends UsageRestriction<Item>
             catch (Exception ignore) {}
 
             //Item item = rl != null ? Registries.ITEM.get(rl) : null;
-            Optional<RegistryEntry.Reference<Item>> opt = Registries.ITEM.get(rl);
+            Optional<RegistryEntry.Reference<Item>> opt = Registries.ITEM.getEntry(rl);
 
             if (opt.isPresent())
             {

@@ -2,7 +2,8 @@
     "malilib.config.name.ignoredKeys": "ignoredKeys",
     "malilib.config.name.openGuiConfigs": "openGuiConfigs",
     "malilib.config.name.realmsCommonConfig": "realmsCommonConfig",
-    "malilib.config.name.debugMessages": "debugMessages",
+
+    "malilib.config.name.debugMessages": "[X] debugMessages",
     "malilib.config.name.inputCancellationDebugging": "inputCancellationDebugging",
     "malilib.config.name.keybindDebugging": "keybindDebugging",
     "malilib.config.name.keybindDebuggingIngame": "keybindDebuggingIngame",
@@ -11,7 +12,8 @@
     "malilib.config.comment.ignoredKeys": "Any keys set here will be completely ignored",
     "malilib.config.comment.openGuiConfigs": "Open the in-game malilib config GUI",
     "malilib.config.comment.realmsCommonConfig": "Whether or not to use a common config file name for all realms servers.\nIf this is disabled, then the server IP and port are used in the generated config file names.\nHowever, apparently the Realms server addresses change regularly, so the config names would change\nall the time and thus the configs wouldn't save properly.\nSo basically leave this enabled if you only play on one Realms server.\nIf you play on multiple Realms... then the configs will get mixed up regardless.\nUnless you play on the different servers on different Minecraft instances\nto keep the configs separated by the Minecraft instance.",
-    "malilib.config.comment.debugMessages": "When enabled, debug level events\nare printed to the game console/log",
+
+    "malilib.config.comment.debugMessages": "[X] When enabled, debug level events\nare printed to the game console/log",
     "malilib.config.comment.inputCancellationDebugging": "When enabled, then the cancellation reason/source\nfor inputs (keyboard and mouse) is printed out",
     "malilib.config.comment.keybindDebugging": "When enabled, key presses and held keys are\nprinted to the game console (and the action bar, if enabled)",
     "malilib.config.comment.keybindDebuggingIngame": "If enabled, then the messages from 'keybindDebugging'\nare also printed to the in-game action bar",
@@ -128,6 +130,28 @@
     "malilib.message.formatting_code.success": "§a",
     "malilib.message.formatting_code.warning": "§6",
 
+    "malilib.config.test.name.testBoolean": "testBoolean /X",
+    "malilib.config.test.name.testBooleanHotkeyed": "testBooleanHotkeyed /X",
+    "malilib.config.test.name.testColor": "testColor /X",
+    "malilib.config.test.name.testColorList": "testColorList /X",
+    "malilib.config.test.name.testDouble": "testDouble /X",
+    "malilib.config.test.name.testHotkey": "testHotkey /X",
+    "malilib.config.test.name.testInteger": "testInteger /X",
+    "malilib.config.test.name.testOptionList": "testOptionList /X",
+    "malilib.config.test.name.testString": "testString /X",
+    "malilib.config.test.name.testStringList": "testStringList /X",
+
+    "malilib.config.test.comment.testBoolean": "testBoolean Comment!",
+    "malilib.config.test.comment.testBooleanHotkeyed": "testBooleanHotkeyed Comment!",
+    "malilib.config.test.comment.testColor": "testColor Comment!",
+    "malilib.config.test.comment.testColorList": "testColorList Comment!",
+    "malilib.config.test.comment.testDouble": "testDouble Comment!",
+    "malilib.config.test.comment.testHotkey": "testHotkey Comment!",
+    "malilib.config.test.comment.testInteger": "testInteger Comment!",
+    "malilib.config.test.comment.testOptionList": "testOptionList Comment!",
+    "malilib.config.test.comment.testString": "testString Comment!",
+    "malilib.config.test.comment.testStringList": "testStringList Comment!",
+
     "malilib.message.layer_range.range_max": "max",
     "malilib.message.layer_range.range_min": "min",
     "malilib.message.moved_layer_range": "Moved the entire layer range by §a%s§r on the §a%s§r axis",
@@ -136,5 +160,4 @@
     "malilib.message.moved_min_layer_to": "Moved min layer to %s",
     "malilib.message.set_layer_axis_to": "Set layer axis to %s",
     "malilib.message.set_layer_mode_to": "Set layer mode to %s",
-    "malilib.message.set_layer_to": "Set layer to %s"
-}
+    "malilib.message.set_layer_to": "Set layer to %s"}

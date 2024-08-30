@@ -69,6 +69,12 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigDouble, IConfig
     }
 
     @Override
+    public String getLowerName()
+    {
+        return this.wrappedConfig.getLowerName();
+    }
+
+    @Override
     public String getComment()
     {
         return this.wrappedConfig.getComment();

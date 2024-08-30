@@ -15,19 +15,44 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
 {
     protected final IKeybind keybind;
 
+    public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey)
+    {
+        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, name+" Comment?", StringUtils.splitCamelCase(name), name);
+    }
+
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, String comment)
     {
-        this(name, defaultValue, defaultHotkey, comment, StringUtils.splitCamelCase(name));
+        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, String comment, String prettyName)
     {
-        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, comment, prettyName);
+        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, comment, prettyName, name);
+    }
+
+    public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, String comment, String prettyName, String translatedName)
+    {
+        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, comment, prettyName, translatedName);
+    }
+
+    public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings)
+    {
+        this(name, defaultValue, defaultHotkey, settings, name+" Comment?", StringUtils.splitCamelCase(name), name);
+    }
+
+    public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings, String comment)
+    {
+        this(name, defaultValue, defaultHotkey, settings, comment, StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings, String comment, String prettyName)
     {
-        super(name, defaultValue, comment, prettyName);
+        this(name, defaultValue, defaultHotkey, settings, comment, prettyName, name);
+    }
+
+    public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings, String comment, String prettyName, String translatedName)
+    {
+        super(name, defaultValue, comment, prettyName, translatedName);
 
         this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
         this.keybind.setCallback(new KeyCallbackToggleBooleanConfigWithMessage(this));
@@ -43,6 +68,12 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
     public ConfigBooleanHotkeyed translatedName(String translatedName)
     {
         return (ConfigBooleanHotkeyed) super.translatedName(translatedName);
+    }
+
+    @Override
+    public ConfigBooleanHotkeyed apply(String translationPrefix)
+    {
+        return (ConfigBooleanHotkeyed) super.apply(translationPrefix);
     }
 
     @Override

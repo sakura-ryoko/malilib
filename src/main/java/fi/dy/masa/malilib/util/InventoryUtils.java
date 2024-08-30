@@ -822,7 +822,7 @@ public class InventoryUtils
 
                 //registries.getOptionalEntry(RegistryKeys.ITEM).getmatchesId(itemId);
 
-                Optional<RegistryEntry.Reference<Item>> opt = Registries.ITEM.get(itemId);
+                Optional<RegistryEntry.Reference<Item>> opt = Registries.ITEM.getEntry(itemId);
 
                 if (opt.isPresent())
                 {
