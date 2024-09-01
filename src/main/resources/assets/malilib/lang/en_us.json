@@ -141,16 +141,16 @@
     "malilib.config.test.name.testString": "testString /X",
     "malilib.config.test.name.testStringList": "testStringList /X",
 
-    "malilib.config.test.comment.testBoolean": "testBoolean Comment!",
-    "malilib.config.test.comment.testBooleanHotkeyed": "testBooleanHotkeyed Comment!",
-    "malilib.config.test.comment.testColor": "testColor Comment!",
-    "malilib.config.test.comment.testColorList": "testColorList Comment!",
-    "malilib.config.test.comment.testDouble": "testDouble Comment!",
-    "malilib.config.test.comment.testHotkey": "testHotkey Comment!",
-    "malilib.config.test.comment.testInteger": "testInteger Comment!",
-    "malilib.config.test.comment.testOptionList": "testOptionList Comment!",
-    "malilib.config.test.comment.testString": "testString Comment!",
-    "malilib.config.test.comment.testStringList": "testStringList Comment!",
+    "malilib.config.test.comment.testBoolean": "[X] testBoolean Comment!",
+    "malilib.config.test.comment.testBooleanHotkeyed": "[X] testBooleanHotkeyed Comment!",
+    "malilib.config.test.comment.testColor": "[X] testColor Comment!",
+    "malilib.config.test.comment.testColorList": "[X] testColorList Comment!",
+    "malilib.config.test.comment.testDouble": "[X] testDouble Comment!",
+    "malilib.config.test.comment.testHotkey": "[X] testHotkey Comment!",
+    "malilib.config.test.comment.testInteger": "[X] testInteger Comment!",
+    "malilib.config.test.comment.testOptionList": "[X] testOptionList Comment!",
+    "malilib.config.test.comment.testString": "[X] testString Comment!",
+    "malilib.config.test.comment.testStringList": "[X] testStringList Comment!",
 
     "malilib.message.layer_range.range_max": "max",
     "malilib.message.layer_range.range_min": "min",
@@ -160,4 +160,5 @@
     "malilib.message.moved_min_layer_to": "Moved min layer to %s",
     "malilib.message.set_layer_axis_to": "Set layer axis to %s",
     "malilib.message.set_layer_mode_to": "Set layer mode to %s",
-    "malilib.message.set_layer_to": "Set layer to %s"}
+    "malilib.message.set_layer_to": "Set layer to %s"
+}
