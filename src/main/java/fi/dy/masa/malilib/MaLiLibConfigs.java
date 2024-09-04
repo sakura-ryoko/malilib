@@ -65,6 +65,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigOptionList        TEST_CONFIG_OPTIONS_LIST        = new ConfigOptionList("testOptionList", ConfigTestOptList.TEST1, "Test Option List").apply(TEST_KEY);
         public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "", "Test String").apply(TEST_KEY);
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of(), "Test String List").apply(TEST_KEY);
+        public static final ConfigLockedStringList  TEST_CONFIG_LOCKED_STRING_LIST  = new ConfigLockedStringList("testLockedConfigList", ImmutableList.of("locked-1", "locked-2"), "Test Locked String List").apply(TEST_KEY);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN,
@@ -76,7 +77,8 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_INTEGER,
                 TEST_CONFIG_OPTIONS_LIST,
                 TEST_CONFIG_STRING,
-                TEST_CONFIG_STRING_LIST
+                TEST_CONFIG_STRING_LIST,
+                TEST_CONFIG_LOCKED_STRING_LIST
         );
     }
 

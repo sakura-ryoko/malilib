@@ -13,7 +13,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
@@ -58,6 +57,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected static final String BUTTON_LABEL_ADD = TXT_DARK_GREEN + "+" + TXT_RST;
     protected static final String BUTTON_LABEL_REMOVE = TXT_DARK_RED + "-" + TXT_RST;
 
+    protected static final Identifier BG_TEXTURE = Identifier.ofVanilla("textures/gui/inworld_menu_list_background.png");
+
     public static final int COLOR_WHITE          = 0xFFFFFFFF;
     public static final int TOOLTIP_BACKGROUND   = 0xB0000000;
     public static final int COLOR_HORIZONTAL_BAR = 0xFF999999;
@@ -70,6 +71,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     private final List<WidgetBase> widgets = new ArrayList<>();
     private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields = new ArrayList<>();
     private final MessageRenderer messageRenderer = new MessageRenderer(0xDD000000, COLOR_HORIZONTAL_BAR);
+    protected DrawContext drawContext;
     private long openTime;
     protected WidgetBase hoveredWidget = null;
     protected String title = "";
@@ -167,8 +169,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         // Use a custom DrawContext that doesn't always disable depth test when drawing...
         //drawContext = new MalilibDrawContext(this.client, drawContext.getVertexConsumers());
+        if (this.drawContext == null || this.drawContext.equals(drawContext) == false)
+        {
+            this.drawContext = drawContext;
+        }
 
-        this.drawScreenBackground(mouseX, mouseY);
+        this.drawScreenBackground(drawContext, mouseX, mouseY);
         this.drawTitle(drawContext, mouseX, mouseY, partialTicks);
 
         // Draw base widgets
@@ -181,6 +187,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.drawButtonHoverTexts(mouseX, mouseY, partialTicks, drawContext);
         this.drawHoveredWidget(mouseX, mouseY, drawContext);
         this.drawGuiMessages(drawContext);
+    }
+
+    protected DrawContext getDrawContext()
+    {
+        return this.drawContext;
     }
 
     @Override
@@ -555,8 +566,23 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     protected void drawScreenBackground(int mouseX, int mouseY)
     {
+        this.drawScreenBackground(this.getDrawContext(), mouseX, mouseY);
+    }
+
+    protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
+    {
         // Draw the dark background
         RenderUtils.drawRect(0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
+    }
+
+    protected void drawTexturedBG(DrawContext drawContext, int topX, int topY, int width, int height, boolean blur)
+    {
+        if (blur)
+        {
+            super.applyBlur();
+        }
+
+        RenderUtils.drawTexturedRect(GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, drawContext);
     }
 
     protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)

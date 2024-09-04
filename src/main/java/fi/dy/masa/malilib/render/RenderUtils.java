@@ -207,6 +207,11 @@ public class RenderUtils
         RenderSystem.disableBlend();
     }
 
+    public static void drawScreenBlur(MinecraftClient mc)
+    {
+        mc.gameRenderer.renderBlur();
+    }
+
     public static void drawTexturedRect(int x, int y, int u, int v, int width, int height, float zLevel)
     {
         float pixelWidth = 0.00390625F;

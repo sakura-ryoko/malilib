@@ -4,20 +4,21 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+
 import fi.dy.masa.malilib.config.ConfigManager;
-import fi.dy.masa.malilib.config.IConfigStringList;
+import fi.dy.masa.malilib.config.IConfigLockedStringList;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
-import fi.dy.masa.malilib.gui.widgets.WidgetListStringListEdit;
-import fi.dy.masa.malilib.gui.widgets.WidgetStringListEditEntry;
+import fi.dy.masa.malilib.gui.widgets.WidgetListLockedStringListEdit;
+import fi.dy.masa.malilib.gui.widgets.WidgetLockedStringListEditEntry;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 
-public class GuiStringListEdit extends GuiListBase<String, WidgetStringListEditEntry, WidgetListStringListEdit>
+public class GuiLockedStringListEdit extends GuiListBase<String, WidgetLockedStringListEditEntry, WidgetListLockedStringListEdit>
 {
-    protected final IConfigStringList config;
+    protected final IConfigLockedStringList config;
     protected final IConfigGui configGui;
     protected int dialogWidth;
     protected int dialogHeight;
@@ -27,14 +28,14 @@ public class GuiStringListEdit extends GuiListBase<String, WidgetStringListEditE
     protected int textFieldWidth;
     @Nullable protected final IDialogHandler dialogHandler;
 
-    public GuiStringListEdit(IConfigStringList config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler, Screen parent)
+    public GuiLockedStringListEdit(IConfigLockedStringList config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler, Screen parent)
     {
         super(0, 0);
 
         this.config = config;
         this.configGui = configGui;
         this.dialogHandler = dialogHandler;
-        this.title = StringUtils.translate("malilib.gui.title.string_list_edit", config.getName());
+        this.title = StringUtils.translate("malilib.gui.title.locked_string_list_edit", config.getName());
 
         // When we have a dialog handler, then we are inside the Liteloader config menu.
         // In there we don't want to use the normal "GUI replacement and render parent first" trick.
@@ -80,7 +81,7 @@ public class GuiStringListEdit extends GuiListBase<String, WidgetStringListEditE
         super.initGui();
     }
 
-    public IConfigStringList getConfig()
+    public IConfigLockedStringList getConfig()
     {
         return this.config;
     }
@@ -98,10 +99,10 @@ public class GuiStringListEdit extends GuiListBase<String, WidgetStringListEditE
     }
 
     @Override
-    protected WidgetListStringListEdit createListWidget(int listX, int listY)
+    protected WidgetListLockedStringListEdit createListWidget(int listX, int listY)
     {
         // The listX and listY are set via the constructor, which in this dialog-like GUI's case is too early to know them
-        return new WidgetListStringListEdit(this.dialogLeft + 10, this.dialogTop + 20, this.getBrowserWidth(), this.getBrowserHeight(), this.dialogWidth - 100, this);
+        return new WidgetListLockedStringListEdit(this.dialogLeft + 10, this.dialogTop + 20, this.getBrowserWidth(), this.getBrowserHeight(), this.dialogWidth - 100, this);
     }
 
     @Override
@@ -148,9 +149,11 @@ public class GuiStringListEdit extends GuiListBase<String, WidgetStringListEditE
             this.dialogHandler.closeDialog();
             return true;
         }
-        else
+        else if (keyCode == KeyCodes.KEY_ESCAPE)
         {
-            return super.onKeyTyped(keyCode, scanCode, modifiers);
+            return super.onKeyTyped(KeyCodes.KEY_ESCAPE, KeyCodes.KEY_NONE, KeyCodes.KEY_NONE);
         }
+
+        return false;
     }
 }

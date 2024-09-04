@@ -8,6 +8,7 @@ public enum ConfigType
     COLOR,
     STRING,
     STRING_LIST,
+    LOCKED_STRING_LIST,
     COLOR_LIST,
     OPTION_LIST,
     HOTKEY;

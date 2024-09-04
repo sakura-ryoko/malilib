@@ -44,6 +44,11 @@
     "malilib.gui.button.render_layers_gui.layers": "Layers: %s",
     "malilib.gui.button.render_layers_gui.set_here": "Set Here",
 
+    "malilib.gui.button.hovertext.add": "Add",
+    "malilib.gui.button.hovertext.remove": "Remove",
+    "malilib.gui.button.hovertext.move_up": "Move Up",
+    "malilib.gui.button.hovertext.move_down": "Move Down",
+
     "malilib.gui.button.hover.directory_widget.create_directory": "Create a new directory",
     "malilib.gui.button.hover.directory_widget.root": "To root/base directory",
     "malilib.gui.button.hover.directory_widget.up": "Up to parent directory",
@@ -94,6 +99,7 @@
     "malilib.gui.title.generic": "Generic",
     "malilib.gui.title.test": "Test",
     "malilib.gui.title.keybind_settings.advanced": "Advanced Keybind Settings for %s",
+    "malilib.gui.title.locked_string_list_edit": "Edit locked string list for '%s'",
     "malilib.gui.title.string_list_edit": "Edit string list for '%s'",
     "malilib.gui.title.color_list_edit": "Edit color list for '%s'",
 
@@ -140,6 +146,7 @@
     "malilib.config.test.name.testOptionList": "testOptionList /X",
     "malilib.config.test.name.testString": "testString /X",
     "malilib.config.test.name.testStringList": "testStringList /X",
+    "malilib.config.test.name.testLockedConfigList": "testLockedConfigList /X",
 
     "malilib.config.test.comment.testBoolean": "[X] testBoolean Comment!",
     "malilib.config.test.comment.testBooleanHotkeyed": "[X] testBooleanHotkeyed Comment!",
@@ -151,6 +158,7 @@
     "malilib.config.test.comment.testOptionList": "[X] testOptionList Comment!",
     "malilib.config.test.comment.testString": "[X] testString Comment!",
     "malilib.config.test.comment.testStringList": "[X] testStringList Comment!",
+    "malilib.config.test.comment.testLockedConfigList": "[X] testLockedConfigList Comment!",
 
     "malilib.message.layer_range.range_max": "max",
     "malilib.message.layer_range.range_min": "min",
