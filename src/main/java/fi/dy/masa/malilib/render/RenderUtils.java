@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.mixin.IMixinDrawContext;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.PositionUtils.HitPart;
 import net.minecraft.block.BlockState;
@@ -90,12 +91,15 @@ public class RenderUtils
 
     public static VertexConsumer getVertexConsumer(RenderLayer textureLyaer, DrawContext drawContext)
     {
-        return drawContext.getVertexConsumers().getBuffer(textureLyaer);
+        //return drawContext.getVertexConsumers().getBuffer(textureLyaer);
+        return ((IMixinDrawContext) drawContext).malilib_getVertexConsumers().getBuffer(textureLyaer);
     }
 
     public static void forceDraw(DrawContext drawContext)
     {
-        drawContext.getVertexConsumers().draw();
+        //drawContext.getVertexConsumers().draw();
+        //((IMixinDrawContext) drawContext).malilib_getVertexConsumers().draw();
+        drawContext.draw();
     }
 
     public static void color(float r, float g, float b, float a)
