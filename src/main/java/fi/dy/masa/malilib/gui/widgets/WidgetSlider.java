@@ -10,8 +10,8 @@ import fi.dy.masa.malilib.render.RenderUtils;
 
 public class WidgetSlider extends WidgetBase
 {
-    public static final Identifier BUTTON_TEXTURE = Identifier.of("minecraft:widget/button");
-    public static final Identifier BUTTON_DISABLE_TEXTURE = Identifier.of("minecraft:widget/button_disabled");
+    public static final Identifier BUTTON_TEXTURE = Identifier.ofVanilla("widget/button");
+    public static final Identifier BUTTON_DISABLE_TEXTURE = Identifier.ofVanilla("widget/button_disabled");
 
     protected final ISliderCallback callback;
     protected int sliderWidth;

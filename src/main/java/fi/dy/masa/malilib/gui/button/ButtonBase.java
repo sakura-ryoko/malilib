@@ -18,9 +18,9 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public abstract class ButtonBase extends WidgetBase
 {
-    protected static final Identifier BUTTON_TEXTURE = Identifier.of("minecraft:widget/button");
-    protected static final Identifier BUTTON_DISABLE_TEXTURE = Identifier.of("minecraft:widget/button_disabled");
-    protected static final Identifier BUTTON_HOVER_TEXTURE = Identifier.of("minecraft:widget/button_highlighted");
+    protected static final Identifier BUTTON_TEXTURE = Identifier.ofVanilla("widget/button");
+    protected static final Identifier BUTTON_DISABLE_TEXTURE = Identifier.ofVanilla("widget/button_disabled");
+    protected static final Identifier BUTTON_HOVER_TEXTURE = Identifier.ofVanilla("widget/button_highlighted");
 
     protected final List<String> hoverStrings = new ArrayList<>();
     protected final ImmutableList<String> hoverHelp;
