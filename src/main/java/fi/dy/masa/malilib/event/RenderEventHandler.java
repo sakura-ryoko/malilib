@@ -5,9 +5,11 @@ import java.util.List;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.Fog;
 import net.minecraft.item.ItemStack;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -127,15 +129,14 @@ public class RenderEventHandler implements IRenderDispatcher
         {
             this.mc.getProfiler().swap("malilib_renderworldpost");
             Framebuffer fb = null;
-            //Fog fog = RenderSystem.getShaderFog();
-            //RenderSystem.setShaderFog(Fog.DUMMY);
+            Fog fog = RenderSystem.getShaderFog();
+            RenderSystem.setShaderFog(Fog.DUMMY);
 
             if (this.hasTransparency && this.mc.worldRenderer != null)
             {
                 try
                 {
-                    //fb = MinecraftClient.isFabulousGraphicsOrBetter() ? this.mc.worldRenderer.getTranslucentFramebuffer() : null;
-                    fb = MinecraftClient.isFabulousGraphicsOrBetter() ? this.mc.worldRenderer.getEntityOutlinesFramebuffer() : null;
+                    fb = MinecraftClient.isFabulousGraphicsOrBetter() ? this.mc.worldRenderer.getTranslucentFramebuffer() : null;
                 }
                 catch (Exception e)
                 {
@@ -164,7 +165,7 @@ public class RenderEventHandler implements IRenderDispatcher
                 this.mc.getFramebuffer().beginWrite(false);
             }
 
-            //RenderSystem.setShaderFog(fog);
+            RenderSystem.setShaderFog(fog);
         }
     }
 }
