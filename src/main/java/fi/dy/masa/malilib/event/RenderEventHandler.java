@@ -2,14 +2,18 @@ package fi.dy.masa.malilib.event;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.DefaultFramebufferSet;
 import net.minecraft.client.render.Fog;
+import net.minecraft.client.render.FrameGraphBuilder;
 import net.minecraft.item.ItemStack;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -166,6 +170,18 @@ public class RenderEventHandler implements IRenderDispatcher
             }
 
             RenderSystem.setShaderFog(fog);
+        }
+    }
+
+    @ApiStatus.Internal
+    public void onRenderWorldPostEffects(@Nullable PostEffectProcessor processor, FrameGraphBuilder frameGraphBuilder, int fbWidth, int fbHeight, DefaultFramebufferSet fbSet)
+    {
+        // Run Post-Effects Processor for the Translucent Frame buffer
+        if (this.worldLastRenderers.isEmpty() == false &&
+            MinecraftClient.isFabulousGraphicsOrBetter() &&
+            processor != null)
+        {
+            processor.render(frameGraphBuilder, fbWidth, fbHeight, fbSet);
         }
     }
 }

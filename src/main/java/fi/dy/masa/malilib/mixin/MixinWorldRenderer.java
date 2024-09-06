@@ -19,6 +19,8 @@ public abstract class MixinWorldRenderer
 {
     @Shadow @Final private MinecraftClient client;
 
+    @Shadow @Final private DefaultFramebufferSet framebufferSet;
+
     @Inject(method = "render",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/render/FrameGraphBuilder;createPass(Ljava/lang/String;)Lnet/minecraft/client/render/RenderPass;"))
@@ -41,4 +43,16 @@ public abstract class MixinWorldRenderer
         }
     }
      */
+
+    @Inject(method = "render",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/LightmapTextureManager;Lnet/minecraft/util/math/Vec3d;FLnet/minecraft/client/render/Fog;)V"))
+    private void malilib_onRenderWeatherPre(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
+                                          Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
+                                          Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+                                          @Local FrameGraphBuilder frameGraphBuilder,
+                                          @Local PostEffectProcessor postEffectProcessor)
+    {
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldPostEffects(postEffectProcessor, frameGraphBuilder, this.client.getFramebuffer().textureWidth, this.client.getFramebuffer().textureHeight, this.framebufferSet);
+    }
 }
