@@ -9,8 +9,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import fi.dy.masa.malilib.event.RenderEventHandler;
-
 @Mixin(value = DebugRenderer.class)
 public class MixinDebugRenderer
 {
