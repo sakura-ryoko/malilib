@@ -1,16 +1,23 @@
 package fi.dy.masa.malilib.mixin;
 
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import fi.dy.masa.malilib.event.RenderEventHandler;
 
 @Mixin(value = DebugRenderer.class)
 public class MixinDebugRenderer
 {
-    /*
-    @Inject(method = "method_62351", at = @At("HEAD"))
-    private void malilib_onDebugRenderDraw(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, double d, double e, double f, CallbackInfo ci)
+    // Doesn't work on Fabulous! Graphics
+    @Inject(method = "render", at = @At("HEAD"))
+    private void malilib_onDebugRenderDraw(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldPost(d, e, f);
+        //((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldPost(cameraX, cameraY, cameraZ);
     }
-     */
 }

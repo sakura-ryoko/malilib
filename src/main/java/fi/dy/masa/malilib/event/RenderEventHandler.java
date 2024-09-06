@@ -134,7 +134,8 @@ public class RenderEventHandler implements IRenderDispatcher
             {
                 try
                 {
-                    fb = MinecraftClient.isFabulousGraphicsOrBetter() ? this.mc.worldRenderer.getTranslucentFramebuffer() : null;
+                    //fb = MinecraftClient.isFabulousGraphicsOrBetter() ? this.mc.worldRenderer.getTranslucentFramebuffer() : null;
+                    fb = MinecraftClient.isFabulousGraphicsOrBetter() ? this.mc.worldRenderer.getEntityOutlinesFramebuffer() : null;
                 }
                 catch (Exception e)
                 {
@@ -147,12 +148,16 @@ public class RenderEventHandler implements IRenderDispatcher
                 fb.beginWrite(false);
             }
 
+            //this.mc.gameRenderer.getLightmapTextureManager().enable();
+
             for (IRenderer renderer : this.worldLastRenderers)
             {
                 this.mc.getProfiler().push(renderer.getProfilerSectionSupplier());
                 renderer.onRenderWorldLast(this.posMatrix, this.projMatrix);
                 this.mc.getProfiler().pop();
             }
+
+            //this.mc.gameRenderer.getLightmapTextureManager().disable();
 
             if (fb != null)
             {
