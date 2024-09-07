@@ -141,8 +141,8 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.worldLastRenderers.isEmpty() == false &&
             this.malilibRenderPass != null)
         {
-            Handle<Framebuffer> handle;
-            //Handle<Framebuffer> handle2;
+            Handle<Framebuffer> handleMain;
+            //Handle<Framebuffer> handleTransluclent;
 
             this.mc.getProfiler().push(MaLiLibReference.MOD_ID+"_render_pass");
 
@@ -151,17 +151,17 @@ public class RenderEventHandler implements IRenderDispatcher
             /*
             if (fbSet.translucentFramebuffer != null)
             {
-                fbSet.translucentFramebuffer = this.malilibRender.transfer(fbSet.translucentFramebuffer);
-                handle2 = fbSet.translucentFramebuffer;
+                fbSet.translucentFramebuffer = this.malilibRenderPass.transfer(fbSet.translucentFramebuffer);
+                handleTransluclent = fbSet.translucentFramebuffer;
             }
             else
             {
              */
                 fbSet.mainFramebuffer = this.malilibRenderPass.transfer(fbSet.mainFramebuffer);
-                //handle2 = null;
+                //handleTransluclent = null;
             //}
 
-            handle = fbSet.mainFramebuffer;
+            handleMain = fbSet.mainFramebuffer;
 
             this.malilibRenderPass.setRenderer(() ->
             {
@@ -169,11 +169,11 @@ public class RenderEventHandler implements IRenderDispatcher
                 //RenderSystem.setShaderFog(Fog.DUMMY);
 
                 /*
-                if (handle2 != null)
+                if (handleTransluclent != null)
                 {
-                    handle2.get().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-                    handle2.get().clear();
-                    handle2.get().copyDepthFrom(handle.get());
+                    handleTransluclent.get().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                    handleTransluclent.get().clear();
+                    handleTransluclent.get().copyDepthFrom(handleMain.get());
                 }
                  */
 
@@ -185,9 +185,8 @@ public class RenderEventHandler implements IRenderDispatcher
                     shaders.bind();
                 }
 
-                handle.get().beginWrite(false);
+                handleMain.get().beginWrite(false);
                 this.onRenderWorldPost(frustum, camera, fog);
-                //handle.get().endWrite();
 
                 if (shaders != null)
                 {
