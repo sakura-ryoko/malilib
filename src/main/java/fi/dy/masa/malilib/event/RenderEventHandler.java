@@ -2,21 +2,19 @@ package fi.dy.masa.malilib.event;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.PostEffectProcessor;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.DefaultFramebufferSet;
-import net.minecraft.client.render.Fog;
-import net.minecraft.client.render.FrameGraphBuilder;
+import net.minecraft.client.render.*;
+import net.minecraft.client.util.Handle;
 import net.minecraft.item.ItemStack;
 
-import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IRenderDispatcher;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -29,10 +27,10 @@ public class RenderEventHandler implements IRenderDispatcher
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
 
+    private RenderPass malilibRenderPass;
     private Matrix4f posMatrix;
     private Matrix4f projMatrix;
     private MinecraftClient mc;
-    private boolean hasTransparency;
 
     public static IRenderDispatcher getInstance()
     {
@@ -105,10 +103,9 @@ public class RenderEventHandler implements IRenderDispatcher
      * @param posMatrix (Position Matrix)
      * @param projMatrix (Projection Matrix)
      * @param mc (Client)
-     * @param hasTransparency (Whether the transparency buffers are being utilized)
      */
     @ApiStatus.Internal
-    public void onRenderWorldPre(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc, boolean hasTransparency)
+    public void onRenderWorldPre(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc)
     {
         if (this.mc == null)
         {
@@ -117,25 +114,106 @@ public class RenderEventHandler implements IRenderDispatcher
 
         this.posMatrix = posMatrix;
         this.projMatrix = projMatrix;
-        this.hasTransparency = hasTransparency;
     }
 
     /**
-     * This is the "Execution" phase of the new WorldRenderer system.
-     * @param cameraX (x)
-     * @param cameraY (y)
-     * @param cameraZ (z)
+     * This creates the MaLiLib Render Phase
+     * @param frameGraphBuilder (Required object)
      */
     @ApiStatus.Internal
-    public void onRenderWorldPost(double cameraX, double cameraY, double cameraZ)
+    public void onRenderWorldCreatePass(FrameGraphBuilder frameGraphBuilder)
     {
         if (this.worldLastRenderers.isEmpty() == false)
         {
-            this.mc.getProfiler().swap("malilib_renderworldpost");
-            Framebuffer fb = null;
-            Fog fog = RenderSystem.getShaderFog();
-            RenderSystem.setShaderFog(Fog.DUMMY);
+            this.malilibRenderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID);
+        }
+    }
 
+    /**
+     * This is the "Execution" phase of the new WorldRenderer system.  This new method supports Shaders.
+     * @param fbSet (WorldRenderer FrameBufferSet Object)
+     * @param frustum (Frustum Object)
+     * @param camera (Camera Object)
+     */
+    @ApiStatus.Internal
+    public void onRenderWorldRunPass(DefaultFramebufferSet fbSet, Frustum frustum, Camera camera)
+    {
+        if (this.worldLastRenderers.isEmpty() == false &&
+            this.malilibRenderPass != null)
+        {
+            Handle<Framebuffer> handle;
+            //Handle<Framebuffer> handle2;
+
+            this.mc.getProfiler().push(MaLiLibReference.MOD_ID+"_render_pass");
+
+            // FIXME --> Don't write to translucent Frame Buffer, bad things will happen,
+            //  at Best, the Player will be able to see through objects with a Stained Glass Block.
+            /*
+            if (fbSet.translucentFramebuffer != null)
+            {
+                fbSet.translucentFramebuffer = this.malilibRender.transfer(fbSet.translucentFramebuffer);
+                handle2 = fbSet.translucentFramebuffer;
+            }
+            else
+            {
+             */
+                fbSet.mainFramebuffer = this.malilibRenderPass.transfer(fbSet.mainFramebuffer);
+                //handle2 = null;
+            //}
+
+            handle = fbSet.mainFramebuffer;
+
+            this.malilibRenderPass.setRenderer(() ->
+            {
+                Fog fog = RenderSystem.getShaderFog();
+                //RenderSystem.setShaderFog(Fog.DUMMY);
+
+                /*
+                if (handle2 != null)
+                {
+                    handle2.get().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                    handle2.get().clear();
+                    handle2.get().copyDepthFrom(handle.get());
+                }
+                 */
+
+                ShaderProgram shaders = RenderSystem.getShader();
+
+                if (shaders != null)
+                {
+                    shaders.initializeUniforms(VertexFormat.DrawMode.QUADS, this.posMatrix, this.projMatrix, this.mc.getWindow());
+                    shaders.bind();
+                }
+
+                handle.get().beginWrite(false);
+                this.onRenderWorldPost(frustum, camera, fog);
+                //handle.get().endWrite();
+
+                if (shaders != null)
+                {
+                    shaders.unbind();
+                }
+
+                //RenderSystem.setShaderFog(fog);
+            });
+        }
+
+        this.mc.getProfiler().pop();
+    }
+
+    /**
+     * This is the "Execution" phase of the new WorldRenderer system.  Frustum / Camera only passed along in case it's wanted later.
+     * @param frustum (Frustum Object)
+     * @param camera (Camera Object)
+     */
+    @ApiStatus.Internal
+    public void onRenderWorldPost(Frustum frustum, Camera camera, Fog fog)
+    {
+        if (this.worldLastRenderers.isEmpty() == false)
+        {
+            this.mc.getProfiler().swap(MaLiLibReference.MOD_ID+"_render_post");
+            //Framebuffer fb = null;
+            /*
             if (this.hasTransparency && this.mc.worldRenderer != null)
             {
                 try
@@ -152,36 +230,40 @@ public class RenderEventHandler implements IRenderDispatcher
             {
                 fb.beginWrite(false);
             }
-
-            //this.mc.gameRenderer.getLightmapTextureManager().enable();
+             */
 
             for (IRenderer renderer : this.worldLastRenderers)
             {
                 this.mc.getProfiler().push(renderer.getProfilerSectionSupplier());
+                // This really should be used either or, and never both in the same mod.
+                renderer.onRenderWorldLastAdvanced(this.posMatrix, this.projMatrix, frustum, camera, fog);
                 renderer.onRenderWorldLast(this.posMatrix, this.projMatrix);
                 this.mc.getProfiler().pop();
             }
 
-            //this.mc.gameRenderer.getLightmapTextureManager().disable();
-
+            /*
             if (fb != null)
             {
                 this.mc.getFramebuffer().beginWrite(false);
             }
-
-            RenderSystem.setShaderFog(fog);
+             */
         }
     }
 
     @ApiStatus.Internal
-    public void onRenderWorldPostEffects(@Nullable PostEffectProcessor processor, FrameGraphBuilder frameGraphBuilder, int fbWidth, int fbHeight, DefaultFramebufferSet fbSet)
+    public void onRenderWorldEnd()
     {
-        // Run Post-Effects Processor for the Translucent Frame buffer
-        if (this.worldLastRenderers.isEmpty() == false &&
-            MinecraftClient.isFabulousGraphicsOrBetter() &&
-            processor != null)
+        if (this.malilibRenderPass != null)
         {
-            processor.render(frameGraphBuilder, fbWidth, fbHeight, fbSet);
+            this.malilibRenderPass = null;
+        }
+        if (this.posMatrix != null)
+        {
+            this.posMatrix = null;
+        }
+        if (this.projMatrix != null)
+        {
+            this.projMatrix = null;
         }
     }
 }
