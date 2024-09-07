@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.test;
 
+import java.util.function.Supplier;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -7,6 +8,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Fog;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -26,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.mixin.test.IMixinAbstractHorseEntity;
@@ -35,6 +40,8 @@ import fi.dy.masa.malilib.util.*;
 
 public class TestRenderHandler implements IRenderer
 {
+    private boolean wasHeld = false;
+
     @Override
     public void onRenderGameOverlayPost(DrawContext drawContext)
     {
@@ -58,6 +65,31 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
+    public void onRenderWorldLastAdvanced(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog)
+    {
+        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+        {
+            MinecraftClient mc = MinecraftClient.getInstance();
+
+            if (wasHeld && !GuiBase.isShiftDown())
+            {
+                TestWalls.clear();
+                wasHeld = false;
+            }
+            else if (GuiBase.isShiftDown())
+            {
+                if (TestWalls.needsUpdate(camera.getBlockPos()))
+                {
+                    TestWalls.update(camera, mc);
+                }
+
+                TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc);
+                wasHeld = true;
+            }
+        }
+    }
+
+    @Override
     public void onRenderTooltipLast(DrawContext drawContext, ItemStack stack, int x, int y)
     {
         Item item = stack.getItem();
@@ -76,6 +108,12 @@ public class TestRenderHandler implements IRenderer
                 RenderUtils.renderShulkerBoxPreview(stack, x, y, true, drawContext);
             }
         }
+    }
+
+    @Override
+    public Supplier<String> getProfilerSectionSupplier()
+    {
+        return () -> MaLiLibReference.MOD_ID + "_test_render";
     }
 
     private void renderTargetingOverlay(Matrix4f posMatrix, MinecraftClient mc)
