@@ -17,14 +17,29 @@ public interface IRenderer
     default void onRenderGameOverlayPost(DrawContext drawContext) {}
 
     /**
-     * Called after vanilla world rendering
+     * Called before vanilla Main Pass rendering
      */
-    default void onRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix) {}
+    default void onRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog) {}
+
+    /**
+     * Called before vanilla Particle rendering
+     */
+    default void onRenderWorldPreParticle(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog) {}
+
+    /**
+     * Called before vanilla Weather rendering
+     */
+    default void onRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog) {}
 
     /**
      * Called after vanilla world rendering, with advanced Parameters, such as Frustum, Camera, and Fog
      */
     default void onRenderWorldLastAdvanced(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog) {}
+
+    /**
+     * Called after vanilla world rendering
+     */
+    default void onRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix) {}
 
     /**
      * Called after the tooltip text of an item has been rendered

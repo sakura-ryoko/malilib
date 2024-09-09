@@ -23,43 +23,53 @@ public abstract class MixinWorldRenderer
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/FrameGraphBuilder;createPass(Ljava/lang/String;)Lnet/minecraft/client/render/RenderPass;"))
-    private void malilib_onRenderWorldPre(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
-                                          Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
-                                          Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci)
+                    target = "Lnet/minecraft/client/render/WorldRenderer;renderMain(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Frustum;Lnet/minecraft/client/render/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/render/Fog;ZZLnet/minecraft/client/render/RenderTickCounter;Lnet/minecraft/util/profiler/Profiler;)V",
+                    shift = At.Shift.BEFORE))
+    private void malilib_onRenderWorldPreMain(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
+                                              Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
+                                              Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+                                              @Local FrameGraphBuilder frameGraphBuilder,
+                                              @Local Frustum frustum)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldPre(positionMatrix, projectionMatrix, this.client);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreMain(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera);
     }
 
-    /*
-    @Inject(method = "renderLayer", at = @At("TAIL"))
-    private void malilib_onRenderWorldPost(RenderLayer renderLayer, double x, double y, double z, Matrix4f viewMatrix, Matrix4f positionMatrix, CallbackInfo ci)
+    @Inject(method = "render",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/WorldRenderer;renderParticles(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/LightmapTextureManager;FLnet/minecraft/client/render/Fog;)V",
+                    shift = At.Shift.BEFORE))
+    private void malilib_onRenderWorldPreParticles(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
+                                                   Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
+                                                   Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+                                                   @Local FrameGraphBuilder frameGraphBuilder,
+                                                   @Local Frustum frustum)
     {
-        if (renderLayer.equals(RenderLayer.getTripwire()))
-        {
-            ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldPost(x, y, z);
-        }
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreParticles(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera);
     }
-     */
+
+    @Inject(method = "render",
+            at = @At(value = "INVOKE",
+                    target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/LightmapTextureManager;Lnet/minecraft/util/math/Vec3d;FLnet/minecraft/client/render/Fog;)V",
+                    shift = At.Shift.BEFORE))
+    private void malilib_onRenderWorldPreWeather(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
+                                                 Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
+                                                 Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+                                                 @Local FrameGraphBuilder frameGraphBuilder,
+                                                 @Local Frustum frustum)
+    {
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera);
+    }
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/render/WorldRenderer;renderLateDebug(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/client/render/Fog;)V",
                     shift = At.Shift.BEFORE))
-    private void malilib_onRenderWorldPost(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
-                                          Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
-                                          Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
-                                          @Local FrameGraphBuilder frameGraphBuilder,
-                                          @Local Frustum frustum)
+    private void malilib_onRenderWorldLast(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
+                                           Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
+                                           Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+                                           @Local FrameGraphBuilder frameGraphBuilder,
+                                           @Local Frustum frustum)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldCreatePass(frameGraphBuilder);
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldRunPass(this.framebufferSet, frustum, camera);
-    }
-
-    @Inject(method = "render",
-            at = @At(value = "TAIL"))
-    private void malilib_onRenderWorldEnd(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci)
-    {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderWorldEnd();
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera);
     }
 }
