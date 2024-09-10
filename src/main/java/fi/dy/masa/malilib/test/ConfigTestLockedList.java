@@ -53,11 +53,11 @@ public class ConfigTestLockedList implements IConfigLockedListType
     }
 
     @Override
-    public List<IConfigLockedListEntry> setEntries(List<IConfigLockedListEntry> entires)
+    public List<IConfigLockedListEntry> setEntries(List<IConfigLockedListEntry> entries)
     {
         List<IConfigLockedListEntry> list = new ArrayList<>();
 
-        entires.forEach((v) ->
+        entries.forEach((v) ->
         {
             Entry entry = Entry.fromString(v.getStringValue());
 
