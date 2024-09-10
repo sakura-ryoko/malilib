@@ -144,9 +144,9 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             ConfigButtonStringList optionButton = new ConfigButtonStringList(x, y, configWidth, configHeight, (IConfigStringList) config, this.host, this.host.getDialogHandler());
             this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
         }
-        else if (type == ConfigType.LOCKED_STRING_LIST)
+        else if (type == ConfigType.LOCKED_LIST)
         {
-            ConfigButtonLockedStringList optionButton = new ConfigButtonLockedStringList(x, y, configWidth, configHeight, (IConfigLockedStringList) config, this.host, this.host.getDialogHandler());
+            ConfigButtonLockedList optionButton = new ConfigButtonLockedList(x, y, configWidth, configHeight, (IConfigLockedList) config, this.host, this.host.getDialogHandler());
             this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
         }
         else if (type == ConfigType.COLOR_LIST)

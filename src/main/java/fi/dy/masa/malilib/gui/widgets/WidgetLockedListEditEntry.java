@@ -4,7 +4,8 @@ import java.util.List;
 
 import net.minecraft.client.gui.DrawContext;
 
-import fi.dy.masa.malilib.config.IConfigLockedStringList;
+import fi.dy.masa.malilib.config.IConfigLockedList;
+import fi.dy.masa.malilib.config.IConfigLockedListEntry;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.MaLiLibIcons;
@@ -15,23 +16,23 @@ import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
-public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<String>
+public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
 {
-    protected final WidgetListLockedStringListEdit parent;
-    protected final String defaultValue;
+    protected final WidgetListLockedListEdit parent;
+    protected final IConfigLockedListEntry defaultValue;
     protected final int listIndex;
     protected final boolean isOdd;
 
-    public WidgetLockedStringListEditEntry(int x, int y, int width, int height,
-                                           int listIndex, boolean isOdd, String initialValue, String defaultValue, WidgetListLockedStringListEdit parent)
+    public WidgetLockedListEditEntry(int x, int y, int width, int height,
+                                     int listIndex, boolean isOdd, IConfigLockedListEntry initialValue, IConfigLockedListEntry defaultValue, WidgetListLockedListEdit parent)
     {
-        super(x, y, width, height, parent, initialValue, listIndex);
+        super(x, y, width, height, parent, initialValue != null ? initialValue.getDisplayName() : "", listIndex);
 
         this.listIndex = listIndex;
         this.isOdd = isOdd;
         this.defaultValue = defaultValue;
-        this.lastAppliedValue = initialValue;
-        this.initialStringValue = initialValue;
+        this.lastAppliedValue = initialValue != null ? initialValue.getDisplayName() : "";
+        this.initialStringValue = initialValue != null ? initialValue.getDisplayName() : "";
         this.parent = parent;
 
         int textFieldX = x + 20;
@@ -73,11 +74,11 @@ public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<Stri
         this.addButton(button, listener);
     }
 
-    protected int addTextField(int x, int y, int resetX, int configWidth, int configHeight, String initialValue)
+    protected int addTextField(int x, int y, int resetX, int configWidth, int configHeight, IConfigLockedListEntry initialValue)
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
-        field.setText(initialValue);
+        field.setText(initialValue != null ? initialValue.getDisplayName() : "");
 
         ButtonGeneric resetButton = this.createResetButton(resetX, y, field);
         ChangeListenerTextField listenerChange = new ChangeListenerTextField(field, resetButton, this.defaultValue);
@@ -93,7 +94,7 @@ public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<Stri
     {
         String labelReset = StringUtils.translate("malilib.gui.button.reset.caps");
         ButtonGeneric resetButton = new ButtonGeneric(x, y, -1, 20, labelReset);
-        resetButton.setEnabled(textField.getText().equals(this.defaultValue) == false);
+        resetButton.setEnabled(textField.getText().equals(this.defaultValue.getStringValue()) == false && textField.getText().equals(this.defaultValue.getDisplayName()) == false);
 
         return resetButton;
     }
@@ -109,13 +110,13 @@ public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<Stri
     {
         if (this.isDummy() == false)
         {
-            IConfigLockedStringList config = this.parent.getConfig();
-            List<String> list = config.getStrings();
+            IConfigLockedList config = this.parent.getConfig();
+            List<IConfigLockedListEntry> list = config.getEntries();
             String value = this.textField.getTextField().getText();
 
             if (list.size() > this.listIndex)
             {
-                list.set(this.listIndex, value);
+                list.set(this.listIndex, config.getEntry(value));
                 this.lastAppliedValue = value;
             }
         }
@@ -123,12 +124,12 @@ public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<Stri
 
     private void moveEntry(boolean down)
     {
-        List<String> list = this.parent.getConfig().getStrings();
+        List<IConfigLockedListEntry> list = this.parent.getConfig().getEntries();
         final int size = list.size();
 
         if (this.listIndex >= 0 && this.listIndex < size)
         {
-            String tmp;
+            IConfigLockedListEntry tmp;
             int index1 = this.listIndex;
             int index2 = -1;
 
@@ -156,7 +157,7 @@ public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<Stri
 
     private boolean canBeMoved(boolean down)
     {
-        final int size = this.parent.getConfig().getStrings().size();
+        final int size = this.parent.getConfig().getEntries().size();
         return (this.listIndex >= 0 && this.listIndex < size) &&
                 ((down && this.listIndex < (size - 1)) || (down == false && this.listIndex > 0));
     }
@@ -183,9 +184,9 @@ public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<Stri
 
     public static class ChangeListenerTextField extends ConfigOptionChangeListenerTextField
     {
-        protected final String defaultValue;
+        protected final IConfigLockedListEntry defaultValue;
 
-        public ChangeListenerTextField(GuiTextFieldGeneric textField, ButtonBase buttonReset, String defaultValue)
+        public ChangeListenerTextField(GuiTextFieldGeneric textField, ButtonBase buttonReset, IConfigLockedListEntry defaultValue)
         {
             super(null, textField, buttonReset);
 
@@ -195,7 +196,7 @@ public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<Stri
         @Override
         public boolean onTextChange(GuiTextFieldGeneric textField)
         {
-            this.buttonReset.setEnabled(this.textField.getText().equals(this.defaultValue) == false);
+            this.buttonReset.setEnabled(this.textField.getText().equals(this.defaultValue.getStringValue()) == false && this.textField.getText().equals(this.defaultValue.getDisplayName()) == false);
             return false;
         }
     }
@@ -214,10 +215,10 @@ public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<Stri
 
     private static class ListenerResetConfig implements IButtonActionListener
     {
-        private final WidgetLockedStringListEditEntry parent;
+        private final WidgetLockedListEditEntry parent;
         private final ButtonGeneric buttonReset;
 
-        public ListenerResetConfig(ButtonGeneric buttonReset, WidgetLockedStringListEditEntry parent)
+        public ListenerResetConfig(ButtonGeneric buttonReset, WidgetLockedListEditEntry parent)
         {
             this.buttonReset = buttonReset;
             this.parent = parent;
@@ -226,17 +227,17 @@ public class WidgetLockedStringListEditEntry extends WidgetConfigOptionBase<Stri
         @Override
         public void actionPerformedWithButton(ButtonBase button, int mouseButton)
         {
-            this.parent.textField.getTextField().setText(this.parent.defaultValue);
-            this.buttonReset.setEnabled(this.parent.textField.getTextField().getText().equals(this.parent.defaultValue) == false);
+            this.parent.textField.getTextField().setText(this.parent.defaultValue.getDisplayName());
+            this.buttonReset.setEnabled(this.parent.textField.getTextField().getText().equals(this.parent.defaultValue.getStringValue()) == false && this.parent.textField.getTextField().getText().equals(this.parent.defaultValue.getDisplayName()) == false);
         }
     }
 
     private static class ListenerListActions implements IButtonActionListener
     {
         private final ButtonType type;
-        private final WidgetLockedStringListEditEntry parent;
+        private final WidgetLockedListEditEntry parent;
 
-        public ListenerListActions(ButtonType type, WidgetLockedStringListEditEntry parent)
+        public ListenerListActions(ButtonType type, WidgetLockedListEditEntry parent)
         {
             this.type = type;
             this.parent = parent;

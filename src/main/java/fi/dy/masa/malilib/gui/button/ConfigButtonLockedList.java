@@ -2,21 +2,21 @@ package fi.dy.masa.malilib.gui.button;
 
 import javax.annotation.Nullable;
 
-import fi.dy.masa.malilib.config.IConfigLockedStringList;
+import fi.dy.masa.malilib.config.IConfigLockedList;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.gui.GuiLockedStringListEdit;
+import fi.dy.masa.malilib.gui.GuiLockedListEdit;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
-public class ConfigButtonLockedStringList extends ButtonGeneric
+public class ConfigButtonLockedList extends ButtonGeneric
 {
-    private final IConfigLockedStringList config;
+    private final IConfigLockedList config;
     private final IConfigGui configGui;
     @Nullable private final IDialogHandler dialogHandler;
 
-    public ConfigButtonLockedStringList(int x, int y, int width, int height, IConfigLockedStringList config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler)
+    public ConfigButtonLockedList(int x, int y, int width, int height, IConfigLockedList config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler)
     {
         super(x, y, width, height, "");
 
@@ -34,11 +34,11 @@ public class ConfigButtonLockedStringList extends ButtonGeneric
 
         if (this.dialogHandler != null)
         {
-            this.dialogHandler.openDialog(new GuiLockedStringListEdit(this.config, this.configGui, this.dialogHandler, null));
+            this.dialogHandler.openDialog(new GuiLockedListEdit(this.config, this.configGui, this.dialogHandler, null));
         }
         else
         {
-            GuiBase.openGui(new GuiLockedStringListEdit(this.config, this.configGui, null, GuiUtils.getCurrentScreen()));
+            GuiBase.openGui(new GuiLockedListEdit(this.config, this.configGui, null, GuiUtils.getCurrentScreen()));
         }
 
         return true;
@@ -47,6 +47,6 @@ public class ConfigButtonLockedStringList extends ButtonGeneric
     @Override
     public void updateDisplayString()
     {
-        this.displayString = StringUtils.getClampedDisplayStringRenderlen(this.config.getStrings(), this.width - 10, "[ ", " ]");
+        this.displayString = StringUtils.getClampedDisplayStringRenderlen(this.config.getConfigKeys(), this.width - 10, "[ ", " ]");
     }
 }
