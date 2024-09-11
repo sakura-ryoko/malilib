@@ -164,6 +164,8 @@
 
     "malilib.gui.label.locked_test.test1": "Test # 1",
     "malilib.gui.label.locked_test.test2": "Test # 2",
+    "malilib.gui.label.locked_test.test3": "Test # 3",
+    "malilib.gui.label.locked_test.test4": "Test # 4",
 
     "malilib.message.layer_range.range_max": "max",
     "malilib.message.layer_range.range_min": "min",

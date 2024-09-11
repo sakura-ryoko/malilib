@@ -1,11 +1,7 @@
 package fi.dy.masa.malilib.test;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonPrimitive;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigLockedListEntry;
@@ -18,18 +14,6 @@ public class ConfigTestLockedList implements IConfigLockedListType
     public ImmutableList<Entry> VALUES = ImmutableList.copyOf(Entry.values());
 
     @Override
-    public @Nullable IConfigLockedListEntry getEmpty()
-    {
-        return null;
-    }
-
-    @Override
-    public @Nullable IConfigLockedListEntry getEntry(String key)
-    {
-        return Entry.fromString(key);
-    }
-
-    @Override
     public ImmutableList<IConfigLockedListEntry> getDefaultEntries()
     {
         ImmutableList.Builder<IConfigLockedListEntry> list = ImmutableList.builder();
@@ -40,81 +24,18 @@ public class ConfigTestLockedList implements IConfigLockedListType
     }
 
     @Override
-    public List<String> getConfigKeys(List<IConfigLockedListEntry> values)
+    @Nullable
+    public IConfigLockedListEntry fromString(String element)
     {
-        List<String> list = new ArrayList<>();
-
-        for (IConfigLockedListEntry entry : values)
-        {
-            list.add(entry.getDisplayName());
-        }
-
-        return list;
-    }
-
-    @Override
-    public List<IConfigLockedListEntry> setEntries(List<IConfigLockedListEntry> entries)
-    {
-        List<IConfigLockedListEntry> list = new ArrayList<>();
-
-        entries.forEach((v) ->
-        {
-            Entry entry = Entry.fromString(v.getStringValue());
-
-            if (entry != null)
-            {
-                list.add(entry);
-            }
-        });
-
-        return list;
-    }
-
-    @Override
-    public int getEntryIndex(List<IConfigLockedListEntry> entries, IConfigLockedListEntry entry)
-    {
-        for (int i = 0; i < entries.size(); i++)
-        {
-            if (entries.get(i).equals(entry))
-            {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    @Override
-    public List<IConfigLockedListEntry> fromJsonArray(JsonArray array)
-    {
-        List<IConfigLockedListEntry> list = new ArrayList<>();
-
-        for (int i = 0; i < array.size(); i++)
-        {
-            Entry entry = Entry.fromString(array.get(i).getAsString());
-
-            if (entry != null)
-            {
-                list.add(entry);
-            }
-        }
-
-        return list;
-    }
-
-    @Override
-    public void toJsonArray(List<IConfigLockedListEntry> values, JsonArray array)
-    {
-        for (IConfigLockedListEntry val : values)
-        {
-            array.add(new JsonPrimitive(val.getStringValue()));
-        }
+        return Entry.fromString(element);
     }
 
     public enum Entry implements IConfigLockedListEntry
     {
         TEST1 ("test1", "test1"),
-        TEST2 ("test2", "test2");
+        TEST2 ("test2", "test2"),
+        TEST3 ("test3", "test3"),
+        TEST4 ("test4", "test4");
 
         private final String configKey;
         private final String translationKey;
