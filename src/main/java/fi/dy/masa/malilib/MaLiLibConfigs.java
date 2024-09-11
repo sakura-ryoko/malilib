@@ -26,10 +26,10 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static class Generic
     {
-        public static final ConfigHotkey          IGNORED_KEYS              = new ConfigHotkey("ignoredKeys", "").apply(GENERIC_KEY);
-        public static final ConfigHotkey          OPEN_GUI_CONFIGS          = new ConfigHotkey("openGuiConfigs", "A,C").apply(GENERIC_KEY);
-        public static final ConfigBoolean         REALMS_COMMON_CONFIG      = new ConfigBoolean("realmsCommonConfig", true).apply(GENERIC_KEY);
-        public static final ConfigBooleanHotkeyed ENABLE_ACTIONBAR_MESSAGES = new ConfigBooleanHotkeyed("enableActionbarMessages", true, "").apply(GENERIC_KEY);
+        public static final ConfigHotkey      IGNORED_KEYS              = new ConfigHotkey("ignoredKeys", "").apply(GENERIC_KEY);
+        public static final ConfigHotkey      OPEN_GUI_CONFIGS          = new ConfigHotkey("openGuiConfigs", "A,C").apply(GENERIC_KEY);
+        public static final ConfigBoolean     REALMS_COMMON_CONFIG      = new ConfigBoolean("realmsCommonConfig", true).apply(GENERIC_KEY);
+        public static final ConfigBoolean     ENABLE_ACTIONBAR_MESSAGES = new ConfigBoolean("enableActionbarMessages", true).apply(GENERIC_KEY);
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
                 IGNORED_KEYS,
