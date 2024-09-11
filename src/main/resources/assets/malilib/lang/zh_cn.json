@@ -89,6 +89,7 @@
   "malilib.gui.title.debug": "调试",
   "malilib.gui.title.generic": "通用",
   "malilib.gui.title.keybind_settings.advanced": "高级按键设置 %s",
+  "malilib.gui.title.locked_list_edit": "编辑的锁定列表 '%s'",
   "malilib.gui.title.string_list_edit": "编辑字符串列表为 '%s'",
   "malilib.gui.title.color_list_edit": "编辑颜色列表为 '%s'",
 
@@ -133,5 +134,17 @@
   "malilib.message.moved_min_layer_to": "移动最低层至 %s",
   "malilib.message.set_layer_axis_to": "设置层轴（axis）为 %s",
   "malilib.message.set_layer_mode_to": "设置层模式为 %s",
-  "malilib.message.set_layer_to": "设置层至 %s"
+  "malilib.message.set_layer_to": "设置层至 %s",
+
+  "malilib.config.name.enableActionbarMessages": "enableActionbarMessages",
+  "malilib.config.comment.enableActionbarMessages": "Whether or not to display Actionbar Messages.\nThis setting may be useful for\nRecording or Streaming purposes.\nInspired by the \"Streamer Mode\" mod by Sakura.",
+  "malilib.config.prettyName.enableActionbarMessages": "Actionbar Messages",
+
+  "malilib.error.invalid_item_stack_entry.string": "Invalid item stack string: '%s'",
+  "malilib.error.invalid_item_stack_entry.nbt_syntax": "Invalid item stack NBT syntax: '%s'",
+
+  "malilib.gui.button.hovertext.add": "Add",
+  "malilib.gui.button.hovertext.remove": "Remove",
+  "malilib.gui.button.hovertext.move_up": "Move Up",
+  "malilib.gui.button.hovertext.move_down": "Move Down"
 }

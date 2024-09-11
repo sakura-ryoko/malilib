@@ -89,6 +89,7 @@
     "malilib.gui.title.debug": "Debug",
     "malilib.gui.title.generic": "Genérico",
     "malilib.gui.title.keybind_settings.advanced": "Configuracion avanzada de la combinación de teclas para %s",
+    "malilib.gui.title.locked_list_edit": "Editar la lista bloqueada para '%s'",
     "malilib.gui.title.string_list_edit": "Editar la lista para '%s'",
     "malilib.gui.title.color_list_edit": "Editar la lista de colores para '%s'",
 
@@ -133,5 +134,17 @@
     "malilib.message.moved_min_layer_to": "Movida la minima capa a %s",
     "malilib.message.set_layer_axis_to": "Fijar el eje de la capa a %s",
     "malilib.message.set_layer_mode_to": "Fijar el eje de la capa a %s",
-    "malilib.message.set_layer_to": "Fijar la capa en %s"
+    "malilib.message.set_layer_to": "Fijar la capa en %s",
+
+    "malilib.config.name.enableActionbarMessages": "enableActionbarMessages",
+    "malilib.config.comment.enableActionbarMessages": "Whether or not to display Actionbar Messages.\nThis setting may be useful for\nRecording or Streaming purposes.\nInspired by the \"Streamer Mode\" mod by Sakura.",
+    "malilib.config.prettyName.enableActionbarMessages": "Actionbar Messages",
+
+    "malilib.error.invalid_item_stack_entry.string": "Invalid item stack string: '%s'",
+    "malilib.error.invalid_item_stack_entry.nbt_syntax": "Invalid item stack NBT syntax: '%s'",
+
+    "malilib.gui.button.hovertext.add": "Add",
+    "malilib.gui.button.hovertext.remove": "Remove",
+    "malilib.gui.button.hovertext.move_up": "Move Up",
+    "malilib.gui.button.hovertext.move_down": "Move Down"
 }
