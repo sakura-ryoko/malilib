@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.util.profiler.Profiler;
 import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
@@ -29,9 +30,10 @@ public abstract class MixinWorldRenderer
                                               Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
                                               Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
                                               @Local FrameGraphBuilder frameGraphBuilder,
-                                              @Local Frustum frustum)
+                                              @Local Frustum frustum,
+                                              @Local Profiler profiler)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreMain(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreMain(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, profiler);
     }
 
     @Inject(method = "render",
@@ -42,9 +44,10 @@ public abstract class MixinWorldRenderer
                                                    Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
                                                    Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
                                                    @Local FrameGraphBuilder frameGraphBuilder,
-                                                   @Local Frustum frustum)
+                                                   @Local Frustum frustum,
+                                                   @Local Profiler profiler)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreParticles(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreParticles(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, profiler);
     }
 
     @Inject(method = "render",
@@ -55,9 +58,10 @@ public abstract class MixinWorldRenderer
                                                  Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
                                                  Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
                                                  @Local FrameGraphBuilder frameGraphBuilder,
-                                                 @Local Frustum frustum)
+                                                 @Local Frustum frustum,
+                                                 @Local Profiler profiler)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, profiler);
     }
 
     @Inject(method = "render",
@@ -68,8 +72,9 @@ public abstract class MixinWorldRenderer
                                            Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
                                            Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
                                            @Local FrameGraphBuilder frameGraphBuilder,
-                                           @Local Frustum frustum)
+                                           @Local Frustum frustum,
+                                           @Local Profiler profiler)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, profiler);
     }
 }

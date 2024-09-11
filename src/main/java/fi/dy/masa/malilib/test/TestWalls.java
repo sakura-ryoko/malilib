@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.test;
 
+import net.minecraft.class_10209;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
@@ -156,7 +157,7 @@ public class TestWalls implements AutoCloseable
 
     public static void draw(Vec3d cameraPos, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc)
     {
-        mc.getProfiler().push(() -> "TestWalls#draw()");
+        class_10209.method_64146().push(() -> "TestWalls#draw()");
 
         RenderSystem.disableCull();
         RenderSystem.enableDepthTest();
@@ -184,7 +185,7 @@ public class TestWalls implements AutoCloseable
         RenderSystem.enableCull();
         RenderSystem.depthMask(true);
 
-        mc.getProfiler().pop();
+        class_10209.method_64146().pop();
     }
 
     private static void drawData(Matrix4f matrix4f, Matrix4f projMatrix)

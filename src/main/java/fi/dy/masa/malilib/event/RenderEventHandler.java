@@ -2,6 +2,9 @@ package fi.dy.masa.malilib.event;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.class_10209;
+import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
@@ -92,23 +95,23 @@ public class RenderEventHandler implements IRenderDispatcher
     @ApiStatus.Internal
     public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)
     {
-        mc.getProfiler().push("malilib_rendergameoverlaypost");
+        class_10209.method_64146().push("malilib_rendergameoverlaypost");
 
         if (this.overlayRenderers.isEmpty() == false)
         {
             for (IRenderer renderer : this.overlayRenderers)
             {
-                mc.getProfiler().push(renderer.getProfilerSectionSupplier());
+                class_10209.method_64146().push(renderer.getProfilerSectionSupplier());
                 renderer.onRenderGameOverlayPost(drawContext);
-                mc.getProfiler().pop();
+                class_10209.method_64146().pop();
             }
         }
 
-        mc.getProfiler().push("malilib_ingamemessages");
+        class_10209.method_64146().push("malilib_ingamemessages");
         InfoUtils.renderInGameMessages(drawContext);
-        mc.getProfiler().pop();
+        class_10209.method_64146().pop();
 
-        mc.getProfiler().pop();
+        class_10209.method_64146().pop();
     }
 
     @ApiStatus.Internal
@@ -125,14 +128,14 @@ public class RenderEventHandler implements IRenderDispatcher
 
     @ApiStatus.Internal
     public void runRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-                                   FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet, Frustum frustum, Camera camera)
+                                   FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet, Frustum frustum, Camera camera, Profiler profiler)
     {
         if (this.worldPreMainRenderers.isEmpty() == false)
         {
             Handle<Framebuffer> handleMain;
             RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID);
 
-            mc.getProfiler().push(MaLiLibReference.MOD_ID+"_render_pre_main");
+            profiler.push(MaLiLibReference.MOD_ID+"_render_pre_main");
 
             fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
             handleMain = fbSet.mainFramebuffer;
@@ -151,9 +154,9 @@ public class RenderEventHandler implements IRenderDispatcher
                 handleMain.get().beginWrite(false);
                 for (IRenderer renderer : this.worldPreMainRenderers)
                 {
-                    mc.getProfiler().push(renderer.getProfilerSectionSupplier());
+                    profiler.push(renderer.getProfilerSectionSupplier());
                     renderer.onRenderWorldPreMain(posMatrix, projMatrix, frustum, camera, fog);
-                    mc.getProfiler().pop();
+                    profiler.pop();
                 }
 
                 if (shaders != null)
@@ -163,19 +166,19 @@ public class RenderEventHandler implements IRenderDispatcher
             });
         }
 
-        mc.getProfiler().pop();
+        profiler.pop();
     }
 
     @ApiStatus.Internal
     public void runRenderWorldPreParticles(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet, Frustum frustum, Camera camera)
+                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet, Frustum frustum, Camera camera, Profiler profiler)
     {
         if (this.worldPreParticleRenderers.isEmpty() == false)
         {
             Handle<Framebuffer> handleMain;
             RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID);
 
-            mc.getProfiler().push(MaLiLibReference.MOD_ID+"_render_pre_particle");
+            profiler.push(MaLiLibReference.MOD_ID+"_render_pre_particle");
 
             fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
             handleMain = fbSet.mainFramebuffer;
@@ -194,9 +197,9 @@ public class RenderEventHandler implements IRenderDispatcher
                 handleMain.get().beginWrite(false);
                 for (IRenderer renderer : this.worldPreParticleRenderers)
                 {
-                    mc.getProfiler().push(renderer.getProfilerSectionSupplier());
+                    profiler.push(renderer.getProfilerSectionSupplier());
                     renderer.onRenderWorldPreParticle(posMatrix, projMatrix, frustum, camera, fog);
-                    mc.getProfiler().pop();
+                    profiler.pop();
                 }
 
                 if (shaders != null)
@@ -206,19 +209,19 @@ public class RenderEventHandler implements IRenderDispatcher
             });
         }
 
-        mc.getProfiler().pop();
+        profiler.pop();
     }
 
     @ApiStatus.Internal
     public void runRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet, Frustum frustum, Camera camera)
+                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet, Frustum frustum, Camera camera, Profiler profiler)
     {
         if (this.worldPreWeatherRenderers.isEmpty() == false)
         {
             Handle<Framebuffer> handleMain;
             RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID);
 
-            mc.getProfiler().push(MaLiLibReference.MOD_ID+"_render_pre_weather");
+            profiler.push(MaLiLibReference.MOD_ID+"_render_pre_weather");
 
             fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
             handleMain = fbSet.mainFramebuffer;
@@ -237,9 +240,9 @@ public class RenderEventHandler implements IRenderDispatcher
                 handleMain.get().beginWrite(false);
                 for (IRenderer renderer : this.worldPreWeatherRenderers)
                 {
-                    mc.getProfiler().push(renderer.getProfilerSectionSupplier());
+                    profiler.push(renderer.getProfilerSectionSupplier());
                     renderer.onRenderWorldPreWeather(posMatrix, projMatrix, frustum, camera, fog);
-                    mc.getProfiler().pop();
+                    profiler.pop();
                 }
 
                 if (shaders != null)
@@ -249,19 +252,19 @@ public class RenderEventHandler implements IRenderDispatcher
             });
         }
 
-        mc.getProfiler().pop();
+        profiler.pop();
     }
 
     @ApiStatus.Internal
     public void runRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-                                   FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet, Frustum frustum, Camera camera)
+                                   FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet, Frustum frustum, Camera camera, Profiler profiler)
     {
         if (this.worldLastRenderers.isEmpty() == false)
         {
             Handle<Framebuffer> handleMain;
             //Handle<Framebuffer> handleTransluclent;
 
-            mc.getProfiler().push(MaLiLibReference.MOD_ID+"_render_post");
+            profiler.push(MaLiLibReference.MOD_ID+"_render_post");
 
             RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID);
 
@@ -327,11 +330,11 @@ public class RenderEventHandler implements IRenderDispatcher
 
                     for (IRenderer renderer : this.worldLastRenderers)
                     {
-                        mc.getProfiler().push(renderer.getProfilerSectionSupplier());
+                        profiler.push(renderer.getProfilerSectionSupplier());
                         // This really should be used either or, and never both in the same mod.
                         renderer.onRenderWorldLastAdvanced(posMatrix, projMatrix, frustum, camera, fog);
                         renderer.onRenderWorldLast(posMatrix, projMatrix);
-                        mc.getProfiler().pop();
+                        profiler.pop();
                     }
 
                 /*
@@ -350,6 +353,6 @@ public class RenderEventHandler implements IRenderDispatcher
             });
         }
 
-        mc.getProfiler().pop();
+        profiler.pop();
     }
 }
