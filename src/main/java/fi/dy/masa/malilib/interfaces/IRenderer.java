@@ -1,6 +1,10 @@
 package fi.dy.masa.malilib.interfaces;
 
 import java.util.function.Supplier;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.LayeredDrawer;
+import net.minecraft.util.profiler.Profiler;
 import org.joml.Matrix4f;
 
 import net.minecraft.client.gui.DrawContext;
@@ -12,32 +16,37 @@ import net.minecraft.item.ItemStack;
 public interface IRenderer
 {
     /**
-     * Called after the vanilla overlays have been rendered
+     * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, drawer, profiler
+     */
+    default void onRenderGameOverlayPostAdvanced(DrawContext drawContext, float partialTicks, LayeredDrawer layeredDrawer, Profiler profiler, MinecraftClient mc) {}
+
+    /**
+     * Called after the vanilla overlays have been rendered (Original)
      */
     default void onRenderGameOverlayPost(DrawContext drawContext) {}
 
     /**
      * Called before vanilla Main Pass rendering
      */
-    default void onRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog) {}
+    default void onRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler) {}
 
     /**
      * Called before vanilla Particle rendering
      */
-    default void onRenderWorldPreParticle(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog) {}
+    default void onRenderWorldPreParticle(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler) {}
 
     /**
      * Called before vanilla Weather rendering
      */
-    default void onRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog) {}
+    default void onRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler) {}
 
     /**
      * Called after vanilla world rendering, with advanced Parameters, such as Frustum, Camera, and Fog
      */
-    default void onRenderWorldLastAdvanced(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog) {}
+    default void onRenderWorldLastAdvanced(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler) {}
 
     /**
-     * Called after vanilla world rendering
+     * Called after vanilla world rendering (Original)
      */
     default void onRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix) {}
 

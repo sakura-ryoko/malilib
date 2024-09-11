@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.class_10209;
+import net.minecraft.client.gui.LayeredDrawer;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
@@ -93,25 +94,28 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)
+    public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks, LayeredDrawer layeredDrawer)
     {
-        class_10209.method_64146().push("malilib_rendergameoverlaypost");
+        Profiler profiler = class_10209.method_64146();
+
+        profiler.push("malilib_rendergameoverlaypost");
 
         if (this.overlayRenderers.isEmpty() == false)
         {
             for (IRenderer renderer : this.overlayRenderers)
             {
-                class_10209.method_64146().push(renderer.getProfilerSectionSupplier());
+                profiler.push(renderer.getProfilerSectionSupplier());
+                renderer.onRenderGameOverlayPostAdvanced(drawContext, partialTicks, layeredDrawer, profiler, mc);
                 renderer.onRenderGameOverlayPost(drawContext);
-                class_10209.method_64146().pop();
+                profiler.pop();
             }
         }
 
-        class_10209.method_64146().push("malilib_ingamemessages");
+        profiler.push("malilib_ingamemessages");
         InfoUtils.renderInGameMessages(drawContext);
-        class_10209.method_64146().pop();
+        profiler.pop();
 
-        class_10209.method_64146().pop();
+        profiler.pop();
     }
 
     @ApiStatus.Internal
@@ -155,7 +159,7 @@ public class RenderEventHandler implements IRenderDispatcher
                 for (IRenderer renderer : this.worldPreMainRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreMain(posMatrix, projMatrix, frustum, camera, fog);
+                    renderer.onRenderWorldPreMain(posMatrix, projMatrix, frustum, camera, fog, profiler);
                     profiler.pop();
                 }
 
@@ -198,7 +202,7 @@ public class RenderEventHandler implements IRenderDispatcher
                 for (IRenderer renderer : this.worldPreParticleRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreParticle(posMatrix, projMatrix, frustum, camera, fog);
+                    renderer.onRenderWorldPreParticle(posMatrix, projMatrix, frustum, camera, fog, profiler);
                     profiler.pop();
                 }
 
@@ -241,7 +245,7 @@ public class RenderEventHandler implements IRenderDispatcher
                 for (IRenderer renderer : this.worldPreWeatherRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreWeather(posMatrix, projMatrix, frustum, camera, fog);
+                    renderer.onRenderWorldPreWeather(posMatrix, projMatrix, frustum, camera, fog, profiler);
                     profiler.pop();
                 }
 
@@ -332,7 +336,7 @@ public class RenderEventHandler implements IRenderDispatcher
                     {
                         profiler.push(renderer.getProfilerSectionSupplier());
                         // This really should be used either or, and never both in the same mod.
-                        renderer.onRenderWorldLastAdvanced(posMatrix, projMatrix, frustum, camera, fog);
+                        renderer.onRenderWorldLastAdvanced(posMatrix, projMatrix, frustum, camera, fog, profiler);
                         renderer.onRenderWorldLast(posMatrix, projMatrix);
                         profiler.pop();
                     }

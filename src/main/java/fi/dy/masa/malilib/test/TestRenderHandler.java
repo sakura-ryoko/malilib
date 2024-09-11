@@ -1,6 +1,9 @@
 package fi.dy.masa.malilib.test;
 
 import java.util.function.Supplier;
+
+import net.minecraft.client.gui.LayeredDrawer;
+import net.minecraft.util.profiler.Profiler;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -43,13 +46,13 @@ public class TestRenderHandler implements IRenderer
     private boolean wasHeld = false;
 
     @Override
-    public void onRenderGameOverlayPost(DrawContext drawContext)
+    public void onRenderGameOverlayPostAdvanced(DrawContext drawContext, float partialTicks, LayeredDrawer layeredDrawer, Profiler profiler, MinecraftClient mc)
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
-
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isAltDown())
         {
+            profiler.push(this.getProfilerSectionSupplier()+"_render_overlay");
             renderInventoryOverlay(mc, drawContext);
+            profiler.pop();
         }
     }
 
@@ -65,12 +68,13 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog)
+    public void onRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
             MinecraftClient mc = MinecraftClient.getInstance();
 
+            profiler.push(this.getProfilerSectionSupplier()+"_test_walls");
             if (wasHeld && !GuiBase.isShiftDown())
             {
                 TestWalls.clear();
@@ -80,12 +84,15 @@ public class TestRenderHandler implements IRenderer
             {
                 if (TestWalls.needsUpdate(camera.getBlockPos()))
                 {
+                    profiler.swap(this.getProfilerSectionSupplier()+"_test_walls_update");
                     TestWalls.update(camera, mc);
                 }
 
+                profiler.swap(this.getProfilerSectionSupplier()+"_test_walls_draw");
                 TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc);
                 wasHeld = true;
             }
+            profiler.pop();
         }
     }
 
