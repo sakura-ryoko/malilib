@@ -22,6 +22,6 @@ public abstract class MixinInGameHud
     @Inject(method = "render", at = @At("RETURN"))
     private void onGameOverlayPost(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci)
     {
-        //((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(context, this.client, tickCounter.getTickDelta(false), this.layeredDrawer);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(context, this.client, tickCounter.getTickDelta(false), this.layeredDrawer);
     }
 }
