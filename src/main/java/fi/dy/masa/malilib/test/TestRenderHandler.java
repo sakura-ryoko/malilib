@@ -89,7 +89,7 @@ public class TestRenderHandler implements IRenderer
                 }
 
                 profiler.swap(this.getProfilerSectionSupplier()+"_test_walls_draw");
-                TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc);
+                TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
                 wasHeld = true;
             }
             profiler.pop();

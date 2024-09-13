@@ -1,11 +1,9 @@
 package fi.dy.masa.malilib.test;
 
-import net.minecraft.class_10209;
-import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
-
 import com.mojang.blaze3d.systems.RenderSystem;
+import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.util.Color4f;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.ShaderProgramKey;
@@ -14,10 +12,10 @@ import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-
-import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.Color4f;
+import net.minecraft.util.profiler.Profiler;
+import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 public class TestWalls implements AutoCloseable
 {
@@ -155,9 +153,9 @@ public class TestWalls implements AutoCloseable
         RenderSystem.enableCull();
     }
 
-    public static void draw(Vec3d cameraPos, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc)
+    public static void draw(Vec3d cameraPos, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc, Profiler profiler)
     {
-        class_10209.method_64146().push(() -> "TestWalls#draw()");
+        profiler.push(() -> "TestWalls#draw()");
 
         RenderSystem.disableCull();
         RenderSystem.enableDepthTest();
@@ -185,7 +183,7 @@ public class TestWalls implements AutoCloseable
         RenderSystem.enableCull();
         RenderSystem.depthMask(true);
 
-        class_10209.method_64146().pop();
+        profiler.pop();
     }
 
     private static void drawData(Matrix4f matrix4f, Matrix4f projMatrix)

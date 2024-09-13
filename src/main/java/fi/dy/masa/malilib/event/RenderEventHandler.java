@@ -3,9 +3,9 @@ package fi.dy.masa.malilib.event;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.class_10209;
 import net.minecraft.client.gui.LayeredDrawer;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
@@ -86,7 +86,7 @@ public class RenderEventHandler implements IRenderDispatcher
     @ApiStatus.Internal
     public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks, LayeredDrawer layeredDrawer)
     {
-        Profiler profiler = class_10209.method_64146();
+        Profiler profiler = Profilers.get();
 
         profiler.push("malilib_rendergameoverlaypost");
 
