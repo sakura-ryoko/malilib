@@ -22,20 +22,7 @@ public abstract class MixinWorldRenderer
     @Shadow @Final private MinecraftClient client;
     @Shadow @Final private DefaultFramebufferSet framebufferSet;
 
-    @Inject(method = "render",
-            at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/WorldRenderer;renderMain(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Frustum;Lnet/minecraft/client/render/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/render/Fog;ZZLnet/minecraft/client/render/RenderTickCounter;Lnet/minecraft/util/profiler/Profiler;)V",
-                    shift = At.Shift.BEFORE))
-    private void malilib_onRenderWorldPreMain(ObjectAllocator objectAllocator, RenderTickCounter tickCounter, boolean bl,
-                                              Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager,
-                                              Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
-                                              @Local FrameGraphBuilder frameGraphBuilder,
-                                              @Local Frustum frustum,
-                                              @Local Profiler profiler)
-    {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreMain(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, profiler);
-    }
-
+    // TODO (This one might not be good to keep)
     @Inject(method = "render",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/render/WorldRenderer;renderParticles(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;Lnet/minecraft/client/render/LightmapTextureManager;FLnet/minecraft/client/render/Fog;)V",

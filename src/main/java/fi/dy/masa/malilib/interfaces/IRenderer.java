@@ -26,11 +26,6 @@ public interface IRenderer
     default void onRenderGameOverlayPost(DrawContext drawContext) {}
 
     /**
-     * Called before vanilla Main Pass rendering
-     */
-    default void onRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler) {}
-
-    /**
      * Called before vanilla Particle rendering
      */
     default void onRenderWorldPreParticle(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler) {}

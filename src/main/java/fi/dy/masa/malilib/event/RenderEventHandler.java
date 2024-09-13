@@ -29,7 +29,6 @@ public class RenderEventHandler implements IRenderDispatcher
 
     private final List<IRenderer> overlayRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
-    private final List<IRenderer> worldPreMainRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
@@ -54,15 +53,6 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.tooltipLastRenderers.contains(renderer) == false)
         {
             this.tooltipLastRenderers.add(renderer);
-        }
-    }
-
-    @Override
-    public void registerWorldPreMainRenderer(IRenderer renderer)
-    {
-        if (this.worldPreMainRenderers.contains(renderer) == false)
-        {
-            this.worldPreMainRenderers.add(renderer);
         }
     }
 
@@ -128,49 +118,6 @@ public class RenderEventHandler implements IRenderDispatcher
                 renderer.onRenderTooltipLast(drawContext ,stack, x, y);
             }
         }
-    }
-
-    @ApiStatus.Internal
-    public void runRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-                                   FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet, Frustum frustum, Camera camera, Profiler profiler)
-    {
-        if (this.worldPreMainRenderers.isEmpty() == false)
-        {
-            Handle<Framebuffer> handleMain;
-            RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID);
-
-            profiler.push(MaLiLibReference.MOD_ID+"_render_pre_main");
-
-            fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
-            handleMain = fbSet.mainFramebuffer;
-
-            renderPass.setRenderer(() ->
-            {
-                Fog fog = RenderSystem.getShaderFog();
-                ShaderProgram shaders = RenderSystem.getShader();
-
-                if (shaders != null)
-                {
-                    shaders.initializeUniforms(VertexFormat.DrawMode.QUADS, posMatrix, projMatrix, mc.getWindow());
-                    shaders.bind();
-                }
-
-                handleMain.get().beginWrite(false);
-                for (IRenderer renderer : this.worldPreMainRenderers)
-                {
-                    profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreMain(posMatrix, projMatrix, frustum, camera, fog, profiler);
-                    profiler.pop();
-                }
-
-                if (shaders != null)
-                {
-                    shaders.unbind();
-                }
-            });
-        }
-
-        profiler.pop();
     }
 
     @ApiStatus.Internal
@@ -273,7 +220,7 @@ public class RenderEventHandler implements IRenderDispatcher
             RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID);
 
             // FIXME --> Don't write to translucent Frame Buffer, bad things will happen,
-            //  at Best, the Player will be able to see through objects with a Stained Glass Block.
+            //  at Best, the Player will be able to see through objects ...
             /*
             if (fbSet.translucentFramebuffer != null)
             {
