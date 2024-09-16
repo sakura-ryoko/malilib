@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.ClickEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
@@ -388,6 +389,16 @@ public class StringUtils
     public static String translate(String translationKey, Object... args)
     {
         return net.minecraft.client.resource.language.I18n.translate(translationKey, args);
+    }
+
+    public static MutableText translateable(String translationKey)
+    {
+        return Text.translatable(translationKey);
+    }
+
+    public static MutableText translateable(String translationKey, Object... args)
+    {
+        return Text.translatable(translationKey, args);
     }
 
     /**
