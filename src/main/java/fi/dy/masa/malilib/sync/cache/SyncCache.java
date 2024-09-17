@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.sync.cache;
 
+import java.util.UUID;
 import javax.annotation.Nonnull;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -98,6 +99,16 @@ public class SyncCache implements AutoCloseable
         return this.chunks.get(chunkPos).getBlockEntity(pos);
     }
 
+    public boolean hasBlockEntity(ChunkPos chunkPos, BlockPos pos)
+    {
+        if (this.hasChunk(chunkPos))
+        {
+            return this.chunks.get(chunkPos).hasBlockEntity(pos);
+        }
+
+        return false;
+    }
+
     @Nullable
     public FakeBlockEntity createBlockEntity(ChunkPos chunkPos, BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
@@ -148,8 +159,24 @@ public class SyncCache implements AutoCloseable
         }
     }
 
+    public boolean hasEntityById(int id)
+    {
+        return this.getEntityById(id) != null;
+    }
+
     @Nullable
     public FakeEntity getEntityById(int id)
+    {
+        return this.getEntityLookup().get(id);
+    }
+
+    public boolean hasEntityByUuid(UUID id)
+    {
+        return this.getEntityByUuid(id) != null;
+    }
+
+    @Nullable
+    public FakeEntity getEntityByUuid(UUID id)
     {
         return this.getEntityLookup().get(id);
     }

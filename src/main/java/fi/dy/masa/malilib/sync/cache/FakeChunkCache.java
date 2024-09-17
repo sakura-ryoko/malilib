@@ -56,6 +56,11 @@ public class FakeChunkCache implements AutoCloseable
         return this.blockEntities.get(pos);
     }
 
+    public boolean hasBlockEntity(BlockPos pos)
+    {
+        return this.blockEntities.containsKey(pos);
+    }
+
     @Nullable
     public FakeBlockEntity getBlockEntity(BlockPos pos)
     {

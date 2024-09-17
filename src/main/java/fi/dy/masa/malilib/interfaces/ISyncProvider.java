@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.interfaces;
 
+import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -32,17 +33,27 @@ public interface ISyncProvider
 
     void requestEntity(int entityId);
 
+    void requestEntity(UUID uuid);
+
     default void requestBulkData(ChunkPos chunkPos, @Nullable Box boundingBox) {}
 
     void onReceiveBlockEntity(BlockPos pos, NbtCompound nbt);
 
     void onReceiveEntity(int entityId, NbtCompound nbt);
 
-    default void onReceiveBulkData(ChunkPos chunkPos, @Nonnull NbtCompound nbtList) {}
+    default void onReceiveBulkData(ChunkPos chunkPos, @Nonnull NbtCompound nbtCompound) {}
+
+    boolean hasBlockEntity(BlockPos pos);
+
+    boolean hasEntity(int entityId);
+
+    boolean hasEntity(UUID uuid);
 
     default boolean hasBulkData(ChunkPos pos) { return false; }
 
     @Nullable FakeBlockEntity getBlockEntity(BlockPos pos);
 
     @Nullable FakeEntity getEntity(int entityId);
+
+    @Nullable FakeEntity getEntity(UUID uuid);
 }
