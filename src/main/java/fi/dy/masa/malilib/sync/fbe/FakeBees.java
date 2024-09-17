@@ -10,9 +10,7 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.util.math.BlockPos;
 
-import fi.dy.masa.malilib.sync.fc.IFakeBlockProvider;
-
-public class FakeBees extends FakeBlockEntity implements IFakeBlockProvider
+public class FakeBees extends FakeBlockEntity
 {
     private final List<FakeBee> bees = Lists.newArrayList();
 
@@ -21,7 +19,6 @@ public class FakeBees extends FakeBlockEntity implements IFakeBlockProvider
         super(BlockEntityType.BEEHIVE, pos, state);
     }
 
-    @Override
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeBees(pos, state);

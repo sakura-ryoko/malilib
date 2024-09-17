@@ -9,9 +9,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BannerPatternsComponent;
 import net.minecraft.util.math.BlockPos;
 
-import fi.dy.masa.malilib.sync.fc.IFakeBlockProvider;
-
-public class FakePatterns extends FakeNamed implements IFakeBlockProvider
+public class FakePatterns extends FakeNamed
 {
     @Nullable
     private BannerPatternsComponent patterns;
@@ -21,7 +19,6 @@ public class FakePatterns extends FakeNamed implements IFakeBlockProvider
         super(type, pos, state);
     }
 
-    @Override
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakePatterns(BlockEntityType.BANNER, pos, state);

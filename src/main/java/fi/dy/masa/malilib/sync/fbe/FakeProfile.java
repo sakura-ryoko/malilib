@@ -10,9 +10,7 @@ import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 
-import fi.dy.masa.malilib.sync.fc.IFakeBlockProvider;
-
-public class FakeProfile extends FakeNamed implements IFakeBlockProvider
+public class FakeProfile extends FakeNamed
 {
     @Nullable
     private ProfileComponent owner;
@@ -24,7 +22,6 @@ public class FakeProfile extends FakeNamed implements IFakeBlockProvider
         super(type, pos, state);
     }
 
-    @Override
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeProfile(BlockEntityType.SKULL, pos, state);

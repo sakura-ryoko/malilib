@@ -7,9 +7,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.inventory.ContainerLock;
 import net.minecraft.util.math.BlockPos;
 
-import fi.dy.masa.malilib.sync.fc.IFakeBlockProvider;
-
-public class FakeLockable extends FakeNamed implements IFakeBlockProvider
+public class FakeLockable extends FakeNamed
 {
     private ContainerLock lock;
 
@@ -18,7 +16,6 @@ public class FakeLockable extends FakeNamed implements IFakeBlockProvider
         super(type, pos, state);
     }
 
-    @Override
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeContainer(BlockEntityType.BEACON, pos, state);

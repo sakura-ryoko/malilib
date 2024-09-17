@@ -9,9 +9,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-import fi.dy.masa.malilib.sync.fc.IFakeBlockProvider;
-
-public class FakeNamed extends FakeBlockEntity implements IFakeBlockProvider
+public class FakeNamed extends FakeBlockEntity
 {
     @Nullable
     private Text customName;
@@ -21,7 +19,6 @@ public class FakeNamed extends FakeBlockEntity implements IFakeBlockProvider
         super(type, pos, state);
     }
 
-    @Override
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeNamed(BlockEntityType.ENCHANTING_TABLE, pos, state);

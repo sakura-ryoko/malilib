@@ -84,12 +84,14 @@ public class WorldLoadHandler implements IWorldLoadManager
         if (worldBefore != null && worldAfter == null)
         {
             ((ConfigManager) ConfigManager.getInstance()).saveAllConfigs();
+            SyncHandler.getInstance().onStopServices();
         }
         // (Re-)Load all the configs from file when entering a world
         else if (worldBefore == null && worldAfter != null)
         {
             ((ConfigManager) ConfigManager.getInstance()).loadAllConfigs();
             InputEventHandler.getKeybindManager().updateUsedKeys();
+            SyncHandler.getInstance().onStartServices(worldAfter);
         }
 
         if (this.worldLoadPostHandlers.isEmpty() == false &&

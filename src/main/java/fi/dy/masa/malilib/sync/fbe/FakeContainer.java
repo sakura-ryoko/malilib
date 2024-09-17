@@ -13,9 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 
-import fi.dy.masa.malilib.sync.fc.IFakeBlockProvider;
-
-public class FakeContainer extends FakeBlockEntity implements Inventory, IFakeBlockProvider
+public class FakeContainer extends FakeBlockEntity implements Inventory
 {
     private static final int MAX_SLOTS = 256;
     private final DefaultedList<ItemStack> stacks;
@@ -32,7 +30,6 @@ public class FakeContainer extends FakeBlockEntity implements Inventory, IFakeBl
         this.stacks = DefaultedList.ofSize(maxSlots, ItemStack.EMPTY);
     }
 
-    @Override
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeContainer(BlockEntityType.CHEST, pos, state);

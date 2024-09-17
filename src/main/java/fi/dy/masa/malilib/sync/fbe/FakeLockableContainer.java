@@ -10,9 +10,7 @@ import net.minecraft.inventory.ContainerLock;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
-import fi.dy.masa.malilib.sync.fc.IFakeBlockProvider;
-
-public class FakeLockableContainer extends FakeContainer implements IFakeBlockProvider
+public class FakeLockableContainer extends FakeContainer
 {
     private ContainerLock lock;
     @Nullable
@@ -28,14 +26,14 @@ public class FakeLockableContainer extends FakeContainer implements IFakeBlockPr
         super(type, pos, state, maxSlots);
     }
 
-    @Override
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeLockableContainer(BlockEntityType.CRAFTER, pos, state);
     }
 
     @Nullable
-    public Text getCustomName() {
+    public Text getCustomName()
+    {
         return this.customName;
     }
 

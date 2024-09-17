@@ -28,12 +28,13 @@ import fi.dy.masa.malilib.MaLiLib;
 public class FakeBlockEntity
 {
     private final static Logger LOGGER = MaLiLib.logger;
-    private final BlockEntityType<?> type;
-    private final BlockPos pos;
+    private BlockEntityType<?> type;
+    private BlockPos pos;
     private World world;
     private BlockState state;
     private ComponentMap components;
     private NbtCompound nbt;
+    private boolean loaded;
 
     public FakeBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
@@ -42,11 +43,17 @@ public class FakeBlockEntity
         this.components = ComponentMap.EMPTY;
         this.state = state;
         this.checkSupport(state);
+        this.loaded = false;
     }
 
     public BlockEntityType<?> getType()
     {
         return this.type;
+    }
+
+    public void setType(BlockEntityType<?> type)
+    {
+        this.type = type;
     }
 
     private void checkSupport(BlockState state)
@@ -56,6 +63,16 @@ public class FakeBlockEntity
             String typeString = String.valueOf(Registries.BLOCK_ENTITY_TYPE.getId(this.getType()));
             LOGGER.warn("Invalid block state given for [{}]", typeString);
         }
+    }
+
+    public boolean isLoaded()
+    {
+        return this.loaded;
+    }
+
+    public void setLoaded(boolean loaded)
+    {
+        this.loaded = loaded && !this.nbt.isEmpty();
     }
 
     public boolean supports(BlockState state)
@@ -84,6 +101,11 @@ public class FakeBlockEntity
         return this.pos;
     }
 
+    public void setPos(BlockPos pos)
+    {
+        this.pos = pos;
+    }
+
     public BlockState getState()
     {
         return this.state;
@@ -109,8 +131,8 @@ public class FakeBlockEntity
     {
         this.readNbt(nbt, registry);
         FakeBlockEntity.Components.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt).resultOrPartial((error) ->
-              LOGGER.warn("Failed to load components: {}", error)).ifPresent((components) ->
-                     this.components = components);
+                                                                                                              LOGGER.warn("Failed to load components: {}", error)).ifPresent((components) ->
+                                                                                                                                                                                     this.components = components);
     }
 
     public final void readBasicNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
@@ -170,12 +192,12 @@ public class FakeBlockEntity
         NbtCompound newNbt = new NbtCompound();
         this.writeNbt(newNbt, registry);
         FakeBlockEntity.Components.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), this.components).resultOrPartial((snbt) ->
-        {
-            LOGGER.warn("Failed to save components: {}", snbt);
-        }).ifPresent((nbt) ->
-         {
-             newNbt.copyFrom((NbtCompound) nbt);
-         });
+                                                                                                                        {
+                                                                                                                            LOGGER.warn("Failed to save components: {}", snbt);
+                                                                                                                        }).ifPresent((nbt) ->
+                                                                                                                                     {
+                                                                                                                                         newNbt.copyFrom((NbtCompound) nbt);
+                                                                                                                                     });
 
         return newNbt;
     }
@@ -324,11 +346,18 @@ public class FakeBlockEntity
         return null;
     }
 
+    public void clear()
+    {
+        this.loaded = false;
+        this.nbt.copyFrom(new NbtCompound());
+        this.components = ComponentMap.EMPTY;
+    }
+
     static class Components
     {
         public static final Codec<ComponentMap> CODEC;
 
-        private Components() { }
+        private Components() {}
 
         static
         {

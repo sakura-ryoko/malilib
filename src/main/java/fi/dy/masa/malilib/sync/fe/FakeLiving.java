@@ -500,7 +500,7 @@ public abstract class FakeLiving extends FakeEntity implements Attackable
 
     protected void readCustomDataFromNbt(NbtCompound nbt)
     {
-        super.readSubNbt(nbt);
+        super.readNbt(nbt);
 
         if (nbt.contains("attributes", 9) && this.getWorld() != null && !this.getWorld().isClient)
         {
@@ -550,6 +550,6 @@ public abstract class FakeLiving extends FakeEntity implements Attackable
         DataResult<NbtElement> dataResult = this.brain.encode(NbtOps.INSTANCE);
         dataResult.resultOrPartial().ifPresent((brain) -> nbt.put("Brain", brain));
 
-        super.writeSubNbt(nbt);
+        super.writeNbt(nbt);
     }
 }

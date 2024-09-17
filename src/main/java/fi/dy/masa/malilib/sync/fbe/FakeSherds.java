@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.sync.fbe;
 
 import java.util.List;
-
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.BlockState;
@@ -15,9 +14,7 @@ import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
-import fi.dy.masa.malilib.sync.fc.IFakeBlockProvider;
-
-public class FakeSherds extends FakeLootable implements SingleStackInventory.SingleStackBlockEntityInventory, IFakeBlockProvider
+public class FakeSherds extends FakeLootable implements SingleStackInventory.SingleStackBlockEntityInventory
 {
     private ItemStack stack;
     private Sherds sherds;
@@ -29,7 +26,6 @@ public class FakeSherds extends FakeLootable implements SingleStackInventory.Sin
         this.sherds = Sherds.DEFAULT;
     }
 
-    @Override
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeSherds(BlockEntityType.DECORATED_POT, pos, state);

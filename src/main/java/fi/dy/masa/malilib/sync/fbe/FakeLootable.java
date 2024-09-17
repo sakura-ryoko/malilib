@@ -13,9 +13,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 
-import fi.dy.masa.malilib.sync.fc.IFakeBlockProvider;
-
-public class FakeLootable extends FakeLockableContainer implements LootableInventory, IFakeBlockProvider
+public class FakeLootable extends FakeLockableContainer implements LootableInventory
 {
     @Nullable
     protected RegistryKey<LootTable> lootTable;
@@ -26,7 +24,6 @@ public class FakeLootable extends FakeLockableContainer implements LootableInven
         super(type, pos, state);
     }
 
-    @Override
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeLootable(BlockEntityType.BARREL, pos, state);
