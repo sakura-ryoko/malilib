@@ -32,15 +32,15 @@ public interface ISyncProvider
 
     void requestEntity(int entityId);
 
-    void requestBulkData(ChunkPos chunkPos, @Nullable Box boundingBox);
+    default void requestBulkData(ChunkPos chunkPos, @Nullable Box boundingBox) {}
 
     void onReceiveBlockEntity(BlockPos pos, NbtCompound nbt);
 
     void onReceiveEntity(int entityId, NbtCompound nbt);
 
-    void onReceiveBulkData(ChunkPos chunkPos, @Nonnull NbtCompound nbtList);
+    default void onReceiveBulkData(ChunkPos chunkPos, @Nonnull NbtCompound nbtList) {}
 
-    boolean hasBulkData(ChunkPos pos);
+    default boolean hasBulkData(ChunkPos pos) { return false; }
 
     @Nullable FakeBlockEntity getBlockEntity(BlockPos pos);
 
