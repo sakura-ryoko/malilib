@@ -1,18 +1,16 @@
 package fi.dy.masa.malilib.sync.fe;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.VariantHolder;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.RangedAttackMob;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.passive.LlamaEntity;
-import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-public abstract class FakeLlama extends FakeHorse implements VariantHolder<LlamaEntity.Variant>, RangedAttackMob
+public class FakeLlama extends FakeHorse implements VariantHolder<LlamaEntity.Variant>, RangedAttackMob
 {
     private static final int MAX_STRENGTH = 5;
     private int strength;
@@ -22,6 +20,17 @@ public abstract class FakeLlama extends FakeHorse implements VariantHolder<Llama
     public FakeLlama(EntityType<?> type, World world, int entityId)
     {
         super(type, world, entityId);
+    }
+
+    public FakeLlama(Entity input)
+    {
+        super(input);
+
+        if (input instanceof LlamaEntity)
+        {
+            this.buildAttributes(createLlamaAttributes());
+            this.readCustomDataFromNbt(this.getNbt());
+        }
     }
 
     public LlamaEntity.Variant getVariant()
@@ -60,6 +69,7 @@ public abstract class FakeLlama extends FakeHorse implements VariantHolder<Llama
         return this.hasChest() ? this.getStrength() : 0;
     }
 
+    @Override
     public boolean isBreedingItem(ItemStack stack)
     {
         return stack.isIn(ItemTags.LLAMA_FOOD);
@@ -85,18 +95,34 @@ public abstract class FakeLlama extends FakeHorse implements VariantHolder<Llama
         return 30;
     }
 
+    public static DefaultAttributeContainer.Builder createLlamaAttributes()
+    {
+        return createAbstractDonkeyAttributes();
+    }
+
+    // Trader Llama
+    public int getDespawnDelay()
+    {
+        return this.despawnDelay;
+    }
+
+    public void setDespawnDelay(int despawnDelay)
+    {
+        this.despawnDelay = despawnDelay;
+    }
+
     public void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeCustomDataToNbt(nbt);
         nbt.putInt("Variant", this.getVariant().getIndex());
         nbt.putInt("Strength", this.getStrength());
         nbt.putInt("DespawnDelay", this.despawnDelay);
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)
     {
-        this.setStrength(nbt.getInt("Strength"));
         super.readCustomDataFromNbt(nbt);
+        this.setStrength(nbt.getInt("Strength"));
         this.setVariant(LlamaEntity.Variant.byId(nbt.getInt("Variant")));
         if (nbt.contains("DespawnDelay", 99))
         {
@@ -104,14 +130,9 @@ public abstract class FakeLlama extends FakeHorse implements VariantHolder<Llama
         }
     }
 
-    public static class FakeLlamaData extends PassiveEntity.PassiveData
+    @Override
+    public void shootAt(LivingEntity target, float pullProgress)
     {
-        public final LlamaEntity.Variant variant;
-
-        public FakeLlamaData(LlamaEntity.Variant variant)
-        {
-            super(true);
-            this.variant = variant;
-        }
+        // NO-OP
     }
 }

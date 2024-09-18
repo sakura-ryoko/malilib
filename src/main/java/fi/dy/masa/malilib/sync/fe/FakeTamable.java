@@ -2,14 +2,16 @@ package fi.dy.masa.malilib.sync.fe;
 
 import java.util.UUID;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
-public abstract class FakeTamable extends FakeAnimal implements Tameable
+public class FakeTamable extends FakeAnimal implements Tameable
 {
     protected UUID owner;
     protected boolean tamed;
@@ -18,6 +20,16 @@ public abstract class FakeTamable extends FakeAnimal implements Tameable
     public FakeTamable(EntityType<?> type, World world, int entityId)
     {
         super(type, world, entityId);
+    }
+
+    public FakeTamable(Entity input)
+    {
+        super(input);
+
+        if (input instanceof TameableEntity)
+        {
+            this.readCustomDataFromNbt(this.getNbt());
+        }
     }
 
     @Override
@@ -86,19 +98,20 @@ public abstract class FakeTamable extends FakeAnimal implements Tameable
 
     public void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeCustomDataToNbt(nbt);
-
         if (this.getOwnerUuid() != null)
         {
             nbt.putUuid("Owner", this.getOwnerUuid());
         }
 
         nbt.putBoolean("Sitting", this.sitting);
+
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)
     {
         super.readCustomDataFromNbt(nbt);
+
         if (nbt.containsUuid("Owner"))
         {
             UUID uuid = nbt.getUuid("Owner");

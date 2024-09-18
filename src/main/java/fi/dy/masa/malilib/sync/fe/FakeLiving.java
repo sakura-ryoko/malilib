@@ -32,7 +32,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public abstract class FakeLiving extends FakeEntity implements Attackable
+public class FakeLiving extends FakeEntity implements Attackable, IFakeLiving
 {
     private final DefaultedList<ItemStack> syncedHandStacks;
     private final DefaultedList<ItemStack> syncedArmorStacks;
@@ -43,20 +43,42 @@ public abstract class FakeLiving extends FakeEntity implements Attackable
     private BlockPos lastBlockPos;
     protected Brain<?> brain;
     private @Nullable LivingEntity attacker;
-    private final AttributeContainer attributes;
+    public static final String ATTRIBUTES_NBT_KEY = "attributes";
+    private AttributeContainer attributes;
     private final Map<RegistryEntry<StatusEffect>, StatusEffectInstance> activeStatusEffects = Maps.newHashMap();
     private boolean effectsChanged;
     private float absorptionAmount;
 
-    @SuppressWarnings("unchecked")
     public FakeLiving(EntityType<?> type, World world, int entityId)
     {
         super(type, world, entityId);
         this.syncedHandStacks = DefaultedList.ofSize(2, ItemStack.EMPTY);
         this.syncedArmorStacks = DefaultedList.ofSize(4, ItemStack.EMPTY);
         this.activeItemStack = ItemStack.EMPTY;
-        this.attributes = new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
-        this.setHealth(this.getMaxHealth());
+        this.attributes = new AttributeContainer(createLivingAttributes().build());
+        this.health = this.getMaxHealth();
+        NbtOps nbtOps = NbtOps.INSTANCE;
+        this.brain = this.deserializeBrain(new Dynamic<>(nbtOps, nbtOps.createMap(ImmutableMap.of(nbtOps.createString("memories"), nbtOps.emptyMap()))));
+    }
+
+    public FakeLiving(Entity input)
+    {
+        super(input);
+        this.syncedHandStacks = DefaultedList.ofSize(2, ItemStack.EMPTY);
+        this.syncedArmorStacks = DefaultedList.ofSize(4, ItemStack.EMPTY);
+        this.activeItemStack = ItemStack.EMPTY;
+
+        if (input instanceof LivingEntity le)
+        {
+            this.attributes = le.getAttributes();
+            this.readCustomDataFromNbt(this.getNbt());
+        }
+        else
+        {
+            this.attributes = new AttributeContainer(createLivingAttributes().build());
+        }
+
+        this.health = this.getMaxHealth();
         NbtOps nbtOps = NbtOps.INSTANCE;
         this.brain = this.deserializeBrain(new Dynamic<>(nbtOps, nbtOps.createMap(ImmutableMap.of(nbtOps.createString("memories"), nbtOps.emptyMap()))));
     }
@@ -100,6 +122,11 @@ public abstract class FakeLiving extends FakeEntity implements Attackable
     public AttributeContainer getAttributes()
     {
         return this.attributes;
+    }
+
+    protected void buildAttributes(DefaultAttributeContainer.Builder builder)
+    {
+        this.attributes = new AttributeContainer(builder.build());
     }
 
     public boolean clearStatusEffects()
@@ -219,6 +246,22 @@ public abstract class FakeLiving extends FakeEntity implements Attackable
         {
             effect.getEffectType().value().onApplied(this.getAttributes(), effect.getAmplifier());
             //this.sendEffectToControllingPlayer(effect);
+        }
+    }
+
+    @Nullable
+    public StatusEffectInstance removeStatusEffectInternal(RegistryEntry<StatusEffect> effect)
+    {
+        return this.activeStatusEffects.remove(effect);
+    }
+
+    public void removeStatusEffect(RegistryEntry<StatusEffect> effect)
+    {
+        StatusEffectInstance statusEffectInstance = this.removeStatusEffectInternal(effect);
+
+        if (statusEffectInstance != null)
+        {
+            this.onStatusEffectsRemoved(List.of(statusEffectInstance));
         }
     }
 
@@ -432,11 +475,23 @@ public abstract class FakeLiving extends FakeEntity implements Attackable
         return true;
     }
 
-    public abstract Iterable<ItemStack> getArmorItems();
+    @Override
+    public Iterable<ItemStack> getArmorItems()
+    {
+        return null;
+    }
 
-    public abstract ItemStack getEquippedStack(EquipmentSlot slot);
+    @Override
+    public ItemStack getEquippedStack(EquipmentSlot slot)
+    {
+        return ItemStack.EMPTY;
+    }
 
-    public abstract void equipStack(EquipmentSlot slot, ItemStack stack);
+    @Override
+    public void equipStack(EquipmentSlot slot, ItemStack stack)
+    {
+        // NO-OP
+    }
 
     public Iterable<ItemStack> getHandItems()
     {
@@ -479,7 +534,11 @@ public abstract class FakeLiving extends FakeEntity implements Attackable
         return scale;
     }
 
-    public abstract Arm getMainArm();
+    @Override
+    public Arm getMainArm()
+    {
+        return Arm.RIGHT;
+    }
 
     @Nullable
     public LivingEntity getAttacker()
@@ -498,7 +557,7 @@ public abstract class FakeLiving extends FakeEntity implements Attackable
         //this.lastAttackedTime = this.age;
     }
 
-    protected void readCustomDataFromNbt(NbtCompound nbt)
+    public void readCustomDataFromNbt(NbtCompound nbt)
     {
         super.readNbt(nbt);
 
@@ -531,7 +590,7 @@ public abstract class FakeLiving extends FakeEntity implements Attackable
         }
     }
 
-    protected void writeCustomDataToNbt(NbtCompound nbt)
+    public void writeCustomDataToNbt(NbtCompound nbt)
     {
         nbt.putFloat("Health", this.getHealth());
         nbt.put("attributes", this.getAttributes().toNbt());

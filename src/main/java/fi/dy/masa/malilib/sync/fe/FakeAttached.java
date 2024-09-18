@@ -2,12 +2,14 @@ package fi.dy.masa.malilib.sync.fe;
 
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.decoration.BlockAttachedEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public abstract class FakeAttached extends FakeEntity
+public class FakeAttached extends FakeEntity implements IFakeAttached
 {
     protected BlockPos attachedBlockPos;
 
@@ -22,11 +24,34 @@ public abstract class FakeAttached extends FakeEntity
         this.attachedBlockPos = attachedBlockPos;
     }
 
-    protected abstract void updateAttachmentPosition();
+    public FakeAttached(Entity input)
+    {
+        super(input);
 
-    public abstract boolean canStayAttached();
+        if (input instanceof BlockAttachedEntity bae)
+        {
+            this.attachedBlockPos = bae.getAttachedBlockPos();
+            this.readCustomDataFromNbt(this.getNbt());
+        }
+    }
 
-    public abstract void onBreak(@Nullable FakeEntity breaker);
+    @Override
+    public void updateAttachmentPosition()
+    {
+        // NO-OP
+    }
+
+    @Override
+    public boolean canStayAttached()
+    {
+        return false;
+    }
+
+    @Override
+    public void onBreak(@Nullable FakeEntity breaker)
+    {
+        // NO-OP
+    }
 
     public boolean canHit()
     {
@@ -55,10 +80,12 @@ public abstract class FakeAttached extends FakeEntity
         nbt.putInt("TileX", blockPos.getX());
         nbt.putInt("TileY", blockPos.getY());
         nbt.putInt("TileZ", blockPos.getZ());
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)
     {
+        super.readCustomDataFromNbt(nbt);
         BlockPos blockPos = new BlockPos(nbt.getInt("TileX"), nbt.getInt("TileY"), nbt.getInt("TileZ"));
 
         if (blockPos.isWithinDistance(this.getBlockPos(), 16.0))

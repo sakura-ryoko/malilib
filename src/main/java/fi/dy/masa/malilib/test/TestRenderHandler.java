@@ -1,9 +1,6 @@
 package fi.dy.masa.malilib.test;
 
 import java.util.function.Supplier;
-
-import net.minecraft.client.gui.LayeredDrawer;
-import net.minecraft.util.profiler.Profiler;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -11,15 +8,13 @@ import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.LayeredDrawer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.FilledMapItem;
@@ -30,15 +25,16 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
-import fi.dy.masa.malilib.mixin.test.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.sync.fe.*;
 import fi.dy.masa.malilib.util.*;
 
 public class TestRenderHandler implements IRenderer
@@ -163,7 +159,7 @@ public class TestRenderHandler implements IRenderer
         World world = WorldUtils.getBestWorld(mc);
         Entity cameraEntity = EntityUtils.getCameraEntity();
 
-        if (mc.player == null)
+        if (world == null || mc.player == null)
         {
             return;
         }
@@ -184,8 +180,9 @@ public class TestRenderHandler implements IRenderer
 
         Inventory inv = null;
         ShulkerBoxBlock shulkerBoxBlock = null;
-        //CrafterBlock crafterBlock = null;
         LivingEntity entityLivingBase = null;
+        FakeEntity fe;
+        FakeLiving fl = null;
 
         if (trace.getType() == HitResult.Type.BLOCK)
         {
@@ -197,44 +194,52 @@ public class TestRenderHandler implements IRenderer
                 shulkerBoxBlock = (ShulkerBoxBlock) blockTmp;
             }
 
-            inv = fi.dy.masa.malilib.util.InventoryUtils.getInventory(world, pos);
+            inv = TestUtils.getInventory(world, pos);
         }
         else if (trace.getType() == HitResult.Type.ENTITY)
         {
             Entity entity = ((EntityHitResult) trace).getEntity();
+            fe = TestUtils.getFakeEntity(entity);
 
+            if (fe instanceof FakeLiving)
+            {
+                fl = (FakeLiving) fe;
+            }
             if (entity instanceof LivingEntity)
             {
                 entityLivingBase = (LivingEntity) entity;
             }
 
-            if (entity instanceof Inventory)
+            if (fe instanceof Inventory)
             {
-                inv = (Inventory) entity;
+                inv = (Inventory) fe;
             }
-            else if (entity instanceof VillagerEntity)
+            else if (fe instanceof FakeVillager)
             {
-                inv = ((VillagerEntity) entity).getInventory();
+                inv = ((FakeVillager) fe).getInventory();
             }
-            else if (entity instanceof AbstractHorseEntity)
+            else if (fe instanceof FakeHorse)
             {
-                inv = ((IMixinAbstractHorseEntity) entity).tweakeroo_getHorseInventory();
+                inv = ((FakeHorse) fe).getHorseInventory();
             }
         }
 
-        final boolean isWolf = (entityLivingBase instanceof WolfEntity);
         final int xCenter = GuiUtils.getScaledWindowWidth() / 2;
         final int yCenter = GuiUtils.getScaledWindowHeight() / 2;
+        boolean isWolf = (fl instanceof FakeWolf);
+        boolean isHorse = (fl instanceof FakeHorse);
+        boolean isVillager = (fl instanceof FakeVillager);
         int x = xCenter - 52 / 2;
         int y = yCenter - 92;
 
-        if (inv != null && inv.size() > 0)
+        if (inv != null && !inv.isEmpty())
         {
-            final boolean isHorse = (entityLivingBase instanceof AbstractHorseEntity);
             final int totalSlots = isHorse ? inv.size() - 1 : inv.size();
             final int firstSlot = isHorse ? 1 : 0;
 
-            final InventoryOverlay.InventoryRenderType type = (entityLivingBase instanceof VillagerEntity) ? InventoryOverlay.InventoryRenderType.VILLAGER : InventoryOverlay.getInventoryType(inv);
+            //System.out.printf("renderInventoryOverlay() inv.size(%d) / real size (%d)\n", inv.size(), ((IMixinAbstractHorseEntity) entityLivingBase).tweakeroo_getHorseInventory().size());
+
+            final InventoryOverlay.InventoryRenderType type = isVillager ? InventoryOverlay.InventoryRenderType.VILLAGER : InventoryOverlay.getInventoryType(inv);
             final InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, totalSlots);
             final int rows = (int) Math.ceil((double) totalSlots / props.slotsPerRow);
             int xInv = xCenter - (props.width / 2);
@@ -246,7 +251,7 @@ public class TestRenderHandler implements IRenderer
                 y -= (rows - 6) * 18;
             }
 
-            if (entityLivingBase != null)
+            if (fl != null)
             {
                 x = xCenter - 55;
                 xInv = xCenter + 2;
@@ -258,7 +263,7 @@ public class TestRenderHandler implements IRenderer
             if (isHorse)
             {
                 Inventory horseInv = new SimpleInventory(2);
-                ItemStack horseArmor = (((AbstractHorseEntity) entityLivingBase).getBodyArmor());
+                ItemStack horseArmor = (((FakeHorse) fl).getBodyArmor());
                 horseInv.setStack(0, horseArmor != null && !horseArmor.isEmpty() ? horseArmor : ItemStack.EMPTY);
                 horseInv.setStack(1, inv.getStack(0));
 
@@ -277,7 +282,7 @@ public class TestRenderHandler implements IRenderer
         if (isWolf)
         {
             InventoryOverlay.InventoryRenderType type = InventoryOverlay.InventoryRenderType.HORSE;
-            final fi.dy.masa.malilib.render.InventoryOverlay.InventoryProperties props = fi.dy.masa.malilib.render.InventoryOverlay.getInventoryPropsTemp(type, 2);
+            final InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, 2);
             final int rows = (int) Math.ceil((double) 2 / props.slotsPerRow);
             int xInv;
             int yInv = yCenter - props.height - 6;
@@ -293,7 +298,7 @@ public class TestRenderHandler implements IRenderer
             yInv = Math.min(yInv, yCenter - 92);
 
             Inventory wolfInv = new SimpleInventory(2);
-            ItemStack wolfArmor = ((WolfEntity) entityLivingBase).getBodyArmor();
+            ItemStack wolfArmor = ((FakeWolf) fl).getBodyArmor();
             wolfInv.setStack(0, wolfArmor != null && !wolfArmor.isEmpty() ? wolfArmor : ItemStack.EMPTY);
             InventoryOverlay.renderInventoryBackground(type, xInv, yInv, 1, 2, mc);
             InventoryOverlay.renderInventoryStacks(type, wolfInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, 1, 0, 2, mc, drawContext);

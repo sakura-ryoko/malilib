@@ -1,10 +1,12 @@
 package fi.dy.masa.malilib.sync.fe;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
-public abstract class FakePassive extends FakeMob
+public class FakePassive extends FakeMob
 {
     protected int breedingAge;
     protected int forcedAge;
@@ -13,6 +15,16 @@ public abstract class FakePassive extends FakeMob
     public FakePassive(EntityType<?> type, World world, int entityId)
     {
         super(type, world, entityId);
+    }
+
+    public FakePassive(Entity input)
+    {
+        super(input);
+
+        if (input instanceof PassiveEntity)
+        {
+            this.readCustomDataFromNbt(this.getNbt());
+        }
     }
 
     public boolean isReadyToBreed()
@@ -57,9 +69,9 @@ public abstract class FakePassive extends FakeMob
 
     public void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeCustomDataToNbt(nbt);
         nbt.putInt("Age", this.getBreedingAge());
         nbt.putInt("ForcedAge", this.forcedAge);
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)

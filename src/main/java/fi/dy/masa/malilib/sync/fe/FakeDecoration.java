@@ -3,14 +3,16 @@ package fi.dy.masa.malilib.sync.fe;
 import java.util.Objects;
 import org.apache.commons.lang3.Validate;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public abstract class FakeDecoration extends FakeAttached
+public class FakeDecoration extends FakeAttached implements IFakeDecoration
 {
     protected Direction facing;
 
@@ -26,6 +28,18 @@ public abstract class FakeDecoration extends FakeAttached
         this.attachedBlockPos = pos;
     }
 
+    public FakeDecoration(Entity input)
+    {
+        super(input);
+
+        if (input instanceof AbstractDecorationEntity ade)
+        {
+            this.facing = ade.getFacing();
+            this.attachedBlockPos = ade.getAttachedBlockPos();
+            this.readCustomDataFromNbt(this.getNbt());
+        }
+    }
+
     protected void setFacing(Direction facing)
     {
         Objects.requireNonNull(facing);
@@ -34,7 +48,8 @@ public abstract class FakeDecoration extends FakeAttached
         this.updateAttachmentPosition();
     }
 
-    protected final void updateAttachmentPosition()
+    @Override
+    public void updateAttachmentPosition()
     {
         if (this.facing != null)
         {
@@ -45,9 +60,15 @@ public abstract class FakeDecoration extends FakeAttached
         }
     }
 
-    protected abstract Box calculateBoundingBox(BlockPos pos, Direction side);
+    public Box calculateBoundingBox(BlockPos pos, Direction side)
+    {
+        return this.getBoundingBox();
+    }
 
-    public abstract void onPlace();
+    public void onPlace()
+    {
+        // NO-OP
+    }
 
     public boolean canStayAttached() { return true; }
 

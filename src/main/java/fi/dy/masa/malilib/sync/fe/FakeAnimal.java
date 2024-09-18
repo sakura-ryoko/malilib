@@ -3,13 +3,17 @@ package fi.dy.masa.malilib.sync.fe;
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
-public abstract class FakeAnimal extends FakePassive
+public class FakeAnimal extends FakePassive implements IFakeAnimal
 {
     private int loveTicks;
     @Nullable
@@ -20,11 +24,26 @@ public abstract class FakeAnimal extends FakePassive
         super(type, world, entityId);
     }
 
-    public abstract boolean isBreedingItem(ItemStack stack);
+    public FakeAnimal(Entity input)
+    {
+        super(input);
+
+        if (input instanceof AnimalEntity)
+        {
+            this.buildAttributes(createAnimalAttributes());
+            this.readCustomDataFromNbt(this.getNbt());
+        }
+    }
 
     public boolean canEat()
     {
         return this.loveTicks <= 0;
+    }
+
+    @Override
+    public boolean isBreedingItem(ItemStack stack)
+    {
+        return false;
     }
 
     public void setLoveTicks(int loveTicks)
@@ -60,14 +79,19 @@ public abstract class FakeAnimal extends FakePassive
         this.loveTicks = 0;
     }
 
+    public static DefaultAttributeContainer.Builder createAnimalAttributes()
+    {
+        return FakeMob.createMobAttributes().add(EntityAttributes.TEMPT_RANGE, 10.0);
+    }
+
     public void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeCustomDataToNbt(nbt);
         nbt.putInt("InLove", this.loveTicks);
         if (this.lovingPlayer != null)
         {
             nbt.putUuid("LoveCause", this.lovingPlayer);
         }
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)

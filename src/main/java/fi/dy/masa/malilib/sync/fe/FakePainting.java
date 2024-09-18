@@ -1,8 +1,10 @@
 package fi.dy.masa.malilib.sync.fe;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.VariantHolder;
+import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
@@ -11,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public abstract class FakePainting extends FakeDecoration implements VariantHolder<RegistryEntry<PaintingVariant>>
+public class FakePainting extends FakeDecoration implements VariantHolder<RegistryEntry<PaintingVariant>>
 {
     private final static Codec<RegistryEntry<PaintingVariant>> CODEC = PaintingVariant.ENTRY_CODEC.fieldOf("variant").codec();
     private RegistryEntry<PaintingVariant> variant;
@@ -31,6 +33,18 @@ public abstract class FakePainting extends FakeDecoration implements VariantHold
         this(world, entityId, pos);
         this.setVariant(variant);
         this.setFacing(facing);
+    }
+
+    public FakePainting(Entity input)
+    {
+        super(input);
+
+        if (input instanceof PaintingEntity pe)
+        {
+            this.setVariant(pe.getVariant());
+            this.setFacing(pe.getFacing());
+            this.readCustomDataFromNbt(this.getNbt());
+        }
     }
 
     public void setVariant(RegistryEntry<PaintingVariant> variant)
@@ -53,9 +67,9 @@ public abstract class FakePainting extends FakeDecoration implements VariantHold
 
     public void readCustomDataFromNbt(NbtCompound nbt)
     {
+        super.readCustomDataFromNbt(nbt);
         CODEC.parse(this.getRegistryManager().getOps(NbtOps.INSTANCE), nbt).ifSuccess(this::setVariant);
         this.facing = Direction.fromHorizontal(nbt.getByte("facing"));
-        super.readCustomDataFromNbt(nbt);
         this.setFacing(this.facing);
     }
 }

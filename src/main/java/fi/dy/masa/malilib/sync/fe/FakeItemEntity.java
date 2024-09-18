@@ -52,6 +52,19 @@ public class FakeItemEntity extends FakeEntity implements Ownable
         this.itemAge = entity.getItemAge();
     }
 
+    public FakeItemEntity(Entity input)
+    {
+        super(input);
+
+        if (input instanceof ItemEntity ie)
+        {
+            this.setStack(ie.getStack());
+            this.copyPositionAndRotation(ie);
+            this.itemAge = ie.getItemAge();
+            this.readCustomDataFromNbt(this.getNbt());
+        }
+    }
+
     @Override
     public @Nullable Entity getOwner()
     {
@@ -131,10 +144,14 @@ public class FakeItemEntity extends FakeEntity implements Ownable
         {
             nbt.put("Item", this.getStack().toNbt(this.getRegistryManager()));
         }
+
+        super.writeNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)
     {
+        super.readNbt(nbt);
+
         this.health = nbt.getShort("Health");
         this.itemAge = nbt.getShort("Age");
         if (nbt.contains("PickupDelay"))

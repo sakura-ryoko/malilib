@@ -1,30 +1,26 @@
 package fi.dy.masa.malilib.sync.fe;
 
 import java.util.List;
-import java.util.Objects;
 import com.google.common.collect.Iterables;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class FakeMob extends FakeLiving implements EquipmentHolder, Leashable
 {
     protected final static Identifier RANDOM_SPAWN_BONUS_MODIFIER_ID = Identifier.ofVanilla("random_spawn_bonus");
-    private final DefaultedList<ItemStack> handItems;
-    private final DefaultedList<ItemStack> armorItems;
+    private DefaultedList<ItemStack> handItems;
+    private DefaultedList<ItemStack> armorItems;
     private ItemStack bodyArmor;
     @Nullable
     private Leashable.LeashData leashData;
@@ -33,6 +29,23 @@ public class FakeMob extends FakeLiving implements EquipmentHolder, Leashable
     public FakeMob(EntityType<?> type, World world, int entityId)
     {
         super(type, world, entityId);
+        this.initItems();
+    }
+
+    public FakeMob(Entity input)
+    {
+        super(input);
+
+        if (input instanceof MobEntity)
+        {
+            this.buildAttributes(createMobAttributes());
+            this.initItems();
+            this.readCustomDataFromNbt(this.getNbt());
+        }
+    }
+
+    protected void initItems()
+    {
         this.handItems = DefaultedList.ofSize(2, ItemStack.EMPTY);
         this.armorItems = DefaultedList.ofSize(4, ItemStack.EMPTY);
         this.bodyArmor = ItemStack.EMPTY;
@@ -42,22 +55,7 @@ public class FakeMob extends FakeLiving implements EquipmentHolder, Leashable
 
     public static DefaultAttributeContainer.Builder createMobAttributes()
     {
-        return LivingEntity.createLivingAttributes().add(EntityAttributes.FOLLOW_RANGE, 16.0);
-    }
-
-    @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData)
-    {
-        net.minecraft.util.math.random.Random random = world.getRandom();
-        EntityAttributeInstance entityAttributeInstance = Objects.requireNonNull(this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE));
-
-        if (!entityAttributeInstance.hasModifier(RANDOM_SPAWN_BONUS_MODIFIER_ID))
-        {
-            entityAttributeInstance.addPersistentModifier(new EntityAttributeModifier(RANDOM_SPAWN_BONUS_MODIFIER_ID, random.nextTriangular(0.0, 0.11485000000000001), EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE));
-        }
-
-        this.setLeftHanded(random.nextFloat() < 0.05F);
-        return entityData;
+        return FakeLiving.createLivingAttributes().add(EntityAttributes.FOLLOW_RANGE, 16.0);
     }
 
     public Iterable<ItemStack> getHandItems()
@@ -154,7 +152,6 @@ public class FakeMob extends FakeLiving implements EquipmentHolder, Leashable
 
     public void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeCustomDataToNbt(nbt);
         NbtList nbtList = new NbtList();
 
         for (ItemStack itemStack : this.armorItems)
@@ -189,6 +186,8 @@ public class FakeMob extends FakeLiving implements EquipmentHolder, Leashable
         {
             nbt.put("body_armor_item", this.bodyArmor.toNbt(this.getRegistryManager()));
         }
+
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)
@@ -202,6 +201,10 @@ public class FakeMob extends FakeLiving implements EquipmentHolder, Leashable
         {
             nbtList = nbt.getList("ArmorItems", 10);
 
+            if (this.armorItems == null)
+            {
+                this.armorItems = DefaultedList.ofSize(4, ItemStack.EMPTY);
+            }
             for (i = 0; i < this.armorItems.size(); ++i)
             {
                 nbtCompound = nbtList.getCompound(i);
@@ -212,6 +215,10 @@ public class FakeMob extends FakeLiving implements EquipmentHolder, Leashable
         {
             nbtList = nbt.getList("HandItems", 10);
 
+            if (this.handItems == null)
+            {
+                this.handItems = DefaultedList.ofSize(2, ItemStack.EMPTY);
+            }
             for (i = 0; i < this.handItems.size(); ++i)
             {
                 nbtCompound = nbtList.getCompound(i);

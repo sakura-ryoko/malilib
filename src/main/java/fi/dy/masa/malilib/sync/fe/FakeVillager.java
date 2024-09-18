@@ -4,7 +4,9 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -13,7 +15,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.village.*;
 import net.minecraft.world.World;
 
-public abstract class FakeVillager extends FakeMerchant implements VillagerDataContainer
+public class FakeVillager extends FakeMerchant implements VillagerDataContainer
 {
     private VillagerData data;
     private final VillagerGossips gossip;
@@ -34,6 +36,23 @@ public abstract class FakeVillager extends FakeMerchant implements VillagerDataC
         super(type, world, entityId);
         this.gossip = new VillagerGossips();
         this.setVillagerData(this.getVillagerData().withType(villagerType).withProfession(VillagerProfession.NONE));
+    }
+
+    public FakeVillager(Entity input)
+    {
+        super(input);
+
+        if (input instanceof VillagerEntity ve)
+        {
+            this.gossip = ve.getGossip();
+            this.setVillagerData(ve.getVillagerData());
+            this.readCustomDataFromNbt(this.getNbt());
+        }
+        else
+        {
+            this.gossip = new VillagerGossips();
+            this.setVillagerData(this.getVillagerData().withType(VillagerType.PLAINS).withProfession(VillagerProfession.NONE));
+        }
     }
 
     public VillagerData getVillagerData()
@@ -86,7 +105,6 @@ public abstract class FakeVillager extends FakeMerchant implements VillagerDataC
 
     public void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeCustomDataToNbt(nbt);
         DataResult<NbtElement> dr = VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData());
         dr.resultOrPartial().ifPresent((nbtElement) -> nbt.put("VillagerData", nbtElement));
         nbt.putByte("FoodLevel", (byte) this.foodLevel);
@@ -100,11 +118,13 @@ public abstract class FakeVillager extends FakeMerchant implements VillagerDataC
             nbt.putBoolean("AssignProfessionWhenSpawned", true);
         }
 
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)
     {
         super.readCustomDataFromNbt(nbt);
+
         if (nbt.contains("VillagerData", 10))
         {
             DataResult<VillagerData> dr = VillagerData.CODEC.parse(NbtOps.INSTANCE, nbt.get("VillagerData"));

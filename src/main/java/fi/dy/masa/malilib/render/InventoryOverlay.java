@@ -28,6 +28,8 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.sync.fe.FakeHorse;
+import fi.dy.masa.malilib.sync.fe.FakePiglin;
 import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 
 public class InventoryOverlay
@@ -282,7 +284,15 @@ public class InventoryOverlay
             {
                 return InventoryRenderType.HORSE;
             }
+            else if (inventory.malilib$getFakeEntityOwner() instanceof FakeHorse)
+            {
+                return InventoryRenderType.HORSE;
+            }
             else if (inventory.malilib$getEntityOwner() instanceof PiglinEntity)
+            {
+                return InventoryRenderType.VILLAGER;
+            }
+            else if (inventory.malilib$getFakeEntityOwner() instanceof FakePiglin)
             {
                 return InventoryRenderType.VILLAGER;
             }

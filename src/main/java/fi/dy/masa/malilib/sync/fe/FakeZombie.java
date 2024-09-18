@@ -1,30 +1,47 @@
 package fi.dy.masa.malilib.sync.fe;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
-public abstract class FakeZombie extends MobEntity
+public class FakeZombie extends FakeHostile
 {
     private boolean baby;
-    private int type;
     private boolean convertingInWater;
+    private boolean isTouchingWater;
     private boolean canBreakDoors;
     private int inWaterTime;
     private int ticksUntilWaterConversion;
 
-    protected FakeZombie(EntityType<? extends MobEntity> entityType, World world)
+    public FakeZombie(EntityType<?> type, World world, int entityId)
     {
-        super(entityType, world);
+        super(type, world, entityId);
+    }
+
+    public FakeZombie(Entity input)
+    {
+        super(input);
+
+        if (input instanceof ZombieEntity)
+        {
+            this.readCustomDataFromNbt(this.getNbt());
+        }
     }
 
     public boolean isConvertingInWater()
     {
         return this.convertingInWater;
+    }
+
+    public boolean isTouchingWater()
+    {
+        return this.isTouchingWater;
     }
 
     public boolean canBreakDoors()
@@ -97,13 +114,18 @@ public abstract class FakeZombie extends MobEntity
         return random.nextFloat() < 0.05F;
     }
 
+    public static DefaultAttributeContainer.Builder createZombieAttributes()
+    {
+        return FakeHostile.createHostileAttributes().add(EntityAttributes.FOLLOW_RANGE, 35.0).add(EntityAttributes.MOVEMENT_SPEED, 0.23000000417232513).add(EntityAttributes.ATTACK_DAMAGE, 3.0).add(EntityAttributes.ARMOR, 2.0).add(EntityAttributes.SPAWN_REINFORCEMENTS);
+    }
+
     public void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeCustomDataToNbt(nbt);
         nbt.putBoolean("IsBaby", this.isBaby());
         nbt.putBoolean("CanBreakDoors", this.canBreakDoors());
         nbt.putInt("InWaterTime", this.isTouchingWater() ? this.inWaterTime : -1);
         nbt.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)

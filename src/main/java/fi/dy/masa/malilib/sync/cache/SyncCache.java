@@ -17,6 +17,7 @@ import net.minecraft.world.entity.EntityLookup;
 
 import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
 import fi.dy.masa.malilib.sync.fe.FakeEntity;
+import fi.dy.masa.malilib.util.EntityUtils;
 
 public class SyncCache implements AutoCloseable
 {
@@ -140,6 +141,11 @@ public class SyncCache implements AutoCloseable
     public int getRegularEntityCount()
     {
         return this.entityManager.getEntityCount();
+    }
+
+    public FakeEntity createFakeEntity(Entity input)
+    {
+        return EntityUtils.toFakeEntity(input);
     }
 
     public void addEntity(FakeEntity entity)

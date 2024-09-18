@@ -31,11 +31,15 @@ public interface ISyncProvider
 
     void requestBlockEntity(BlockPos pos, @Nullable BlockState state);
 
+    void requestBlockEntityAt(World world, BlockPos pos);
+
     void requestEntity(int entityId);
 
     void requestEntity(UUID uuid);
 
     default void requestBulkData(ChunkPos chunkPos, @Nullable Box boundingBox) {}
+
+    void handleVanillaQueryNbt(int transactionId, NbtCompound nbt);
 
     void onReceiveBlockEntity(BlockPos pos, NbtCompound nbt);
 

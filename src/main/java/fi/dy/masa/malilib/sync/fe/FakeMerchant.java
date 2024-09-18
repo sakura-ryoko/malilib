@@ -3,28 +3,43 @@ package fi.dy.masa.malilib.sync.fe;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.DataResult;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.InventoryOwner;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.village.Merchant;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.World;
 
-public abstract class FakeMerchant extends FakePassive implements InventoryOwner, Merchant
+public class FakeMerchant extends FakePassive implements InventoryOwner, Merchant, IFakeMerchant
 {
     @Nullable
     private PlayerEntity customer;
     @Nullable
     protected TradeOfferList offers;
     private final SimpleInventory inventory = new SimpleInventory(8);
+    private int exp;
 
     public FakeMerchant(EntityType<?> type, World world, int entityId)
     {
         super(type, world, entityId);
+    }
+
+    public FakeMerchant(Entity input)
+    {
+        super(input);
+
+        if (input instanceof MerchantEntity)
+        {
+            this.readCustomDataFromNbt(this.getNbt());
+        }
     }
 
     public void setCustomer(@Nullable PlayerEntity customer)
@@ -59,13 +74,61 @@ public abstract class FakeMerchant extends FakePassive implements InventoryOwner
         return this.offers;
     }
 
-    protected abstract void afterUsing(TradeOffer offer);
+    @Override
+    public void setOffersFromServer(TradeOfferList offers)
+    {
+        this.offers = offers;
+    }
 
-    protected abstract void fillRecipes();
+    @Override
+    public void trade(TradeOffer offer)
+    {
+        // NO-OP
+    }
+
+    @Override
+    public void onSellingItem(ItemStack stack)
+    {
+        // NO-OP
+    }
+
+    @Override
+    public int getExperience()
+    {
+        return this.exp;
+    }
+
+    @Override
+    public void setExperienceFromServer(int experience)
+    {
+        this.exp = experience;
+    }
+
+    public void afterUsing(TradeOffer offer)
+    {
+        // NO-OP
+    }
+
+    public void fillRecipes()
+    {
+        // NO-OP
+    }
 
     public boolean isLeveledMerchant()
     {
         return true;
+    }
+
+    @Override
+    public SoundEvent getYesSound()
+    {
+        return null;
+    }
+
+    @Override
+    public boolean isClient()
+    {
+        return false;
     }
 
     public boolean canBeLeashed()
@@ -80,7 +143,6 @@ public abstract class FakeMerchant extends FakePassive implements InventoryOwner
 
     public void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeCustomDataToNbt(nbt);
         if (!this.getWorld().isClient)
         {
             TradeOfferList tradeOfferList = this.getOffers();
@@ -92,6 +154,7 @@ public abstract class FakeMerchant extends FakePassive implements InventoryOwner
         }
 
         this.writeInventory(nbt, this.getRegistryManager());
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)

@@ -5,21 +5,24 @@ import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
 import net.minecraft.world.World;
 
-public abstract class FakeZombieVillager extends FakeZombie implements VillagerDataContainer
+public class FakeZombieVillager extends FakeZombie implements VillagerDataContainer
 {
     private VillagerData data;
     private boolean converting;
@@ -32,10 +35,25 @@ public abstract class FakeZombieVillager extends FakeZombie implements VillagerD
     private TradeOfferList offerData;
     private int xp;
 
-    protected FakeZombieVillager(EntityType<? extends MobEntity> entityType, World world)
+    public FakeZombieVillager(EntityType<? extends MobEntity> entityType, World world, int entityId)
     {
-        super(entityType, world);
-        Registries.VILLAGER_PROFESSION.getRandom(this.random).ifPresent((profession) -> this.setVillagerData(this.getVillagerData().withProfession(profession.value())));
+        super(entityType, world, entityId);
+        this.setRandomProfession();
+    }
+
+    public FakeZombieVillager(Entity input)
+    {
+        super(input);
+
+        if (input instanceof ZombieVillagerEntity zve)
+        {
+            this.setVillagerData(zve.getVillagerData());
+            this.readCustomDataFromNbt(this.getNbt());
+        }
+        else
+        {
+            this.setRandomProfession();
+        }
     }
 
     public VillagerData getVillagerData()
@@ -46,6 +64,11 @@ public abstract class FakeZombieVillager extends FakeZombie implements VillagerD
     public void setVillagerData(VillagerData data)
     {
         this.data = data;
+    }
+
+    public void setRandomProfession()
+    {
+        Registries.VILLAGER_PROFESSION.getRandom(Random.create()).ifPresent((profession) -> this.setVillagerData(this.getVillagerData().withProfession(profession.value())));
     }
 
     protected boolean canConvertInWater()
@@ -63,7 +86,7 @@ public abstract class FakeZombieVillager extends FakeZombie implements VillagerD
         return this.converting;
     }
 
-    private void setConverting(@Nullable UUID uuid, int delay)
+    protected void setConverting(@Nullable UUID uuid, int delay)
     {
         this.converter = uuid;
         this.conversionTimer = delay;
@@ -119,7 +142,6 @@ public abstract class FakeZombieVillager extends FakeZombie implements VillagerD
 
     public void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeCustomDataToNbt(nbt);
         DataResult<NbtElement> dr = VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData());
         dr.resultOrPartial().ifPresent((villagerData) -> nbt.put("VillagerData", villagerData));
         if (this.offerData != null)
@@ -139,6 +161,7 @@ public abstract class FakeZombieVillager extends FakeZombie implements VillagerD
         }
 
         nbt.putInt("Xp", this.xp);
+        super.writeCustomDataToNbt(nbt);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)

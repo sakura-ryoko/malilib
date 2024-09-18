@@ -4,22 +4,32 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.entity.*;
-import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.mob.SkeletonHorseEntity;
+import net.minecraft.entity.mob.ZombieHorseEntity;
+import net.minecraft.entity.passive.AbstractDonkeyEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.CamelEntity;
+import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-public abstract class FakeHorse extends FakeAnimal implements RideableInventory, Tameable, Saddleable
+import fi.dy.masa.malilib.util.IEntityOwnedInventory;
+
+public class FakeHorse extends FakeAnimal implements InventoryChangedListener, RideableInventory, Tameable, Saddleable
 {
     protected SimpleInventory items;
     protected boolean tamed;
@@ -35,6 +45,7 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
     @Nullable
     private UUID ownerUuid;
     private boolean chested;
+    private long lastPoseTick;
     private final Inventory armorInventory = new SingleStackInventory()
     {
         public void markDirty() {}
@@ -55,6 +66,40 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
     public FakeHorse(EntityType<?> type, World world, int entityId)
     {
         super(type, world, entityId);
+        this.onChestedStatusChanged();
+    }
+
+    public FakeHorse(Entity input)
+    {
+        super(input);
+
+        if (input instanceof CamelEntity)
+        {
+            this.buildAttributes(createCamelAttributes());
+        }
+        else if (input instanceof SkeletonHorseEntity)
+        {
+            this.buildAttributes(createSkeletonHorseAttributes());
+        }
+        else if (input instanceof ZombieHorseEntity)
+        {
+            this.buildAttributes(createZombieHorseAttributes());
+        }
+        else if (input instanceof AbstractDonkeyEntity)
+        {
+            if (!(input instanceof LlamaEntity))
+            {
+                this.buildAttributes(createAbstractDonkeyAttributes());
+            }
+
+            this.onChestedStatusChanged();
+        }
+        else if (input instanceof AbstractHorseEntity)
+        {
+            this.buildAttributes(createBaseHorseAttributes());
+        }
+
+        this.readCustomDataFromNbt(this.getNbt());
     }
 
     public boolean isTame()
@@ -100,6 +145,12 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
 
     public boolean isAngry() {return false;}
 
+    @Override
+    public boolean isBreedingItem(ItemStack stack)
+    {
+        return stack.isIn(ItemTags.HORSE_FOOD);
+    }
+
     public boolean isBred()
     {
         return this.bred;
@@ -113,6 +164,12 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
     public boolean canBeSaddled()
     {
         return this.isAlive() && !this.isBaby() && this.isTame();
+    }
+
+    @Override
+    public void saddle(ItemStack stack, @Nullable SoundCategory soundCategory)
+    {
+        // NO-OP
     }
 
     public boolean isSaddled()
@@ -213,18 +270,6 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
 
     protected void initAttributes(Random random) {}
 
-    @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData)
-    {
-        if (entityData == null)
-        {
-            entityData = new PassiveEntity.PassiveData(0.2F);
-        }
-
-        this.initAttributes(world.getRandom());
-        return super.initialize(world, difficulty, spawnReason, entityData);
-    }
-
     public boolean areInventoriesDifferent(Inventory inventory)
     {
         return this.items != inventory;
@@ -240,6 +285,11 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
         return columns * 3 + 1;
     }
 
+    public final Inventory getHorseInventory()
+    {
+        return this.items;
+    }
+
     public final Inventory getArmorInventory()
     {
         return this.armorInventory;
@@ -248,6 +298,71 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
     public int getInventoryColumns()
     {
         return this.hasChest() ? 5 : 0;
+    }
+
+    protected void onChestedStatusChanged()
+    {
+        SimpleInventory simpleInventory = this.items;
+        this.items = new SimpleInventory(this.getInventorySize());
+
+        if (simpleInventory != null)
+        {
+            simpleInventory.removeListener(this);
+            int i = Math.min(simpleInventory.size(), this.items.size());
+
+            for (int j = 0; j < i; ++j)
+            {
+                ItemStack itemStack = simpleInventory.getStack(j);
+
+                if (!itemStack.isEmpty())
+                {
+                    this.items.setStack(j, itemStack.copy());
+                }
+            }
+        }
+
+        this.items.addListener(this);
+        this.updateSaddledFlag();
+        ((IEntityOwnedInventory) items).malilib$setFakeEntityOwner(this);
+    }
+
+    private void updateSaddledFlag()
+    {
+        this.setSaddled(!this.items.getStack(0).isEmpty());
+    }
+
+    @Override
+    public void onInventoryChanged(Inventory sender)
+    {
+
+    }
+
+    @Override
+    public void openInventory(PlayerEntity player)
+    {
+        // NO-OP
+    }
+
+    public static DefaultAttributeContainer.Builder createBaseHorseAttributes()
+    {
+        return FakeAnimal.createAnimalAttributes().add(EntityAttributes.JUMP_STRENGTH, 0.7).add(EntityAttributes.MAX_HEALTH, 53.0).add(EntityAttributes.MOVEMENT_SPEED, 0.22499999403953552).add(EntityAttributes.STEP_HEIGHT, 1.0).add(EntityAttributes.SAFE_FALL_DISTANCE, 6.0).add(EntityAttributes.FALL_DAMAGE_MULTIPLIER, 0.5);
+    }
+
+    // Camel
+
+    public long getLastPoseTick()
+    {
+        return this.lastPoseTick;
+    }
+
+    public void setLastPoseTick(long tick)
+    {
+        this.lastPoseTick = tick;
+    }
+
+    public static DefaultAttributeContainer.Builder createCamelAttributes()
+    {
+        return createBaseHorseAttributes().add(EntityAttributes.MAX_HEALTH, 32.0).add(EntityAttributes.MOVEMENT_SPEED, 0.09000000357627869).add(EntityAttributes.JUMP_STRENGTH, 0.41999998688697815).add(EntityAttributes.STEP_HEIGHT, 1.5);
     }
 
     // Donkey
@@ -261,8 +376,14 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
         this.chested = chested;
     }
 
+    public static DefaultAttributeContainer.Builder createAbstractDonkeyAttributes()
+    {
+        return createBaseHorseAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.17499999701976776).add(EntityAttributes.JUMP_STRENGTH, 0.5);
+    }
+
     // Skeleton Horse
-    public boolean isTrapped() {
+    public boolean isTrapped()
+    {
         return this.trapped;
     }
 
@@ -271,46 +392,15 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
         this.trapped = trapped;
     }
 
-    public void writeCustomDataToNbt(NbtCompound nbt)
+    public static DefaultAttributeContainer.Builder createSkeletonHorseAttributes()
     {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putBoolean("EatingHaystack", this.isEatingGrass());
-        nbt.putBoolean("Bred", this.isBred());
-        nbt.putInt("Temper", this.getTemper());
-        nbt.putBoolean("Tame", this.isTame());
-        if (this.getOwnerUuid() != null)
-        {
-            nbt.putUuid("Owner", this.getOwnerUuid());
-        }
+        return createBaseHorseAttributes().add(EntityAttributes.MAX_HEALTH, 15.0).add(EntityAttributes.MOVEMENT_SPEED, 0.20000000298023224);
+    }
 
-        if (!this.items.getStack(0).isEmpty())
-        {
-            nbt.put("SaddleItem", this.items.getStack(0).toNbt(this.getRegistryManager()));
-        }
-
-        if (this.hasChest())
-        {
-            nbt.putBoolean("ChestedHorse", this.hasChest());
-            NbtList nbtList = new NbtList();
-
-            for (int i = 1; i < this.items.size(); ++i)
-            {
-                ItemStack itemStack = this.items.getStack(i);
-                if (!itemStack.isEmpty())
-                {
-                    NbtCompound nbtCompound = new NbtCompound();
-                    nbtCompound.putByte("Slot", (byte) (i - 1));
-                    nbtList.add(itemStack.toNbt(this.getRegistryManager(), nbtCompound));
-                }
-            }
-
-            nbt.put("Items", nbtList);
-        }
-        if (this.isTrapped())
-        {
-            nbt.putBoolean("SkeletonTrap", this.isTrapped());
-            nbt.putInt("SkeletonTrapTime", this.trapTime);
-        }
+    // Zombie Horse
+    public static DefaultAttributeContainer.Builder createZombieHorseAttributes()
+    {
+        return createBaseHorseAttributes().add(EntityAttributes.MAX_HEALTH, 15.0).add(EntityAttributes.MOVEMENT_SPEED, 0.20000000298023224);
     }
 
     public void readCustomDataFromNbt(NbtCompound nbt)
@@ -326,6 +416,15 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
             this.setOwnerUuid(uuid);
         }
 
+        if (nbt.contains("ChestedHorse"))
+        {
+            this.setHasChest(nbt.getBoolean("ChestedHorse"));
+        }
+        if (this.items == null)
+        {
+            this.onChestedStatusChanged();
+        }
+
         if (nbt.contains("SaddleItem", 10))
         {
             ItemStack itemStack = ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("SaddleItem")).orElse(ItemStack.EMPTY);
@@ -337,9 +436,9 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
             }
         }
 
-        if (nbt.contains("ChestedHorse"))
+        if (nbt.contains("LastPoseTick"))
         {
-            this.setHasChest(nbt.getBoolean("ChestedHorse"));
+            this.setLastPoseTick(nbt.getLong("LastPoseTick"));
         }
         if (this.hasChest())
         {
@@ -363,5 +462,52 @@ public abstract class FakeHorse extends FakeAnimal implements RideableInventory,
         {
             this.trapTime = nbt.getInt("SkeletonTrapTime");
         }
+    }
+
+    public void writeCustomDataToNbt(NbtCompound nbt)
+    {
+        nbt.putBoolean("EatingHaystack", this.isEatingGrass());
+        nbt.putBoolean("Bred", this.isBred());
+        nbt.putInt("Temper", this.getTemper());
+        nbt.putBoolean("Tame", this.isTame());
+        if (this.getOwnerUuid() != null)
+        {
+            nbt.putUuid("Owner", this.getOwnerUuid());
+        }
+
+        if (!this.items.getStack(0).isEmpty())
+        {
+            nbt.put("SaddleItem", this.items.getStack(0).toNbt(this.getRegistryManager()));
+        }
+
+        if (this.getLastPoseTick() > 0L)
+        {
+            nbt.putLong("LastPoseTick", this.getLastPoseTick());
+        }
+        if (this.hasChest())
+        {
+            nbt.putBoolean("ChestedHorse", this.hasChest());
+            NbtList nbtList = new NbtList();
+
+            for (int i = 1; i < this.items.size(); ++i)
+            {
+                ItemStack itemStack = this.items.getStack(i);
+                if (!itemStack.isEmpty())
+                {
+                    NbtCompound nbtCompound = new NbtCompound();
+                    nbtCompound.putByte("Slot", (byte) (i - 1));
+                    nbtList.add(itemStack.toNbt(this.getRegistryManager(), nbtCompound));
+                }
+            }
+
+            nbt.put("Items", nbtList);
+        }
+        if (this.isTrapped())
+        {
+            nbt.putBoolean("SkeletonTrap", this.isTrapped());
+            nbt.putInt("SkeletonTrapTime", this.trapTime);
+        }
+
+        super.writeCustomDataToNbt(nbt);
     }
 }

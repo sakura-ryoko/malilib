@@ -1,9 +1,6 @@
 package fi.dy.masa.malilib.sync.fe;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableList;
@@ -26,7 +23,7 @@ import net.minecraft.world.entity.EntityLike;
 
 import fi.dy.masa.malilib.MaLiLib;
 
-public abstract class FakeEntity implements EntityLike
+public class FakeEntity implements EntityLike, IFakeEntityHolder
 {
     private final static Logger LOGGER = MaLiLib.logger;
     private EntityType<?> type;
@@ -71,6 +68,19 @@ public abstract class FakeEntity implements EntityLike
         this.chunkPos = ChunkPos.ORIGIN;
         this.passengerList = ImmutableList.of();
         this.loaded = false;
+    }
+
+    public FakeEntity(Entity input)
+    {
+        this(input.getType(), input.getWorld(), input.getId());
+        this.copyFromEntity(input);
+    }
+
+    public FakeEntity(EntityType<?> type, World world, int entityId, @Nonnull NbtCompound nbt)
+    {
+        this(type, world, entityId);
+        this.copyFromNbt(nbt);
+        this.readCustomDataFromNbt(nbt);
     }
 
     public EntityType<?> getType()
@@ -176,8 +186,6 @@ public abstract class FakeEntity implements EntityLike
         this.setPosition(x, y, z);
         this.setYaw(yaw);
         this.setPitch(pitch);
-        //this.resetPosition();
-        //this.refreshPosition();
     }
 
     public void setPitch(float pitch)
@@ -260,7 +268,7 @@ public abstract class FakeEntity implements EntityLike
     @Nullable
     public Entity getFirstPassenger()
     {
-        return this.passengerList.isEmpty() ? null : (Entity) this.passengerList.get(0);
+        return this.passengerList.isEmpty() ? null : this.passengerList.getFirst();
     }
 
     public boolean hasPassenger(Entity passenger)
@@ -484,16 +492,41 @@ public abstract class FakeEntity implements EntityLike
         return null;
     }
 
-    public void readNbtInternal(@Nonnull NbtCompound nbt)
+    public void readCustomDataFromNbt(NbtCompound nbt) {}
+
+    protected void readCustomDataFromNbtInternal(NbtCompound nbt)
     {
-        if (nbt.isEmpty())
+        this.nbt = new NbtCompound();
+
+        if (!nbt.isEmpty())
         {
+            this.nbt.copyFrom(nbt);
+        }
+    }
+
+    public void writeCustomDataToNbt(NbtCompound nbt) {}
+
+    protected void writeCustomDataToNbtInternal(NbtCompound nbt)
+    {
+        if (this.nbt == null || this.nbt.isEmpty())
+        {
+            nbt.copyFrom(new NbtCompound());
             this.nbt = new NbtCompound();
         }
         else
         {
-            this.nbt.copyFrom(nbt);
+            nbt.copyFrom(this.nbt);
         }
+    }
+
+    public NbtCompound getNbt()
+    {
+        if (this.nbt == null)
+        {
+            this.nbt = new NbtCompound();
+        }
+
+        return this.nbt;
     }
 
     public void readNbt(NbtCompound nbt)
@@ -559,8 +592,7 @@ public abstract class FakeEntity implements EntityLike
                 }
             }
 
-            this.readCustomDataFromNbt(nbt);
-            this.readNbtInternal(nbt);
+            this.readCustomDataFromNbtInternal(nbt);
         }
         catch (Throwable err)
         {
@@ -568,8 +600,7 @@ public abstract class FakeEntity implements EntityLike
         }
     }
 
-    @Nullable
-    public NbtCompound writeNbt(NbtCompound nbt)
+    public void writeNbt(NbtCompound nbt)
     {
         try
         {
@@ -645,7 +676,6 @@ public abstract class FakeEntity implements EntityLike
                 nbt.put("Tags", nbtList);
             }
 
-            this.writeCustomDataToNbt(nbt);
             if (this.hasPassengers())
             {
                 nbtList = new NbtList();
@@ -665,25 +695,11 @@ public abstract class FakeEntity implements EntityLike
                 }
             }
 
-            this.writeNbtInternal(nbt);
-            return nbt;
+            this.readCustomDataFromNbtInternal(nbt);
         }
         catch (Throwable err)
         {
             LOGGER.error("FakeEntity#writeNbt(): Error writing Nbt, reason: [{}]", err.getMessage());
-            return null;
-        }
-    }
-
-    public void writeNbtInternal(@Nonnull NbtCompound nbt)
-    {
-        if (this.nbt.isEmpty())
-        {
-            nbt.copyFrom(new NbtCompound());
-        }
-        else
-        {
-            nbt.copyFrom(this.nbt);
         }
     }
 
@@ -745,10 +761,6 @@ public abstract class FakeEntity implements EntityLike
         return type.isSaveable() && id != null ? id.toString() : null;
     }
 
-    protected abstract void readCustomDataFromNbt(NbtCompound nbt);
-
-    protected abstract void writeCustomDataToNbt(NbtCompound nbt);
-
     @Nullable
     public FakeEntity createEmpty(EntityType<?> type, World world, int entityId)
     {
@@ -765,29 +777,19 @@ public abstract class FakeEntity implements EntityLike
         return this;
     }
 
-    @Nullable
-    public FakeEntity createFromNbt(EntityType<?> type, int entityId, @Nonnull NbtCompound nbt)
+    public void copyFromNbt(@Nonnull NbtCompound nbt)
     {
-        this.setType(type);
-        this.setId(entityId);
-        Identifier identifier = EntityType.getId(type);
-
-        if (identifier != null)
-        {
-            nbt.putString("id", identifier.toString());
-        }
+        Optional<EntityType<?>> opt = EntityType.fromNbt(nbt);
+        opt.ifPresent(this::setType);
         this.readNbt(nbt);
-
-        return this;
     }
 
-    @Nullable
-    public FakeEntity copyFromEntity(@Nonnull Entity entity)
+    public void copyFromEntity(@Nonnull Entity entity)
     {
         Entity.RemovalReason reason = entity.getRemovalReason();
         if (reason != null && !reason.shouldSave())
         {
-            return null;
+            return;
         }
 
         EntityType<?> type = entity.getType();
@@ -801,9 +803,8 @@ public abstract class FakeEntity implements EntityLike
         }
         this.setType(type);
         this.setId(id);
-        this.readNbt(nbt);
 
-        return this;
+        this.readNbt(nbt);
     }
 
     public void onRemoved()
