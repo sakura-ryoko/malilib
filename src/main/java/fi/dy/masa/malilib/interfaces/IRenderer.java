@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.interfaces;
 import java.util.function.Supplier;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.LayeredDrawer;
 import net.minecraft.util.profiler.Profiler;
 import org.joml.Matrix4f;
 
@@ -18,7 +17,7 @@ public interface IRenderer
     /**
      * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, drawer, profiler
      */
-    default void onRenderGameOverlayPostAdvanced(DrawContext drawContext, float partialTicks, LayeredDrawer layeredDrawer, Profiler profiler, MinecraftClient mc) {}
+    default void onRenderGameOverlayPostAdvanced(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc) {}
 
     /**
      * Called after the vanilla overlays have been rendered (Original)

@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.event;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.gui.LayeredDrawer;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.Profilers;
 import org.jetbrains.annotations.ApiStatus;
@@ -84,7 +83,7 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks, LayeredDrawer layeredDrawer)
+    public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)
     {
         Profiler profiler = Profilers.get();
 
@@ -95,7 +94,7 @@ public class RenderEventHandler implements IRenderDispatcher
             for (IRenderer renderer : this.overlayRenderers)
             {
                 profiler.push(renderer.getProfilerSectionSupplier());
-                renderer.onRenderGameOverlayPostAdvanced(drawContext, partialTicks, layeredDrawer, profiler, mc);
+                renderer.onRenderGameOverlayPostAdvanced(drawContext, partialTicks, profiler, mc);
                 renderer.onRenderGameOverlayPost(drawContext);
                 profiler.pop();
             }
