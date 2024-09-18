@@ -5,10 +5,7 @@ import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.Color4f;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.gl.ShaderProgramKey;
-import net.minecraft.client.gl.ShaderProgramKeys;
-import net.minecraft.client.gl.VertexBuffer;
+import net.minecraft.client.gl.*;
 import net.minecraft.client.render.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -75,11 +72,11 @@ public class TestWalls implements AutoCloseable
 
         if (VERTEX_1 == null || VERTEX_1.isClosed())
         {
-            VERTEX_1 = new VertexBuffer(VertexBuffer.Usage.STATIC);
+            VERTEX_1 = new VertexBuffer(Usage.STATIC_WRITE);
         }
         if (VERTEX_2 == null || VERTEX_2.isClosed())
         {
-            VERTEX_2 = new VertexBuffer(VertexBuffer.Usage.STATIC);
+            VERTEX_2 = new VertexBuffer(Usage.STATIC_WRITE);
         }
 
         BUFFER_1 = TESSELLATOR_1.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
