@@ -20,16 +20,18 @@ import net.minecraft.world.World;
 
 public class FakeMerchant extends FakePassive implements InventoryOwner, Merchant, IFakeMerchant
 {
+    public static final int INVENTORY_SIZE = 8;
     @Nullable
     private PlayerEntity customer;
     @Nullable
     protected TradeOfferList offers;
-    private final SimpleInventory inventory = new SimpleInventory(8);
+    private SimpleInventory inventory;
     private int exp;
 
     public FakeMerchant(EntityType<?> type, World world, int entityId)
     {
         super(type, world, entityId);
+        this.inventory = new SimpleInventory(INVENTORY_SIZE);
     }
 
     public FakeMerchant(Entity input)
@@ -38,6 +40,7 @@ public class FakeMerchant extends FakePassive implements InventoryOwner, Merchan
 
         if (input instanceof MerchantEntity)
         {
+            this.inventory = new SimpleInventory(INVENTORY_SIZE);
             this.readCustomDataFromNbt(this.getNbt());
         }
     }
@@ -167,6 +170,10 @@ public class FakeMerchant extends FakePassive implements InventoryOwner, Merchan
             dr.resultOrPartial().ifPresent((offers) -> this.offers = offers);
         }
 
+        if (this.inventory == null)
+        {
+            this.inventory = new SimpleInventory(INVENTORY_SIZE);
+        }
         this.readInventory(nbt, this.getRegistryManager());
     }
 }

@@ -18,7 +18,7 @@ import net.minecraft.world.World;
 public class FakeVillager extends FakeMerchant implements VillagerDataContainer
 {
     private VillagerData data;
-    private final VillagerGossips gossip;
+    private VillagerGossips gossip;
     private long lastGossipDecayTime;
     private int experience;
     private int foodLevel;
@@ -134,6 +134,11 @@ public class FakeVillager extends FakeMerchant implements VillagerDataContainer
         if (nbt.contains("FoodLevel", 1))
         {
             this.foodLevel = nbt.getByte("FoodLevel");
+        }
+
+        if (this.gossip == null)
+        {
+            this.gossip = new VillagerGossips();
         }
 
         NbtList nbtList = nbt.getList("Gossips", 10);
