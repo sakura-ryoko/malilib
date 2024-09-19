@@ -15,16 +15,10 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class FakeContainer extends FakeBlockEntity implements Inventory
+public class FakeContainer extends FakeBlockEntity implements Inventory, IFakeContainer
 {
     private static final int MAX_SLOTS = 256;
-    private final DefaultedList<ItemStack> stacks;
-
-    public FakeContainer(BlockEntityType<?> type, BlockPos pos, BlockState state)
-    {
-        super(type, pos, state);
-        this.stacks = DefaultedList.ofSize(MAX_SLOTS, ItemStack.EMPTY);
-    }
+    private DefaultedList<ItemStack> stacks;
 
     public FakeContainer(BlockEntityType<?> type, BlockPos pos, BlockState state, int maxSlots)
     {
@@ -32,21 +26,31 @@ public class FakeContainer extends FakeBlockEntity implements Inventory
         this.stacks = DefaultedList.ofSize(maxSlots, ItemStack.EMPTY);
     }
 
+    public FakeContainer(BlockEntityType<?> type, BlockPos pos, BlockState state)
+    {
+        this(type, pos, state, MAX_SLOTS);
+    }
+
     public FakeContainer(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        this.setWorld(world);
-        this.copyFromBlockEntity(be, world.getRegistryManager());
+        //this.setWorld(world);
+        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
-    public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
+    public FakeContainer createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeContainer(BlockEntityType.CHEST, pos, state);
     }
 
-    public DefaultedList<ItemStack> getStacks()
+    public DefaultedList<ItemStack> getHeldStacks()
     {
         return this.stacks;
+    }
+
+    public void setHeldStacks(DefaultedList<ItemStack> inventory)
+    {
+        this.stacks = inventory;
     }
 
     public int size()

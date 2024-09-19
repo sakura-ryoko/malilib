@@ -39,8 +39,8 @@ public class FakeCrafter extends FakeLootableContainer implements RecipeInputInv
     public FakeCrafter(BlockEntity be, World world)
     {
         this(be.getPos(), be.getCachedState());
-        this.setWorld(world);
-        this.copyFromBlockEntity(be, world.getRegistryManager());
+        //this.setWorld(world);
+        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
     @Override

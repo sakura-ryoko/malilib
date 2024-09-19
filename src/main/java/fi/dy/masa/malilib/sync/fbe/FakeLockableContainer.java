@@ -24,31 +24,31 @@ import net.minecraft.world.World;
 public class FakeLockableContainer extends FakeContainer implements Inventory, IFakeContainer
 {
     private static final int MAX_SLOTS = 256;
-    private DefaultedList<ItemStack> inventory;
+    protected DefaultedList<ItemStack> inventory;
     private ContainerLock lock;
     @Nullable
     private Text customName;
-
-    public FakeLockableContainer(BlockEntityType<?> type, BlockPos pos, BlockState state)
-    {
-        super(type, pos, state);
-        this.inventory = DefaultedList.ofSize(MAX_SLOTS, ItemStack.EMPTY);
-    }
 
     public FakeLockableContainer(BlockEntityType<?> type, BlockPos pos, BlockState state, int maxSlots)
     {
         super(type, pos, state, maxSlots);
         this.inventory = DefaultedList.ofSize(maxSlots, ItemStack.EMPTY);
+        this.lock = ContainerLock.EMPTY;
+    }
+
+    public FakeLockableContainer(BlockEntityType<?> type, BlockPos pos, BlockState state)
+    {
+        this(type, pos, state, MAX_SLOTS);
     }
 
     public FakeLockableContainer(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        this.setWorld(world);
-        this.copyFromBlockEntity(be, world.getRegistryManager());
+        //this.setWorld(world);
+        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
-    public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
+    public FakeLockableContainer createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeLockableContainer(BlockEntityType.BARREL, pos, state);
     }
@@ -64,6 +64,9 @@ public class FakeLockableContainer extends FakeContainer implements Inventory, I
         return this.lock;
     }
 
+    public int size() {
+        return this.inventory.size();
+    }
 
     @Override
     public DefaultedList<ItemStack> getHeldStacks()
@@ -122,6 +125,11 @@ public class FakeLockableContainer extends FakeContainer implements Inventory, I
         this.getHeldStacks().set(slot, stack);
         stack.capCount(this.getMaxCount(stack));
         this.markDirty();
+    }
+
+    public boolean isValid(int slot, ItemStack stack)
+    {
+        return true;
     }
 
     public boolean canPlayerUse(PlayerEntity player)

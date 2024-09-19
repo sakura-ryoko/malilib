@@ -24,11 +24,11 @@ public class FakeNamed extends FakeBlockEntity
     public FakeNamed(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        this.setWorld(world);
-        this.copyFromBlockEntity(be, world.getRegistryManager());
+        //this.setWorld(world);
+        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
-    public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
+    public FakeNamed createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeNamed(BlockEntityType.ENCHANTING_TABLE, pos, state);
     }

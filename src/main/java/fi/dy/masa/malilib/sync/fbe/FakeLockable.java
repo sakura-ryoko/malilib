@@ -16,18 +16,19 @@ public class FakeLockable extends FakeNamed
     public FakeLockable(BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
         super(type, pos, state);
+        this.lock = ContainerLock.EMPTY;
     }
 
     public FakeLockable(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        this.setWorld(world);
-        this.copyFromBlockEntity(be, world.getRegistryManager());
+        //this.setWorld(world);
+        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
-    public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
+    public FakeLockable createBlockEntity(BlockPos pos, BlockState state)
     {
-        return new FakeContainer(BlockEntityType.BEACON, pos, state);
+        return new FakeLockable(BlockEntityType.BEACON, pos, state);
     }
 
     public ContainerLock getLock()

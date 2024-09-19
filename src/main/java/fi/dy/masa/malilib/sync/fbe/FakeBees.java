@@ -22,24 +22,25 @@ public class FakeBees extends FakeBlockEntity
     private final List<FakeBee> bees = Lists.newArrayList();
     private BlockPos flowerPos;
 
-    public FakeBees(BlockPos pos, BlockState state)
-    {
-        super(BlockEntityType.BEEHIVE, pos, state);
-    }
-
     public FakeBees(BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
         super(type, pos, state);
+        this.flowerPos = BlockPos.ORIGIN;
+    }
+
+    public FakeBees(BlockPos pos, BlockState state)
+    {
+        this(BlockEntityType.BEEHIVE, pos, state);
     }
 
     public FakeBees(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        this.setWorld(world);
-        this.copyFromBlockEntity(be, world.getRegistryManager());
+        //this.setWorld(world);
+        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
-    public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
+    public FakeBees createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakeBees(pos, state);
     }
@@ -111,7 +112,7 @@ public class FakeBees extends FakeBlockEntity
     static class FakeBee
     {
         private final BeehiveBlockEntity.BeeData data;
-        private int ticksInHive;
+        private final int ticksInHive;
 
         FakeBee(BeehiveBlockEntity.BeeData data)
         {

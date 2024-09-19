@@ -50,8 +50,7 @@ public class FakeBlockEntity
     public FakeBlockEntity(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        this.setWorld(world);
-        this.copyFromBlockEntity(be, world.getRegistryManager());
+        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
     public BlockEntityType<?> getType()
@@ -137,18 +136,13 @@ public class FakeBlockEntity
 
     public final void read(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
     {
+        this.readPos(nbt);
         this.readNbt(nbt, registry);
         FakeBlockEntity.Components.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt).resultOrPartial((error) ->
                                   LOGGER.warn("Failed to load components: {}", error)).ifPresent((components) ->
                                         this.components = components);
     }
 
-    public final void readBasicNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
-    {
-        this.readNbt(nbt, registry);
-    }
-
-    // Plain stupid simple way to read / write the FBE's NBT data.
     public void readNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
     {
         if (nbt.isEmpty())
@@ -162,18 +156,6 @@ public class FakeBlockEntity
         }
     }
 
-    public void writeNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
-    {
-        if (this.nbt.isEmpty())
-        {
-            nbt.copyFrom(new NbtCompound());
-        }
-        else
-        {
-            nbt.copyFrom(this.nbt);
-        }
-    }
-
     public NbtCompound getNbt()
     {
         if (this.nbt == null)
@@ -182,6 +164,19 @@ public class FakeBlockEntity
         }
 
         return this.nbt;
+    }
+
+    public void writeNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
+    {
+        if (this.nbt.isEmpty())
+        {
+            nbt.copyFrom(new NbtCompound());
+        }
+        else
+        {
+            nbt = new NbtCompound();
+            nbt.copyFrom(this.nbt);
+        }
     }
 
     public final NbtCompound createNbtWithId(RegistryWrapper.WrapperLookup registry)
@@ -199,20 +194,13 @@ public class FakeBlockEntity
         return newNbt;
     }
 
-    public final NbtCompound createBasicNbtWithId(RegistryWrapper.WrapperLookup registry)
-    {
-        NbtCompound newNbt = this.createBasicNbt(registry);
-        this.writeIdToNbt(newNbt);
-        return newNbt;
-    }
-
     public NbtCompound createNbt(RegistryWrapper.WrapperLookup registry)
     {
         NbtCompound newNbt = new NbtCompound();
         this.writeNbt(newNbt, registry);
         FakeBlockEntity.Components.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), this.components).resultOrPartial((snbt) ->
-                                                                                                                                LOGGER.warn("Failed to save components: {}", snbt)).ifPresent((nbt) ->
-                                                                                                                                                                                                      newNbt.copyFrom((NbtCompound) nbt));
+                    LOGGER.warn("Failed to save components: {}", snbt)).ifPresent((nbt) ->
+                    newNbt.copyFrom((NbtCompound) nbt));
 
         return newNbt;
     }
@@ -228,11 +216,13 @@ public class FakeBlockEntity
         }
 
         this.putIdString(nbt, identifier.toString());
+        this.putPos(nbt);
     }
 
     public void writeIdToNbt(@Nonnull NbtCompound nbt, @Nonnull BlockEntityType<?> type)
     {
         this.putIdString(nbt, Objects.requireNonNull(BlockEntityType.getId(type)).toString());
+        this.putPos(nbt);
     }
 
     public void putIdString(@Nonnull NbtCompound nbt, String id)
@@ -242,18 +232,21 @@ public class FakeBlockEntity
 
     public void putPos(@Nonnull NbtCompound nbt)
     {
-        this.writeIdToNbt(nbt);
+        if (!nbt.contains("id"))
+        {
+            this.writeIdToNbt(nbt);
+        }
         nbt.putInt("x", this.pos.getX());
         nbt.putInt("y", this.pos.getY());
         nbt.putInt("z", this.pos.getZ());
     }
 
-    public void setStackNbt(ItemStack stack, RegistryWrapper.WrapperLookup registry)
+    public void readPos(@Nonnull NbtCompound nbt)
     {
-        NbtCompound newNbt = this.createBasicNbt(registry);
-        stack.clearComponentChanges();
-        BlockItem.setBlockEntityData(stack, this.getType(), newNbt);
-        stack.applyComponentsFrom(this.createComponentMap());
+        if (nbt.contains("x") && nbt.contains("y") && nbt.contains("z"))
+        {
+            this.setPos(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")).toImmutable());
+        }
     }
 
     @Nullable
@@ -288,8 +281,8 @@ public class FakeBlockEntity
         return null;
     }
 
-    @Nullable
-    public FakeBlockEntity copyFromBlockEntity(BlockEntity be, RegistryWrapper.WrapperLookup registry)
+    @SuppressWarnings("unchecked")
+    public <T extends FakeBlockEntity> T copyFromBlockEntity(BlockEntity be, RegistryWrapper.WrapperLookup registry)
     {
         BlockEntityType<?> type = be.getType();
         BlockPos pos = be.getPos();
@@ -303,8 +296,45 @@ public class FakeBlockEntity
         fbe.setComponents(map);
         fbe.readNbt(nbt, registry);
 
-        return fbe;
+        return (T) fbe;
     }
+
+    protected void copyFromBlockEntityInternal(BlockEntity be, RegistryWrapper.WrapperLookup registry)
+    {
+        //this.setType(be.getType());
+        //this.setPos(be.getPos());
+        //this.setState(be.getCachedState());
+        this.setWorld(be.getWorld());
+        //this.setComponents(be.getComponents());
+        this.read(be.createNbtWithIdentifyingData(registry), registry);
+        this.setLoaded(true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public @Nullable <T extends BlockEntity> T copyToBlockEntity(RegistryWrapper.WrapperLookup registry)
+    {
+        NbtCompound nbt = this.createNbtWithId(registry);
+        var be1 = this.getType().get(this.getWorld(), this.getPos());
+
+        // Copy to existing
+        if (be1 != null)
+        {
+            be1.read(nbt, registry);
+            return (T) be1;
+        }
+
+        // Create New
+        var be2 = this.getType().instantiate(this.getPos(), this.getState());
+
+        if (be2 != null)
+        {
+            be2.read(nbt, registry);
+            return (T) be2;
+        }
+
+        return null;
+    }
+
 
     @Nullable
     public static Text tryParseCustomName(String json, RegistryWrapper.WrapperLookup registries)
@@ -325,12 +355,20 @@ public class FakeBlockEntity
         // NO-OP
     }
 
-    public final void readComponents(ItemStack stack)
+    public final void readComponentsFromStack(ItemStack stack)
     {
-        this.readComponents(stack.getDefaultComponents(), stack.getComponentChanges());
+        this.readComponentsInternal(stack.getDefaultComponents(), stack.getComponentChanges());
     }
 
-    public final void readComponents(ComponentMap defaults, ComponentChanges changes)
+    public void setStackNbt(ItemStack stack, RegistryWrapper.WrapperLookup registry)
+    {
+        NbtCompound newNbt = this.createBasicNbt(registry);
+        stack.clearComponentChanges();
+        BlockItem.setBlockEntityData(stack, this.getType(), newNbt);
+        stack.applyComponentsFrom(this.createComponentMap());
+    }
+
+    public final void readComponentsInternal(ComponentMap defaults, ComponentChanges changes)
     {
         final Set<ComponentType<?>> set = new HashSet<>();
         final ComponentMap componentMap = MergedComponentMap.create(defaults, changes);

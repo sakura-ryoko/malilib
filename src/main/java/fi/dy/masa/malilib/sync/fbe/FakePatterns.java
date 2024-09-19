@@ -24,16 +24,17 @@ public class FakePatterns extends FakeNamed
     public FakePatterns(BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
         super(type, pos, state);
+        this.patterns = BannerPatternsComponent.DEFAULT;
     }
 
     public FakePatterns(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        this.setWorld(world);
-        this.copyFromBlockEntity(be, world.getRegistryManager());
+        //this.setWorld(world);
+        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
-    public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
+    public FakePatterns createBlockEntity(BlockPos pos, BlockState state)
     {
         return new FakePatterns(BlockEntityType.BANNER, pos, state);
     }

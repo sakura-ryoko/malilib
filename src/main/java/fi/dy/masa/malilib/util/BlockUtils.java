@@ -232,6 +232,10 @@ public class BlockUtils
         {
             return (T) new FakeCrafter(be, world);
         }
+        if (be instanceof AbstractFurnaceBlockEntity)
+        {
+            return (T) new FakeFurnace(be, world);
+        }
         if (be instanceof LockableContainerBlockEntity)
         {
             return (T) new FakeLockableContainer(be, world);
