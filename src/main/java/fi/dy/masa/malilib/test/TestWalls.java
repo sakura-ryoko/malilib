@@ -72,11 +72,11 @@ public class TestWalls implements AutoCloseable
 
         if (VERTEX_1 == null || VERTEX_1.isClosed())
         {
-            VERTEX_1 = new VertexBuffer(Usage.STATIC_WRITE);
+            VERTEX_1 = new VertexBuffer(GlUsage.STATIC_WRITE);
         }
         if (VERTEX_2 == null || VERTEX_2.isClosed())
         {
-            VERTEX_2 = new VertexBuffer(Usage.STATIC_WRITE);
+            VERTEX_2 = new VertexBuffer(GlUsage.STATIC_WRITE);
         }
 
         BUFFER_1 = TESSELLATOR_1.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
