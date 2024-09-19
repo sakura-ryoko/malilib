@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin.test;
+package fi.dy.masa.malilib.mixin;
 
 import net.minecraft.client.network.DataQueryHandler;
 import org.spongepowered.asm.mixin.Mixin;

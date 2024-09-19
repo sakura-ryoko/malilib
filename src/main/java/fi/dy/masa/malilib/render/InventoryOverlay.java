@@ -468,6 +468,7 @@ public class InventoryOverlay
 
                     if (stack.isEmpty() == false)
                     {
+                        //System.out.printf("renderInventoryStacks - slot[%d/%d]: [%s]\n", slot, slots, stack);
                         renderStackAt(stack, x, y, 1, mc, drawContext, mouseX, mouseY);
                     }
 
@@ -566,6 +567,7 @@ public class InventoryOverlay
 
     public static void renderStackAt(ItemStack stack, float x, float y, float scale, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
     {
+        //String count = stack.getCount() > 1 ? Integer.toString(stack.getCount()) : null;
         MatrixStack matrixStack = drawContext.getMatrices();
         matrixStack.push();
         matrixStack.translate(x, y, 0.f);
@@ -577,6 +579,7 @@ public class InventoryOverlay
         drawContext.drawItem(stack, 0, 0);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
+        //System.out.printf("renderStackAt - [%s] // [%s]\n", stack, count);
         drawContext.drawItemInSlot( mc.textRenderer, stack, 0, 0);
 
         RenderUtils.color(1f, 1f, 1f, 1f);

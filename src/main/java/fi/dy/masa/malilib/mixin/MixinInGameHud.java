@@ -23,12 +23,18 @@ public abstract class MixinInGameHud
     @Inject(method = "<init>", at = @At("TAIL"))
     private void malilib_onInit(CallbackInfo info)
     {
-        this.layeredDrawer.addLayer(this::malilib_onGameOverlayPost);
+        this.layeredDrawer.addLayer(this::malilib_renderGameOverlay);
     }
 
-    //@Inject(method = "render", at = @At("RETURN"))
+    @Inject(method = "render", at = @At("TAIL"))
+    private void malilib_onGameOverlayPost(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci)
+    {
+        this.malilib_renderGameOverlay(context, tickCounter);
+        //((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(context, this.client, tickCounter.getTickDelta(false));
+    }
+
     @Unique
-    private void malilib_onGameOverlayPost(DrawContext context, RenderTickCounter tickCounter)
+    private void malilib_renderGameOverlay(DrawContext context, RenderTickCounter tickCounter)
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(context, this.client, tickCounter.getTickDelta(false));
     }

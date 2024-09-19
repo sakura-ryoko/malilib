@@ -26,8 +26,8 @@ public class MaLiLibInitHandler implements IInitializationHandler
         IRenderer renderer = new TestRenderHandler();
         RenderEventHandler.getInstance().registerGameOverlayRenderer(renderer);
         RenderEventHandler.getInstance().registerTooltipLastRenderer(renderer);
-        RenderEventHandler.getInstance().registerWorldPreWeatherRenderer(renderer);
-        RenderEventHandler.getInstance().registerWorldLastRenderer(renderer);
+        //RenderEventHandler.getInstance().registerWorldPreWeatherRenderer(renderer);
+        //RenderEventHandler.getInstance().registerWorldLastRenderer(renderer);
 
         SyncHandler.getInstance().registerSyncProvider(new TestDataSync());
     }

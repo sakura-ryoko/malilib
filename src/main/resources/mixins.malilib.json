@@ -19,9 +19,9 @@
     "MixinPiglinEntity",
     "MixinSimpleInventory",
     "MixinWorldRenderer",
-    "test.IMixinAbstractHorseEntity",
-    "test.IMixinDataQueryHandler",
-    "test.MixinClientPlayNetworkHandler_NbtQuery"
+    "IMixinAbstractHorseEntity",
+    "IMixinDataQueryHandler",
+    "MixinClientPlayNetworkHandler_NbtQuery"
   ],
   "injectors": {
     "defaultRequire": 1

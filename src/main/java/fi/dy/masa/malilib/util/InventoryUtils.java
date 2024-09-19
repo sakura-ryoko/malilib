@@ -380,13 +380,13 @@ public class InventoryUtils
      * @param stackShulkerBox
      * @return
      */
-    public static boolean shulkerBoxHasItems(ItemStack stackShulkerBox)
+    public static boolean shulkerBoxHasItems(ItemStack stack)
     {
-        ContainerComponent countContainer = stackShulkerBox.getComponents().get(DataComponentTypes.CONTAINER);
+        ContainerComponent container = stack.getComponents().get(DataComponentTypes.CONTAINER);
 
-        if (countContainer != null)
+        if (container != null)
         {
-            return countContainer.iterateNonEmpty().iterator().hasNext();
+            return container.iterateNonEmpty().iterator().hasNext();
         }
 
         return false;
@@ -504,11 +504,13 @@ public class InventoryUtils
         {
             Iterator<ItemStack> iter = container.streamNonEmpty().iterator();
             DefaultedList<ItemStack> items = DefaultedList.ofSize((int) container.streamNonEmpty().count());
+            int i = 0;
 
             // Using 'container.copyTo(items)' will break Litematica's Material List
             while (iter.hasNext())
             {
-                items.add(iter.next());
+                items.add(iter.next().copy());
+                i++;
             }
 
             return items;
@@ -549,14 +551,18 @@ public class InventoryUtils
 
             for (int i = 0; i < slotCount; i++)
             {
+                ItemStack entry;
+
                 if (iter.hasNext())
                 {
-                    items.add(iter.next());
+                    entry = iter.next();
                 }
                 else
                 {
-                    items.add(ItemStack.EMPTY);
+                    entry = ItemStack.EMPTY;
                 }
+
+                items.add(entry.copy());
             }
 
             return items;

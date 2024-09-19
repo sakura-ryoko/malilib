@@ -1179,12 +1179,12 @@ public class RenderUtils
         matrix4fStack.translate((float) (-x), (float) (-y), (float) ((-z) + 0.510));
     }
 
-    public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions)
+    public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions, DrawContext drawContext)
     {
-        renderMapPreview(stack, x, y, dimensions, true);
+        renderMapPreview(stack, x, y, dimensions, true, drawContext);
     }
 
-    public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions, boolean requireShift)
+    public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions, boolean requireShift, DrawContext drawContext)
     {
         if (stack.getItem() instanceof FilledMapItem && (!requireShift || GuiBase.isShiftDown()))
         {
@@ -1195,18 +1195,29 @@ public class RenderUtils
             int x1 = x + 8;
             int x2 = x1 + dimensions;
             int z = 300;
+            int uv = 0xF000F0;
 
             MapState mapState = FilledMapItem.getMapState(stack, mc().world);
             ComponentMap data = stack.getComponents();
             MapIdComponent mapId = data.get(DataComponentTypes.MAP_ID);
 
             Identifier bgTexture = mapState == null ? TEXTURE_MAP_BACKGROUND : TEXTURE_MAP_BACKGROUND_CHECKERBOARD;
-            bindTexture(bgTexture);
-            setupBlend();
+            //bindTexture(bgTexture);
+            VertexConsumer vertex = bindTexture(bgTexture, drawContext);
+            Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
+            //setupBlend();
 
-            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
+            vertex.vertex(matrix4f, x1, y2, z).color(-1).texture(0.0f, 1.0f).light(uv);
+            vertex.vertex(matrix4f, x2, y2, z).color(-1).texture(1.0f, 1.0f).light(uv);
+            vertex.vertex(matrix4f, x2, y1, z).color(-1).texture(1.0f, 0.0f).light(uv);
+            vertex.vertex(matrix4f, x1, y1, z).color(-1).texture(0.0f, 0.0f).light(uv);
+
+            forceDraw(drawContext);
+
+            //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
             //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             //RenderSystem.applyModelViewMatrix();
+            /*
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
             BuiltBuffer builtBuffer;
@@ -1225,6 +1236,7 @@ public class RenderUtils
             catch (Exception ignored) { }
 
             RenderSystem.disableBlend();
+             */
 
             if (mapState != null)
             {
@@ -1241,7 +1253,7 @@ public class RenderUtils
 
                 MapRenderState mapRenderState = new MapRenderState();
                 mc().getMapRenderer().update(mapId, mapState, mapRenderState);
-                mc().getMapRenderer().draw(mapRenderState, matrixStack, consumer, false, 0xF000F0);
+                mc().getMapRenderer().draw(mapRenderState, matrixStack, consumer, false, uv);
                 consumer.draw();
                 matrixStack.pop();
             }
@@ -1294,7 +1306,7 @@ public class RenderUtils
             enableDiffuseLightingGui3D();
 
             Inventory inv = InventoryUtils.getAsInventory(items);
-            InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, ShulkerBoxBlockEntity.INVENTORY_SIZE, mc(), drawContext);
+            InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, (inv.size()), mc(), drawContext);
 
             matrix4fStack.popMatrix();
             //drawContext.getMatrices().pop();

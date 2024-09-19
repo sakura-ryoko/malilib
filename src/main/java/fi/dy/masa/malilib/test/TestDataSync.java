@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.interfaces.ISyncProvider;
-import fi.dy.masa.malilib.mixin.test.IMixinDataQueryHandler;
+import fi.dy.masa.malilib.mixin.IMixinDataQueryHandler;
 import fi.dy.masa.malilib.sync.cache.SyncCache;
 import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
 import fi.dy.masa.malilib.sync.fe.FakeEntity;

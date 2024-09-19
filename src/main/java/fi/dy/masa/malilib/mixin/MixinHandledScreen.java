@@ -25,6 +25,7 @@ public abstract class MixinHandledScreen
         if (this.focusedSlot != null && this.focusedSlot.hasStack())
         {
             ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(drawContext, this.focusedSlot.getStack(), x, y);
+            drawContext.draw();
         }
     }
 }

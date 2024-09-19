@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin.test;
+package fi.dy.masa.malilib.mixin;
 
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.nbt.NbtCompound;
