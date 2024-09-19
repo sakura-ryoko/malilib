@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.sync.fbe;
 
 import java.util.List;
+import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.BlockState;
@@ -12,9 +13,12 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
-public class FakeSherds extends FakeLootable implements SingleStackInventory.SingleStackBlockEntityInventory
+public class FakeSherds extends FakeLootableContainer implements SingleStackInventory.SingleStackBlockEntityInventory
 {
     private ItemStack stack;
     private Sherds sherds;
@@ -24,6 +28,13 @@ public class FakeSherds extends FakeLootable implements SingleStackInventory.Sin
         super(type, pos, state);
         this.stack = ItemStack.EMPTY;
         this.sherds = Sherds.DEFAULT;
+    }
+
+    public FakeSherds(BlockEntity be, World world)
+    {
+        this(be.getType(), be.getPos(), be.getCachedState());
+        this.setWorld(world);
+        this.copyFromBlockEntity(be, world.getRegistryManager());
     }
 
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
@@ -58,6 +69,35 @@ public class FakeSherds extends FakeLootable implements SingleStackInventory.Sin
     public void markDirty()
     {
         // NO-OP
+    }
+
+    public void writeNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
+    {
+        super.writeNbt(nbt, registries);
+        this.sherds.toNbt(nbt);
+
+        if (!this.writeLootTable(nbt) && !this.stack.isEmpty())
+        {
+            nbt.put("item", this.stack.toNbt(registries));
+        }
+    }
+
+    public void readNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
+    {
+        super.readNbt(nbt, registries);
+        this.sherds = Sherds.fromNbt(nbt);
+
+        if (!this.readLootTable(nbt))
+        {
+            if (nbt.contains("item", 10))
+            {
+                this.stack = ItemStack.fromNbt(registries, nbt.getCompound("item")).orElse(ItemStack.EMPTY);
+            }
+            else
+            {
+                this.stack = ItemStack.EMPTY;
+            }
+        }
     }
 
     protected void readComponents(ComponentsAccess components)

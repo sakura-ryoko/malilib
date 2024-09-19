@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.sync.fbe;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
@@ -12,21 +13,29 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
-public class FakeLootable extends FakeLockableContainer implements LootableInventory
+public class FakeLootableContainer extends FakeLockableContainer implements LootableInventory
 {
     @Nullable
     protected RegistryKey<LootTable> lootTable;
     protected long lootTableSeed = 0L;
 
-    public FakeLootable(BlockEntityType<?> type, BlockPos pos, BlockState state)
+    public FakeLootableContainer(BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
         super(type, pos, state);
     }
 
+    public FakeLootableContainer(BlockEntity be, World world)
+    {
+        this(be.getType(), be.getPos(), be.getCachedState());
+        this.setWorld(world);
+        this.copyFromBlockEntity(be, world.getRegistryManager());
+    }
+
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)
     {
-        return new FakeLootable(BlockEntityType.BARREL, pos, state);
+        return new FakeLootableContainer(BlockEntityType.BARREL, pos, state);
     }
 
     @Nullable

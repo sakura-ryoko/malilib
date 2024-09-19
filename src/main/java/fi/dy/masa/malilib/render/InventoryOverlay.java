@@ -1,7 +1,9 @@
 package fi.dy.masa.malilib.render;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.*;
@@ -42,6 +44,7 @@ public class InventoryOverlay
     public static final Identifier TEXTURE_HOPPER           = Identifier.ofVanilla("textures/gui/container/hopper.png");
     public static final Identifier TEXTURE_PLAYER_INV       = Identifier.ofVanilla("textures/gui/container/inventory.png");
     public static final Identifier TEXTURE_SINGLE_CHEST     = Identifier.ofVanilla("textures/gui/container/shulker_box.png");
+    public static final Identifier TEXTURE_DISABLED_SLOT    = Identifier.ofVanilla("container/crafter/disabled_slot");
 
     private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
     public static final InventoryProperties INV_PROPS_TEMP = new InventoryProperties();
@@ -425,6 +428,8 @@ public class InventoryOverlay
             INV_PROPS_TEMP.height = rows * 18 + 14;
         }
 
+        INV_PROPS_TEMP.lockedSlots = new HashSet<>();
+
         return INV_PROPS_TEMP;
     }
 
@@ -590,6 +595,25 @@ public class InventoryOverlay
         }
     }
 
+    public static void renderLockedSlotAt(float x, float y, float scale, DrawContext drawContext)
+    {
+        //# drawContext.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE_DISABLED_SLOT, x - 1, y - 1, 18, 18);
+        //RenderLayer renderLayer = RenderUtils.getTextureLayer(RenderLayer::getGuiTextured, TEXTURE_DISABLED_SLOT);
+        //VertexConsumer vertex = RenderUtils.getVertexConsumer(renderLayer, drawContext);
+
+        MatrixStack matrixStack = drawContext.getMatrices();
+        int color = -1;
+
+        matrixStack.push();
+        matrixStack.translate(x, y, 0.f);
+        matrixStack.scale(scale, scale, 1);
+
+        RenderUtils.color(1f, 1f, 1f, 1f);
+
+        drawContext.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE_DISABLED_SLOT, 0, 0, 18, 18, color);
+        matrixStack.pop();
+    }
+
     public static void renderStackToolTip(int x, int y, ItemStack stack, MinecraftClient mc, DrawContext drawContext)
     {
         List<Text> list = stack.getTooltip(Item.TooltipContext.DEFAULT, mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
@@ -618,6 +642,7 @@ public class InventoryOverlay
         public int slotsPerRow = 9;
         public int slotOffsetX = 8;
         public int slotOffsetY = 8;
+        public Set<Integer> lockedSlots = new HashSet<>();
     }
 
     public enum InventoryRenderType

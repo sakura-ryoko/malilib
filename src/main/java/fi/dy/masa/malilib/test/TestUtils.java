@@ -4,6 +4,8 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
@@ -14,7 +16,9 @@ import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
 import fi.dy.masa.malilib.sync.fe.FakeEntity;
+import fi.dy.masa.malilib.util.BlockUtils;
 import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
@@ -221,6 +225,16 @@ public class TestUtils
     {
         Inventory inv = InventoryUtils.getInventory(world, pos);
 
+        if (TestDataSync.getInstance().hasBlockEntity(pos))
+        {
+            FakeBlockEntity fbe = TestDataSync.getInstance().getBlockEntity(pos);
+
+            if (InventoryUtils.fbeHasItems(fbe))
+            {
+                inv = InventoryUtils.getAsInventory(InventoryUtils.getStoredItems(fbe));
+            }
+        }
+
         if ((inv == null || inv.isEmpty()) && !MinecraftClient.getInstance().isIntegratedServerRunning()
             && world.getBlockState(pos).getBlock() instanceof BlockEntityProvider
             && MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
@@ -229,6 +243,31 @@ public class TestUtils
         }
 
         return inv;
+    }
+
+    public @Nullable static FakeBlockEntity getFakeBlockEntity(World world, BlockPos pos)
+    {
+        BlockState state = world.getBlockState(pos);
+
+        if (TestDataSync.getInstance().hasBlockEntity(pos))
+        {
+            return TestDataSync.getInstance().getBlockEntity(pos);
+        }
+
+        if (world.isClient
+            && state.getBlock() instanceof BlockEntityProvider
+            && MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+        {
+            TestDataSync.getInstance().requestBlockEntityAt(world, pos);
+        }
+        else if (state.hasBlockEntity())
+        {
+            BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
+
+            return BlockUtils.toFakeBlockEntity(be, world);
+        }
+
+        return null;
     }
 
     public @Nullable static FakeEntity getFakeEntity(Entity entity)

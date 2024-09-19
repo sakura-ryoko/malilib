@@ -19,6 +19,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -27,7 +28,7 @@ import fi.dy.masa.malilib.MaLiLib;
 
 public class FakeBlockEntity
 {
-    private final static Logger LOGGER = MaLiLib.logger;
+    protected final static Logger LOGGER = MaLiLib.logger;
     private BlockEntityType<?> type;
     private BlockPos pos;
     private World world;
@@ -44,6 +45,13 @@ public class FakeBlockEntity
         this.state = state;
         this.checkSupport(state);
         this.loaded = false;
+    }
+
+    public FakeBlockEntity(BlockEntity be, World world)
+    {
+        this(be.getType(), be.getPos(), be.getCachedState());
+        this.setWorld(world);
+        this.copyFromBlockEntity(be, world.getRegistryManager());
     }
 
     public BlockEntityType<?> getType()
@@ -131,8 +139,8 @@ public class FakeBlockEntity
     {
         this.readNbt(nbt, registry);
         FakeBlockEntity.Components.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt).resultOrPartial((error) ->
-                                                                                                              LOGGER.warn("Failed to load components: {}", error)).ifPresent((components) ->
-                                                                                                                                                                                     this.components = components);
+                                  LOGGER.warn("Failed to load components: {}", error)).ifPresent((components) ->
+                                        this.components = components);
     }
 
     public final void readBasicNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
@@ -149,6 +157,7 @@ public class FakeBlockEntity
         }
         else
         {
+            this.nbt = new NbtCompound();
             this.nbt.copyFrom(nbt);
         }
     }
@@ -163,6 +172,16 @@ public class FakeBlockEntity
         {
             nbt.copyFrom(this.nbt);
         }
+    }
+
+    public NbtCompound getNbt()
+    {
+        if (this.nbt == null)
+        {
+            this.nbt = new NbtCompound();
+        }
+
+        return this.nbt;
     }
 
     public final NbtCompound createNbtWithId(RegistryWrapper.WrapperLookup registry)
@@ -192,12 +211,8 @@ public class FakeBlockEntity
         NbtCompound newNbt = new NbtCompound();
         this.writeNbt(newNbt, registry);
         FakeBlockEntity.Components.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), this.components).resultOrPartial((snbt) ->
-                                                                                                                        {
-                                                                                                                            LOGGER.warn("Failed to save components: {}", snbt);
-                                                                                                                        }).ifPresent((nbt) ->
-                                                                                                                                     {
-                                                                                                                                         newNbt.copyFrom((NbtCompound) nbt);
-                                                                                                                                     });
+                                                                                                                                LOGGER.warn("Failed to save components: {}", snbt)).ifPresent((nbt) ->
+                                                                                                                                                                                                      newNbt.copyFrom((NbtCompound) nbt));
 
         return newNbt;
     }
@@ -289,6 +304,20 @@ public class FakeBlockEntity
         fbe.readNbt(nbt, registry);
 
         return fbe;
+    }
+
+    @Nullable
+    public static Text tryParseCustomName(String json, RegistryWrapper.WrapperLookup registries)
+    {
+        try
+        {
+            return Text.Serialization.fromJson(json, registries);
+        }
+        catch (Exception e)
+        {
+            LOGGER.warn("Failed to parse custom name from [{}], discarding [{}]", json, e.getMessage());
+            return null;
+        }
     }
 
     protected void readComponents(FakeBlockEntity.ComponentsAccess components)

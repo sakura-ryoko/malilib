@@ -48,6 +48,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
 
 public class InventoryUtils
 {
@@ -392,6 +393,23 @@ public class InventoryUtils
         return false;
     }
 
+    public static boolean fbeHasItems(FakeBlockEntity fbe)
+    {
+        if (fbe == null)
+        {
+            return false;
+        }
+
+        ContainerComponent container = fbe.getComponents().get(DataComponentTypes.CONTAINER);
+
+        if (container != null)
+        {
+            return container.iterateNonEmpty().iterator().hasNext();
+        }
+
+        return false;
+    }
+
     /**
      * Checks if the given NBT currently contains any items, using the NBT Items[] interface.
      * @param tag
@@ -519,6 +537,34 @@ public class InventoryUtils
         return DefaultedList.of();
     }
 
+    public static DefaultedList<ItemStack> getStoredItems(FakeBlockEntity fbe)
+    {
+        if (fbe == null)
+        {
+            return DefaultedList.of();
+        }
+
+        ContainerComponent container = fbe.getComponents().get(DataComponentTypes.CONTAINER);
+
+        if (container != null)
+        {
+            Iterator<ItemStack> iter = container.streamNonEmpty().iterator();
+            DefaultedList<ItemStack> items = DefaultedList.ofSize((int) container.streamNonEmpty().count());
+            int i = 0;
+
+            // Using 'container.copyTo(items)' will break Litematica's Material List
+            while (iter.hasNext())
+            {
+                items.add(iter.next().copy());
+                i++;
+            }
+
+            return items;
+        }
+
+        return DefaultedList.of();
+    }
+
     /**
      * Returns the list of items currently stored in the given Shulker Box
      * (or other storage item with the same NBT data structure).
@@ -530,6 +576,56 @@ public class InventoryUtils
     public static DefaultedList<ItemStack> getStoredItems(ItemStack stackIn, int slotCount)
     {
         ContainerComponent itemContainer = stackIn.getComponents().get(DataComponentTypes.CONTAINER);
+
+        // Using itemContainer.copyTo() does not preserve empty stacks.  Iterator again.
+        if (itemContainer != null)
+        {
+            long defSlotCount = itemContainer.stream().count();
+
+            // ContainerComponent.MAX_SLOTS = 256; (private)
+            if (slotCount < 1)
+            {
+                slotCount = defSlotCount < 256 ? (int) defSlotCount : 256;
+            }
+            else
+            {
+                slotCount = Math.min(slotCount, 256);
+            }
+
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount);
+            Iterator<ItemStack> iter = itemContainer.stream().iterator();
+
+            for (int i = 0; i < slotCount; i++)
+            {
+                ItemStack entry;
+
+                if (iter.hasNext())
+                {
+                    entry = iter.next();
+                }
+                else
+                {
+                    entry = ItemStack.EMPTY;
+                }
+
+                items.add(entry.copy());
+            }
+
+            return items;
+        }
+        else
+        {
+            return DefaultedList.of();
+        }
+    }
+
+    public static DefaultedList<ItemStack> getStoredItems(FakeBlockEntity fbe, int slotCount)
+    {
+        if (fbe == null)
+        {
+            return DefaultedList.of();
+        }
+        ContainerComponent itemContainer = fbe.getComponents().get(DataComponentTypes.CONTAINER);
 
         // Using itemContainer.copyTo() does not preserve empty stacks.  Iterator again.
         if (itemContainer != null)

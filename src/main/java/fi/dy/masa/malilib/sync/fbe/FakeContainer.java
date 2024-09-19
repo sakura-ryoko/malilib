@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.sync.fbe;
 import java.util.Objects;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
@@ -12,6 +13,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class FakeContainer extends FakeBlockEntity implements Inventory
 {
@@ -28,6 +30,13 @@ public class FakeContainer extends FakeBlockEntity implements Inventory
     {
         super(type, pos, state);
         this.stacks = DefaultedList.ofSize(maxSlots, ItemStack.EMPTY);
+    }
+
+    public FakeContainer(BlockEntity be, World world)
+    {
+        this(be.getType(), be.getPos(), be.getCachedState());
+        this.setWorld(world);
+        this.copyFromBlockEntity(be, world.getRegistryManager());
     }
 
     public FakeBlockEntity createBlockEntity(BlockPos pos, BlockState state)

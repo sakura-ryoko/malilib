@@ -5,6 +5,8 @@ import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.CrafterBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -33,6 +35,8 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
+import fi.dy.masa.malilib.sync.fbe.FakeCrafter;
 import fi.dy.masa.malilib.sync.fe.*;
 import fi.dy.masa.malilib.util.*;
 
@@ -177,20 +181,34 @@ public class TestRenderHandler implements IRenderer
 
         HitResult trace = RayTraceUtils.getRayTraceFromEntity(world, cameraEntity, false);
 
+        BlockPos pos = null;
+        BlockState state;
         Inventory inv = null;
+        FakeBlockEntity fbe = null;
         ShulkerBoxBlock shulkerBoxBlock = null;
+        CrafterBlock crafterBlock = null;
         LivingEntity entityLivingBase = null;
         FakeEntity fe;
         FakeLiving fl = null;
 
         if (trace.getType() == HitResult.Type.BLOCK)
         {
-            BlockPos pos = ((BlockHitResult) trace).getBlockPos();
-            Block blockTmp = world.getBlockState(pos).getBlock();
+            pos = ((BlockHitResult) trace).getBlockPos();
+            state = world.getBlockState(pos);
+            Block blockTmp = state.getBlock();
 
-            if (blockTmp instanceof ShulkerBoxBlock)
+            if (state.hasBlockEntity())
             {
-                shulkerBoxBlock = (ShulkerBoxBlock) blockTmp;
+                if (blockTmp instanceof ShulkerBoxBlock)
+                {
+                    shulkerBoxBlock = (ShulkerBoxBlock) blockTmp;
+                }
+                if (blockTmp instanceof CrafterBlock)
+                {
+                    crafterBlock = (CrafterBlock) blockTmp;
+                }
+
+                fbe = TestUtils.getFakeBlockEntity(world, pos);
             }
 
             inv = TestUtils.getInventory(world, pos);
@@ -255,6 +273,15 @@ public class TestRenderHandler implements IRenderer
                 x = xCenter - 55;
                 xInv = xCenter + 2;
                 yInv = Math.min(yInv, yCenter - 92);
+            }
+
+            if (crafterBlock != null && type == InventoryOverlay.InventoryRenderType.CRAFTER &&
+                pos != null)
+            {
+                if (fbe != null)
+                {
+                    props.lockedSlots = ((FakeCrafter) fbe).getDisabledSlots();
+                }
             }
 
             RenderUtils.setShulkerboxBackgroundTintColor(shulkerBoxBlock, true);

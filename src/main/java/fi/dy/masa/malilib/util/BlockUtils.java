@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.*;
 import net.minecraft.block.enums.Orientation;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -11,7 +12,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.*;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
+
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.sync.fbe.*;
 
 import java.util.*;
 
@@ -219,5 +223,64 @@ public class BlockUtils
         }
 
         return Collections.emptyList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends FakeBlockEntity> T toFakeBlockEntity(BlockEntity be, World world)
+    {
+        if (be instanceof CrafterBlockEntity)
+        {
+            return (T) new FakeCrafter(be, world);
+        }
+        if (be instanceof LockableContainerBlockEntity)
+        {
+            return (T) new FakeLockableContainer(be, world);
+        }
+        if (be instanceof LootableContainerBlockEntity)
+        {
+            return (T) new FakeLootableContainer(be, world);
+        }
+        if (be instanceof BeehiveBlockEntity)
+        {
+            return (T) new FakeBees(be, world);
+        }
+        if (be instanceof BannerBlockEntity)
+        {
+            return (T) new FakePatterns(be, world);
+        }
+        if (be instanceof BeaconBlockEntity)
+        {
+            return (T) new FakeLockable(be, world);
+        }
+        if (be instanceof ChiseledBookshelfBlockEntity)
+        {
+            return (T) new FakeContainer(be, world);
+        }
+        if (be instanceof CampfireBlockEntity)
+        {
+            return (T) new FakeContainer(be, world);
+        }
+        if (be instanceof DecoratedPotBlockEntity)
+        {
+            return (T) new FakeSherds(be, world);
+        }
+        if (be instanceof EnchantingTableBlockEntity)
+        {
+            return (T) new FakeNamed(be, world);
+        }
+        if (be instanceof SkullBlockEntity)
+        {
+            return (T) new FakeProfile(be, world);
+        }
+        if (be instanceof CommandBlockBlockEntity)
+        {
+            return (T) new FakeNamed(be, world);
+        }
+
+        T fbe = (T) new FakeBlockEntity(be.getType(), be.getPos(), be.getCachedState());
+        fbe.setWorld(world);
+        fbe.copyFromBlockEntity(be, world.getRegistryManager());
+
+        return fbe;
     }
 }
