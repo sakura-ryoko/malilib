@@ -23,22 +23,19 @@ import java.util.List;
 
 public class FakeFurnace extends FakeLockableContainer implements SidedInventory
 {
-    private static final int MAX_SLOTS = 27;
+    private static final int MAX_SLOTS = 3;
     private final Object2IntOpenHashMap<Identifier> recipesUsed;
     private int burnTime;
     private int fuelTime;
     private int cookTime;
     private int cookTimeTotal;
 
-    public FakeFurnace(BlockEntityType<?> type, BlockPos pos, BlockState state, int maxSlots)
-    {
-        super(type, pos, state, maxSlots);
-        this.recipesUsed = new Object2IntOpenHashMap<>();
-    }
-
     public FakeFurnace(BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
-        this(type, pos, state, MAX_SLOTS);
+        super(type, pos, state, MAX_SLOTS);
+        this.inventory = DefaultedList.ofSize(MAX_SLOTS, ItemStack.EMPTY);
+        this.fuelTime = 0;
+        this.recipesUsed = new Object2IntOpenHashMap<>();
     }
 
     public FakeFurnace(BlockEntity be, World world)
@@ -48,10 +45,29 @@ public class FakeFurnace extends FakeLockableContainer implements SidedInventory
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
-    private boolean isBurning() {
+    public FakeFurnace createBlockEntity(BlockPos pos, BlockState state)
+    {
+        return new FakeFurnace(BlockEntityType.FURNACE, pos, state);
+    }
+
+    public boolean isBurning() {
         return this.burnTime > 0;
     }
 
+    public int getFuelTime()
+    {
+        return this.fuelTime;
+    }
+
+    public int getCookTime()
+    {
+        return this.cookTime;
+    }
+
+    public int getCookTimeTotal()
+    {
+        return this.cookTimeTotal;
+    }
 
     public int[] getAvailableSlots(Direction side)
     {

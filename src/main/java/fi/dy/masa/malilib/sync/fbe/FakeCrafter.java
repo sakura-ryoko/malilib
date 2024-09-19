@@ -30,7 +30,7 @@ public class FakeCrafter extends FakeLootableContainer implements RecipeInputInv
 
     public FakeCrafter(BlockPos pos, BlockState state)
     {
-        super(BlockEntityType.CRAFTER, pos, state);
+        super(BlockEntityType.CRAFTER, pos, state, MAX_SLOTS);
         this.inputStacks = DefaultedList.ofSize(MAX_SLOTS, ItemStack.EMPTY);
         this.disabledSlots = new HashSet<>();
         this.craftingTicksRemaining = 0;

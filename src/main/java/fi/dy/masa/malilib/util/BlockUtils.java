@@ -236,6 +236,14 @@ public class BlockUtils
         {
             return (T) new FakeFurnace(be, world);
         }
+        if (be instanceof BrewingStandBlockEntity)
+        {
+            return (T) new FakeBrewer(be, world);
+        }
+        if (be instanceof HopperBlockEntity)
+        {
+            return (T) new FakeHopper(be, world);
+        }
         if (be instanceof LockableContainerBlockEntity)
         {
             return (T) new FakeLockableContainer(be, world);
@@ -256,9 +264,9 @@ public class BlockUtils
         {
             return (T) new FakeLockable(be, world);
         }
-        if (be instanceof ChiseledBookshelfBlockEntity)
+        if (be instanceof ChiseledBookshelfBlockEntity || be instanceof LecternBlockEntity)
         {
-            return (T) new FakeContainer(be, world);
+            return (T) new FakeBooks(be, world);
         }
         if (be instanceof CampfireBlockEntity)
         {

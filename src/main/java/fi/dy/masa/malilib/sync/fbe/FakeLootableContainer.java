@@ -17,13 +17,19 @@ import net.minecraft.world.World;
 
 public class FakeLootableContainer extends FakeLockableContainer implements LootableInventory
 {
+    public static final int MAX_SLOTS = 27;
     @Nullable
     protected RegistryKey<LootTable> lootTable;
     protected long lootTableSeed = 0L;
 
+    public FakeLootableContainer(BlockEntityType<?> type, BlockPos pos, BlockState state, int maxSlots)
+    {
+        super(type, pos, state, maxSlots);
+    }
+
     public FakeLootableContainer(BlockEntityType<?> type, BlockPos pos, BlockState state)
     {
-        super(type, pos, state);
+        this(type, pos, state, MAX_SLOTS);
     }
 
     public FakeLootableContainer(BlockEntity be, World world)
