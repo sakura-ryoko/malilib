@@ -35,7 +35,7 @@ public class FakeLootableContainer extends FakeLockableContainer implements Loot
     public FakeLootableContainer(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeLootableContainer\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

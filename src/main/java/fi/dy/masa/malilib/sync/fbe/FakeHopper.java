@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.sync.fbe;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -12,8 +14,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-
-import javax.annotation.Nonnull;
 
 public class FakeHopper extends FakeLootableContainer
 {
@@ -32,7 +32,7 @@ public class FakeHopper extends FakeLootableContainer
     public FakeHopper(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeHopper\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

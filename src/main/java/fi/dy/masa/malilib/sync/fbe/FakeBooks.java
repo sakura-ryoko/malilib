@@ -46,6 +46,7 @@ public class FakeBooks extends FakeBlockEntity implements Inventory
     public FakeBooks(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
+        System.out.print("be -> FakeBooks\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

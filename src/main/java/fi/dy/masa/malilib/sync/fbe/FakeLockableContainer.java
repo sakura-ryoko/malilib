@@ -44,7 +44,7 @@ public class FakeLockableContainer extends FakeContainer implements Inventory, I
     public FakeLockableContainer(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeLockableContainer\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

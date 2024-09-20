@@ -30,7 +30,7 @@ public class FakePatterns extends FakeNamed
     public FakePatterns(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakePatterns\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

@@ -1,5 +1,8 @@
 package fi.dy.masa.malilib.sync.fbe;
 
+import javax.annotation.Nonnull;
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -13,9 +16,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
-
-import javax.annotation.Nonnull;
 
 public class FakeBrewer extends FakeLockableContainer implements SidedInventory
 {
@@ -34,7 +34,7 @@ public class FakeBrewer extends FakeLockableContainer implements SidedInventory
     public FakeBrewer(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeBrewer\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
@@ -66,7 +66,7 @@ public class FakeBrewer extends FakeLockableContainer implements SidedInventory
         }
         else
         {
-            return side == Direction.DOWN ? new int[]{0,1,2,3} : new int[]{0,1,2,4};
+            return side == Direction.DOWN ? new int[]{0, 1, 2, 3} : new int[]{0, 1, 2, 4};
         }
     }
 
@@ -97,8 +97,8 @@ public class FakeBrewer extends FakeLockableContainer implements SidedInventory
     public void writeNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
     {
         super.writeNbt(nbt, registry);
-        nbt.putShort("BrewTime", (short)this.brewTime);
+        nbt.putShort("BrewTime", (short) this.brewTime);
         Inventories.writeNbt(nbt, this.inventory, registry);
-        nbt.putByte("Fuel", (byte)this.fuel);
+        nbt.putByte("Fuel", (byte) this.fuel);
     }
 }

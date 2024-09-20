@@ -32,7 +32,7 @@ public class FakeProfile extends FakeNamed
     public FakeProfile(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeProfile\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

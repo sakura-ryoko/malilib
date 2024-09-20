@@ -33,7 +33,7 @@ public class FakeSherds extends FakeLootableContainer implements SingleStackInve
     public FakeSherds(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeSherds\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

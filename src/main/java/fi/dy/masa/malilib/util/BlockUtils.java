@@ -244,6 +244,10 @@ public class BlockUtils
         {
             return (T) new FakeHopper(be, world);
         }
+        if (be instanceof JukeboxBlockEntity)
+        {
+            return (T) new FakeRecords(be, world);
+        }
         if (be instanceof LockableContainerBlockEntity)
         {
             return (T) new FakeLockableContainer(be, world);

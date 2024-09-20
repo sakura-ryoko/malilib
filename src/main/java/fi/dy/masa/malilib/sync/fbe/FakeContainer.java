@@ -34,7 +34,7 @@ public class FakeContainer extends FakeBlockEntity implements Inventory, IFakeCo
     public FakeContainer(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeContainer\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

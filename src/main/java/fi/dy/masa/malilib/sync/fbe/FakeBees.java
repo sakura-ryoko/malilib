@@ -36,7 +36,7 @@ public class FakeBees extends FakeBlockEntity
     public FakeBees(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeBees\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

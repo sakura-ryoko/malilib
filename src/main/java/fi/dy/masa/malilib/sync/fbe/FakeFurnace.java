@@ -1,6 +1,10 @@
 package fi.dy.masa.malilib.sync.fbe;
 
+import java.util.List;
+import javax.annotation.Nonnull;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -16,10 +20,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
-
-import javax.annotation.Nonnull;
-import java.util.List;
 
 public class FakeFurnace extends FakeLockableContainer implements SidedInventory
 {
@@ -41,7 +41,7 @@ public class FakeFurnace extends FakeLockableContainer implements SidedInventory
     public FakeFurnace(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeFurnace\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
@@ -50,7 +50,8 @@ public class FakeFurnace extends FakeLockableContainer implements SidedInventory
         return new FakeFurnace(BlockEntityType.FURNACE, pos, state);
     }
 
-    public boolean isBurning() {
+    public boolean isBurning()
+    {
         return this.burnTime > 0;
     }
 
@@ -73,7 +74,7 @@ public class FakeFurnace extends FakeLockableContainer implements SidedInventory
     {
         if (side == Direction.DOWN)
         {
-            return new int[]{2,1};
+            return new int[]{2, 1};
         }
         else
         {
@@ -128,15 +129,14 @@ public class FakeFurnace extends FakeLockableContainer implements SidedInventory
         {
             this.recipesUsed.put(Identifier.of(string), nbtCompound.getInt(string));
         }
-
     }
 
     public void writeNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
     {
         super.writeNbt(nbt, registry);
-        nbt.putShort("BurnTime", (short)this.burnTime);
-        nbt.putShort("CookTime", (short)this.cookTime);
-        nbt.putShort("CookTimeTotal", (short)this.cookTimeTotal);
+        nbt.putShort("BurnTime", (short) this.burnTime);
+        nbt.putShort("CookTime", (short) this.cookTime);
+        nbt.putShort("CookTimeTotal", (short) this.cookTimeTotal);
         Inventories.writeNbt(nbt, this.inventory, registry);
         NbtCompound nbtCompound = new NbtCompound();
         this.recipesUsed.forEach((identifier, count) -> nbtCompound.putInt(identifier.toString(), count));

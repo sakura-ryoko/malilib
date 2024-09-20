@@ -1,12 +1,13 @@
 package fi.dy.masa.malilib.test;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.CrafterBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -27,6 +28,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
@@ -186,7 +188,6 @@ public class TestRenderHandler implements IRenderer
         Inventory inv = null;
         FakeBlockEntity fbe = null;
         ShulkerBoxBlock shulkerBoxBlock = null;
-        CrafterBlock crafterBlock = null;
         LivingEntity entityLivingBase = null;
         FakeEntity fe;
         FakeLiving fl = null;
@@ -195,17 +196,26 @@ public class TestRenderHandler implements IRenderer
         {
             pos = ((BlockHitResult) trace).getBlockPos();
             state = world.getBlockState(pos);
-            Block blockTmp = state.getBlock();
 
+            if (!state.hasBlockEntity())
+            {
+                BlockPos adjPos = new BlockPos(pos.getX(), pos.getY() + 1, pos.getZ());
+                BlockState adjState = world.getBlockState(adjPos);
+
+                // Check block Offset if it's not a collide-able block (trace doesn't land)
+                if (adjState.hasBlockEntity() && adjState.getCollisionShape(world, adjPos).equals(VoxelShapes.empty()))
+                {
+                    pos = adjPos;
+                    state = adjState;
+                }
+            }
+
+            Block blockTmp = state.getBlock();
             if (state.hasBlockEntity())
             {
                 if (blockTmp instanceof ShulkerBoxBlock)
                 {
                     shulkerBoxBlock = (ShulkerBoxBlock) blockTmp;
-                }
-                if (blockTmp instanceof CrafterBlock)
-                {
-                    crafterBlock = (CrafterBlock) blockTmp;
                 }
 
                 fbe = TestUtils.getFakeBlockEntity(world, pos);
@@ -259,6 +269,7 @@ public class TestRenderHandler implements IRenderer
             final InventoryOverlay.InventoryRenderType type = isVillager ? InventoryOverlay.InventoryRenderType.VILLAGER : InventoryOverlay.getInventoryType(inv);
             final InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, totalSlots);
             final int rows = (int) Math.ceil((double) totalSlots / props.slotsPerRow);
+            Set<Integer> lockedSlots = new HashSet<>();
             int xInv = xCenter - (props.width / 2);
             int yInv = yCenter - props.height - 6;
 
@@ -275,13 +286,16 @@ public class TestRenderHandler implements IRenderer
                 yInv = Math.min(yInv, yCenter - 92);
             }
 
-            if (crafterBlock != null && type == InventoryOverlay.InventoryRenderType.CRAFTER &&
-                pos != null)
+            if (type == InventoryOverlay.InventoryRenderType.CRAFTER && pos != null)
             {
                 if (fbe != null)
                 {
-                    props.lockedSlots = ((FakeCrafter) fbe).getDisabledSlots();
+                    lockedSlots = ((FakeCrafter) fbe).getDisabledSlots();
                 }
+            }
+            if (fbe != null)
+            {
+                System.out.printf("render - fbe nbt [%s]\n", fbe.getNbt().toString());
             }
 
             RenderUtils.setShulkerboxBackgroundTintColor(shulkerBoxBlock, true);
@@ -301,7 +315,15 @@ public class TestRenderHandler implements IRenderer
             if (totalSlots > 0)
             {
                 InventoryOverlay.renderInventoryBackground(type, xInv, yInv, props.slotsPerRow, totalSlots, mc);
-                InventoryOverlay.renderInventoryStacks(type, inv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, props.slotsPerRow, firstSlot, totalSlots, mc, drawContext);
+
+                if (lockedSlots.isEmpty())
+                {
+                    InventoryOverlay.renderInventoryStacks(type, inv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, props.slotsPerRow, firstSlot, totalSlots, mc, drawContext);
+                }
+                else
+                {
+                    InventoryOverlay.renderCrafterStacks(((FakeCrafter) fbe).getHeldStacks(), lockedSlots, xInv + props.slotOffsetX, yInv + props.slotOffsetY, firstSlot, mc, drawContext);
+                }
             }
         }
 

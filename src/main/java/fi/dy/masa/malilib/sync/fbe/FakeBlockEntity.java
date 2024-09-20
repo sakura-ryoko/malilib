@@ -1,9 +1,6 @@
 package fi.dy.masa.malilib.sync.fbe;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.logging.log4j.Logger;
@@ -50,6 +47,7 @@ public class FakeBlockEntity
     public FakeBlockEntity(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
+        System.out.print("be -> FakeBlockEntity\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
@@ -301,13 +299,26 @@ public class FakeBlockEntity
 
     protected void copyFromBlockEntityInternal(BlockEntity be, RegistryWrapper.WrapperLookup registry)
     {
-        //this.setType(be.getType());
-        //this.setPos(be.getPos());
-        //this.setState(be.getCachedState());
+        NbtCompound nbt = be.createNbtWithIdentifyingData(registry);
         this.setWorld(be.getWorld());
-        //this.setComponents(be.getComponents());
-        this.read(be.createNbtWithIdentifyingData(registry), registry);
+        System.out.printf("copyFromBlockEntityInternal() nbt in [%s]\n", nbt);
+        this.read(nbt, registry);
+        this.printComponents();
         this.setLoaded(true);
+    }
+
+    private void printComponents()
+    {
+        Iterator<Component<?>> iter = this.components.stream().iterator();
+        int i = 0;
+
+        System.out.print("Comps:\n");
+        while (iter.hasNext())
+        {
+            Component<?> entry = iter.next();
+            System.out.printf("comp[%d]: type [%s], value [%s]\n", i, entry.type().toString(), entry.value());
+            i++;
+        }
     }
 
     @SuppressWarnings("unchecked")

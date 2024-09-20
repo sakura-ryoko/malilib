@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.render;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,26 +35,26 @@ import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 
 public class InventoryOverlay
 {
-    public static final Identifier TEXTURE_BREWING_STAND    = Identifier.ofVanilla("textures/gui/container/brewing_stand.png");
-    public static final Identifier TEXTURE_CRAFTER          = Identifier.ofVanilla("textures/gui/container/crafter.png");
-    public static final Identifier TEXTURE_DISPENSER        = Identifier.ofVanilla("textures/gui/container/dispenser.png");
-    public static final Identifier TEXTURE_DOUBLE_CHEST     = Identifier.ofVanilla("textures/gui/container/generic_54.png");
-    public static final Identifier TEXTURE_FURNACE          = Identifier.ofVanilla("textures/gui/container/furnace.png");
-    public static final Identifier TEXTURE_HOPPER           = Identifier.ofVanilla("textures/gui/container/hopper.png");
-    public static final Identifier TEXTURE_PLAYER_INV       = Identifier.ofVanilla("textures/gui/container/inventory.png");
-    public static final Identifier TEXTURE_SINGLE_CHEST     = Identifier.ofVanilla("textures/gui/container/shulker_box.png");
-    public static final Identifier TEXTURE_DISABLED_SLOT    = Identifier.ofVanilla("container/crafter/disabled_slot");
+    public static final Identifier TEXTURE_BREWING_STAND = Identifier.ofVanilla("textures/gui/container/brewing_stand.png");
+    public static final Identifier TEXTURE_CRAFTER = Identifier.ofVanilla("textures/gui/container/crafter.png");
+    public static final Identifier TEXTURE_DISPENSER = Identifier.ofVanilla("textures/gui/container/dispenser.png");
+    public static final Identifier TEXTURE_DOUBLE_CHEST = Identifier.ofVanilla("textures/gui/container/generic_54.png");
+    public static final Identifier TEXTURE_FURNACE = Identifier.ofVanilla("textures/gui/container/furnace.png");
+    public static final Identifier TEXTURE_HOPPER = Identifier.ofVanilla("textures/gui/container/hopper.png");
+    public static final Identifier TEXTURE_PLAYER_INV = Identifier.ofVanilla("textures/gui/container/inventory.png");
+    public static final Identifier TEXTURE_SINGLE_CHEST = Identifier.ofVanilla("textures/gui/container/shulker_box.png");
+    public static final Identifier TEXTURE_DISABLED_SLOT = Identifier.ofVanilla("container/crafter/disabled_slot");
 
-    private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
+    private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
     public static final InventoryProperties INV_PROPS_TEMP = new InventoryProperties();
 
     private static final Identifier[] EMPTY_SLOT_TEXTURES = new Identifier[]
-    {
-        Identifier.ofVanilla("item/empty_armor_slot_boots"),
-        Identifier.ofVanilla("item/empty_armor_slot_leggings"),
-        Identifier.ofVanilla("item/empty_armor_slot_chestplate"),
-        Identifier.ofVanilla("item/empty_armor_slot_helmet")
-    };
+            {
+                    Identifier.ofVanilla("item/empty_armor_slot_boots"),
+                    Identifier.ofVanilla("item/empty_armor_slot_leggings"),
+                    Identifier.ofVanilla("item/empty_armor_slot_chestplate"),
+                    Identifier.ofVanilla("item/empty_armor_slot_helmet")
+            };
 
     private static ItemStack hoveredStack = null;
 
@@ -73,58 +72,58 @@ public class InventoryOverlay
         if (type == InventoryRenderType.FURNACE)
         {
             RenderUtils.bindTexture(TEXTURE_FURNACE);
-            RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0,   4,  64, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +  4, y     ,  84,   0,  92,   4, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x     , y + 64,   0, 162,  92,   4, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 92, y +  4, 172, 102,   4,  64, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +  4, y +  4,  52,  13,  88,  60, buffer); // middle
+            RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 4, 64, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(x + 4, y, 84, 0, 92, 4, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(x, y + 64, 0, 162, 92, 4, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(x + 92, y + 4, 172, 102, 4, 64, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(x + 4, y + 4, 52, 13, 88, 60, buffer); // middle
         }
         else if (type == InventoryRenderType.BREWING_STAND)
         {
             RenderUtils.bindTexture(TEXTURE_BREWING_STAND);
-            RenderUtils.drawTexturedRectBatched(x      , y     ,   0,   0,   4,  68, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +   4, y     ,  63,   0, 113,   4, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x      , y + 68,   0, 162, 113,   4, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 113, y +  4, 172,  98,   4,  68, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +   4, y +  4,  13,  13, 109,  64, buffer); // middle
+            RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 4, 68, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(x + 4, y, 63, 0, 113, 4, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(x, y + 68, 0, 162, 113, 4, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(x + 113, y + 4, 172, 98, 4, 68, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(x + 4, y + 4, 13, 13, 109, 64, buffer); // middle
         }
         else if (type == InventoryRenderType.CRAFTER)
         {
             // We just hack in the Dispenser Texture, so it displays right.  Easy.
             RenderUtils.bindTexture(TEXTURE_DISPENSER);
-            RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0,   7,  61, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +  7, y     , 115,   0,  61,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x     , y + 61,   0, 159,  61,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 61, y +  7, 169, 105,   7,  61, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +  7, y +  7,  61,  16,  54,  54, buffer); // middle
+            RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 7, 61, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(x + 7, y, 115, 0, 61, 7, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(x, y + 61, 0, 159, 61, 7, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(x + 61, y + 7, 169, 105, 7, 61, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(x + 7, y + 7, 61, 16, 54, 54, buffer); // middle
         }
         else if (type == InventoryRenderType.DISPENSER)
         {
             RenderUtils.bindTexture(TEXTURE_DISPENSER);
-            RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0,   7,  61, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +  7, y     , 115,   0,  61,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x     , y + 61,   0, 159,  61,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 61, y +  7, 169, 105,   7,  61, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +  7, y +  7,  61,  16,  54,  54, buffer); // middle
+            RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 7, 61, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(x + 7, y, 115, 0, 61, 7, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(x, y + 61, 0, 159, 61, 7, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(x + 61, y + 7, 169, 105, 7, 61, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(x + 7, y + 7, 61, 16, 54, 54, buffer); // middle
         }
         else if (type == InventoryRenderType.HOPPER)
         {
             RenderUtils.bindTexture(TEXTURE_HOPPER);
-            RenderUtils.drawTexturedRectBatched(x      , y     ,   0,   0,   7,  25, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +   7, y     ,  79,   0,  97,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x      , y + 25,   0, 126,  97,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x +  97, y +  7, 169, 108,   7,  25, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +   7, y +  7,  43,  19,  90,  18, buffer); // middle
+            RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 7, 25, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(x + 7, y, 79, 0, 97, 7, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(x, y + 25, 0, 126, 97, 7, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(x + 97, y + 7, 169, 108, 7, 25, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(x + 7, y + 7, 43, 19, 90, 18, buffer); // middle
         }
         // Most likely a Villager, or possibly a Llama
         else if (type == InventoryRenderType.VILLAGER)
         {
             RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST);
-            RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0,   7,  79, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +  7, y     , 133,   0,  43,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x     , y + 79,   0, 215,  43,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 43, y +  7, 169, 143,   7,  79, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +  7, y +  7,   7,  17,  36,  72, buffer); // 2x4 slots
+            RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 7, 79, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(x + 7, y, 133, 0, 43, 7, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(x, y + 79, 0, 215, 43, 7, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(x + 43, y + 7, 169, 143, 7, 79, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(x + 7, y + 7, 7, 17, 36, 72, buffer); // 2x4 slots
         }
         else if (type == InventoryRenderType.FIXED_27)
         {
@@ -143,10 +142,10 @@ public class InventoryOverlay
             int bgw = Math.min(totalSlots, slotsPerRow) * 18 + 7;
             int bgh = rows * 18 + 7;
 
-            RenderUtils.drawTexturedRectBatched(x      , y      ,         0,         0,   7, bgh, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +   7, y      , 176 - bgw,         0, bgw,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x      , y + bgh,         0,       215, bgw,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + bgw, y +   7,       169, 222 - bgh,   7, bgh, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 7, bgh, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(x + 7, y, 176 - bgw, 0, bgw, 7, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(x, y + bgh, 0, 215, bgw, 7, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(x + bgw, y + 7, 169, 222 - bgh, 7, bgh, buffer); // right (bottom)
 
             for (int row = 0; row < rows; row++)
             {
@@ -157,7 +156,7 @@ public class InventoryOverlay
                 // in two strips of the background texture from the double chest texture's top part.
                 if (rows > 1 && rowLen < slotsPerRow)
                 {
-                    RenderUtils.drawTexturedRectBatched(x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, buffer);
+                    RenderUtils.drawTexturedRectBatched(x + rowLen * 18 + 7, y + row * 18 + 7, 7, 3, (slotsPerRow - rowLen) * 18, 9, buffer);
                     RenderUtils.drawTexturedRectBatched(x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, buffer);
                 }
             }
@@ -172,27 +171,29 @@ public class InventoryOverlay
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
     }
 
     public static void renderInventoryBackground27(int x, int y, BufferBuilder buffer, MinecraftClient mc)
     {
         RenderUtils.bindTexture(TEXTURE_SINGLE_CHEST);
-        RenderUtils.drawTexturedRectBatched(x      , y     ,   0,   0,   7,  61, buffer); // left (top)
-        RenderUtils.drawTexturedRectBatched(x +   7, y     ,   7,   0, 169,   7, buffer); // top (right)
-        RenderUtils.drawTexturedRectBatched(x      , y + 61,   0, 159, 169,   7, buffer); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(x + 169, y +  7, 169, 105,   7,  61, buffer); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(x +   7, y +  7,   7,  17, 162,  54, buffer); // middle
+        RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 7, 61, buffer); // left (top)
+        RenderUtils.drawTexturedRectBatched(x + 7, y, 7, 0, 169, 7, buffer); // top (right)
+        RenderUtils.drawTexturedRectBatched(x, y + 61, 0, 159, 169, 7, buffer); // bottom (left)
+        RenderUtils.drawTexturedRectBatched(x + 169, y + 7, 169, 105, 7, 61, buffer); // right (bottom)
+        RenderUtils.drawTexturedRectBatched(x + 7, y + 7, 7, 17, 162, 54, buffer); // middle
     }
 
     public static void renderInventoryBackground54(int x, int y, BufferBuilder buffer, MinecraftClient mc)
     {
         RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST);
-        RenderUtils.drawTexturedRectBatched(x      , y      ,   0,   0,   7, 115, buffer); // left (top)
-        RenderUtils.drawTexturedRectBatched(x +   7, y      ,   7,   0, 169,   7, buffer); // top (right)
-        RenderUtils.drawTexturedRectBatched(x      , y + 115,   0, 215, 169,   7, buffer); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(x + 169, y +   7, 169, 107,   7, 115, buffer); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(x +   7, y +   7,   7,  17, 162, 108, buffer); // middle
+        RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 7, 115, buffer); // left (top)
+        RenderUtils.drawTexturedRectBatched(x + 7, y, 7, 0, 169, 7, buffer); // top (right)
+        RenderUtils.drawTexturedRectBatched(x, y + 115, 0, 215, 169, 7, buffer); // bottom (left)
+        RenderUtils.drawTexturedRectBatched(x + 169, y + 7, 169, 107, 7, 115, buffer); // right (bottom)
+        RenderUtils.drawTexturedRectBatched(x + 7, y + 7, 7, 17, 162, 108, buffer); // middle
     }
 
     public static void renderEquipmentOverlayBackground(int x, int y, LivingEntity entity, DrawContext drawContext)
@@ -209,10 +210,10 @@ public class InventoryOverlay
 
         RenderUtils.bindTexture(TEXTURE_DISPENSER);
 
-        RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0, 50, 83, buffer); // top-left (main part)
-        RenderUtils.drawTexturedRectBatched(x + 50, y     , 173,   0,  3, 83, buffer); // right edge top
-        RenderUtils.drawTexturedRectBatched(x     , y + 83,   0, 163, 50,  3, buffer); // bottom edge left
-        RenderUtils.drawTexturedRectBatched(x + 50, y + 83, 173, 163,  3,  3, buffer); // bottom right corner
+        RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 50, 83, buffer); // top-left (main part)
+        RenderUtils.drawTexturedRectBatched(x + 50, y, 173, 0, 3, 83, buffer); // right edge top
+        RenderUtils.drawTexturedRectBatched(x, y + 83, 0, 163, 50, 3, buffer); // bottom edge left
+        RenderUtils.drawTexturedRectBatched(x + 50, y + 83, 173, 163, 3, 3, buffer); // bottom right corner
 
         for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
         {
@@ -229,7 +230,9 @@ public class InventoryOverlay
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
 
         RenderUtils.bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
 
@@ -345,6 +348,7 @@ public class InventoryOverlay
      * with the values set for the type of inventory provided.
      * Don't hold on to the instance, as the values will mutate when this
      * method is called again!
+     *
      * @param type
      * @param totalSlots
      * @return
@@ -428,8 +432,6 @@ public class InventoryOverlay
             INV_PROPS_TEMP.height = rows * 18 + 14;
         }
 
-        INV_PROPS_TEMP.lockedSlots = new HashSet<>();
-
         return INV_PROPS_TEMP;
     }
 
@@ -442,17 +444,17 @@ public class InventoryOverlay
     {
         if (type == InventoryRenderType.FURNACE)
         {
-            renderStackAt(inv.getStack(0), startX +   8, startY +  8, 1, mc, drawContext, mouseX, mouseY);
-            renderStackAt(inv.getStack(1), startX +   8, startY + 44, 1, mc, drawContext, mouseX, mouseY);
-            renderStackAt(inv.getStack(2), startX +  68, startY + 26, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(0), startX + 8, startY + 8, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(1), startX + 8, startY + 44, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(2), startX + 68, startY + 26, 1, mc, drawContext, mouseX, mouseY);
         }
         else if (type == InventoryRenderType.BREWING_STAND)
         {
-            renderStackAt(inv.getStack(0), startX +  47, startY + 42, 1, mc, drawContext, mouseX, mouseY);
-            renderStackAt(inv.getStack(1), startX +  70, startY + 49, 1, mc, drawContext, mouseX, mouseY);
-            renderStackAt(inv.getStack(2), startX +  93, startY + 42, 1, mc, drawContext, mouseX, mouseY);
-            renderStackAt(inv.getStack(3), startX +  70, startY +  8, 1, mc, drawContext, mouseX, mouseY);
-            renderStackAt(inv.getStack(4), startX +   8, startY +  8, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(0), startX + 47, startY + 42, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(1), startX + 70, startY + 49, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(2), startX + 93, startY + 42, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(3), startX + 70, startY + 8, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(inv.getStack(4), startX + 8, startY + 8, 1, mc, drawContext, mouseX, mouseY);
         }
         else
         {
@@ -465,7 +467,7 @@ public class InventoryOverlay
                 maxSlots = slots;
             }
 
-            for (int slot = startSlot, i = 0; slot < slots && i < maxSlots;)
+            for (int slot = startSlot, i = 0; slot < slots && i < maxSlots; )
             {
                 for (int column = 0; column < slotsPerRow && slot < slots && i < maxSlots; ++column, ++slot, ++i)
                 {
@@ -546,15 +548,53 @@ public class InventoryOverlay
             maxSlots = slots;
         }
 
-        for (int slot = startSlot, i = 0; slot < slots && i < maxSlots;)
+        for (int slot = startSlot, i = 0; slot < slots && i < maxSlots; )
         {
             for (int column = 0; column < slotsPerRow && slot < slots && i < maxSlots; ++column, ++slot, ++i)
             {
                 ItemStack stack = items.get(slot);
 
-                if (stack.isEmpty() == false)
+                if (!stack.isEmpty())
                 {
                     renderStackAt(stack, x, y, 1, mc, drawContext);
+                }
+
+                x += 18;
+            }
+
+            x = startX;
+            y += 18;
+        }
+    }
+
+    public static void renderCrafterStacks(DefaultedList<ItemStack> items, Set<Integer> lockedSlots, int startX, int startY, int startSlot, MinecraftClient mc, DrawContext drawContext)
+    {
+        int slots = items.size();
+        float scale = 1.0f;
+        int x = startX;
+        int y = startY;
+
+        if (slots > 9)
+        {
+            slots = 9;
+        }
+
+        for (int slot = startSlot, i = 0; slot < slots && i < 9; )
+        {
+            for (int column = 0; column < 3 && slot < slots && i < 9; ++column, ++slot, ++i)
+            {
+                if (lockedSlots.contains(slot))
+                {
+                    renderLockedSlotAt((x - 1), (y - 1), scale, drawContext);
+                }
+                else
+                {
+                    ItemStack stack = items.get(slot);
+
+                    if (!stack.isEmpty())
+                    {
+                        renderStackAt(stack, x, y, scale, mc, drawContext);
+                    }
                 }
 
                 x += 18;
@@ -572,7 +612,6 @@ public class InventoryOverlay
 
     public static void renderStackAt(ItemStack stack, float x, float y, float scale, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
     {
-        //String count = stack.getCount() > 1 ? Integer.toString(stack.getCount()) : null;
         MatrixStack matrixStack = drawContext.getMatrices();
         matrixStack.push();
         matrixStack.translate(x, y, 0.f);
@@ -584,8 +623,7 @@ public class InventoryOverlay
         drawContext.drawItem(stack, 0, 0);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
-        //System.out.printf("renderStackAt - [%s] // [%s]\n", stack, count);
-        drawContext.drawItemInSlot( mc.textRenderer, stack, 0, 0);
+        drawContext.drawItemInSlot(mc.textRenderer, stack, 0, 0);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
@@ -597,10 +635,6 @@ public class InventoryOverlay
 
     public static void renderLockedSlotAt(float x, float y, float scale, DrawContext drawContext)
     {
-        //# drawContext.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE_DISABLED_SLOT, x - 1, y - 1, 18, 18);
-        //RenderLayer renderLayer = RenderUtils.getTextureLayer(RenderLayer::getGuiTextured, TEXTURE_DISABLED_SLOT);
-        //VertexConsumer vertex = RenderUtils.getVertexConsumer(renderLayer, drawContext);
-
         MatrixStack matrixStack = drawContext.getMatrices();
         int color = -1;
 
@@ -608,8 +642,7 @@ public class InventoryOverlay
         matrixStack.translate(x, y, 0.f);
         matrixStack.scale(scale, scale, 1);
 
-        RenderUtils.color(1f, 1f, 1f, 1f);
-
+        //RenderUtils.color(1f, 1f, 1f, 1f);
         drawContext.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE_DISABLED_SLOT, 0, 0, 18, 18, color);
         matrixStack.pop();
     }
@@ -642,7 +675,6 @@ public class InventoryOverlay
         public int slotsPerRow = 9;
         public int slotOffsetX = 8;
         public int slotOffsetY = 8;
-        public Set<Integer> lockedSlots = new HashSet<>();
     }
 
     public enum InventoryRenderType

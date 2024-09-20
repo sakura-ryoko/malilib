@@ -22,7 +22,7 @@ public class FakeLockable extends FakeNamed
     public FakeLockable(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeLockable\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 

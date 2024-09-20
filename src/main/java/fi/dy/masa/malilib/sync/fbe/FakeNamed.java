@@ -24,7 +24,7 @@ public class FakeNamed extends FakeBlockEntity
     public FakeNamed(BlockEntity be, World world)
     {
         this(be.getType(), be.getPos(), be.getCachedState());
-        //this.setWorld(world);
+        System.out.print("be -> FakeNamed\n");
         this.copyFromBlockEntityInternal(be, world.getRegistryManager());
     }
 
