@@ -4,6 +4,7 @@ import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.event.SyncHandler;
+import fi.dy.masa.malilib.event.TickHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.IHotkeyCallback;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
@@ -29,7 +30,9 @@ public class MaLiLibInitHandler implements IInitializationHandler
         //RenderEventHandler.getInstance().registerWorldPreWeatherRenderer(renderer);
         //RenderEventHandler.getInstance().registerWorldLastRenderer(renderer);
 
-        SyncHandler.getInstance().registerSyncProvider(new TestDataSync());
+        TestDataSync<?, ?> testDataSync = new TestDataSync<>();
+        SyncHandler.getInstance().registerSyncProvider(testDataSync);
+        TickHandler.getInstance().registerClientTickHandler(testDataSync);
     }
 
     private static class CallbackOpenConfigGui implements IHotkeyCallback

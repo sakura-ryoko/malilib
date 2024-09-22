@@ -1,4 +1,7 @@
-package fi.dy.masa.malilib.sync.fbe;
+package fi.dy.masa.malilib.sync.data;
+
+import java.util.Objects;
+import javax.annotation.Nonnull;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -8,23 +11,25 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.component.type.WrittenBookContentComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-import javax.annotation.Nonnull;
-import java.util.Objects;
-
-public class FakeBooks extends FakeBlockEntity implements Inventory
+public class SyncBooks extends SyncData implements Inventory
 {
+    private static final String BOOK_KEY = "Book";
+    private static final String PAGE_KEY = "Page";
+    private static final String ITEMS_KEY = "Items";
+    private static final String LAST_SLOT_KEY = "last_interacted_slot";
     private static final int MAX_SLOTS = 6;
     private DefaultedList<ItemStack> inventory;
     private int lastInteractedSlot;
@@ -32,22 +37,32 @@ public class FakeBooks extends FakeBlockEntity implements Inventory
     private int currentPage;
     private int pageCount;
 
-    public FakeBooks(BlockEntityType<?> type, BlockPos pos, BlockState state)
+    public SyncBooks(BlockEntityType<?> type, BlockPos pos, BlockState state, World world)
     {
-        super(type, pos, state);
-        this.inventory = DefaultedList.ofSize(MAX_SLOTS, ItemStack.EMPTY);
+        super(type, pos, state, world);
+        this.initInventory();
         this.lastInteractedSlot = -1;
-
-        this.book = ItemStack.EMPTY;
         this.currentPage = 0;
         this.pageCount = 0;
     }
 
-    public FakeBooks(BlockEntity be, World world)
+    public SyncBooks(BlockEntity be)
     {
-        this(be.getType(), be.getPos(), be.getCachedState());
-        System.out.print("be -> FakeBooks\n");
-        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
+        this(be.getType(), be.getPos(), be.getCachedState(), be.getWorld());
+        this.initInventory();
+        this.copyNbtFromBlockEntity(be);
+        //this.readCustomDataFromNbt(this.getNbt());
+    }
+
+    protected void initInventory()
+    {
+        this.inventory = DefaultedList.ofSize(MAX_SLOTS, ItemStack.EMPTY);
+        this.book = ItemStack.EMPTY;
+    }
+
+    protected void initAttributes(Entity entity)
+    {
+        // NO-OP
     }
 
     // Bookshelf
@@ -167,14 +182,25 @@ public class FakeBooks extends FakeBlockEntity implements Inventory
         this.setBook(ItemStack.EMPTY);
     }
 
-    public void readNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
+    public void readNbt(@Nonnull NbtCompound nbt)
     {
-        super.readNbt(nbt, registry);
-        if (nbt.contains("Book", 10))
+        this.readCustomDataFromNbt(nbt);
+        super.readNbt(nbt);
+    }
+
+    public void writeNbt(@Nonnull NbtCompound nbt)
+    {
+        this.writeCustomDataToNbt(nbt);
+        super.writeNbt(nbt);
+    }
+
+    protected void readCustomDataFromNbt(NbtCompound nbt)
+    {
+        if (nbt.contains(BOOK_KEY, NbtElement.COMPOUND_TYPE))
         {
-           this.setBook(ItemStack.fromNbt(registry, nbt.getCompound("Book")).orElse(ItemStack.EMPTY));
-           this.pageCount = getPageCount(this.book);
-           this.currentPage = MathHelper.clamp(nbt.getInt("Page"), 0, this.pageCount - 1);
+            this.setBook(ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound(BOOK_KEY)).orElse(ItemStack.EMPTY));
+            this.pageCount = getPageCount(this.book);
+            this.currentPage = MathHelper.clamp(nbt.getInt(PAGE_KEY), 0, this.pageCount - 1);
         }
         else
         {
@@ -185,29 +211,28 @@ public class FakeBooks extends FakeBlockEntity implements Inventory
         {
             this.inventory = DefaultedList.ofSize(MAX_SLOTS, ItemStack.EMPTY);
         }
-        if (nbt.contains("Items"))
+        if (nbt.contains(ITEMS_KEY))
         {
             this.inventory.clear();
-            Inventories.readNbt(nbt, this.inventory, registry);
+            Inventories.readNbt(nbt, this.inventory, this.getRegistryManager());
         }
 
-        if (nbt.contains("last_interacted_slot"))
+        if (nbt.contains(LAST_SLOT_KEY))
         {
-            this.lastInteractedSlot = nbt.getInt("last_interacted_slot");
+            this.lastInteractedSlot = nbt.getInt(LAST_SLOT_KEY);
         }
     }
 
-    public void writeNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
+    protected void writeCustomDataToNbt(NbtCompound nbt)
     {
-        super.writeNbt(nbt, registry);
         if (!this.getBook().isEmpty())
         {
-            nbt.put("Book", this.getBook().toNbt(registry));
-            nbt.putInt("Page", this.currentPage);
+            nbt.put(BOOK_KEY, this.getBook().toNbt(this.getRegistryManager()));
+            nbt.putInt(PAGE_KEY, this.currentPage);
         }
     }
 
-    protected void readComponents(FakeBlockEntity.ComponentsAccess components)
+    protected void readComponents(ComponentsAccess components)
     {
         super.readComponents(components);
         components.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT).copyTo(this.inventory);

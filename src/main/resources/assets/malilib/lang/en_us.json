@@ -152,6 +152,7 @@
     "malilib.config.test.name.testString": "testString /X",
     "malilib.config.test.name.testStringList": "testStringList /X",
     "malilib.config.test.name.testLockedConfigList": "testLockedConfigList /X",
+    "malilib.config.test.name.testSyncEnable": "testSyncEnable",
 
     "malilib.config.test.comment.testBoolean": "[X] testBoolean Comment!",
     "malilib.config.test.comment.testBooleanHotkeyed": "[X] testBooleanHotkeyed Comment!",
@@ -165,6 +166,7 @@
     "malilib.config.test.comment.testString": "[X] testString Comment!",
     "malilib.config.test.comment.testStringList": "[X] testStringList Comment!",
     "malilib.config.test.comment.testLockedConfigList": "[X] testLockedConfigList Comment!",
+    "malilib.config.test.comment.testSyncEnable": "Enable the Testing Only 'DataSync' Service",
 
     "malilib.gui.label.locked_test.test1": "Test # 1",
     "malilib.gui.label.locked_test.test2": "Test # 2",

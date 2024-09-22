@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.test;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.datafixers.util.Either;
@@ -11,28 +10,30 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.interfaces.IClientTickHandler;
 import fi.dy.masa.malilib.interfaces.ISyncProvider;
 import fi.dy.masa.malilib.mixin.IMixinDataQueryHandler;
-import fi.dy.masa.malilib.sync.cache.SyncCache;
-import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
-import fi.dy.masa.malilib.sync.fe.FakeEntity;
+import fi.dy.masa.malilib.sync.data.SyncData;
+import fi.dy.masa.malilib.sync.SyncDataCache;
 
-public class TestDataSync implements ISyncProvider
+public class TestDataSync<B extends SyncData, E extends SyncData> implements ISyncProvider, IClientTickHandler, AutoCloseable
 {
-    private static final TestDataSync INSTANCE = new TestDataSync();
-    public static TestDataSync getInstance() { return INSTANCE; }
+    private static final TestDataSync<?, ?> INSTANCE = new TestDataSync<>();
+
+    public static TestDataSync<?, ?> getInstance() { return INSTANCE; }
 
     private static final MinecraftClient mc = MinecraftClient.getInstance();
     private final Map<Integer, Either<BlockPos, Integer>> transactionToBlockPosOrEntityId = new HashMap<>();
-    private SyncCache cache;
+    private final SyncDataCache<B, E> cache = new SyncDataCache<>();
     private World world;
+    private static final int TIMEOUT = 5;
+    private long lastTick;
 
     @Override
     public void onInstanceStart()
@@ -51,13 +52,14 @@ public class TestDataSync implements ISyncProvider
     {
         System.out.print("sync - onStartServices()\n");
         this.world = world;
-        this.cache = new SyncCache(world);
+        this.cache.setWorld(world);
+        this.lastTick = System.currentTimeMillis();
     }
 
     @Override
     public void onStopServices()
     {
-        System.out.print("sync - onStartServices()\n");
+        System.out.print("sync - onStopServices()\n");
         this.cache.clear();
         this.world = null;
     }
@@ -65,13 +67,37 @@ public class TestDataSync implements ISyncProvider
     @Override
     public World getWorld()
     {
+        if (this.world == null && mc.world != null)
+        {
+            this.world = mc.world;
+        }
+
         return this.world;
     }
 
     @Override
-    public SyncCache getCache()
+    public SyncDataCache<B, E> getCache()
     {
         return this.cache;
+    }
+
+    @Override
+    public void onClientTick(MinecraftClient mc)
+    {
+        long tickTime = TIMEOUT * 1000L;
+        long now = System.currentTimeMillis();
+        long elapsed = now - this.lastTick;
+
+        if (elapsed > tickTime)
+        {
+            // Tick the Cache
+            this.getCache().tickEntities(now, tickTime);
+            this.lastTick = System.currentTimeMillis();
+        }
+        else if (this.lastTick > now)
+        {
+            this.lastTick = now;
+        }
     }
 
     private static ClientPlayNetworkHandler getVanillaHandler()
@@ -87,6 +113,10 @@ public class TestDataSync implements ISyncProvider
     @Override
     public void requestBlockEntity(BlockPos pos, @Nullable BlockState state)
     {
+        if (this.world == null)
+        {
+            return;
+        }
         System.out.printf("sync - requestBlockEntity() at [%s] state [%s]\n", pos.toShortString(), state != null ? state.toString() : "empty");
         this.requestQueryBlockEntity(pos);
     }
@@ -94,6 +124,10 @@ public class TestDataSync implements ISyncProvider
     @Override
     public void requestBlockEntityAt(World world, BlockPos pos)
     {
+        if (this.world == null)
+        {
+            this.world = world;
+        }
         if (!(world instanceof ServerWorld))
         {
             BlockState state = world.getBlockState(pos);
@@ -114,25 +148,17 @@ public class TestDataSync implements ISyncProvider
     @Override
     public void requestEntity(int entityId)
     {
+        if (this.world == null)
+        {
+            return;
+        }
         System.out.printf("sync - requestEntity() id [%d]\n", entityId);
         this.requestQueryEntityData(entityId);
     }
 
-    @Override
-    public void requestEntity(UUID uuid)
-    {
-        System.out.printf("sync - requestEntity() uuid [%s]\n", uuid.toString());
-        PlayerEntity player = this.getWorld().getPlayerByUuid(uuid);
-
-        if (player != null)
-        {
-            this.requestQueryEntityData(player.getId());
-        }
-    }
-
     private void requestQueryBlockEntity(BlockPos pos)
     {
-        if (!MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+        if (!MaLiLibConfigs.Test.TEST_SYNC_ENABLE.getBooleanValue())
         {
             return;
         }
@@ -150,7 +176,7 @@ public class TestDataSync implements ISyncProvider
 
     private void requestQueryEntityData(int entityId)
     {
-        if (!MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+        if (!MaLiLibConfigs.Test.TEST_SYNC_ENABLE.getBooleanValue())
         {
             return;
         }
@@ -193,39 +219,42 @@ public class TestDataSync implements ISyncProvider
     @Override
     public boolean hasBlockEntity(BlockPos pos)
     {
-        return false;
+        return this.cache.hasBlockEntity(pos);
     }
 
     @Override
     public boolean hasEntity(int entityId)
     {
-        return false;
+        return this.cache.hasEntity(entityId);
     }
 
     @Override
-    public boolean hasEntity(UUID uuid)
-    {
-        return false;
-    }
-
-    @Override
-    public @Nullable FakeBlockEntity getBlockEntity(BlockPos pos)
+    @SuppressWarnings("unchecked")
+    public @Nullable B getBlockEntity(BlockPos pos)
     {
         System.out.printf("sync - getBlockEntity() at [%s]\n", pos.toShortString());
-        return null;
+
+        return (B) this.cache.getBlockEntity(pos);
     }
 
     @Override
-    public @Nullable FakeEntity getEntity(int entityId)
+    @SuppressWarnings("unchecked")
+    public @Nullable E getEntity(int entityId)
     {
         System.out.printf("sync - getEntity() id [%d]\n", entityId);
-        return null;
+
+        return (E) this.cache.getEntity(entityId);
+    }
+
+    public void clear()
+    {
+        this.cache.clear();
     }
 
     @Override
-    public @Nullable FakeEntity getEntity(UUID uuid)
+    public void close() throws Exception
     {
-        System.out.printf("sync - getEntity() uuid [%s]\n", uuid.toString());
-        return null;
+        this.clear();
+        this.cache.close();
     }
 }

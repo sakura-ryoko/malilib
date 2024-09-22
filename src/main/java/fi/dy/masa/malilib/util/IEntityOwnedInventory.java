@@ -2,13 +2,13 @@ package fi.dy.masa.malilib.util;
 
 import net.minecraft.entity.Entity;
 
-import fi.dy.masa.malilib.sync.fe.FakeEntity;
+import fi.dy.masa.malilib.sync.data.SyncEquipment;
 
 public interface IEntityOwnedInventory
 {
     Entity malilib$getEntityOwner();
     void malilib$setEntityOwner(Entity entity);
 
-    FakeEntity malilib$getFakeEntityOwner();
-    void malilib$setFakeEntityOwner(FakeEntity entity);
+    <T extends SyncEquipment> T malilib$getSyncOwner();
+    <T extends SyncEquipment> void malilib$setSyncOwner(T entity);
 }

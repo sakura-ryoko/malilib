@@ -1,27 +1,17 @@
 package fi.dy.masa.malilib.test;
 
-import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
-import fi.dy.masa.malilib.sync.fe.FakeEntity;
-import fi.dy.masa.malilib.util.BlockUtils;
 import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.EntityUtils;
-import fi.dy.masa.malilib.util.InventoryUtils;
 
 public class TestUtils
 {
@@ -218,76 +208,6 @@ public class TestUtils
             double remainder = value % interval;
 
             return remainder == 0.0 ? value : value + interval - remainder;
-        }
-    }
-
-    public @Nullable static Inventory getInventory(World world, BlockPos pos)
-    {
-        Inventory inv = InventoryUtils.getInventory(world, pos);
-
-        if (TestDataSync.getInstance().hasBlockEntity(pos))
-        {
-            FakeBlockEntity fbe = TestDataSync.getInstance().getBlockEntity(pos);
-
-            if (InventoryUtils.fbeHasItems(fbe))
-            {
-                inv = InventoryUtils.getAsInventory(InventoryUtils.getStoredItems(fbe));
-            }
-        }
-
-        if ((inv == null || inv.isEmpty()) && !MinecraftClient.getInstance().isIntegratedServerRunning()
-            && world.getBlockState(pos).getBlock() instanceof BlockEntityProvider
-            && MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-        {
-            TestDataSync.getInstance().requestBlockEntityAt(world, pos);
-        }
-
-        return inv;
-    }
-
-    public @Nullable static FakeBlockEntity getFakeBlockEntity(World world, BlockPos pos)
-    {
-        BlockState state = world.getBlockState(pos);
-
-        if (TestDataSync.getInstance().hasBlockEntity(pos))
-        {
-            return TestDataSync.getInstance().getBlockEntity(pos);
-        }
-
-        if (world.isClient
-            && state.getBlock() instanceof BlockEntityProvider
-            && MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-        {
-            TestDataSync.getInstance().requestBlockEntityAt(world, pos);
-        }
-        else if (state.hasBlockEntity())
-        {
-            BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
-
-            return BlockUtils.toFakeBlockEntity(be, world);
-        }
-
-        return null;
-    }
-
-    public @Nullable static FakeEntity getFakeEntity(Entity entity)
-    {
-        int entityId = entity.getId();
-
-        if (TestDataSync.getInstance().hasEntity(entityId))
-        {
-            return TestDataSync.getInstance().getEntity(entityId);
-        }
-
-        if (entity.getWorld().isClient &&
-            MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-        {
-            TestDataSync.getInstance().requestEntity(entityId);
-            return TestDataSync.getInstance().getCache().createFakeEntity(entity);
-        }
-        else
-        {
-            return EntityUtils.toFakeEntity(entity);
         }
     }
 }

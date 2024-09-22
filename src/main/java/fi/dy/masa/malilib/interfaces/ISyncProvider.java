@@ -1,6 +1,5 @@
 package fi.dy.masa.malilib.interfaces;
 
-import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -11,9 +10,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 
-import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
-import fi.dy.masa.malilib.sync.fe.FakeEntity;
-import fi.dy.masa.malilib.sync.cache.SyncCache;
+import fi.dy.masa.malilib.sync.data.SyncData;
+import fi.dy.masa.malilib.sync.SyncDataCache;
 
 public interface ISyncProvider
 {
@@ -27,15 +25,13 @@ public interface ISyncProvider
 
     World getWorld();
 
-    SyncCache getCache();
+    SyncDataCache<? extends SyncData,? extends SyncData> getCache();
 
     void requestBlockEntity(BlockPos pos, @Nullable BlockState state);
 
     void requestBlockEntityAt(World world, BlockPos pos);
 
     void requestEntity(int entityId);
-
-    void requestEntity(UUID uuid);
 
     default void requestBulkData(ChunkPos chunkPos, @Nullable Box boundingBox) {}
 
@@ -51,13 +47,9 @@ public interface ISyncProvider
 
     boolean hasEntity(int entityId);
 
-    boolean hasEntity(UUID uuid);
+    default boolean hasBulkData(ChunkPos pos) {return false;}
 
-    default boolean hasBulkData(ChunkPos pos) { return false; }
+    @Nullable <B extends SyncData> B getBlockEntity(BlockPos pos);
 
-    @Nullable FakeBlockEntity getBlockEntity(BlockPos pos);
-
-    @Nullable FakeEntity getEntity(int entityId);
-
-    @Nullable FakeEntity getEntity(UUID uuid);
+    @Nullable <E extends SyncData> E getEntity(int entityId);
 }

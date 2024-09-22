@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.sync.fbe;
+package fi.dy.masa.malilib.sync.data;
 
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -10,39 +10,42 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class FakeBees extends FakeBlockEntity
+public class SyncBees extends SyncData
 {
+    private static final String BEES_KEY = "bees";
+    private static final String FLOWER_POS_KEY = "flower_pos";
     private final List<FakeBee> bees = Lists.newArrayList();
     private BlockPos flowerPos;
 
-    public FakeBees(BlockEntityType<?> type, BlockPos pos, BlockState state)
+    public SyncBees(BlockEntityType<?> type, BlockPos pos, BlockState state, World world)
     {
-        super(type, pos, state);
+        super(type, pos, state, world);
         this.flowerPos = BlockPos.ORIGIN;
     }
 
-    public FakeBees(BlockPos pos, BlockState state)
+    public SyncBees(BlockEntity be)
     {
-        this(BlockEntityType.BEEHIVE, pos, state);
+        super(be);
+        this.flowerPos = BlockPos.ORIGIN;
+        this.copyNbtFromBlockEntity(be);
+        //this.readCustomDataFromNbt(this.getNbt());
     }
 
-    public FakeBees(BlockEntity be, World world)
+    protected void initInventory()
     {
-        this(be.getType(), be.getPos(), be.getCachedState());
-        System.out.print("be -> FakeBees\n");
-        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
+        // NO-OP
     }
 
-    public FakeBees createBlockEntity(BlockPos pos, BlockState state)
+    protected void initAttributes(Entity entity)
     {
-        return new FakeBees(pos, state);
+        // NO-OP
     }
 
     private void addBee(BeehiveBlockEntity.BeeData bee)
@@ -70,28 +73,37 @@ public class FakeBees extends FakeBlockEntity
         this.flowerPos = pos;
     }
 
-    public void readNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
+    public void readNbt(@Nonnull NbtCompound nbt)
     {
-        super.readNbt(nbt, registries);
-        this.bees.clear();
-        if (nbt.contains("bees"))
-        {
-            BeehiveBlockEntity.BeeData.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.get("bees")).resultOrPartial((string) ->
-                          LOGGER.error("Failed to parse bees: '{}'", string)).ifPresent((list) ->
-                            list.forEach(this::addBee));
-        }
-
-        this.flowerPos = NbtHelper.toBlockPos(nbt, "flower_pos").orElse(null);
+        this.readCustomDataFromNbt(nbt);
+        super.readNbt(nbt);
     }
 
-    public void writeNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registries)
+    public void writeNbt(@Nonnull NbtCompound nbt)
     {
-        super.writeNbt(nbt, registries);
-        nbt.put("bees", BeehiveBlockEntity.BeeData.LIST_CODEC.encodeStart(NbtOps.INSTANCE, this.createBeesData()).getOrThrow());
+        this.writeCustomDataToNbt(nbt);
+        super.writeNbt(nbt);
+    }
+
+    protected void readCustomDataFromNbt(NbtCompound nbt)
+    {
+        this.bees.clear();
+        if (nbt.contains(BEES_KEY))
+        {
+            BeehiveBlockEntity.BeeData.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.get(BEES_KEY)).resultOrPartial((string) ->
+                                       LOGGER.error("Failed to parse bees: '{}'", string)).ifPresent((list) -> list.forEach(this::addBee));
+        }
+
+        this.flowerPos = NbtHelper.toBlockPos(nbt, FLOWER_POS_KEY).orElse(null);
+    }
+
+    protected void writeCustomDataToNbt(NbtCompound nbt)
+    {
+        nbt.put(BEES_KEY, BeehiveBlockEntity.BeeData.LIST_CODEC.encodeStart(NbtOps.INSTANCE, this.createBeesData()).getOrThrow());
 
         if (this.hasFlowerPos())
         {
-            nbt.put("flower_pos", NbtHelper.fromBlockPos(this.flowerPos));
+            nbt.put(FLOWER_POS_KEY, NbtHelper.fromBlockPos(this.flowerPos));
         }
     }
 

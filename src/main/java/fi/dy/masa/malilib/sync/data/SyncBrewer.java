@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.sync.fbe;
+package fi.dy.masa.malilib.sync.data;
 
 import javax.annotation.Nonnull;
 import org.jetbrains.annotations.Nullable;
@@ -17,30 +17,33 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-public class FakeBrewer extends FakeLockableContainer implements SidedInventory
+public class SyncBrewer extends SyncInventory implements SidedInventory
 {
+    private static final String BREW_TIME_KEY = "BrewTime";
+    private static final String FUEL_KEY = "Fuel";
     private static final int MAX_SLOTS = 5;
-    private boolean[] slotsEmptyLastTick;
+    private static final int BREWING_SLOT = 3;
     private Item itemBrewing;
     private int brewTime;
     private int fuel;
 
-    public FakeBrewer(BlockEntityType<?> type, BlockPos pos, BlockState state)
+    public SyncBrewer(BlockEntityType<?> type, BlockPos pos, BlockState state, World world, int maxSlots)
     {
-        super(type, pos, state, MAX_SLOTS);
-        this.inventory = DefaultedList.ofSize(MAX_SLOTS, ItemStack.EMPTY);
+        super(type, pos, state, world, maxSlots);
+        this.initInventory();
     }
 
-    public FakeBrewer(BlockEntity be, World world)
+    public SyncBrewer(BlockEntity be)
     {
-        this(be.getType(), be.getPos(), be.getCachedState());
-        System.out.print("be -> FakeBrewer\n");
-        this.copyFromBlockEntityInternal(be, world.getRegistryManager());
+        this(be.getType(), be.getPos(), be.getCachedState(), be.getWorld(), MAX_SLOTS);
+        this.copyNbtFromBlockEntity(be);
+        //this.readCustomDataFromNbt(this.getNbt());
     }
 
-    public FakeBrewer createBlockEntity(BlockPos pos, BlockState state)
+    protected void initInventory()
     {
-        return new FakeBrewer(BlockEntityType.BREWING_STAND, pos, state);
+        super.initInventory();
+        this.stacks = DefaultedList.ofSize(MAX_SLOTS, ItemStack.EMPTY);
     }
 
     public Item getItemBrewing()
@@ -82,23 +85,33 @@ public class FakeBrewer extends FakeLockableContainer implements SidedInventory
 
     public void readNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
     {
+        this.readCustomDataFromNbt(nbt);
         super.readNbt(nbt, registry);
-        this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        Inventories.readNbt(nbt, this.inventory, registry);
-        this.brewTime = nbt.getShort("BrewTime");
-        if (this.brewTime > 0)
-        {
-            this.itemBrewing = this.inventory.get(3).getItem();
-        }
-
-        this.fuel = nbt.getByte("Fuel");
     }
 
     public void writeNbt(@Nonnull NbtCompound nbt, RegistryWrapper.WrapperLookup registry)
     {
+        this.writeCustomDataToNbt(nbt);
         super.writeNbt(nbt, registry);
-        nbt.putShort("BrewTime", (short) this.brewTime);
-        Inventories.writeNbt(nbt, this.inventory, registry);
-        nbt.putByte("Fuel", (byte) this.fuel);
+    }
+
+    protected void readCustomDataFromNbt(NbtCompound nbt)
+    {
+        this.stacks = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+        Inventories.readNbt(nbt, this.stacks, this.getRegistryManager());
+        this.brewTime = nbt.getShort(BREW_TIME_KEY);
+        if (this.brewTime > 0)
+        {
+            this.itemBrewing = this.stacks.get(BREWING_SLOT).getItem();
+        }
+
+        this.fuel = nbt.getByte(FUEL_KEY);
+    }
+
+    protected void writeCustomDataToNbt(NbtCompound nbt)
+    {
+        nbt.putShort(BREW_TIME_KEY, (short) this.brewTime);
+        Inventories.writeNbt(nbt, this.stacks, this.getRegistryManager());
+        nbt.putByte(FUEL_KEY, (byte) this.fuel);
     }
 }

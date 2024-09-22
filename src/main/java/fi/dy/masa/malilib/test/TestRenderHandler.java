@@ -8,7 +8,9 @@ import org.joml.Matrix4f;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.CrafterBlock;
 import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.Camera;
@@ -16,13 +18,19 @@ import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.Frustum;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.MerchantEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -31,15 +39,16 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
+import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
-import fi.dy.masa.malilib.sync.fbe.FakeCrafter;
-import fi.dy.masa.malilib.sync.fe.*;
+import fi.dy.masa.malilib.sync.SyncUtils;
+import fi.dy.masa.malilib.sync.data.*;
 import fi.dy.masa.malilib.util.*;
 
 public class TestRenderHandler implements IRenderer
@@ -51,7 +60,7 @@ public class TestRenderHandler implements IRenderer
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isAltDown())
         {
-            profiler.push(this.getProfilerSectionSupplier()+"_render_overlay");
+            profiler.push(this.getProfilerSectionSupplier() + "_render_overlay");
             renderInventoryOverlay(mc, drawContext);
             profiler.pop();
         }
@@ -75,7 +84,7 @@ public class TestRenderHandler implements IRenderer
         {
             MinecraftClient mc = MinecraftClient.getInstance();
 
-            profiler.push(this.getProfilerSectionSupplier()+"_test_walls");
+            profiler.push(this.getProfilerSectionSupplier() + "_test_walls");
             if (wasHeld && !GuiBase.isShiftDown())
             {
                 TestWalls.clear();
@@ -85,11 +94,11 @@ public class TestRenderHandler implements IRenderer
             {
                 if (TestWalls.needsUpdate(camera.getBlockPos()))
                 {
-                    profiler.swap(this.getProfilerSectionSupplier()+"_test_walls_update");
+                    profiler.swap(this.getProfilerSectionSupplier() + "_test_walls_update");
                     TestWalls.update(camera, mc);
                 }
 
-                profiler.swap(this.getProfilerSectionSupplier()+"_test_walls_draw");
+                profiler.swap(this.getProfilerSectionSupplier() + "_test_walls_draw");
                 TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
                 wasHeld = true;
             }
@@ -129,10 +138,10 @@ public class TestRenderHandler implements IRenderer
         Entity entity = mc.getCameraEntity();
 
         if (entity != null &&
-            mc.crosshairTarget != null &&
-            mc.crosshairTarget.getType() == HitResult.Type.BLOCK &&
-            MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
-            GuiBase.isCtrlDown())
+                mc.crosshairTarget != null &&
+                mc.crosshairTarget.getType() == HitResult.Type.BLOCK &&
+                MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
+                GuiBase.isCtrlDown())
         {
             BlockHitResult hitResult = (BlockHitResult) mc.crosshairTarget;
             RenderSystem.depthMask(false);
@@ -186,11 +195,15 @@ public class TestRenderHandler implements IRenderer
         BlockPos pos = null;
         BlockState state;
         Inventory inv = null;
-        FakeBlockEntity fbe = null;
+        SyncData fbe = null;
+        SyncInventory si = null;
+        SyncEquipment se = null;
+        SyncMerchant sm = null;
+        SyncHorse sh = null;
+        CrafterBlockEntity ce = null;
+        Entity entity = null;
         ShulkerBoxBlock shulkerBoxBlock = null;
         LivingEntity entityLivingBase = null;
-        FakeEntity fe;
-        FakeLiving fl = null;
 
         if (trace.getType() == HitResult.Type.BLOCK)
         {
@@ -217,55 +230,100 @@ public class TestRenderHandler implements IRenderer
                 {
                     shulkerBoxBlock = (ShulkerBoxBlock) blockTmp;
                 }
+                if (blockTmp instanceof CrafterBlock)
+                {
+                    ce = (CrafterBlockEntity) world.getWorldChunk(pos).getBlockEntity(pos);
+                }
 
-                fbe = TestUtils.getFakeBlockEntity(world, pos);
+                if (MaLiLibConfigs.Test.TEST_SYNC_ENABLE.getBooleanValue())
+                {
+                    fbe = SyncUtils.getFakeBlockEntity(world, pos);
+
+                    if (fbe instanceof SyncInventory)
+                    {
+                        si = (SyncInventory) fbe;
+                    }
+                }
             }
 
-            inv = TestUtils.getInventory(world, pos);
+            inv = SyncUtils.getInventory(world, pos);
         }
         else if (trace.getType() == HitResult.Type.ENTITY)
         {
-            Entity entity = ((EntityHitResult) trace).getEntity();
-            fe = TestUtils.getFakeEntity(entity);
+            entity = ((EntityHitResult) trace).getEntity();
 
-            if (fe instanceof FakeLiving)
+            if (MaLiLibConfigs.Test.TEST_SYNC_ENABLE.getBooleanValue())
             {
-                fl = (FakeLiving) fe;
+                fbe = SyncUtils.getFakeEntity(entity);
             }
+
             if (entity instanceof LivingEntity)
             {
                 entityLivingBase = (LivingEntity) entity;
             }
 
-            if (fe instanceof Inventory)
+            if (entity instanceof PiglinEntity)
             {
-                inv = (Inventory) fe;
+                inv = fbe != null ? ((SyncMerchant) fbe).getInventory() : ((PiglinEntity) entity).getInventory();
             }
-            else if (fe instanceof FakeVillager)
+            else if (entity instanceof MerchantEntity)
             {
-                inv = ((FakeVillager) fe).getInventory();
+                inv = fbe != null ? ((SyncMerchant) fbe).getInventory() : ((MerchantEntity) entity).getInventory();
             }
-            else if (fe instanceof FakeHorse)
+            else if (entity instanceof AbstractHorseEntity)
             {
-                inv = ((FakeHorse) fe).getHorseInventory();
+                inv = fbe != null ? ((SyncHorse) fbe).getHorseInventory() : ((IMixinAbstractHorseEntity) entity).tweakeroo_getHorseInventory();
+            }
+            else if (entity instanceof Inventory)
+            {
+                if (fbe != null)
+                {
+                    inv = InventoryUtils.getAsInventory(((SyncInventory) fbe).getHeldStacks());
+                }
+                else
+                {
+                    inv = (Inventory) entity;
+                }
+            }
+
+            if (MaLiLibConfigs.Test.TEST_SYNC_ENABLE.getBooleanValue())
+            {
+                if (fbe instanceof SyncMerchant)
+                {
+                    sm = (SyncMerchant) fbe;
+                }
+                if (fbe instanceof SyncHorse)
+                {
+                    sh = (SyncHorse) fbe;
+                }
+                if (fbe instanceof SyncEquipment)
+                {
+                    se = (SyncEquipment) fbe;
+                }
             }
         }
 
         final int xCenter = GuiUtils.getScaledWindowWidth() / 2;
         final int yCenter = GuiUtils.getScaledWindowHeight() / 2;
-        boolean isWolf = (fl instanceof FakeWolf);
-        boolean isHorse = (fl instanceof FakeHorse);
-        boolean isVillager = (fl instanceof FakeVillager);
+        boolean isWolf = (entityLivingBase instanceof WolfEntity) || (entity != null && entity.getType().equals(EntityType.WOLF));
+        boolean isHorse = entityLivingBase instanceof AbstractHorseEntity;
+        boolean isVillager = entityLivingBase instanceof MerchantEntity;
         int x = xCenter - 52 / 2;
         int y = yCenter - 92;
 
-        if (inv != null && !inv.isEmpty())
+        if (fbe != null && (inv == null || inv.isEmpty()))
+        {
+            System.out.printf("render (No inv) - [FBE] type [%s], nbt [%s]\n", fbe.getClass().getTypeName(), fbe.getNbt().toString());
+        }
+        else
+        {
+            System.out.printf("render - [NO FBE] wolf: %s, horse: %s, villager: %s\n", isWolf, isHorse, isVillager);
+        }
+
+        if (inv != null && inv.size() > 0)
         {
             final int totalSlots = isHorse ? inv.size() - 1 : inv.size();
             final int firstSlot = isHorse ? 1 : 0;
-
-            //System.out.printf("renderInventoryOverlay() inv.size(%d) / real size (%d)\n", inv.size(), ((IMixinAbstractHorseEntity) entityLivingBase).tweakeroo_getHorseInventory().size());
-
             final InventoryOverlay.InventoryRenderType type = isVillager ? InventoryOverlay.InventoryRenderType.VILLAGER : InventoryOverlay.getInventoryType(inv);
             final InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, totalSlots);
             final int rows = (int) Math.ceil((double) totalSlots / props.slotsPerRow);
@@ -279,7 +337,7 @@ public class TestRenderHandler implements IRenderer
                 y -= (rows - 6) * 18;
             }
 
-            if (fl != null)
+            if (entityLivingBase != null)
             {
                 x = xCenter - 55;
                 xInv = xCenter + 2;
@@ -288,14 +346,22 @@ public class TestRenderHandler implements IRenderer
 
             if (type == InventoryOverlay.InventoryRenderType.CRAFTER && pos != null)
             {
-                if (fbe != null)
+                if (si != null)
                 {
-                    lockedSlots = ((FakeCrafter) fbe).getDisabledSlots();
+                    lockedSlots = si.getDisabledSlots();
+                }
+                else if (ce != null)
+                {
+                    lockedSlots = BlockUtils.getDisabledSlots(ce);
                 }
             }
             if (fbe != null)
             {
-                System.out.printf("render - fbe nbt [%s]\n", fbe.getNbt().toString());
+                System.out.printf("render - [FBE]  type [%s], nbt id [%s]\n", type.toString(), fbe.getNbt().getString("id"));
+            }
+            else
+            {
+                System.out.printf("render - [NO FBE] type [%s], wolf: %s, horse: %s, villager: %s\n", type.toString(), isWolf, isHorse, isVillager);
             }
 
             RenderUtils.setShulkerboxBackgroundTintColor(shulkerBoxBlock, true);
@@ -303,7 +369,7 @@ public class TestRenderHandler implements IRenderer
             if (isHorse)
             {
                 Inventory horseInv = new SimpleInventory(2);
-                ItemStack horseArmor = (((FakeHorse) fl).getBodyArmor());
+                ItemStack horseArmor = sh != null ? sh.getBodyArmor() : ((AbstractHorseEntity) entityLivingBase).getBodyArmor();
                 horseInv.setStack(0, horseArmor != null && !horseArmor.isEmpty() ? horseArmor : ItemStack.EMPTY);
                 horseInv.setStack(1, inv.getStack(0));
 
@@ -322,7 +388,8 @@ public class TestRenderHandler implements IRenderer
                 }
                 else
                 {
-                    InventoryOverlay.renderCrafterStacks(((FakeCrafter) fbe).getHeldStacks(), lockedSlots, xInv + props.slotOffsetX, yInv + props.slotOffsetY, firstSlot, mc, drawContext);
+                    DefaultedList<ItemStack> crafterInv = si != null ? si.getHeldStacks() : ce.getHeldStacks();
+                    InventoryOverlay.renderCrafterStacks(crafterInv, lockedSlots, xInv + props.slotOffsetX, yInv + props.slotOffsetY, firstSlot, mc, drawContext);
                 }
             }
         }
@@ -346,16 +413,41 @@ public class TestRenderHandler implements IRenderer
             yInv = Math.min(yInv, yCenter - 92);
 
             Inventory wolfInv = new SimpleInventory(2);
-            ItemStack wolfArmor = ((FakeWolf) fl).getBodyArmor();
+            ItemStack wolfArmor = null;
+            if (entityLivingBase instanceof WolfEntity)
+            {
+                wolfArmor = se != null ? se.getBodyArmor() : ((WolfEntity) entityLivingBase).getBodyArmor();
+            }
             wolfInv.setStack(0, wolfArmor != null && !wolfArmor.isEmpty() ? wolfArmor : ItemStack.EMPTY);
             InventoryOverlay.renderInventoryBackground(type, xInv, yInv, 1, 2, mc);
             InventoryOverlay.renderInventoryStacks(type, wolfInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, 1, 0, 2, mc, drawContext);
         }
 
-        if (entityLivingBase != null)
+        MaLiLib.logger.error("IO: renderEquipmentStacks() - START");
+
+        if (sm != null)
+        {
+            InventoryOverlay.renderFeEquipmentOverlayBackground(x, y, sm, drawContext);
+            InventoryOverlay.renderFeEquipmentStacks(sm, x, y, mc, drawContext);
+        }
+        else if (sh != null)
+        {
+            InventoryOverlay.renderFeEquipmentOverlayBackground(x, y, sh, drawContext);
+            InventoryOverlay.renderFeEquipmentStacks(sh, x, y, mc, drawContext);
+        }
+        else if (se != null)
+        {
+            InventoryOverlay.renderFeEquipmentOverlayBackground(x, y, se, drawContext);
+            InventoryOverlay.renderFeEquipmentStacks(se, x, y, mc, drawContext);
+        }
+        else if (entityLivingBase != null)
         {
             InventoryOverlay.renderEquipmentOverlayBackground(x, y, entityLivingBase, drawContext);
             InventoryOverlay.renderEquipmentStacks(entityLivingBase, x, y, mc, drawContext);
+        }
+        else
+        {
+            MaLiLib.logger.error("IO: renderEquipmentStacks() - FAIL");
         }
     }
 }

@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.render;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -28,9 +29,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.sync.fe.FakeHorse;
-import fi.dy.masa.malilib.sync.fe.FakePiglin;
+import fi.dy.masa.malilib.sync.data.SyncEquipment;
+import fi.dy.masa.malilib.sync.data.SyncHorse;
 import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 
 public class InventoryOverlay
@@ -254,6 +256,64 @@ public class InventoryOverlay
         }
     }
 
+    public static <T extends SyncEquipment> void renderFeEquipmentOverlayBackground(int x, int y, T fe, DrawContext drawContext)
+    {
+        RenderUtils.color(1f, 1f, 1f, 1f);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BuiltBuffer builtBuffer;
+
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
+        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        //RenderSystem.applyModelViewMatrix();
+
+        RenderUtils.bindTexture(TEXTURE_DISPENSER);
+
+        RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 50, 83, buffer); // top-left (main part)
+        RenderUtils.drawTexturedRectBatched(x + 50, y, 173, 0, 3, 83, buffer); // right edge top
+        RenderUtils.drawTexturedRectBatched(x, y + 83, 0, 163, 50, 3, buffer); // bottom edge left
+        RenderUtils.drawTexturedRectBatched(x + 50, y + 83, 173, 163, 3, 3, buffer); // bottom right corner
+
+        for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
+        {
+            RenderUtils.drawTexturedRectBatched(x + xOff, y + yOff, 61, 16, 18, 18, buffer);
+        }
+
+        // Main hand and offhand
+        RenderUtils.drawTexturedRectBatched(x + 28, y + 2 * 18 + 7, 61, 16, 18, 18, buffer);
+        RenderUtils.drawTexturedRectBatched(x + 28, y + 3 * 18 + 7, 61, 16, 18, 18, buffer);
+
+        try
+        {
+            builtBuffer = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(builtBuffer);
+            builtBuffer.close();
+        }
+        catch (Exception ignored)
+        {
+        }
+
+        RenderUtils.bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
+
+        if (fe.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
+        {
+            Identifier texture = Identifier.ofVanilla("item/empty_armor_slot_shield");
+            RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, drawContext);
+        }
+
+        for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
+        {
+            final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
+
+            if (fe.getEquippedStack(eqSlot).isEmpty())
+            {
+                Identifier texture = EMPTY_SLOT_TEXTURES[eqSlot.getEntitySlotId()];
+                RenderUtils.renderSprite(x + xOff + 1, y + yOff + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, drawContext);
+            }
+        }
+    }
+
     public static InventoryRenderType getInventoryType(Inventory inv)
     {
         if (inv instanceof ShulkerBoxBlockEntity)
@@ -290,7 +350,7 @@ public class InventoryOverlay
             {
                 return InventoryRenderType.HORSE;
             }
-            else if (inventory.malilib$getFakeEntityOwner() instanceof FakeHorse)
+            else if (inventory.malilib$getSyncOwner() instanceof SyncHorse)
             {
                 return InventoryRenderType.HORSE;
             }
@@ -298,7 +358,7 @@ public class InventoryOverlay
             {
                 return InventoryRenderType.VILLAGER;
             }
-            else if (inventory.malilib$getFakeEntityOwner() instanceof FakePiglin)
+            else if (inventory.malilib$getSyncOwner() instanceof SyncEquipment)
             {
                 return InventoryRenderType.VILLAGER;
             }
@@ -475,7 +535,7 @@ public class InventoryOverlay
 
                     if (stack.isEmpty() == false)
                     {
-                        //System.out.printf("renderInventoryStacks - slot[%d/%d]: [%s]\n", slot, slots, stack);
+                        //System.out.printf("renderInventoryStacks: slot[%d/%d]: [%s]\n", slot, slots, stack);
                         renderStackAt(stack, x, y, 1, mc, drawContext, mouseX, mouseY);
                     }
 
@@ -498,6 +558,7 @@ public class InventoryOverlay
 
     public static void renderEquipmentStacks(LivingEntity entity, int x, int y, MinecraftClient mc, DrawContext drawContext)
     {
+        MaLiLib.logger.error("renderEquipmentStacks[LE]: entityId [{}]", entity.getId());
         renderEquipmentStacks(entity, x, y, mc, drawContext, 0, 0);
     }
 
@@ -522,6 +583,63 @@ public class InventoryOverlay
         }
 
         stack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
+
+        if (stack.isEmpty() == false)
+        {
+            renderStackAt(stack, x + 28, y + 3 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
+        }
+
+        if (hoveredStack != null)
+        {
+            stack = hoveredStack;
+            hoveredStack = null;
+            // Some mixin / side effects can happen here, so reset hoveredStack
+            drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
+        }
+    }
+
+    public static <T extends SyncEquipment> void renderFeEquipmentStacks(T fe, int x, int y, MinecraftClient mc, DrawContext drawContext)
+    {
+        MaLiLib.logger.error("renderEquipmentStacks[FE]: entityId [{}]", fe.getEntityId());
+        renderFeEquipmentStacks(fe, x, y, mc, drawContext, 0, 0);
+    }
+
+    public static <T extends SyncEquipment> void renderFeEquipmentStacks(T fe, int x, int y, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
+    {
+        Iterator<ItemStack> slots = fe.getEquippedItems().iterator();
+        int w = 0;
+
+        while (slots.hasNext())
+        {
+            MaLiLib.logger.warn("renderEquipmentStacks[{}]: item [{}]", w, slots.next().toString());
+            w++;
+        }
+
+        for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
+        {
+            final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
+            ItemStack stack = fe.getEquippedStack(eqSlot);
+
+            //MaLiLib.logger.warn("[{}] type: [{}/{}], item: [{}]", i, eqSlot.getEntitySlotId(), eqSlot.getName(), stack.toString());
+
+            if (stack.isEmpty() == false)
+            {
+                renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc, drawContext, mouseX, mouseY);
+            }
+        }
+
+        ItemStack stack = fe.getEquippedStack(EquipmentSlot.MAINHAND);
+
+        //MaLiLib.logger.warn("-> type: [{}/{}], item: [{}]", EquipmentSlot.MAINHAND.getEntitySlotId(), EquipmentSlot.MAINHAND.getName(), stack.toString());
+
+        if (stack.isEmpty() == false)
+        {
+            renderStackAt(stack, x + 28, y + 2 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
+        }
+
+        stack = fe.getEquippedStack(EquipmentSlot.OFFHAND);
+
+        //MaLiLib.logger.warn("-> type: [{}/{}], item: [{}]", EquipmentSlot.OFFHAND.getEntitySlotId(), EquipmentSlot.OFFHAND.getName(), stack.toString());
 
         if (stack.isEmpty() == false)
         {
@@ -612,6 +730,8 @@ public class InventoryOverlay
 
     public static void renderStackAt(ItemStack stack, float x, float y, float scale, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
     {
+        MaLiLib.logger.warn("renderStackAt(): stack [{}]", stack.toString());
+
         MatrixStack matrixStack = drawContext.getMatrices();
         matrixStack.push();
         matrixStack.translate(x, y, 0.f);
@@ -627,6 +747,7 @@ public class InventoryOverlay
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
+
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
             hoveredStack = stack;

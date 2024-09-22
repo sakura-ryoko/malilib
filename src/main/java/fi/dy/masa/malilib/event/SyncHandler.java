@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jetbrains.annotations.ApiStatus;
 
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.interfaces.ISyncManager;
@@ -57,6 +58,18 @@ public class SyncHandler implements ISyncManager
             for (ISyncProvider handler : this.handlers)
             {
                 handler.onStopServices();
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    public void onQueryResponse(int transactionId, NbtCompound nbt)
+    {
+        if (!this.handlers.isEmpty())
+        {
+            for (ISyncProvider handler : this.handlers)
+            {
+                handler.handleVanillaQueryNbt(transactionId, nbt);
             }
         }
     }

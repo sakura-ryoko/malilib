@@ -1,18 +1,20 @@
 package fi.dy.masa.malilib.mixin;
 
-import fi.dy.masa.malilib.sync.fe.FakeEntity;
-import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+import fi.dy.masa.malilib.sync.data.SyncEquipment;
+import fi.dy.masa.malilib.util.IEntityOwnedInventory;
+
 @Mixin(SimpleInventory.class)
 public abstract class MixinSimpleInventory implements IEntityOwnedInventory, Inventory
 {
     @Unique Entity entityOwner;
-    @Unique FakeEntity fakeEntityOwner;
+    @Unique
+    SyncEquipment fakeEntityOwner;
 
     @Override
     public Entity malilib$getEntityOwner()
@@ -27,13 +29,14 @@ public abstract class MixinSimpleInventory implements IEntityOwnedInventory, Inv
     }
 
     @Override
-    public FakeEntity malilib$getFakeEntityOwner()
+    @SuppressWarnings("unchecked")
+    public <T extends SyncEquipment> T malilib$getSyncOwner()
     {
-        return fakeEntityOwner;
+        return (T) this.fakeEntityOwner;
     }
 
     @Override
-    public void malilib$setFakeEntityOwner(FakeEntity entity)
+    public <T extends SyncEquipment> void malilib$setSyncOwner(T entity)
     {
         this.fakeEntityOwner = entity;
     }

@@ -1,15 +1,16 @@
 package fi.dy.masa.malilib.util;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.commons.lang3.math.Fraction;
+
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.BlockState;
@@ -32,12 +33,10 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -47,8 +46,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.sync.fbe.FakeBlockEntity;
+import fi.dy.masa.malilib.sync.data.SyncData;
+import fi.dy.masa.malilib.sync.data.SyncInventory;
+import fi.dy.masa.malilib.sync.data.SyncSingleStack;
 
 public class InventoryUtils
 {
@@ -105,12 +107,13 @@ public class InventoryUtils
 
     /**
      * Uses new ComponentMap to compare values
-     * @param tag1 (ComponentMap 1)
-     * @param tag2 (ComponentMap 2)
-     * @param type (DataComponentType) [OPTIONAL]
+     *
+     * @param tag1        (ComponentMap 1)
+     * @param tag2        (ComponentMap 2)
+     * @param type        (DataComponentType) [OPTIONAL]
      * @param ignoredKeys (keys to ignore) [OPTIONAL]
+     * @param <T>         DataComponentType extendable
      * @return (return value)
-     * @param <T> DataComponentType extendable
      */
     public static <T> boolean areNbtEqualIgnoreKeys(@Nonnull ComponentMap tag1, @Nonnull ComponentMap tag2, @Nullable ComponentType<T> type, @Nullable Set<ComponentType<T>> ignoredKeys)
     {
@@ -151,8 +154,9 @@ public class InventoryUtils
 
     /**
      * Same as above, but still intended to compare NbtCompounds
-     * @param tag1 (NbtCompound tag1)
-     * @param tag2 (NbtCompound tag2)
+     *
+     * @param tag1        (NbtCompound tag1)
+     * @param tag2        (NbtCompound tag2)
      * @param ignoredKeys (Keys to ignore) [OPTIONAL]
      * @return (result)
      */
@@ -188,6 +192,7 @@ public class InventoryUtils
 
     /**
      * Swaps the stack from the slot <b>slotNum</b> to the given hotbar slot <b>hotbarSlot</b>
+     *
      * @param container
      * @param slotNum
      * @param hotbarSlot
@@ -202,6 +207,7 @@ public class InventoryUtils
      * Assuming that the slot is from the ContainerPlayer container,
      * returns whether the given slot number is one of the regular inventory slots.
      * This means that the crafting slots and armor slots are not valid.
+     *
      * @param slotNumber
      * @param allowOffhand
      * @return
@@ -214,6 +220,7 @@ public class InventoryUtils
     /**
      * Finds an empty slot in the player inventory. Armor slots are not valid for the return value of this method.
      * Whether or not the offhand slot is valid, depends on the <b>allowOffhand</b> argument.
+     *
      * @param containerPlayer
      * @param allowOffhand
      * @param reverse
@@ -244,6 +251,7 @@ public class InventoryUtils
      * Finds a slot with an identical item than <b>stackReference</b>, ignoring the durability
      * of damageable items. Does not allow crafting or armor slots or the offhand slot
      * in the ContainerPlayer container.
+     *
      * @param container
      * @param stackReference
      * @param reverse
@@ -273,6 +281,7 @@ public class InventoryUtils
     /**
      * Swap the given item to the player's main hand, if that item is found
      * in the player's inventory.
+     *
      * @param stackReference
      * @param mc
      * @return true if an item was swapped to the main hand, false if it was already in the hand, or was not found in the inventory
@@ -312,6 +321,7 @@ public class InventoryUtils
     /**
      * Gets the inventory at the given position, if any.
      * Combines chest inventories into double chest inventories when applicable.
+     *
      * @param world
      * @param pos
      * @return
@@ -355,8 +365,8 @@ public class InventoryUtils
                             stateAdj.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE &&
                             stateAdj.get(ChestBlock.FACING) == state.get(ChestBlock.FACING))
                         {
-                            Inventory invRight = type == ChestType.RIGHT ?             inv : (Inventory) te2;
-                            Inventory invLeft  = type == ChestType.RIGHT ? (Inventory) te2 :             inv;
+                            Inventory invRight = type == ChestType.RIGHT ? inv : (Inventory) te2;
+                            Inventory invLeft = type == ChestType.RIGHT ? (Inventory) te2 : inv;
                             inv = new DoubleInventory(invRight, invLeft);
                         }
                     }
@@ -378,6 +388,7 @@ public class InventoryUtils
     /**
      * Checks if the given Shulker Box (or other storage item with the
      * same NBT data structure) currently contains any items.
+     *
      * @param stackShulkerBox
      * @return
      */
@@ -393,18 +404,25 @@ public class InventoryUtils
         return false;
     }
 
-    public static boolean fbeHasItems(FakeBlockEntity fbe)
+    public static <T extends SyncData> boolean fbeHasItems(T fbe)
     {
         if (fbe == null)
         {
             return false;
         }
 
-        ContainerComponent container = fbe.getComponents().get(DataComponentTypes.CONTAINER);
-
-        if (container != null)
+        if (fbe.getNbt().contains("Items"))
         {
-            return container.iterateNonEmpty().iterator().hasNext();
+            return hasNbtItems(fbe.getNbt());
+        }
+        if (fbe instanceof SyncInventory si)
+        {
+            ContainerComponent container = si.getComponents().get(DataComponentTypes.CONTAINER);
+
+            if (container != null)
+            {
+                return container.iterateNonEmpty().iterator().hasNext() || !si.getHeldStacks().isEmpty() || !si.getHeldStacks().isEmpty();
+            }
         }
 
         return false;
@@ -412,6 +430,7 @@ public class InventoryUtils
 
     /**
      * Checks if the given NBT currently contains any items, using the NBT Items[] interface.
+     *
      * @param tag
      * @return
      */
@@ -429,6 +448,7 @@ public class InventoryUtils
     /**
      * Returns the list of items currently stored in the given NBT Items[] interface.
      * Does not keep empty slots.
+     *
      * @param tag The item holding the inventory contents
      * @return
      */
@@ -459,7 +479,8 @@ public class InventoryUtils
     /**
      * Returns the list of items currently stored in the given NBT Items[] interface.
      * Preserves empty slots.
-     * @param tagIn The tag holding the inventory contents
+     *
+     * @param tagIn     The tag holding the inventory contents
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
      * @return
      */
@@ -511,6 +532,7 @@ public class InventoryUtils
      * Returns the list of items currently stored in the given Shulker Box
      * (or other storage item with the same NBT data structure).
      * Does not keep empty slots.
+     *
      * @param stackIn The item holding the inventory contents
      * @return
      */
@@ -537,11 +559,16 @@ public class InventoryUtils
         return DefaultedList.of();
     }
 
-    public static DefaultedList<ItemStack> getStoredItems(FakeBlockEntity fbe)
+    public static <T extends SyncData> DefaultedList<ItemStack> getStoredItems(T fbe)
     {
         if (fbe == null)
         {
             return DefaultedList.of();
+        }
+
+        if (hasNbtItems(fbe.getNbt()))
+        {
+            return getNbtItems(fbe.getNbt());
         }
 
         ContainerComponent container = fbe.getComponents().get(DataComponentTypes.CONTAINER);
@@ -561,6 +588,20 @@ public class InventoryUtils
 
             return items;
         }
+        if (fbe instanceof SyncInventory si)
+        {
+            if (!si.getHeldStacks().isEmpty())
+            {
+                return si.getHeldStacks();
+            }
+        }
+        else if (fbe instanceof SyncSingleStack s)
+        {
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1);
+
+            items.add(s.getStack());
+            return items;
+        }
 
         return DefaultedList.of();
     }
@@ -569,7 +610,8 @@ public class InventoryUtils
      * Returns the list of items currently stored in the given Shulker Box
      * (or other storage item with the same NBT data structure).
      * Preserves empty slots.
-     * @param stackIn The item holding the inventory contents
+     *
+     * @param stackIn   The item holding the inventory contents
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
      * @return
      */
@@ -619,7 +661,7 @@ public class InventoryUtils
         }
     }
 
-    public static DefaultedList<ItemStack> getStoredItems(FakeBlockEntity fbe, int slotCount)
+    public static <T extends SyncData> DefaultedList<ItemStack> getStoredItems(T fbe, int slotCount)
     {
         if (fbe == null)
         {
@@ -663,10 +705,22 @@ public class InventoryUtils
 
             return items;
         }
-        else
+        if (fbe instanceof SyncInventory si)
         {
-            return DefaultedList.of();
+            if (!si.getHeldStacks().isEmpty())
+            {
+                return si.getHeldStacks();
+            }
         }
+        if (fbe instanceof SyncSingleStack s)
+        {
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1);
+
+            items.add(s.getStack());
+            return items;
+        }
+
+        return DefaultedList.of();
     }
 
     // Same code as above, but for BUNDLE_CONTENTS, such as for the Materials List under Litematica.
@@ -684,6 +738,7 @@ public class InventoryUtils
 
     /**
      * Returns a Fraction value, probably indicating fill % value, rather than an actual item count.
+     *
      * @param stack
      * @return
      */
@@ -701,6 +756,7 @@ public class InventoryUtils
 
     /**
      * Returns the "slot count" (Item Stacks) in the Bundle.
+     *
      * @param stack
      * @return
      */
@@ -718,6 +774,7 @@ public class InventoryUtils
 
     /**
      * Returns a list of ItemStacks from the Bundle.  Does not preserve Empty Stacks.
+     *
      * @param stackIn
      * @return
      */
@@ -749,6 +806,7 @@ public class InventoryUtils
 
     /**
      * Returns a list of ItemStacks from the Bundle.  Preserves Empty Stacks up to maxSlots.
+     *
      * @param stackIn
      * @param maxSlots
      * @return
@@ -789,6 +847,7 @@ public class InventoryUtils
     /**
      * Returns a map of the stored item counts in the given Shulker Box
      * (or other storage item with the same NBT data structure).
+     *
      * @param stackShulkerBox
      * @return
      */
@@ -812,6 +871,7 @@ public class InventoryUtils
      * Returns a map of the stored item counts in the given inventory.
      * This also counts the contents of any Shulker Boxes
      * (or other storage item with the same NBT data structure).
+     *
      * @param inv
      * @return
      */
@@ -846,6 +906,7 @@ public class InventoryUtils
 
     /**
      * Returns the given list of items wrapped as an InventoryBasic
+     *
      * @param items
      * @return
      */
@@ -863,6 +924,7 @@ public class InventoryUtils
 
     /**
      * Creates an ItemStack via a String
+     *
      * @param itemNameIn (String containing the item name)
      * @return (The ItemStack object or ItemStack.EMPTY, aka Air)
      */
@@ -874,8 +936,9 @@ public class InventoryUtils
 
     /**
      * Creates an ItemStack via a String
+     *
      * @param itemNameIn (String containing the item name)
-     * @param data (ComponentMap data to import)
+     * @param data       (ComponentMap data to import)
      * @return (The ItemStack object or ItemStack.EMPTY, aka Air)
      */
     @Nullable
@@ -886,8 +949,9 @@ public class InventoryUtils
 
     /**
      * Creates an ItemStack via a String
+     *
      * @param itemNameIn (String containing the item name)
-     * @param count (How many in this stack)
+     * @param count      (How many in this stack)
      * @return (The ItemStack object or ItemStack.EMPTY, aka Air)
      */
     @Nullable
@@ -898,9 +962,10 @@ public class InventoryUtils
 
     /**
      * Creates an ItemStack via a String
+     *
      * @param itemNameIn (String containing the item name)
-     * @param count (How many in this stack)
-     * @param data (ComponentMap data to import)
+     * @param count      (How many in this stack)
+     * @param data       (ComponentMap data to import)
      * @return (The ItemStack object or ItemStack.EMPTY, aka Air)
      */
     @Nullable
@@ -963,6 +1028,7 @@ public class InventoryUtils
 
     /**
      * Create ItemStack from a string, using a Data Components aware method, wrapping the Vanilla ItemStringReader method
+     *
      * @param stringIn (The string to parse)
      * @param registry (Dynamic Registry)
      * @return (The item stack with components, or null)

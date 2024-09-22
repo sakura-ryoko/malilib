@@ -1,23 +1,21 @@
 package fi.dy.masa.malilib.util;
 
+import java.util.*;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.*;
+import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.block.enums.Orientation;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.property.*;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.property.Properties;
+import net.minecraft.state.property.*;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.sync.fbe.*;
-
-import java.util.*;
 
 public class BlockUtils
 {
@@ -225,78 +223,41 @@ public class BlockUtils
         return Collections.emptyList();
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends FakeBlockEntity> T toFakeBlockEntity(BlockEntity be, World world)
+    public static Set<Integer> getDisabledSlots(CrafterBlockEntity ce)
     {
-        if (be instanceof CrafterBlockEntity)
+        Set<Integer> list = new HashSet<>();
+
+        if (ce != null)
         {
-            return (T) new FakeCrafter(be, world);
-        }
-        if (be instanceof AbstractFurnaceBlockEntity)
-        {
-            return (T) new FakeFurnace(be, world);
-        }
-        if (be instanceof BrewingStandBlockEntity)
-        {
-            return (T) new FakeBrewer(be, world);
-        }
-        if (be instanceof HopperBlockEntity)
-        {
-            return (T) new FakeHopper(be, world);
-        }
-        if (be instanceof JukeboxBlockEntity)
-        {
-            return (T) new FakeRecords(be, world);
-        }
-        if (be instanceof LockableContainerBlockEntity)
-        {
-            return (T) new FakeLockableContainer(be, world);
-        }
-        if (be instanceof LootableContainerBlockEntity)
-        {
-            return (T) new FakeLootableContainer(be, world);
-        }
-        if (be instanceof BeehiveBlockEntity)
-        {
-            return (T) new FakeBees(be, world);
-        }
-        if (be instanceof BannerBlockEntity)
-        {
-            return (T) new FakePatterns(be, world);
-        }
-        if (be instanceof BeaconBlockEntity)
-        {
-            return (T) new FakeLockable(be, world);
-        }
-        if (be instanceof ChiseledBookshelfBlockEntity || be instanceof LecternBlockEntity)
-        {
-            return (T) new FakeBooks(be, world);
-        }
-        if (be instanceof CampfireBlockEntity)
-        {
-            return (T) new FakeContainer(be, world);
-        }
-        if (be instanceof DecoratedPotBlockEntity)
-        {
-            return (T) new FakeSherds(be, world);
-        }
-        if (be instanceof EnchantingTableBlockEntity)
-        {
-            return (T) new FakeNamed(be, world);
-        }
-        if (be instanceof SkullBlockEntity)
-        {
-            return (T) new FakeProfile(be, world);
-        }
-        if (be instanceof CommandBlockBlockEntity)
-        {
-            return (T) new FakeNamed(be, world);
+            for (int i = 0; i < 9; i++)
+            {
+                if (ce.isSlotDisabled(i))
+                {
+                    list.add(i);
+                }
+            }
         }
 
-        T fbe = (T) new FakeBlockEntity(be.getType(), be.getPos(), be.getCachedState());
-        fbe.setWorld(world);
-        fbe.copyFromBlockEntity(be, world.getRegistryManager());
+        return list;
+    }
 
-        return fbe;
+    public static Set<Integer> getDisabledSlots(NbtCompound nbt)
+    {
+        Set<Integer> list = new HashSet<>();
+
+        if (nbt != null && !nbt.isEmpty())
+        {
+            if (nbt.contains("disabled_slots", Constants.NBT.TAG_INT_ARRAY))
+            {
+                int[] is = nbt.getIntArray("disabled_slots");
+
+                for (int j : is)
+                {
+                    list.add(j);
+                }
+            }
+        }
+
+        return list;
     }
 }
