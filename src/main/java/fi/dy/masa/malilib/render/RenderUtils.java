@@ -1179,20 +1179,12 @@ public class RenderUtils
         matrix4fStack.translate((float) (-x), (float) (-y), (float) ((-z) + 0.510));
     }
 
-    /*
     public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions, DrawContext drawContext)
     {
         renderMapPreview(stack, x, y, dimensions, true, drawContext);
     }
-     */
 
-    public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions)
-    {
-        renderMapPreview(stack, x, y, dimensions, true);
-    }
-
-    //public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions, boolean requireShift, DrawContext drawContext)
-    public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions, boolean requireShift)
+    public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions, boolean requireShift, DrawContext drawContext)
     {
         if (stack.getItem() instanceof FilledMapItem && (!requireShift || GuiBase.isShiftDown()))
         {
@@ -1210,23 +1202,22 @@ public class RenderUtils
             MapIdComponent mapId = data.get(DataComponentTypes.MAP_ID);
 
             Identifier bgTexture = mapState == null ? TEXTURE_MAP_BACKGROUND : TEXTURE_MAP_BACKGROUND_CHECKERBOARD;
-            bindTexture(bgTexture);
-            //VertexConsumer vertex = bindTexture(bgTexture, drawContext);
-            //Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
-            setupBlend();
+            //bindTexture(bgTexture);
+            VertexConsumer vertex = bindTexture(bgTexture, drawContext);
+            Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
+            //setupBlend();
 
-            /*
             vertex.vertex(matrix4f, x1, y2, z).color(-1).texture(0.0f, 1.0f).light(uv);
             vertex.vertex(matrix4f, x2, y2, z).color(-1).texture(1.0f, 1.0f).light(uv);
             vertex.vertex(matrix4f, x2, y1, z).color(-1).texture(1.0f, 0.0f).light(uv);
             vertex.vertex(matrix4f, x1, y1, z).color(-1).texture(0.0f, 0.0f).light(uv);
 
             forceDraw(drawContext);
-             */
 
-            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
+            //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
             //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             //RenderSystem.applyModelViewMatrix();
+            /*
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
             BuiltBuffer builtBuffer;
@@ -1245,6 +1236,8 @@ public class RenderUtils
             catch (Exception ignored) { }
 
             RenderSystem.disableBlend();
+
+             */
 
             if (mapState != null)
             {

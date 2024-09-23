@@ -17,6 +17,7 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 public abstract class MixinInGameHud
 {
     @Shadow @Final private MinecraftClient client;
+    // --> This code breaks things.  I tried it from a PR.
     //@Shadow @Final private LayeredDrawer layeredDrawer;
 
     /*
