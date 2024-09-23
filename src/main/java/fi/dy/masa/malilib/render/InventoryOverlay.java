@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.render;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -31,8 +30,6 @@ import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.sync.data.SyncEquipment;
-import fi.dy.masa.malilib.sync.data.SyncHorse;
 import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 
 public class InventoryOverlay
@@ -45,7 +42,6 @@ public class InventoryOverlay
     public static final Identifier TEXTURE_HOPPER = Identifier.ofVanilla("textures/gui/container/hopper.png");
     public static final Identifier TEXTURE_PLAYER_INV = Identifier.ofVanilla("textures/gui/container/inventory.png");
     public static final Identifier TEXTURE_SINGLE_CHEST = Identifier.ofVanilla("textures/gui/container/shulker_box.png");
-    public static final Identifier TEXTURE_DISABLED_SLOT = Identifier.ofVanilla("container/crafter/disabled_slot");
 
     private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
     public static final InventoryProperties INV_PROPS_TEMP = new InventoryProperties();
@@ -89,18 +85,9 @@ public class InventoryOverlay
             RenderUtils.drawTexturedRectBatched(x + 113, y + 4, 172, 98, 4, 68, buffer); // right (bottom)
             RenderUtils.drawTexturedRectBatched(x + 4, y + 4, 13, 13, 109, 64, buffer); // middle
         }
-        else if (type == InventoryRenderType.CRAFTER)
+        else if (type == InventoryRenderType.CRAFTER || type == InventoryRenderType.DISPENSER)
         {
             // We just hack in the Dispenser Texture, so it displays right.  Easy.
-            RenderUtils.bindTexture(TEXTURE_DISPENSER);
-            RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 7, 61, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x + 7, y, 115, 0, 61, 7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x, y + 61, 0, 159, 61, 7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 61, y + 7, 169, 105, 7, 61, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x + 7, y + 7, 61, 16, 54, 54, buffer); // middle
-        }
-        else if (type == InventoryRenderType.DISPENSER)
-        {
             RenderUtils.bindTexture(TEXTURE_DISPENSER);
             RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 7, 61, buffer); // left (top)
             RenderUtils.drawTexturedRectBatched(x + 7, y, 115, 0, 61, 7, buffer); // top (right)
@@ -173,9 +160,7 @@ public class InventoryOverlay
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
         }
-        catch (Exception ignored)
-        {
-        }
+        catch (Exception ignored) {  }
     }
 
     public static void renderInventoryBackground27(int x, int y, BufferBuilder buffer, MinecraftClient mc)
@@ -232,9 +217,7 @@ public class InventoryOverlay
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
         }
-        catch (Exception ignored)
-        {
-        }
+        catch (Exception ignored) { }
 
         RenderUtils.bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
 
@@ -249,64 +232,6 @@ public class InventoryOverlay
             final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
 
             if (entity.getEquippedStack(eqSlot).isEmpty())
-            {
-                Identifier texture = EMPTY_SLOT_TEXTURES[eqSlot.getEntitySlotId()];
-                RenderUtils.renderSprite(x + xOff + 1, y + yOff + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, drawContext);
-            }
-        }
-    }
-
-    public static <T extends SyncEquipment> void renderFeEquipmentOverlayBackground(int x, int y, T fe, DrawContext drawContext)
-    {
-        RenderUtils.color(1f, 1f, 1f, 1f);
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        BuiltBuffer builtBuffer;
-
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        //RenderSystem.applyModelViewMatrix();
-
-        RenderUtils.bindTexture(TEXTURE_DISPENSER);
-
-        RenderUtils.drawTexturedRectBatched(x, y, 0, 0, 50, 83, buffer); // top-left (main part)
-        RenderUtils.drawTexturedRectBatched(x + 50, y, 173, 0, 3, 83, buffer); // right edge top
-        RenderUtils.drawTexturedRectBatched(x, y + 83, 0, 163, 50, 3, buffer); // bottom edge left
-        RenderUtils.drawTexturedRectBatched(x + 50, y + 83, 173, 163, 3, 3, buffer); // bottom right corner
-
-        for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
-        {
-            RenderUtils.drawTexturedRectBatched(x + xOff, y + yOff, 61, 16, 18, 18, buffer);
-        }
-
-        // Main hand and offhand
-        RenderUtils.drawTexturedRectBatched(x + 28, y + 2 * 18 + 7, 61, 16, 18, 18, buffer);
-        RenderUtils.drawTexturedRectBatched(x + 28, y + 3 * 18 + 7, 61, 16, 18, 18, buffer);
-
-        try
-        {
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-        }
-        catch (Exception ignored)
-        {
-        }
-
-        RenderUtils.bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
-
-        if (fe.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
-        {
-            Identifier texture = Identifier.ofVanilla("item/empty_armor_slot_shield");
-            RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, drawContext);
-        }
-
-        for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
-        {
-            final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
-
-            if (fe.getEquippedStack(eqSlot).isEmpty())
             {
                 Identifier texture = EMPTY_SLOT_TEXTURES[eqSlot.getEntitySlotId()];
                 RenderUtils.renderSprite(x + xOff + 1, y + yOff + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, texture, drawContext);
@@ -336,8 +261,9 @@ public class InventoryOverlay
         {
             return InventoryRenderType.CRAFTER;
         }
-        else if (inv instanceof DispenserBlockEntity) // this includes the Dropper as a sub class
+        else if (inv instanceof DispenserBlockEntity)
         {
+            // this includes the Dropper as a subclass
             return InventoryRenderType.DISPENSER;
         }
         else if (inv instanceof HopperBlockEntity)
@@ -350,15 +276,7 @@ public class InventoryOverlay
             {
                 return InventoryRenderType.HORSE;
             }
-            else if (inventory.malilib$getSyncOwner() instanceof SyncHorse)
-            {
-                return InventoryRenderType.HORSE;
-            }
             else if (inventory.malilib$getEntityOwner() instanceof PiglinEntity)
-            {
-                return InventoryRenderType.VILLAGER;
-            }
-            else if (inventory.malilib$getSyncOwner() instanceof SyncEquipment)
             {
                 return InventoryRenderType.VILLAGER;
             }
@@ -382,7 +300,7 @@ public class InventoryOverlay
             {
                 return InventoryRenderType.FURNACE;
             }
-            else if (block instanceof DispenserBlock) // this includes the Dropper as a sub class
+            else if (block instanceof DispenserBlock) // this includes the Dropper as a subclass
             {
                 return InventoryRenderType.DISPENSER;
             }
@@ -497,10 +415,20 @@ public class InventoryOverlay
 
     public static void renderInventoryStacks(InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc, DrawContext drawContext)
     {
-        renderInventoryStacks(type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, mc, drawContext, 0, 0);
+        renderInventoryStacks(type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, drawContext, 0, 0);
+    }
+
+    public static void renderInventoryStacks(InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc, DrawContext drawContext)
+    {
+        renderInventoryStacks(type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, disabledSlots, mc, drawContext, 0, 0);
     }
 
     public static void renderInventoryStacks(InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
+    {
+        renderInventoryStacks(type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, drawContext, mouseX, mouseY);
+    }
+
+    public static void renderInventoryStacks(InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
     {
         if (type == InventoryRenderType.FURNACE)
         {
@@ -533,7 +461,12 @@ public class InventoryOverlay
                 {
                     ItemStack stack = inv.getStack(slot);
 
-                    if (stack.isEmpty() == false)
+                    if (disabledSlots.contains(slot))
+                    {
+                        // Requires -1 offset, because locked texture is 18 x 18.
+                        renderLockedSlotAt(x - 1, y - 1, 1, drawContext, mouseX, mouseY);
+                    }
+                    else if (!stack.isEmpty())
                     {
                         //System.out.printf("renderInventoryStacks: slot[%d/%d]: [%s]\n", slot, slots, stack);
                         renderStackAt(stack, x, y, 1, mc, drawContext, mouseX, mouseY);
@@ -598,64 +531,7 @@ public class InventoryOverlay
         }
     }
 
-    public static <T extends SyncEquipment> void renderFeEquipmentStacks(T fe, int x, int y, MinecraftClient mc, DrawContext drawContext)
-    {
-        MaLiLib.logger.error("renderEquipmentStacks[FE]: entityId [{}]", fe.getEntityId());
-        renderFeEquipmentStacks(fe, x, y, mc, drawContext, 0, 0);
-    }
-
-    public static <T extends SyncEquipment> void renderFeEquipmentStacks(T fe, int x, int y, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
-    {
-        Iterator<ItemStack> slots = fe.getEquippedItems().iterator();
-        int w = 0;
-
-        while (slots.hasNext())
-        {
-            MaLiLib.logger.warn("renderEquipmentStacks[{}]: item [{}]", w, slots.next().toString());
-            w++;
-        }
-
-        for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
-        {
-            final EquipmentSlot eqSlot = VALID_EQUIPMENT_SLOTS[i];
-            ItemStack stack = fe.getEquippedStack(eqSlot);
-
-            //MaLiLib.logger.warn("[{}] type: [{}/{}], item: [{}]", i, eqSlot.getEntitySlotId(), eqSlot.getName(), stack.toString());
-
-            if (stack.isEmpty() == false)
-            {
-                renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc, drawContext, mouseX, mouseY);
-            }
-        }
-
-        ItemStack stack = fe.getEquippedStack(EquipmentSlot.MAINHAND);
-
-        //MaLiLib.logger.warn("-> type: [{}/{}], item: [{}]", EquipmentSlot.MAINHAND.getEntitySlotId(), EquipmentSlot.MAINHAND.getName(), stack.toString());
-
-        if (stack.isEmpty() == false)
-        {
-            renderStackAt(stack, x + 28, y + 2 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
-        }
-
-        stack = fe.getEquippedStack(EquipmentSlot.OFFHAND);
-
-        //MaLiLib.logger.warn("-> type: [{}/{}], item: [{}]", EquipmentSlot.OFFHAND.getEntitySlotId(), EquipmentSlot.OFFHAND.getName(), stack.toString());
-
-        if (stack.isEmpty() == false)
-        {
-            renderStackAt(stack, x + 28, y + 3 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
-        }
-
-        if (hoveredStack != null)
-        {
-            stack = hoveredStack;
-            hoveredStack = null;
-            // Some mixin / side effects can happen here, so reset hoveredStack
-            drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
-        }
-    }
-
-    public static void renderItemStacks(DefaultedList<ItemStack> items, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc, DrawContext drawContext)
+        public static void renderItemStacks(DefaultedList<ItemStack> items, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc, DrawContext drawContext)
     {
         final int slots = items.size();
         int x = startX;
@@ -685,44 +561,6 @@ public class InventoryOverlay
         }
     }
 
-    public static void renderCrafterStacks(DefaultedList<ItemStack> items, Set<Integer> lockedSlots, int startX, int startY, int startSlot, MinecraftClient mc, DrawContext drawContext)
-    {
-        int slots = items.size();
-        float scale = 1.0f;
-        int x = startX;
-        int y = startY;
-
-        if (slots > 9)
-        {
-            slots = 9;
-        }
-
-        for (int slot = startSlot, i = 0; slot < slots && i < 9; )
-        {
-            for (int column = 0; column < 3 && slot < slots && i < 9; ++column, ++slot, ++i)
-            {
-                if (lockedSlots.contains(slot))
-                {
-                    renderLockedSlotAt((x - 1), (y - 1), scale, drawContext);
-                }
-                else
-                {
-                    ItemStack stack = items.get(slot);
-
-                    if (!stack.isEmpty())
-                    {
-                        renderStackAt(stack, x, y, scale, mc, drawContext);
-                    }
-                }
-
-                x += 18;
-            }
-
-            x = startX;
-            y += 18;
-        }
-    }
-
     public static void renderStackAt(ItemStack stack, float x, float y, float scale, MinecraftClient mc, DrawContext drawContext)
     {
         renderStackAt(stack, x, y, scale, mc, drawContext, 0, 0);
@@ -730,8 +568,6 @@ public class InventoryOverlay
 
     public static void renderStackAt(ItemStack stack, float x, float y, float scale, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
     {
-        MaLiLib.logger.warn("renderStackAt(): stack [{}]", stack.toString());
-
         MatrixStack matrixStack = drawContext.getMatrices();
         matrixStack.push();
         matrixStack.translate(x, y, 0.f);
@@ -747,14 +583,13 @@ public class InventoryOverlay
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
-
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
             hoveredStack = stack;
         }
     }
 
-    public static void renderLockedSlotAt(float x, float y, float scale, DrawContext drawContext)
+    public static void renderLockedSlotAt(float x, float y, float scale, DrawContext drawContext, double mouseX, double mouseY)
     {
         MatrixStack matrixStack = drawContext.getMatrices();
         int color = -1;
@@ -763,9 +598,19 @@ public class InventoryOverlay
         matrixStack.translate(x, y, 0.f);
         matrixStack.scale(scale, scale, 1);
 
-        //RenderUtils.color(1f, 1f, 1f, 1f);
-        drawContext.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE_DISABLED_SLOT, 0, 0, 18, 18, color);
+        RenderUtils.enableDiffuseLightingGui3D();
+        RenderUtils.color(1f, 1f, 1f, 1f);
+
+        drawContext.drawGuiTexture(RenderLayer::getGuiTextured, Identifier.ofVanilla("container/crafter/disabled_slot"), 0, 0, 18, 18, color);
+
+        RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
+        RenderUtils.forceDraw(drawContext);
+
+        if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
+        {
+            hoveredStack = null;
+        }
     }
 
     public static void renderStackToolTip(int x, int y, ItemStack stack, MinecraftClient mc, DrawContext drawContext)

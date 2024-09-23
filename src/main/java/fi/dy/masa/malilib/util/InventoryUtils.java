@@ -15,9 +15,11 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.CrafterBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.argument.ItemStringReader;
@@ -28,6 +30,7 @@ import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.DoubleInventory;
+import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BlockItem;
@@ -37,6 +40,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -48,9 +52,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.sync.data.SyncData;
-import fi.dy.masa.malilib.sync.data.SyncInventory;
-import fi.dy.masa.malilib.sync.data.SyncSingleStack;
 
 public class InventoryUtils
 {
@@ -372,12 +373,6 @@ public class InventoryUtils
                     }
                 }
             }
-            /*
-            else if (state.getBlock() instanceof CrafterBlock && te instanceof CrafterBlockEntity ce)
-            {
-                return getAsInventory(ce.getHeldStacks());
-            }
-             */
 
             return inv;
         }
@@ -404,30 +399,6 @@ public class InventoryUtils
         return false;
     }
 
-    public static <T extends SyncData> boolean fbeHasItems(T fbe)
-    {
-        if (fbe == null)
-        {
-            return false;
-        }
-
-        if (fbe.getNbt().contains("Items"))
-        {
-            return hasNbtItems(fbe.getNbt());
-        }
-        if (fbe instanceof SyncInventory si)
-        {
-            ContainerComponent container = si.getComponents().get(DataComponentTypes.CONTAINER);
-
-            if (container != null)
-            {
-                return container.iterateNonEmpty().iterator().hasNext() || !si.getHeldStacks().isEmpty() || !si.getHeldStacks().isEmpty();
-            }
-        }
-
-        return false;
-    }
-
     /**
      * Checks if the given NBT currently contains any items, using the NBT Items[] interface.
      *
@@ -436,7 +407,7 @@ public class InventoryUtils
      */
     public static boolean hasNbtItems(NbtCompound tag)
     {
-        if (tag.contains("Items", Constants.NBT.TAG_LIST))
+        if (tag.contains("Items", Constants.NBT.TAG_COMPOUND))
         {
             NbtList tagList = tag.getList("Items", Constants.NBT.TAG_COMPOUND);
             return tagList.size() > 0;
@@ -452,21 +423,64 @@ public class InventoryUtils
      * @param tag The item holding the inventory contents
      * @return
      */
-    public static DefaultedList<ItemStack> getNbtItems(NbtCompound tag)
+    public static DefaultedList<ItemStack> getNbtItems(@Nonnull NbtCompound tag)
     {
-        if (tag.contains("Items", Constants.NBT.TAG_LIST))
+        if (MinecraftClient.getInstance().world == null)
         {
-            NbtList tagList = tag.getList("Items", Constants.NBT.TAG_COMPOUND);
-            final int count = tagList.size();
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(count);
+            return DefaultedList.of();
+        }
 
-            for (int i = 0; i < count; ++i)
+        return getNbtItems(tag, -1, MinecraftClient.getInstance().world.getRegistryManager());
+    }
+
+    /**
+     * Returns the list of items currently stored in the given NBT Items[] interface.
+     * Preserves empty slots, unless the "Inventory" interface is used.
+     *
+     * @param tagIn     The tag holding the inventory contents
+     * @param slotCount the maximum number of slots, and thus also the size of the list to create
+     * @param registry  the Dynamic Registry object
+     * @return
+     */
+    public static DefaultedList<ItemStack> getNbtItems(@Nonnull NbtCompound nbt, int slotCount, @Nonnull RegistryWrapper.WrapperLookup registry)
+    {
+        if (slotCount > 256)
+        {
+            slotCount = 256;
+        }
+
+        // Most Common Tag
+        if (nbt.contains("Items", Constants.NBT.TAG_COMPOUND))
+        {
+            NbtList list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+            if (slotCount < 0)
             {
-                ItemStack stack = ItemStack.fromNbtOrEmpty(MinecraftClient.getInstance().world.getRegistryManager(), tagList.getCompound(i));
+                slotCount = list.size();
+            }
 
-                if (stack.isEmpty() == false)
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+            Inventories.readNbt(nbt, items, registry);
+
+            return items;
+        }
+        // A few Entities use this
+        else if (nbt.contains("Inventory", Constants.NBT.TAG_LIST))
+        {
+            NbtList list = nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND);
+            if (slotCount < 0)
+            {
+                slotCount = list.size();
+            }
+
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+
+            for (int i = 0; i < list.size(); i++)
+            {
+                Optional<ItemStack> opt = ItemStack.fromNbt(registry, list.getCompound(i));
+
+                if (opt.isPresent())
                 {
-                    items.add(stack);
+                    items.add(opt.get());
                 }
             }
 
@@ -477,55 +491,78 @@ public class InventoryUtils
     }
 
     /**
-     * Returns the list of items currently stored in the given NBT Items[] interface.
-     * Preserves empty slots.
+     * Returns Inventory of items currently stored in the given NBT Items[] interface.
+     * Preserves empty slots, unless the "Inventory" interface is used.
+     *
+     * @param tagIn     The tag holding the inventory contents
+     * @return
+     */
+    public static Inventory getNbtInventory(@Nonnull NbtCompound nbt)
+    {
+        if (MinecraftClient.getInstance().world == null)
+        {
+            return null;
+        }
+
+        return getNbtInventory(nbt, -1, MinecraftClient.getInstance().world.getRegistryManager());
+    }
+
+    /**
+     * Returns Inventory of items currently stored in the given NBT Items[] interface.
+     * Preserves empty slots, unless the "Inventory" interface is used.
      *
      * @param tagIn     The tag holding the inventory contents
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
+     * @param registry  The Dynamic Registry object
      * @return
      */
-    public static DefaultedList<ItemStack> getNbtItems(NbtCompound tagIn, int slotCount)
+    public static Inventory getNbtInventory(@Nonnull NbtCompound nbt, int slotCount, @Nonnull RegistryWrapper.WrapperLookup registry)
     {
-        if (tagIn.contains("Items", Constants.NBT.TAG_LIST))
+        if (slotCount > 256)
         {
-            NbtList tagList = tagIn.getList("Items", Constants.NBT.TAG_COMPOUND);
-            final int count = tagList.size();
-            int maxSlot = -1;
-
-            if (slotCount <= 0)
-            {
-                for (int i = 0; i < count; ++i)
-                {
-                    NbtCompound nbt = tagList.getCompound(i);
-                    int slot = nbt.getByte("Slot");
-
-                    if (slot > maxSlot)
-                    {
-                        maxSlot = slot;
-                    }
-                }
-
-                slotCount = maxSlot + 1;
-            }
-
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-
-            for (int i = 0; i < count; ++i)
-            {
-                NbtCompound nbt = tagList.getCompound(i);
-                ItemStack stack = ItemStack.fromNbtOrEmpty(MinecraftClient.getInstance().world.getRegistryManager(), nbt);
-                int slot = nbt.getByte("Slot");
-
-                if (slot >= 0 && slot < items.size() && stack.isEmpty() == false)
-                {
-                    items.set(slot, stack);
-                }
-            }
-
-            return items;
+            slotCount = 256;
         }
 
-        return DefaultedList.of();
+        // Most Common Tag
+        if (nbt.contains("Items", Constants.NBT.TAG_COMPOUND))
+        {
+            NbtList list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+            if (slotCount < 0)
+            {
+                slotCount = list.size();
+            }
+
+            SimpleInventory inv = new SimpleInventory(slotCount);
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+            Inventories.readNbt(nbt, items, registry);
+
+            if (items.isEmpty())
+            {
+                return null;
+            }
+            for (int i = 0; i < slotCount; i++)
+            {
+                inv.setStack(i, items.get(i));
+            }
+
+            return inv;
+        }
+        // A few Entities use this
+        else if (nbt.contains("Inventory", Constants.NBT.TAG_LIST))
+        {
+            NbtList list = nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND);
+            if (slotCount < 0)
+            {
+                slotCount = list.size();
+            }
+
+            SimpleInventory inv = new SimpleInventory(slotCount);
+            inv.readNbtList(nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND), registry);
+
+            return inv;
+        }
+
+        return null;
     }
 
     /**
@@ -559,53 +596,6 @@ public class InventoryUtils
         return DefaultedList.of();
     }
 
-    public static <T extends SyncData> DefaultedList<ItemStack> getStoredItems(T fbe)
-    {
-        if (fbe == null)
-        {
-            return DefaultedList.of();
-        }
-
-        if (hasNbtItems(fbe.getNbt()))
-        {
-            return getNbtItems(fbe.getNbt());
-        }
-
-        ContainerComponent container = fbe.getComponents().get(DataComponentTypes.CONTAINER);
-
-        if (container != null)
-        {
-            Iterator<ItemStack> iter = container.streamNonEmpty().iterator();
-            DefaultedList<ItemStack> items = DefaultedList.ofSize((int) container.streamNonEmpty().count());
-            int i = 0;
-
-            // Using 'container.copyTo(items)' will break Litematica's Material List
-            while (iter.hasNext())
-            {
-                items.add(iter.next().copy());
-                i++;
-            }
-
-            return items;
-        }
-        if (fbe instanceof SyncInventory si)
-        {
-            if (!si.getHeldStacks().isEmpty())
-            {
-                return si.getHeldStacks();
-            }
-        }
-        else if (fbe instanceof SyncSingleStack s)
-        {
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(1);
-
-            items.add(s.getStack());
-            return items;
-        }
-
-        return DefaultedList.of();
-    }
-
     /**
      * Returns the list of items currently stored in the given Shulker Box
      * (or other storage item with the same NBT data structure).
@@ -619,12 +609,12 @@ public class InventoryUtils
     {
         ContainerComponent itemContainer = stackIn.getComponents().get(DataComponentTypes.CONTAINER);
 
-        // Using itemContainer.copyTo() does not preserve empty stacks.  Iterator again.
+        // Using itemContainer.copyTo() does not preserve empty stacks.
         if (itemContainer != null)
         {
             long defSlotCount = itemContainer.stream().count();
 
-            // ContainerComponent.MAX_SLOTS = 256; (private)
+            // ContainerComponent.MAX_SLOTS = 256
             if (slotCount < 1)
             {
                 slotCount = defSlotCount < 256 ? (int) defSlotCount : 256;
@@ -659,68 +649,6 @@ public class InventoryUtils
         {
             return DefaultedList.of();
         }
-    }
-
-    public static <T extends SyncData> DefaultedList<ItemStack> getStoredItems(T fbe, int slotCount)
-    {
-        if (fbe == null)
-        {
-            return DefaultedList.of();
-        }
-        ContainerComponent itemContainer = fbe.getComponents().get(DataComponentTypes.CONTAINER);
-
-        // Using itemContainer.copyTo() does not preserve empty stacks.  Iterator again.
-        if (itemContainer != null)
-        {
-            long defSlotCount = itemContainer.stream().count();
-
-            // ContainerComponent.MAX_SLOTS = 256; (private)
-            if (slotCount < 1)
-            {
-                slotCount = defSlotCount < 256 ? (int) defSlotCount : 256;
-            }
-            else
-            {
-                slotCount = Math.min(slotCount, 256);
-            }
-
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount);
-            Iterator<ItemStack> iter = itemContainer.stream().iterator();
-
-            for (int i = 0; i < slotCount; i++)
-            {
-                ItemStack entry;
-
-                if (iter.hasNext())
-                {
-                    entry = iter.next();
-                }
-                else
-                {
-                    entry = ItemStack.EMPTY;
-                }
-
-                items.add(entry.copy());
-            }
-
-            return items;
-        }
-        if (fbe instanceof SyncInventory si)
-        {
-            if (!si.getHeldStacks().isEmpty())
-            {
-                return si.getHeldStacks();
-            }
-        }
-        if (fbe instanceof SyncSingleStack s)
-        {
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(1);
-
-            items.add(s.getStack());
-            return items;
-        }
-
-        return DefaultedList.of();
     }
 
     // Same code as above, but for BUNDLE_CONTENTS, such as for the Materials List under Litematica.
@@ -902,6 +830,35 @@ public class InventoryUtils
         }
 
         return map;
+    }
+
+    /**
+     * Returns the given Inventory wrapped as a list of items
+     *
+     * @param inv
+     * @return
+     */
+    public static DefaultedList<ItemStack> getAsItemList(Inventory inv)
+    {
+        if (inv == null || inv.isEmpty())
+        {
+            return DefaultedList.of();
+        }
+
+        int size = inv.size();
+        DefaultedList<ItemStack> list = DefaultedList.ofSize(size, ItemStack.EMPTY);
+
+        for (int i = 0; i < size; i++)
+        {
+            ItemStack entry = inv.getStack(i);
+
+            if (!entry.isEmpty())
+            {
+                list.set(i, entry.copy());
+            }
+        }
+
+        return list;
     }
 
     /**

@@ -1,19 +1,35 @@
 package fi.dy.masa.malilib.util;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.CrafterBlockEntity;
+import net.minecraft.block.entity.SignText;
 import net.minecraft.block.enums.Orientation;
+import net.minecraft.component.type.ProfileComponent;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.*;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.event.Vibrations;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 
@@ -21,6 +37,7 @@ public class BlockUtils
 {
     /**
      * Returns the first PropertyDirection property from the provided state, if any.
+     *
      * @param state
      * @return the first PropertyDirection, or null if there are no such properties
      */
@@ -46,6 +63,7 @@ public class BlockUtils
      * Returns the EnumFacing value of the first found PropertyDirection
      * type blockstate property in the given state, if any.
      * If there are no PropertyDirection properties, then null is returned.
+     *
      * @param state
      * @return
      */
@@ -241,23 +259,171 @@ public class BlockUtils
         return list;
     }
 
-    public static Set<Integer> getDisabledSlots(NbtCompound nbt)
+    public static Set<Integer> getDisabledSlotsFromNbt(@Nonnull NbtCompound nbt)
     {
         Set<Integer> list = new HashSet<>();
 
-        if (nbt != null && !nbt.isEmpty())
+        if (nbt.contains("disabled_slots", Constants.NBT.TAG_INT_ARRAY))
         {
-            if (nbt.contains("disabled_slots", Constants.NBT.TAG_INT_ARRAY))
-            {
-                int[] is = nbt.getIntArray("disabled_slots");
+            int[] is = nbt.getIntArray("disabled_slots");
 
-                for (int j : is)
-                {
-                    list.add(j);
-                }
+            for (int j : is)
+            {
+                list.add(j);
             }
         }
 
         return list;
+    }
+
+    public static Pair<RegistryEntry<StatusEffect>, RegistryEntry<StatusEffect>> getBeaconEffectsFromNbt(@Nonnull NbtCompound nbt)
+    {
+        RegistryEntry<StatusEffect> primary = null;
+        RegistryEntry<StatusEffect> secondary = null;
+
+        if (nbt.contains("primary_effect", Constants.NBT.TAG_STRING))
+        {
+            Identifier id = Identifier.tryParse(nbt.getString("primary_effect"));
+            if (id != null)
+            {
+                Optional<RegistryEntry.Reference<StatusEffect>> opt = Registries.STATUS_EFFECT.getEntry(id);
+                if (opt.isPresent())
+                {
+                    primary = opt.get();
+                }
+            }
+        }
+        if (nbt.contains("secondary_effect", Constants.NBT.TAG_STRING))
+        {
+            Identifier id = Identifier.tryParse(nbt.getString("secondary_effect"));
+            if (id != null)
+            {
+                Optional<RegistryEntry.Reference<StatusEffect>> opt = Registries.STATUS_EFFECT.getEntry(id);
+                if (opt.isPresent())
+                {
+                    secondary = opt.get();
+                }
+            }
+        }
+
+        return Pair.of(primary, secondary);
+    }
+
+    public static Pair<List<BeehiveBlockEntity.BeeData>, BlockPos> getBeesDataFromNbt(@Nonnull NbtCompound nbt)
+    {
+        List<BeehiveBlockEntity.BeeData> bees = new ArrayList<>();
+        BlockPos flower = BlockPos.ORIGIN;
+
+        if (nbt.contains("flower_pos"))
+        {
+            flower = NBTUtils.readBlockPosFromIntArray(nbt, "flower_pos");
+        }
+        if (nbt.contains("bees", Constants.NBT.TAG_LIST))
+        {
+            BeehiveBlockEntity.BeeData.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.get("bees")).resultOrPartial().ifPresent(bees::addAll);
+        }
+
+        return Pair.of(bees, flower);
+    }
+
+    public static Pair<Integer, Vibrations.ListenerData> getSkulkSensorVibrationsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    {
+        AtomicReference<Vibrations.ListenerData> data = new AtomicReference<>(null);
+        int lastFreq = -1;
+
+        if (nbt.contains("last_vibration_frequency", Constants.NBT.TAG_INT))
+        {
+            lastFreq = nbt.getInt("last_vibration_frequency");
+        }
+        if (nbt.contains("listener", Constants.NBT.TAG_COMPOUND))
+        {
+            Vibrations.ListenerData.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound("listener")).resultOrPartial().ifPresent(data::set);
+        }
+
+        return Pair.of(lastFreq, data.get());
+    }
+
+    public static Pair<Long, BlockPos> getExitPortalFromNbt(@Nonnull NbtCompound nbt)
+    {
+        long age = -1;
+        BlockPos pos = BlockPos.ORIGIN;
+
+        if (nbt.contains("Age", Constants.NBT.TAG_LONG))
+        {
+            age = nbt.getLong("Age");
+        }
+        if (nbt.contains("exit_portal", Constants.NBT.TAG_INT_ARRAY))
+        {
+            pos = NBTUtils.readBlockPosFromIntArray(nbt, "exit_portal");
+        }
+
+        return Pair.of(age, pos);
+    }
+
+    public static Pair<Pair<SignText, SignText>, Boolean> getSignTextFromNbt(@Nonnull NbtCompound nbt, DynamicRegistryManager registry)
+    {
+        AtomicReference<SignText> front = new AtomicReference<>(null);
+        AtomicReference<SignText> back = new AtomicReference<>(null);
+        boolean waxed = false;
+
+        if (nbt.contains("front_text"))
+        {
+            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound("front_text")).resultOrPartial().ifPresent(front::set);
+        }
+        if (nbt.contains("back_text"))
+        {
+            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound("back_text")).resultOrPartial().ifPresent(back::set);
+        }
+        if (nbt.contains("is_waxed"))
+        {
+            waxed = nbt.getBoolean("is_waxed");
+        }
+
+        return Pair.of(Pair.of(front.get(), back.get()), waxed);
+    }
+
+    public static Pair<ItemStack, Integer> getBookFromNbt(@Nonnull NbtCompound nbt, DynamicRegistryManager registry)
+    {
+        ItemStack book = ItemStack.EMPTY;
+        int current = -1;
+
+        if (nbt.contains("Book", Constants.NBT.TAG_COMPOUND))
+        {
+            book = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound("Book"));
+        }
+        if (nbt.contains("Page", Constants.NBT.TAG_INT))
+        {
+            current = nbt.getInt("Page");
+        }
+
+        return Pair.of(book, current);
+    }
+
+    public static Pair<ProfileComponent, Pair<Identifier, Text>> getSkullDataFromNbt(@Nonnull NbtCompound nbt, DynamicRegistryManager registry)
+    {
+        AtomicReference<ProfileComponent> profile = new AtomicReference<>(null);
+        Identifier note = null;
+        Text name = Text.empty();
+
+        if (nbt.contains("note_block_sound", 8))
+        {
+            note = Identifier.tryParse(nbt.getString("note_block_sound"));
+        }
+        if (nbt.contains("custom_name", 8))
+        {
+            String str = nbt.getString("custom_name");
+
+            try
+            {
+                name = Text.Serialization.fromJson(str, registry);
+            }
+            catch (Exception ignored) {}
+        }
+        if (nbt.contains("profile"))
+        {
+            ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("profile")).resultOrPartial().ifPresent(profile::set);
+        }
+
+        return Pair.of(profile.get(), Pair.of(note, name));
     }
 }

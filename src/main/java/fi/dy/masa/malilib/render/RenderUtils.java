@@ -1212,7 +1212,7 @@ public class RenderUtils
             vertex.vertex(matrix4f, x2, y1, z).color(-1).texture(1.0f, 0.0f).light(uv);
             vertex.vertex(matrix4f, x1, y1, z).color(-1).texture(0.0f, 0.0f).light(uv);
 
-            forceDraw(drawContext);
+            //forceDraw(drawContext);
 
             //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
             //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
@@ -1330,7 +1330,7 @@ public class RenderUtils
     {
         if (InventoryUtils.hasNbtItems(itemsTag))
         {
-            DefaultedList<ItemStack> items = InventoryUtils.getNbtItems(itemsTag, -1);
+            DefaultedList<ItemStack> items = InventoryUtils.getNbtItems(itemsTag, -1, mc().world.getRegistryManager());
 
             if (items.size() == 0)
             {
@@ -1360,7 +1360,7 @@ public class RenderUtils
 
             enableDiffuseLightingGui3D();
 
-            Inventory inv = fi.dy.masa.malilib.util.InventoryUtils.getAsInventory(items);
+            Inventory inv = InventoryUtils.getAsInventory(items);
             InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc(), drawContext);
 
             matrix4fStack.popMatrix();

@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.util;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
@@ -35,6 +36,28 @@ public class NBTUtils
         }
 
         return null;
+    }
+
+    @Nullable
+    public static BlockPos readBlockPosFromIntArray(@Nonnull NbtCompound nbt, String key)
+    {
+        if (nbt.contains(key, Constants.NBT.TAG_INT_ARRAY))
+        {
+            int[] array = nbt.getIntArray(key);
+
+            return new BlockPos(array[0], array[1], array[2]);
+        }
+
+        return null;
+    }
+
+    public static NbtCompound writeBlockPosToNbtIntArray(BlockPos pos, String key)
+    {
+        NbtCompound nbt = new NbtCompound();
+        int[] array = {pos.getX(), pos.getY(), pos.getZ()};
+        nbt.putIntArray(key, array);
+
+        return nbt;
     }
 
     public static NbtCompound writeVec3dToTag(Vec3d vec, NbtCompound tag)
