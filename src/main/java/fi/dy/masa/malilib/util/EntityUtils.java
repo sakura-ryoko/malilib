@@ -27,8 +27,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.village.TradeOfferList;
@@ -75,15 +77,40 @@ public class EntityUtils
 
     public static @Nullable EntityType<?> getEntityTypeFromNbt(@Nonnull NbtCompound nbt)
     {
-        Optional<EntityType<?>> opt = EntityType.fromNbt(nbt);
-        return opt.orElse(null);
+        if (nbt.contains("id", Constants.NBT.TAG_STRING))
+        {
+            return Registries.ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString("id"))).orElse(null);
+        }
 
+        return null;
+    }
+
+    public NbtCompound setEntityTypeToNbt(EntityType<?> type, @Nullable NbtCompound nbtIn)
+    {
+        NbtCompound nbt = new NbtCompound();
+        Identifier id = EntityType.getId(type);
+
+        if (id != null)
+        {
+            if (nbtIn != null)
+            {
+                nbtIn.putString("id", id.toString());
+                return nbtIn;
+            }
+            else
+            {
+                nbt.putString("id", id.toString());
+            }
+        }
+
+        return nbt;
     }
 
     @SuppressWarnings("unchecked")
     public static @Nullable AttributeContainer getAttributesFromNbt(@Nonnull NbtCompound nbt)
     {
         EntityType<?> type = getEntityTypeFromNbt(nbt);
+
         if (type != null && nbt.contains("attributes", Constants.NBT.TAG_LIST))
         {
             return new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
@@ -95,6 +122,7 @@ public class EntityUtils
     public static double getAttributeBaseValueFromNbt(@Nonnull NbtCompound nbt, RegistryEntry<EntityAttribute> attribute)
     {
         AttributeContainer attributes = getAttributesFromNbt(nbt);
+
         if (attributes != null)
         {
             return attributes.getBaseValue(attribute);
@@ -106,6 +134,7 @@ public class EntityUtils
     public static double getAttributeValueFromNbt(@Nonnull NbtCompound nbt, RegistryEntry<EntityAttribute> attribute)
     {
         AttributeContainer attributes = getAttributesFromNbt(nbt);
+
         if (attributes != null)
         {
             return attributes.getValue(attribute);
@@ -166,6 +195,27 @@ public class EntityUtils
         }
 
         return null;
+    }
+
+    public static NbtCompound setCustomNameToNbt(@Nonnull Text name, @Nonnull DynamicRegistryManager registry, @Nullable NbtCompound nbtIn)
+    {
+        NbtCompound nbt = new NbtCompound();
+
+        try
+        {
+            if (nbtIn != null)
+            {
+                nbtIn.putString("CustomName", Text.Serialization.toJsonString(name, registry));
+                return nbtIn;
+            }
+            else
+            {
+                nbt.putString("CustomName", Text.Serialization.toJsonString(name, registry));
+            }
+        }
+        catch (Exception ignored) {}
+
+        return nbt;
     }
 
     public static @Nullable Map<RegistryEntry<StatusEffect>, StatusEffectInstance> getActiveStatusEffectsFromNbt(@Nonnull NbtCompound nbt)
@@ -342,4 +392,17 @@ public class EntityUtils
 
         return -1;
     }
+
+    public static RegistryEntry.Reference<EntityType<?>> getEntityTypeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return registry.getOrThrow(Registries.ENTITY_TYPE.getKey()).getEntry(id).orElseThrow();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
 }

@@ -27,7 +27,6 @@ public class BlockRestriction extends UsageRestriction<Block>
             }
             catch (Exception ignore) {}
 
-            //Block block = rl != null ? Registries.BLOCK.get(rl) : null;
             Optional<RegistryEntry.Reference<Block>> opt = Registries.BLOCK.getEntry(rl);
 
             if (opt.isPresent())

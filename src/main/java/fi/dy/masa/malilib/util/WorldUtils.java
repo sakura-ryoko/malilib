@@ -1,14 +1,22 @@
 package fi.dy.masa.malilib.util;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.dimension.DimensionType;
 
 public class WorldUtils
 {
@@ -82,5 +90,92 @@ public class WorldUtils
         yMax = yMax == -1 ? chunk.getBottomY() : ChunkSectionPos.getBlockCoord(chunk.sectionIndexToCoord(yMax));
 
         return yMax;
+    }
+
+    public static RegistryEntry<DimensionType> getDimensionTypeEntry(DimensionType key, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return registry.getOrThrow(RegistryKeys.DIMENSION_TYPE).getEntry(key);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public static RegistryEntry<DimensionType> getDimensionTypeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return registry.getOrThrow(RegistryKeys.DIMENSION_TYPE).getEntry(id).orElseThrow();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public static RegistryEntry<DimensionType> getDimensionTypeEntry(String id, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return registry.getOrThrow(RegistryKeys.DIMENSION_TYPE).getEntry(Identifier.tryParse(id)).orElseThrow();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public static RegistryEntry<Biome> getBiomeEntry(RegistryKey<Biome> key, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return registry.getOrThrow(RegistryKeys.BIOME).getOrThrow(key);
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public static RegistryEntry<Biome> getBiomeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return registry.getOrThrow(RegistryKeys.BIOME).getEntry(id).orElseThrow();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public static RegistryEntry<Biome> getBiomeEntry(String id, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return registry.getOrThrow(RegistryKeys.BIOME).getEntry(Identifier.tryParse(id)).orElseThrow();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    public static RegistryEntry<Biome> getPlains(@Nonnull DynamicRegistryManager registry)
+    {
+        return getBiomeEntry(BiomeKeys.PLAINS, registry);
+    }
+
+    public static RegistryEntry<Biome> getWastes(@Nonnull DynamicRegistryManager registry)
+    {
+        return getBiomeEntry(BiomeKeys.NETHER_WASTES, registry);
+    }
+
+    public static RegistryEntry<Biome> getTheEnd(@Nonnull DynamicRegistryManager registry)
+    {
+        return getBiomeEntry(BiomeKeys.THE_END, registry);
     }
 }

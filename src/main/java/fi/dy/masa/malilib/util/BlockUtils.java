@@ -10,6 +10,7 @@ import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeehiveBlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.block.entity.SignText;
 import net.minecraft.block.enums.Orientation;
@@ -259,6 +260,37 @@ public class BlockUtils
         return list;
     }
 
+    public static @Nullable BlockEntityType<?> getBlockEntityTypeFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains("id", Constants.NBT.TAG_STRING))
+        {
+            return Registries.BLOCK_ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString("id"))).orElse(null);
+        }
+
+        return null;
+    }
+
+    public static NbtCompound setBlockEntityTypeToNbt(BlockEntityType<?> type, @Nullable NbtCompound nbtIn)
+    {
+        NbtCompound nbt = new NbtCompound();
+        Identifier id = BlockEntityType.getId(type);
+
+        if (id != null)
+        {
+            if (nbtIn != null)
+            {
+                nbtIn.putString("id", id.toString());
+                return nbtIn;
+            }
+            else
+            {
+                nbt.putString("id", id.toString());
+            }
+        }
+
+        return nbt;
+    }
+
     public static Set<Integer> getDisabledSlotsFromNbt(@Nonnull NbtCompound nbt)
     {
         Set<Integer> list = new HashSet<>();
@@ -286,11 +318,7 @@ public class BlockUtils
             Identifier id = Identifier.tryParse(nbt.getString("primary_effect"));
             if (id != null)
             {
-                Optional<RegistryEntry.Reference<StatusEffect>> opt = Registries.STATUS_EFFECT.getEntry(id);
-                if (opt.isPresent())
-                {
-                    primary = opt.get();
-                }
+                primary = Registries.STATUS_EFFECT.getEntry(id).orElse(null);
             }
         }
         if (nbt.contains("secondary_effect", Constants.NBT.TAG_STRING))
@@ -298,11 +326,7 @@ public class BlockUtils
             Identifier id = Identifier.tryParse(nbt.getString("secondary_effect"));
             if (id != null)
             {
-                Optional<RegistryEntry.Reference<StatusEffect>> opt = Registries.STATUS_EFFECT.getEntry(id);
-                if (opt.isPresent())
-                {
-                    secondary = opt.get();
-                }
+                secondary = Registries.STATUS_EFFECT.getEntry(id).orElse(null);
             }
         }
 
@@ -360,7 +384,7 @@ public class BlockUtils
         return Pair.of(age, pos);
     }
 
-    public static Pair<Pair<SignText, SignText>, Boolean> getSignTextFromNbt(@Nonnull NbtCompound nbt, DynamicRegistryManager registry)
+    public static Pair<Pair<SignText, SignText>, Boolean> getSignTextFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         AtomicReference<SignText> front = new AtomicReference<>(null);
         AtomicReference<SignText> back = new AtomicReference<>(null);
@@ -382,7 +406,7 @@ public class BlockUtils
         return Pair.of(Pair.of(front.get(), back.get()), waxed);
     }
 
-    public static Pair<ItemStack, Integer> getBookFromNbt(@Nonnull NbtCompound nbt, DynamicRegistryManager registry)
+    public static Pair<ItemStack, Integer> getBookFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         ItemStack book = ItemStack.EMPTY;
         int current = -1;
@@ -399,17 +423,17 @@ public class BlockUtils
         return Pair.of(book, current);
     }
 
-    public static Pair<ProfileComponent, Pair<Identifier, Text>> getSkullDataFromNbt(@Nonnull NbtCompound nbt, DynamicRegistryManager registry)
+    public static Pair<ProfileComponent, Pair<Identifier, Text>> getSkullDataFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         AtomicReference<ProfileComponent> profile = new AtomicReference<>(null);
         Identifier note = null;
         Text name = Text.empty();
 
-        if (nbt.contains("note_block_sound", 8))
+        if (nbt.contains("note_block_sound", Constants.NBT.TAG_STRING))
         {
             note = Identifier.tryParse(nbt.getString("note_block_sound"));
         }
-        if (nbt.contains("custom_name", 8))
+        if (nbt.contains("custom_name", Constants.NBT.TAG_STRING))
         {
             String str = nbt.getString("custom_name");
 
@@ -425,5 +449,17 @@ public class BlockUtils
         }
 
         return Pair.of(profile.get(), Pair.of(note, name));
+    }
+
+    public static RegistryEntry<Block> getBlockEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return registry.getOrThrow(Registries.BLOCK.getKey()).getEntry(id).orElseThrow();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 }

@@ -15,11 +15,9 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.block.CrafterBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.command.argument.ItemStringReader;
@@ -384,7 +382,7 @@ public class InventoryUtils
      * Checks if the given Shulker Box (or other storage item with the
      * same NBT data structure) currently contains any items.
      *
-     * @param stackShulkerBox
+     * @param stack
      * @return
      */
     public static boolean shulkerBoxHasItems(ItemStack stack)
@@ -410,7 +408,7 @@ public class InventoryUtils
         if (tag.contains("Items", Constants.NBT.TAG_COMPOUND))
         {
             NbtList tagList = tag.getList("Items", Constants.NBT.TAG_COMPOUND);
-            return tagList.size() > 0;
+            return !tagList.isEmpty();
         }
 
         return false;
@@ -437,7 +435,7 @@ public class InventoryUtils
      * Returns the list of items currently stored in the given NBT Items[] interface.
      * Preserves empty slots, unless the "Inventory" interface is used.
      *
-     * @param tagIn     The tag holding the inventory contents
+     * @param nbt       The tag holding the inventory contents
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
      * @param registry  the Dynamic Registry object
      * @return
@@ -494,7 +492,7 @@ public class InventoryUtils
      * Returns Inventory of items currently stored in the given NBT Items[] interface.
      * Preserves empty slots, unless the "Inventory" interface is used.
      *
-     * @param tagIn     The tag holding the inventory contents
+     * @param nbt     The tag holding the inventory contents
      * @return
      */
     public static Inventory getNbtInventory(@Nonnull NbtCompound nbt)
@@ -511,7 +509,7 @@ public class InventoryUtils
      * Returns Inventory of items currently stored in the given NBT Items[] interface.
      * Preserves empty slots, unless the "Inventory" interface is used.
      *
-     * @param tagIn     The tag holding the inventory contents
+     * @param nbt       The tag holding the inventory contents
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
      * @param registry  The Dynamic Registry object
      * @return
@@ -926,7 +924,7 @@ public class InventoryUtils
      * @return (The ItemStack object or ItemStack.EMPTY, aka Air)
      */
     @Nullable
-    public static ItemStack getItemStackFromString(String itemNameIn, int count, ComponentMap data)
+    public static ItemStack getItemStackFromString(String itemNameIn, int count, @Nonnull ComponentMap data)
     {
         if (itemNameIn.isEmpty() || itemNameIn.equals("empty") || itemNameIn.equals("minecraft:air") || itemNameIn.equals("air"))
         {
@@ -943,35 +941,24 @@ public class InventoryUtils
             if (itemName != null)
             {
                 Identifier itemId = Identifier.tryParse(itemName);
+                RegistryEntry<Item> itemEntry = Registries.ITEM.getEntry(itemId).orElse(null);
 
-                //registries.getOptionalEntry(RegistryKeys.ITEM).getmatchesId(itemId);
-
-                Optional<RegistryEntry.Reference<Item>> opt = Registries.ITEM.getEntry(itemId);
-
-                if (opt.isPresent())
+                if (itemEntry != null && itemEntry.hasKeyAndValue())
                 {
-                    //Item item = Registries.ITEM.get(itemId);
-                    //RegistryEntry<Item> itemEntry = RegistryEntry.of(item);
-
-                    RegistryEntry<Item> itemEntry = opt.get();
-
-                    if (itemEntry.hasKeyAndValue())
+                    if (count < 0)
                     {
-                        if (count < 0)
-                        {
-                            stackOut = new ItemStack(itemEntry);
-                        }
-                        else
-                        {
-                            stackOut = new ItemStack(itemEntry, count);
-                        }
-                        if (data.isEmpty() == false && data.equals(ComponentMap.EMPTY) == false)
-                        {
-                            stackOut.applyComponentsFrom(data);
-                        }
-
-                        return stackOut;
+                        stackOut = new ItemStack(itemEntry);
                     }
+                    else
+                    {
+                        stackOut = new ItemStack(itemEntry, count);
+                    }
+                    if (data.isEmpty() == false && data.equals(ComponentMap.EMPTY) == false)
+                    {
+                        stackOut.applyComponentsFrom(data);
+                    }
+
+                    return stackOut;
                 }
                 else
                 {
@@ -1002,7 +989,6 @@ public class InventoryUtils
         }
         catch (CommandSyntaxException e)
         {
-            //MaLiLib.logger.warn("getItemStackFromString(): Invalid NBT Syntax");
             MaLiLib.logger.warn(StringUtils.translate("malilib.error.invalid_item_stack_entry.nbt_syntax", stringIn));
             return null;
         }
@@ -1011,5 +997,17 @@ public class InventoryUtils
         stackOut.applyChanges(results.components());
 
         return stackOut;
+    }
+
+    public static RegistryEntry<Item> getItemEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return registry.getOrThrow(Registries.ITEM.getKey()).getEntry(id).orElseThrow();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
     }
 }
