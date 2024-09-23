@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.event;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.annotation.Nonnull;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.ApiStatus;
@@ -27,7 +28,6 @@ public class InputEventHandler implements IKeybindManager, IInputManager
 {
     private static final InputEventHandler INSTANCE = new InputEventHandler();
 
-    private final MinecraftClient mc;
     private final Multimap<Integer, IKeybind> hotkeyMap = ArrayListMultimap.create();
     private final List<KeybindCategory> allKeybinds = new ArrayList<>();
     private final List<IKeybindProvider> keybindProviders = new ArrayList<>();
@@ -35,10 +35,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     private final List<IMouseInputHandler> mouseHandlers = new ArrayList<>();
     private double mouseWheelDeltaSum;
 
-    private InputEventHandler()
-    {
-        this.mc = MinecraftClient.getInstance();
-    }
+    private InputEventHandler() { }
 
     public static IKeybindManager getKeybindManager()
     {
@@ -138,13 +135,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     @ApiStatus.Internal
     public boolean onKeyInput(int keyCode, int scanCode, int modifiers, int action)
     {
-        boolean eventKeyState;
-
-        if (this.mc == null)
-        {
-            return false;
-        }
-        eventKeyState = action != GLFW.GLFW_RELEASE;
+        boolean eventKeyState = action != GLFW.GLFW_RELEASE;
 
         // Update the cached pressed keys status
         KeybindMulti.onKeyInputPre(keyCode, scanCode, modifiers, action);
@@ -167,14 +158,10 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onMouseClick(int mouseX, int mouseY, int eventButton, int action)
+    public boolean onMouseClick(int mouseX, int mouseY, int eventButton, int action, @Nonnull MinecraftClient mc)
     {
         boolean cancel = false;
 
-        if (this.mc == null)
-        {
-            return false;
-        }
         if (eventButton != -1)
         {
             boolean eventButtonState = action == GLFW.GLFW_PRESS;
@@ -211,24 +198,16 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onMouseScroll(final int mouseX, final int mouseY, final double xOffset, final double yOffset)
+    public boolean onMouseScroll(final int mouseX, final int mouseY, final double xOffset, final double yOffset, @Nonnull MinecraftClient mc)
     {
-        boolean discrete;
-        double sensitivity;
-        double amount;
-
-        if (this.mc == null)
-        {
-            return false;
-        }
-        discrete = this.mc.options.getDiscreteMouseScroll().getValue();
-        sensitivity = this.mc.options.getMouseWheelSensitivity().getValue();
-        amount = (discrete ? Math.signum(yOffset) : yOffset) * sensitivity;
+        boolean discrete = mc.options.getDiscreteMouseScroll().getValue();
+        double sensitivity = mc.options.getMouseWheelSensitivity().getValue();
+        double amount = (discrete ? Math.signum(yOffset) : yOffset) * sensitivity;
 
         if (MaLiLibConfigs.Debug.MOUSE_SCROLL_DEBUG.getBooleanValue())
         {
             int time = (int) (System.currentTimeMillis() & 0xFFFF);
-            int tick = this.mc.world != null ? (int) (this.mc.world.getTime() & 0xFFFF) : 0;
+            int tick = mc.world != null ? (int) (mc.world.getTime() & 0xFFFF) : 0;
             String timeStr = String.format("time: %04X, tick: %04X", time, tick);
             MaLiLib.logger.info("{} - xOffset: {}, yOffset: {}, discrete: {}, sensitivity: {}, amount: {}",
                                 timeStr, xOffset, yOffset, discrete, sensitivity, amount);
@@ -263,12 +242,8 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public void onMouseMove(final int mouseX, final int mouseY)
+    public void onMouseMove(final int mouseX, final int mouseY, @Nonnull MinecraftClient mc)
     {
-        if (this.mc == null)
-        {
-            return;
-        }
         if (this.mouseHandlers.isEmpty() == false)
         {
             for (IMouseInputHandler handler : this.mouseHandlers)
