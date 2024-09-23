@@ -108,7 +108,7 @@ public class TestRenderHandler implements IRenderer
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
-                RenderUtils.renderMapPreview(stack, x, y, 160, false, drawContext);
+                RenderUtils.renderMapPreview(stack, x, y, 160, false);
             }
         }
         else if (stack.getComponents().contains(DataComponentTypes.CONTAINER) && InventoryUtils.shulkerBoxHasItems(stack))
