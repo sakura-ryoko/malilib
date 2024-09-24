@@ -15,6 +15,11 @@ import net.minecraft.item.ItemStack;
 public interface IRenderer
 {
     /**
+     * Called after the vanilla "drawer" overlays have been rendered
+     */
+    default void onRenderGameOverlayLastDrawer(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc) {}
+
+    /**
      * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, drawer, profiler
      */
     default void onRenderGameOverlayPostAdvanced(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc) {}

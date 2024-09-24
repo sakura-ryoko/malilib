@@ -8,12 +8,10 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -24,6 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -33,6 +32,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 
@@ -405,4 +405,39 @@ public class EntityUtils
         }
     }
 
+    /**
+     * Try to get the Leash Data from NBT using 'FakeLeashData' because LeashData is package-private
+     * @param nbt ()
+     * @return ()
+     */
+    @SuppressWarnings("unchecked")
+    public static @Nullable FakeLeashData getLeashDataFromNbt(@Nonnull NbtCompound nbt)
+    {
+        FakeLeashData data = null;
+
+        if (nbt.contains("leash", Constants.NBT.TAG_COMPOUND))
+        {
+            data = new FakeLeashData(-1, null, Either.left(nbt.getCompound("leash").getUuid("UUID")));
+        }
+        else if (nbt.contains("leash", Constants.NBT.TAG_INT_ARRAY))
+        {
+            Either<UUID, BlockPos> either = (Either) NbtHelper.toBlockPos(nbt, "leash").map(Either::right).orElse(null);
+
+            if (either != null)
+            {
+                return new FakeLeashData(-1, null, either);
+            }
+        }
+
+        return data;
+    }
+
+    /**
+     * Fake "LeashData" record.  To change the values, just make a new one.
+     *
+     * @param unresolvedLeashHolderId
+     * @param leashHolder
+     * @param unresolvedLeashData
+     */
+    public record FakeLeashData(int unresolvedLeashHolderId, @Nullable Entity leashHolder, @Nullable Either<UUID, BlockPos> unresolvedLeashData) {}
 }

@@ -83,6 +83,26 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
+    public void onRenderGameOverlayLastDrawer(DrawContext drawContext, MinecraftClient mc, float partialTicks)
+    {
+        Profiler profiler = Profilers.get();
+
+        profiler.push("malilib_rendergameoverlaydrawer");
+
+        if (this.overlayRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.overlayRenderers)
+            {
+                profiler.push(renderer.getProfilerSectionSupplier());
+                renderer.onRenderGameOverlayLastDrawer(drawContext, partialTicks, profiler, mc);
+                profiler.pop();
+            }
+        }
+
+        profiler.pop();
+    }
+
+    @ApiStatus.Internal
     public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)
     {
         Profiler profiler = Profilers.get();
