@@ -10,7 +10,6 @@
     "MixinAbstractHorseEntity",
     "MixinClientConfigurationNetworkHandler",
     "MixinClientPlayNetworkHandler",
-    "MixinClientPlayNetworkHandler_NbtQuery",
     "MixinDrawContext",
     "MixinHandledScreen",
     "MixinInGameHud",
