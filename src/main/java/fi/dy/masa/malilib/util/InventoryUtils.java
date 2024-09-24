@@ -521,12 +521,13 @@ public class InventoryUtils
             slotCount = 256;
         }
 
-        // Most Common Tag
-        if (nbt.contains("Items", Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains("Items"))
         {
-            NbtList list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+            // Standard 'Items' tag for most Block Entities --
+            // -- Furnace, Brewing Stand, Shulker Box, Crafter, Barrel, Chest, Dispenser, Hopper, Bookshelf, Campfire
             if (slotCount < 0)
             {
+                NbtList list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
                 slotCount = list.size();
             }
 
@@ -545,17 +546,44 @@ public class InventoryUtils
 
             return inv;
         }
-        // A few Entities use this
-        else if (nbt.contains("Inventory", Constants.NBT.TAG_LIST))
+        else if (nbt.contains("Inventory"))
         {
-            NbtList list = nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND);
+            // Entities use this (Piglin, Villager, a few others)
             if (slotCount < 0)
             {
+                NbtList list = nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND);
                 slotCount = list.size();
             }
 
             SimpleInventory inv = new SimpleInventory(slotCount);
             inv.readNbtList(nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND), registry);
+
+            return inv;
+        }
+        else if (nbt.contains("item"))
+        {
+            // item (DecoratedPot, ItemEntity)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound("item"));
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry);
+
+            return inv;
+        }
+        else if (nbt.contains("Book"))
+        {
+            // Book (Lectern)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound("Book"));
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry);
+
+            return inv;
+        }
+        else if (nbt.contains("RecordItem"))
+        {
+            // RecordItem (Jukebox)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound("RecordItem"));
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry);
 
             return inv;
         }

@@ -410,6 +410,20 @@ public class InventoryOverlay
         return InventoryRenderType.GENERIC;
     }
 
+    public static InventoryRenderType getBestInventoryType(@Nonnull Inventory inv, @Nonnull NbtCompound nbt)
+    {
+        InventoryRenderType i = getInventoryType(inv);
+        InventoryRenderType n = getInventoryType(nbt);
+
+        // Don't use the NBT value if the INV result is FIXED_54.
+        if (i != n && i == InventoryRenderType.GENERIC)
+        {
+            return n;
+        }
+
+        return i;
+    }
+
     /**
      * Returns the instance of the shared/temporary properties instance,
      * with the values set for the type of inventory provided.
@@ -754,7 +768,7 @@ public class InventoryOverlay
         GENERIC;
     }
 
-    public record Context(@Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt) {}
+    public record Context(InventoryRenderType type, @Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt) {}
 
     public static @Nullable Context invFromNbt(NbtCompound nbtIn)
     {
@@ -764,7 +778,7 @@ public class InventoryOverlay
 
             if (i != null)
             {
-                return new Context(i, null, null, nbtIn);
+                return new Context(getInventoryType(nbtIn), i, null, null, nbtIn);
             }
         }
 
@@ -779,7 +793,7 @@ public class InventoryOverlay
 
             if (i != null)
             {
-                return new Context(i, null, null, null);
+                return new Context(getInventoryType(i), i, null, null, null);
             }
         }
 
@@ -794,7 +808,8 @@ public class InventoryOverlay
 
             if (i != null)
             {
-                return new Context(i, blockEntity, null, blockEntity.createNbtWithIdentifyingData(world.getRegistryManager()));
+                NbtCompound nbt = blockEntity.createNbtWithIdentifyingData(world.getRegistryManager());
+                return new Context(getBestInventoryType(i, nbt), i, blockEntity, null, nbt);
             }
         }
 
@@ -843,7 +858,7 @@ public class InventoryOverlay
                 NbtCompound newNbt = new NbtCompound();
                 boolean gotNbt = ent.saveSelfNbt(newNbt);
 
-                return new Context(inv2, null, entLiving, gotNbt ? newNbt : null);
+                return new Context(getBestInventoryType(inv2, gotNbt ? newNbt : new NbtCompound()), inv2, null, entLiving, gotNbt ? newNbt : null);
             }
         }
 
