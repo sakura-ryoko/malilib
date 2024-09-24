@@ -754,100 +754,99 @@ public class InventoryOverlay
         GENERIC;
     }
 
-    public record InventoryOverlayContext(@Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt)
+    public record Context(@Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt) {}
+
+    public static @Nullable Context invFromNbt(NbtCompound nbtIn)
     {
-        public @Nullable InventoryOverlayContext invFromNbt(NbtCompound nbtIn)
+        if (nbtIn != null)
         {
-            if (nbtIn != null)
+            Inventory i = InventoryUtils.getNbtInventory(nbtIn);
+
+            if (i != null)
             {
-                Inventory i = InventoryUtils.getNbtInventory(nbtIn);
-
-                if (i != null)
-                {
-                    return new InventoryOverlayContext(i, null, null, nbtIn);
-                }
+                return new Context(i, null, null, nbtIn);
             }
-
-            return null;
         }
 
-        public @Nullable InventoryOverlayContext invFromBlockPos(World world, BlockPos pos)
+        return null;
+    }
+
+    public static @Nullable Context invFromBlockPos(World world, BlockPos pos)
+    {
+        if (world != null && pos == null)
         {
-            if (world != null && pos == null)
+            Inventory i = InventoryUtils.getInventory(world, pos);
+
+            if (i != null)
             {
-                Inventory i = InventoryUtils.getInventory(world, pos);
-
-                if (i != null)
-                {
-                    return new InventoryOverlayContext(i, null, null, null);
-                }
+                return new Context(i, null, null, null);
             }
-
-            return null;
         }
 
-        public @Nullable InventoryOverlayContext invFromBlockEntity(BlockEntity blockEntity, @Nonnull World world)
+        return null;
+    }
+
+    public static @Nullable Context invFromBlockEntity(BlockEntity blockEntity, @Nonnull World world)
+    {
+        if (blockEntity != null)
         {
-            if (blockEntity != null)
+            Inventory i = InventoryUtils.getInventory(blockEntity.getWorld() != null ? blockEntity.getWorld() : world, blockEntity.getPos());
+
+            if (i != null)
             {
-                Inventory i = InventoryUtils.getInventory(blockEntity.getWorld() != null ? blockEntity.getWorld() : world, blockEntity.getPos());
-
-                if (i != null)
-                {
-                    return new InventoryOverlayContext(i, blockEntity, null, blockEntity.createNbtWithIdentifyingData(world.getRegistryManager()));
-                }
+                return new Context(i, blockEntity, null, blockEntity.createNbtWithIdentifyingData(world.getRegistryManager()));
             }
-
-            return null;
         }
 
-        public @Nullable InventoryOverlayContext invFromEntity(Entity ent)
+        return null;
+    }
+
+    public static @Nullable Context invFromEntity(Entity ent)
+    {
+        if (ent != null)
         {
-            if (ent != null)
+            Inventory inv2 = null;
+            LivingEntity entLiving = null;
+
+            if (ent instanceof LivingEntity)
             {
-                Inventory inv2 = null;
-                LivingEntity entLiving = null;
-
-                if (ent instanceof LivingEntity)
-                {
-                    entLiving = (LivingEntity) ent;
-                }
-
-                if (ent instanceof Inventory)
-                {
-                    inv2 = (Inventory) ent;
-                }
-                else if (ent instanceof PlayerEntity player)
-                {
-                    inv2 = new SimpleInventory(player.getInventory().main.toArray(new ItemStack[36]));
-                }
-                else if (ent instanceof VillagerEntity)
-                {
-                    inv2 = ((VillagerEntity) ent).getInventory();
-                }
-                else if (ent instanceof AbstractHorseEntity)
-                {
-                    inv2 = ((IMixinAbstractHorseEntity) ent).malilib_getHorseInventory();
-                }
-                else if (ent instanceof PiglinEntity)
-                {
-                    inv2 = ((IMixinPiglinEntity) ent).malilib_getInventory();
-                }
-
-                if (inv2 == null && entLiving == null)
-                {
-                    return null;
-                }
-                if (inv2 != null)
-                {
-                    NbtCompound newNbt = new NbtCompound();
-                    boolean gotNbt = ent.saveSelfNbt(newNbt);
-
-                    return new InventoryOverlayContext(inv2, null, entLiving, gotNbt ? newNbt : null);
-                }
+                entLiving = (LivingEntity) ent;
             }
 
-            return null;
+            if (ent instanceof Inventory)
+            {
+                inv2 = (Inventory) ent;
+            }
+            else if (ent instanceof PlayerEntity player)
+            {
+                inv2 = new SimpleInventory(player.getInventory().main.toArray(new ItemStack[36]));
+            }
+            else if (ent instanceof VillagerEntity)
+            {
+                inv2 = ((VillagerEntity) ent).getInventory();
+            }
+            else if (ent instanceof AbstractHorseEntity)
+            {
+                inv2 = ((IMixinAbstractHorseEntity) ent).malilib_getHorseInventory();
+            }
+            else if (ent instanceof PiglinEntity)
+            {
+                inv2 = ((IMixinPiglinEntity) ent).malilib_getInventory();
+            }
+
+            if (inv2 == null && entLiving == null)
+            {
+                return null;
+            }
+            if (inv2 != null)
+            {
+                NbtCompound newNbt = new NbtCompound();
+                boolean gotNbt = ent.saveSelfNbt(newNbt);
+
+                return new Context(inv2, null, entLiving, gotNbt ? newNbt : null);
+            }
         }
+
+        return null;
     }
 }
