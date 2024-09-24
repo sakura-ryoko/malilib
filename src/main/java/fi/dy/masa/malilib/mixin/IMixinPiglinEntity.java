@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface IMixinPiglinEntity
 {
     @Accessor("inventory")
-    SimpleInventory malilib_inventory();
+    SimpleInventory malilib_getInventory();
 }

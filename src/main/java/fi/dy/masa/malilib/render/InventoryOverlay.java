@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
@@ -12,24 +15,34 @@ import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.util.IEntityOwnedInventory;
+import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
+import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
+import fi.dy.masa.malilib.util.*;
 
 public class InventoryOverlay
 {
@@ -325,6 +338,72 @@ public class InventoryOverlay
             else if (block instanceof CrafterBlock)
             {
                 return InventoryRenderType.CRAFTER;
+            }
+        }
+
+        return InventoryRenderType.GENERIC;
+    }
+
+    public static InventoryRenderType getInventoryType(@Nonnull NbtCompound nbt)
+    {
+        BlockEntityType<?> blockType = BlockUtils.getBlockEntityTypeFromNbt(nbt);
+
+        if (blockType != null)
+        {
+            if (blockType.equals(BlockEntityType.SHULKER_BOX) ||
+                blockType.equals(BlockEntityType.CHEST) ||
+                blockType.equals(BlockEntityType.TRAPPED_CHEST))
+            {
+                return InventoryRenderType.FIXED_27;
+            }
+            else if (blockType.equals(BlockEntityType.FURNACE) ||
+                blockType.equals(BlockEntityType.BLAST_FURNACE) ||
+                blockType.equals(BlockEntityType.SMOKER))
+            {
+                return InventoryRenderType.FURNACE;
+            }
+            else if (blockType.equals(BlockEntityType.DISPENSER) ||
+                    blockType.equals(BlockEntityType.DROPPER))
+            {
+                return InventoryRenderType.DISPENSER;
+            }
+            else if (blockType.equals(BlockEntityType.HOPPER))
+            {
+                return InventoryRenderType.HOPPER;
+            }
+            else if (blockType.equals(BlockEntityType.BREWING_STAND))
+            {
+                return InventoryRenderType.BREWING_STAND;
+            }
+            else if (blockType.equals(BlockEntityType.CRAFTER))
+            {
+                return InventoryRenderType.CRAFTER;
+            }
+        }
+
+        EntityType<?> entityType = EntityUtils.getEntityTypeFromNbt(nbt);
+
+        if (entityType != null)
+        {
+            if (entityType.equals(EntityType.HORSE) ||
+                entityType.equals(EntityType.DONKEY) ||
+                entityType.equals(EntityType.MULE) ||
+                entityType.equals(EntityType.CAMEL) ||
+                entityType.equals(EntityType.LLAMA) ||
+                entityType.equals(EntityType.TRADER_LLAMA) ||
+                entityType.equals(EntityType.SKELETON_HORSE) ||
+                entityType.equals(EntityType.ZOMBIE_HORSE))
+            {
+                return InventoryRenderType.HORSE;
+            }
+            else if (entityType.equals(EntityType.VILLAGER) ||
+                     entityType.equals(EntityType.ALLAY) ||
+                     entityType.equals(EntityType.PILLAGER) ||
+                     entityType.equals(EntityType.PIGLIN) ||
+                     entityType.equals(EntityType.WANDERING_TRADER) ||
+                     entityType.equals(EntityType.ZOMBIE_VILLAGER))
+            {
+                return InventoryRenderType.VILLAGER;
             }
         }
 
@@ -673,5 +752,102 @@ public class InventoryOverlay
         FIXED_54,
         VILLAGER,
         GENERIC;
+    }
+
+    public record InventoryOverlayContext(@Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt)
+    {
+        public @Nullable InventoryOverlayContext invFromNbt(NbtCompound nbtIn)
+        {
+            if (nbtIn != null)
+            {
+                Inventory i = InventoryUtils.getNbtInventory(nbtIn);
+
+                if (i != null)
+                {
+                    return new InventoryOverlayContext(i, null, null, nbtIn);
+                }
+            }
+
+            return null;
+        }
+
+        public @Nullable InventoryOverlayContext invFromBlockPos(World world, BlockPos pos)
+        {
+            if (world != null && pos == null)
+            {
+                Inventory i = InventoryUtils.getInventory(world, pos);
+
+                if (i != null)
+                {
+                    return new InventoryOverlayContext(i, null, null, null);
+                }
+            }
+
+            return null;
+        }
+
+        public @Nullable InventoryOverlayContext invFromBlockEntity(BlockEntity blockEntity, @Nonnull World world)
+        {
+            if (blockEntity != null)
+            {
+                Inventory i = InventoryUtils.getInventory(blockEntity.getWorld() != null ? blockEntity.getWorld() : world, blockEntity.getPos());
+
+                if (i != null)
+                {
+                    return new InventoryOverlayContext(i, blockEntity, null, blockEntity.createNbtWithIdentifyingData(world.getRegistryManager()));
+                }
+            }
+
+            return null;
+        }
+
+        public @Nullable InventoryOverlayContext invFromEntity(Entity ent)
+        {
+            if (ent != null)
+            {
+                Inventory inv2 = null;
+                LivingEntity entLiving = null;
+
+                if (ent instanceof LivingEntity)
+                {
+                    entLiving = (LivingEntity) ent;
+                }
+
+                if (ent instanceof Inventory)
+                {
+                    inv2 = (Inventory) ent;
+                }
+                else if (ent instanceof PlayerEntity player)
+                {
+                    inv2 = new SimpleInventory(player.getInventory().main.toArray(new ItemStack[36]));
+                }
+                else if (ent instanceof VillagerEntity)
+                {
+                    inv2 = ((VillagerEntity) ent).getInventory();
+                }
+                else if (ent instanceof AbstractHorseEntity)
+                {
+                    inv2 = ((IMixinAbstractHorseEntity) ent).malilib_getHorseInventory();
+                }
+                else if (ent instanceof PiglinEntity)
+                {
+                    inv2 = ((IMixinPiglinEntity) ent).malilib_getInventory();
+                }
+
+                if (inv2 == null && entLiving == null)
+                {
+                    return null;
+                }
+                if (inv2 != null)
+                {
+                    NbtCompound newNbt = new NbtCompound();
+                    boolean gotNbt = ent.saveSelfNbt(newNbt);
+
+                    return new InventoryOverlayContext(inv2, null, entLiving, gotNbt ? newNbt : null);
+                }
+            }
+
+            return null;
+        }
     }
 }

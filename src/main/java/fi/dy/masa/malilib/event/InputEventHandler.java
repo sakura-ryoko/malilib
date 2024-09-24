@@ -133,7 +133,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onKeyInput(int keyCode, int scanCode, int modifiers, int action)
+    public boolean onKeyInput(int keyCode, int scanCode, int modifiers, int action, @Nonnull MinecraftClient mc)
     {
         boolean eventKeyState = action != GLFW.GLFW_RELEASE;
 

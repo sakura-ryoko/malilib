@@ -234,7 +234,7 @@ public class TestRenderHandler implements IRenderer
             }
             else if (entity instanceof AbstractHorseEntity)
             {
-                inv = ((IMixinAbstractHorseEntity) entity).tweakeroo_getHorseInventory();
+                inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
             }
         }
 

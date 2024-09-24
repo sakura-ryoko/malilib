@@ -9,5 +9,5 @@ import net.minecraft.inventory.SimpleInventory;
 public interface IMixinAbstractHorseEntity
 {
     @Accessor("items")
-    SimpleInventory tweakeroo_getHorseInventory();
+    SimpleInventory malilib_getHorseInventory();
 }
