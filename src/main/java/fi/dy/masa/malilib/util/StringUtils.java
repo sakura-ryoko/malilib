@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -77,13 +78,13 @@ public class StringUtils
         return str;
     }
 
-    public static void sendOpenFileChatMessage(net.minecraft.entity.Entity sender, String messageKey, File file)
+    public static void sendOpenFileChatMessage(PlayerEntity sender, String messageKey, File file)
     {
         net.minecraft.text.Text name = Text.literal(file.getName())
             .formatted(net.minecraft.util.Formatting.UNDERLINE)
             .styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
 
-        sender.sendMessage(Text.translatable(messageKey, name));
+        sender.sendMessage(Text.translatable(messageKey, name), false);
     }
 
     /**

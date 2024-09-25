@@ -424,6 +424,25 @@ public class InventoryOverlay
         return i;
     }
 
+    public static InventoryRenderType getBestInventoryType(@Nonnull Inventory inv, @Nonnull NbtCompound nbt, Context ctx)
+    {
+        InventoryRenderType i = getInventoryType(inv);
+        InventoryRenderType n = getInventoryType(nbt);
+
+        // Don't use the NBT value if the INV result is FIXED_54.
+        if (i != n && i == InventoryRenderType.GENERIC)
+        {
+            if (n != ctx.type() && ctx.type() != InventoryRenderType.GENERIC)
+            {
+                return ctx.type();
+            }
+
+            return n;
+        }
+
+        return i;
+    }
+
     /**
      * Returns the instance of the shared/temporary properties instance,
      * with the values set for the type of inventory provided.
