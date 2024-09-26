@@ -31,6 +31,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -38,6 +39,8 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+
+import org.spongepowered.asm.mixin.injection.Constant;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
@@ -354,6 +357,16 @@ public class InventoryOverlay
                 blockType.equals(BlockEntityType.CHEST) ||
                 blockType.equals(BlockEntityType.TRAPPED_CHEST))
             {
+                if (nbt.contains("Items"))
+                {
+                    NbtList list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+
+                    if (list.size() > 27)
+                    {
+                        return InventoryRenderType.FIXED_54;
+                    }
+                }
+
                 return InventoryRenderType.FIXED_27;
             }
             else if (blockType.equals(BlockEntityType.FURNACE) ||
