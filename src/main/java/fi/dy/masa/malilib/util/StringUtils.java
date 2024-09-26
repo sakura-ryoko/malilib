@@ -8,6 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.ClickEvent;
@@ -430,5 +432,15 @@ public class StringUtils
     {
         drawContext.drawText(net.minecraft.client.MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
         //RenderUtils.forceDraw(drawContext);
+    }
+
+    /**
+     * Get a nicely formatted Duration string (ex: X hours, X minutes, X seconds)
+     * @param durationMs (Duration in Milliseconds (1 second * 1000L or 1 tick * 50L))
+     * @return (The formatted string)
+     */
+    public static String getDurationString(long durationMs)
+    {
+        return DurationFormatUtils.formatDurationWords(durationMs, true, true);
     }
 }
