@@ -18,6 +18,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -440,4 +441,21 @@ public class EntityUtils
      * @param unresolvedLeashData
      */
     public record FakeLeashData(int unresolvedLeashHolderId, @Nullable Entity leashHolder, @Nullable Either<UUID, BlockPos> unresolvedLeashData) {}
+
+    public static Pair<PandaEntity.Gene, PandaEntity.Gene> getPandaGenesFromNbt(@Nonnull NbtCompound nbt)
+    {
+        PandaEntity.Gene mainGene = null;
+        PandaEntity.Gene hiddenGene = null;
+
+        if (nbt.contains("MainGene", Constants.NBT.TAG_STRING))
+        {
+            mainGene = PandaEntity.Gene.byName(nbt.getString("MainGene"));
+        }
+        if (nbt.contains("HiddenGene", Constants.NBT.TAG_STRING))
+        {
+            hiddenGene = PandaEntity.Gene.byName(nbt.getString("HiddenGene"));
+        }
+
+        return Pair.of(mainGene, hiddenGene);
+    }
 }
