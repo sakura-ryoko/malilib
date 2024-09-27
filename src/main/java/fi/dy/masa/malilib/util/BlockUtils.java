@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -449,6 +450,23 @@ public class BlockUtils
         }
 
         return Pair.of(profile.get(), Pair.of(note, name));
+    }
+
+    public static Object2IntOpenHashMap<Identifier> getRecipesUsedFromNbt(@Nonnull NbtCompound nbt)
+    {
+        Object2IntOpenHashMap<Identifier> list = new Object2IntOpenHashMap<>();
+
+        if (nbt.contains("RecipesUsed", Constants.NBT.TAG_COMPOUND))
+        {
+            NbtCompound compound = nbt.getCompound("RecipesUsed");
+
+            for (String key : compound.getKeys())
+            {
+                list.put(Identifier.of(key), compound.getInt(key));
+            }
+        }
+
+        return list;
     }
 
     public static RegistryEntry<Block> getBlockEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
