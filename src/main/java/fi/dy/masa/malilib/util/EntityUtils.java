@@ -42,7 +42,7 @@ public class EntityUtils
     /**
      * Returns the camera entity, if it's not null, otherwise returns the client player entity.
      *
-     * @return
+     * @return ()
      */
     @Nullable
     public static Entity getCameraEntity()
@@ -76,6 +76,12 @@ public class EntityUtils
         return !stack.isEmpty() && stack.isOf(Items.TURTLE_HELMET);
     }
 
+    /**
+     * Get an EntityType from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static @Nullable EntityType<?> getEntityTypeFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains("id", Constants.NBT.TAG_STRING))
@@ -86,6 +92,13 @@ public class EntityUtils
         return null;
     }
 
+    /**
+     * Write an EntityType to NBT
+     *
+     * @param type ()
+     * @param nbtIn ()
+     * @return ()
+     */
     public NbtCompound setEntityTypeToNbt(EntityType<?> type, @Nullable NbtCompound nbtIn)
     {
         NbtCompound nbt = new NbtCompound();
@@ -107,6 +120,12 @@ public class EntityUtils
         return nbt;
     }
 
+    /**
+     * Get the AttributeContainer from NBT
+     *
+     * @param nbt ()
+     * @return ()
+     */
     @SuppressWarnings("unchecked")
     public static @Nullable AttributeContainer getAttributesFromNbt(@Nonnull NbtCompound nbt)
     {
@@ -132,6 +151,12 @@ public class EntityUtils
         return -1;
     }
 
+    /** Get a specified Attribute Value from NBT
+     *
+     * @param nbt ()
+     * @param attribute ()
+     * @return ()
+     */
     public static double getAttributeValueFromNbt(@Nonnull NbtCompound nbt, RegistryEntry<EntityAttribute> attribute)
     {
         AttributeContainer attributes = getAttributesFromNbt(nbt);
@@ -144,6 +169,12 @@ public class EntityUtils
         return -1;
     }
 
+    /**
+     * Get an entities' Health / Max Health from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static Pair<Float, Float> getHealthFromNbt(@Nonnull NbtCompound nbt)
     {
         float health = 0;
@@ -162,6 +193,12 @@ public class EntityUtils
         return Pair.of(health, (float) maxHealth);
     }
 
+    /**
+     * Get an entities Movement Speed, and Jump Strength attributes from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static Pair<Float, Float> getSpeedAndJumpStrengthFromNbt(@Nonnull NbtCompound nbt)
     {
         float moveSpeed = (float) getAttributeValueFromNbt(nbt, EntityAttributes.MOVEMENT_SPEED);
@@ -170,6 +207,12 @@ public class EntityUtils
         return Pair.of(moveSpeed, jumpStrength);
     }
 
+    /**
+     * Get the Entity's UUID from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static @Nullable UUID getUUIDFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.containsUuid("UUID"))
@@ -180,6 +223,13 @@ public class EntityUtils
         return null;
     }
 
+    /**
+     * Read the CustomName from NBT
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
     public static @Nullable Text getCustomNameFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains("CustomName", Constants.NBT.TAG_STRING))
@@ -190,14 +240,20 @@ public class EntityUtils
             {
                 return Text.Serialization.fromJson(string, registry);
             }
-            catch (Exception ignored)
-            {
-            }
+            catch (Exception ignored) { }
         }
 
         return null;
     }
 
+    /**
+     * Write a CustomName to NBT.
+     *
+     * @param name ()
+     * @param registry ()
+     * @param nbtIn ()
+     * @return (Nbt Out)
+     */
     public static NbtCompound setCustomNameToNbt(@Nonnull Text name, @Nonnull DynamicRegistryManager registry, @Nullable NbtCompound nbtIn)
     {
         NbtCompound nbt = new NbtCompound();
@@ -219,7 +275,13 @@ public class EntityUtils
         return nbt;
     }
 
-    public static @Nullable Map<RegistryEntry<StatusEffect>, StatusEffectInstance> getActiveStatusEffectsFromNbt(@Nonnull NbtCompound nbt)
+    /**
+     * Get a Map of all active Status Effects via NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static Map<RegistryEntry<StatusEffect>, StatusEffectInstance> getActiveStatusEffectsFromNbt(@Nonnull NbtCompound nbt)
     {
         Map<RegistryEntry<StatusEffect>, StatusEffectInstance> statusEffects = Maps.newHashMap();
 
@@ -231,18 +293,24 @@ public class EntityUtils
             {
                 NbtCompound data = list.getCompound(i);
                 StatusEffectInstance instance = StatusEffectInstance.fromNbt(data);
+
                 if (instance != null)
                 {
                     statusEffects.put(instance.getEffectType(), instance);
                 }
             }
-
-            return statusEffects;
         }
 
-        return null;
+        return statusEffects;
     }
 
+    /**
+     * Get a ItemStack List of all Equipped Hand Items pieces.
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
     public static DefaultedList<ItemStack> getHandItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(2, ItemStack.EMPTY);
@@ -259,6 +327,14 @@ public class EntityUtils
 
         return list;
     }
+
+    /**
+     * Get a ItemStack List of all Equipped Armor pieces.
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
     public static DefaultedList<ItemStack> getArmorItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(4, ItemStack.EMPTY);
@@ -276,6 +352,13 @@ public class EntityUtils
         return list;
     }
 
+    /**
+     * Get the 'Body Armor Item' for the Horse or Wolf Armor.
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
     public static ItemStack getBodyArmorFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains("body_armor_item", Constants.NBT.TAG_COMPOUND))
@@ -286,6 +369,13 @@ public class EntityUtils
         return ItemStack.EMPTY;
     }
 
+    /**
+     * Get the Tamable Entity's Owner and if they have a Saddle Equipped.
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
     public static Pair<UUID, ItemStack> getOwnerAndSaddle(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         UUID owner = Util.NIL_UUID;
@@ -303,6 +393,12 @@ public class EntityUtils
         return Pair.of(owner, saddle);
     }
 
+    /**
+     * Get the Common Age / ForcedAge data from NBT
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static Pair<Integer, Integer> getAgeFromNbt(@Nonnull NbtCompound nbt)
     {
         int breedingAge = 0;
@@ -314,12 +410,19 @@ public class EntityUtils
         }
         if (nbt.contains("ForcedAge"))
         {
-            breedingAge = nbt.getInt("ForcedAge");
+            forcedAge = nbt.getInt("ForcedAge");
         }
 
         return Pair.of(breedingAge, forcedAge);
     }
 
+    /**
+     * Get the Merchant Trade Offer's Object from NBT
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
     public static @Nullable TradeOfferList getTradeOffersFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains("Offers"))
@@ -335,6 +438,12 @@ public class EntityUtils
         return null;
     }
 
+    /**
+     * Get the Villager Data object from NBT
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static @Nullable VillagerData getVillagerDataFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains("VillagerData", Constants.NBT.TAG_COMPOUND))
@@ -350,9 +459,15 @@ public class EntityUtils
         return null;
     }
 
+    /**
+     * Get the Zombie Villager cure timer.
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static Pair<Integer, UUID> getZombieConversionTimerFromNbt(@Nonnull NbtCompound nbt)
     {
-        int timer = 0;
+        int timer = -1;
         UUID player = Util.NIL_UUID;
 
         if (nbt.contains("ConversionTime", Constants.NBT.TAG_ANY_NUMERIC))
@@ -367,6 +482,12 @@ public class EntityUtils
         return Pair.of(timer, player);
     }
 
+    /**
+     * Get Drowned conversion timer from a Zombie being in Water
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static Pair<Integer, Integer> getDrownedConversionTimerFromNbt(@Nonnull NbtCompound nbt)
     {
         int drowning = -1;
@@ -384,6 +505,12 @@ public class EntityUtils
         return Pair.of(drowning, inWater);
     }
 
+    /**
+     * Get Stray Conversion Timer from being in Powered Snow
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static int getStrayConversionTimeFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains("StrayConversionTime", Constants.NBT.TAG_ANY_NUMERIC))
@@ -394,6 +521,13 @@ public class EntityUtils
         return -1;
     }
 
+    /**
+     * Get EntityType Registry Reference
+     *
+     * @param id (id)
+     * @param registry (registry)
+     * @return ()
+     */
     public static RegistryEntry.Reference<EntityType<?>> getEntityTypeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
     {
         try
@@ -442,6 +576,12 @@ public class EntityUtils
      */
     public record FakeLeashData(int unresolvedLeashHolderId, @Nullable Entity leashHolder, @Nullable Either<UUID, BlockPos> unresolvedLeashData) {}
 
+    /**
+     * Get the Panda Gene's from NBT
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static Pair<PandaEntity.Gene, PandaEntity.Gene> getPandaGenesFromNbt(@Nonnull NbtCompound nbt)
     {
         PandaEntity.Gene mainGene = null;
