@@ -263,9 +263,9 @@ public class BlockUtils
 
     public static @Nullable BlockEntityType<?> getBlockEntityTypeFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains("id", Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
         {
-            return Registries.BLOCK_ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString("id"))).orElse(null);
+            return Registries.BLOCK_ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString(NbtKeys.ID))).orElse(null);
         }
 
         return null;
@@ -280,12 +280,12 @@ public class BlockUtils
         {
             if (nbtIn != null)
             {
-                nbtIn.putString("id", id.toString());
+                nbtIn.putString(NbtKeys.ID, id.toString());
                 return nbtIn;
             }
             else
             {
-                nbt.putString("id", id.toString());
+                nbt.putString(NbtKeys.ID, id.toString());
             }
         }
 
@@ -296,9 +296,9 @@ public class BlockUtils
     {
         Set<Integer> list = new HashSet<>();
 
-        if (nbt.contains("disabled_slots", Constants.NBT.TAG_INT_ARRAY))
+        if (nbt.contains(NbtKeys.DISABLED_SLOTS, Constants.NBT.TAG_INT_ARRAY))
         {
-            int[] is = nbt.getIntArray("disabled_slots");
+            int[] is = nbt.getIntArray(NbtKeys.DISABLED_SLOTS);
 
             for (int j : is)
             {
@@ -314,17 +314,17 @@ public class BlockUtils
         RegistryEntry<StatusEffect> primary = null;
         RegistryEntry<StatusEffect> secondary = null;
 
-        if (nbt.contains("primary_effect", Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.PRIMARY_EFFECT, Constants.NBT.TAG_STRING))
         {
-            Identifier id = Identifier.tryParse(nbt.getString("primary_effect"));
+            Identifier id = Identifier.tryParse(nbt.getString(NbtKeys.PRIMARY_EFFECT));
             if (id != null)
             {
                 primary = Registries.STATUS_EFFECT.getEntry(id).orElse(null);
             }
         }
-        if (nbt.contains("secondary_effect", Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.SECONDARY_EFFECT, Constants.NBT.TAG_STRING))
         {
-            Identifier id = Identifier.tryParse(nbt.getString("secondary_effect"));
+            Identifier id = Identifier.tryParse(nbt.getString(NbtKeys.SECONDARY_EFFECT));
             if (id != null)
             {
                 secondary = Registries.STATUS_EFFECT.getEntry(id).orElse(null);
@@ -339,13 +339,13 @@ public class BlockUtils
         List<BeehiveBlockEntity.BeeData> bees = new ArrayList<>();
         BlockPos flower = BlockPos.ORIGIN;
 
-        if (nbt.contains("flower_pos"))
+        if (nbt.contains(NbtKeys.FLOWER))
         {
-            flower = NBTUtils.readBlockPosFromIntArray(nbt, "flower_pos");
+            flower = NBTUtils.readBlockPosFromIntArray(nbt, NbtKeys.FLOWER);
         }
-        if (nbt.contains("bees", Constants.NBT.TAG_LIST))
+        if (nbt.contains(NbtKeys.BEES, Constants.NBT.TAG_LIST))
         {
-            BeehiveBlockEntity.BeeData.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.get("bees")).resultOrPartial().ifPresent(bees::addAll);
+            BeehiveBlockEntity.BeeData.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.get(NbtKeys.BEES)).resultOrPartial().ifPresent(bees::addAll);
         }
 
         return Pair.of(bees, flower);
@@ -356,13 +356,13 @@ public class BlockUtils
         AtomicReference<Vibrations.ListenerData> data = new AtomicReference<>(null);
         int lastFreq = -1;
 
-        if (nbt.contains("last_vibration_frequency", Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.VIBRATION, Constants.NBT.TAG_INT))
         {
-            lastFreq = nbt.getInt("last_vibration_frequency");
+            lastFreq = nbt.getInt(NbtKeys.VIBRATION);
         }
-        if (nbt.contains("listener", Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.LISTENER, Constants.NBT.TAG_COMPOUND))
         {
-            Vibrations.ListenerData.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound("listener")).resultOrPartial().ifPresent(data::set);
+            Vibrations.ListenerData.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(NbtKeys.LISTENER)).resultOrPartial().ifPresent(data::set);
         }
 
         return Pair.of(lastFreq, data.get());
@@ -373,13 +373,13 @@ public class BlockUtils
         long age = -1;
         BlockPos pos = BlockPos.ORIGIN;
 
-        if (nbt.contains("Age", Constants.NBT.TAG_LONG))
+        if (nbt.contains(NbtKeys.AGE, Constants.NBT.TAG_LONG))
         {
-            age = nbt.getLong("Age");
+            age = nbt.getLong(NbtKeys.AGE);
         }
-        if (nbt.contains("exit_portal", Constants.NBT.TAG_INT_ARRAY))
+        if (nbt.contains(NbtKeys.EXIT, Constants.NBT.TAG_INT_ARRAY))
         {
-            pos = NBTUtils.readBlockPosFromIntArray(nbt, "exit_portal");
+            pos = NBTUtils.readBlockPosFromIntArray(nbt, NbtKeys.EXIT);
         }
 
         return Pair.of(age, pos);
@@ -391,17 +391,17 @@ public class BlockUtils
         AtomicReference<SignText> back = new AtomicReference<>(null);
         boolean waxed = false;
 
-        if (nbt.contains("front_text"))
+        if (nbt.contains(NbtKeys.FRONT_TEXT))
         {
-            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound("front_text")).resultOrPartial().ifPresent(front::set);
+            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(NbtKeys.FRONT_TEXT)).resultOrPartial().ifPresent(front::set);
         }
-        if (nbt.contains("back_text"))
+        if (nbt.contains(NbtKeys.BACK_TEXT))
         {
-            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound("back_text")).resultOrPartial().ifPresent(back::set);
+            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(NbtKeys.BACK_TEXT)).resultOrPartial().ifPresent(back::set);
         }
-        if (nbt.contains("is_waxed"))
+        if (nbt.contains(NbtKeys.WAXED))
         {
-            waxed = nbt.getBoolean("is_waxed");
+            waxed = nbt.getBoolean(NbtKeys.WAXED);
         }
 
         return Pair.of(Pair.of(front.get(), back.get()), waxed);
@@ -412,13 +412,13 @@ public class BlockUtils
         ItemStack book = ItemStack.EMPTY;
         int current = -1;
 
-        if (nbt.contains("Book", Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
         {
-            book = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound("Book"));
+            book = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
         }
-        if (nbt.contains("Page", Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.PAGE, Constants.NBT.TAG_INT))
         {
-            current = nbt.getInt("Page");
+            current = nbt.getInt(NbtKeys.PAGE);
         }
 
         return Pair.of(book, current);
@@ -430,13 +430,13 @@ public class BlockUtils
         Identifier note = null;
         Text name = Text.empty();
 
-        if (nbt.contains("note_block_sound", Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.NOTE, Constants.NBT.TAG_STRING))
         {
-            note = Identifier.tryParse(nbt.getString("note_block_sound"));
+            note = Identifier.tryParse(nbt.getString(NbtKeys.NOTE));
         }
-        if (nbt.contains("custom_name", Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.SKULL_NAME, Constants.NBT.TAG_STRING))
         {
-            String str = nbt.getString("custom_name");
+            String str = nbt.getString(NbtKeys.SKULL_NAME);
 
             try
             {
@@ -444,9 +444,9 @@ public class BlockUtils
             }
             catch (Exception ignored) {}
         }
-        if (nbt.contains("profile"))
+        if (nbt.contains(NbtKeys.PROFILE))
         {
-            ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get("profile")).resultOrPartial().ifPresent(profile::set);
+            ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get(NbtKeys.PROFILE)).resultOrPartial().ifPresent(profile::set);
         }
 
         return Pair.of(profile.get(), Pair.of(note, name));
@@ -456,9 +456,9 @@ public class BlockUtils
     {
         Object2IntOpenHashMap<Identifier> list = new Object2IntOpenHashMap<>();
 
-        if (nbt.contains("RecipesUsed", Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.RECIPES, Constants.NBT.TAG_COMPOUND))
         {
-            NbtCompound compound = nbt.getCompound("RecipesUsed");
+            NbtCompound compound = nbt.getCompound(NbtKeys.RECIPES);
 
             for (String key : compound.getKeys())
             {

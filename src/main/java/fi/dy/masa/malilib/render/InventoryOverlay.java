@@ -40,8 +40,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-import org.spongepowered.asm.mixin.injection.Constant;
-
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
@@ -357,9 +355,9 @@ public class InventoryOverlay
                 blockType.equals(BlockEntityType.CHEST) ||
                 blockType.equals(BlockEntityType.TRAPPED_CHEST))
             {
-                if (nbt.contains("Items"))
+                if (nbt.contains(NbtKeys.ITEMS))
                 {
-                    NbtList list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+                    NbtList list = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
 
                     if (list.size() > 27)
                     {
@@ -722,10 +720,12 @@ public class InventoryOverlay
         drawContext.drawItem(stack, 0, 0);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
-        drawContext.drawItemInSlot(mc.textRenderer, stack, 0, 0);
+        drawContext.drawItemInSlot(mc.textRenderer, stack.copyWithCount(stack.getCount()), 0, 0);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
+        RenderUtils.forceDraw(drawContext);
+
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
             hoveredStack = stack;

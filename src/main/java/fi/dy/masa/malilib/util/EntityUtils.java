@@ -84,9 +84,9 @@ public class EntityUtils
      */
     public static @Nullable EntityType<?> getEntityTypeFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains("id", Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
         {
-            return Registries.ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString("id"))).orElse(null);
+            return Registries.ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString(NbtKeys.ID))).orElse(null);
         }
 
         return null;
@@ -108,12 +108,12 @@ public class EntityUtils
         {
             if (nbtIn != null)
             {
-                nbtIn.putString("id", id.toString());
+                nbtIn.putString(NbtKeys.ID, id.toString());
                 return nbtIn;
             }
             else
             {
-                nbt.putString("id", id.toString());
+                nbt.putString(NbtKeys.ID, id.toString());
             }
         }
 
@@ -131,7 +131,7 @@ public class EntityUtils
     {
         EntityType<?> type = getEntityTypeFromNbt(nbt);
 
-        if (type != null && nbt.contains("attributes", Constants.NBT.TAG_LIST))
+        if (type != null && nbt.contains(NbtKeys.ATTRIB, Constants.NBT.TAG_LIST))
         {
             return new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
         }
@@ -180,9 +180,9 @@ public class EntityUtils
         float health = 0;
         double maxHealth;
 
-        if (nbt.contains("Health", Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.HEALTH, Constants.NBT.TAG_ANY_NUMERIC))
         {
-            health = nbt.getFloat("Health");
+            health = nbt.getFloat(NbtKeys.HEALTH);
         }
         maxHealth = getAttributeValueFromNbt(nbt, EntityAttributes.MAX_HEALTH);
         if (maxHealth < 0)
@@ -215,9 +215,9 @@ public class EntityUtils
      */
     public static @Nullable UUID getUUIDFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.containsUuid("UUID"))
+        if (nbt.containsUuid(NbtKeys.UUID))
         {
-            return nbt.getUuid("UUID");
+            return nbt.getUuid(NbtKeys.UUID);
         }
 
         return null;
@@ -232,9 +232,9 @@ public class EntityUtils
      */
     public static @Nullable Text getCustomNameFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        if (nbt.contains("CustomName", Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.CUSTOM_NAME, Constants.NBT.TAG_STRING))
         {
-            String string = nbt.getString("CustomName");
+            String string = nbt.getString(NbtKeys.CUSTOM_NAME);
 
             try
             {
@@ -262,12 +262,12 @@ public class EntityUtils
         {
             if (nbtIn != null)
             {
-                nbtIn.putString("CustomName", Text.Serialization.toJsonString(name, registry));
+                nbtIn.putString(NbtKeys.CUSTOM_NAME, Text.Serialization.toJsonString(name, registry));
                 return nbtIn;
             }
             else
             {
-                nbt.putString("CustomName", Text.Serialization.toJsonString(name, registry));
+                nbt.putString(NbtKeys.CUSTOM_NAME, Text.Serialization.toJsonString(name, registry));
             }
         }
         catch (Exception ignored) {}
@@ -285,9 +285,9 @@ public class EntityUtils
     {
         Map<RegistryEntry<StatusEffect>, StatusEffectInstance> statusEffects = Maps.newHashMap();
 
-        if (nbt.contains("active_effects", Constants.NBT.TAG_LIST))
+        if (nbt.contains(NbtKeys.EFFECTS, Constants.NBT.TAG_LIST))
         {
-            NbtList list = nbt.getList("active_effects", Constants.NBT.TAG_COMPOUND);
+            NbtList list = nbt.getList(NbtKeys.EFFECTS, Constants.NBT.TAG_COMPOUND);
 
             for (int i = 0; i < list.size(); i++)
             {
@@ -315,9 +315,9 @@ public class EntityUtils
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(2, ItemStack.EMPTY);
 
-        if (nbt.contains("HandItems", Constants.NBT.TAG_LIST))
+        if (nbt.contains(NbtKeys.HAND_ITEMS, Constants.NBT.TAG_LIST))
         {
-            NbtList nbtList = nbt.getList("HandItems", Constants.NBT.TAG_COMPOUND);
+            NbtList nbtList = nbt.getList(NbtKeys.HAND_ITEMS, Constants.NBT.TAG_COMPOUND);
 
             for (int i = 0; i < list.size(); i++)
             {
@@ -339,9 +339,9 @@ public class EntityUtils
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(4, ItemStack.EMPTY);
 
-        if (nbt.contains("ArmorItems", Constants.NBT.TAG_LIST))
+        if (nbt.contains(NbtKeys.ARMOR_ITEMS, Constants.NBT.TAG_LIST))
         {
-            NbtList nbtList = nbt.getList("ArmorItems", Constants.NBT.TAG_COMPOUND);
+            NbtList nbtList = nbt.getList(NbtKeys.ARMOR_ITEMS, Constants.NBT.TAG_COMPOUND);
 
             for (int i = 0; i < list.size(); i++)
             {
@@ -361,9 +361,9 @@ public class EntityUtils
      */
     public static ItemStack getBodyArmorFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        if (nbt.contains("body_armor_item", Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.BODY_ARMOR, Constants.NBT.TAG_COMPOUND))
         {
-            return ItemStack.fromNbtOrEmpty(registry, nbt);
+            return ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BODY_ARMOR));
         }
 
         return ItemStack.EMPTY;
@@ -381,13 +381,13 @@ public class EntityUtils
         UUID owner = Util.NIL_UUID;
         ItemStack saddle = ItemStack.EMPTY;
 
-        if (nbt.containsUuid("Owner"))
+        if (nbt.containsUuid(NbtKeys.OWNER))
         {
-            owner = nbt.getUuid("Owner");
+            owner = nbt.getUuid(NbtKeys.OWNER);
         }
-        if (nbt.contains("SaddleItem", Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.SADDLE, Constants.NBT.TAG_COMPOUND))
         {
-            saddle = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound("SaddleItem"));
+            saddle = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.SADDLE));
         }
 
         return Pair.of(owner, saddle);
@@ -404,13 +404,13 @@ public class EntityUtils
         int breedingAge = 0;
         int forcedAge = 0;
 
-        if (nbt.contains("Age"))
+        if (nbt.contains(NbtKeys.AGE))
         {
-            breedingAge = nbt.getInt("Age");
+            breedingAge = nbt.getInt(NbtKeys.AGE);
         }
-        if (nbt.contains("ForcedAge"))
+        if (nbt.contains(NbtKeys.FORCED_AGE))
         {
-            forcedAge = nbt.getInt("ForcedAge");
+            forcedAge = nbt.getInt(NbtKeys.FORCED_AGE);
         }
 
         return Pair.of(breedingAge, forcedAge);
@@ -425,9 +425,9 @@ public class EntityUtils
      */
     public static @Nullable TradeOfferList getTradeOffersFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        if (nbt.contains("Offers"))
+        if (nbt.contains(NbtKeys.OFFERS))
         {
-            Optional<TradeOfferList> opt = TradeOfferList.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get("Offers")).resultOrPartial();
+            Optional<TradeOfferList> opt = TradeOfferList.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.OFFERS)).resultOrPartial();
 
             if (opt.isPresent())
             {
@@ -446,9 +446,9 @@ public class EntityUtils
      */
     public static @Nullable VillagerData getVillagerDataFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains("VillagerData", Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.VILLAGER, Constants.NBT.TAG_COMPOUND))
         {
-            Optional<VillagerData> opt = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("VillagerData"))).resultOrPartial();
+            Optional<VillagerData> opt = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get(NbtKeys.VILLAGER))).resultOrPartial();
 
             if (opt.isPresent())
             {
@@ -470,13 +470,13 @@ public class EntityUtils
         int timer = -1;
         UUID player = Util.NIL_UUID;
 
-        if (nbt.contains("ConversionTime", Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.ZOMBIE_CONVERSION, Constants.NBT.TAG_ANY_NUMERIC))
         {
-            timer = nbt.getInt("ConversionTime");
+            timer = nbt.getInt(NbtKeys.ZOMBIE_CONVERSION);
         }
-        if (nbt.containsUuid("ConversionPlayer"))
+        if (nbt.containsUuid(NbtKeys.CONVERSION_PLAYER))
         {
-            player = nbt.getUuid("ConversionPlayer");
+            player = nbt.getUuid(NbtKeys.CONVERSION_PLAYER);
         }
 
         return Pair.of(timer, player);
@@ -493,13 +493,13 @@ public class EntityUtils
         int drowning = -1;
         int inWater = -1;
 
-        if (nbt.contains("DrownedConversionTime", Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.DROWNED_CONVERSION, Constants.NBT.TAG_ANY_NUMERIC))
         {
-            drowning = nbt.getInt("DrownedConversionTime");
+            drowning = nbt.getInt(NbtKeys.DROWNED_CONVERSION);
         }
-        if (nbt.contains("InWaterTime", Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.IN_WATER, Constants.NBT.TAG_INT))
         {
-            inWater = nbt.getInt("InWaterTime");
+            inWater = nbt.getInt(NbtKeys.IN_WATER);
         }
 
         return Pair.of(drowning, inWater);
@@ -513,9 +513,9 @@ public class EntityUtils
      */
     public static int getStrayConversionTimeFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains("StrayConversionTime", Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.STRAY_CONVERSION, Constants.NBT.TAG_ANY_NUMERIC))
         {
-            return nbt.getInt("StrayConversionTime");
+            return nbt.getInt(NbtKeys.STRAY_CONVERSION);
         }
 
         return -1;
@@ -550,13 +550,13 @@ public class EntityUtils
     {
         FakeLeashData data = null;
 
-        if (nbt.contains("leash", Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.LEASH, Constants.NBT.TAG_COMPOUND))
         {
-            data = new FakeLeashData(-1, null, Either.left(nbt.getCompound("leash").getUuid("UUID")));
+            data = new FakeLeashData(-1, null, Either.left(nbt.getCompound(NbtKeys.LEASH).getUuid(NbtKeys.UUID)));
         }
-        else if (nbt.contains("leash", Constants.NBT.TAG_INT_ARRAY))
+        else if (nbt.contains(NbtKeys.LEASH, Constants.NBT.TAG_INT_ARRAY))
         {
-            Either<UUID, BlockPos> either = (Either) NbtHelper.toBlockPos(nbt, "leash").map(Either::right).orElse(null);
+            Either<UUID, BlockPos> either = (Either) NbtHelper.toBlockPos(nbt, NbtKeys.LEASH).map(Either::right).orElse(null);
 
             if (either != null)
             {
@@ -587,13 +587,13 @@ public class EntityUtils
         PandaEntity.Gene mainGene = null;
         PandaEntity.Gene hiddenGene = null;
 
-        if (nbt.contains("MainGene", Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.MAIN_GENE, Constants.NBT.TAG_STRING))
         {
-            mainGene = PandaEntity.Gene.byName(nbt.getString("MainGene"));
+            mainGene = PandaEntity.Gene.byName(nbt.getString(NbtKeys.MAIN_GENE));
         }
-        if (nbt.contains("HiddenGene", Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.HIDDEN_GENE, Constants.NBT.TAG_STRING))
         {
-            hiddenGene = PandaEntity.Gene.byName(nbt.getString("HiddenGene"));
+            hiddenGene = PandaEntity.Gene.byName(nbt.getString(NbtKeys.HIDDEN_GENE));
         }
 
         return Pair.of(mainGene, hiddenGene);

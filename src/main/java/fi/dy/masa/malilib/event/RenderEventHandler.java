@@ -82,7 +82,6 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
-    /*
     @ApiStatus.Internal
     public void onRenderGameOverlayLastDrawer(DrawContext drawContext, MinecraftClient mc, float partialTicks)
     {
@@ -102,7 +101,6 @@ public class RenderEventHandler implements IRenderDispatcher
 
         profiler.pop();
     }
-     */
 
     @ApiStatus.Internal
     public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)

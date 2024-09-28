@@ -75,7 +75,7 @@ public class NBTUtils
         posList.add(NbtDouble.of(pos.x));
         posList.add(NbtDouble.of(pos.y));
         posList.add(NbtDouble.of(pos.z));
-        tag.put("Pos", posList);
+        tag.put(NbtKeys.POS, posList);
 
         return tag;
     }
@@ -97,9 +97,9 @@ public class NBTUtils
     @Nullable
     public static Vec3d readEntityPositionFromTag(@Nullable NbtCompound tag)
     {
-        if (tag != null && tag.contains("Pos", Constants.NBT.TAG_LIST))
+        if (tag != null && tag.contains(NbtKeys.POS, Constants.NBT.TAG_LIST))
         {
-            NbtList tagList = tag.getList("Pos", Constants.NBT.TAG_DOUBLE);
+            NbtList tagList = tag.getList(NbtKeys.POS, Constants.NBT.TAG_DOUBLE);
 
             if (tagList.getHeldType() == Constants.NBT.TAG_DOUBLE && tagList.size() == 3)
             {

@@ -405,9 +405,9 @@ public class InventoryUtils
      */
     public static boolean hasNbtItems(NbtCompound tag)
     {
-        if (tag.contains("Items", Constants.NBT.TAG_COMPOUND))
+        if (tag.contains(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND))
         {
-            NbtList tagList = tag.getList("Items", Constants.NBT.TAG_COMPOUND);
+            NbtList tagList = tag.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
             return !tagList.isEmpty();
         }
 
@@ -448,9 +448,9 @@ public class InventoryUtils
         }
 
         // Most Common Tag
-        if (nbt.contains("Items", Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND))
         {
-            NbtList list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+            NbtList list = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
             if (slotCount < 0)
             {
                 slotCount = list.size();
@@ -462,9 +462,9 @@ public class InventoryUtils
             return items;
         }
         // A few Entities use this
-        else if (nbt.contains("Inventory", Constants.NBT.TAG_LIST))
+        else if (nbt.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST))
         {
-            NbtList list = nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND);
+            NbtList list = nbt.getList(NbtKeys.INVENTORY, Constants.NBT.TAG_COMPOUND);
             if (slotCount < 0)
             {
                 slotCount = list.size();
@@ -481,6 +481,33 @@ public class InventoryUtils
                     items.add(opt.get());
                 }
             }
+            
+            return items;
+        }
+        else if (nbt.contains(NbtKeys.ITEM))
+        {
+            // item (DecoratedPot, ItemEntity)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+            items.add(0, entry);
+
+            return items;
+        }
+        else if (nbt.contains(NbtKeys.BOOK))
+        {
+            // Book (Lectern)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+            items.add(0, entry);
+
+            return items;
+        }
+        else if (nbt.contains(NbtKeys.RECORD))
+        {
+            // RecordItem (Jukebox)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.RECORD));
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+            items.add(0, entry);
 
             return items;
         }
@@ -521,13 +548,13 @@ public class InventoryUtils
             slotCount = 256;
         }
 
-        if (nbt.contains("Items"))
+        if (nbt.contains(NbtKeys.ITEMS))
         {
             // Standard 'Items' tag for most Block Entities --
             // -- Furnace, Brewing Stand, Shulker Box, Crafter, Barrel, Chest, Dispenser, Hopper, Bookshelf, Campfire
             if (slotCount < 0)
             {
-                NbtList list = nbt.getList("Items", Constants.NBT.TAG_COMPOUND);
+                NbtList list = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
                 slotCount = list.size();
             }
 
@@ -546,42 +573,42 @@ public class InventoryUtils
 
             return inv;
         }
-        else if (nbt.contains("Inventory"))
+        else if (nbt.contains(NbtKeys.INVENTORY))
         {
             // Entities use this (Piglin, Villager, a few others)
             if (slotCount < 0)
             {
-                NbtList list = nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND);
+                NbtList list = nbt.getList(NbtKeys.INVENTORY, Constants.NBT.TAG_COMPOUND);
                 slotCount = list.size();
             }
 
             SimpleInventory inv = new SimpleInventory(slotCount);
-            inv.readNbtList(nbt.getList("Inventory", Constants.NBT.TAG_COMPOUND), registry);
+            inv.readNbtList(nbt.getList(NbtKeys.INVENTORY, Constants.NBT.TAG_COMPOUND), registry);
 
             return inv;
         }
-        else if (nbt.contains("item"))
+        else if (nbt.contains(NbtKeys.ITEM))
         {
             // item (DecoratedPot, ItemEntity)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound("item"));
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry);
 
             return inv;
         }
-        else if (nbt.contains("Book"))
+        else if (nbt.contains(NbtKeys.BOOK))
         {
             // Book (Lectern)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound("Book"));
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry);
 
             return inv;
         }
-        else if (nbt.contains("RecordItem"))
+        else if (nbt.contains(NbtKeys.RECORD))
         {
             // RecordItem (Jukebox)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound("RecordItem"));
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.RECORD));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry);
 
@@ -899,7 +926,7 @@ public class InventoryUtils
 
         for (int slot = 0; slot < items.size(); ++slot)
         {
-            inv.setStack(slot, items.get(slot));
+            inv.setStack(slot, items.get(slot).copy());
         }
 
         return inv;

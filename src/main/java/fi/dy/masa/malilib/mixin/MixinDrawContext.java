@@ -16,10 +16,9 @@ public abstract class MixinDrawContext
 {
     @Shadow public abstract void draw();
 
-    @Inject(method = "drawItemTooltip", at = @At(value = "RETURN"))
-    private void onRenderTooltip(TextRenderer textRenderer, ItemStack stack, int x, int y, CallbackInfo ci)
+    @Inject(method = "drawItemTooltip(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V", at = @At(value = "RETURN"))
+    private void malilib_onRenderTooltip(TextRenderer textRenderer, ItemStack stack, int x, int y, CallbackInfo ci)
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast((DrawContext) (Object) this, stack, x, y);
-        this.draw();
     }
 }
