@@ -16,6 +16,8 @@ import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.decoration.painting.PaintingEntity;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.PandaEntity;
@@ -34,6 +36,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 
@@ -597,5 +600,39 @@ public class EntityUtils
         }
 
         return Pair.of(mainGene, hiddenGene);
+    }
+
+    public static Pair<Direction, Direction> getItemFrameDirectionsFromNbt(@Nonnull NbtCompound nbt)
+    {
+        Direction facing = null;
+        Direction rotation = null;
+
+        if (nbt.contains(NbtKeys.FACING_2, Constants.NBT.TAG_BYTE))
+        {
+            facing = Direction.byId(nbt.getByte(NbtKeys.FACING_2));
+        }
+        if (nbt.contains(NbtKeys.ITEM_ROTATION, Constants.NBT.TAG_BYTE))
+        {
+            rotation = Direction.byId(nbt.getByte(NbtKeys.ITEM_ROTATION));
+        }
+
+        return Pair.of(facing, rotation);
+    }
+
+    public static Pair<Direction, PaintingVariant> getPaintingDataFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    {
+        Direction facing = null;
+        RegistryEntry<PaintingVariant> variant = null;
+
+        if (nbt.contains(NbtKeys.FACING, Constants.NBT.TAG_BYTE))
+        {
+            facing = Direction.fromHorizontal(nbt.getByte(NbtKeys.FACING));
+        }
+        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_COMPOUND))
+        {
+            variant = PaintingEntity.VARIANT_ENTRY_CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt).resultOrPartial().orElse(null);
+        }
+
+        return Pair.of(facing, variant != null ? variant.value() : null);
     }
 }

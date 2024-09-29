@@ -13,6 +13,7 @@ public class NbtKeys
     public static final String ITEMS               = "Items";
     public static final String INVENTORY           = "Inventory";
     public static final String ITEM                = "item";
+    public static final String ITEM_2              = "Item";
     public static final String SLOT                = "Slot";
     public static final String COUNT               = "count";
 
@@ -57,6 +58,10 @@ public class NbtKeys
     public static final String LEASH               = "leash";
     public static final String MAIN_GENE           = "MainGene";
     public static final String HIDDEN_GENE         = "HiddenGene";
+    public static final String ITEM_ROTATION       = "ItemRotation";
+    public static final String FACING              = "facing";
+    public static final String FACING_2            = "Facing";
+    public static final String VARIANT             = "variant";
 
     // Other/Outdated Tags (There are tons more not listed)
     public static final String OLD_TAGS            = "tags";

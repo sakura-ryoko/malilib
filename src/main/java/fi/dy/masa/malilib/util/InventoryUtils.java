@@ -493,6 +493,15 @@ public class InventoryUtils
 
             return items;
         }
+        else if (nbt.contains(NbtKeys.ITEM_2))
+        {
+            // Item (ItemFrame)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM_2));
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+            items.add(0, entry);
+
+            return items;
+        }
         else if (nbt.contains(NbtKeys.BOOK))
         {
             // Book (Lectern)
@@ -591,6 +600,15 @@ public class InventoryUtils
         {
             // item (DecoratedPot, ItemEntity)
             ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry);
+
+            return inv;
+        }
+        else if (nbt.contains(NbtKeys.ITEM_2))
+        {
+            // Item (Item Frame)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM_2));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry);
 

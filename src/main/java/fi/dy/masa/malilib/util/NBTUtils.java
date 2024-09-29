@@ -16,7 +16,7 @@ public class NBTUtils
         return writeBlockPosToTag(pos, new NbtCompound());
     }
 
-    public static NbtCompound writeBlockPosToTag(Vec3i pos, NbtCompound tag)
+    public static NbtCompound writeBlockPosToTag(Vec3i pos, @Nonnull NbtCompound tag)
     {
         tag.putInt("x", pos.getX());
         tag.putInt("y", pos.getY());
@@ -60,7 +60,7 @@ public class NBTUtils
         return nbt;
     }
 
-    public static NbtCompound writeVec3dToTag(Vec3d vec, NbtCompound tag)
+    public static NbtCompound writeVec3dToTag(Vec3d vec, @Nonnull NbtCompound tag)
     {
         tag.putDouble("dx", vec.x);
         tag.putDouble("dy", vec.y);
@@ -68,7 +68,7 @@ public class NBTUtils
         return tag;
     }
 
-    public static NbtCompound writeEntityPositionToTag(Vec3d pos, NbtCompound tag)
+    public static NbtCompound writeEntityPositionToTag(Vec3d pos, @Nonnull NbtCompound tag)
     {
         NbtList posList = new NbtList();
 
@@ -108,5 +108,27 @@ public class NBTUtils
         }
 
         return null;
+    }
+
+    @Nullable
+    public static BlockPos readAttachedPosFromTag(@Nonnull NbtCompound tag)
+    {
+        if (tag.contains("TileX", Constants.NBT.TAG_INT) &&
+            tag.contains("TileY", Constants.NBT.TAG_INT) &&
+            tag.contains("TileZ", Constants.NBT.TAG_INT))
+        {
+            return new BlockPos(tag.getInt("TileX"), tag.getInt("TileY"), tag.getInt("TileZ"));
+        }
+
+        return null;
+    }
+
+    public static NbtCompound writeAttachedPosToTag(BlockPos pos, @Nonnull NbtCompound tag)
+    {
+        tag.putInt("TileX", pos.getX());
+        tag.putInt("TileY", pos.getY());
+        tag.putInt("TileZ", pos.getZ());
+
+        return tag;
     }
 }

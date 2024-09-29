@@ -23,6 +23,9 @@ import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.vehicle.AbstractChestBoatEntity;
+import net.minecraft.entity.vehicle.ChestMinecartEntity;
+import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -273,6 +276,14 @@ public class InventoryOverlay
         {
             return InventoryRenderType.FIXED_54;
         }
+        else if (inv instanceof AbstractChestBoatEntity)
+        {
+            return InventoryRenderType.FIXED_27;
+        }
+        else if (inv instanceof ChestMinecartEntity)
+        {
+            return InventoryRenderType.FIXED_27;
+        }
         else if (inv instanceof AbstractFurnaceBlockEntity)
         {
             return InventoryRenderType.FURNACE;
@@ -291,6 +302,10 @@ public class InventoryOverlay
             return InventoryRenderType.DISPENSER;
         }
         else if (inv instanceof HopperBlockEntity)
+        {
+            return InventoryRenderType.HOPPER;
+        }
+        else if (inv instanceof HopperMinecartEntity)
         {
             return InventoryRenderType.HOPPER;
         }
@@ -396,7 +411,24 @@ public class InventoryOverlay
 
         if (entityType != null)
         {
-            if (entityType.equals(EntityType.HORSE) ||
+            if (entityType.equals(EntityType.CHEST_MINECART) ||
+                entityType.equals(EntityType.ACACIA_CHEST_BOAT) ||
+                entityType.equals(EntityType.BAMBOO_CHEST_RAFT) ||
+                entityType.equals(EntityType.BIRCH_CHEST_BOAT) ||
+                entityType.equals(EntityType.CHERRY_CHEST_BOAT) ||
+                entityType.equals(EntityType.DARK_OAK_CHEST_BOAT) ||
+                entityType.equals(EntityType.JUNGLE_CHEST_BOAT) ||
+                entityType.equals(EntityType.MANGROVE_CHEST_BOAT) ||
+                entityType.equals(EntityType.OAK_CHEST_BOAT) ||
+                entityType.equals(EntityType.SPRUCE_CHEST_BOAT))
+            {
+                return InventoryRenderType.FIXED_27;
+            }
+            else if (entityType.equals(EntityType.HOPPER_MINECART))
+            {
+                return InventoryRenderType.HOPPER;
+            }
+            else if (entityType.equals(EntityType.HORSE) ||
                 entityType.equals(EntityType.DONKEY) ||
                 entityType.equals(EntityType.MULE) ||
                 entityType.equals(EntityType.CAMEL) ||
