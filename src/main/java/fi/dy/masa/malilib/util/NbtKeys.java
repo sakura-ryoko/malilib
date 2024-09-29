@@ -62,6 +62,9 @@ public class NbtKeys
     public static final String FACING              = "facing";
     public static final String FACING_2            = "Facing";
     public static final String VARIANT             = "variant";
+    public static final String VARIANT_2           = "Variant";
+    public static final String COLLAR              = "CollarColor";
+    public static final String BUCKET_VARIANT      = "BucketVariantTag";
 
     // Other/Outdated Tags (There are tons more not listed)
     public static final String OLD_TAGS            = "tags";

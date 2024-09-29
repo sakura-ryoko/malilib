@@ -20,7 +20,7 @@ import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.passive.PandaEntity;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -30,8 +30,11 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -634,5 +637,113 @@ public class EntityUtils
         }
 
         return Pair.of(facing, variant != null ? variant.value() : null);
+    }
+
+    public static @Nullable AxolotlEntity.Variant getAxolotlVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
+        {
+            return AxolotlEntity.Variant.byId(nbt.getInt(NbtKeys.VARIANT_2));
+        }
+
+        return null;
+    }
+
+    public static Pair<CatVariant, DyeColor> getCatVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        CatVariant variant = null;
+        DyeColor collar = null;
+
+        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        {
+            RegistryEntry<CatVariant> entry = Registries.CAT_VARIANT.getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT))).orElse(null);
+
+            if (entry != null && entry.hasKeyAndValue())
+            {
+                variant = entry.value();
+            }
+        }
+        if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
+        {
+            collar = DyeColor.byId(nbt.getInt(NbtKeys.COLLAR));
+        }
+
+        return Pair.of(variant, collar);
+    }
+
+    public static @Nullable FrogVariant getFrogVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        {
+            RegistryEntry<FrogVariant> entry = Registries.FROG_VARIANT.getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT))).orElse(null);
+
+            if (entry != null && entry.hasKeyAndValue())
+            {
+                return entry.value();
+            }
+        }
+
+        return null;
+    }
+
+    public static @Nullable HorseColor getHorseVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
+        {
+            return HorseColor.byId(nbt.getInt(NbtKeys.VARIANT_2) & 255);
+        }
+
+        return null;
+    }
+
+    public static @Nullable ParrotEntity.Variant getParrotVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
+        {
+            return ParrotEntity.Variant.byIndex(nbt.getInt(NbtKeys.VARIANT_2));
+        }
+
+        return null;
+    }
+
+    public @Nullable TropicalFishEntity.Variety getFishVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
+        {
+            return TropicalFishEntity.Variety.fromId(nbt.getInt(NbtKeys.VARIANT_2) & '\uffff');
+        }
+        else if (nbt.contains(NbtKeys.BUCKET_VARIANT, Constants.NBT.TAG_INT))
+        {
+            return TropicalFishEntity.Variety.fromId(nbt.getInt(NbtKeys.BUCKET_VARIANT) & '\uffff');
+        }
+
+        return null;
+    }
+
+    public static Pair<WolfVariant, DyeColor> getWolfVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    {
+        WolfVariant variant = null;
+        DyeColor collar = null;
+
+        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        {
+            RegistryKey<WolfVariant> key = RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+
+            if (key != null)
+            {
+                RegistryEntry.Reference<WolfVariant> opt = registry.getOrThrow(RegistryKeys.WOLF_VARIANT).getOptional(key).orElse(null);
+
+                if (opt != null && opt.hasKeyAndValue())
+                {
+                    variant = opt.value();
+                }
+            }
+        }
+        if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
+        {
+            collar = DyeColor.byId(nbt.getInt(NbtKeys.COLLAR));
+        }
+
+        return Pair.of(variant, collar);
     }
 }
