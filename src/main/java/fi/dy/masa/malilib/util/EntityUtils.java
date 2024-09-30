@@ -649,18 +649,18 @@ public class EntityUtils
         return null;
     }
 
-    public static Pair<CatVariant, DyeColor> getCatVariantFromNbt(@Nonnull NbtCompound nbt)
+    public static Pair<RegistryKey<CatVariant>, DyeColor> getCatVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        CatVariant variant = null;
+        RegistryKey<CatVariant> variantKey = null;
         DyeColor collar = null;
 
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
-            RegistryEntry<CatVariant> entry = Registries.CAT_VARIANT.getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT))).orElse(null);
+            variantKey = RegistryKey.of(RegistryKeys.CAT_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
 
-            if (entry != null && entry.hasKeyAndValue())
+            if (variantKey == null)
             {
-                variant = entry.value();
+                variantKey = CatVariant.ALL_BLACK;
             }
         }
         if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
@@ -668,7 +668,7 @@ public class EntityUtils
             collar = DyeColor.byId(nbt.getInt(NbtKeys.COLLAR));
         }
 
-        return Pair.of(variant, collar);
+        return Pair.of(variantKey, collar);
     }
 
     public static @Nullable FrogVariant getFrogVariantFromNbt(@Nonnull NbtCompound nbt)
@@ -734,17 +734,10 @@ public class EntityUtils
         {
             variantKey = RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
 
-            /*
-            if (key != null)
+            if (variantKey == null)
             {
-                RegistryEntry.Reference<WolfVariant> opt = registry.getOrThrow(RegistryKeys.WOLF_VARIANT).getOptional(key).orElse(null);
-
-                if (opt != null && opt.hasKeyAndValue())
-                {
-                    variant = opt.value();
-                }
+                variantKey = WolfVariants.PALE;
             }
-             */
         }
         if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
         {
