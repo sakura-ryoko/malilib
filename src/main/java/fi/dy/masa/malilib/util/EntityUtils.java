@@ -686,14 +686,19 @@ public class EntityUtils
         return null;
     }
 
-    public static @Nullable HorseColor getHorseVariantFromNbt(@Nonnull NbtCompound nbt)
+    public static Pair<HorseColor, HorseMarking> getHorseVariantFromNbt(@Nonnull NbtCompound nbt)
     {
+        HorseColor color = null;
+        HorseMarking marking = null;
+
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
-            return HorseColor.byId(nbt.getInt(NbtKeys.VARIANT_2) & 255);
+            int variant = nbt.getInt(NbtKeys.VARIANT_2);
+            color = HorseColor.byId(variant & 255);
+            marking = HorseMarking.byIndex((variant & '\uff00') >> 8);
         }
 
-        return null;
+        return Pair.of(color, marking);
     }
 
     public static @Nullable ParrotEntity.Variant getParrotVariantFromNbt(@Nonnull NbtCompound nbt)
