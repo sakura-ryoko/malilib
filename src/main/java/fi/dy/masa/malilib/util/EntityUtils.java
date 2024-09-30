@@ -711,7 +711,7 @@ public class EntityUtils
         return null;
     }
 
-    public @Nullable TropicalFishEntity.Variety getFishVariantFromNbt(@Nonnull NbtCompound nbt)
+    public static @Nullable TropicalFishEntity.Variety getFishVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
