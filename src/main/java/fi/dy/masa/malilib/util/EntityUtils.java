@@ -746,4 +746,14 @@ public class EntityUtils
 
         return Pair.of(variant, collar);
     }
+
+    public static @Nullable DyeColor getSheepColorFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.COLOR, Constants.NBT.TAG_BYTE))
+        {
+            return DyeColor.byId(nbt.getByte(NbtKeys.COLOR));
+        }
+
+        return null;
+    }
 }

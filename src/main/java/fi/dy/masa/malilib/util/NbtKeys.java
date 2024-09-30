@@ -64,6 +64,7 @@ public class NbtKeys
     public static final String VARIANT             = "variant";
     public static final String VARIANT_2           = "Variant";
     public static final String COLLAR              = "CollarColor";
+    public static final String COLOR               = "Color";
     public static final String BUCKET_VARIANT      = "BucketVariantTag";
 
     // Other/Outdated Tags (There are tons more not listed)
