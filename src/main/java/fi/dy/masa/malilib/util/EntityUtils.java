@@ -671,16 +671,18 @@ public class EntityUtils
         return Pair.of(variantKey, collar);
     }
 
-    public static @Nullable FrogVariant getFrogVariantFromNbt(@Nonnull NbtCompound nbt)
+    public static @Nullable RegistryKey<FrogVariant> getFrogVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
-            RegistryEntry<FrogVariant> entry = Registries.FROG_VARIANT.getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT))).orElse(null);
+            RegistryKey<FrogVariant> variantKey = RegistryKey.of(RegistryKeys.FROG_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
 
-            if (entry != null && entry.hasKeyAndValue())
+            if (variantKey == null)
             {
-                return entry.value();
+                variantKey = FrogVariant.TEMPERATE;
             }
+
+            return variantKey;
         }
 
         return null;
@@ -725,7 +727,7 @@ public class EntityUtils
         return null;
     }
 
-    public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         RegistryKey<WolfVariant> variantKey = null;
         DyeColor collar = null;
