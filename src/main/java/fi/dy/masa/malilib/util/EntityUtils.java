@@ -725,15 +725,16 @@ public class EntityUtils
         return null;
     }
 
-    public static Pair<WolfVariant, DyeColor> getWolfVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        WolfVariant variant = null;
+        RegistryKey<WolfVariant> variantKey = null;
         DyeColor collar = null;
 
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
-            RegistryKey<WolfVariant> key = RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+            variantKey = RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
 
+            /*
             if (key != null)
             {
                 RegistryEntry.Reference<WolfVariant> opt = registry.getOrThrow(RegistryKeys.WOLF_VARIANT).getOptional(key).orElse(null);
@@ -743,13 +744,14 @@ public class EntityUtils
                     variant = opt.value();
                 }
             }
+             */
         }
         if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
         {
             collar = DyeColor.byId(nbt.getInt(NbtKeys.COLLAR));
         }
 
-        return Pair.of(variant, collar);
+        return Pair.of(variantKey, collar);
     }
 
     public static @Nullable DyeColor getSheepColorFromNbt(@Nonnull NbtCompound nbt)
