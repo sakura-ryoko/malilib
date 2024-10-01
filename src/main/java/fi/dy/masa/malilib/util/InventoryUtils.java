@@ -636,6 +636,58 @@ public class InventoryUtils
         return null;
     }
 
+    public static Inventory getNbtInventoryHorseFix(@Nonnull NbtCompound nbt, int slotCount, @Nonnull RegistryWrapper.WrapperLookup registry)
+    {
+        ItemStack saddle = ItemStack.EMPTY;
+
+        if (slotCount > 256)
+        {
+            slotCount = 256;
+        }
+
+        // Get Saddle Item for slot 0
+        if (nbt.contains(NbtKeys.SADDLE))
+        {
+            saddle = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.SADDLE));
+        }
+        // Shift inv ahead by 1 slot for horses (1.21 only)
+        if (nbt.contains(NbtKeys.ITEMS))
+        {
+            // Standard 'Items' tag for most Block Entities --
+            // -- Furnace, Brewing Stand, Shulker Box, Crafter, Barrel, Chest, Dispenser, Hopper, Bookshelf, Campfire
+            if (slotCount < 0)
+            {
+                NbtList list = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
+                slotCount = list.size();
+            }
+
+            SimpleInventory inv = new SimpleInventory(slotCount + 1);
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+            Inventories.readNbt(nbt, items, registry);
+
+            if (items.isEmpty())
+            {
+                return null;
+            }
+            inv.setStack(0, saddle);
+            for (int i = 0; i < slotCount; i++)
+            {
+                inv.setStack(i + 1, items.get(i));
+            }
+
+            return inv;
+        }
+        // Saddled only fix
+        else if (!saddle.isEmpty())
+        {
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, saddle);
+            return inv;
+        }
+
+        return null;
+    }
+
     /**
      * Returns the list of items currently stored in the given Shulker Box
      * (or other storage item with the same NBT data structure).
