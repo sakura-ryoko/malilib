@@ -6,8 +6,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
+import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BeehiveBlockEntity;
@@ -22,8 +22,11 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.*;
@@ -452,9 +455,9 @@ public class BlockUtils
         return Pair.of(profile.get(), Pair.of(note, name));
     }
 
-    public static Object2IntOpenHashMap<Identifier> getRecipesUsedFromNbt(@Nonnull NbtCompound nbt)
+    public static Reference2IntOpenHashMap<RegistryKey<Recipe<?>>> getRecipesUsedFromNbt(@Nonnull NbtCompound nbt)
     {
-        Object2IntOpenHashMap<Identifier> list = new Object2IntOpenHashMap<>();
+        Reference2IntOpenHashMap<RegistryKey<Recipe<?>>> list = new Reference2IntOpenHashMap<>();
 
         if (nbt.contains(NbtKeys.RECIPES, Constants.NBT.TAG_COMPOUND))
         {
@@ -462,7 +465,7 @@ public class BlockUtils
 
             for (String key : compound.getKeys())
             {
-                list.put(Identifier.of(key), compound.getInt(key));
+                list.put(RegistryKey.of(RegistryKeys.RECIPE, Identifier.of(key)), compound.getInt(key));
             }
         }
 
