@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
@@ -21,6 +22,7 @@ import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.*;
+import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -28,11 +30,13 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerRecipeBook;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -757,5 +761,53 @@ public class EntityUtils
         }
 
         return null;
+    }
+
+    public static Triple<Integer, Integer, Float> getPlayerExpFromNbt(@Nonnull NbtCompound nbt)
+    {
+        int level = -1;
+        int total = -1;
+        float progress = 0.0f;
+
+        if (nbt.contains(NbtKeys.EXP_LEVEL, Constants.NBT.TAG_INT))
+        {
+            level = nbt.getInt(NbtKeys.EXP_LEVEL);
+        }
+        if (nbt.contains(NbtKeys.EXP_TOTAL, Constants.NBT.TAG_INT))
+        {
+            total = nbt.getInt(NbtKeys.EXP_TOTAL);
+        }
+        if (nbt.contains(NbtKeys.EXP_PROGRESS, Constants.NBT.TAG_FLOAT))
+        {
+            progress = nbt.getFloat(NbtKeys.EXP_PROGRESS);
+        }
+
+        return Triple.of(level, total, progress);
+    }
+
+    public static @Nullable HungerManager getPlayerHungerFromNbt(@Nonnull NbtCompound nbt)
+    {
+        HungerManager hunger = null;
+
+        if (nbt.contains(NbtKeys.FOOD_LEVEL, Constants.NBT.TAG_ANY_NUMERIC))
+        {
+            hunger = new HungerManager();
+            hunger.readNbt(nbt);
+        }
+
+        return hunger;
+    }
+
+    public static @Nullable ServerRecipeBook getPlayerRecipeBookFromNbt(@Nonnull NbtCompound nbt, @Nonnull ServerRecipeManager manager)
+    {
+        ServerRecipeBook book = null;
+
+        if (nbt.contains(NbtKeys.RECIPE_BOOK, Constants.NBT.TAG_COMPOUND))
+        {
+            book = new ServerRecipeBook(manager::method_64679);
+            book.readNbt(nbt.getCompound(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
+        }
+
+        return book;
     }
 }

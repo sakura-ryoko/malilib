@@ -35,7 +35,7 @@ public class NbtKeys
     public static final String SKULL_NAME          = "custom_name";
     public static final String NOTE                = "note_block_sound";
     public static final String PROFILE             = "profile";
-    public static final String RECIPES             = "RecipesUsed";
+    public static final String RECIPES_USED        = "RecipesUsed";
 
     // Entity
     public static final String ATTRIB              = "attributes";
@@ -66,6 +66,16 @@ public class NbtKeys
     public static final String COLLAR              = "CollarColor";
     public static final String COLOR               = "Color";
     public static final String BUCKET_VARIANT      = "BucketVariantTag";
+    public static final String EXP_LEVEL           = "XpLevel";
+    public static final String EXP_TOTAL           = "XpTotal";
+    public static final String EXP_PROGRESS        = "XpP";
+    public static final String FOOD_LEVEL          = "foodLevel";
+    public static final String FOOD_TIMER          = "foodTickTimer";
+    public static final String FOOD_SATURATION     = "foodSaturationLevel";
+    public static final String FOOD_EXHAUSTION     = "foodExhaustionLevel";
+    public static final String RECIPE_BOOK         = "recipeBook";
+    public static final String RECIPES             = "recipes";
+    public static final String DISPLAYED           = "toBeDisplayed";
 
     // Other/Outdated Tags (There are tons more not listed)
     public static final String OLD_TAGS            = "tags";

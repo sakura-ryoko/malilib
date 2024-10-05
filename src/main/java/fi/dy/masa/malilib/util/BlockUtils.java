@@ -459,9 +459,9 @@ public class BlockUtils
     {
         Reference2IntOpenHashMap<RegistryKey<Recipe<?>>> list = new Reference2IntOpenHashMap<>();
 
-        if (nbt.contains(NbtKeys.RECIPES, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.RECIPES_USED, Constants.NBT.TAG_COMPOUND))
         {
-            NbtCompound compound = nbt.getCompound(NbtKeys.RECIPES);
+            NbtCompound compound = nbt.getCompound(NbtKeys.RECIPES_USED);
 
             for (String key : compound.getKeys())
             {
