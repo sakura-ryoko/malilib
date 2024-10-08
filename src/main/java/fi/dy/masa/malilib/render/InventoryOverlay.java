@@ -15,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -33,6 +34,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -46,6 +48,7 @@ import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
+import fi.dy.masa.malilib.mixin.IMixinDrawContext;
 import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
 import fi.dy.masa.malilib.util.*;
 
@@ -180,7 +183,7 @@ public class InventoryOverlay
             }
         }
 
-        RenderSystem.enableDepthTest();
+        //RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
 
         try
@@ -626,7 +629,7 @@ public class InventoryOverlay
                 {
                     ItemStack stack = inv.getStack(slot);
 
-                    System.out.printf("inv stacks - slot[%d] item [%s]\n", slot, stack.toString());
+                    //System.out.printf("inv stacks - slot[%d] item [%s]\n", slot, stack.toString());
 
                     if (disabledSlots.contains(slot))
                     {
@@ -758,10 +761,10 @@ public class InventoryOverlay
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         drawContext.drawStackOverlay(mc.textRenderer, stack.copyWithCount(stack.getCount()), 0, 0);
+        RenderUtils.forceDraw(drawContext);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
-        RenderUtils.forceDraw(drawContext);
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
@@ -782,10 +785,10 @@ public class InventoryOverlay
         RenderUtils.color(1f, 1f, 1f, 1f);
 
         drawContext.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE_LOCKED_SLOT, 0, 0, 18, 18, color);
+        RenderUtils.forceDraw(drawContext);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
-        RenderUtils.forceDraw(drawContext);
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {

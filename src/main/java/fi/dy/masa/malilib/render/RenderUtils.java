@@ -1294,13 +1294,12 @@ public class RenderUtils
 
             disableDiffuseLighting();
 
-            //Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
-            //matrix4fStack.pushMatrix();
-            //matrix4fStack.translate(0, 0, 500);
-            drawContext.getMatrices().push();
-            drawContext.getMatrices().translate(0, 0, 500);
+            Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+            matrix4fStack.pushMatrix();
+            matrix4fStack.translate(0, 0, 500);
+            //drawContext.getMatrices().push();
+            //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
-            //RenderSystem.backupProjectionMatrix();
 
             InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), mc());
 
@@ -1309,8 +1308,9 @@ public class RenderUtils
             Inventory inv = InventoryUtils.getAsInventory(items);
             InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, (inv.size()), mc(), drawContext);
 
-            //matrix4fStack.popMatrix();
-            drawContext.getMatrices().pop();
+            matrix4fStack.popMatrix();
+            //drawContext.getMatrices().pop();
+            forceDraw(drawContext);
             //RenderSystem.applyModelViewMatrix();
         }
     }
