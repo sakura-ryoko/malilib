@@ -25,7 +25,7 @@ public class MaLiLibInitHandler implements IInitializationHandler
         RenderEventHandler.getInstance().registerGameOverlayRenderer(renderer);
         RenderEventHandler.getInstance().registerTooltipLastRenderer(renderer);
         //RenderEventHandler.getInstance().registerWorldPreWeatherRenderer(renderer);
-        //RenderEventHandler.getInstance().registerWorldLastRenderer(renderer);
+        RenderEventHandler.getInstance().registerWorldLastRenderer(renderer);
     }
 
     private static class CallbackOpenConfigGui implements IHotkeyCallback

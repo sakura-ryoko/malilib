@@ -3,6 +3,8 @@ package fi.dy.masa.malilib.test;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
+
+import fi.dy.masa.malilib.MaLiLib;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -48,7 +50,7 @@ public class TestRenderHandler implements IRenderer
     private boolean wasHeld = false;
 
     @Override
-    public void onRenderGameOverlayPostAdvanced(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc)
+    public void onRenderGameOverlayLastDrawer(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isAltDown())
         {
@@ -278,6 +280,7 @@ public class TestRenderHandler implements IRenderer
                 }
             }
 
+            MaLiLib.printDebug("renderInventory(): type [{}], size [{}]", type.name(), inv.size());
             RenderUtils.setShulkerboxBackgroundTintColor(shulkerBoxBlock, true);
 
             if (isHorse)
@@ -296,6 +299,10 @@ public class TestRenderHandler implements IRenderer
                 InventoryOverlay.renderInventoryBackground(type, xInv, yInv, props.slotsPerRow, totalSlots, mc);
                 InventoryOverlay.renderInventoryStacks(type, inv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, props.slotsPerRow, firstSlot, totalSlots, lockedSlots, mc, drawContext);
             }
+        }
+        else
+        {
+            MaLiLib.printDebug("renderInventory(): null / empty!");
         }
 
         if (isWolf)

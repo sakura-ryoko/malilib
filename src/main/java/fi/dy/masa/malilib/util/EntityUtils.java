@@ -804,7 +804,7 @@ public class EntityUtils
 
         if (nbt.contains(NbtKeys.RECIPE_BOOK, Constants.NBT.TAG_COMPOUND))
         {
-            book = new ServerRecipeBook(manager::method_64679);
+            book = new ServerRecipeBook(manager::forEachRecipeDisplay);
             book.readNbt(nbt.getCompound(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
         }
 

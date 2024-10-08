@@ -32,8 +32,8 @@
 	],
 
 	"depends": {
-		"minecraft": ">1.21.1",
-		"fabric-networking-api-v1": ">=4.2.3",
+		"minecraft": "1.21.2-beta.1",
+		"fabric-networking-api-v1": ">=4.3.0",
 		"fabric-resource-loader-v0": "*"
 	}
 }

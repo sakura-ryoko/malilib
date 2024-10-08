@@ -18,12 +18,26 @@ public abstract class MixinHandledScreen
 {
     @Shadow @Nullable protected Slot focusedSlot;
 
-    @Inject(method = "drawMouseoverTooltip", at = @At(value = "TAIL"))
+    /*
+    @Inject(method = "render", at = @At("TAIL"))
+    private void malilib_onHandledScreenRenderLast(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci)
+    {
+        if (this.focusedSlot != null && this.focusedSlot.hasStack())
+        {
+            ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(context, this.focusedSlot.getStack(), mouseX, mouseY);
+        }
+    }
+     */
+
+    @Inject(method = "drawMouseoverTooltip",
+            at = @At(value = "RETURN"))
+            //target = "Lnet/minecraft/client/gui/DrawContext;drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;Ljava/util/Optional;IILnet/minecraft/util/Identifier;)V"))
     private void malilib_onRenderMouseoverTooltip(DrawContext drawContext, int x, int y, CallbackInfo ci)
     {
         if (this.focusedSlot != null && this.focusedSlot.hasStack())
         {
             ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(drawContext, this.focusedSlot.getStack(), x, y);
+            drawContext.draw();
         }
     }
 }

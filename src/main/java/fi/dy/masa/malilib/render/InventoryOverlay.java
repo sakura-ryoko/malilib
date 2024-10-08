@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import fi.dy.masa.malilib.MaLiLib;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
@@ -625,6 +626,8 @@ public class InventoryOverlay
                 {
                     ItemStack stack = inv.getStack(slot);
 
+                    System.out.printf("inv stacks - slot[%d] item [%s]\n", slot, stack.toString());
+
                     if (disabledSlots.contains(slot))
                     {
                         // Requires -1 offset, because locked texture is 18 x 18.
@@ -749,10 +752,12 @@ public class InventoryOverlay
         RenderUtils.enableDiffuseLightingGui3D();
         RenderUtils.color(1f, 1f, 1f, 1f);
 
-        drawContext.drawItem(stack, 0, 0);
+        System.out.printf("renderStackAt() item [%s]\n", stack.toString());
+
+        drawContext.drawItem(stack.copy(), 0, 0);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
-        drawContext.drawItemInSlot(mc.textRenderer, stack.copyWithCount(stack.getCount()), 0, 0);
+        drawContext.drawStackOverlay(mc.textRenderer, stack.copyWithCount(stack.getCount()), 0, 0);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
