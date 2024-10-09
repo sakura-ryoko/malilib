@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.Identifier;
 
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.gui.Message.MessageType;
@@ -21,6 +22,8 @@ public class MessageRenderer
     private boolean centeredV = true;
     private boolean expandUp;
     private float zLevel;
+
+    protected static final Identifier BG_TEXTURE = Identifier.ofVanilla("textures/gui/inworld_menu_list_background.png");
 
     public MessageRenderer(int bgColor, int borderColor)
     {
@@ -135,6 +138,7 @@ public class MessageRenderer
             if (this.useBackground)
             {
                 int bw = this.useBorder ? 1 : 0;
+                RenderUtils.drawTexturedRect(BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw, drawContext);
                 RenderUtils.drawRect(x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor, this.zLevel);
             }
 

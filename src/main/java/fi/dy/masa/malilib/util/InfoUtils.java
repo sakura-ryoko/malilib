@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.util;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -179,9 +181,7 @@ public class InfoUtils
         printActionbarMessage(message);
     }
 
-    /**
-     * NOT PUBLIC API - DO NOT CALL
-     */
+    @ApiStatus.Internal
     public static void renderInGameMessages(net.minecraft.client.gui.DrawContext drawContext)
     {
         int x = GuiUtils.getScaledWindowWidth() / 2;
