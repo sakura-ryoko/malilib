@@ -9,6 +9,7 @@ import fi.dy.masa.malilib.mixin.IMixinDrawContext;
 /**
  * No longer required past 1.21
  */
+@Deprecated
 public class MalilibDrawContext extends DrawContext
 {
     public MalilibDrawContext(MinecraftClient client, Immediate vertexConsumers)

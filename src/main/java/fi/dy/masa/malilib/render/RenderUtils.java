@@ -79,26 +79,49 @@ public class RenderUtils
         RenderSystem.setShaderTexture(0, texture);
     }
 
+    /**
+     * Bind a Texture using DrawContext.
+     *
+     * @param texture
+     * @param drawContext
+     * @return
+     */
     public static VertexConsumer bindTexture(Identifier texture, DrawContext drawContext)
     {
         return getVertexConsumer(getTextureLayer(RenderLayer::getGuiTexturedOverlay, texture), drawContext);
     }
 
+    /**
+     * Get RenderLayer based on the function, and apply the texture.
+     *
+     * @param function
+     * @param texture
+     * @return
+     */
     public static RenderLayer getTextureLayer(Function<Identifier, RenderLayer> function, Identifier texture)
     {
         return (RenderLayer) function.apply(texture);
     }
 
-    public static VertexConsumer getVertexConsumer(RenderLayer textureLyaer, DrawContext drawContext)
+    /**
+     * Get the VertexConsumer for the texture Layer from DrawContext.
+     *
+     * @param textureLyaer
+     * @param drawContext
+     * @return
+     */
+    public static VertexConsumer getVertexConsumer(RenderLayer textureLayer, DrawContext drawContext)
     {
-        //return drawContext.getVertexConsumers().getBuffer(textureLyaer);
-        return ((IMixinDrawContext) drawContext).malilib_getVertexConsumers().getBuffer(textureLyaer);
+        return ((IMixinDrawContext) drawContext).malilib_getVertexConsumers().getBuffer(textureLayer);
     }
 
+    /**
+     * Executes the draw() operation on the DrawContext.
+     *
+     * @param drawContext
+     */
     public static void forceDraw(DrawContext drawContext)
     {
-        //drawContext.getVertexConsumers().draw();
-        //((IMixinDrawContext) drawContext).malilib_getVertexConsumers().draw();
         drawContext.draw();
     }
 
@@ -211,6 +234,11 @@ public class RenderUtils
         RenderSystem.disableBlend();
     }
 
+    /**
+     * Draws the Vanilla "Screen Blur" effect.
+     *
+     * @param mc
+     */
     public static void drawScreenBlur(MinecraftClient mc)
     {
         mc.gameRenderer.renderBlur();
@@ -242,16 +270,55 @@ public class RenderUtils
         catch (Exception ignored) { }
     }
 
+    /**
+     * New DrawContext-based Textured Rect method.  Use this when the original method fails.
+     *
+     * @param texture
+     * @param x
+     * @param y
+     * @param u
+     * @param v
+     * @param width
+     * @param height
+     * @param drawContext
+     */
     public static void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, DrawContext drawContext)
     {
         drawTexturedRect(texture, x, y, u, v, width, height, 0F, -1, drawContext);
     }
 
+    /**
+     * New DrawContext-based Textured Rect method.  Use this when the original method fails.
+     *
+     * @param texture
+     * @param x
+     * @param y
+     * @param u
+     * @param v
+     * @param width
+     * @param height
+     * @param zLevel
+     * @param drawContext
+     */
     public static void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, DrawContext drawContext)
     {
         drawTexturedRect(texture, x, y, u, v, width, height, zLevel, -1, drawContext);
     }
 
+    /**
+     * New DrawContext-based Textured Rect method.  Use this when the original method fails.
+     *
+     * @param texture
+     * @param x
+     * @param y
+     * @param u
+     * @param v
+     * @param width
+     * @param height
+     * @param zLevel
+     * @param argb
+     * @param drawContext
+     */
     public static void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, int argb, DrawContext drawContext)
     {
         float pixelWidth = 0.00390625F;
@@ -265,6 +332,8 @@ public class RenderUtils
         vertexConsumer.vertex(matrix4f,x + width, y + height   , zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
         vertexConsumer.vertex(matrix4f, x + width  , y            , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth).color(argb);
         vertexConsumer.vertex(matrix4f, x             , y            , zLevel).texture( u          * pixelWidth,  v           * pixelWidth).color(argb);
+
+        forceDraw(drawContext);
     }
 
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, BufferBuilder buffer)
@@ -288,7 +357,7 @@ public class RenderUtils
 
         if (textLines.isEmpty() == false && GuiUtils.getCurrentScreen() != null)
         {
-            RenderSystem.enableDepthTest();
+            //RenderSystem.enableDepthTest();
             TextRenderer font = mc.textRenderer;
             int maxLineLength = 0;
             int maxWidth = GuiUtils.getCurrentScreen().width;
@@ -347,11 +416,11 @@ public class RenderUtils
                 String str = textLines.get(i);
 
                 drawContext.drawText(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
-                //tryDraw(drawContext);
 
                 textStartY += lineHeight;
             }
 
+            forceDraw(drawContext);
             drawContext.getMatrices().pop();
             //RenderSystem.applyModelViewMatrix();
 
@@ -609,7 +678,6 @@ public class RenderUtils
 
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
-     * --> Correction, never assume this is safe.
      */
     public static void drawBlockBoundingBoxSidesBatchedQuads(BlockPos pos, Color4f color, double expand, BufferBuilder buffer)
     {
@@ -625,7 +693,6 @@ public class RenderUtils
 
     /**
      * Assumes a BufferBuilder in GL_LINES mode has been initialized
-     * --> Correction, never assume this is safe.
      */
     public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color, double expand, BufferBuilder buffer)
     {
@@ -634,7 +701,6 @@ public class RenderUtils
 
     /**
      * Assumes a BufferBuilder in GL_LINES mode has been initialized.
-     * --> Correction, never assume this is safe.
      * The cameraPos value will be subtracted from the absolute coordinate values of the passed in BlockPos.
      * @param pos
      * @param cameraPos
@@ -656,7 +722,6 @@ public class RenderUtils
 
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
-     * --> Correction, never assume this is safe.
      */
     public static void drawBoxAllSidesBatchedQuads(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
             Color4f color, BufferBuilder buffer)
@@ -669,7 +734,6 @@ public class RenderUtils
     /**
      * Draws a box with outlines around the given corner positions.
      * Takes in buffers initialized for GL_QUADS and GL_LINES modes.
-     * --> Correction, never assume this is safe.
      * @param posMin
      * @param posMax
      * @param colorLines
@@ -686,7 +750,6 @@ public class RenderUtils
      * Draws a box with outlines around the given corner positions.
      * Takes in buffers initialized for GL_QUADS and GL_LINES modes.
      * The cameraPos value will be subtracted from the absolute coordinate values of the passed in block positions.
-     * --> Correction, never assume this is safe.
      * @param posMin
      * @param posMax
      * @param cameraPos
@@ -710,7 +773,6 @@ public class RenderUtils
 
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
-     * --> Correction, never assume this is safe.
      */
     public static void drawBoxHorizontalSidesBatchedQuads(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
             Color4f color, BufferBuilder buffer)
@@ -742,7 +804,6 @@ public class RenderUtils
 
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
-     * --> Correction, never assume this is safe.
      */
     public static void drawBoxTopBatchedQuads(float minX, float minZ, float maxX, float maxY, float maxZ, Color4f color, BufferBuilder buffer)
     {
@@ -755,7 +816,6 @@ public class RenderUtils
 
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
-     * --> Correction, never assume this is safe.
      */
     public static void drawBoxBottomBatchedQuads(float minX, float minY, float minZ, float maxX, float maxZ, Color4f color, BufferBuilder buffer)
     {
@@ -768,7 +828,6 @@ public class RenderUtils
 
     /**
      * Assumes a BufferBuilder in GL_LINES mode has been initialized
-     * --> Correction, never assume this is safe.
      */
     public static void drawBoxAllEdgesBatchedLines(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
             Color4f color, BufferBuilder buffer)

@@ -38,6 +38,13 @@ public class NBTUtils
         return null;
     }
 
+    /**
+     * Read an IntArray type BlockPos from NBT.
+     *
+     * @param nbt ()
+     * @param key ()
+     * @return ()
+     */
     @Nullable
     public static BlockPos readBlockPosFromIntArray(@Nonnull NbtCompound nbt, String key)
     {
@@ -51,6 +58,13 @@ public class NBTUtils
         return null;
     }
 
+    /**
+     * Write a Block pos as an IntArray in NBT.
+     *
+     * @param pos ()
+     * @param key ()
+     * @return ()
+     */
     public static NbtCompound writeBlockPosToNbtIntArray(BlockPos pos, String key)
     {
         NbtCompound nbt = new NbtCompound();
@@ -110,6 +124,12 @@ public class NBTUtils
         return null;
     }
 
+    /**
+     * Read the "BlockAttached" BlockPos from NBT.
+     *
+     * @param tag ()
+     * @return ()
+     */
     @Nullable
     public static BlockPos readAttachedPosFromTag(@Nonnull NbtCompound tag)
     {
@@ -123,6 +143,13 @@ public class NBTUtils
         return null;
     }
 
+    /**
+     * Write the "Block Attached" BlockPos to NBT.
+     *
+     * @param pos ()
+     * @param tag ()
+     * @return ()
+     */
     public static NbtCompound writeAttachedPosToTag(BlockPos pos, @Nonnull NbtCompound tag)
     {
         tag.putInt("TileX", pos.getX());

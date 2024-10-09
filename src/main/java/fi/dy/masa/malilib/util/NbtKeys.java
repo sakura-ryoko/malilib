@@ -1,5 +1,8 @@
 package fi.dy.masa.malilib.util;
 
+/**
+ * NBT Tag Constants Collection.
+ */
 public class NbtKeys
 {
     // Generic

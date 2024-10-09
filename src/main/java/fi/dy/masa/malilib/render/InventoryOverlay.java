@@ -364,6 +364,11 @@ public class InventoryOverlay
         return InventoryRenderType.GENERIC;
     }
 
+    /**
+     * Attempts to get the Inventory Type based on raw NBT tags.
+     * @param nbt
+     * @return
+     */
     public static InventoryRenderType getInventoryType(@Nonnull NbtCompound nbt)
     {
         BlockEntityType<?> blockType = BlockUtils.getBlockEntityTypeFromNbt(nbt);
@@ -457,6 +462,12 @@ public class InventoryOverlay
         return InventoryRenderType.GENERIC;
     }
 
+    /**
+     * Two-Way match to try to get the Best Inventory Type based on the INV Object, or NBT Tags.
+     * @param inv
+     * @param nbt
+     * @return
+     */
     public static InventoryRenderType getBestInventoryType(@Nonnull Inventory inv, @Nonnull NbtCompound nbt)
     {
         InventoryRenderType i = getInventoryType(inv);
@@ -471,6 +482,13 @@ public class InventoryOverlay
         return i;
     }
 
+    /**
+     * Three-Way match to try to get the Best Inventory Type based on the INV Object, NBT tags, or an Overlay Context.
+     * @param inv
+     * @param nbt
+     * @param ctx
+     * @return
+     */
     public static InventoryRenderType getBestInventoryType(@Nonnull Inventory inv, @Nonnull NbtCompound nbt, Context ctx)
     {
         InventoryRenderType i = getInventoryType(inv);
@@ -586,6 +604,19 @@ public class InventoryOverlay
         renderInventoryStacks(type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, drawContext, 0, 0);
     }
 
+    /**
+     * Supports lockable Crafter Slots
+     * @param type
+     * @param inv
+     * @param startX
+     * @param startY
+     * @param slotsPerRow
+     * @param startSlot
+     * @param maxSlots
+     * @param disabledSlots (Locked Crafter Slots as a numbered Set)
+     * @param mc
+     * @param drawContext
+     */
     public static void renderInventoryStacks(InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc, DrawContext drawContext)
     {
         renderInventoryStacks(type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, disabledSlots, mc, drawContext, 0, 0);
@@ -596,6 +627,22 @@ public class InventoryOverlay
         renderInventoryStacks(type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, drawContext, mouseX, mouseY);
     }
 
+    /**
+     * Render the Inventory Stacks.  Now Supports Lockable Crafter Slots.
+     *
+     * @param type
+     * @param inv
+     * @param startX
+     * @param startY
+     * @param slotsPerRow
+     * @param startSlot
+     * @param maxSlots
+     * @param disabledSlots  (Locked Crafter Slots as a numbered Set)
+     * @param mc
+     * @param drawContext
+     * @param mouseX
+     * @param mouseY
+     */
     public static void renderInventoryStacks(InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
     {
         if (type == InventoryRenderType.FURNACE)
@@ -628,8 +675,6 @@ public class InventoryOverlay
                 for (int column = 0; column < slotsPerRow && slot < slots && i < maxSlots; ++column, ++slot, ++i)
                 {
                     ItemStack stack = inv.getStack(slot);
-
-                    //System.out.printf("inv stacks - slot[%d] item [%s]\n", slot, stack.toString());
 
                     if (disabledSlots.contains(slot))
                     {
@@ -705,6 +750,19 @@ public class InventoryOverlay
         renderItemStacks(items, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, drawContext);
     }
 
+    /**
+     * Renders an ItemList.  Now supports Lockable Crafter Slots.
+     *
+     * @param items
+     * @param startX
+     * @param startY
+     * @param slotsPerRow
+     * @param startSlot
+     * @param maxSlots
+     * @param disabledSlots  (Locked Crafter Slots as a numbered Set)
+     * @param mc
+     * @param drawContext
+     */
     public static void renderItemStacks(DefaultedList<ItemStack> items, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc, DrawContext drawContext)
     {
         final int slots = items.size();
@@ -755,8 +813,6 @@ public class InventoryOverlay
         RenderUtils.enableDiffuseLightingGui3D();
         RenderUtils.color(1f, 1f, 1f, 1f);
 
-        System.out.printf("renderStackAt() item [%s]\n", stack.toString());
-
         drawContext.drawItem(stack.copy(), 0, 0);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
@@ -772,6 +828,16 @@ public class InventoryOverlay
         }
     }
 
+    /**
+     * Render's a locked Crafter Slot at the specified location.
+     *
+     * @param x
+     * @param y
+     * @param scale
+     * @param drawContext
+     * @param mouseX
+     * @param mouseY
+     */
     public static void renderLockedSlotAt(float x, float y, float scale, DrawContext drawContext, double mouseX, double mouseY)
     {
         MatrixStack matrixStack = drawContext.getMatrices();
@@ -840,8 +906,22 @@ public class InventoryOverlay
         GENERIC;
     }
 
+    /**
+     * New InventoryOverlay Context interface.
+     *
+     * @param type
+     * @param inv
+     * @param be
+     * @param entity
+     * @param nbt
+     */
     public record Context(InventoryRenderType type, @Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt) {}
 
+    /**
+     * Returns a Context based on NBT Tags
+     * @param nbtIn
+     * @return
+     */
     public static @Nullable Context invFromNbt(NbtCompound nbtIn)
     {
         if (nbtIn != null)
@@ -857,6 +937,12 @@ public class InventoryOverlay
         return null;
     }
 
+    /**
+     * Returns a Context based on a Block Entity World / Pos
+     * @param world
+     * @param pos
+     * @return
+     */
     public static @Nullable Context invFromBlockPos(World world, BlockPos pos)
     {
         if (world != null && pos == null)
@@ -872,6 +958,13 @@ public class InventoryOverlay
         return null;
     }
 
+    /**
+     * Returns a Context based on a Block Entity Object.  Attempts to generate the NBT tags.
+     *
+     * @param blockEntity
+     * @param world
+     * @return
+     */
     public static @Nullable Context invFromBlockEntity(BlockEntity blockEntity, @Nonnull World world)
     {
         if (blockEntity != null)
@@ -888,6 +981,12 @@ public class InventoryOverlay
         return null;
     }
 
+    /**
+     * Returns a Context based on an Entity, and attempts to generate the NBT tags.
+     *
+     * @param ent
+     * @return
+     */
     public static @Nullable Context invFromEntity(Entity ent)
     {
         if (ent != null)

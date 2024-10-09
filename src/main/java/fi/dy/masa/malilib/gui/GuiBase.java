@@ -575,6 +575,17 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         RenderUtils.drawRect(0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
     }
 
+    /**
+     * Draw's a [Optional] blurred out Background, and masking texture the same size as the widget.
+     * This helps with sub-menu widgets not displaying correctly, such as with the Advanced keybinds menu.
+     *
+     * @param drawContext ()
+     * @param topX ()
+     * @param topY ()
+     * @param width ()
+     * @param height ()
+     * @param blur ()
+     */
     protected void drawTexturedBG(DrawContext drawContext, int topX, int topY, int width, int height, boolean blur)
     {
         if (blur)

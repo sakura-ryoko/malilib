@@ -92,6 +92,13 @@ public class WorldUtils
         return yMax;
     }
 
+    /**
+     * Get the Dimension RegistryEntry based on Dimension Type.
+     *
+     * @param key
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<DimensionType> getDimensionTypeEntry(DimensionType key, @Nonnull DynamicRegistryManager registry)
     {
         try
@@ -104,6 +111,13 @@ public class WorldUtils
         }
     }
 
+    /**
+     * Get the Dimension RegistryEntry based on Dimension ID.
+     *
+     * @param id
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<DimensionType> getDimensionTypeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
     {
         try
@@ -116,6 +130,13 @@ public class WorldUtils
         }
     }
 
+    /**
+     * Get the Dimension RegistryEntry based on Dimension ID String.
+     *
+     * @param id
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<DimensionType> getDimensionTypeEntry(String id, @Nonnull DynamicRegistryManager registry)
     {
         try
@@ -128,6 +149,13 @@ public class WorldUtils
         }
     }
 
+    /**
+     * Get the Biome Registry Entry from a Biome Registry Key.
+     *
+     * @param key
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<Biome> getBiomeEntry(RegistryKey<Biome> key, @Nonnull DynamicRegistryManager registry)
     {
         try
@@ -140,6 +168,13 @@ public class WorldUtils
         }
     }
 
+    /**
+     * Get the Biome Registry Entry from a Biome ID.
+     *
+     * @param id
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<Biome> getBiomeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
     {
         try
@@ -152,6 +187,13 @@ public class WorldUtils
         }
     }
 
+    /**
+     * Get the Biome Registry Entry from a Biome ID String.
+     *
+     * @param id
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<Biome> getBiomeEntry(String id, @Nonnull DynamicRegistryManager registry)
     {
         try
@@ -164,16 +206,34 @@ public class WorldUtils
         }
     }
 
+    /**
+     * Get the PLAINS Biome Registry Entry.
+     *
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<Biome> getPlains(@Nonnull DynamicRegistryManager registry)
     {
         return getBiomeEntry(BiomeKeys.PLAINS, registry);
     }
 
+    /**
+     * Get the NETHER WASTES Biome Registry Entry.
+     *
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<Biome> getWastes(@Nonnull DynamicRegistryManager registry)
     {
         return getBiomeEntry(BiomeKeys.NETHER_WASTES, registry);
     }
 
+    /**
+     * Get the END Biome Registry Entry.
+     *
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<Biome> getTheEnd(@Nonnull DynamicRegistryManager registry)
     {
         return getBiomeEntry(BiomeKeys.THE_END, registry);

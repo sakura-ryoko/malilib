@@ -636,6 +636,14 @@ public class InventoryUtils
         return null;
     }
 
+    /**
+     * Executes the "Inventory Display Horse Fix" (Saddle Offset) for NBT-based Displays.
+     *
+     * @param nbt
+     * @param slotCount
+     * @param registry
+     * @return
+     */
     public static Inventory getNbtInventoryHorseFix(@Nonnull NbtCompound nbt, int slotCount, @Nonnull RegistryWrapper.WrapperLookup registry)
     {
         ItemStack saddle = ItemStack.EMPTY;
@@ -1124,6 +1132,13 @@ public class InventoryUtils
         return stackOut;
     }
 
+    /**
+     * Get an Item's Registry Entry.
+     *
+     * @param id
+     * @param registry
+     * @return
+     */
     public static RegistryEntry<Item> getItemEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
     {
         try
