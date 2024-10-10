@@ -6,13 +6,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fi.dy.masa.malilib.config.ConfigUtils;
-import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.IConfigValue;
-import fi.dy.masa.malilib.config.options.*;
-import fi.dy.masa.malilib.test.ConfigTestLockedList;
-import fi.dy.masa.malilib.test.ConfigTestOptList;
-import fi.dy.masa.malilib.util.Color4f;
+import fi.dy.masa.malilib.config.options.ConfigBoolean;
+import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 
@@ -21,9 +18,6 @@ public class MaLiLibConfigs implements IConfigHandler
     private static final String CONFIG_FILE_NAME = MaLiLibReference.MOD_ID + ".json";
 
     private static final String GENERIC_KEY = MaLiLibReference.MOD_ID+".config";
-    private static final String DEBUG_KEY = MaLiLibReference.MOD_ID+".config";
-    private static final String TEST_KEY = MaLiLibReference.MOD_ID+".config.test";
-
     public static class Generic
     {
         public static final ConfigHotkey      IGNORED_KEYS              = new ConfigHotkey("ignoredKeys", "").apply(GENERIC_KEY);
@@ -39,6 +33,7 @@ public class MaLiLibConfigs implements IConfigHandler
         );
     }
 
+    private static final String DEBUG_KEY = MaLiLibReference.MOD_ID+".config";
     public static class Debug
     {
         public static final ConfigBoolean DEBUG_MESSAGES            = new ConfigBoolean("debugMessages",false).apply(DEBUG_KEY);
@@ -56,6 +51,8 @@ public class MaLiLibConfigs implements IConfigHandler
         );
     }
 
+    /*
+    private static final String TEST_KEY = MaLiLibReference.MOD_ID+".config.test";
     public static class Test
     {
         public static final ConfigBoolean           TEST_CONFIG_BOOLEAN             = new ConfigBoolean("testBoolean", false, "Test Boolean").apply(TEST_KEY);
@@ -86,6 +83,7 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_LOCKED_LIST
         );
     }
+     */
 
     public static void loadFromFile()
     {
@@ -101,7 +99,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
                 ConfigUtils.readConfigBase(root, "Generic", Generic.OPTIONS);
                 ConfigUtils.readConfigBase(root, "Debug", Debug.OPTIONS);
-                ConfigUtils.readConfigBase(root, "Test", Test.OPTIONS);
+                //ConfigUtils.readConfigBase(root, "Test", Test.OPTIONS);
             }
         }
     }
@@ -116,7 +114,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
             ConfigUtils.writeConfigBase(root, "Generic", Generic.OPTIONS);
             ConfigUtils.writeConfigBase(root, "Debug", Debug.OPTIONS);
-            ConfigUtils.writeConfigBase(root, "Test", Test.OPTIONS);
+            //ConfigUtils.writeConfigBase(root, "Test", Test.OPTIONS);
 
             JsonUtils.writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
         }

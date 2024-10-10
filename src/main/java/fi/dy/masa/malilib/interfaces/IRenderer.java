@@ -30,11 +30,6 @@ public interface IRenderer
     default void onRenderGameOverlayPost(DrawContext drawContext) {}
 
     /**
-     * Called before vanilla Particle rendering
-     */
-    default void onRenderWorldPreParticle(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler) {}
-
-    /**
      * Called before vanilla Weather rendering
      */
     default void onRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler) {}

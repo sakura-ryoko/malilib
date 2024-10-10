@@ -70,10 +70,12 @@ public class MaLiLibConfigGui extends GuiConfigsBase
         {
             configs = MaLiLibConfigs.Debug.OPTIONS;
         }
+        /*
         else if (tab == ConfigGuiTab.TEST)
         {
             configs = MaLiLibConfigs.Test.OPTIONS;
         }
+         */
         else
         {
             return Collections.emptyList();
@@ -107,8 +109,8 @@ public class MaLiLibConfigGui extends GuiConfigsBase
     public enum ConfigGuiTab
     {
         GENERIC ("malilib.gui.title.generic"),
-        DEBUG   ("malilib.gui.title.debug"),
-        TEST    ("malilib.gui.title.test");
+        DEBUG   ("malilib.gui.title.debug");
+        //TEST    ("malilib.gui.title.test");
 
         private final String translationKey;
 
