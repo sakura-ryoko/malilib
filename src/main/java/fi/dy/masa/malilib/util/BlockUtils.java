@@ -10,6 +10,7 @@ import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.CrafterBlockEntity;
@@ -17,6 +18,7 @@ import net.minecraft.block.entity.SignText;
 import net.minecraft.block.enums.Orientation;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -70,6 +72,21 @@ public class BlockUtils
         }
 
         return Optional.empty();
+    }
+
+    public static boolean PRW_isFluidBlock(BlockState state)
+    {
+        if (state.getFluidState().equals(Fluids.EMPTY.getDefaultState()))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean PRW_isFluidSourceBlock(BlockState state)
+    {
+        return state.getBlock() instanceof FluidBlock && state.getFluidState().getLevel() == 8;
     }
 
     /**
