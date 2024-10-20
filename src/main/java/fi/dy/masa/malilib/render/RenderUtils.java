@@ -489,7 +489,7 @@ public class RenderUtils
         if (texture != null)
         {
             Sprite sprite = mc().getSpriteAtlas(atlas).apply(texture);
-            drawContext.drawSprite(RenderLayer::getGuiTextured, sprite, x, y, width, height, -1);
+            drawContext.drawSpriteStretched(RenderLayer::getGuiTextured, sprite, x, y, width, height, -1);
         }
     }
 

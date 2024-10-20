@@ -4,7 +4,7 @@
     "malilib.config.name.realmsCommonConfig": "realmsCommonConfig",
     "malilib.config.name.enableActionbarMessages": "enableActionbarMessages",
 
-    "malilib.config.name.debugMessages": "[X] debugMessages",
+    "malilib.config.name.debugMessages": "debugMessages",
     "malilib.config.name.inputCancellationDebugging": "inputCancellationDebugging",
     "malilib.config.name.keybindDebugging": "keybindDebugging",
     "malilib.config.name.keybindDebuggingIngame": "keybindDebuggingIngame",
@@ -15,9 +15,18 @@
     "malilib.config.comment.realmsCommonConfig": "Whether or not to use a common config file name for all realms servers.\nIf this is disabled, then the server IP and port are used in the generated config file names.\nHowever, apparently the Realms server addresses change regularly, so the config names would change\nall the time and thus the configs wouldn't save properly.\nSo basically leave this enabled if you only play on one Realms server.\nIf you play on multiple Realms... then the configs will get mixed up regardless.\nUnless you play on the different servers on different Minecraft instances\nto keep the configs separated by the Minecraft instance.",
     "malilib.config.comment.enableActionbarMessages": "Whether or not to display Actionbar Messages.\nThis setting may be useful for\nRecording or Streaming purposes.\nInspired by the \"Streamer Mode\" mod by Sakura.",
 
+    "malilib.config.prettyName.ignoredKeys": "Ignored Keys",
+    "malilib.config.prettyName.openGuiConfigs": "Open Gui Configs",
+    "malilib.config.prettyName.realmsCommonConfig": "Realms Common Config",
     "malilib.config.prettyName.enableActionbarMessages": "Actionbar Messages",
 
-    "malilib.config.comment.debugMessages": "[X] When enabled, debug level events\nare printed to the game console/log",
+    "malilib.config.prettyName.debugMessages": "Debug Messages",
+    "malilib.config.prettyName.inputCancellationDebugging": "Input Cancellation Debugging",
+    "malilib.config.prettyName.keybindDebugging": "Keybind Debugging",
+    "malilib.config.prettyName.keybindDebuggingIngame": "Keybind Debugging In-Game",
+    "malilib.config.prettyName.mouseScrollDebug": "Mouse Scroll Debug",
+
+    "malilib.config.comment.debugMessages": "When enabled, debug level events\nare printed to the game console/log",
     "malilib.config.comment.inputCancellationDebugging": "When enabled, then the cancellation reason/source\nfor inputs (keyboard and mouse) is printed out",
     "malilib.config.comment.keybindDebugging": "When enabled, key presses and held keys are\nprinted to the game console (and the action bar, if enabled)",
     "malilib.config.comment.keybindDebuggingIngame": "If enabled, then the messages from 'keybindDebugging'\nare also printed to the in-game action bar",
