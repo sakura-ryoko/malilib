@@ -27,10 +27,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.DoubleInventory;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.*;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -50,6 +47,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.mixin.IMixinPlayerEntity;
 
 public class InventoryUtils
 {
@@ -484,6 +482,29 @@ public class InventoryUtils
             
             return items;
         }
+        // Ender Chest
+        else if (nbt.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
+        {
+            NbtList list = nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND);
+            if (slotCount < 0)
+            {
+                slotCount = list.size();
+            }
+
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+
+            for (int i = 0; i < list.size(); i++)
+            {
+                Optional<ItemStack> opt = ItemStack.fromNbt(registry, list.getCompound(i));
+
+                if (opt.isPresent())
+                {
+                    items.add(opt.get());
+                }
+            }
+
+            return items;
+        }
         else if (nbt.contains(NbtKeys.ITEM))
         {
             // item (DecoratedPot, ItemEntity)
@@ -596,6 +617,20 @@ public class InventoryUtils
 
             return inv;
         }
+        else if (nbt.contains(NbtKeys.ENDER_ITEMS))
+        {
+            // Ender Chest
+            if (slotCount < 0)
+            {
+                NbtList list = nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND);
+                slotCount = list.size();
+            }
+
+            SimpleInventory inv = new SimpleInventory(slotCount);
+            inv.readNbtList(nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND), registry);
+
+            return inv;
+        }
         else if (nbt.contains(NbtKeys.ITEM))
         {
             // item (DecoratedPot, ItemEntity)
@@ -690,6 +725,30 @@ public class InventoryUtils
         {
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, saddle);
+            return inv;
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static EnderChestInventory getPlayerEnderItems(PlayerEntity player)
+    {
+        if (player != null)
+        {
+            return ((IMixinPlayerEntity) player).malilib_getEnderItems();
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static EnderChestInventory getPlayerEnderItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull RegistryWrapper.WrapperLookup registry)
+    {
+        if (nbt.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND))
+        {
+            EnderChestInventory inv = new EnderChestInventory();
+            inv.readNbtList(nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND), registry);
             return inv;
         }
 

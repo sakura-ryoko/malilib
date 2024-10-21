@@ -19,6 +19,7 @@ public class NbtKeys
     public static final String ITEM_2              = "Item";
     public static final String SLOT                = "Slot";
     public static final String COUNT               = "count";
+    public static final String ENDER_ITEMS         = "EnderItems";
 
     // Block Entity
     public static final String DISABLED_SLOTS      = "disabled_slots";
