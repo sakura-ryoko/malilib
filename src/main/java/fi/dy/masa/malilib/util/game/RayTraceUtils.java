@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
+import org.apache.http.annotation.Experimental;
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +30,7 @@ import fi.dy.masa.malilib.util.MathUtils;
 /**
  * Post-ReWrite code
  */
+@Experimental
 public class RayTraceUtils
 {
     public static final BlockState BLOCK_STATE_AIR = Blocks.AIR.getDefaultState();

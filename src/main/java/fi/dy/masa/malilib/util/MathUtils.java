@@ -1,10 +1,13 @@
 package fi.dy.masa.malilib.util;
 
+import org.apache.http.annotation.Experimental;
+
 import net.minecraft.util.math.Vec3d;
 
 /**
  * Post-ReWrite code
  */
+@Experimental
 public class MathUtils
 {
     public static Vec3d getRotationVector(float yaw, float pitch)
