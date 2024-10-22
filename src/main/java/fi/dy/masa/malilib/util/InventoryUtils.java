@@ -486,6 +486,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
         {
             NbtList list = nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND);
+
             if (slotCount < 0)
             {
                 slotCount = list.size();
@@ -502,6 +503,42 @@ public class InventoryUtils
                     items.add(opt.get());
                 }
             }
+            
+            return items;
+        }
+        else if (nbt.contains(NbtKeys.ITEM))
+        {
+            // item (DecoratedPot, ItemEntity)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+            items.add(0, entry);
+
+            return items;
+        }
+        else if (nbt.contains(NbtKeys.ITEM_2))
+        {
+            // Item (ItemFrame)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM_2));
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+            items.add(0, entry);
+
+            return items;
+        }
+        else if (nbt.contains(NbtKeys.BOOK))
+        {
+            // Book (Lectern)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+            items.add(0, entry);
+
+            return items;
+        }
+        else if (nbt.contains(NbtKeys.RECORD))
+        {
+            // RecordItem (Jukebox)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.RECORD));
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+            items.add(0, entry);
 
             return items;
         }
@@ -725,8 +762,15 @@ public class InventoryUtils
         {
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, saddle);
+
             return inv;
         }
+        else if (nbt.contains(NbtKeys.ITEM))
+        {
+            // item (DecoratedPot, ItemEntity)
+            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry);
 
         return null;
     }
@@ -749,6 +793,7 @@ public class InventoryUtils
         {
             EnderChestInventory inv = new EnderChestInventory();
             inv.readNbtList(nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND), registry);
+
             return inv;
         }
 

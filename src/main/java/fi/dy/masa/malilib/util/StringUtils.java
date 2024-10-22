@@ -415,6 +415,16 @@ public class StringUtils
     }
 
     /**
+     * Return if this translationKey has been found
+     * @param translationKey (Key th check)
+     * @return (True|False)
+     */
+    public static boolean hasTranslation(String translationKey)
+    {
+        return net.minecraft.client.resource.language.I18n.hasTranslation(translationKey);
+    }
+
+    /**
      * Just a wrapper to get the font height from the Font/TextRenderer
      * @return
      */

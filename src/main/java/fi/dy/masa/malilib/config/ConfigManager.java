@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.config;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.ApiStatus;

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.ApiStatus;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.interfaces.IInitializationDispatcher;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
+import org.jetbrains.annotations.ApiStatus;
 
 public class InitializationHandler implements IInitializationDispatcher
 {

@@ -194,7 +194,9 @@ public class EntityUtils
         {
             health = nbt.getFloat(NbtKeys.HEALTH);
         }
+      
         maxHealth = getAttributeValueFromNbt(nbt, EntityAttributes.MAX_HEALTH);
+
         if (maxHealth < 0)
         {
             maxHealth = (float) 20;
