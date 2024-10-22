@@ -2,11 +2,14 @@ package fi.dy.masa.malilib.interoperation;
 
 import javax.annotation.Nullable;
 
+import org.apache.http.annotation.Experimental;
+
 import net.minecraft.util.math.BlockPos;
 
 /**
  * Post-ReWrite code
  */
+@Experimental
 public interface IBlockPlacementPositionProvider
 {
     /**

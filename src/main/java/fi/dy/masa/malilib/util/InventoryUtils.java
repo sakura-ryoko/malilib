@@ -771,6 +771,7 @@ public class InventoryUtils
             ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry);
+        }
 
         return null;
     }
