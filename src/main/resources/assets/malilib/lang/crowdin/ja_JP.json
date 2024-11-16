@@ -27,7 +27,7 @@
     "malilib.config.comment.keybindDebuggingIngame": "有効にした場合、ゲーム内アクションバーに「keybindDebugging」\nからのメッセージも出力されます",
     "malilib.config.comment.mouseScrollDebug": "有効にすると、マウスのスクロール\nのデバッグ値がゲーム機/ログに出力されます",
     "malilib.config.comment.keybind_settings.activate_on": "キーバインドはキーの組み合わせを押したとき、または解放したときに有効になりますか？",
-    "malilib.config.comment.keybind_settings.allow_empty_keybind": "空のキーバインドは有効な\nです（常にアクティブであるとみなされます）",
+    "malilib.config.comment.keybind_settings.allow_empty_keybind": "空のキーバインドは有効です\n(常にアクティブとみなされます)",
     "malilib.config.comment.keybind_settings.allow_extra_keys": "キーバインドを有効にするために保持される追加の鍵はありますか？",
     "malilib.config.comment.keybind_settings.cancel_further": "キーバインドがアクティブになったときに、最後に押されたキー\nの以降の（バニラ）処理をキャンセルします。",
     "malilib.config.comment.keybind_settings.context": "キーバインドはゲーム内またはGUI内で有効にできますか？",
