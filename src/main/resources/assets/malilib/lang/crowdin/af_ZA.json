@@ -31,7 +31,7 @@
     "malilib.config.comment.keybind_settings.allow_extra_keys": "Word ekstra sleutels toegelaat om gehou te word om steeds die sleutelbinding te aktiveer",
     "malilib.config.comment.keybind_settings.cancel_further": "Kanselleer verdere (vanielje) verwerking van die\nlaaste gedrukte sleutel, wanneer die sleutelbinding aktiveer",
     "malilib.config.comment.keybind_settings.context": "Kan die sleutelbinding in die spel of binne 'n GUI geaktiveer word",
-    "malilib.config.comment.keybind_settings.exclusive": "As dit waar is, kan geen ander sleutelbindings\ngeaktiveer gewees het voor die betrokke sleutelbinding nie.\nHierdie kontrole stel terug wanneer alle sleutels vrygelaat word.",
+    "malilib.config.comment.keybind_settings.exclusive": "As dit waar is, kan geen ander sleutelbindings\ngeaktiveer gewees het voor die betrokke sleutelbinding nie.\nHierdie kontrole word teruggestel wanneer alle sleutels vrygelaat word.",
     "malilib.config.comment.keybind_settings.order_sensitive": "Indien die sleutelbindsleutels\ngedruk word in die spesifieke volgorde waarin hulle gedefinieer is",
     "malilib.error.failed_to_create_directory": "Kon nie gids '%s' skep",
     "malilib.error.file_or_directory_already_exists": "Lêer of gids '%s' bestaan reeds",
