@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Használjon-e közös konfigurációs fájlnevet az összes tartománykiszolgálóhoz.\nHa ez le van tiltva, akkor a kiszolgáló IP-címe és portja kerül felhasználásra a generált konfigurációs fájlnevekben.\nAzonban úgy tűnik, hogy a Realms szervercímei rendszeresen változnak, így a konfigurációnevek folyamatosan\nváltoztak, és így a konfigurációk nem mentek megfelelően.\nTehát alapvetően hagyja ezt engedélyezve, ha csak egy Realms szerveren játszik.\nHa több birodalmon játszol... akkor a konfigurációk ettől függetlenül összekeverednek.\nHacsak nem játszol a különböző szervereken különböző Minecraft-példányokon\n, hogy a konfigurációkat a Minecraft-példány választja el egymástól.",
     "malilib.config.comment.enableActionbarMessages": "Megjeleníti-e a műveletsor üzeneteit.\nEz a beállítás\nfelvételi vagy streamelési célokra hasznos lehet.\nA Sakura \"Streamer Mode\" modja ihlette.",
     "malilib.config.prettyName.ignoredKeys": "Figyelmen kívül hagyott kulcsok",
-    "malilib.config.prettyName.openGuiConfigs": "Nyissa meg a GUI konfigurációkat",
+    "malilib.config.prettyName.openGuiConfigs": "Nyissa meg a Gui konfigurációkat",
     "malilib.config.prettyName.realmsCommonConfig": "Realms Common Config",
     "malilib.config.prettyName.enableActionbarMessages": "Műveletsáv Üzenetek",
     "malilib.config.prettyName.debugMessages": "Hibakeresési üzenetek",
