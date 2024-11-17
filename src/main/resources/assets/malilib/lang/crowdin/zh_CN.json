@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "是否为所有领域服务器使用常用配置文件名。\n如果禁用此项，则服务器IP和端口被用于生成的配置文件名。\n然而，领域服务器地址显然经常发生变更， 所以配置名称会随时更改\n，因此配置无法正确保存。\n如果您只在一个领域服务器上玩，请基本上保持此开启状态。\n如果您在多个领域玩游戏，那么配置将被混合成多个领域。\n除非您在不同的Minecraft实例上玩不同的服务器，否则\n保持配置由Minecraft实例分隔。",
     "malilib.config.comment.enableActionbarMessages": "是否显示操作栏消息。\n此设置可能对\n录制或流媒体目的有用。\n受到 Sakura 的“Streamer Mode”模式的启发。",
     "malilib.config.prettyName.ignoredKeys": "忽略的密钥",
-    "malilib.config.prettyName.openGuiConfigs": "打开 Gui 配置",
+    "malilib.config.prettyName.openGuiConfigs": "Open Gui Configs",
     "malilib.config.prettyName.realmsCommonConfig": "领域常用配置",
     "malilib.config.prettyName.enableActionbarMessages": "操作栏消息",
     "malilib.config.prettyName.debugMessages": "调试消息",
