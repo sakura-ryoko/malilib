@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Hvorvidt du skal bruke et felles konfigurasjonsfilnavn for alle realms-servere.\nHvis dette er deaktivert, brukes serverens IP og port i de genererte konfigurasjonsfilnavnene.\nImidlertid endres tilsynelatende Realms-serveradressene regelmessig, slik at konfigurasjonsnavnene endres\nhele tiden og dermed ville ikke konfigurasjonene lagres ordentlig.\nSå la i utgangspunktet dette være aktivert hvis du bare spiller på én Realms-server.\nHvis du spiller på flere Realms... vil konfigurasjonene bli blandet sammen uansett.\nMed mindre du spiller på de forskjellige serverne på forskjellige Minecraft-instanser\nfor å holde konfigurasjonene atskilt av Minecraft-forekomsten.",
     "malilib.config.comment.enableActionbarMessages": "Hvorvidt handlingslinjemeldinger skal vises eller ikke.\nDenne innstillingen kan være nyttig for\nopptak eller streaming.\nInspirert av \"Streamer Mode\"-moden av Sakura.",
     "malilib.config.prettyName.ignoredKeys": "Ignorerte taster",
-    "malilib.config.prettyName.openGuiConfigs": "Åpne GUI-konfigurasjoner",
+    "malilib.config.prettyName.openGuiConfigs": "Åpne Gui Konfigurasjoner",
     "malilib.config.prettyName.realmsCommonConfig": "Realms Common Config",
     "malilib.config.prettyName.enableActionbarMessages": "Handlingslinjemeldinger",
     "malilib.config.prettyName.debugMessages": "Feilsøke meldinger",
