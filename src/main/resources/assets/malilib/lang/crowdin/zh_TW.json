@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "是否對所有領域伺服器使用通用設定檔名稱。\n如果停用此選項，則在產生的設定檔名稱中使用伺服器 IP 和連接埠。\n但是，顯然 Realms 伺服器位址會定期更改，因此設定名稱會一直更改\n，因此設定無法正確儲存。\n因此，如果您只在一台 Realms 伺服器上玩，基本上請啟用此功能。\n如果您在多個 Realms 上玩...那麼配置無論如何都會混淆。\n除非您在不同 Minecraft 實例的不同伺服器上玩\n以保持 Minecraft 實例分開的配置。",
     "malilib.config.comment.enableActionbarMessages": "是否顯示操作欄訊息。\n此設定可能對\n錄製或串流用途有用。\n受到 Sakura 的「Streamer Mode」模組的啟發。",
     "malilib.config.prettyName.ignoredKeys": "忽略的鍵",
-    "malilib.config.prettyName.openGuiConfigs": "開啟 GUI 配置",
+    "malilib.config.prettyName.openGuiConfigs": "Open Gui Configs",
     "malilib.config.prettyName.realmsCommonConfig": "領域通用配置",
     "malilib.config.prettyName.enableActionbarMessages": "操作欄訊息",
     "malilib.config.prettyName.debugMessages": "偵錯訊息",
