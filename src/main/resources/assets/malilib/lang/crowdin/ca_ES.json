@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Si s'utilitza o no un nom de fitxer de configuració comú per a tots els servidors de dominis.\nSi està desactivat, l'IP del servidor i el port s'utilitzen als noms dels fitxers de configuració generats.\nTanmateix, aparentment, les adreces del servidor de Realms canvien regularment, de manera que els noms de configuració canviarien\ntot el temps i, per tant, les configuracions no es desaran correctament.\nAixí, bàsicament, deixeu-ho activat si només jugueu en un servidor de Realms.\nSi jugues a diversos regnes... aleshores les configuracions es barrejaran independentment.\nTret que jugueu als diferents servidors de diferents instàncies de Minecraft\nper mantenir les configuracions separades per la instància de Minecraft.",
     "malilib.config.comment.enableActionbarMessages": "Si es mostren o no els missatges de la barra d'acció.\nAquesta configuració pot ser útil per a fins de\nenregistrament o reproducció en temps real.\nInspirat en el mod \"Streamer Mode\" de Sakura.",
     "malilib.config.prettyName.ignoredKeys": "Claus ignorades",
-    "malilib.config.prettyName.openGuiConfigs": "Obriu les configuracions de la GUI",
+    "malilib.config.prettyName.openGuiConfigs": "Obriu Gui Configs",
     "malilib.config.prettyName.realmsCommonConfig": "Realms Common Config",
     "malilib.config.prettyName.enableActionbarMessages": "Missatges de la barra d'acció",
     "malilib.config.prettyName.debugMessages": "Missatges de depuració",
