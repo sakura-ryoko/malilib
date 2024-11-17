@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Käytetäänkö yhteistä konfigurointitiedoston nimeä kaikille alueiden palvelimille.\nJos tämä ei ole käytössä, palvelimen IP-osoitetta ja porttia käytetään luoduissa asetustiedostojen nimissä.\nIlmeisesti Realmsin palvelinosoitteet kuitenkin muuttuvat säännöllisesti, joten asetusten nimet muuttuisivat\nkoko ajan ja näin ollen asetukset eivät tallennu kunnolla.\nJätä tämä siis periaatteessa käyttöön, jos pelaat vain yhdellä Realms-palvelimella.\nJos pelaat useilla Realmsilla..., asetukset sekoittuvat siitä huolimatta.\nEllei pelaa eri palvelimilla eri Minecraft-esiintymissä\npitääksesi määritykset erillään Minecraft-instanssilla.",
     "malilib.config.comment.enableActionbarMessages": "Näytetäänkö toimintopalkin viestit vai ei.\nTämä asetus voi olla hyödyllinen\ntallennus- tai suoratoistotarkoituksiin.\nInspiroitunut Sakuran \"Streamer Mode\" -modista.",
     "malilib.config.prettyName.ignoredKeys": "Ohitetut avaimet",
-    "malilib.config.prettyName.openGuiConfigs": "Avaa GUI-asetukset",
+    "malilib.config.prettyName.openGuiConfigs": "Avaa Gui Asetukset",
     "malilib.config.prettyName.realmsCommonConfig": "Realms Common Config",
     "malilib.config.prettyName.enableActionbarMessages": "Toimintopalkin viestit",
     "malilib.config.prettyName.debugMessages": "Virheenkorjausviestit",
