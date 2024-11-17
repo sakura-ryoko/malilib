@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Có nên sử dụng tên tệp cấu hình chung cho tất cả các máy chủ Realms hay không.\nNếu tùy chọn này bị vô hiệu hóa, thì IP và cổng máy chủ sẽ được sử dụng trong tên tệp cấu hình được tạo.\nTuy nhiên, rõ ràng là địa chỉ máy chủ Realms thay đổi thường xuyên, vì vậy tên cấu hình sẽ thay đổi\nmọi lúc và do đó các cấu hình sẽ không được lưu đúng cách.\nVì vậy, về cơ bản, hãy để tùy chọn này được bật nếu bạn chỉ chơi trên một máy chủ Realms.\nNếu bạn chơi trên nhiều Realms... thì các cấu hình sẽ bị trộn lẫn bất kể thế nào.\nTrừ khi bạn chơi trên các máy chủ khác nhau trong các phiên bản Minecraft khác nhau\nđể giữ cho các cấu hình được phân tách theo phiên bản Minecraft.",
     "malilib.config.comment.enableActionbarMessages": "Có hiển thị Tin nhắn trên thanh hành động hay không.\nCài đặt này có thể hữu ích cho mục đích Ghi hoặc Phát trực tuyến\n.\nĐược lấy cảm hứng từ bản mod \"Streamer Mode\" của Sakura.",
     "malilib.config.prettyName.ignoredKeys": "Các phím bị bỏ qua",
-    "malilib.config.prettyName.openGuiConfigs": "Mở cấu hình GUI",
+    "malilib.config.prettyName.openGuiConfigs": "Mở Gui Configs",
     "malilib.config.prettyName.realmsCommonConfig": "Cấu hình chung của Realms",
     "malilib.config.prettyName.enableActionbarMessages": "Tin nhắn Actionbar",
     "malilib.config.prettyName.debugMessages": "Tin nhắn gỡ lỗi",
