@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "سواء كان سيتم استخدام اسم ملف تكوين مشترك لجميع خوادم العوالم أم لا.\nإذا تم تعطيل هذا، فسيتم استخدام عنوان IP الخاص بالخادم والمنفذ في أسماء ملفات التكوين المُولدة.\nومع ذلك، يبدو أن عناوين خادم العوالم تتغير بانتظام، لذا فإن أسماء التكوين ستتغير\nطوال الوقت وبالتالي لن يتم حفظ التكوينات بشكل صحيح.\nلذا اترك هذا ممكّنًا بشكل أساسي إذا كنت تلعب على خادم Realms واحد فقط.\nإذا كنت تلعب على عوالم متعددة... فستختلط التكوينات بغض النظر عن ذلك.\nما لم تلعب على خوادم مختلفة في نسخ Minecraft المختلفة\nللحفاظ على فصل التكوينات حسب نسخة Minecraft.",
     "malilib.config.comment.enableActionbarMessages": "ما إذا كان سيتم عرض رسائل شريط الإجراءات أم لا.\nقد يكون هذا الإعداد مفيدًا لأغراض التسجيل أو البث المباشر\n.\nمستوحى من تعديل \"وضع البث المباشر\" بواسطة ساكورا.",
     "malilib.config.prettyName.ignoredKeys": "المفاتيح المغفلة",
-    "malilib.config.prettyName.openGuiConfigs": "إعدادات واجهة المستخدم المفتوحة",
+    "malilib.config.prettyName.openGuiConfigs": "فتح إعدادات Gui",
     "malilib.config.prettyName.realmsCommonConfig": "تكوين العوالم المشتركة",
     "malilib.config.prettyName.enableActionbarMessages": "رسائل شريط العمل",
     "malilib.config.prettyName.debugMessages": "تصحيح الرسائل",
