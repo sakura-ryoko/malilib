@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Utiliser ou non un nom de fichier de configuration commun pour tous les serveurs Realms.\nSi cette option est désactivée, l'IP et le port du serveur sont utilisés dans les noms de fichiers de configuration générés.\nCependant, apparemment, les adresses des serveurs Realms changent régulièrement, donc les noms de configuration changeraient\ntout le temps et donc les configurations ne seraient pas enregistrées correctement.\nDonc, laissez cette option activée si vous ne jouez que sur un seul serveur Realms.\nSi vous jouez sur plusieurs Realms... alors les configurations seront mélangées quoi qu'il en soit.\nÀ moins que vous ne jouiez sur les différents serveurs sur différentes instances de Minecraft\npour garder les configurations séparées par l'instance de Minecraft.",
     "malilib.config.comment.enableActionbarMessages": "Afficher/Masquer ou non les messages de la barre d'action.\nCe paramètre peut être utile pour\nEnregistrement ou Streaming.\nInspiré par le mod \"Mode Streamer\" de Sakura.",
     "malilib.config.prettyName.ignoredKeys": "Clés ignorées",
-    "malilib.config.prettyName.openGuiConfigs": "Ouvrir les configurations de l'interface",
+    "malilib.config.prettyName.openGuiConfigs": "Ouvrir les configurations de Gui",
     "malilib.config.prettyName.realmsCommonConfig": "Configuration commune des royaumes",
     "malilib.config.prettyName.enableActionbarMessages": "Messages de la barre d'action",
     "malilib.config.prettyName.debugMessages": "Messages de débogage",
