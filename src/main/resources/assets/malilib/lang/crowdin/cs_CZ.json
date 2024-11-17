@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Zda použít společný název konfiguračního souboru pro všechny servery sfér.\nPokud je toto zakázáno, pak se ve vygenerovaných názvech konfiguračních souborů použije adresa IP serveru a port.\nZřejmě se však adresy serverů Realms pravidelně mění, takže názvy konfigurací by se neustále měnily\n, a proto by se konfigurace neukládaly správně.\nTakže v zásadě nechte toto povolené, pokud hrajete pouze na jednom serveru Realms.\nPokud hrajete na více Realms... pak se konfigurace bez ohledu na to zamíchají.\nPokud nehrajete na různých serverech na různých instancích Minecraftu\n, aby byly konfigurace odděleny instancí Minecraftu.",
     "malilib.config.comment.enableActionbarMessages": "Zda se mají či nemají zobrazovat zprávy Actionbar.\nToto nastavení může být užitečné pro účely\nnahrávání nebo streamování.\nInspirováno režimem \"Streamer Mode\" od Sakury.",
     "malilib.config.prettyName.ignoredKeys": "Ignorované klíče",
-    "malilib.config.prettyName.openGuiConfigs": "Otevřít konfigurace GUI",
+    "malilib.config.prettyName.openGuiConfigs": "Otevřít konfiguraci Gui",
     "malilib.config.prettyName.realmsCommonConfig": "Běžná konfigurace sfér",
     "malilib.config.prettyName.enableActionbarMessages": "Zprávy v panelu akcí",
     "malilib.config.prettyName.debugMessages": "Ladící zprávy",
