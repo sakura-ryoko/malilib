@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "모든 realms 서버에 공통된 구성 파일 이름을 사용할지 여부입니다.\n이것이 비활성화되면 생성된 구성 파일 이름에 서버 IP와 포트가 사용됩니다.\n그러나 Realms 서버 주소는 정기적으로 변경되므로 구성 이름이\n항상 변경되고 따라서 구성이 제대로 저장되지 않습니다.\n기본적으로 하나의 Realms 서버에서만 플레이하는 경우 이 설정을 활성화된 상태로 둡니다.\n여러 Realms에서 플레이하는 경우... 구성이 무조건 섞입니다.\n다른 Minecraft 인스턴스의 다른 서버에서 플레이하지 않는 한\nMinecraft 인스턴스로 구성을 분리합니다.",
     "malilib.config.comment.enableActionbarMessages": "액션바 메시지를 표시할지 여부입니다.\n이 설정은\n녹화나 스트리밍 목적으로 유용할 수 있습니다.\nSakura의 \"스트리머 모드\" 모드에서 영감을 받았습니다.",
     "malilib.config.prettyName.ignoredKeys": "무시된 키",
-    "malilib.config.prettyName.openGuiConfigs": "GUI 구성 열기",
+    "malilib.config.prettyName.openGuiConfigs": "Open Gui Configs",
     "malilib.config.prettyName.realmsCommonConfig": "Realms 공통 구성",
     "malilib.config.prettyName.enableActionbarMessages": "액션바 메시지",
     "malilib.config.prettyName.debugMessages": "디버그 메시지",
