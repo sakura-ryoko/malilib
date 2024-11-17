@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Tüm Realms sunucuları için ortak bir yapılandırma dosyası adı kullanılıp kullanılmayacağı.\nBu devre dışı bırakılırsa, sunucu IP'si ve portu oluşturulan yapılandırma dosyası adlarında kullanılır.\nAncak, görünüşe göre Realms sunucu adresleri düzenli olarak değişiyor, bu nedenle yapılandırma adları\nsürekli değişiyor ve bu nedenle yapılandırmalar düzgün bir şekilde kaydedilmiyor.\nYani temel olarak yalnızca bir Realms sunucusunda oynuyorsanız bunu etkin bırakın.\nBirden fazla Realms'de oynuyorsanız... yapılandırmalar ne olursa olsun karışacaktır.\nFarklı Minecraft örneklerindeki farklı sunucularda oynamadığınız sürece\nYapılandırmaları Minecraft örneğine göre ayrı tutmak için.",
     "malilib.config.comment.enableActionbarMessages": "Actionbar Mesajlarının gösterilip gösterilmeyeceği.\nBu ayar\nKayıt veya Yayın amaçları için yararlı olabilir.\nSakura'nın \"Streamer Mode\" modundan esinlenilmiştir.",
     "malilib.config.prettyName.ignoredKeys": "Göz ardı edilen tuşlar",
-    "malilib.config.prettyName.openGuiConfigs": "Açık GUI Yapılandırmaları",
+    "malilib.config.prettyName.openGuiConfigs": "Open Gui Configs",
     "malilib.config.prettyName.realmsCommonConfig": "Realms Ortak Yapılandırması",
     "malilib.config.prettyName.enableActionbarMessages": "Eylem Çubuğu Mesajları",
     "malilib.config.prettyName.debugMessages": "Hata Ayıklama Mesajları",
