@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Использовать ли общее имя файла конфигурации для всех серверов Realms.\nЕсли это отключено, то IP-адрес и порт сервера используются в сгенерированных именах файлов конфигурации.\nОднако, по-видимому, адреса серверов Realms регулярно меняются, поэтому имена конфигураций будут меняться\nвсе время, и, таким образом, конфигурации не будут сохраняться должным образом.\nТак что в основном оставляйте это включенным, если вы играете только на одном сервере Realms.\nЕсли вы играете в нескольких Realms... то конфигурации все равно будут путаться.\nЕсли только вы не играете на разных серверах в разных экземплярах Minecraft\nчтобы сохранить конфигурации, разделенные экземпляром Minecraft.",
     "malilib.config.comment.enableActionbarMessages": "Отображать или нет сообщения на панели действий.\nЭта настройка может быть полезна для\nцелей записи или потоковой передачи.\nВдохновлено модом «Streamer Mode» от Sakura.",
     "malilib.config.prettyName.ignoredKeys": "Игнорируемые ключи",
-    "malilib.config.prettyName.openGuiConfigs": "Открыть GUI Конфигурации",
+    "malilib.config.prettyName.openGuiConfigs": "Открыть Gui Конфигурации",
     "malilib.config.prettyName.realmsCommonConfig": "Общая конфигурация Realms",
     "malilib.config.prettyName.enableActionbarMessages": "Сообщения в панели действий",
     "malilib.config.prettyName.debugMessages": "Отладочные сообщения",
