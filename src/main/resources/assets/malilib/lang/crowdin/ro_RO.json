@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Dacă trebuie sau nu să utilizați un nume de fișier de configurare comun pentru toate serverele tărâmurilor.\nDacă aceasta este dezactivată, atunci IP-ul serverului și portul sunt folosite în numele fișierelor de configurare generate.\nCu toate acestea, se pare că adresele serverului Realms se schimbă în mod regulat, așa că numele de configurare s-ar schimba tot timpul\nși astfel configurațiile nu s-ar salva corect.\nDeci, practic, lăsați acest lucru activat dacă jucați doar pe un server Realms.\nDacă joci pe mai multe tărâmuri... atunci configurațiile se vor amesteca indiferent.\nCu excepția cazului în care jucați pe diferite servere pe diferite instanțe Minecraft\npentru a păstra configurațiile separate de instanța Minecraft.",
     "malilib.config.comment.enableActionbarMessages": "Dacă se afișează sau nu mesajele din bara de acțiuni.\nAceastă setare poate fi utilă pentru\nîn scopuri de înregistrare sau streaming.\nInspirat de modul „Streamer Mode” de la Sakura.",
     "malilib.config.prettyName.ignoredKeys": "Taste ignorate",
-    "malilib.config.prettyName.openGuiConfigs": "Deschide Configurări GUI",
+    "malilib.config.prettyName.openGuiConfigs": "Deschide Configurări Gui",
     "malilib.config.prettyName.realmsCommonConfig": "Configurare comună pentru tărâmuri",
     "malilib.config.prettyName.enableActionbarMessages": "Mesaje din bara de acțiuni",
     "malilib.config.prettyName.debugMessages": "Mesaje de depanare",
