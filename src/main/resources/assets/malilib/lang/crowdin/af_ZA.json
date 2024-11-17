@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Of u 'n algemene konfigurasielêernaam vir alle realms-bedieners moet gebruik of nie.\nAs dit gedeaktiveer is, word die bediener IP en poort in die gegenereerde konfigurasielêername gebruik.\nBlykbaar verander egter die Realms-bedieneradresse gereeld, so die konfigurasiename sal heeltyd\nverander en dus sal die konfigurasies nie behoorlik gestoor word nie.\nLaat dit dus basies geaktiveer as jy net op een Realms-bediener speel.\nAs jy op verskeie Realms speel... dan sal die konfigurasies deurmekaar raak, ongeag.\nTensy jy op die verskillende bedieners op verskillende Minecraft-instansies speel\nom die konfigurasies geskei te hou deur die Minecraft-instansie.",
     "malilib.config.comment.enableActionbarMessages": "Of jy Actionbar-boodskappe moet vertoon of nie.\nHierdie instelling kan nuttig wees vir\nopname- of stroomdoeleindes.\nGeïnspireer deur die \"Streamer Mode\" mod deur Sakura.",
     "malilib.config.prettyName.ignoredKeys": "Sleutels geïgnoreer",
-    "malilib.config.prettyName.openGuiConfigs": "Maak GUI Configs oop",
+    "malilib.config.prettyName.openGuiConfigs": "Maak Gui Configs oop",
     "malilib.config.prettyName.realmsCommonConfig": "Realms Common Config",
     "malilib.config.prettyName.enableActionbarMessages": "Aksiebalk Boodskappe",
     "malilib.config.prettyName.debugMessages": "Ontfout boodskappe",
