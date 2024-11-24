@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Використовувати загальну назву файлу конфігурації для всіх серверів сфер.\nЯкщо це вимкнено, IP-адреса сервера та порт використовуються в створених іменах конфігураційних файлів.\nОднак, вочевидь, адреси серверів Realms регулярно змінюються, тому назви конфігурацій змінюватимуться\nвесь час і, таким чином, конфігурації не зберігатимуться належним чином.\nОтже, залиште це ввімкненим, якщо ви граєте лише на одному сервері Realms.\nЯкщо ви граєте в кількох сферах... конфігурації будуть переплутані незалежно від цього.\nЯкщо ви не граєте на різних серверах на різних примірниках Minecraft\n, щоб зберегти конфігурації окремо від примірника Minecraft.",
     "malilib.config.comment.enableActionbarMessages": "Відображати чи ні повідомлення панелі дій.\nЦей параметр може бути корисним для\nзапису або потокового передавання.\nНатхненний модом «Streamer Mode» від Sakura.",
     "malilib.config.prettyName.ignoredKeys": "Проігноровані ключі",
-    "malilib.config.prettyName.openGuiConfigs": "Відкрити налаштування інтерфейсу",
+    "malilib.config.prettyName.openGuiConfigs": "Відкрити конфігурацію інтерфейсу",
     "malilib.config.prettyName.realmsCommonConfig": "Realms Common Config",
     "malilib.config.prettyName.enableActionbarMessages": "Повідомлення в рядку стану",
     "malilib.config.prettyName.debugMessages": "Налагодження повідомлень",
