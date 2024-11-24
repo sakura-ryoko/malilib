@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Of er een gemeenschappelijke configuratiebestandsnaam moet worden gebruikt voor alle realms-servers.\nAls dit is uitgeschakeld, worden het IP-adres en de poort van de server gebruikt in de gegenereerde configuratiebestandsnamen.\nBlijkbaar veranderen de Realms-serveradressen echter regelmatig, dus de configuratienamen zouden\nvoortdurend veranderen en dus zouden de configuraties niet goed worden opgeslagen.\nLaat dit dus in principe ingeschakeld als je maar op één Realms-server speelt.\nAls je op meerdere Realms speelt... dan raken de configuraties hoe dan ook door elkaar.\nTenzij je op verschillende servers op verschillende Minecraft-instanties speelt\nom de configuraties gescheiden te houden per Minecraft-instantie.",
     "malilib.config.comment.enableActionbarMessages": "Of de berichten op de actiebalk moeten worden weergegeven.\nDeze instelling kan handig zijn voor\nOpname- of streamingdoeleinden.\nGeïnspireerd door de \"Streamer Mode\"-mod van Sakura.",
     "malilib.config.prettyName.ignoredKeys": "Genegeerde sleutels",
-    "malilib.config.prettyName.openGuiConfigs": "Open GUI Configuraties",
+    "malilib.config.prettyName.openGuiConfigs": "GUI Configs openen",
     "malilib.config.prettyName.realmsCommonConfig": "Realms Algemene configuratie",
     "malilib.config.prettyName.enableActionbarMessages": "Actiebalk berichten",
     "malilib.config.prettyName.debugMessages": "Berichten debuggen",
