@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "האם להשתמש בשם קובץ תצורה משותף לכל שרתי הממלכות או לא.\nאם זה מושבת, אזי משתמשים ב-IP והיציאה של השרת בשמות קבצי התצורה שנוצרו.\nעם זאת, ככל הנראה כתובות השרתים של Realms משתנות באופן קבוע, כך ששמות התצורה ישתנו\nכל הזמן ולכן ההגדרות לא יישמרו כראוי.\nאז בעצם השאר את זה מופעל אם אתה משחק רק בשרת Realms אחד.\nאם אתה משחק במספר ממלכות... אז ההגדרות יתערבבו בלי קשר.\nאלא אם כן אתה משחק בשרתים השונים במופעים שונים של Minecraft\nכדי לשמור על ההגדרות מופרדות על ידי מופע Minecraft.",
     "malilib.config.comment.enableActionbarMessages": "האם להציג הודעות Actionbar או לא.\nהגדרה זו עשויה להיות שימושית למטרות של\nהקלטה או סטרימינג.\nבהשראת המוד \"Streamer Mode\" של סאקורה.",
     "malilib.config.prettyName.ignoredKeys": "מפתחות התעלמו",
-    "malilib.config.prettyName.openGuiConfigs": "פתח את הגדרות GUI",
+    "malilib.config.prettyName.openGuiConfigs": "פתח את Gui Configs",
     "malilib.config.prettyName.realmsCommonConfig": "Realms Common Config",
     "malilib.config.prettyName.enableActionbarMessages": "הודעות בסרגל הפעולה",
     "malilib.config.prettyName.debugMessages": "ניפוי באגים בהודעות",
