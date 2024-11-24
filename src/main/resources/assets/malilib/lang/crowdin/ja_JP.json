@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "すべての Realms サーバーに共通の設定ファイル名を使用するかどうか。\nこれが無効になっている場合、生成された設定ファイル名にサーバーの IP とポートが使用されます。\nただし、Realms サーバーのアドレスは定期的に変更されるため、設定名は常に変更され\n、設定が適切に保存されません。\nしたがって、基本的に 1 つの Realms サーバーでのみプレイする場合は、これを有効のままにしておきます。\n複数の Realms でプレイする場合... 設定はいずれにしても混同されます。\n異なる Minecraft インスタンスの異なるサーバーでプレイしない限り\nMinecraft インスタンスごとに設定を分離します。",
     "malilib.config.comment.enableActionbarMessages": "アクションバー メッセージを表示するかどうか。\nこの設定は、\n録画またはストリーミングの目的に役立つ場合があります。\nSakura の「Streamer Mode」mod に触発されました。",
     "malilib.config.prettyName.ignoredKeys": "無視したキー",
-    "malilib.config.prettyName.openGuiConfigs": "GUI設定を開く",
+    "malilib.config.prettyName.openGuiConfigs": "Guiの設定を開く",
     "malilib.config.prettyName.realmsCommonConfig": "Realms 共通設定",
     "malilib.config.prettyName.enableActionbarMessages": "アクションバーメッセージ",
     "malilib.config.prettyName.debugMessages": "デバッグメッセージ",
