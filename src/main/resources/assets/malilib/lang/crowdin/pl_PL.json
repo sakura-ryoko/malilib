@@ -13,7 +13,7 @@
     "malilib.config.comment.realmsCommonConfig": "Czy używać wspólnej nazwy pliku konfiguracyjnego dla wszystkich serwerów Realms.\nJeśli ta opcja jest wyłączona, w generowanych nazwach plików konfiguracyjnych używane są adres IP serwera i port.\nJednak najwyraźniej adresy serwerów Realms zmieniają się regularnie, więc nazwy konfiguracji zmieniałyby się\ncały czas, a w związku z tym konfiguracje nie zapisywałyby się prawidłowo.\nTak więc zasadniczo pozostaw tę opcję włączoną, jeśli grasz tylko na jednym serwerze Realms.\nJeśli grasz na wielu serwerach Realms... to konfiguracje i tak zostaną pomieszane.\nChyba że grasz na różnych serwerach na różnych instancjach Minecraft\naby konfiguracje były oddzielone według instancji Minecraft.",
     "malilib.config.comment.enableActionbarMessages": "Czy wyświetlać komunikaty na pasku akcji.\nTo ustawienie może być przydatne do\nnagrywania lub przesyłania strumieniowego.\nZainspirowane modem „Streamer Mode” autorstwa Sakury.",
     "malilib.config.prettyName.ignoredKeys": "Ignorowane klucze",
-    "malilib.config.prettyName.openGuiConfigs": "Otwórz konfiguracje GUI",
+    "malilib.config.prettyName.openGuiConfigs": "Otwórz konfiguracje Gui",
     "malilib.config.prettyName.realmsCommonConfig": "Wspólna konfiguracja Realms",
     "malilib.config.prettyName.enableActionbarMessages": "Wiadomości na pasku akcji",
     "malilib.config.prettyName.debugMessages": "Wiadomości debugowania",
