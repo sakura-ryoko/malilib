@@ -31,7 +31,9 @@ public abstract class MixinWorldRenderer
                      shift = At.Shift.BEFORE))
     private void malilib_onRenderWorldPreWeather(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
                                                  Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
-                                                 @Local Profiler profiler, @Local Frustum frustum, @Local FrameGraphBuilder frameGraphBuilder)
+                                                 @Local Profiler profiler,
+                                                 @Local Frustum frustum,
+                                                 @Local FrameGraphBuilder frameGraphBuilder)
                                                  //@Local(ordinal = 0) int i, @Local(ordinal = 1) int j, @Local PostEffectProcessor postEffectProcessor)
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, profiler);
@@ -53,7 +55,9 @@ public abstract class MixinWorldRenderer
                     shift = At.Shift.BEFORE))
     private void malilib_onRenderWorldLast(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
                                            Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
-                                           @Local FrameGraphBuilder frameGraphBuilder, @Local Frustum frustum, @Local Profiler profiler)
+                                           @Local FrameGraphBuilder frameGraphBuilder,
+                                           @Local Frustum frustum,
+                                           @Local Profiler profiler)
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, profiler);
 
