@@ -455,7 +455,7 @@ public class InventoryOverlay
         {
             Block block = ((BlockItem) item).getBlock();
 
-            if (block instanceof ShulkerBoxBlock || block instanceof ChestBlock)
+            if (block instanceof ShulkerBoxBlock || block instanceof ChestBlock || block instanceof BarrelBlock)
             {
                 return InventoryRenderType.FIXED_27;
             }
@@ -512,6 +512,7 @@ public class InventoryOverlay
         if (blockType != null)
         {
             if (blockType.equals(BlockEntityType.SHULKER_BOX) ||
+                blockType.equals(BlockEntityType.BARREL) ||
                 blockType.equals(BlockEntityType.CHEST) ||
                 blockType.equals(BlockEntityType.TRAPPED_CHEST))
             {
@@ -579,6 +580,7 @@ public class InventoryOverlay
                 entityType.equals(EntityType.JUNGLE_CHEST_BOAT) ||
                 entityType.equals(EntityType.MANGROVE_CHEST_BOAT) ||
                 entityType.equals(EntityType.OAK_CHEST_BOAT) ||
+                entityType.equals(EntityType.PALE_OAK_CHEST_BOAT) ||
                 entityType.equals(EntityType.SPRUCE_CHEST_BOAT))
             {
                 return InventoryRenderType.FIXED_27;
