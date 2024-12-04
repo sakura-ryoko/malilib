@@ -74,7 +74,7 @@
   "malilib.error.invalid_directory": "'%s' 잘못된 디렉토리 이름입니다.",
   "malilib.error.invalid_item_blacklist_entry": "'%s' 블랙리스트 또는 화이트리스트에\n의해 차단된 아이템 이름입니다.",
   "malilib.error.invalid_item_stack_entry.nbt_syntax": "잘못된 아이템 스택 NBT 구문: '%s'",
-  "malilib.error.invalid_item_stack_entry.string": "잘못된 아이템 스택 문자열: '%s'",\
+  "malilib.error.invalid_item_stack_entry.string": "잘못된 아이템 스택 문자열: '%s'",
   "malilib.gui.button.cancel": "취소",
   "malilib.gui.button.hover.directory_widget.create_directory": "새 디렉토리 생성",
   "malilib.gui.button.hover.directory_widget.root": "루트/기본 디렉토리로",
