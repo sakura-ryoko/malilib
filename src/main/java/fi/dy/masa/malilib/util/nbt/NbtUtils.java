@@ -160,7 +160,7 @@ public class NbtUtils
     {
         if (NbtWrap.containsIntArray(tag, tagName))
         {
-            int[] pos = NbtWrap.getIntArray(tag, NbtKeys.POS);
+            int[] pos = NbtWrap.getIntArray(tag, tagName);
 
             if (pos.length == 3)
             {

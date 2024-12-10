@@ -27,6 +27,7 @@ public class NbtKeys
     public static final String SECONDARY_EFFECT    = "secondary_effect";
     public static final String FLOWER              = "flower_pos";
     public static final String BEES                = "bees";
+    public static final String OUTPUT_SIGNAL       = "OutputSignal";
     public static final String VIBRATION           = "last_vibration_frequency";
     public static final String LISTENER            = "listener";
     public static final String EXIT                = "exit_portal";

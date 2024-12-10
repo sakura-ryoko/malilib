@@ -118,17 +118,17 @@ public class NbtBlockUtils
         RegistryEntry<StatusEffect> primary = null;
         RegistryEntry<StatusEffect> secondary = null;
 
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.PRIMARY_EFFECT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.PRIMARY_EFFECT, Constants.NBT.TAG_STRING))
         {
-            Identifier id = Identifier.tryParse(nbt.getString(fi.dy.masa.malilib.util.NbtKeys.PRIMARY_EFFECT));
+            Identifier id = Identifier.tryParse(nbt.getString(NbtKeys.PRIMARY_EFFECT));
             if (id != null)
             {
                 primary = Registries.STATUS_EFFECT.getEntry(id).orElse(null);
             }
         }
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.SECONDARY_EFFECT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.SECONDARY_EFFECT, Constants.NBT.TAG_STRING))
         {
-            Identifier id = Identifier.tryParse(nbt.getString(fi.dy.masa.malilib.util.NbtKeys.SECONDARY_EFFECT));
+            Identifier id = Identifier.tryParse(nbt.getString(NbtKeys.SECONDARY_EFFECT));
             if (id != null)
             {
                 secondary = Registries.STATUS_EFFECT.getEntry(id).orElse(null);
@@ -148,13 +148,13 @@ public class NbtBlockUtils
         List<BeehiveBlockEntity.BeeData> bees = new ArrayList<>();
         BlockPos flower = BlockPos.ORIGIN;
 
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.FLOWER))
+        if (nbt.contains(NbtKeys.BEES))
         {
-            flower = NBTUtils.readBlockPosFromIntArray(nbt, fi.dy.masa.malilib.util.NbtKeys.FLOWER);
+            BeehiveBlockEntity.BeeData.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.get(NbtKeys.BEES)).resultOrPartial().ifPresent(bees::addAll);
         }
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.BEES, Constants.NBT.TAG_LIST))
+        if (nbt.contains(NbtKeys.FLOWER, Constants.NBT.TAG_INT_ARRAY))
         {
-            BeehiveBlockEntity.BeeData.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.get(fi.dy.masa.malilib.util.NbtKeys.BEES)).resultOrPartial().ifPresent(bees::addAll);
+            flower = NbtUtils.readBlockPosFromIntArray(nbt, NbtKeys.FLOWER);
         }
 
         return Pair.of(bees, flower);
@@ -172,13 +172,13 @@ public class NbtBlockUtils
         AtomicReference<Vibrations.ListenerData> data = new AtomicReference<>(null);
         int lastFreq = -1;
 
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.VIBRATION, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.VIBRATION, Constants.NBT.TAG_INT))
         {
-            lastFreq = nbt.getInt(fi.dy.masa.malilib.util.NbtKeys.VIBRATION);
+            lastFreq = nbt.getInt(NbtKeys.VIBRATION);
         }
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.LISTENER, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.LISTENER, Constants.NBT.TAG_COMPOUND))
         {
-            Vibrations.ListenerData.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(fi.dy.masa.malilib.util.NbtKeys.LISTENER)).resultOrPartial().ifPresent(data::set);
+            Vibrations.ListenerData.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(NbtKeys.LISTENER)).resultOrPartial().ifPresent(data::set);
         }
 
         return Pair.of(lastFreq, data.get());
@@ -194,13 +194,13 @@ public class NbtBlockUtils
         long age = -1;
         BlockPos pos = BlockPos.ORIGIN;
 
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.AGE, Constants.NBT.TAG_LONG))
+        if (nbt.contains(NbtKeys.AGE, Constants.NBT.TAG_LONG))
         {
-            age = nbt.getLong(fi.dy.masa.malilib.util.NbtKeys.AGE);
+            age = nbt.getLong(NbtKeys.AGE);
         }
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.EXIT, Constants.NBT.TAG_INT_ARRAY))
+        if (nbt.contains(NbtKeys.EXIT, Constants.NBT.TAG_INT_ARRAY))
         {
-            pos = NBTUtils.readBlockPosFromIntArray(nbt, fi.dy.masa.malilib.util.NbtKeys.EXIT);
+            pos = NbtUtils.readBlockPosFromIntArray(nbt, NbtKeys.EXIT);
         }
 
         return Pair.of(age, pos);
@@ -219,17 +219,17 @@ public class NbtBlockUtils
         AtomicReference<SignText> back = new AtomicReference<>(null);
         boolean waxed = false;
 
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.FRONT_TEXT))
+        if (nbt.contains(NbtKeys.FRONT_TEXT))
         {
-            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(fi.dy.masa.malilib.util.NbtKeys.FRONT_TEXT)).resultOrPartial().ifPresent(front::set);
+            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(NbtKeys.FRONT_TEXT)).resultOrPartial().ifPresent(front::set);
         }
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.BACK_TEXT))
+        if (nbt.contains(NbtKeys.BACK_TEXT))
         {
-            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(fi.dy.masa.malilib.util.NbtKeys.BACK_TEXT)).resultOrPartial().ifPresent(back::set);
+            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(NbtKeys.BACK_TEXT)).resultOrPartial().ifPresent(back::set);
         }
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.WAXED))
+        if (nbt.contains(NbtKeys.WAXED))
         {
-            waxed = nbt.getBoolean(fi.dy.masa.malilib.util.NbtKeys.WAXED);
+            waxed = nbt.getBoolean(NbtKeys.WAXED);
         }
 
         return Pair.of(Pair.of(front.get(), back.get()), waxed);
@@ -247,13 +247,13 @@ public class NbtBlockUtils
         ItemStack book = ItemStack.EMPTY;
         int current = -1;
 
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
         {
-            book = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(fi.dy.masa.malilib.util.NbtKeys.BOOK));
+            book = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
         }
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.PAGE, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.PAGE, Constants.NBT.TAG_INT))
         {
-            current = nbt.getInt(fi.dy.masa.malilib.util.NbtKeys.PAGE);
+            current = nbt.getInt(NbtKeys.PAGE);
         }
 
         return Pair.of(book, current);
@@ -315,5 +315,15 @@ public class NbtBlockUtils
         }
 
         return list;
+    }
+
+    public static int getOutputSignalFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.OUTPUT_SIGNAL, Constants.NBT.TAG_INT))
+        {
+            return nbt.getInt(NbtKeys.OUTPUT_SIGNAL);
+        }
+
+        return 0;
     }
 }
