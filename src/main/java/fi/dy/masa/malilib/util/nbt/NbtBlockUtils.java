@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -19,11 +18,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -31,7 +27,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.Vibrations;
 
 import fi.dy.masa.malilib.util.Constants;
-import fi.dy.masa.malilib.util.NBTUtils;
 
 public class NbtBlockUtils
 {
@@ -43,9 +38,9 @@ public class NbtBlockUtils
      */
     public static @Nullable BlockEntityType<?> getBlockEntityTypeFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.ID, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
         {
-            RegistryEntry<BlockEntityType<?>> entry = Registries.BLOCK_ENTITY_TYPE.getEntry(Identifier.tryParse(nbt.getString(fi.dy.masa.malilib.util.NbtKeys.ID))).orElse(null);
+            RegistryEntry<BlockEntityType<?>> entry = Registries.BLOCK_ENTITY_TYPE.getEntry(Identifier.tryParse(nbt.getString(NbtKeys.ID))).orElse(null);
 
             if (entry != null && entry.hasKeyAndValue())
             {
@@ -94,9 +89,9 @@ public class NbtBlockUtils
     {
         Set<Integer> list = new HashSet<>();
 
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.DISABLED_SLOTS, Constants.NBT.TAG_INT_ARRAY))
+        if (nbt.contains(NbtKeys.DISABLED_SLOTS, Constants.NBT.TAG_INT_ARRAY))
         {
-            int[] is = nbt.getIntArray(fi.dy.masa.malilib.util.NbtKeys.DISABLED_SLOTS);
+            int[] is = nbt.getIntArray(NbtKeys.DISABLED_SLOTS);
 
             for (int j : is)
             {
@@ -272,13 +267,13 @@ public class NbtBlockUtils
         Identifier note = null;
         Text name = Text.empty();
 
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.NOTE, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.NOTE, Constants.NBT.TAG_STRING))
         {
-            note = Identifier.tryParse(nbt.getString(fi.dy.masa.malilib.util.NbtKeys.NOTE));
+            note = Identifier.tryParse(nbt.getString(NbtKeys.NOTE));
         }
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.SKULL_NAME, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.SKULL_NAME, Constants.NBT.TAG_STRING))
         {
-            String str = nbt.getString(fi.dy.masa.malilib.util.NbtKeys.SKULL_NAME);
+            String str = nbt.getString(NbtKeys.SKULL_NAME);
 
             try
             {
@@ -286,9 +281,9 @@ public class NbtBlockUtils
             }
             catch (Exception ignored) {}
         }
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.PROFILE))
+        if (nbt.contains(NbtKeys.PROFILE))
         {
-            ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get(fi.dy.masa.malilib.util.NbtKeys.PROFILE)).resultOrPartial().ifPresent(profile::set);
+            ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get(NbtKeys.PROFILE)).resultOrPartial().ifPresent(profile::set);
         }
 
         return Pair.of(profile.get(), Pair.of(note, name));
@@ -304,9 +299,9 @@ public class NbtBlockUtils
     {
         Object2IntOpenHashMap<Identifier> list = new Object2IntOpenHashMap<>();
 
-        if (nbt.contains(fi.dy.masa.malilib.util.NbtKeys.RECIPES_USED, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.RECIPES_USED, Constants.NBT.TAG_COMPOUND))
         {
-            NbtCompound compound = nbt.getCompound(fi.dy.masa.malilib.util.NbtKeys.RECIPES_USED);
+            NbtCompound compound = nbt.getCompound(NbtKeys.RECIPES_USED);
 
             for (String key : compound.getKeys())
             {
