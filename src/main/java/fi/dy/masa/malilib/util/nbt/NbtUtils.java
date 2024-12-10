@@ -85,16 +85,35 @@ public class NbtUtils
         return list;
     }
 
-    public static NbtCompound createBlockPosTag(Vec3i pos)
+    public static @NotNull NbtCompound createBlockPosTag(@Nonnull BlockPos pos)
+    {
+        return writeBlockPos(pos, new NbtCompound());
+    }
+
+    public static @NotNull NbtCompound createBlockPosTag(@Nonnull Vec3i pos)
     {
         return putVec3i(new NbtCompound(), pos);
     }
 
-    public static NbtCompound putVec3i(@Nonnull NbtCompound tag, @Nonnull Vec3i pos)
+    public static @NotNull NbtCompound createEntityPositionToTag(@Nonnull Vec3d pos)
+    {
+        return writeVec3dToListTag(pos, new NbtCompound(), NbtKeys.POS);
+    }
+
+    public static @NotNull NbtCompound putVec3i(@Nonnull NbtCompound tag, @Nonnull Vec3i pos)
     {
         NbtWrap.putInt(tag, "x", pos.getX());
         NbtWrap.putInt(tag, "y", pos.getY());
         NbtWrap.putInt(tag, "z", pos.getZ());
+        return tag;
+    }
+
+    public static @NotNull NbtCompound writeBlockPos(@Nonnull BlockPos pos, @Nonnull NbtCompound tag)
+    {
+        NbtWrap.putInt(tag, "x", pos.getX());
+        NbtWrap.putInt(tag, "y", pos.getY());
+        NbtWrap.putInt(tag, "z", pos.getZ());
+
         return tag;
     }
 
@@ -171,7 +190,7 @@ public class NbtUtils
         return null;
     }
 
-    public static NbtCompound removeBlockPosFromTag(@Nonnull NbtCompound tag)
+    public static @NotNull NbtCompound removeBlockPosFromTag(@Nonnull NbtCompound tag)
     {
         NbtWrap.remove(tag, "x");
         NbtWrap.remove(tag, "y");
@@ -180,12 +199,17 @@ public class NbtUtils
         return tag;
     }
 
-    public static NbtCompound writeVec3dToListTag(@Nonnull Vec3d pos, @Nonnull NbtCompound tag)
+    public static @NotNull NbtCompound writeEntityPositionToTag(@Nonnull Vec3d pos, @Nonnull NbtCompound tag)
     {
         return writeVec3dToListTag(pos, tag, NbtKeys.POS);
     }
 
-    public static NbtCompound writeVec3dToListTag(@Nonnull Vec3d pos, @Nonnull NbtCompound tag, String tagName)
+    public static @NotNull NbtCompound writeVec3dToListTag(@Nonnull Vec3d pos, @Nonnull NbtCompound tag)
+    {
+        return writeVec3dToListTag(pos, tag, NbtKeys.POS);
+    }
+
+    public static @NotNull NbtCompound writeVec3dToListTag(@Nonnull Vec3d pos, @Nonnull NbtCompound tag, String tagName)
     {
         NbtList posList = new NbtList();
 
@@ -265,7 +289,7 @@ public class NbtUtils
      * @param tag ()
      * @return ()
      */
-    public static NbtCompound writeAttachedPosToTag(@Nonnull BlockPos pos, @Nonnull NbtCompound tag)
+    public static @NotNull NbtCompound writeAttachedPosToTag(@Nonnull BlockPos pos, @Nonnull NbtCompound tag)
     {
         tag.putInt("TileX", pos.getX());
         tag.putInt("TileY", pos.getY());
