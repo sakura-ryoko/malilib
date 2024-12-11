@@ -48,9 +48,12 @@ import net.minecraft.world.World;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
-import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.Constants;
+import fi.dy.masa.malilib.util.IEntityOwnedInventory;
+import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
+import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 public class InventoryOverlay
 {

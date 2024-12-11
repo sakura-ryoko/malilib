@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.test;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +35,11 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
-import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.Constants;
+import fi.dy.masa.malilib.util.EntityUtils;
+import fi.dy.masa.malilib.util.InventoryUtils;
+import fi.dy.masa.malilib.util.WorldUtils;
+import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 public class RayTraceUtils
 {

@@ -48,6 +48,7 @@ import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.IMixinPlayerEntity;
+import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 public class InventoryUtils
 {
