@@ -1,6 +1,9 @@
 package fi.dy.masa.malilib.util.position;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Vector3i;
+
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Post-ReWrite code
@@ -24,6 +27,16 @@ public class Vec3i extends net.minecraft.util.math.BlockPos
         this.y = y;
         this.z = z;
         */
+    }
+
+    public Vec3i of(BlockPos blockPos)
+    {
+        return new Vec3i(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+    }
+
+    public Vec3i of(net.minecraft.util.math.Vec3i vanilla)
+    {
+        return new Vec3i(vanilla.getX(), vanilla.getY(), vanilla.getZ());
     }
 
     /*
@@ -56,6 +69,21 @@ public class Vec3i extends net.minecraft.util.math.BlockPos
     public double squareDistanceOfCenterTo(Vec3d pos)
     {
         return (this.getX() + 0.5) * pos.x + (this.getY() + 0.5) * pos.y + (this.getZ() + 0.5) * pos.z;
+    }
+
+    public net.minecraft.util.math.Vec3i toVanilla()
+    {
+        return new net.minecraft.util.math.Vec3i(this.getX(), this.getY(), this.getZ());
+    }
+
+    public net.minecraft.util.math.BlockPos toBlockPos()
+    {
+        return new BlockPos(this.getX(), this.getY(), this.getZ());
+    }
+
+    public Vector3i toVector()
+    {
+        return new Vector3i(this.getX(), this.getY(), this.getZ());
     }
 
     @Override

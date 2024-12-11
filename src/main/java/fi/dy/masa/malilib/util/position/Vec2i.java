@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.util.position;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Vector2i;
 
 /**
  * Post-ReWrite code
@@ -52,6 +53,11 @@ public class Vec2i
 
         if (this.x != vec2i.x) { return false; }
         return this.y == vec2i.y;
+    }
+
+    public Vector2i toVector()
+    {
+        return new Vector2i(this.getX(), this.getY());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.util.position;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Vector3f;
 
 /**
  * Post-ReWrite code
@@ -50,6 +51,11 @@ public class Vec3f
     {
         double d = Math.sqrt(x * x + y * y + z * z);
         return d < 1.0E-4 ? ZERO : new Vec3f(x / d, y / d, z / d);
+    }
+
+    public Vector3f toVector()
+    {
+        return new Vector3f(this.getX(), this.getY(), this.getZ());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.util.position;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Vector2d;
 
 /**
  * Post-ReWrite code
@@ -51,6 +52,11 @@ public class Vec2d
         Vec2d vec2d = (Vec2d) o;
         return Double.compare(vec2d.x, this.x) == 0 &&
                Double.compare(vec2d.y, this.y) == 0;
+    }
+
+    public Vector2d toVector()
+    {
+        return new Vector2d(this.getX(), this.getY());
     }
 
     @Override

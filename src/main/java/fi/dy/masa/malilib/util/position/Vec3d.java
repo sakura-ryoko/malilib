@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.util.position;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.joml.Vector3d;
 
 /**
  * Post-ReWrite code
@@ -91,11 +92,6 @@ public class Vec3d
         return normalized(this.x, this.y, this.z);
     }
 
-    public net.minecraft.util.math.Vec3d toVanilla()
-    {
-        return new net.minecraft.util.math.Vec3d(this.x, this.y, this.z);
-    }
-
     public static Vec3d of(double x, double y, double z)
     {
         return new Vec3d(x, y, z);
@@ -115,6 +111,16 @@ public class Vec3d
     {
         double d = Math.sqrt(x * x + y * y + z * z);
         return d < 1.0E-4 ? ZERO : new Vec3d(x / d, y / d, z / d);
+    }
+
+    public net.minecraft.util.math.Vec3d toVanilla()
+    {
+        return new net.minecraft.util.math.Vec3d(this.x, this.y, this.z);
+    }
+
+    public Vector3d toVector()
+    {
+        return new Vector3d(this.getX(), this.getY(), this.getZ());
     }
 
     @Override

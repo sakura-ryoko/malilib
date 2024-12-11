@@ -100,6 +100,11 @@ public class NbtUtils
         return putVec3i(new NbtCompound(), pos);
     }
 
+    public static @NotNull NbtCompound createVec3iTag(@Nonnull Vec3i pos)
+    {
+        return putVec3i(new NbtCompound(), pos);
+    }
+
     public static @NotNull NbtCompound createVec3iToArray(@Nonnull Vec3i pos, String tagName)
     {
         return writeBlockPosToArrayTag(pos, new NbtCompound(), tagName);
@@ -182,6 +187,26 @@ public class NbtUtils
             NbtWrap.containsInt(tag, "z"))
         {
             return new BlockPos(NbtWrap.getInt(tag, "x"), NbtWrap.getInt(tag, "y"), NbtWrap.getInt(tag, "z"));
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static Vec3i readVec3i(@Nullable NbtCompound tag)
+    {
+        return readVec3iFromTag(tag);
+    }
+
+    @Nullable
+    public static Vec3i readVec3iFromTag(@Nullable NbtCompound tag)
+    {
+        if (tag != null &&
+            NbtWrap.containsInt(tag, "x") &&
+            NbtWrap.containsInt(tag, "y") &&
+            NbtWrap.containsInt(tag, "z"))
+        {
+            return new Vec3i(NbtWrap.getInt(tag, "x"), NbtWrap.getInt(tag, "y"), NbtWrap.getInt(tag, "z"));
         }
 
         return null;
