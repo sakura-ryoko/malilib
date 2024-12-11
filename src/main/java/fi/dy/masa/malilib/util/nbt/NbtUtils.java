@@ -389,13 +389,25 @@ public class NbtUtils
 
         return tag;
     }
-    
+
+    @Nullable
+    public static NbtCompound readNbtFromFile(@Nonnull File file)
+    {
+        return readNbtFromFile(file.toPath(), NbtSizeTracker.ofUnlimitedBytes());
+    }
+
     @Nullable
     public static NbtCompound readNbtFromFile(@Nonnull Path file)
     {
         return readNbtFromFile(file, NbtSizeTracker.ofUnlimitedBytes());
     }
-    
+
+    @Nullable
+    public static NbtCompound readNbtFromFile(@Nonnull File file, NbtSizeTracker tracker)
+    {
+        return readNbtFromFile(file.toPath(), tracker);
+    }
+
     @Nullable
     public static NbtCompound readNbtFromFile(@Nonnull Path file, NbtSizeTracker tracker)
     {

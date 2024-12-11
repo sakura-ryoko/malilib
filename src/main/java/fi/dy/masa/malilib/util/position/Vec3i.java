@@ -29,12 +29,12 @@ public class Vec3i extends net.minecraft.util.math.BlockPos
         */
     }
 
-    public Vec3i of(BlockPos blockPos)
+    public static Vec3i of(BlockPos blockPos)
     {
         return new Vec3i(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
-    public Vec3i of(net.minecraft.util.math.Vec3i vanilla)
+    public static Vec3i of(net.minecraft.util.math.Vec3i vanilla)
     {
         return new Vec3i(vanilla.getX(), vanilla.getY(), vanilla.getZ());
     }
