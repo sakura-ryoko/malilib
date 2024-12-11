@@ -85,6 +85,11 @@ public class NbtUtils
         return list;
     }
 
+    public static @NotNull NbtCompound createBlockPos(@Nonnull BlockPos pos)
+    {
+        return writeBlockPos(pos, new NbtCompound());
+    }
+
     public static @NotNull NbtCompound createBlockPosTag(@Nonnull BlockPos pos)
     {
         return writeBlockPos(pos, new NbtCompound());
@@ -93,6 +98,11 @@ public class NbtUtils
     public static @NotNull NbtCompound createBlockPosTag(@Nonnull Vec3i pos)
     {
         return putVec3i(new NbtCompound(), pos);
+    }
+
+    public static @NotNull NbtCompound createEntityPosition(@Nonnull Vec3d pos)
+    {
+        return createEntityPositionToTag(pos);
     }
 
     public static @NotNull NbtCompound createEntityPositionToTag(@Nonnull Vec3d pos)
@@ -106,6 +116,11 @@ public class NbtUtils
         NbtWrap.putInt(tag, "y", pos.getY());
         NbtWrap.putInt(tag, "z", pos.getZ());
         return tag;
+    }
+
+    public static @NotNull NbtCompound writeBlockPosToTag(@Nonnull BlockPos pos, @Nonnull NbtCompound tag)
+    {
+        return writeBlockPos(pos, tag);
     }
 
     public static @NotNull NbtCompound writeBlockPos(@Nonnull BlockPos pos, @Nonnull NbtCompound tag)
@@ -190,6 +205,11 @@ public class NbtUtils
         return null;
     }
 
+    public static @NotNull NbtCompound removeBlockPos(@Nonnull NbtCompound tag)
+    {
+        return removeBlockPosFromTag(tag);
+    }
+
     public static @NotNull NbtCompound removeBlockPosFromTag(@Nonnull NbtCompound tag)
     {
         NbtWrap.remove(tag, "x");
@@ -197,6 +217,11 @@ public class NbtUtils
         NbtWrap.remove(tag, "z");
 
         return tag;
+    }
+
+    public static @NotNull NbtCompound writeEntityPosition(@Nonnull Vec3d pos, @Nonnull NbtCompound tag)
+    {
+        return writeVec3dToListTag(pos, tag, NbtKeys.POS);
     }
 
     public static @NotNull NbtCompound writeEntityPositionToTag(@Nonnull Vec3d pos, @Nonnull NbtCompound tag)
