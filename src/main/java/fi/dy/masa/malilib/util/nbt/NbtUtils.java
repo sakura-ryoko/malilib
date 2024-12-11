@@ -100,6 +100,16 @@ public class NbtUtils
         return putVec3i(new NbtCompound(), pos);
     }
 
+    public static @NotNull NbtCompound createVec3iToArray(@Nonnull Vec3i pos, String tagName)
+    {
+        return writeBlockPosToArrayTag(pos, new NbtCompound(), tagName);
+    }
+
+    public static @NotNull NbtCompound createVec3iToArrayTag(@Nonnull Vec3i pos, String tagName)
+    {
+        return writeBlockPosToArrayTag(pos, new NbtCompound(), tagName);
+    }
+
     public static @NotNull NbtCompound createEntityPosition(@Nonnull Vec3d pos)
     {
         return createEntityPositionToTag(pos);
@@ -142,6 +152,16 @@ public class NbtUtils
         NbtWrap.putTag(tag, tagName, tagList);
 
         return tag;
+    }
+
+    public static @NotNull NbtCompound writeVec3iToArray(@Nonnull Vec3i pos, @Nonnull NbtCompound tag, String tagName)
+    {
+        return writeBlockPosToArrayTag(pos, tag, tagName);
+    }
+
+    public static @NotNull NbtCompound writeVec3iToArrayTag(@Nonnull Vec3i pos, @Nonnull NbtCompound tag, String tagName)
+    {
+        return writeBlockPosToArrayTag(pos, tag, tagName);
     }
 
     public static @NotNull NbtCompound writeBlockPosToArrayTag(@Nonnull Vec3i pos, @Nonnull NbtCompound tag, String tagName)
@@ -199,6 +219,28 @@ public class NbtUtils
             if (pos.length == 3)
             {
                 return new BlockPos(pos[0], pos[1], pos[2]);
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    public static Vec3i readVec3iFromIntArray(@Nonnull NbtCompound nbt, String key)
+    {
+        return readVec3iFromIntArrayTag(nbt, key);
+    }
+
+    @Nullable
+    public static Vec3i readVec3iFromIntArrayTag(@Nonnull NbtCompound tag, String tagName)
+    {
+        if (NbtWrap.containsIntArray(tag, tagName))
+        {
+            int[] pos = NbtWrap.getIntArray(tag, tagName);
+
+            if (pos.length == 3)
+            {
+                return new Vec3i(pos[0], pos[1], pos[2]);
             }
         }
 
