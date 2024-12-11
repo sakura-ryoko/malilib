@@ -405,7 +405,55 @@ public class NbtUtils
     @Nullable
     public static NbtCompound readNbtFromFile(@Nonnull File file, NbtSizeTracker tracker)
     {
-        return readNbtFromFile(file.toPath(), tracker);
+        if (file.exists() == false || file.canRead() == false)
+        {
+            return null;
+        }
+
+        FileInputStream is;
+
+        try
+        {
+            is = new FileInputStream(file);
+        }
+        catch (Exception e)
+        {
+            MaLiLib.LOGGER.warn("Failed to read NBT data from file '{}' (failed to create the input stream)", file.getAbsolutePath());
+            return null;
+        }
+
+        NbtCompound nbt = null;
+
+        if (is != null)
+        {
+            try
+            {
+                nbt = NbtIo.readCompressed(is, NbtSizeTracker.ofUnlimitedBytes());
+            }
+            catch (Exception e)
+            {
+                try
+                {
+                    is.close();
+                    is = new FileInputStream(file);
+                    nbt = NbtIo.read(file.toPath());
+                }
+                catch (Exception ignore) {}
+            }
+
+            try
+            {
+                is.close();
+            }
+            catch (Exception ignore) {}
+        }
+
+        if (nbt == null)
+        {
+            MaLiLib.LOGGER.warn("Failed to read NBT data from file '{}'", file.getAbsolutePath());
+        }
+
+        return nbt;
     }
 
     @Nullable
