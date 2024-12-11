@@ -393,7 +393,7 @@ public class NbtUtils
     @Nullable
     public static NbtCompound readNbtFromFile(@Nonnull File file)
     {
-        return readNbtFromFile(file.toPath(), NbtSizeTracker.ofUnlimitedBytes());
+        return readNbtFromFile(file, NbtSizeTracker.ofUnlimitedBytes());
     }
 
     @Nullable
@@ -428,7 +428,7 @@ public class NbtUtils
         {
             try
             {
-                nbt = NbtIo.readCompressed(is, NbtSizeTracker.ofUnlimitedBytes());
+                nbt = NbtIo.readCompressed(is, tracker);
             }
             catch (Exception e)
             {
