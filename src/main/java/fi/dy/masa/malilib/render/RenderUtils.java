@@ -278,6 +278,8 @@ public class RenderUtils
                 textStartX = Math.max(2, maxWidth - maxLineLength - 8);
             }
 
+            //drawTexturedRect(GuiBase.BG_TEXTURE, x, y, 0, 0, maxLineLength, maxWidth, drawContext);
+
             // TODO --> DrawContext still uses MatrixStack,
             MatrixStack matrixStack = drawContext.getMatrices();
             matrixStack.push();

@@ -4,6 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
+
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public abstract class WidgetBase
@@ -181,6 +182,14 @@ public abstract class WidgetBase
     {
         drawContext.drawCenteredTextWithShadow(this.textRenderer, text, x, y, color);
     }
+
+    // TODO 1.21.2+
+    /*
+    public void drawBackgroundMask(DrawContext drawContext)
+    {
+        RenderUtils.drawTexturedRect(GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2, drawContext);
+    }
+     */
 
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
