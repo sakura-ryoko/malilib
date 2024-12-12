@@ -281,7 +281,7 @@ public class BlockUtils
                         key = "malilib.label.block_state_properties.generic";
                     }
 
-                    lines.add(StringUtils.translate(key, prop.getName(), separator, val.toString()));
+                    lines.add(StringUtils.translate(key, prop.getName(), separator, val.toString().toLowerCase()));
                 }
             }
             catch (Exception ignore) {}
