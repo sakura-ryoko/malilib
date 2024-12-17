@@ -1089,7 +1089,7 @@ public class InventoryOverlay
 
     public static void renderStackToolTip(int x, int y, ItemStack stack, MinecraftClient mc, DrawContext drawContext)
     {
-        List<Text> list = stack.getTooltip(Item.TooltipContext.DEFAULT, mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
+        List<Text> list = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
         List<String> lines = new ArrayList<>();
 
         for (int i = 0; i < list.size(); ++i)
