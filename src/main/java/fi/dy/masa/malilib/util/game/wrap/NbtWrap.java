@@ -316,7 +316,7 @@ public class NbtWrap
 
     public static int getListStoredType(NbtList listTag)
     {
-        return listTag.getType();
+        return listTag.getHeldType();
     }
 
     public static NbtList getListOfCompounds(NbtCompound tag, String name)
