@@ -46,6 +46,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
@@ -1025,8 +1026,6 @@ public class InventoryOverlay
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
 
-        System.out.printf("renderStackAt(): [%s]\n", stack.encode(WorldUtils.getBestWorld(GameWrap.getClient()).getRegistryManager()).toString());
-
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
             hoveredStack = stack.copy();
@@ -1107,7 +1106,10 @@ public class InventoryOverlay
         List<Text> list = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
         List<String> lines = new ArrayList<>();
 
-        dumpStack(stack, list);
+        if (MaLiLibReference.DEBUG_MODE)
+        {
+            dumpStack(stack, list);
+        }
         for (int i = 0; i < list.size(); ++i)
         {
             if (i == 0)
@@ -1136,8 +1138,14 @@ public class InventoryOverlay
     {
         if (stack.isEmpty() == false && mc.world != null && mc.player != null)
         {
+            // Not sure why getBestWorld() is required here,
+            // it's also required when connected to a server;
+            // or else not be able to see Enchantment tooltips. (>.>)
             List<Text> toolTips = stack.getTooltip(Item.TooltipContext.create(WorldUtils.getBestWorld(mc)), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
-            dumpStack(stack, toolTips);
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                dumpStack(stack, toolTips);
+            }
             drawContext.drawTooltip(mc.textRenderer,
                                     toolTips,
                                     stack.getTooltipData(), // Bundle/Optional Data
@@ -1154,7 +1162,7 @@ public class InventoryOverlay
             return;
         }
 
-        System.out.printf("dumpStack(): [%s]\n", stack.encode(GameWrap.getClientRegistryManager()).toString());
+        System.out.printf("dumpStack(): [%s]\n", stack.encode(WorldUtils.getBestWorld(GameWrap.getClient()).getRegistryManager()).toString());
 
         if (list != null && !list.isEmpty())
         {
