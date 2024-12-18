@@ -13,6 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -900,7 +901,7 @@ public class InventoryOverlay
             hoveredStack = null;
             // Some mixin / side effects can happen here
             //drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
-            renderStackToolTip((int) mouseX, (int) mouseY, stack, mc, drawContext);
+            renderStackToolTipStyled((int) mouseX, (int) mouseY, stack, mc, drawContext);
         }
     }
 
@@ -942,7 +943,7 @@ public class InventoryOverlay
             hoveredStack = null;
             // Some mixin / side effects can happen here, so reset hoveredStack
             //drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
-            renderStackToolTip((int) mouseX, (int) mouseY, stack, mc, drawContext);
+            renderStackToolTipStyled((int) mouseX, (int) mouseY, stack, mc, drawContext);
         }
     }
 
@@ -1089,6 +1090,14 @@ public class InventoryOverlay
         }
     }
 
+    /**
+     * This is a more "basic" hover tooltip
+     * @param x
+     * @param y
+     * @param stack
+     * @param mc
+     * @param drawContext
+     */
     public static void renderStackToolTip(int x, int y, ItemStack stack, MinecraftClient mc, DrawContext drawContext)
     {
         List<Text> list = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
@@ -1107,6 +1116,27 @@ public class InventoryOverlay
         }
 
         RenderUtils.drawHoverText(x, y, lines, drawContext);
+    }
+
+    /**
+     * This is a more Advanced version, with full Color Style, etc; just like Vanilla's display.
+     * This should even be able to display the Bundle pop up interface.
+     * @param x
+     * @param y
+     * @param stack
+     * @param mc
+     * @param drawContext
+     */
+    public static void renderStackToolTipStyled(int x, int y, ItemStack stack, MinecraftClient mc, DrawContext drawContext)
+    {
+        if (stack.isEmpty() == false && mc.world != null && mc.player != null)
+        {
+            drawContext.drawTooltip(mc.textRenderer,
+                                    stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC),
+                                    stack.getTooltipData(), // Bundle/Optional Data
+                                    x, y,
+                                    stack.get(DataComponentTypes.TOOLTIP_STYLE));
+        }
     }
 
     public static class InventoryProperties
