@@ -1103,6 +1103,7 @@ public class InventoryOverlay
         List<Text> list = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
         List<String> lines = new ArrayList<>();
 
+        //dumpTooltip(list);
         for (int i = 0; i < list.size(); ++i)
         {
             if (i == 0)
@@ -1131,11 +1132,24 @@ public class InventoryOverlay
     {
         if (stack.isEmpty() == false && mc.world != null && mc.player != null)
         {
+            List<Text> toolTips = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
+            dumpTooltip(toolTips);
             drawContext.drawTooltip(mc.textRenderer,
-                                    stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC),
+                                    toolTips,
                                     stack.getTooltipData(), // Bundle/Optional Data
                                     x, y,
                                     stack.get(DataComponentTypes.TOOLTIP_STYLE));
+        }
+    }
+
+    private static void dumpTooltip(List<Text> list)
+    {
+        int i = 0;
+
+        for (Text entry : list)
+        {
+            System.out.printf("dumpTooltip[%d]: %s\n", i, entry.getString());
+            i++;
         }
     }
 

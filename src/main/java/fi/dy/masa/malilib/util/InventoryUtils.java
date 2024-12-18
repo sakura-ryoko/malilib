@@ -640,7 +640,7 @@ public class InventoryUtils
             }
             for (int i = 0; i < slotCount; i++)
             {
-                inv.setStack(i, items.get(i));
+                inv.setStack(i, items.get(i).copy());
             }
 
             return inv;
@@ -678,7 +678,7 @@ public class InventoryUtils
             // item (DecoratedPot, ItemEntity)
             ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
             SimpleInventory inv = new SimpleInventory(1);
-            inv.setStack(0, entry);
+            inv.setStack(0, entry.copy());
 
             return inv;
         }
@@ -687,7 +687,7 @@ public class InventoryUtils
             // Item (Item Frame)
             ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM_2));
             SimpleInventory inv = new SimpleInventory(1);
-            inv.setStack(0, entry);
+            inv.setStack(0, entry.copy());
 
             return inv;
         }
@@ -696,7 +696,7 @@ public class InventoryUtils
             // Book (Lectern)
             ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
             SimpleInventory inv = new SimpleInventory(1);
-            inv.setStack(0, entry);
+            inv.setStack(0, entry.copy());
 
             return inv;
         }
@@ -705,7 +705,7 @@ public class InventoryUtils
             // RecordItem (Jukebox)
             ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.RECORD));
             SimpleInventory inv = new SimpleInventory(1);
-            inv.setStack(0, entry);
+            inv.setStack(0, entry.copy());
 
             return inv;
         }
@@ -754,7 +754,7 @@ public class InventoryUtils
             {
                 return null;
             }
-            inv.setStack(0, saddle);
+            inv.setStack(0, saddle.copy());
             for (int i = 0; i < slotCount; i++)
             {
                 inv.setStack(i + 1, items.get(i));
@@ -766,7 +766,7 @@ public class InventoryUtils
         else if (!saddle.isEmpty())
         {
             SimpleInventory inv = new SimpleInventory(1);
-            inv.setStack(0, saddle);
+            inv.setStack(0, saddle.copy());
 
             return inv;
         }
@@ -775,7 +775,7 @@ public class InventoryUtils
             // item (DecoratedPot, ItemEntity)
             ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
             SimpleInventory inv = new SimpleInventory(1);
-            inv.setStack(0, entry);
+            inv.setStack(0, entry.copy());
         }
 
         return null;
@@ -963,7 +963,7 @@ public class InventoryUtils
 
                 if (slot.isEmpty() == false)
                 {
-                    items.add(slot);
+                    items.add(slot.copy());
                 }
             }
 
@@ -1003,7 +1003,7 @@ public class InventoryUtils
 
             while (iter.hasNext() && limit < maxSlots)
             {
-                items.add(iter.next());
+                items.add(iter.next().copy());
                 limit++;
             }
 
