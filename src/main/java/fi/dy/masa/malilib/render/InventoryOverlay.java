@@ -52,6 +52,8 @@ import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
 import fi.dy.masa.malilib.util.Constants;
 import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 import fi.dy.masa.malilib.util.InventoryUtils;
+import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.game.wrap.GameWrap;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
@@ -599,16 +601,16 @@ public class InventoryOverlay
                 return InventoryRenderType.HOPPER;
             }
             else if (entityType.equals(EntityType.HORSE) ||
-                    entityType.equals(EntityType.DONKEY) ||
-                    entityType.equals(EntityType.MULE) ||
-                    entityType.equals(EntityType.CAMEL) ||
-                    entityType.equals(EntityType.SKELETON_HORSE) ||
-                    entityType.equals(EntityType.ZOMBIE_HORSE))
+                     entityType.equals(EntityType.DONKEY) ||
+                     entityType.equals(EntityType.MULE) ||
+                     entityType.equals(EntityType.CAMEL) ||
+                     entityType.equals(EntityType.SKELETON_HORSE) ||
+                     entityType.equals(EntityType.ZOMBIE_HORSE))
             {
                 return InventoryRenderType.HORSE;
             }
             else if (entityType.equals(EntityType.LLAMA) ||
-                    entityType.equals(EntityType.TRADER_LLAMA))
+                     entityType.equals(EntityType.TRADER_LLAMA))
             {
                 return InventoryRenderType.LLAMA;
             }
@@ -874,7 +876,7 @@ public class InventoryOverlay
             {
                 for (int column = 0; column < slotsPerRow && slot < slots && i < maxSlots; ++column, ++slot, ++i)
                 {
-                    ItemStack stack = inv.getStack(slot);
+                    ItemStack stack = inv.getStack(slot).copy();
 
                     if (disabledSlots.contains(slot))
                     {
@@ -919,7 +921,7 @@ public class InventoryOverlay
 
             if (stack.isEmpty() == false)
             {
-                renderStackAt(stack, x + xOff + 1, y + yOff + 1, 1, mc, drawContext, mouseX, mouseY);
+                renderStackAt(stack.copy(), x + xOff + 1, y + yOff + 1, 1, mc, drawContext, mouseX, mouseY);
             }
         }
 
@@ -927,14 +929,14 @@ public class InventoryOverlay
 
         if (stack.isEmpty() == false)
         {
-            renderStackAt(stack, x + 28, y + 2 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(stack.copy(), x + 28, y + 2 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
         }
 
         stack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
 
         if (stack.isEmpty() == false)
         {
-            renderStackAt(stack, x + 28, y + 3 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
+            renderStackAt(stack.copy(), x + 28, y + 3 * 18 + 7 + 1, 1, mc, drawContext, mouseX, mouseY);
         }
 
         if (hoveredStack != null)
@@ -980,7 +982,7 @@ public class InventoryOverlay
         {
             for (int column = 0; column < slotsPerRow && slot < slots && i < maxSlots; ++column, ++slot, ++i)
             {
-                ItemStack stack = items.get(slot);
+                ItemStack stack = items.get(slot).copy();
 
                 if (disabledSlots.contains(slot))
                 {
@@ -1022,6 +1024,8 @@ public class InventoryOverlay
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
+
+        System.out.printf("renderStackAt(): %s\n", stack.toNbt(GameWrap.getClientRegistryManager()));
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
@@ -1103,7 +1107,7 @@ public class InventoryOverlay
         List<Text> list = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
         List<String> lines = new ArrayList<>();
 
-        //dumpTooltip(list);
+        //dumpStack(stack, list);
         for (int i = 0; i < list.size(); ++i)
         {
             if (i == 0)
@@ -1133,7 +1137,7 @@ public class InventoryOverlay
         if (stack.isEmpty() == false && mc.world != null && mc.player != null)
         {
             List<Text> toolTips = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
-            dumpTooltip(toolTips);
+            dumpStack(stack, toolTips);
             drawContext.drawTooltip(mc.textRenderer,
                                     toolTips,
                                     stack.getTooltipData(), // Bundle/Optional Data
@@ -1142,14 +1146,25 @@ public class InventoryOverlay
         }
     }
 
-    private static void dumpTooltip(List<Text> list)
+    private static void dumpStack(ItemStack stack, @Nullable List<Text> list)
     {
-        int i = 0;
-
-        for (Text entry : list)
+        if (stack.isEmpty())
         {
-            System.out.printf("dumpTooltip[%d]: %s\n", i, entry.getString());
-            i++;
+            System.out.printf("dumpStack(): [%s]\n", ItemStack.EMPTY.toString());
+            return;
+        }
+
+        System.out.printf("dumpStack(): [%s]\n", stack.encode(GameWrap.getClientRegistryManager()).toString());
+
+        if (list != null && !list.isEmpty())
+        {
+            int i = 0;
+
+            for (Text entry : list)
+            {
+                System.out.printf("dumpTooltip[%d]: %s\n", i, entry.getString());
+                i++;
+            }
         }
     }
 
