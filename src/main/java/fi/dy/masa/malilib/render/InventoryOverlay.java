@@ -1149,8 +1149,8 @@ public class InventoryOverlay
             drawContext.drawTooltip(mc.textRenderer,
                                     toolTips,
                                     stack.getTooltipData(), // Bundle/Optional Data
-                                    x, y,
-                                    stack.get(DataComponentTypes.TOOLTIP_STYLE));
+                                    x, y);
+                                    //stack.get(DataComponentTypes.TOOLTIP_STYLE));
         }
     }
 
