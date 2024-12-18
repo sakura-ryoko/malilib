@@ -1136,7 +1136,7 @@ public class InventoryOverlay
     {
         if (stack.isEmpty() == false && mc.world != null && mc.player != null)
         {
-            List<Text> toolTips = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
+            List<Text> toolTips = stack.getTooltip(Item.TooltipContext.create(WorldUtils.getBestWorld(mc)), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
             dumpStack(stack, toolTips);
             drawContext.drawTooltip(mc.textRenderer,
                                     toolTips,
