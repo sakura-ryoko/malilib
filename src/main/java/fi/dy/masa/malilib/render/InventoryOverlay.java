@@ -79,7 +79,7 @@ public class InventoryOverlay
     // Brewer Slots (1.21.4+)
     public static final Identifier TEXTURE_EMPTY_BREWER_FUEL = Identifier.ofVanilla("container/slot/brewing_fuel");
     public static final Identifier TEXTURE_EMPTY_POTION      = Identifier.ofVanilla("container/slot/potion");
-    // Other Misc Empty Slots
+    // Other Misc Empty Slots (1.21.3-)
     public static final Identifier TEXTURE_EMPTY_SLOT_AMETHYST   = Identifier.ofVanilla("item/empty_slot_amethyst_shard");
     public static final Identifier TEXTURE_EMPTY_SLOT_AXE        = Identifier.ofVanilla("item/empty_slot_axe");
     public static final Identifier TEXTURE_EMPTY_SLOT_DIAMOND    = Identifier.ofVanilla("item/empty_slot_diamond");
@@ -1025,7 +1025,7 @@ public class InventoryOverlay
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
 
-        System.out.printf("renderStackAt(): %s\n", stack.toNbt(GameWrap.getClientRegistryManager()));
+        System.out.printf("renderStackAt(): [%s]\n", stack.encode(WorldUtils.getBestWorld(GameWrap.getClient()).getRegistryManager()).toString());
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
@@ -1162,7 +1162,7 @@ public class InventoryOverlay
 
             for (Text entry : list)
             {
-                System.out.printf("dumpTooltip[%d]: %s\n", i, entry.getString());
+                System.out.printf("ToolTip[%d]: %s\n", i, entry.getString());
                 i++;
             }
         }
