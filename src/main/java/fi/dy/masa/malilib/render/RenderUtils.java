@@ -53,6 +53,8 @@ import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.PositionUtils.HitPart;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 
+import static fi.dy.masa.malilib.render.InventoryOverlay.INV_PROPS_TEMP;
+
 public class RenderUtils
 {
     public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.ofVanilla("textures/map/map_background.png");
@@ -1399,12 +1401,19 @@ public class RenderUtils
 
     public static void renderBundlePreview(ItemStack stack, int baseX, int baseY, boolean useBgColors, DrawContext drawContext)
     {
+        // Default is 9 to make the default display the same as Shulker Boxes
+        renderBundlePreview(stack, baseX, baseY, 9, useBgColors, drawContext);
+    }
+
+    public static void renderBundlePreview(ItemStack stack, int baseX, int baseY, int slotsPerRow, boolean useBgColors, DrawContext drawContext)
+    {
         DefaultedList<ItemStack> items;
 
         if (stack.getComponents().contains(DataComponentTypes.BUNDLE_CONTENTS))
         {
             int count = InventoryUtils.bundleCountItems(stack);
             items = InventoryUtils.getBundleItems(stack, count);
+            slotsPerRow = slotsPerRow != 9 ? MathUtils.clamp(slotsPerRow, 6, 9) : 9;
 
             if (items.isEmpty())
             {
@@ -1413,7 +1422,7 @@ public class RenderUtils
 
             Inventory inv = InventoryUtils.getAsInventory(items);
             InventoryOverlay.InventoryRenderType type = InventoryOverlay.getInventoryType(stack);
-            InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, count);
+            InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, count, slotsPerRow);
 
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
