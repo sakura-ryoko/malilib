@@ -702,6 +702,22 @@ public class InventoryOverlay
      */
     public static InventoryProperties getInventoryPropsTemp(InventoryRenderType type, int totalSlots)
     {
+        // Default slotsPerARow is only used for Bundles
+        return getInventoryPropsTemp(type, totalSlots, 9);
+    }
+
+    /**
+     * Returns the instance of the shared/temporary properties instance,
+     * with the values set for the type of inventory provided.
+     * Don't hold on to the instance, as the values will mutate when this
+     * method is called again!
+     * @param type ()
+     * @param totalSlots ()
+     * @param slotsPerARow ()
+     * @return
+     */
+    public static InventoryProperties getInventoryPropsTemp(InventoryRenderType type, int totalSlots, int slotsPerARow)
+    {
         INV_PROPS_TEMP.totalSlots = totalSlots;
 
         if (type == InventoryRenderType.FURNACE)
@@ -772,7 +788,7 @@ public class InventoryOverlay
         }
         else if (type == InventoryRenderType.BUNDLE)
         {
-            INV_PROPS_TEMP.slotsPerRow = 9;
+            INV_PROPS_TEMP.slotsPerRow = slotsPerARow != 9 ? MathUtils.clamp(slotsPerARow, 6, 9) : 9;
             INV_PROPS_TEMP.slotOffsetX = 8;
             INV_PROPS_TEMP.slotOffsetY = 8;
             int rows = (int) (Math.ceil((double) totalSlots / (double) INV_PROPS_TEMP.slotsPerRow));

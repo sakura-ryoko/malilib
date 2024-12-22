@@ -88,6 +88,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "testString", "Test String").apply(TEST_KEY);
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
+        public static final ConfigInteger           TEST_BUNDLE_PREVIEW_WIDTH       = new ConfigInteger("testBundlePreviewWidth", 9, 6, 9, "Test Bundle Preview Width").apply(TEST_KEY);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN,
@@ -101,7 +102,8 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_OPTIONS_LIST,
                 TEST_CONFIG_STRING,
                 TEST_CONFIG_STRING_LIST,
-                TEST_CONFIG_LOCKED_LIST
+                TEST_CONFIG_LOCKED_LIST,
+                TEST_BUNDLE_PREVIEW_WIDTH
         );
 
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(

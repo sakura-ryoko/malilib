@@ -87,6 +87,7 @@ public class TestRenderHandler implements IRenderer
             MinecraftClient mc = MinecraftClient.getInstance();
 
             profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
+
             if (TestEnumConfig.TEST_WALLS_HOTKEY.getBooleanValue())
             {
                 if (TestWalls.needsUpdate(camera.getBlockPos()))
@@ -96,6 +97,7 @@ public class TestRenderHandler implements IRenderer
 
                 TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
             }
+
             profiler.pop();
         }
     }
@@ -125,7 +127,7 @@ public class TestRenderHandler implements IRenderer
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
-                RenderUtils.renderBundlePreview(stack, x, y, true, drawContext);
+                RenderUtils.renderBundlePreview(stack, x, y, MaLiLibConfigs.Test.TEST_BUNDLE_PREVIEW_WIDTH.getIntegerValue(), true, drawContext);
             }
         }
     }
@@ -133,7 +135,7 @@ public class TestRenderHandler implements IRenderer
     @Override
     public Supplier<String> getProfilerSectionSupplier()
     {
-        return () -> MaLiLibReference.MOD_ID + "_test_render";
+        return () -> MaLiLibReference.MOD_ID + "_test";
     }
 
     private void renderTargetingOverlay(Matrix4f posMatrix, MinecraftClient mc)
@@ -496,7 +498,7 @@ public class TestRenderHandler implements IRenderer
             wolfInv.setStack(0, wolfArmor != null && !wolfArmor.isEmpty() ? wolfArmor : ItemStack.EMPTY);
             InventoryOverlay.renderInventoryBackground(type, xInv, yInv, 1, 2, mc);
             // TODO 1.21.3+
-            InventoryOverlay.renderWolfArmorBackgroundSlots(wolfInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, drawContext);
+            //InventoryOverlay.renderWolfArmorBackgroundSlots(wolfInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, drawContext);
             InventoryOverlay.renderInventoryStacks(type, wolfInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, 1, 0, 2, mc, drawContext);
         }
 
