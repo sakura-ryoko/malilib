@@ -210,7 +210,7 @@
   "malilib.message.error.failed_to_save_all_configs": "At least some config options failed to save properly",
   "malilib.message.error.failed_to_write_data_to_file": "Failed to write data to file §e'%s'§r",
   "malilib.message.error.failed_to_write_json_to_file": "Failed to write JSON data to file §e'%s'§r\nException: %s",
-  "malilib.message.error.file_already_exists_hold_shift_to_override=": "ile already exists. Hold §eShift§r when clicking the button to override the existing file.",
+  "malilib.message.error.file_already_exists_hold_shift_to_override=": "File already exists. Hold §eShift§r when clicking the button to override the existing file.",
   "malilib.message.error.file_or_directory_already_exists": "File or directory\n  §e'%s'§r\nalready exists",
   "malilib.message.error.file_rename.rename_failed": "Failed to rename the file\n  §e'%s'§r\nto\n  §e'%s'§r",
   "malilib.message.error.file_rename.same_name": "Won't rename the file\n  §e'%s'§r,\nbecause the new name is the same as the original name",
