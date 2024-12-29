@@ -1,6 +1,6 @@
 package fi.dy.masa.malilib.test;
 
-import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;

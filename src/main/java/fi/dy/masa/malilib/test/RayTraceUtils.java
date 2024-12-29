@@ -3,7 +3,8 @@ package fi.dy.masa.malilib.test;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.Block;
