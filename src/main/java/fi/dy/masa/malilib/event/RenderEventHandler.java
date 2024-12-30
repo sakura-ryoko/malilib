@@ -8,7 +8,10 @@ import org.joml.Matrix4f;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+
 import fi.dy.masa.malilib.interfaces.IRenderDispatcher;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -91,6 +94,42 @@ public class RenderEventHandler implements IRenderDispatcher
         mc.getProfiler().pop();
 
         mc.getProfiler().pop();
+    }
+
+    @ApiStatus.Internal
+    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, List<Text> list)
+    {
+        if (this.tooltipLastRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.tooltipLastRenderers)
+            {
+                renderer.onRenderTooltipComponentInsertFirst(context, stack, list);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, List<Text> list)
+    {
+        if (this.tooltipLastRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.tooltipLastRenderers)
+            {
+                renderer.onRenderTooltipComponentInsertMiddle(context, stack, list);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, List<Text> list)
+    {
+        if (this.tooltipLastRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.tooltipLastRenderers)
+            {
+                renderer.onRenderTooltipComponentInsertLast(context, stack, list);
+            }
+        }
     }
 
     @ApiStatus.Internal

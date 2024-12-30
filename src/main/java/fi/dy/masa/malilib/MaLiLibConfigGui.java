@@ -10,13 +10,13 @@ import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
-import fi.dy.masa.malilib.test.TestEnumConfig;
+import fi.dy.masa.malilib.test.ConfigTestEnum;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class MaLiLibConfigGui extends GuiConfigsBase
 {
     private static ConfigGuiTab tab = ConfigGuiTab.GENERIC;
-    public static ImmutableList<TestEnumConfig> TEST_ENUM_LIST = TestEnumConfig.VALUES;
+    public static ImmutableList<ConfigTestEnum> TEST_ENUM_LIST = ConfigTestEnum.VALUES;
 
     public MaLiLibConfigGui()
     {
@@ -111,7 +111,7 @@ public class MaLiLibConfigGui extends GuiConfigsBase
         return ConfigOptionWrapper.createFor(configs);
     }
 
-    protected BooleanHotkeyGuiWrapper wrapConfig(TestEnumConfig config)
+    protected BooleanHotkeyGuiWrapper wrapConfig(ConfigTestEnum config)
     {
         return new BooleanHotkeyGuiWrapper(config.getName(), config, config.getKeybind());
     }

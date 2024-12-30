@@ -13,24 +13,19 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.LlamaEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.Item;
@@ -42,18 +37,16 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
-import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
 import fi.dy.masa.malilib.util.Constants;
 import fi.dy.masa.malilib.util.IEntityOwnedInventory;
-import fi.dy.masa.malilib.util.InventoryUtils;
-import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.MathUtils;
+import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.game.wrap.GameWrap;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
@@ -1167,6 +1160,9 @@ public class InventoryOverlay
                                     stack.getTooltipData(), // Bundle/Optional Data
                                     x, y);
                                     //stack.get(DataComponentTypes.TOOLTIP_STYLE));
+
+            // Extra Hook for this tooltip style
+            ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(drawContext, stack, x, y);
         }
     }
 
@@ -1233,125 +1229,12 @@ public class InventoryOverlay
      * @param be
      * @param entity
      * @param nbt
+     * @param handler
      */
-    public record Context(InventoryRenderType type, @Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt) {}
+    public record Context(InventoryRenderType type, @Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt, Refresher handler) {}
 
-    /**
-     * Returns a Context based on NBT Tags
-     * @param nbtIn
-     * @return
-     */
-    public static @Nullable Context invFromNbt(NbtCompound nbtIn)
+    public interface Refresher
     {
-        if (nbtIn != null)
-        {
-            Inventory i = InventoryUtils.getNbtInventory(nbtIn);
-
-            if (i != null)
-            {
-                return new Context(getInventoryType(nbtIn), i, null, null, nbtIn);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns a Context based on a Block Entity World / Pos
-     * @param world
-     * @param pos
-     * @return
-     */
-    public static @Nullable Context invFromBlockPos(World world, BlockPos pos)
-    {
-        if (world != null && pos == null)
-        {
-            Inventory i = InventoryUtils.getInventory(world, pos);
-
-            if (i != null)
-            {
-                return new Context(getInventoryType(i), i, null, null, null);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns a Context based on a Block Entity Object.  Attempts to generate the NBT tags.
-     *
-     * @param blockEntity
-     * @param world
-     * @return
-     */
-    public static @Nullable Context invFromBlockEntity(BlockEntity blockEntity, @Nonnull World world)
-    {
-        if (blockEntity != null)
-        {
-            Inventory i = InventoryUtils.getInventory(blockEntity.getWorld() != null ? blockEntity.getWorld() : world, blockEntity.getPos());
-
-            if (i != null)
-            {
-                NbtCompound nbt = blockEntity.createNbtWithIdentifyingData(world.getRegistryManager());
-                return new Context(getBestInventoryType(i, nbt), i, blockEntity, null, nbt);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns a Context based on an Entity, and attempts to generate the NBT tags.
-     *
-     * @param ent
-     * @return
-     */
-    public static @Nullable Context invFromEntity(Entity ent)
-    {
-        if (ent != null)
-        {
-            Inventory inv2 = null;
-            LivingEntity entLiving = null;
-
-            if (ent instanceof LivingEntity)
-            {
-                entLiving = (LivingEntity) ent;
-            }
-
-            if (ent instanceof Inventory)
-            {
-                inv2 = (Inventory) ent;
-            }
-            else if (ent instanceof PlayerEntity player)
-            {
-                inv2 = new SimpleInventory(player.getInventory().main.toArray(new ItemStack[36]));
-            }
-            else if (ent instanceof VillagerEntity)
-            {
-                inv2 = ((VillagerEntity) ent).getInventory();
-            }
-            else if (ent instanceof AbstractHorseEntity)
-            {
-                inv2 = ((IMixinAbstractHorseEntity) ent).malilib_getHorseInventory();
-            }
-            else if (ent instanceof PiglinEntity)
-            {
-                inv2 = ((IMixinPiglinEntity) ent).malilib_getInventory();
-            }
-
-            if (inv2 == null && entLiving == null)
-            {
-                return null;
-            }
-            if (inv2 != null)
-            {
-                NbtCompound newNbt = new NbtCompound();
-                boolean gotNbt = ent.saveSelfNbt(newNbt);
-
-                return new Context(getBestInventoryType(inv2, gotNbt ? newNbt : new NbtCompound()), inv2, null, entLiving, gotNbt ? newNbt : null);
-            }
-        }
-
-        return null;
+        Context onContextRefresh(Context data, World world);
     }
 }

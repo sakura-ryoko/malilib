@@ -722,6 +722,18 @@ public class StringUtils
         return fallback;
     }
 
+    public static Text getTranslatedAsTextOrFallback(String key, @Nullable String fallback)
+    {
+        String result = getTranslatedOrFallback(key, fallback);
+
+        if (result == null)
+        {
+            return Text.empty();
+        }
+
+        return Text.of(result);
+    }
+
     // Some MCP vs. Yarn vs. MC versions compatibility/wrapper stuff below this
 
     /**
@@ -758,6 +770,11 @@ public class StringUtils
         {
             return translationKey;
         }
+    }
+
+    public static Text translateAsText(String translationKey, Object... args)
+    {
+        return Text.of(translate(translationKey, args));
     }
 
     public static MutableText translateable(String translationKey)
