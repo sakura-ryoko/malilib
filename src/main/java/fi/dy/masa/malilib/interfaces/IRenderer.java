@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Fog;
+import net.minecraft.client.render.Frustum;
 import net.minecraft.util.profiler.Profiler;
 import org.joml.Matrix4f;
 
@@ -11,7 +14,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.profiler.Profiler;
 
 public interface IRenderer
 {

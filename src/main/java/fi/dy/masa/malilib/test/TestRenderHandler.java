@@ -39,8 +39,8 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.World;
 import net.minecraft.util.profiler.Profilers;
+import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
@@ -578,5 +578,30 @@ public class TestRenderHandler implements IRenderer
             InventoryOverlay.renderEquipmentOverlayBackground(x, y, entityLivingBase, drawContext);
             InventoryOverlay.renderEquipmentStacks(entityLivingBase, x, y, mc, drawContext);
         }
+    }
+
+    @Nullable
+    public Pair<BlockEntity, NbtCompound> requestBlockEntityAt(World world, BlockPos pos)
+    {
+        if (!(world instanceof ServerWorld))
+        {
+            Pair<BlockEntity, NbtCompound> pair = TestDataSyncer.getInstance().requestBlockEntity(world, pos);
+
+            BlockState state = world.getBlockState(pos);
+
+            if (state.getBlock() instanceof ChestBlock)
+            {
+                ChestType type = state.get(ChestBlock.CHEST_TYPE);
+
+                if (type != ChestType.SINGLE)
+                {
+                    return TestDataSyncer.getInstance().requestBlockEntity(world, pos.offset(ChestBlock.getFacing(state)));
+                }
+            }
+
+            return pair;
+        }
+
+        return null;
     }
 }
