@@ -46,7 +46,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
     public static TestInventoryOverlayHandler getInstance() {return INSTANCE;}
 
-    TestDataSyncer syncer;
+    IDataSyncer syncer;
     InventoryOverlay.Context context;
     InventoryOverlay.Refresher refresher;
 
@@ -70,6 +70,12 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
         }
 
         return this.syncer;
+    }
+
+    @Override
+    public void setDataSyncer(IDataSyncer syncer)
+    {
+        this.syncer = syncer;
     }
 
     @Override
@@ -218,7 +224,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             }
             else
             {
-                Pair<Entity, NbtCompound> pair = this.getDataSyncer().requestEntity(entity.getId());
+                Pair<Entity, NbtCompound> pair = this.getDataSyncer().requestEntity(world, entity.getId());
 
                 if (pair != null)
                 {
@@ -320,8 +326,8 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
             // Fix for empty horse inv
             if (inv != null &&
-                    nbt.contains(NbtKeys.ITEMS) &&
-                    nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND).size() > 1)
+                nbt.contains(NbtKeys.ITEMS) &&
+                nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND).size() > 1)
             {
                 if (entity instanceof AbstractHorseEntity)
                 {
@@ -387,12 +393,12 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             // Refresh data
             if (data.be() != null)
             {
-                TestRenderHandler.getInstance().requestBlockEntityAt(world, data.be().getPos());
+                TestInventoryOverlayHandler.getInstance().requestBlockEntityAt(world, data.be().getPos());
                 data = TestInventoryOverlayHandler.getInstance().getTargetInventoryFromBlock(data.be().getWorld(), data.be().getPos(), data.be(), data.nbt());
             }
             else if (data.entity() != null)
             {
-                TestDataSyncer.getInstance().requestEntity(data.entity().getId());
+                TestInventoryOverlayHandler.getInstance().getDataSyncer().requestEntity(world, data.entity().getId());
                 data = TestInventoryOverlayHandler.getInstance().getTargetInventoryFromEntity(data.entity(), data.nbt());
             }
 
