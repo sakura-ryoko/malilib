@@ -1,9 +1,11 @@
 package fi.dy.masa.malilib.test;
 
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.ApiStatus;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
+@ApiStatus.Experimental
 public enum ConfigTestOptList implements IConfigOptionListEntry
 {
     TEST1 ("test1"),

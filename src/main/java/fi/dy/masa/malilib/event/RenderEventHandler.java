@@ -115,6 +115,42 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
+    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, List<Text> list)
+    {
+        if (this.tooltipLastRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.tooltipLastRenderers)
+            {
+                renderer.onRenderTooltipComponentInsertFirst(context, stack, list);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, List<Text> list)
+    {
+        if (this.tooltipLastRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.tooltipLastRenderers)
+            {
+                renderer.onRenderTooltipComponentInsertMiddle(context, stack, list);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, List<Text> list)
+    {
+        if (this.tooltipLastRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.tooltipLastRenderers)
+            {
+                renderer.onRenderTooltipComponentInsertLast(context, stack, list);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
     public void onRenderTooltipLast(DrawContext drawContext, ItemStack stack, int x, int y)
     {
         Profiler profiler = Profilers.get();

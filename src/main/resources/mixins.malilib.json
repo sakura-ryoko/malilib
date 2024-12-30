@@ -29,6 +29,7 @@
     "defaultRequire": 1
   },
   "mixins": [
+    "MixinItemStack",
     "test.MixinBundleItem"
   ]
 }

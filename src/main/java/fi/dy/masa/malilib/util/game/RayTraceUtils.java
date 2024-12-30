@@ -8,6 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -29,6 +30,11 @@ import fi.dy.masa.malilib.util.MathUtils;
 public class RayTraceUtils
 {
     public static final BlockState BLOCK_STATE_AIR = Blocks.AIR.getDefaultState();
+
+    public static HitResult getRayTraceFromEntity(World world, Entity entity, RayTraceFluidHandling fluidHandling)
+    {
+        return getRayTraceFromEntity(world, entity, fluidHandling, true, entity instanceof PlayerEntity pe ? pe.getBlockInteractionRange() + 1.0d : 5.0d);
+    }
 
     /**
      * Get a ray trace from the point of view of the given entity (along its look vector)

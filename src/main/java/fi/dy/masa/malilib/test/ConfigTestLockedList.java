@@ -2,12 +2,14 @@ package fi.dy.masa.malilib.test;
 
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.ApiStatus;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigLockedListEntry;
 import fi.dy.masa.malilib.config.IConfigLockedListType;
 import fi.dy.masa.malilib.util.StringUtils;
 
+@ApiStatus.Experimental
 public class ConfigTestLockedList implements IConfigLockedListType
 {
     public static final ConfigTestLockedList INSTANCE = new ConfigTestLockedList();

@@ -1,10 +1,7 @@
 package fi.dy.masa.malilib.test;
 
-import java.util.List;
-import java.util.Optional;
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.Block;
@@ -12,6 +9,7 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinEntity;
@@ -27,142 +25,108 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.interfaces.IDataSyncer;
+import fi.dy.masa.malilib.interfaces.IInventoryOverlayHandler;
 import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
-public class RayTraceUtils
+@ApiStatus.Experimental
+public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 {
-    /*
-    @Nonnull
-    public static HitResult getRayTraceFromEntity(World worldIn, Entity entityIn, boolean useLiquids)
+    private static final TestInventoryOverlayHandler INSTANCE = new TestInventoryOverlayHandler();
+
+    public static TestInventoryOverlayHandler getInstance() {return INSTANCE;}
+
+    TestDataSyncer syncer;
+    InventoryOverlay.Context context;
+    InventoryOverlay.Refresher refresher;
+
+    public TestInventoryOverlayHandler()
     {
-        //double reach = 5.0d;
-        double reach = entityIn instanceof PlayerEntity pe ? pe.getBlockInteractionRange() + 1.0d : 5.0d;
-        return getRayTraceFromEntity(worldIn, entityIn, useLiquids, reach);
+        // NO-OP
     }
 
-    @Nonnull
-    public static HitResult getRayTraceFromEntity(World worldIn, Entity entityIn, boolean useLiquids, double range)
+    @Override
+    public String getModId()
     {
-        Vec3d eyesVec = new Vec3d(entityIn.getX(), entityIn.getY() + entityIn.getStandingEyeHeight(), entityIn.getZ());
-        Vec3d rangedLookRot = entityIn.getRotationVec(1f).multiply(range);
-        Vec3d lookVec = eyesVec.add(rangedLookRot);
+        return MaLiLibReference.MOD_ID;
+    }
 
-        RaycastContext.FluidHandling fluidMode = useLiquids ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
-        RaycastContext context = new RaycastContext(eyesVec, lookVec, RaycastContext.ShapeType.COLLIDER, fluidMode, entityIn);
-        HitResult result = worldIn.raycast(context);
-
-        if (result == null)
+    @Override
+    public IDataSyncer getDataSyncer()
+    {
+        if (this.syncer == null)
         {
-            result = BlockHitResult.createMissed(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN);
+            this.syncer = TestDataSyncer.getInstance();
         }
 
-        net.minecraft.util.math.Box bb = entityIn.getBoundingBox().expand(rangedLookRot.x, rangedLookRot.y, rangedLookRot.z).expand(1d, 1d, 1d);
-        List<Entity> list = worldIn.getOtherEntities(entityIn, bb);
+        return this.syncer;
+    }
 
-        double closest = result.getType() == HitResult.Type.BLOCK ? eyesVec.distanceTo(result.getPos()) : Double.MAX_VALUE;
-        Optional<Vec3d> entityTrace = Optional.empty();
-        Entity targetEntity = null;
-
-        for (int i = 0; i < list.size(); i++)
+    @Override
+    public InventoryOverlay.Refresher getRefreshHandler()
+    {
+        if (this.refresher == null)
         {
-            Entity entity = list.get(i);
-            bb = entity.getBoundingBox();
-            Optional<Vec3d> traceTmp = bb.raycast(lookVec, eyesVec);
+            this.refresher = new Refresher();
+        }
 
-            if (traceTmp.isPresent())
+        return this.refresher;
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return this.context == null;
+    }
+
+    @Override
+    public @Nullable InventoryOverlay.Context getRenderContextNullable()
+    {
+        return this.context;
+    }
+
+
+    @Override
+    public @Nullable InventoryOverlay.Context getRenderContext(DrawContext drawContext, Profiler profiler, MinecraftClient mc)
+    {
+        profiler.push(this.getClass().getName() + "_inventory_overlay");
+        this.getTargetInventory(mc);
+
+        if (!this.isEmpty())
+        {
+            if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY_OG.getBooleanValue())
             {
-                double distance = eyesVec.distanceTo(traceTmp.get());
-
-                if (distance <= closest)
-                {
-                    targetEntity = entity;
-                    entityTrace = traceTmp;
-                    closest = distance;
-                }
+                // Tweakeroo style
+                TestRenderHandler.renderInventoryOverlayOG(this.getRenderContextNullable(), drawContext, mc);
+            }
+            else
+            {
+                // MiniHUD Style
+                this.renderInventoryOverlay(this.getRenderContextNullable(), drawContext, mc, true);
             }
         }
 
-        if (targetEntity != null)
-        {
-            result = new EntityHitResult(targetEntity, entityTrace.get());
-        }
+        profiler.pop();
 
-        return result;
-    }
-     */
-
-    @Nonnull
-    public static HitResult getRayTraceFromEntity(World worldIn, Entity entityIn, boolean useLiquids)
-    {
-        //double reach = 5.0d;
-        double reach = entityIn instanceof PlayerEntity pe ? pe.getBlockInteractionRange() + 1.0d : 5.0d;
-        return getRayTraceFromEntity(worldIn, entityIn, useLiquids, reach);
+        return this.getRenderContextNullable();
     }
 
-    @Nonnull
-    public static HitResult getRayTraceFromEntity(World worldIn, Entity entityIn, boolean useLiquids, double range)
-    {
-        Vec3d eyesVec = new Vec3d(entityIn.getX(), entityIn.getY() + entityIn.getStandingEyeHeight(), entityIn.getZ());
-        Vec3d rangedLookRot = entityIn.getRotationVec(1f).multiply(range);
-        Vec3d lookVec = eyesVec.add(rangedLookRot);
-
-        RaycastContext.FluidHandling fluidMode = useLiquids ? RaycastContext.FluidHandling.SOURCE_ONLY : RaycastContext.FluidHandling.NONE;
-        RaycastContext context = new RaycastContext(eyesVec, lookVec, RaycastContext.ShapeType.COLLIDER, fluidMode, entityIn);
-        HitResult result = worldIn.raycast(context);
-
-        if (result == null)
-        {
-            result = BlockHitResult.createMissed(Vec3d.ZERO, Direction.UP, BlockPos.ORIGIN);
-        }
-
-        net.minecraft.util.math.Box bb = entityIn.getBoundingBox().expand(rangedLookRot.x, rangedLookRot.y, rangedLookRot.z).expand(1d, 1d, 1d);
-        List<Entity> list = worldIn.getOtherEntities(entityIn, bb);
-
-        double closest = result.getType() == HitResult.Type.BLOCK ? eyesVec.distanceTo(result.getPos()) : Double.MAX_VALUE;
-        Optional<Vec3d> entityTrace = Optional.empty();
-        Entity targetEntity = null;
-
-        for (int i = 0; i < list.size(); i++)
-        {
-            Entity entity = list.get(i);
-            bb = entity.getBoundingBox();
-            Optional<Vec3d> traceTmp = bb.raycast(lookVec, eyesVec);
-
-            if (traceTmp.isPresent())
-            {
-                double distance = eyesVec.distanceTo(traceTmp.get());
-
-                if (distance <= closest)
-                {
-                    targetEntity = entity;
-                    entityTrace = traceTmp;
-                    closest = distance;
-                }
-            }
-        }
-
-        if (targetEntity != null)
-        {
-            result = new EntityHitResult(targetEntity, entityTrace.get());
-        }
-
-        return result;
-    }
-
-    public static @Nullable InventoryOverlay.Context getTargetInventory(MinecraftClient mc)
+    @Override
+    public @Nullable InventoryOverlay.Context getTargetInventory(MinecraftClient mc)
     {
         World world = WorldUtils.getBestWorld(mc);
         Entity cameraEntity = EntityUtils.getCameraEntity();
+        this.context = null;
 
         if (mc.player == null || world == null)
         {
@@ -181,8 +145,20 @@ public class RayTraceUtils
             }
         }
 
-        HitResult trace = getRayTraceFromEntity(world, cameraEntity, false);
+        if (cameraEntity == null)
+        {
+            return null;
+        }
+
+        HitResult trace = TestRayTraceUtils.getRayTraceFromEntity(world, cameraEntity, false);
+        // todo the Post-Rewrite needs fixing.
+        //HitResult trace = RayTraceUtils.getRayTraceFromEntity(world, cameraEntity, RayTraceUtils.RayTraceFluidHandling.NONE);
         NbtCompound nbt = new NbtCompound();
+
+        if (trace == null)
+        {
+            return null;
+        }
 
         if (trace.getType() == HitResult.Type.BLOCK)
         {
@@ -191,7 +167,15 @@ public class RayTraceUtils
             Block blockTmp = state.getBlock();
             BlockEntity be = null;
 
-            //Tweakeroo.logger.warn("getTarget():1: pos [{}], state [{}]", pos.toShortString(), state.toString());
+            //MaLiLib.LOGGER.warn("getTarget():1: pos [{}], state [{}]", pos.toShortString(), state.toString());
+
+            // Keep screen from getting 'stuck' if trying to use toggle on a lectern
+            /*
+            if (blockTmp instanceof LecternBlock && !newScreen)
+            {
+                return null;
+            }
+             */
 
             if (blockTmp instanceof BlockEntityProvider)
             {
@@ -206,7 +190,7 @@ public class RayTraceUtils
                 }
                 else
                 {
-                    Pair<BlockEntity, NbtCompound> pair = TestDataSyncer.getInstance().requestBlockEntity(world, pos);
+                    Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
 
                     if (pair != null)
                     {
@@ -214,9 +198,9 @@ public class RayTraceUtils
                     }
                 }
 
-                //Tweakeroo.logger.warn("getTarget():2: pos [{}], be [{}], nbt [{}]", pos.toShortString(), be != null, nbt != null);
+                //MaLiLib.LOGGER.warn("getTarget():2: pos [{}], be [{}], nbt [{}]", pos.toShortString(), be != null, nbt != null);
 
-                return getTargetInventoryFromBlock(world, pos, be, nbt);
+                return this.getTargetInventoryFromBlock(world, pos, be, nbt);
             }
 
             return null;
@@ -229,16 +213,16 @@ public class RayTraceUtils
             {
                 if (entity.saveSelfNbt(nbt))
                 {
-                    return getTargetInventoryFromEntity(world.getEntityById(entity.getId()), nbt);
+                    return this.getTargetInventoryFromEntity(world.getEntityById(entity.getId()), nbt);
                 }
             }
             else
             {
-                Pair<Entity, NbtCompound> pair = TestDataSyncer.getInstance().requestEntity(entity.getId());
+                Pair<Entity, NbtCompound> pair = this.getDataSyncer().requestEntity(entity.getId());
 
                 if (pair != null)
                 {
-                    return getTargetInventoryFromEntity(world.getEntityById(pair.getLeft().getId()), pair.getRight());
+                    return this.getTargetInventoryFromEntity(world.getEntityById(pair.getLeft().getId()), pair.getRight());
                 }
             }
         }
@@ -246,7 +230,8 @@ public class RayTraceUtils
         return null;
     }
 
-    public static @Nullable InventoryOverlay.Context getTargetInventoryFromBlock(World world, BlockPos pos, @Nullable BlockEntity be, NbtCompound nbt)
+    @Override
+    public @Nullable InventoryOverlay.Context getTargetInventoryFromBlock(World world, BlockPos pos, @Nullable BlockEntity be, NbtCompound nbt)
     {
         Inventory inv;
 
@@ -262,7 +247,7 @@ public class RayTraceUtils
         {
             if (nbt.isEmpty())
             {
-                Pair<BlockEntity, NbtCompound> pair = TestDataSyncer.getInstance().requestBlockEntity(world, pos);
+                Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
 
                 if (pair != null)
                 {
@@ -270,7 +255,7 @@ public class RayTraceUtils
                 }
             }
 
-            inv = TestDataSyncer.getInstance().getBlockInventory(world, pos, false);
+            inv = this.getDataSyncer().getBlockInventory(world, pos, false);
         }
 
         if (nbt != null && !nbt.isEmpty())
@@ -290,10 +275,14 @@ public class RayTraceUtils
             return null;
         }
 
-        return new InventoryOverlay.Context(InventoryOverlay.getBestInventoryType(inv, nbt), inv, be != null ? be : world.getBlockEntity(pos), null, nbt);
+        this.context = new InventoryOverlay.Context(InventoryOverlay.getBestInventoryType(inv, nbt), inv,
+                                                    be != null ? be : world.getBlockEntity(pos), null, nbt, this.getRefreshHandler());
+
+        return this.context;
     }
 
-    public static @Nullable InventoryOverlay.Context getTargetInventoryFromEntity(Entity entity, NbtCompound nbt)
+    @Override
+    public @Nullable InventoryOverlay.Context getTargetInventoryFromEntity(Entity entity, NbtCompound nbt)
     {
         Inventory inv = null;
         LivingEntity entityLivingBase = null;
@@ -382,7 +371,32 @@ public class RayTraceUtils
             return null;
         }
 
-        return new InventoryOverlay.Context(inv != null ? InventoryOverlay.getBestInventoryType(inv, nbt) : InventoryOverlay.getInventoryType(nbt),
-                                            inv, null, entityLivingBase, nbt);
+        this.context = new InventoryOverlay.Context(inv != null ? InventoryOverlay.getBestInventoryType(inv, nbt) : InventoryOverlay.getInventoryType(nbt), inv,
+                                                    null, entityLivingBase, nbt, this.getRefreshHandler());
+
+        return this.context;
+    }
+
+    public static class Refresher implements InventoryOverlay.Refresher
+    {
+        public Refresher() {}
+
+        @Override
+        public InventoryOverlay.Context onContextRefresh(InventoryOverlay.Context data, World world)
+        {
+            // Refresh data
+            if (data.be() != null)
+            {
+                TestRenderHandler.getInstance().requestBlockEntityAt(world, data.be().getPos());
+                data = TestInventoryOverlayHandler.getInstance().getTargetInventoryFromBlock(data.be().getWorld(), data.be().getPos(), data.be(), data.nbt());
+            }
+            else if (data.entity() != null)
+            {
+                TestDataSyncer.getInstance().requestEntity(data.entity().getId());
+                data = TestInventoryOverlayHandler.getInstance().getTargetInventoryFromEntity(data.entity(), data.nbt());
+            }
+
+            return data;
+        }
     }
 }

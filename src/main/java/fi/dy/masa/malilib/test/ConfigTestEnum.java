@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.test;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -19,11 +20,12 @@ import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import fi.dy.masa.malilib.util.StringUtils;
 
-public enum TestEnumConfig implements IHotkeyTogglable, IConfigNotifiable<IConfigBoolean>
+@ApiStatus.Experimental
+public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfigBoolean>
 {
-    TEST_ENUM_CONFIG        ("testEnumConfig",      false,""),
-    TEST_ENUM_SINGLE_PLAYER ("testEnumSinglePlayer",false,true, ""),
-    TEST_WALLS_HOTKEY       ("testWallsHotkey",     false,"");
+    TEST_ENUM_CONFIG                ("testEnumConfig",              false,""),
+    TEST_ENUM_SINGLE_PLAYER         ("testEnumSinglePlayer",        false,true, ""),
+    TEST_WALLS_HOTKEY               ("testWallsHotkey",             false,"");
 
     private final static String TEST_ENUM_KEY = MaLiLibReference.MOD_ID + ".config.test_enum";
 
@@ -37,9 +39,9 @@ public enum TestEnumConfig implements IHotkeyTogglable, IConfigNotifiable<IConfi
     private boolean valueBoolean;
     private IValueChangeCallback<IConfigBoolean> callback;
 
-    public static final ImmutableList<TestEnumConfig> VALUES = ImmutableList.copyOf(values());
+    public static final ImmutableList<ConfigTestEnum> VALUES = ImmutableList.copyOf(values());
 
-    TestEnumConfig(String name, boolean defaultValue, String defaultHotkey)
+    ConfigTestEnum(String name, boolean defaultValue, String defaultHotkey)
     {
         this(name, defaultValue, false, defaultHotkey, KeybindSettings.DEFAULT,
              buildTranslateName(name, "comment"),
@@ -47,7 +49,7 @@ public enum TestEnumConfig implements IHotkeyTogglable, IConfigNotifiable<IConfi
              buildTranslateName(name, "name"));
     }
 
-    TestEnumConfig(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings)
+    ConfigTestEnum(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings)
     {
         this(name, defaultValue, false, defaultHotkey, settings,
              buildTranslateName(name, "comment"),
@@ -55,7 +57,7 @@ public enum TestEnumConfig implements IHotkeyTogglable, IConfigNotifiable<IConfi
              buildTranslateName(name, "name"));
     }
 
-    TestEnumConfig(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey)
+    ConfigTestEnum(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey)
     {
         this(name, defaultValue, singlePlayer, defaultHotkey, KeybindSettings.DEFAULT,
              buildTranslateName(name, "comment"),
@@ -63,7 +65,7 @@ public enum TestEnumConfig implements IHotkeyTogglable, IConfigNotifiable<IConfi
              buildTranslateName(name, "name"));
     }
 
-    TestEnumConfig(String name, boolean defaultValue, String defaultHotkey, String comment, String prettyName, String translatedName)
+    ConfigTestEnum(String name, boolean defaultValue, String defaultHotkey, String comment, String prettyName, String translatedName)
     {
         this(name, defaultValue, false, defaultHotkey,
              comment,
@@ -71,7 +73,7 @@ public enum TestEnumConfig implements IHotkeyTogglable, IConfigNotifiable<IConfi
              translatedName);
     }
 
-    TestEnumConfig(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, String comment, String prettyName, String translatedName)
+    ConfigTestEnum(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, String comment, String prettyName, String translatedName)
     {
         this(name, defaultValue, singlePlayer, defaultHotkey, KeybindSettings.DEFAULT,
              comment,
@@ -79,7 +81,7 @@ public enum TestEnumConfig implements IHotkeyTogglable, IConfigNotifiable<IConfi
              translatedName);
     }
 
-    TestEnumConfig(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, KeybindSettings settings, String comment, String prettyName, String translatedName)
+    ConfigTestEnum(String name, boolean defaultValue, boolean singlePlayer, String defaultHotkey, KeybindSettings settings, String comment, String prettyName, String translatedName)
     {
         this.name = name;
         this.valueBoolean = defaultValue;
@@ -112,6 +114,12 @@ public enum TestEnumConfig implements IHotkeyTogglable, IConfigNotifiable<IConfi
     @Override
     public void setValueFromString(String value)
     {
+        switch (value)
+        {
+            case "true" -> this.valueBoolean = true;
+            case "false" -> this.valueBoolean = false;
+            default -> {}
+        }
     }
 
     @Override
