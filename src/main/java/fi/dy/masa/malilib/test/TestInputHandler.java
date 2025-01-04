@@ -87,7 +87,7 @@ public class TestInputHandler implements IKeybindProvider
                 else if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
                          MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
                 {
-                    TestInventoryOverlayHandler.getInstance().refreshInventoryOverlay(mc, true);
+                    TestInventoryOverlayHandler.getInstance().refreshInventoryOverlay(mc, true, true);
                 }
                 else
                 {

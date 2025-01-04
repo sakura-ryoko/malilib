@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.ShulkerBoxBlock;
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,6 +25,9 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -33,6 +38,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.game.BlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
+import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 // todo - using GuiBase works; but it adds some lag / delay to the screen opening.
@@ -42,15 +48,21 @@ public class InventoryOverlayScreen extends Screen implements Drawable
     String modId;
     private InventoryOverlay.Context previewData;
     private final boolean shulkerBGColors;
+    private final boolean villagerBGColors;
     private int ticks;
 
 
     public InventoryOverlayScreen(String modId, @Nullable InventoryOverlay.Context previewData)
     {
-        this(modId, previewData, true);
+        this(modId, previewData, true, false);
     }
 
     public InventoryOverlayScreen(String modId, @Nullable InventoryOverlay.Context previewData, boolean shulkerBGColors)
+    {
+        this(modId, previewData, shulkerBGColors, false);
+    }
+
+    public InventoryOverlayScreen(String modId, @Nullable InventoryOverlay.Context previewData, boolean shulkerBGColors, boolean villagerBGColors)
     {
         super(StringUtils.translateAsText(MaLiLibReference.MOD_ID + ".gui.title.inventory_overlay", modId));
         //this.setTitle(StringUtils.translate(MaLiLibReference.MOD_ID + ".gui.title.inventory_overlay", modId));
@@ -58,6 +70,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
         this.modId = modId;
         this.previewData = previewData;
         this.shulkerBGColors = shulkerBGColors;
+        this.villagerBGColors = villagerBGColors;
     }
 
     @Override
@@ -108,12 +121,13 @@ public class InventoryOverlayScreen extends Screen implements Drawable
                 y -= (rows - 6) * 18;
             }
 
-            /*
-            MaLiLib.LOGGER.warn("render():0: type [{}], previewData.type [{}], previewData.inv [{}], previewData.be [{}], previewData.ent [{}], previewData.nbt [{}]", type.toString(), previewData.type().toString(),
-                                 previewData.inv() != null, previewData.be() != null, previewData.entity() != null, previewData.nbt() != null ? previewData.nbt().getString("id") : null);
-            MaLiLib.LOGGER.error("0: -> inv.type [{}] // nbt.type [{}]", previewData.inv() != null ? InventoryOverlay.getInventoryType(previewData.inv()) : null, previewData.nbt() != null ? InventoryOverlay.getInventoryType(previewData.nbt()) : null);
-            MaLiLib.LOGGER.error("1: -> inv.size [{}] // inv.isEmpty [{}]", previewData.inv() != null ? previewData.inv().size() : -1, previewData.inv() != null ? previewData.inv().isEmpty() : -1);
-             */
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("render():0: type [{}], previewData.type [{}], previewData.inv [{}], previewData.be [{}], previewData.ent [{}], previewData.nbt [{}]", type.toString(), previewData.type().toString(),
+                                    previewData.inv() != null, previewData.be() != null, previewData.entity() != null, previewData.nbt() != null ? previewData.nbt().getString("id") : null);
+                MaLiLib.LOGGER.error("0: -> inv.type [{}] // nbt.type [{}]", previewData.inv() != null ? InventoryOverlay.getInventoryType(previewData.inv()) : null, previewData.nbt() != null ? InventoryOverlay.getInventoryType(previewData.nbt()) : null);
+                MaLiLib.LOGGER.error("1: -> inv.size [{}] // inv.isEmpty [{}]", previewData.inv() != null ? previewData.inv().size() : -1, previewData.inv() != null ? previewData.inv().isEmpty() : -1);
+            }
 
             if (previewData.entity() != null)
             {
@@ -148,15 +162,11 @@ public class InventoryOverlayScreen extends Screen implements Drawable
             if (totalSlots > 0 && previewData.inv() != null)
             {
                 InventoryOverlay.renderInventoryBackground(type, xInv, yInv, props.slotsPerRow, totalSlots, mc);
-
                 // TODO 1.21.4+
-                /*
                 if (type == InventoryOverlay.InventoryRenderType.BREWING_STAND)
                 {
                     InventoryOverlay.renderBrewerBackgroundSlots(previewData.inv(), xInv, yInv, drawContext);
                 }
-                 */
-
                 InventoryOverlay.renderInventoryStacks(type, previewData.inv(), xInv + props.slotOffsetX, yInv + props.slotOffsetY, props.slotsPerRow, startSlot, totalSlots, lockedSlots, mc, drawContext, mouseX, mouseY);
             }
 
@@ -182,6 +192,59 @@ public class InventoryOverlayScreen extends Screen implements Drawable
                 InventoryOverlay.renderInventoryStacks(InventoryOverlay.InventoryRenderType.GENERIC, player.getEnderChestInventory(), xInv + props.slotOffsetX, yInv + props.slotOffsetY, 9, 0, 27, mc, drawContext, mouseX, mouseY);
             }
 
+            // Villager Trades Display
+            if (type == InventoryOverlay.InventoryRenderType.VILLAGER &&
+                previewData.nbt() != null && previewData.nbt().contains(NbtKeys.OFFERS))
+            {
+                DefaultedList<ItemStack> offers = InventoryUtils.getSellingItemsFromNbt(previewData.nbt(), world.getRegistryManager());
+                Inventory tradeOffers = InventoryUtils.getAsInventory(offers);
+
+                if (!tradeOffers.isEmpty())
+                {
+                    int xInvOffset = (xCenter - 55) - (props.width / 2);
+                    int offerSlotCount = 9;
+
+                    yInv = yCenter + 6;
+
+                    // Realistically, this should never go above 9; but because Minecraft doesn't have these guard rails, be prepared for it.
+                    if (offers.size() > 9)
+                    {
+                        offerSlotCount = 18;
+                    }
+
+                    RenderUtils.setVillagerBackgroundTintColor(NbtEntityUtils.getVillagerDataFromNbt(previewData.nbt()), this.villagerBGColors);
+                    InventoryOverlay.renderInventoryBackground(InventoryOverlay.InventoryRenderType.GENERIC, xInvOffset - props.slotOffsetX, yInv, 9, offerSlotCount, mc);
+                    InventoryOverlay.renderInventoryStacks(InventoryOverlay.InventoryRenderType.GENERIC, tradeOffers, xInvOffset, yInv + props.slotOffsetY, 9, 0, offerSlotCount, mc, drawContext, mouseX, mouseY);
+                }
+            }
+            else if (previewData.entity() instanceof MerchantEntity merchant)
+            {
+                TradeOfferList trades = merchant.getOffers();
+                DefaultedList<ItemStack> offers = InventoryUtils.getSellingItems(trades);
+                Inventory tradeOffers = InventoryUtils.getAsInventory(offers);
+
+                if (!tradeOffers.isEmpty())
+                {
+                    int xInvOffset = (xCenter - 55) - (props.width / 2);
+                    int offerSlotCount = 9;
+
+                    yInv = yCenter + 6;
+
+                    // Realistically, this should never go above 9; but because Minecraft doesn't have these guard rails, be prepared for it.
+                    if (offers.size() > 9)
+                    {
+                        offerSlotCount = 18;
+                    }
+
+                    if (merchant instanceof VillagerEntity villager)
+                    {
+                        RenderUtils.setVillagerBackgroundTintColor(villager.getVillagerData(), this.villagerBGColors);
+                    }
+                    InventoryOverlay.renderInventoryBackground(InventoryOverlay.InventoryRenderType.GENERIC, xInvOffset - props.slotOffsetX, yInv, 9, offerSlotCount, mc);
+                    InventoryOverlay.renderInventoryStacks(InventoryOverlay.InventoryRenderType.GENERIC, tradeOffers, xInvOffset, yInv + props.slotOffsetY, 9, 0, offerSlotCount, mc, drawContext, mouseX, mouseY);
+                }
+            }
+
             // Entity Display
             if (previewData.entity() != null)
             {
@@ -201,5 +264,34 @@ public class InventoryOverlayScreen extends Screen implements Drawable
     public boolean shouldPause()
     {
         return false;
+    }
+
+    private void dumpOffers(DefaultedList<ItemStack> offers, @Nonnull DynamicRegistryManager registry)
+    {
+        System.out.print("dumpOffers(): DUMP OFFERS -->\n");
+
+        if (offers == null || offers.isEmpty())
+        {
+            System.out.print("EMPTY!\n");
+            return;
+        }
+
+        int i = 0;
+
+        for (ItemStack entry : offers)
+        {
+            if (entry.isEmpty())
+            {
+                System.out.printf("[%d]: EMPTY!\n", i);
+            }
+            else
+            {
+                System.out.printf("[%d] Item Nbt: [%s]\n", i, entry.toNbt(registry));
+            }
+
+            i++;
+        }
+
+        System.out.print("END!\n");
     }
 }

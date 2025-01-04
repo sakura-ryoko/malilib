@@ -118,7 +118,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             else
             {
                 // MiniHUD Style
-                this.renderInventoryOverlay(this.getRenderContextNullable(), drawContext, mc, true);
+                this.renderInventoryOverlay(this.getRenderContextNullable(), drawContext, mc, true, true);
             }
         }
 
