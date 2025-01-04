@@ -251,11 +251,14 @@ public class InventoryOverlay
 
     public static void renderInventoryBackgroundSlots(InventoryRenderType type, Inventory inv, int x, int y, DrawContext drawContext)
     {
+        /*
         if (type == InventoryRenderType.BREWING_STAND)
         {
             renderBrewerBackgroundSlots(inv, x, y, drawContext);
         }
-        else if (type == InventoryRenderType.HORSE)
+        else
+         */
+        if (type == InventoryRenderType.HORSE)
         {
             renderHorseArmorBackgroundSlots(inv, x, y, drawContext);
         }
