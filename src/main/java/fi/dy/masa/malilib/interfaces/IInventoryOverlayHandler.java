@@ -76,29 +76,51 @@ public interface IInventoryOverlayHandler
      * @param context ()
      * @param drawContext ()
      * @param mc ()
-     * @param shulkerBGColors ()
+     * @param shulkerBGColors (Display the Shulker Box Background Colors)
+     * @param villagerBGColors (Display the Villager Profession Background Colors)
      */
-    default void renderInventoryOverlay(InventoryOverlay.Context context, DrawContext drawContext, MinecraftClient mc, boolean shulkerBGColors)
+    default void renderInventoryOverlay(InventoryOverlay.Context context, DrawContext drawContext, MinecraftClient mc, boolean shulkerBGColors, boolean villagerBGColors)
     {
-        Screen screen = new InventoryOverlayScreen(this.getModId(), context, shulkerBGColors);
+        Screen screen = new InventoryOverlayScreen(this.getModId(), context, shulkerBGColors, villagerBGColors);
         screen.init(mc, 0, 0);
         screen.render(drawContext, 0, 0, 0);
+    }
+
+    default void renderInventoryOverlay(InventoryOverlay.Context context, DrawContext drawContext, MinecraftClient mc, boolean shulkerBGColors)
+    {
+        this.renderInventoryOverlay(context, drawContext, mc, shulkerBGColors, false);
+    }
+
+    default void renderInventoryOverlay(InventoryOverlay.Context context, DrawContext drawContext, MinecraftClient mc)
+    {
+        this.renderInventoryOverlay(context, drawContext, mc, false, false);
     }
 
     /**
      * Refresh your InventoryOverlay.Context and redraw the Screen.
      * Used for using the Assigned Hotkey to "open" the Screen; and keep the data updated.
      * @param mc ()
-     * @param shulkerBGColors ()
+     * @param shulkerBGColors (Display the Shulker Box Background Colors)
+     * @param villagerBGColors (Display the Villager Profession Background Colors)
      */
-    default void refreshInventoryOverlay(MinecraftClient mc, boolean shulkerBGColors)
+    default void refreshInventoryOverlay(MinecraftClient mc, boolean shulkerBGColors, boolean villagerBGColors)
     {
         this.getTargetInventory(mc);
 
         if (!this.isEmpty())
         {
-            mc.setScreen(new InventoryOverlayScreen(this.getModId(), this.getRenderContextNullable(), shulkerBGColors));
+            mc.setScreen(new InventoryOverlayScreen(this.getModId(), this.getRenderContextNullable(), shulkerBGColors, villagerBGColors));
         }
+    }
+
+    default void refreshInventoryOverlay(MinecraftClient mc, boolean shulkerBGColors)
+    {
+        this.refreshInventoryOverlay(mc, shulkerBGColors, false);
+    }
+
+    default void refreshInventoryOverlay(MinecraftClient mc)
+    {
+        this.refreshInventoryOverlay(mc, false, false);
     }
 
     /**

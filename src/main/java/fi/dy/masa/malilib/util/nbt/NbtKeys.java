@@ -55,6 +55,7 @@ public class NbtKeys
     public static final String FORCED_AGE          = "ForcedAge";
     public static final String OFFERS              = "Offers";
     public static final String VILLAGER            = "VillagerData";
+    public static final String TRADE_RECIPES       = "Recipes";
     public static final String ZOMBIE_CONVERSION   = "ConversionTime";
     public static final String CONVERSION_PLAYER   = "ConversionPlayer";
     public static final String DROWNED_CONVERSION  = "DrownedConversionTime";
