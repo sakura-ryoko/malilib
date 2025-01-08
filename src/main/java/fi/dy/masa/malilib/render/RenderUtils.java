@@ -4,11 +4,6 @@ import java.util.*;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import fi.dy.masa.malilib.util.*;
-import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.PositionUtils;
-import fi.dy.masa.malilib.util.position.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
@@ -31,7 +26,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -46,6 +40,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
@@ -53,9 +48,10 @@ import net.minecraft.village.VillagerProfession;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinDrawContext;
+import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
-
-import static fi.dy.masa.malilib.render.InventoryOverlay.INV_PROPS_TEMP;
+import fi.dy.masa.malilib.util.position.PositionUtils;
 
 public class RenderUtils
 {
@@ -913,7 +909,7 @@ public class RenderUtils
     public static void drawTextPlate(List<String> text, double x, double y, double z, float yaw, float pitch,
                                      float scale, int textColor, int bgColor, boolean disableDepth)
     {
-        Vec3d cameraPos = Vec3d.of(mc().gameRenderer.getCamera().getPos());
+        Vec3d cameraPos = mc().gameRenderer.getCamera().getPos();
         double cx = cameraPos.x;
         double cy = cameraPos.y;
         double cz = cameraPos.z;
@@ -1016,11 +1012,11 @@ public class RenderUtils
     }
 
     public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3d hitVec,
-            Color4f color, Matrix4f posMatrix, MinecraftClient mc)
+                                                   Color4f color, Matrix4f posMatrix, MinecraftClient mc)
     {
         Direction playerFacing = entity.getHorizontalFacing();
         PositionUtils.HitPart part = PositionUtils.getHitPart(side, playerFacing, pos, hitVec);
-        Vec3d cameraPos = Vec3d.of(mc.gameRenderer.getCamera().getPos());
+        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
 
         double x = (pos.getX() + 0.5d - cameraPos.x);
         double y = (pos.getY() + 0.5d - cameraPos.y);
@@ -1147,7 +1143,7 @@ public class RenderUtils
             Color4f color, Matrix4f posMatrix, MinecraftClient mc)
     {
         Direction playerFacing = entity.getHorizontalFacing();
-        Vec3d cameraPos = Vec3d.of(mc.gameRenderer.getCamera().getPos());
+        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
 
         double x = pos.getX() + 0.5d - cameraPos.x;
         double y = pos.getY() + 0.5d - cameraPos.y;

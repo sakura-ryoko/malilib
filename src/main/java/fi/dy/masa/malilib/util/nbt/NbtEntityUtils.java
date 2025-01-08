@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.class_10586;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -821,6 +822,26 @@ public class NbtEntityUtils
         }
 
         return Pair.of(variant, strength);
+    }
+
+    /**
+     * Get a Pig's Variant type from NBT.
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
+    public static @Nullable class_10586 getPigVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    {
+        if (nbt.contains(NbtKeys.VARIANT))
+        {
+			return registry.getOrThrow(RegistryKeys.PIG_VARIANT)
+						   .getOptionalValue(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)))
+						   .orElse(null);
+        }
+
+        // Null means standard pig type
+        return null;
     }
 
     /**

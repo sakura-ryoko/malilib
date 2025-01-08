@@ -14,7 +14,6 @@ import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.game.BlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
-import fi.dy.masa.malilib.util.position.Vec3d;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CrafterBlockEntity;
@@ -218,7 +217,7 @@ public class TestRenderHandler implements IRenderer
                     entity,
                     hitResult.getBlockPos(),
                     hitResult.getSide(),
-                    Vec3d.of(hitResult.getPos()),
+                    hitResult.getPos(),
                     color,
                     posMatrix,
                     mc);

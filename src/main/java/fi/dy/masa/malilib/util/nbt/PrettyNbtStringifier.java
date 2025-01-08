@@ -11,7 +11,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 
-import fi.dy.masa.malilib.util.Constants;
+import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.game.wrap.NbtWrap;
 
 /**

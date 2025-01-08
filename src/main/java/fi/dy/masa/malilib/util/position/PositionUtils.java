@@ -1,13 +1,14 @@
 package fi.dy.masa.malilib.util.position;
 
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import org.jetbrains.annotations.ApiStatus;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Post-ReWrite code
