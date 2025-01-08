@@ -11,7 +11,6 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.class_10586;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -30,10 +29,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.ServerRecipeManager;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerRecipeBook;
 import net.minecraft.text.Text;
@@ -831,16 +827,20 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
-    public static @Nullable class_10586 getPigVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    public static @Nullable RegistryKey<PigVariant> getPigVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains(NbtKeys.VARIANT))
         {
-			return registry.getOrThrow(RegistryKeys.PIG_VARIANT)
-						   .getOptionalValue(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)))
-						   .orElse(null);
+			Optional<RegistryEntry.Reference<PigVariant>> opt = registry.getOrThrow(RegistryKeys.PIG_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+
+            if (opt.isPresent())
+            {
+                return opt.get().registryKey();
+            }
+
+            return PigVariants.DEFAULT;
         }
 
-        // Null means standard pig type
         return null;
     }
 
