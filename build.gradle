@@ -22,17 +22,16 @@ dependencies {
 	include(modApi(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
 
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
-
-	//modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}")
-	//modRuntimeOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 }
 
-group = project.group + "." + project.mod_id
-base.archivesName = project.mod_file_name + '-' + project.minecraft_version_out
-version = project.mod_version
+base {
+	group = project.group + "." + project.mod_id
+	archivesName = project.mod_file_name + '-' + project.minecraft_version_out
+	version = project.mod_version
 
-if (version.endsWith('-dev')) {
-	version += "." + new Date().format('yyyyMMdd.HHmmss')
+	if (version.endsWith('-dev')) {
+		version += "." + new Date().format('yyyyMMdd.HHmmss')
+	}
 }
 
 processResources {
