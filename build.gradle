@@ -3,12 +3,9 @@ plugins {
 	id 'maven-publish'
 }
 
-//sourceCompatibility = JavaVersion.VERSION_21
-//targetCompatibility = JavaVersion.VERSION_21
-
 repositories {
-	maven { url 'https://maven.terraformersmc.com/releases/' }
-	// maven { url 'https://maven.quiltmc.org/repository/release/' }
+	maven { url = 'https://maven.terraformersmc.com/releases/' }
+	// maven { url = 'https://maven.quiltmc.org/repository/release/' }
 }
 
 dependencies {
@@ -87,7 +84,7 @@ publishing {
 	publications {
 		mavenJava(MavenPublication) {
 			// How to introduce archivesName here without it breaking?
-			artifactId base.archivesName.get()
+			artifactId = base.archivesName.get()
 
 			// add all the jars that should be included when publishing to maven
 			//artifact(jar)             { builtBy remapJar }
@@ -97,7 +94,7 @@ publishing {
 
 	repositories {
 		maven {
-			url "$projectDir/../../CommonMaven"
+			url = "$projectDir/../../CommonMaven"
 		}
 	}
 }

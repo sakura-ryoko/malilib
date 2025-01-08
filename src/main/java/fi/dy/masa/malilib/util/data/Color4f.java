@@ -1,11 +1,11 @@
 package fi.dy.masa.malilib.util.data;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import fi.dy.masa.malilib.util.MathUtils;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Post-ReWrite code
@@ -19,6 +19,7 @@ public class Color4f
     public static final Pattern HEX_3 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{3})");
 
     public static final Color4f WHITE = new Color4f(1.0F, 1.0F, 1.0F, 1.0F);
+    public static final Color4f ZERO = new Color4f(0F, 0F, 0F, 0F);
     public final float r;
     public final float g;
     public final float b;
@@ -79,11 +80,16 @@ public class Color4f
                              getHexColorString(this.intValue), this.a, this.r, this.g, this.b, this.intValue);
     }
 
+    public String toHexString()
+    {
+        return String.format("#%08X", this.intValue);
+    }
+
     @Override
     public boolean equals(Object o)
     {
-        if (this == o) {return true;}
-        if (o == null || this.getClass() != o.getClass()) {return false;}
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
         Color4f color4f = (Color4f) o;
         return this.intValue == color4f.intValue;
     }
@@ -91,7 +97,7 @@ public class Color4f
     @Override
     public int hashCode()
     {
-        return this.intValue;
+        return Objects.hash(this.intValue);
     }
 
     /**

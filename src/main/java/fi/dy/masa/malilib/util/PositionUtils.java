@@ -6,6 +6,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.AxisDirection;
 import net.minecraft.util.math.Vec3d;
 
+/**
+ * Moved to Post-ReWrite util/position/PositionUtils
+ */
+@Deprecated(forRemoval = true)
 public class PositionUtils
 {
     public static final Direction[] ALL_DIRECTIONS = new Direction[] { Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST };

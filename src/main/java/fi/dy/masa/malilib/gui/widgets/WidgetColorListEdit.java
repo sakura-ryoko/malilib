@@ -2,7 +2,7 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.gui.GuiColorListEdit;
-import fi.dy.masa.malilib.util.Color4f;
+import fi.dy.masa.malilib.util.data.Color4f;
 
 import java.util.Collection;
 

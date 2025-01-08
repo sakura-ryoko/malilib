@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.test;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.Color4f;
+import fi.dy.masa.malilib.util.data.Color4f;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.render.*;
@@ -50,8 +50,7 @@ public class TestWalls implements AutoCloseable
         {
             lastPos = pos;
             return true;
-        }
-        else if (!pos.equals(BlockPos.ORIGIN) &&
+        } else if (!pos.equals(BlockPos.ORIGIN) &&
                 !pos.equals(lastPos))
         {
             lastPos = pos;
@@ -119,7 +118,7 @@ public class TestWalls implements AutoCloseable
                 builtBuffer.close();
             }
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored) {}
     }
 
     protected static void preRender()
@@ -135,8 +134,7 @@ public class TestWalls implements AutoCloseable
         if (useCulling)
         {
             RenderSystem.enableCull();
-        }
-        else
+        } else
         {
             RenderSystem.disableCull();
         }

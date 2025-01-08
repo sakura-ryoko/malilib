@@ -1,9 +1,5 @@
 package fi.dy.masa.malilib.gui.widgets;
 
-import java.util.List;
-
-import net.minecraft.client.gui.DrawContext;
-
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -13,8 +9,11 @@ import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.Color4f;
+import net.minecraft.client.gui.DrawContext;
+
+import java.util.List;
 
 public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 {

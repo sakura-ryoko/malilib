@@ -20,7 +20,7 @@ import fi.dy.masa.malilib.test.ConfigTestLockedList;
 import fi.dy.masa.malilib.test.ConfigTestOptList;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
-import fi.dy.masa.malilib.util.Color4f;
+import fi.dy.masa.malilib.util.data.Color4f;
 
 public class MaLiLibConfigs implements IConfigHandler
 {

@@ -14,12 +14,12 @@ import net.minecraft.state.property.*;
 import net.minecraft.util.math.Direction;
 
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 
 /**
- * Consider Migrating to util/game/BlockUtils or util/nbt/NbtBlockUtils
+ * Consider Migrating to util/game/BlockUtils
  */
-public class BlockUtils extends NbtBlockUtils
+@Deprecated(forRemoval = true)
+public class BlockUtils
 {
     /**
      * Returns the first PropertyDirection property from the provided state, if any.

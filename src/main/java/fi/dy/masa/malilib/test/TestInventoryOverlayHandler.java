@@ -37,6 +37,7 @@ import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 @ApiStatus.Experimental

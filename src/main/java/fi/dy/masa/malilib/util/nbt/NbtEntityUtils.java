@@ -45,7 +45,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 
-import fi.dy.masa.malilib.util.Constants;
+import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.EntityUtils;
 
 public class NbtEntityUtils
@@ -680,7 +680,8 @@ public class NbtEntityUtils
 
             if (variantKey == null)
             {
-                variantKey = FrogVariant.TEMPERATE;
+                // todo FrogVariant.TEMPERATE
+                variantKey = FrogVariant.field_37462;
             }
 
             return variantKey;

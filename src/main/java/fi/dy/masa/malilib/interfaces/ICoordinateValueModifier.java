@@ -1,6 +1,6 @@
 package fi.dy.masa.malilib.interfaces;
 
-import fi.dy.masa.malilib.util.PositionUtils.CoordinateType;
+import fi.dy.masa.malilib.util.position.PositionUtils.CoordinateType;
 
 public interface ICoordinateValueModifier
 {

@@ -14,10 +14,7 @@ import net.minecraft.util.math.BlockPos;
 
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 
-/**
- * Consider Migrating to util/nbt/NbtEntityUtils
- */
-public class EntityUtils extends NbtEntityUtils
+public class EntityUtils
 {
     /**
      * Returns the camera entity, if it's not null, otherwise returns the client player entity.

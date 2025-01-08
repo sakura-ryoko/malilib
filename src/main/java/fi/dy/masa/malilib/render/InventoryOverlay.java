@@ -44,7 +44,7 @@ import net.minecraft.world.World;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.util.Constants;
+import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.IEntityOwnedInventory;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
