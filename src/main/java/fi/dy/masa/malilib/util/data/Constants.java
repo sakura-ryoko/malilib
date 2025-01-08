@@ -1,8 +1,5 @@
 package fi.dy.masa.malilib.util.data;
 
-/**
- * New Version will be located under util/data
- */
 public class Constants
 {
     public static class NBT

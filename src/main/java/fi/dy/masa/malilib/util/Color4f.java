@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.util;
 import java.util.Objects;
 
 /**
- * New Version will be located under util/data
+ * New Version located under util/data
  */
 @Deprecated(forRemoval = true)
 public class Color4f
