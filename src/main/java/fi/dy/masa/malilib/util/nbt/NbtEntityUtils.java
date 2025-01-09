@@ -677,8 +677,7 @@ public class NbtEntityUtils
 
             if (variantKey == null)
             {
-                // todo FrogVariant.TEMPERATE
-                variantKey = FrogVariant.field_37462;
+                variantKey = FrogVariant.TEMPERATE;
             }
 
             return variantKey;
