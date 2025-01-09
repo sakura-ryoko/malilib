@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.*;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.*;
 import net.minecraft.registry.RegistryKey;
@@ -120,7 +121,7 @@ public class EquipmentUtils
 		return Pair.of(-1, false);
 	}
 
-	public Pair<Double, Double> getDamageAndSpeedAttributes(ItemStack stack)
+	public static Pair<Double, Double> getDamageAndSpeedAttributes(ItemStack stack)
 	{
 		double speed = -1;
 		double damage = -1;
@@ -153,7 +154,7 @@ public class EquipmentUtils
 		return Pair.of(damage, speed);
 	}
 
-	public static boolean isCorrectTool(ItemStack stack, BlockState state)
+	public static boolean isCorrectTool(ItemStack stack, @Nonnull BlockState state)
 	{
 		if (stack == null || stack.isEmpty())
 		{
@@ -224,6 +225,35 @@ public class EquipmentUtils
 					if (entry.attribute().equals(EntityAttributes.ARMOR) &&
 						(entry.slot() != AttributeModifierSlot.MAINHAND &&
 						 entry.slot() != AttributeModifierSlot.OFFHAND))
+					{
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean matchArmorSlot(ItemStack stack, @Nonnull EquipmentSlot slot)
+	{
+		if (stack == null || stack.isEmpty())
+		{
+			return false;
+		}
+
+		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
+		{
+			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+			AttributeModifierSlot attributeSlot = AttributeModifierSlot.forEquipmentSlot(slot);
+
+			if (attrib != null)
+			{
+				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
+				{
+					if (entry.attribute().equals(EntityAttributes.ARMOR) &&
+						entry.slot() == attributeSlot)
 					{
 						return true;
 					}
@@ -319,5 +349,10 @@ public class EquipmentUtils
 		}
 
 		return -1;
+	}
+
+	public static int hasSameOrBetterEnchantment(ItemStack testedStack, ItemStack previous, RegistryKey<Enchantment> enchantment)
+	{
+		return getEnchantmentLevel(testedStack, enchantment) - getEnchantmentLevel(previous, enchantment);
 	}
 }
