@@ -2,6 +2,10 @@ package fi.dy.masa.malilib.util;
 
 import java.util.Set;
 import javax.annotation.Nonnull;
+
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.registry.tag.TagKey;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +51,7 @@ public class EquipmentUtils
 			return false;
 		}
 
-		return stack.contains(DataComponentTypes.WEAPON);
+		return stack.contains(DataComponentTypes.WEAPON) || stack.isIn(ItemTags.WEAPON_ENCHANTABLE);
 	}
 
 	public static boolean isRangedWeapon(ItemStack stack)
@@ -83,7 +87,7 @@ public class EquipmentUtils
 			return false;
 		}
 
-		return stack.contains(DataComponentTypes.TOOL);
+		return stack.contains(DataComponentTypes.TOOL) || stack.isIn(ItemTags.MINING_ENCHANTABLE);
 	}
 
 	public static boolean isMiscTool(ItemStack stack)
@@ -232,7 +236,7 @@ public class EquipmentUtils
 			}
 		}
 
-		return false;
+		return stack.isIn(ItemTags.EQUIPPABLE_ENCHANTABLE);
 	}
 
 	public static boolean matchArmorSlot(ItemStack stack, @Nonnull EquipmentSlot slot)
@@ -354,5 +358,10 @@ public class EquipmentUtils
 	public static int hasSameOrBetterEnchantment(ItemStack testedStack, ItemStack previous, RegistryKey<Enchantment> enchantment)
 	{
 		return getEnchantmentLevel(testedStack, enchantment) - getEnchantmentLevel(previous, enchantment);
+	}
+
+	public static boolean hasSilkTouch(ItemStack stack)
+	{
+		return getEnchantmentLevel(stack, Enchantments.SILK_TOUCH) > 0;
 	}
 }
