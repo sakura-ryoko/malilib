@@ -4,7 +4,9 @@
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
   "client": [
+    "test.MixinBundleItem",
     "IMixinAbstractHorseEntity",
+    "IMixinAnimalArmorItem",
     "IMixinDrawContext",
     "IMixinHandledScreen",
     "IMixinPiglinEntity",
@@ -17,6 +19,7 @@
     "MixinInGameHud",
     "MixinIntegratedServer",
     "MixinInventoryScreen",
+    "MixinItemStack",
     "MixinKeyboard",
     "MixinMinecraftClient",
     "MixinMinecraftServer",
@@ -27,9 +30,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "MixinItemStack",
-    "test.MixinBundleItem"
-  ]
+  }
 }
