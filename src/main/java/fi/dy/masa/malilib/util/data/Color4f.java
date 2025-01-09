@@ -67,6 +67,14 @@ public class Color4f
         return fromColor(this.intValue, alpha);
     }
 
+    /**
+     * @return the color intValue
+     */
+    public int getIntValue()
+    {
+        return this.intValue;
+    }
+
     @Override
     public String toString()
     {
@@ -103,6 +111,12 @@ public class Color4f
         return fromColor(color, alpha);
     }
 
+    // Compat
+    public static Color4f fromColor(Color4f color)
+    {
+        return fromColor(color.intValue);
+    }
+
     /**
      * @return a color value parsed from the given String argument.
      * The supported formats are 3, 4, 6 or 8 digit HEX representations,
@@ -124,6 +138,12 @@ public class Color4f
         float b = ((color & 0x000000FF)       ) / 255.0F;
 
         return new Color4f(r, g, b, alpha);
+    }
+
+    // Compat
+    public static Color4f fromColor(Color4f color, float alpha)
+    {
+        return fromColor(color.intValue, alpha);
     }
 
     /**
