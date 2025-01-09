@@ -5,12 +5,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fi.dy.masa.malilib.util.MathUtils;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class Color4f
 {
     public static final Pattern HEX_8 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{8})");

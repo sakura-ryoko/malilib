@@ -13,7 +13,6 @@ import net.minecraft.util.math.Vec3d;
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class PositionUtils
 {
     public static final Direction[] ALL_DIRECTIONS = new Direction[] { Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST };
