@@ -77,6 +77,9 @@ public class MaLiLibConfigs implements IConfigHandler
 
     private static final String TEST_KEY = MaLiLibReference.MOD_ID+".config.test";
     private static final KeybindSettings OVERLAY_TOGGLE = KeybindSettings.create(KeybindSettings.Context.ANY, KeyAction.PRESS, true, true, false, true);
+    //private static final KeybindSettings GUI_RELAXED = KeybindSettings.create(KeybindSettings.Context.GUI, KeyAction.PRESS, true, false, false, false);
+    private static final KeybindSettings GUI_RELAXED_CANCEL = KeybindSettings.create(KeybindSettings.Context.GUI, KeyAction.PRESS, true, false, false, true);
+    //private static final KeybindSettings GUI_NO_ORDER = KeybindSettings.create(KeybindSettings.Context.GUI, KeyAction.PRESS, false, false, false, true);
     public static class Test
     {
         public static final ConfigBoolean           TEST_CONFIG_BOOLEAN             = new ConfigBoolean("testBoolean", false, "Test Boolean").apply(TEST_KEY);
@@ -95,6 +98,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY          = new ConfigBooleanHotkeyed("testInventoryOverlay", false, "LEFT_ALT").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY_OG       = new ConfigBooleanHotkeyed("testInventoryOverlayOG", false, "").apply(TEST_KEY);
         public static final ConfigHotkey            TEST_INVENTORY_OVERLAY_TOGGLE   = new ConfigHotkey("testInventoryOverlayToggle", "BUTTON_3", OVERLAY_TOGGLE).apply(TEST_KEY);
+        public static final ConfigHotkey            TEST_GUI_KEYBIND                = new ConfigHotkey("testGuiKeybind", "", GUI_RELAXED_CANCEL).apply(TEST_KEY);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN,
@@ -112,14 +116,16 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_BUNDLE_PREVIEW_WIDTH,
                 TEST_INVENTORY_OVERLAY,
                 TEST_INVENTORY_OVERLAY_OG,
-                TEST_INVENTORY_OVERLAY_TOGGLE
+                TEST_INVENTORY_OVERLAY_TOGGLE,
+                TEST_GUI_KEYBIND
         );
 
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN_HOTKEYED,
                 TEST_INVENTORY_OVERLAY,
                 TEST_INVENTORY_OVERLAY_OG,
-                TEST_INVENTORY_OVERLAY_TOGGLE
+                TEST_INVENTORY_OVERLAY_TOGGLE,
+                TEST_GUI_KEYBIND
         );
     }
 

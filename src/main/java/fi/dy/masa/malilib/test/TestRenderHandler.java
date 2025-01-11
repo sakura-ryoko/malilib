@@ -67,6 +67,7 @@ public class TestRenderHandler implements IRenderer
     public void onRenderGameOverlayLastDrawer(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
+            MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
             MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
         {
             /*
