@@ -38,6 +38,7 @@ public class TestInputHandler implements IKeybindProvider
     {
         MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().setCallback(this.callback);
         MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind().setCallback(this.callback);
+        MaLiLibConfigs.Test.TEST_GUI_KEYBIND.getKeybind().setCallback(this.callback);
     }
 
     @Override
@@ -88,18 +89,19 @@ public class TestInputHandler implements IKeybindProvider
                          MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
                 {
                     TestInventoryOverlayHandler.getInstance().refreshInventoryOverlay(mc, true, true);
+                    return true;
                 }
                 else
                 {
                     return false;
                 }
             }
-            else
+            else if (key == MaLiLibConfigs.Test.TEST_GUI_KEYBIND.getKeybind())
             {
-                return false;
+                System.out.printf("testGuiKeybind Callback Action: [%s] (Cancel = false)\n", action.getStringValue());
             }
 
-            return true;
+            return false;
         }
     }
 }
