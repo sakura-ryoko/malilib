@@ -145,4 +145,13 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     {
         this.setFocused(focus);
     }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @return ()
+     */
+    public boolean isFocusedWrapper()
+    {
+        return this.isFocused();
+    }
 }
