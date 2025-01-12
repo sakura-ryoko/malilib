@@ -50,21 +50,25 @@ public class GuiTextFieldGeneric extends TextFieldWidget
         return ret;
     }
 
+    @Override
     public int getX()
     {
         return this.x;
     }
 
+    @Override
     public int getY()
     {
         return this.y;
     }
 
+    @Override
     public void setX(int x)
     {
         this.x = x;
     }
 
+    @Override
     public void setY(int y)
     {
         this.y = y;
@@ -159,6 +163,42 @@ public class GuiTextFieldGeneric extends TextFieldWidget
      * For Compat/Crash prevention reasons
      * @return ()
      */
+    public int getXWrapper()
+    {
+        return this.getX();
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @return ()
+     */
+    public int getYWrapper()
+    {
+        return this.getY();
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @param x ()
+     */
+    public void setXWrapper(int x)
+    {
+        this.setX(x);
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @param y ()
+     */
+    public void setYWrapper(int y)
+    {
+        this.setY(y);
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @return ()
+     */
     public int getWidthWrapper()
     {
         return this.getWidth();
@@ -197,5 +237,17 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     public boolean charTypedWrapper(char chr, int modifiers)
     {
         return this.charTyped(chr, modifiers);
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @param mouseX ()
+     * @param mouseY ()
+     * @param mouseButton ()
+     * @return ()
+     */
+    public boolean mouseClickedWrapper(double mouseX, double mouseY, int mouseButton)
+    {
+        return this.mouseClicked(mouseX, mouseY, mouseButton);
     }
 }
