@@ -163,11 +163,19 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
     }
 
+    /**
+     * For Compat / Crash prevention reasons
+     * @return
+     */
     public int getScreenHeight()
     {
         return this.height;
     }
 
+    /**
+     * For Compat / Crash prevention reasons
+     * @return
+     */
     public int getScreenWidth()
     {
         return this.width;
@@ -582,6 +590,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.drawScreenBackground(this.getDrawContext(), mouseX, mouseY);
     }
 
+    /**
+     * Draw's an Screen Tooltip Background
+     * @param drawContext ()
+     * @param mouseX ()
+     * @param mouseY ()
+     */
     protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
     {
         // Draw the dark background
