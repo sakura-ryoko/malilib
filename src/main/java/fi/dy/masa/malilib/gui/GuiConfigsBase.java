@@ -48,9 +48,14 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public void initGui() {
+    public void initGui()
+    {
         super.initGui();
+        this.buildConfigSwitcher();
+    }
 
+    protected void buildConfigSwitcher()
+    {
         ModInfo thisMod = Registry.CONFIG_SCREEN.getModInfoFromConfigScreen(this.getClass());
 
         if (thisMod == null)
@@ -69,9 +74,11 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                 return;
             }
         }
+
         if (thisMod != null && MaLiLibConfigs.Generic.ENABLE_CONFIG_SWITCHER.getBooleanValue())
         {
-            modSwitchWidget = new WidgetDropDownList<>(GuiUtils.getScaledWindowWidth() - 155, 13, 130, 18, 200, 10, Registry.CONFIG_SCREEN.getAllModsWithConfigScreens())
+            // Was: y = 13
+            this.modSwitchWidget = new WidgetDropDownList<>(GuiUtils.getScaledWindowWidth() - 155, 6, 130, 18, 200, 10, Registry.CONFIG_SCREEN.getAllModsWithConfigScreens())
             {
                 {
                     selectedEntry = thisMod;
@@ -81,6 +88,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                 protected void setSelectedEntry(int index)
                 {
                     super.setSelectedEntry(index);
+
                     if (selectedEntry != null && selectedEntry.getConfigScreenSupplier() != null)
                     {
                         client.setScreen(selectedEntry.getConfigScreenSupplier().get());
@@ -93,7 +101,8 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                     return entry.getModName();
                 }
             };
-            addWidget(modSwitchWidget);
+
+            addWidget(this.modSwitchWidget);
         }
     }
 

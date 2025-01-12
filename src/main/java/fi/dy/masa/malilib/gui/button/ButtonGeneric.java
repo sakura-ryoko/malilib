@@ -112,7 +112,6 @@ public class ButtonGeneric extends ButtonBase
                 int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
                 this.bindTexture(this.icon.getTexture());
-                //RenderUtils.drawTexturedRect(x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
                 RenderUtils.drawTexturedRect(this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight(), drawContext);
                 //RenderUtils.forceDraw(drawContext);
             }

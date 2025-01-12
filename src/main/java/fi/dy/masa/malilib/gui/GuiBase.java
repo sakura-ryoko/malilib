@@ -164,6 +164,16 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
     }
 
+    public int getScreenHeight()
+    {
+        return this.height;
+    }
+
+    public int getScreenWidth()
+    {
+        return this.width;
+    }
+
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
