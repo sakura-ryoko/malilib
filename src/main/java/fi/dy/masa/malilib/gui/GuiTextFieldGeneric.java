@@ -100,4 +100,10 @@ public class GuiTextFieldGeneric extends TextFieldWidget
             super.renderWidget(context, mouseX, mouseY, delta);
         }
     }
+
+    // For compat reasons
+    public void setTextWrapper(String text)
+    {
+        this.setText(text);
+    }
 }
