@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
+
 import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.MaLiLibIcons;
@@ -292,6 +293,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
             RenderSystem.depthMask(true);
             RenderSystem.enableDepthTest();
+            //RenderUtils.drawTexturedRect(GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, visibleEntries * this.height, drawContext);
             RenderUtils.drawOutline(this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
 
             int y = this.y + this.height + 1;
@@ -325,6 +327,10 @@ public class WidgetDropDownList<T> extends WidgetBase
             RenderSystem.depthMask(true);
             RenderSystem.enableDepthTest();
             this.scrollBar.render(mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight, drawContext);
+
+            this.bindTexture(MaLiLibIcons.TEXTURE);
+            MaLiLibIcons i = MaLiLibIcons.ARROW_UP;
+            RenderUtils.drawTexturedRect(this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
         else
         {
@@ -335,6 +341,17 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         matrixStack.popMatrix();
         matrixStackIn.pop();
+    }
+
+    @Override
+    public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    {
+        // Draw it again to cover up other elements, when open
+        if (this.isOpen)
+        {
+            this.render(mouseX, mouseY, selected, drawContext);
+            RenderUtils.forceDraw(drawContext);
+        }
     }
 
     protected static class TextFieldListener implements ITextFieldListener<GuiTextFieldGeneric>
