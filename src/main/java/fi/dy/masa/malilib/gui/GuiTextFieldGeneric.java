@@ -112,11 +112,29 @@ public class GuiTextFieldGeneric extends TextFieldWidget
 
     /**
      * For Compat/Crash prevention reasons
+     * @return ()
+     */
+    public String getTextWrapper()
+    {
+        return this.getText();
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
      * @param length ()
      */
     public void setMaxLengthWrapper(int length)
     {
         this.setMaxLength(length);
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @return ()
+     */
+    public int getCursorWrapper()
+    {
+        return this.getCursor();
     }
 
     /**
