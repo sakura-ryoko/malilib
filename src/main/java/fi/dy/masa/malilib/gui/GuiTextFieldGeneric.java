@@ -154,4 +154,48 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     {
         return this.isFocused();
     }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @return ()
+     */
+    public int getWidthWrapper()
+    {
+        return this.getWidth();
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @param context ()
+     * @param mouseX ()
+     * @param mouseY ()
+     * @param delta ()
+     */
+    public void renderWrapper(DrawContext context, int mouseX, int mouseY, float delta)
+    {
+        this.render(context, mouseX, mouseY, delta);
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @param keyCode ()
+     * @param scanCode ()
+     * @param modifiers ()
+     * @return ()
+     */
+    public boolean keyPressedWrapper(int keyCode, int scanCode, int modifiers)
+    {
+        return this.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @param chr ()
+     * @param modifiers ()
+     * @return ()
+     */
+    public boolean charTypedWrapper(char chr, int modifiers)
+    {
+        return this.charTyped(chr, modifiers);
+    }
 }
