@@ -5,7 +5,6 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.registry.tag.TagKey;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,7 +50,9 @@ public class EquipmentUtils
 			return false;
 		}
 
-		return stack.contains(DataComponentTypes.WEAPON) || stack.isIn(ItemTags.WEAPON_ENCHANTABLE);
+		// TODO 25w02a+
+		//return stack.contains(DataComponentTypes.WEAPON) || stack.isIn(ItemTags.WEAPON_ENCHANTABLE);
+		return stack.isIn(ItemTags.WEAPON_ENCHANTABLE);
 	}
 
 	public static boolean isRangedWeapon(ItemStack stack)
@@ -105,6 +106,8 @@ public class EquipmentUtils
 				item instanceof FishingRodItem;
 	}
 
+	// TODO 25w02a+
+	/*
 	public static Pair<Integer, Boolean> getWeaponData(ItemStack stack)
 	{
 		if (stack == null || stack.isEmpty())
@@ -124,6 +127,7 @@ public class EquipmentUtils
 
 		return Pair.of(-1, false);
 	}
+	 */
 
 	public static Pair<Double, Double> getDamageAndSpeedAttributes(ItemStack stack)
 	{
