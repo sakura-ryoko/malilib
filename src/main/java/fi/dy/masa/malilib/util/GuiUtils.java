@@ -45,6 +45,26 @@ public class GuiUtils
         return MinecraftClient.getInstance().currentScreen;
     }
 
+    public static int getCurrentScreenHeight()
+    {
+        if (getCurrentScreen() != null)
+        {
+            return getCurrentScreen().height;
+        }
+
+        return getScaledWindowHeight();
+    }
+
+    public static int getCurrentScreenWidth()
+    {
+        if (getCurrentScreen() != null)
+        {
+            return getCurrentScreen().width;
+        }
+
+        return getScaledWindowWidth();
+    }
+
     public static void createBlockPosInputsVertical(int x, int y, int textFieldWidth, BlockPos pos,
             ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
