@@ -101,9 +101,30 @@ public class GuiTextFieldGeneric extends TextFieldWidget
         }
     }
 
-    // For compat reasons
+    /**
+     * For Compat/Crash prevention reasons
+     * @param text ()
+     */
     public void setTextWrapper(String text)
     {
         this.setText(text);
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @param max ()
+     */
+    public void setLengthWrapper(int max)
+    {
+        this.setMaxLength(max);
+    }
+
+    /**
+     * For Compat/Crash prevention reasons
+     * @param focus ()
+     */
+    public void setFocusedWrapper(boolean focus)
+    {
+        this.setFocused(focus);
     }
 }
