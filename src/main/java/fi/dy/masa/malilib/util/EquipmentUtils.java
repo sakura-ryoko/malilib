@@ -147,11 +147,11 @@ public class EquipmentUtils
 			{
 				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-					if (entry.attribute().equals(EntityAttributes.ATTACK_DAMAGE))
+					if (entry.attribute().equals(EntityAttributes.GENERIC_ATTACK_DAMAGE))
 					{
 						damage = entry.modifier().value();
 					}
-					else if (entry.attribute().equals(EntityAttributes.ATTACK_SPEED))
+					else if (entry.attribute().equals(EntityAttributes.GENERIC_ATTACK_SPEED))
 					{
 						speed = entry.modifier().value();
 					}
@@ -221,7 +221,7 @@ public class EquipmentUtils
 			return false;
 		}
 
-		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+		if (stack.getItem() instanceof ArmorItem &&
 			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
 			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
@@ -230,7 +230,7 @@ public class EquipmentUtils
 			{
 				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-					if (entry.attribute().equals(EntityAttributes.ARMOR) &&
+					if (entry.attribute().equals(EntityAttributes.GENERIC_ARMOR) &&
 						(entry.slot() != AttributeModifierSlot.MAINHAND &&
 						 entry.slot() != AttributeModifierSlot.OFFHAND))
 					{
@@ -250,7 +250,7 @@ public class EquipmentUtils
 			return false;
 		}
 
-		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+		if (stack.getItem() instanceof ArmorItem &&
 			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
 			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
@@ -260,7 +260,7 @@ public class EquipmentUtils
 			{
 				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-					if (entry.attribute().equals(EntityAttributes.ARMOR) &&
+					if (entry.attribute().equals(EntityAttributes.GENERIC_ARMOR) &&
 						entry.slot() == attributeSlot)
 					{
 						return true;
@@ -319,7 +319,7 @@ public class EquipmentUtils
 			return null;
 		}
 
-		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+		if (stack.getItem() instanceof ArmorItem &&
 			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
 			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
@@ -328,7 +328,7 @@ public class EquipmentUtils
 			{
 				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-					if (entry.attribute().equals(EntityAttributes.ARMOR))
+					if (entry.attribute().equals(EntityAttributes.GENERIC_ARMOR))
 					{
 						return entry.slot();
 					}
