@@ -1157,8 +1157,13 @@ public class InventoryUtils
      * @param items
      * @return
      */
-    public static Inventory getAsInventory(DefaultedList<ItemStack> items)
+    public static @Nullable Inventory getAsInventory(DefaultedList<ItemStack> items)
     {
+        if (items == null || items.isEmpty())
+        {
+            return null;
+        }
+
         SimpleInventory inv = new SimpleInventory(items.size());
 
         for (int slot = 0; slot < items.size(); ++slot)

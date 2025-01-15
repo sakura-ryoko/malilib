@@ -4,11 +4,10 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-    "test.MixinBundleItem",
     "IMixinAbstractHorseEntity",
-    "MixinItemStack",
     "IMixinPiglinEntity",
     "IMixinPlayerEntity",
+    "IMixinMerchantEntity",
     "MixinClientConfigurationNetworkHandler",
     "MixinClientPlayNetworkHandler",
     "MixinDrawContext",
@@ -16,13 +15,15 @@
     "MixinHorseEntity",
     "MixinInGameHud",
     "MixinIntegratedServer",
+    "MixinItemStack",
     "MixinKeyboard",
     "MixinMinecraftClient",
     "MixinMinecraftServer",
     "MixinMouse",
     "MixinPiglinEntity",
     "MixinSimpleInventory",
-    "MixinWorldRenderer"
+    "MixinWorldRenderer",
+    "test.MixinBundleItem"
   ],
   "injectors": {
     "defaultRequire": 1
