@@ -6,6 +6,7 @@
   "client": [
     "test.MixinBundleItem",
     "IMixinAbstractHorseEntity",
+    "IMixinMerchantEntity",
     "IMixinAnimalArmorItem",
     "IMixinDrawContext",
     "IMixinHandledScreen",

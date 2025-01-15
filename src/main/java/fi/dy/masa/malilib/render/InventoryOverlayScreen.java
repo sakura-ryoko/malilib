@@ -32,6 +32,7 @@ import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.mixin.IMixinMerchantEntity;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -199,7 +200,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
                 DefaultedList<ItemStack> offers = InventoryUtils.getSellingItemsFromNbt(previewData.nbt(), world.getRegistryManager());
                 Inventory tradeOffers = InventoryUtils.getAsInventory(offers);
 
-                if (!tradeOffers.isEmpty())
+                if (tradeOffers != null && !tradeOffers.isEmpty())
                 {
                     int xInvOffset = (xCenter - 55) - (props.width / 2);
                     int offerSlotCount = 9;
@@ -219,11 +220,11 @@ public class InventoryOverlayScreen extends Screen implements Drawable
             }
             else if (previewData.entity() instanceof MerchantEntity merchant)
             {
-                TradeOfferList trades = merchant.getOffers();
-                DefaultedList<ItemStack> offers = InventoryUtils.getSellingItems(trades);
+                TradeOfferList trades = ((IMixinMerchantEntity) merchant).malilib_offers();
+                DefaultedList<ItemStack> offers = trades != null ? InventoryUtils.getSellingItems(trades) : DefaultedList.of();
                 Inventory tradeOffers = InventoryUtils.getAsInventory(offers);
 
-                if (!tradeOffers.isEmpty())
+                if (tradeOffers != null && !tradeOffers.isEmpty())
                 {
                     int xInvOffset = (xCenter - 55) - (props.width / 2);
                     int offerSlotCount = 9;

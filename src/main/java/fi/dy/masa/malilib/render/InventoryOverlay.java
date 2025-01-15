@@ -28,6 +28,7 @@ import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.entity.vehicle.HopperMinecartEntity;
 import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.Item;
@@ -872,6 +873,12 @@ public class InventoryOverlay
      */
     public static void renderInventoryStacks(InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc, DrawContext drawContext, double mouseX, double mouseY)
     {
+        if (inv == null)
+        {
+            // Only so this doesn't crash if inv was set to null
+            inv = new SimpleInventory(maxSlots > 0 ? maxSlots : INV_PROPS_TEMP.totalSlots);
+        }
+
         if (type == InventoryRenderType.FURNACE)
         {
             renderStackAt(inv.getStack(0), startX + 8, startY + 8, 1, mc, drawContext, mouseX, mouseY);
