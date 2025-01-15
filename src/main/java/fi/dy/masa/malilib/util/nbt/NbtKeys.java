@@ -10,6 +10,7 @@ public class NbtKeys
     public static final String UUID                = "UUID";
     public static final String COMPONENTS          = "components";
     public static final String AGE                 = "Age";
+    public static final String FIRE                = "Fire";
     public static final String POS                 = "Pos";
 
     // Inventory / Single items
@@ -47,6 +48,8 @@ public class NbtKeys
     public static final String BURN_TIME_TOTAL     = "lit_total_time";
 
     // Entity
+    public static final String BRAIN               = "Brain";
+    public static final String MEMORIES            = "memories";
     public static final String ATTRIB              = "attributes";
     public static final String EFFECTS             = "active_effects";
     public static final String CUSTOM_NAME         = "CustomName";
