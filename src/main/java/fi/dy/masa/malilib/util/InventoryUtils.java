@@ -641,6 +641,7 @@ public class InventoryUtils
             {
                 return null;
             }
+
             for (int i = 0; i < slotCount; i++)
             {
                 inv.setStack(i, items.get(i).copy());
@@ -660,6 +661,11 @@ public class InventoryUtils
             SimpleInventory inv = new SimpleInventory(slotCount);
             inv.readNbtList(nbt.getList(NbtKeys.INVENTORY, Constants.NBT.TAG_COMPOUND), registry);
 
+            if (inv.isEmpty())
+            {
+                return null;
+            }
+
             return inv;
         }
         else if (nbt.contains(NbtKeys.ENDER_ITEMS))
@@ -673,6 +679,11 @@ public class InventoryUtils
 
             SimpleInventory inv = new SimpleInventory(slotCount);
             inv.readNbtList(nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND), registry);
+
+            if (inv.isEmpty())
+            {
+                return null;
+            }
 
             return inv;
         }
