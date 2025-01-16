@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.mixin.IMixinMerchantEntity;
+import fi.dy.masa.malilib.mixin.entity.IMixinMerchantEntity;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.StringUtils;
