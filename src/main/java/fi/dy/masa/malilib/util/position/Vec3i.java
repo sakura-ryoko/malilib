@@ -1,14 +1,14 @@
 package fi.dy.masa.malilib.util.position;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3i;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
+@Deprecated(forRemoval = true)
 public class Vec3i extends net.minecraft.util.math.BlockPos
 {
     public static final Vec3i ZERO = new Vec3i(0, 0, 0);

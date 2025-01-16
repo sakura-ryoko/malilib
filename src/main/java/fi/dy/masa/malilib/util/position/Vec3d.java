@@ -1,12 +1,11 @@
 package fi.dy.masa.malilib.util.position;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3d;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
+@Deprecated(forRemoval = true)
 public class Vec3d
 {
     public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);

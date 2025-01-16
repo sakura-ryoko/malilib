@@ -45,8 +45,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 
-import fi.dy.masa.malilib.util.Constants;
 import fi.dy.masa.malilib.util.EntityUtils;
+import fi.dy.masa.malilib.util.data.Constants;
 
 public class NbtEntityUtils
 {
