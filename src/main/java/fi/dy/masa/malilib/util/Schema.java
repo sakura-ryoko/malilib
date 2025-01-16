@@ -12,6 +12,8 @@ public enum Schema
 {
     // TODO --> Add Schema Versions to this as versions get released
     // Minecraft Data Versions
+    SCHEMA_25W03A  (4304, "25w03a"), // Entity Data Components ( https://www.minecraft.net/en-us/article/minecraft-snapshot-25w03a )
+    SCHEMA_25W02A  (4298, "25w02a"),
     SCHEMA_1_21_04 (4189, "1.21.4"),
     SCHEMA_24W46A  (4178, "24w46a"),
     SCHEMA_24W44A  (4174, "24w44a"),
