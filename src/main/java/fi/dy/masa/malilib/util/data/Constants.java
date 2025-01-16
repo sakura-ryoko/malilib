@@ -1,10 +1,9 @@
-package fi.dy.masa.malilib.util;
+package fi.dy.masa.malilib.util.data;
 
 /**
  * New Version will be located under util/data
  */
-@Deprecated(forRemoval = true)
-public class Constants extends fi.dy.masa.malilib.util.data.Constants
+public class Constants
 {
     public static class NBT
     {

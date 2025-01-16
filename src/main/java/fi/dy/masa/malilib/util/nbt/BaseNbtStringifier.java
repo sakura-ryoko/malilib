@@ -1,13 +1,12 @@
 package fi.dy.masa.malilib.util.nbt;
 
 import javax.annotation.Nullable;
-
 import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.nbt.*;
 
-import fi.dy.masa.malilib.util.Constants;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.game.wrap.NbtWrap;
 
 /**

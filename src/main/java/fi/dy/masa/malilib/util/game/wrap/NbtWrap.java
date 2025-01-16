@@ -1,12 +1,11 @@
 package fi.dy.masa.malilib.util.game.wrap;
 
 import java.util.Set;
-
 import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.nbt.*;
 
-import fi.dy.masa.malilib.util.Constants;
+import fi.dy.masa.malilib.util.data.Constants;
 
 /**
  * Post-ReWrite code
