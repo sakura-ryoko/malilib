@@ -11,25 +11,26 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
+import net.minecraft.class_10630;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.*;
 import net.minecraft.recipe.ServerRecipeManager;
-import net.minecraft.registry.*;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerRecipeBook;
 import net.minecraft.text.Text;
@@ -42,8 +43,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 
-import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.EntityUtils;
+import fi.dy.masa.malilib.util.data.Constants;
 
 public class NbtEntityUtils
 {
@@ -287,7 +289,8 @@ public class NbtEntityUtils
     }
 
     /**
-     * Get a ItemStack List of all Equipped Hand Items pieces.
+     * Get a ItemStack List of all Equipped Hand Items.
+     * 0/1 [{MainHand}, {OffHand}]
      *
      * @param nbt ()
      * @param registry ()
@@ -296,14 +299,21 @@ public class NbtEntityUtils
     public static DefaultedList<ItemStack> getHandItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(2, ItemStack.EMPTY);
+        class_10630 equipment = getEquipmentSlotsFromNbt(nbt, registry);
 
-        if (nbt.contains(NbtKeys.HAND_ITEMS, Constants.NBT.TAG_LIST))
+        if (equipment != null)
         {
-            NbtList nbtList = nbt.getList(NbtKeys.HAND_ITEMS, Constants.NBT.TAG_COMPOUND);
+            ItemStack mainHand = equipment.method_66659(EquipmentSlot.MAINHAND);
+            ItemStack offHand = equipment.method_66659(EquipmentSlot.OFFHAND);
 
-            for (int i = 0; i < list.size(); i++)
+            if (mainHand != null && !mainHand.isEmpty())
             {
-                list.set(i, ItemStack.fromNbtOrEmpty(registry, nbtList.getCompound(i)));
+                list.set(0, mainHand.copy());
+            }
+
+            if (offHand != null && !offHand.isEmpty())
+            {
+                list.set(1, offHand.copy());
             }
         }
 
@@ -311,23 +321,43 @@ public class NbtEntityUtils
     }
 
     /**
-     * Get a ItemStack List of all Equipped Armor pieces.
+     * Get a ItemStack List of all Equipped Humanoid Armor Slots
+     * 0/1/2/3 [{Head}, {Chest}, {Legs}, {Feet}]
      *
      * @param nbt ()
      * @param registry ()
      * @return ()
      */
-    public static DefaultedList<ItemStack> getArmorItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    public static DefaultedList<ItemStack> getHumanoidArmorFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(4, ItemStack.EMPTY);
+        class_10630 equipment = getEquipmentSlotsFromNbt(nbt, registry);
 
-        if (nbt.contains(NbtKeys.ARMOR_ITEMS, Constants.NBT.TAG_LIST))
+        if (equipment != null)
         {
-            NbtList nbtList = nbt.getList(NbtKeys.ARMOR_ITEMS, Constants.NBT.TAG_COMPOUND);
+            ItemStack head = equipment.method_66659(EquipmentSlot.HEAD);
+            ItemStack chest = equipment.method_66659(EquipmentSlot.CHEST);
+            ItemStack legs = equipment.method_66659(EquipmentSlot.LEGS);
+            ItemStack feet = equipment.method_66659(EquipmentSlot.FEET);
 
-            for (int i = 0; i < list.size(); i++)
+            if (head != null && !head.isEmpty())
             {
-                list.set(i, ItemStack.fromNbtOrEmpty(registry, nbtList.getCompound(i)));
+                list.set(0, head.copy());
+            }
+
+            if (chest != null && !chest.isEmpty())
+            {
+                list.set(1, chest.copy());
+            }
+
+            if (legs != null && !legs.isEmpty())
+            {
+                list.set(2, legs.copy());
+            }
+
+            if (feet != null && !feet.isEmpty())
+            {
+                list.set(3, feet.copy());
             }
         }
 
@@ -335,44 +365,132 @@ public class NbtEntityUtils
     }
 
     /**
-     * Get the 'Body Armor Item' for the Horse or Wolf Armor.
+     * Get a ItemStack List of all Equipped Horse/Wolf/Llama/Camel/Etc Slots
+     * 0/1 [{BodyArmor}, {Saddle}]
      *
      * @param nbt ()
      * @param registry ()
      * @return ()
      */
-    public static ItemStack getBodyArmorFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    public static DefaultedList<ItemStack> getHorseEquipmentFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        if (nbt.contains(NbtKeys.BODY_ARMOR, Constants.NBT.TAG_COMPOUND))
+        DefaultedList<ItemStack> list = DefaultedList.ofSize(2, ItemStack.EMPTY);
+        class_10630 equipment = getEquipmentSlotsFromNbt(nbt, registry);
+
+        if (equipment != null)
         {
-            return ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BODY_ARMOR));
+            ItemStack bodyArmor = equipment.method_66659(EquipmentSlot.BODY);
+            ItemStack saddle = equipment.method_66659(EquipmentSlot.SADDLE);
+
+            if (bodyArmor != null && !bodyArmor.isEmpty())
+            {
+                list.set(0, bodyArmor.copy());
+            }
+
+            if (saddle != null && !saddle.isEmpty())
+            {
+                list.set(1, saddle.copy());
+            }
         }
 
-        return ItemStack.EMPTY;
+        return list;
     }
 
     /**
-     * Get the Tamable Entity's Owner and if they have a Saddle Equipped.
+     * Get a ItemStack List of all Equipment Slots
+     *   0/1   [{MainHand}, {OffHand}]
+     * 2/3/4/5 [{Head}, {Chest}, {Legs}, {Feet}]
+     *   6/7   [{BodyArmor}, {Saddle}]
      *
      * @param nbt ()
      * @param registry ()
      * @return ()
      */
-    public static Pair<UUID, ItemStack> getOwnerAndSaddle(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    public static DefaultedList<ItemStack> getAllEquipmentFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    {
+        DefaultedList<ItemStack> list = DefaultedList.ofSize(8, ItemStack.EMPTY);
+        class_10630 equipment = getEquipmentSlotsFromNbt(nbt, registry);
+
+        if (equipment != null)
+        {
+            ItemStack mainHand = equipment.method_66659(EquipmentSlot.MAINHAND);
+            ItemStack offHand = equipment.method_66659(EquipmentSlot.OFFHAND);
+            ItemStack head = equipment.method_66659(EquipmentSlot.HEAD);
+            ItemStack chest = equipment.method_66659(EquipmentSlot.CHEST);
+            ItemStack legs = equipment.method_66659(EquipmentSlot.LEGS);
+            ItemStack feet = equipment.method_66659(EquipmentSlot.FEET);
+            ItemStack bodyArmor = equipment.method_66659(EquipmentSlot.BODY);
+            ItemStack saddle = equipment.method_66659(EquipmentSlot.SADDLE);
+
+            // Hand Items
+            if (mainHand != null && !mainHand.isEmpty())
+            {
+                list.set(0, mainHand.copy());
+            }
+
+            if (offHand != null && !offHand.isEmpty())
+            {
+                list.set(1, offHand.copy());
+            }
+
+            // ArmorItems
+            if (head != null && !head.isEmpty())
+            {
+                list.set(2, head.copy());
+            }
+
+            if (chest != null && !chest.isEmpty())
+            {
+                list.set(3, chest.copy());
+            }
+
+            if (legs != null && !legs.isEmpty())
+            {
+                list.set(4, legs.copy());
+            }
+
+            if (feet != null && !feet.isEmpty())
+            {
+                list.set(5, feet.copy());
+            }
+
+            // HorseArmor
+            if (bodyArmor != null && !bodyArmor.isEmpty())
+            {
+                list.set(6, bodyArmor.copy());
+            }
+
+            // SaddleItem
+            if (saddle != null && !saddle.isEmpty())
+            {
+                list.set(7, saddle.copy());
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * Get the Tamable Entity's Owner
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static Pair<UUID, Boolean> getTamableOwner(@Nonnull NbtCompound nbt)
     {
         UUID owner = Util.NIL_UUID;
-        ItemStack saddle = ItemStack.EMPTY;
+        boolean sitting = false;
 
         if (nbt.containsUuid(NbtKeys.OWNER))
         {
             owner = nbt.getUuid(NbtKeys.OWNER);
         }
-        if (nbt.contains(NbtKeys.SADDLE, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.SITTING))
         {
-            saddle = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.SADDLE));
+            sitting = nbt.getBoolean(NbtKeys.SITTING);
         }
 
-        return Pair.of(owner, saddle);
+        return Pair.of(owner, sitting);
     }
 
     /**
@@ -613,7 +731,9 @@ public class NbtEntityUtils
         }
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_COMPOUND))
         {
-            variant = PaintingEntity.VARIANT_ENTRY_CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt).resultOrPartial().orElse(null);
+            variant = PaintingVariant.ENTRY_CODEC.fieldOf(NbtKeys.VARIANT).codec()
+                                     .parse(registry.getOps(NbtOps.INSTANCE), nbt)
+                                     .resultOrPartial().orElse(null);
         }
 
         return Pair.of(facing, variant != null ? variant.value() : null);
@@ -844,6 +964,22 @@ public class NbtEntityUtils
     }
 
     /**
+     * Get a Fox's Variant type from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static @Nullable FoxEntity.Type getFoxVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.FOX_TYPE, Constants.NBT.TAG_STRING))
+        {
+            return FoxEntity.Type.byName(nbt.getString(NbtKeys.FOX_TYPE));
+        }
+
+        return null;
+    }
+
+    /**
      * Get a player's Experience values from NBT.
      *
      * @param nbt ()
@@ -907,5 +1043,47 @@ public class NbtEntityUtils
         }
 
         return book;
+    }
+
+    /**
+     * Get Equipment Slot values from NBT.
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
+    public static @Nullable class_10630 getEquipmentSlotsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    {
+        if (nbt.contains(NbtKeys.EQUIPMENT))
+        {
+            Optional<class_10630> opt = class_10630.field_55943.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.EQUIPMENT)).result();
+
+            if (opt.isPresent())
+            {
+                return opt.get();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Encode Equipment Slots to NBT.
+     *
+     * @param equipment ()
+     * @param registry ()
+     * @return ()
+     */
+    public static @Nullable NbtElement setEquipmentSlotsToNbt(@Nonnull class_10630 equipment, @Nonnull DynamicRegistryManager registry)
+    {
+        try
+        {
+            return class_10630.field_55943.encodeStart(registry.getOps(NbtOps.INSTANCE), equipment).getOrThrow();
+        }
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.warn("setEquipmentSlotsToNbt(): Failed to parse Equipment Slots Object; {}", err.getMessage());
+            return null;
+        }
     }
 }

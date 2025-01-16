@@ -1647,7 +1647,7 @@ public class RenderUtils
 
     public static void setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
     {
-        VillagerProfession profession = data != null ? data.getProfession() : null;
+        VillagerProfession profession = data != null ? data.profession().value() : null;
         setVillagerBackgroundTintColor(profession, useBgColors);
     }
 

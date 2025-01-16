@@ -645,7 +645,7 @@ public class InventoryOverlay
             {
                 return InventoryRenderType.ARMOR_STAND;
             }
-            else if (nbt.contains(NbtKeys.ATTRIB) || nbt.contains(NbtKeys.EFFECTS) || nbt.contains(NbtKeys.ARMOR_ITEMS))
+            else if (nbt.contains(NbtKeys.ATTRIB) || nbt.contains(NbtKeys.EFFECTS) || nbt.contains(NbtKeys.FALL_FLYING))
             {
                 return InventoryRenderType.LIVING_ENTITY;
             }

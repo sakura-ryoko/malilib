@@ -51,13 +51,10 @@ public class NbtKeys
     public static final String BRAIN               = "Brain";
     public static final String MEMORIES            = "memories";
     public static final String ATTRIB              = "attributes";
+    public static final String EQUIPMENT           = "equipment";
     public static final String EFFECTS             = "active_effects";
     public static final String CUSTOM_NAME         = "CustomName";
     public static final String HEALTH              = "Health";
-    public static final String HAND_ITEMS          = "HandItems";
-    public static final String ARMOR_ITEMS         = "ArmorItems";
-    public static final String BODY_ARMOR          = "body_armor_item";
-    public static final String SADDLE              = "SaddleItem";
     public static final String OWNER               = "Owner";
     public static final String FORCED_AGE          = "ForcedAge";
     public static final String OFFERS              = "Offers";
@@ -80,6 +77,7 @@ public class NbtKeys
     public static final String COLOR               = "Color";
     public static final String BUCKET_VARIANT      = "BucketVariantTag";
     public static final String RABBIT_TYPE         = "RabbitType";
+    public static final String FOX_TYPE            = "Type";
     public static final String STRENGTH            = "Strength";
     public static final String EXP_LEVEL           = "XpLevel";
     public static final String EXP_TOTAL           = "XpTotal";
@@ -91,6 +89,10 @@ public class NbtKeys
     public static final String RECIPE_BOOK         = "recipeBook";
     public static final String RECIPES             = "recipes";
     public static final String DISPLAYED           = "toBeDisplayed";
+    public static final String EATING_HAY          = "EatingHaystack";
+    public static final String HORSE_TEMPER        = "Temper";
+    public static final String SITTING             = "Sitting";
+    public static final String FALL_FLYING         = "FallFlying";
 
     // Other/Outdated Tags (There are tons more not listed)
     // 24w09a (Data Components)
@@ -118,4 +120,9 @@ public class NbtKeys
     public static final String OLD_COOK_TIME_SPENT = "CookTime";
     public static final String OLD_COOK_TIME_TOTAL = "CookTimeTotal";
     public static final String OLD_BURN_TIME       = "BurnTime";
+    // 25w03a (Equipment Data Components)
+    public static final String OLD_HAND_ITEMS      = "HandItems";
+    public static final String OLD_ARMOR_ITEMS     = "ArmorItems";
+    public static final String OLD_BODY_ARMOR      = "body_armor_item";
+    public static final String OLD_SADDLE          = "SaddleItem";
 }

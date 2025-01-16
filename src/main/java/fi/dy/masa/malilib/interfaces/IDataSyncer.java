@@ -25,8 +25,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import fi.dy.masa.malilib.mixin.IMixinAbstractHorseEntity;
-import fi.dy.masa.malilib.mixin.IMixinPiglinEntity;
+import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
+import fi.dy.masa.malilib.mixin.entity.IMixinPiglinEntity;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 
@@ -348,8 +348,8 @@ public interface IDataSyncer
     /**
      * Used by your Packet Receiver if any Bulk handling of NBT Tags for multiple Entities is required.
      * This is usually used for something like downloading an entire ChunkPos worth of Entity Data; such as with Litematica.
-     * @param transactionId
-     * @param nbt
+     * @param transactionId ()
+     * @param nbt ()
      */
     default void handleBulkEntityData(int transactionId, NbtCompound nbt) {}
 

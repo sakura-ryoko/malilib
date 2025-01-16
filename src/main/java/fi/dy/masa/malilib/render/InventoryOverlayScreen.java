@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.mixin.IMixinMerchantEntity;
+import fi.dy.masa.malilib.mixin.entity.IMixinMerchantEntity;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -91,6 +91,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
             int startSlot = 0;
             int totalSlots = previewData.inv() == null ? 0 : previewData.inv().size();
             List<ItemStack> armourItems = new ArrayList<>();
+
             if (previewData.entity() instanceof AbstractHorseEntity)
             {
                 if (previewData.inv() == null)
@@ -186,6 +187,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
                 InventoryOverlay.renderInventoryBackground(InventoryOverlay.InventoryRenderType.GENERIC, xInv, yInv, 9, 27, mc);
                 InventoryOverlay.renderInventoryStacks(InventoryOverlay.InventoryRenderType.GENERIC, enderItems, xInv + props.slotOffsetX, yInv + props.slotOffsetY, 9, 0, 27, mc, drawContext, mouseX, mouseY);
             }
+            // Player Inventory Display
             else if (previewData.entity() instanceof PlayerEntity player)
             {
                 yInv = yCenter + 6;
@@ -218,6 +220,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
                     InventoryOverlay.renderInventoryStacks(InventoryOverlay.InventoryRenderType.GENERIC, tradeOffers, xInvOffset, yInv + props.slotOffsetY, 9, 0, offerSlotCount, mc, drawContext, mouseX, mouseY);
                 }
             }
+            // Villager Trades Display
             else if (previewData.entity() instanceof MerchantEntity merchant)
             {
                 TradeOfferList trades = ((IMixinMerchantEntity) merchant).malilib_offers();

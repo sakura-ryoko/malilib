@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.registry.tag.TagKey;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +19,7 @@ import net.minecraft.item.*;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 
-import fi.dy.masa.malilib.mixin.IMixinAnimalArmorItem;
+import fi.dy.masa.malilib.mixin.entity.IMixinAnimalArmorItem;
 
 public class EquipmentUtils
 {
@@ -118,7 +118,7 @@ public class EquipmentUtils
 
 			if (weaponComponent != null)
 			{
-				return Pair.of(weaponComponent.damagePerAttack(), weaponComponent.canDisableBlocking());
+				return Pair.of(weaponComponent.itemDamagePerAttack(), weaponComponent.canDisableBlocking());
 			}
 		}
 

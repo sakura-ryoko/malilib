@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin;
+package fi.dy.masa.malilib.mixin.entity;
 
 import net.minecraft.item.AnimalArmorItem;
 import org.spongepowered.asm.mixin.Mixin;

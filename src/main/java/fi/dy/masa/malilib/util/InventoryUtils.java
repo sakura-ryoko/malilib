@@ -49,7 +49,7 @@ import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.mixin.IMixinPlayerEntity;
+import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.data.Constants;
@@ -736,20 +736,15 @@ public class InventoryUtils
      * @param registry
      * @return
      */
-    public static Inventory getNbtInventoryHorseFix(@Nonnull NbtCompound nbt, int slotCount, @Nonnull RegistryWrapper.WrapperLookup registry)
+    public static Inventory getNbtInventoryHorseFix(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
-        ItemStack saddle = ItemStack.EMPTY;
+        DefaultedList<ItemStack> horseEquipment = NbtEntityUtils.getHorseEquipmentFromNbt(nbt, registry);
 
         if (slotCount > 256)
         {
             slotCount = 256;
         }
 
-        // Get Saddle Item for slot 0
-        if (nbt.contains(NbtKeys.SADDLE))
-        {
-            saddle = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.SADDLE));
-        }
         // Shift inv ahead by 1 slot for horses (1.21 only)
         if (nbt.contains(NbtKeys.ITEMS))
         {
@@ -769,7 +764,7 @@ public class InventoryUtils
             {
                 return null;
             }
-            inv.setStack(0, saddle.copy());
+            inv.setStack(0, horseEquipment.getLast());
             for (int i = 0; i < slotCount; i++)
             {
                 inv.setStack(i + 1, items.get(i));
@@ -778,10 +773,10 @@ public class InventoryUtils
             return inv;
         }
         // Saddled only fix
-        else if (!saddle.isEmpty())
+        else if (!horseEquipment.getLast().isEmpty())
         {
             SimpleInventory inv = new SimpleInventory(1);
-            inv.setStack(0, saddle.copy());
+            inv.setStack(0, horseEquipment.getLast().copy());
 
             return inv;
         }
