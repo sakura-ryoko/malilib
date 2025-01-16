@@ -18,7 +18,7 @@ import net.minecraft.item.*;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 
-import fi.dy.masa.malilib.mixin.IMixinAnimalArmorItem;
+import fi.dy.masa.malilib.mixin.entity.IMixinAnimalArmorItem;
 
 public class EquipmentUtils
 {
