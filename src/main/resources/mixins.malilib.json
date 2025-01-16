@@ -11,7 +11,7 @@
     "entity.IMixinMerchantEntity",
     "entity.IMixinPiglinEntity",
     "entity.IMixinPlayerEntity",
-    "entity.MixinHorseEntity",
+    "entity.MixinAbstractHorseEntity",
     "entity.MixinPiglinEntity",
     "entity.MixinSimpleInventory",
     "MixinClientConfigurationNetworkHandler",
