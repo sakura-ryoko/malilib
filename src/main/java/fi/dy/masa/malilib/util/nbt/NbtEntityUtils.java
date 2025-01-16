@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Triple;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.class_10630;
+import net.minecraft.entity.EntityEquipment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -299,12 +299,12 @@ public class NbtEntityUtils
     public static DefaultedList<ItemStack> getHandItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(2, ItemStack.EMPTY);
-        class_10630 equipment = getEquipmentSlotsFromNbt(nbt, registry);
+        EntityEquipment equipment = getEquipmentSlotsFromNbt(nbt, registry);
 
         if (equipment != null)
         {
-            ItemStack mainHand = equipment.method_66659(EquipmentSlot.MAINHAND);
-            ItemStack offHand = equipment.method_66659(EquipmentSlot.OFFHAND);
+            ItemStack mainHand = equipment.get(EquipmentSlot.MAINHAND);
+            ItemStack offHand = equipment.get(EquipmentSlot.OFFHAND);
 
             if (mainHand != null && !mainHand.isEmpty())
             {
@@ -331,14 +331,14 @@ public class NbtEntityUtils
     public static DefaultedList<ItemStack> getHumanoidArmorFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(4, ItemStack.EMPTY);
-        class_10630 equipment = getEquipmentSlotsFromNbt(nbt, registry);
+        EntityEquipment equipment = getEquipmentSlotsFromNbt(nbt, registry);
 
         if (equipment != null)
         {
-            ItemStack head = equipment.method_66659(EquipmentSlot.HEAD);
-            ItemStack chest = equipment.method_66659(EquipmentSlot.CHEST);
-            ItemStack legs = equipment.method_66659(EquipmentSlot.LEGS);
-            ItemStack feet = equipment.method_66659(EquipmentSlot.FEET);
+            ItemStack head = equipment.get(EquipmentSlot.HEAD);
+            ItemStack chest = equipment.get(EquipmentSlot.CHEST);
+            ItemStack legs = equipment.get(EquipmentSlot.LEGS);
+            ItemStack feet = equipment.get(EquipmentSlot.FEET);
 
             if (head != null && !head.isEmpty())
             {
@@ -375,12 +375,12 @@ public class NbtEntityUtils
     public static DefaultedList<ItemStack> getHorseEquipmentFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(2, ItemStack.EMPTY);
-        class_10630 equipment = getEquipmentSlotsFromNbt(nbt, registry);
+        EntityEquipment equipment = getEquipmentSlotsFromNbt(nbt, registry);
 
         if (equipment != null)
         {
-            ItemStack bodyArmor = equipment.method_66659(EquipmentSlot.BODY);
-            ItemStack saddle = equipment.method_66659(EquipmentSlot.SADDLE);
+            ItemStack bodyArmor = equipment.get(EquipmentSlot.BODY);
+            ItemStack saddle = equipment.get(EquipmentSlot.SADDLE);
 
             if (bodyArmor != null && !bodyArmor.isEmpty())
             {
@@ -409,18 +409,18 @@ public class NbtEntityUtils
     public static DefaultedList<ItemStack> getAllEquipmentFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         DefaultedList<ItemStack> list = DefaultedList.ofSize(8, ItemStack.EMPTY);
-        class_10630 equipment = getEquipmentSlotsFromNbt(nbt, registry);
+        EntityEquipment equipment = getEquipmentSlotsFromNbt(nbt, registry);
 
         if (equipment != null)
         {
-            ItemStack mainHand = equipment.method_66659(EquipmentSlot.MAINHAND);
-            ItemStack offHand = equipment.method_66659(EquipmentSlot.OFFHAND);
-            ItemStack head = equipment.method_66659(EquipmentSlot.HEAD);
-            ItemStack chest = equipment.method_66659(EquipmentSlot.CHEST);
-            ItemStack legs = equipment.method_66659(EquipmentSlot.LEGS);
-            ItemStack feet = equipment.method_66659(EquipmentSlot.FEET);
-            ItemStack bodyArmor = equipment.method_66659(EquipmentSlot.BODY);
-            ItemStack saddle = equipment.method_66659(EquipmentSlot.SADDLE);
+            ItemStack mainHand = equipment.get(EquipmentSlot.MAINHAND);
+            ItemStack offHand = equipment.get(EquipmentSlot.OFFHAND);
+            ItemStack head = equipment.get(EquipmentSlot.HEAD);
+            ItemStack chest = equipment.get(EquipmentSlot.CHEST);
+            ItemStack legs = equipment.get(EquipmentSlot.LEGS);
+            ItemStack feet = equipment.get(EquipmentSlot.FEET);
+            ItemStack bodyArmor = equipment.get(EquipmentSlot.BODY);
+            ItemStack saddle = equipment.get(EquipmentSlot.SADDLE);
 
             // Hand Items
             if (mainHand != null && !mainHand.isEmpty())
@@ -749,7 +749,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
-            return AxolotlEntity.Variant.byId(nbt.getInt(NbtKeys.VARIANT_2));
+            return AxolotlEntity.Variant.byIndex(nbt.getInt(NbtKeys.VARIANT_2));
         }
 
         return null;
@@ -819,7 +819,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
             int variant = nbt.getInt(NbtKeys.VARIANT_2);
-            color = HorseColor.byId(variant & 255);
+            color = HorseColor.byIndex(variant & 255);
             marking = HorseMarking.byIndex((variant & '\uff00') >> 8);
         }
 
@@ -906,11 +906,11 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    public static @Nullable RabbitEntity.RabbitType getRabbitTypeFromNbt(@Nonnull NbtCompound nbt)
+    public static @Nullable RabbitEntity.Variant getRabbitTypeFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.RABBIT_TYPE, Constants.NBT.TAG_INT))
         {
-            return RabbitEntity.RabbitType.byId(nbt.getInt(NbtKeys.RABBIT_TYPE));
+            return RabbitEntity.Variant.byIndex(nbt.getInt(NbtKeys.RABBIT_TYPE));
         }
 
         return null;
@@ -929,7 +929,7 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
-            variant = LlamaEntity.Variant.byId(nbt.getInt(NbtKeys.VARIANT_2));
+            variant = LlamaEntity.Variant.byIndex(nbt.getInt(NbtKeys.VARIANT_2));
         }
         if (nbt.contains(NbtKeys.STRENGTH, Constants.NBT.TAG_INT))
         {
@@ -969,11 +969,11 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    public static @Nullable FoxEntity.Type getFoxVariantFromNbt(@Nonnull NbtCompound nbt)
+    public static @Nullable FoxEntity.Variant getFoxVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.FOX_TYPE, Constants.NBT.TAG_STRING))
         {
-            return FoxEntity.Type.byName(nbt.getString(NbtKeys.FOX_TYPE));
+            return FoxEntity.Variant.byId(nbt.getString(NbtKeys.FOX_TYPE));
         }
 
         return null;
@@ -1052,11 +1052,11 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
-    public static @Nullable class_10630 getEquipmentSlotsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    public static @Nullable EntityEquipment getEquipmentSlotsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains(NbtKeys.EQUIPMENT))
         {
-            Optional<class_10630> opt = class_10630.field_55943.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.EQUIPMENT)).result();
+            Optional<EntityEquipment> opt = EntityEquipment.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.EQUIPMENT)).result();
 
             if (opt.isPresent())
             {
@@ -1074,11 +1074,11 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
-    public static @Nullable NbtElement setEquipmentSlotsToNbt(@Nonnull class_10630 equipment, @Nonnull DynamicRegistryManager registry)
+    public static @Nullable NbtElement setEquipmentSlotsToNbt(@Nonnull EntityEquipment equipment, @Nonnull DynamicRegistryManager registry)
     {
         try
         {
-            return class_10630.field_55943.encodeStart(registry.getOps(NbtOps.INSTANCE), equipment).getOrThrow();
+            return EntityEquipment.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), equipment).getOrThrow();
         }
         catch (Exception err)
         {
