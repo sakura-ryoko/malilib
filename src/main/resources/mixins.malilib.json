@@ -14,6 +14,8 @@
     "entity.MixinAbstractHorseEntity",
     "entity.MixinPiglinEntity",
     "entity.MixinSimpleInventory",
+    "IMixinDrawContext",
+    "IMixinHandledScreen",
     "MixinClientConfigurationNetworkHandler",
     "MixinClientPlayNetworkHandler",
     "MixinDrawContext",
