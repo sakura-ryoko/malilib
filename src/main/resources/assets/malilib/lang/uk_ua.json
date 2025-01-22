@@ -83,7 +83,7 @@
   "malilib.config.test.name.testString": "testString /X",
   "malilib.config.test.name.testStringList": "testStringList /X",
   "malilib.config.test.prettyName.testBooleanHotkeyed": "Тест логічної прив'язі клавіш",
-  "malilib.config.test.prettyName.testGuiKeybind": "Тест прив'язі клавіш" Gui ",
+  "malilib.config.test.prettyName.testGuiKeybind": "Тест прив'язі клавіш Gui",
   "malilib.config.test.prettyName.testInventoryOverlay": "Тест накладення інвентарю",
   "malilib.config.test.prettyName.testInventoryOverlayOG": "Тест накладення інвентарю",
   "malilib.config.test.prettyName.testInventoryOverlayToggle": "Перемикач тесту накладення інвентарю",
