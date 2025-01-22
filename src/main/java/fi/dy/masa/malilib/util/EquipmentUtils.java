@@ -1,25 +1,23 @@
 package fi.dy.masa.malilib.util;
 
-import java.util.Set;
-import javax.annotation.Nonnull;
-
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.registry.tag.ItemTags;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.*;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.*;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
-import fi.dy.masa.malilib.mixin.entity.IMixinAnimalArmorItem;
+import javax.annotation.Nonnull;
+import java.util.Objects;
+import java.util.Set;
 
 public class EquipmentUtils
 {
@@ -105,11 +103,11 @@ public class EquipmentUtils
 				item instanceof FishingRodItem;
 	}
 
-	public static Pair<Integer, Boolean> getWeaponData(ItemStack stack)
+	public static Pair<Integer, Float> getWeaponData(ItemStack stack)
 	{
 		if (stack == null || stack.isEmpty())
 		{
-			return Pair.of(-1, false);
+			return Pair.of(-1, 0.0f);
 		}
 
 		if (stack.contains(DataComponentTypes.WEAPON))
@@ -118,11 +116,11 @@ public class EquipmentUtils
 
 			if (weaponComponent != null)
 			{
-				return Pair.of(weaponComponent.itemDamagePerAttack(), weaponComponent.canDisableBlocking());
+				return Pair.of(weaponComponent.itemDamagePerAttack(), weaponComponent.disableBlockingForSeconds());
 			}
 		}
 
-		return Pair.of(-1, false);
+		return Pair.of(-1, 0.0f);
 	}
 
 	public static Pair<Double, Double> getDamageAndSpeedAttributes(ItemStack stack)
@@ -275,7 +273,7 @@ public class EquipmentUtils
 			return false;
 		}
 
-		return stack.getItem() instanceof AnimalArmorItem;
+		return Objects.equals(getEquipmentSlot(stack), AttributeModifierSlot.BODY);
 	}
 
 	public static boolean isHorseArmor(ItemStack stack)
@@ -285,9 +283,27 @@ public class EquipmentUtils
 			return false;
 		}
 
-		if (stack.getItem() instanceof AnimalArmorItem armor)
+		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
-			return (((IMixinAnimalArmorItem) armor).malilib_getAnimalArmorType() == AnimalArmorItem.Type.EQUESTRIAN);
+			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+			EquippableComponent equip = stack.get(DataComponentTypes.EQUIPPABLE);
+
+			if (attrib != null && equip != null)
+			{
+				boolean bodySlot = false;
+
+				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
+				{
+					if (entry.attribute().equals(EntityAttributes.ARMOR) && entry.slot().equals(AttributeModifierSlot.BODY))
+					{
+						bodySlot = true;
+						break;
+					}
+				}
+
+				return bodySlot && equip.allows(EntityType.HORSE);
+			}
 		}
 
 		return false;
@@ -300,9 +316,27 @@ public class EquipmentUtils
 			return false;
 		}
 
-		if (stack.getItem() instanceof AnimalArmorItem armor)
+		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
-			return (((IMixinAnimalArmorItem) armor).malilib_getAnimalArmorType() == AnimalArmorItem.Type.CANINE);
+			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+			EquippableComponent equip = stack.get(DataComponentTypes.EQUIPPABLE);
+
+			if (attrib != null && equip != null)
+			{
+				boolean bodySlot = false;
+
+				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
+				{
+                    if (entry.attribute().equals(EntityAttributes.ARMOR) && entry.slot().equals(AttributeModifierSlot.BODY))
+                    {
+                        bodySlot = true;
+                        break;
+                    }
+				}
+
+				return bodySlot && equip.allows(EntityType.WOLF);
+			}
 		}
 
 		return false;

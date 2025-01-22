@@ -6,6 +6,9 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
+import net.minecraft.class_10686;
+import net.minecraft.class_10689;
+import net.minecraft.class_10704;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -761,19 +764,25 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    public static Pair<RegistryKey<CatVariant>, DyeColor> getCatVariantFromNbt(@Nonnull NbtCompound nbt)
+    public static Pair<RegistryKey<CatVariant>, DyeColor> getCatVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         RegistryKey<CatVariant> variantKey = null;
         DyeColor collar = null;
 
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
-            variantKey = RegistryKey.of(RegistryKeys.CAT_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+            /*
+            Optional<RegistryEntry.Reference<CatVariant>> opt = registry.getOrThrow(RegistryKeys.CAT_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+            Optional<RegistryEntry<CatVariant>> opt = CatVariant.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.VARIANT)).resultOrPartial();
 
-            if (variantKey == null)
+            if (opt.isPresent())
             {
-                variantKey = CatVariant.ALL_BLACK;
+                return opt.get().registryKey();
             }
+             */
+
+            // TODO new Variant Parser class? (Does it work?)
+            variantKey = class_10704.method_67178(nbt, registry, RegistryKeys.CAT_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(class_10686.BLACK);
         }
         if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
         {
@@ -789,18 +798,22 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    public static @Nullable RegistryKey<FrogVariant> getFrogVariantFromNbt(@Nonnull NbtCompound nbt)
+    public static @Nullable RegistryKey<FrogVariant> getFrogVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
-            RegistryKey<FrogVariant> variantKey = RegistryKey.of(RegistryKeys.FROG_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+            /*
+            Optional<RegistryEntry.Reference<FrogVariant>> opt = registry.getOrThrow(RegistryKeys.FROG_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+            Optional<RegistryEntry<FrogVariant>> opt2 = FrogVariant.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.VARIANT)).resultOrPartial();
 
-            if (variantKey == null)
+            if (opt.isPresent())
             {
-                variantKey = FrogVariant.TEMPERATE;
+                return opt.get().registryKey();
             }
+             */
 
-            return variantKey;
+            // TODO new Variant Parser class? (Does it work?)
+            return class_10704.method_67178(nbt, registry, RegistryKeys.FROG_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(class_10689.field_56278);
         }
 
         return null;

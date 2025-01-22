@@ -1,18 +1,25 @@
 package fi.dy.masa.malilib.util;
 
-import java.util.UUID;
-import javax.annotation.Nullable;
-
 import com.mojang.datafixers.util.Either;
+import net.minecraft.class_10686;
+import net.minecraft.class_10689;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.tuple.Pair;
 
-import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.UUID;
 
 public class EntityUtils
 {
@@ -60,5 +67,122 @@ public class EntityUtils
      * @param leashHolder
      * @param unresolvedLeashData
      */
-    public record FakeLeashData(int unresolvedLeashHolderId, @Nullable Entity leashHolder, @Nullable Either<UUID, BlockPos> unresolvedLeashData) {}
+    public record FakeLeashData(int unresolvedLeashHolderId, @Nullable Entity leashHolder,
+                                @Nullable Either<UUID, BlockPos> unresolvedLeashData) {}
+
+    /**
+     * Get an Axolotl's Variant from Data Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable AxolotlEntity.Variant getAxolotlVariantFromComponents(@Nonnull AxolotlEntity entity)
+    {
+        return entity.get(DataComponentTypes.AXOLOTL_VARIANT);
+    }
+
+    /**
+     * Get a Cat's Variant, and Collar Color from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static Pair<RegistryKey<CatVariant>, DyeColor> getCatVariantFromComponents(@Nonnull CatEntity entity)
+    {
+        RegistryEntry<CatVariant> entry = entity.get(DataComponentTypes.CAT_VARIANT);
+        DyeColor collar = entity.get((DataComponentTypes.CAT_COLLAR));
+        RegistryKey<CatVariant> key = entry != null ? entry.getKey().orElse(class_10686.BLACK) : class_10686.BLACK;
+
+        return Pair.of(key, collar);
+    }
+
+    /**
+     * Get a Fox's Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable FoxEntity.Variant getFoxVariantFromComponents(@Nonnull FoxEntity entity)
+    {
+        return entity.get(DataComponentTypes.FOX_VARIANT);
+    }
+
+    /**
+     * Get a Frog's Variant from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static RegistryKey<FrogVariant> getFrogVariantFromComponents(@Nonnull FrogEntity entity)
+    {
+        RegistryEntry<FrogVariant> entry = entity.get(DataComponentTypes.FROG_VARIANT);
+        return entry != null ? entry.getKey().orElse(class_10689.field_56278) : class_10689.field_56278;
+    }
+
+    /**
+     * Get a Horse's Variant (Color, Markings) from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static Pair<HorseColor, HorseMarking> getHorseVariantFromComponents(@Nonnull HorseEntity entity)
+    {
+        HorseColor color = entity.get(DataComponentTypes.HORSE_VARIANT);
+
+        if (color == null)
+        {
+            color = HorseColor.WHITE;
+        }
+
+        HorseMarking marking = HorseMarking.byIndex((color.getIndex() & '\uff00') >> 8);
+
+        return Pair.of(color, marking);
+    }
+
+    /**
+     * Get a Parrot's Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable ParrotEntity.Variant getParrotVariantFromComponents(@Nonnull ParrotEntity entity)
+    {
+        return entity.get(DataComponentTypes.PARROT_VARIANT);
+    }
+
+    /**
+     * Get a Pig's Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static RegistryKey<PigVariant> getPigVariantFromComponents(@Nonnull PigEntity entity)
+    {
+        RegistryEntry<PigVariant> entry = entity.get(DataComponentTypes.PIG_VARIANT);
+        return entry != null ? entry.getKey().orElse(PigVariants.DEFAULT) : PigVariants.DEFAULT;
+    }
+
+    /**
+     * Get a Rabbit's Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable RabbitEntity.Variant getRabbitVariantFromComponents(@Nonnull RabbitEntity entity)
+    {
+        return entity.get(DataComponentTypes.RABBIT_VARIANT);
+    }
+
+    /**
+     * Get a Llama's Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable LlamaEntity.Variant getLlamaVariantFromComponents(@Nonnull LlamaEntity entity)
+    {
+        return entity.get(DataComponentTypes.LLAMA_VARIANT);
+    }
+
+    // TODO WOLF & Tropical Fish Variants
 }
