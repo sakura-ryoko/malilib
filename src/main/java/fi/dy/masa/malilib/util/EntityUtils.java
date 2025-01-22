@@ -184,5 +184,56 @@ public class EntityUtils
         return entity.get(DataComponentTypes.LLAMA_VARIANT);
     }
 
-    // TODO WOLF & Tropical Fish Variants
+    /**
+     * Get a Tropical Fish Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable TropicalFishEntity.Variety getFishVariantFromComponents(@Nonnull TropicalFishEntity entity)
+    {
+        return entity.get(DataComponentTypes.TROPICAL_FISH_PATTERN);
+    }
+
+    /**
+     * Get a Wolves' Variant and Collar Color from NBT.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull WolfEntity entity)
+    {
+        RegistryEntry<WolfVariant> entry = entity.get(DataComponentTypes.WOLF_VARIANT);
+        DyeColor collar = entity.get(DataComponentTypes.WOLF_COLLAR);
+        RegistryKey<WolfVariant> variantKey = entry != null ? entry.getKey().orElse(WolfVariants.DEFAULT) : WolfVariants.DEFAULT;
+
+        if (collar == null)
+        {
+            collar = DyeColor.RED;
+        }
+
+        return Pair.of(variantKey, collar);
+    }
+
+    /**
+     * Get a Salmon Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable SalmonEntity.Variant getSalmonVariantFromComponents(@Nonnull SalmonEntity entity)
+    {
+        return entity.get(DataComponentTypes.SALMON_SIZE);
+    }
+
+    /**
+     * Get a Sheep Color from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable DyeColor getSheepVariantFromComponents(@Nonnull SheepEntity entity)
+    {
+        return entity.get(DataComponentTypes.SHEEP_COLOR);
+    }
 }
