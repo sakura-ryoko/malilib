@@ -1,8 +1,6 @@
 package fi.dy.masa.malilib.util;
 
 import com.mojang.datafixers.util.Either;
-import net.minecraft.class_10686;
-import net.minecraft.class_10689;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -91,7 +89,7 @@ public class EntityUtils
     {
         RegistryEntry<CatVariant> entry = entity.get(DataComponentTypes.CAT_VARIANT);
         DyeColor collar = entity.get((DataComponentTypes.CAT_COLLAR));
-        RegistryKey<CatVariant> key = entry != null ? entry.getKey().orElse(class_10686.BLACK) : class_10686.BLACK;
+        RegistryKey<CatVariant> key = entry != null ? entry.getKey().orElse(CatVariants.BLACK) : CatVariants.BLACK;
 
         return Pair.of(key, collar);
     }
@@ -116,7 +114,7 @@ public class EntityUtils
     public static RegistryKey<FrogVariant> getFrogVariantFromComponents(@Nonnull FrogEntity entity)
     {
         RegistryEntry<FrogVariant> entry = entity.get(DataComponentTypes.FROG_VARIANT);
-        return entry != null ? entry.getKey().orElse(class_10689.field_56278) : class_10689.field_56278;
+        return entry != null ? entry.getKey().orElse(FrogVariants.TEMPERATE) : FrogVariants.TEMPERATE;
     }
 
     /**
@@ -190,7 +188,7 @@ public class EntityUtils
      * @param entity ()
      * @return ()
      */
-    public static @Nullable TropicalFishEntity.Variety getFishVariantFromComponents(@Nonnull TropicalFishEntity entity)
+    public static @Nullable TropicalFishEntity.Pattern getFishVariantFromComponents(@Nonnull TropicalFishEntity entity)
     {
         return entity.get(DataComponentTypes.TROPICAL_FISH_PATTERN);
     }

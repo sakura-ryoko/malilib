@@ -6,18 +6,12 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
-import net.minecraft.class_10686;
-import net.minecraft.class_10689;
-import net.minecraft.class_10704;
+import net.minecraft.entity.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Dynamic;
-import net.minecraft.entity.EntityEquipment;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -781,8 +775,8 @@ public class NbtEntityUtils
             }
              */
 
-            // TODO new Variant Parser class? (Does it work?)
-            variantKey = class_10704.method_67178(nbt, registry, RegistryKeys.CAT_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(class_10686.BLACK);
+            // TODO new Variants Parser class? (Does it work?)
+            variantKey = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.CAT_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
         }
         if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
         {
@@ -812,8 +806,8 @@ public class NbtEntityUtils
             }
              */
 
-            // TODO new Variant Parser class? (Does it work?)
-            return class_10704.method_67178(nbt, registry, RegistryKeys.FROG_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(class_10689.field_56278);
+            // TODO new Variants Parser class? (Does it work?)
+            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.FROG_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
         }
 
         return null;
@@ -855,15 +849,15 @@ public class NbtEntityUtils
         return null;
     }
 
-    public static @Nullable TropicalFishEntity.Variety getFishVariantFromNbt(@Nonnull NbtCompound nbt)
+    public static @Nullable TropicalFishEntity.Pattern getFishVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
-            return TropicalFishEntity.Variety.fromId(nbt.getInt(NbtKeys.VARIANT_2) & '\uffff');
+            return TropicalFishEntity.Pattern.byIndex(nbt.getInt(NbtKeys.VARIANT_2) & '\uffff');
         }
         else if (nbt.contains(NbtKeys.BUCKET_VARIANT, Constants.NBT.TAG_INT))
         {
-            return TropicalFishEntity.Variety.fromId(nbt.getInt(NbtKeys.BUCKET_VARIANT) & '\uffff');
+            return TropicalFishEntity.Pattern.byIndex(nbt.getInt(NbtKeys.BUCKET_VARIANT) & '\uffff');
         }
 
         return null;
