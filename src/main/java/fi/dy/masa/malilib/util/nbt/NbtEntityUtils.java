@@ -858,6 +858,8 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    // TODO 1.21.2+
+    /*
     public static @Nullable SalmonEntity.Variant getSalmonVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.SALMON_TYPE, Constants.NBT.TAG_STRING))
@@ -867,6 +869,7 @@ public class NbtEntityUtils
 
         return null;
     }
+     */
 
     /**
      * Get a Dolphin's TreasurePos and other data from NBT.
