@@ -753,15 +753,20 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
             variantKey = RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
-
-            if (variantKey == null)
-            {
-                variantKey = WolfVariants.PALE;
-            }
         }
         if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
         {
             collar = DyeColor.byId(nbt.getInt(NbtKeys.COLLAR));
+        }
+
+        if (variantKey == null)
+        {
+            variantKey = WolfVariants.DEFAULT;
+        }
+
+        if (collar == null)
+        {
+            collar = DyeColor.RED;
         }
 
         return Pair.of(variantKey, collar);
@@ -820,6 +825,70 @@ public class NbtEntityUtils
         }
 
         return Pair.of(variant, strength);
+    }
+
+    /**
+     * Get a Fox's Variant type from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static @Nullable FoxEntity.Type getFoxVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.FOX_TYPE, Constants.NBT.TAG_STRING))
+        {
+            return FoxEntity.Type.byName(nbt.getString(NbtKeys.FOX_TYPE));
+        }
+
+        return null;
+    }
+
+    /**
+     * Get a Salmon's Variant type from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static @Nullable SalmonEntity.Variant getSalmonVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.SALMON_TYPE, Constants.NBT.TAG_STRING))
+        {
+            return SalmonEntity.Variant.CODEC.byId(nbt.getString(NbtKeys.SALMON_TYPE), SalmonEntity.Variant.MEDIUM);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get a Dolphin's TreasurePos and other data from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static Triple<BlockPos, Integer, Boolean> getDolphinDataFromNbt(@Nonnull NbtCompound nbt)
+    {
+        BlockPos treasure = BlockPos.ORIGIN;
+        int moist = -1;
+        boolean hasFish = false;
+
+        if (nbt.contains(NbtKeys.TREASURE_X, Constants.NBT.TAG_INT) &&
+            nbt.contains(NbtKeys.TREASURE_Y, Constants.NBT.TAG_INT) &&
+            nbt.contains(NbtKeys.TREASURE_Z, Constants.NBT.TAG_INT))
+        {
+            treasure = new BlockPos(nbt.getInt(NbtKeys.TREASURE_X), nbt.getInt(NbtKeys.TREASURE_Y), nbt.getInt(NbtKeys.TREASURE_Z));
+        }
+
+        if (nbt.contains(NbtKeys.MOISTNESS, Constants.NBT.TAG_INT))
+        {
+            moist = nbt.getInt(NbtKeys.MOISTNESS);
+        }
+
+        if (nbt.contains(NbtKeys.GOT_FISH))
+        {
+            hasFish = nbt.getBoolean(NbtKeys.GOT_FISH);
+        }
+
+        return Triple.of(treasure, moist, hasFish);
     }
 
     /**
