@@ -45,6 +45,7 @@ import org.joml.Matrix4f;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @ApiStatus.Experimental
@@ -99,7 +100,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, List<Text> list)
+    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -109,25 +110,25 @@ public class TestRenderHandler implements IRenderer
             MutableText title = Text.empty().append(StringUtils.translateAsText(MaLiLibReference.MOD_ID+".gui.tooltip.test.title"));
             list.addFirst(title);
              */
-            list.add(StringUtils.translateAsText(MaLiLibReference.MOD_ID+".gui.tooltip.test.first"));
+            list.accept(StringUtils.translateAsText(MaLiLibReference.MOD_ID+".gui.tooltip.test.first"));
         }
     }
 
     @Override
-    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, List<Text> list)
+    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
-            list.add(StringUtils.translateAsText(MaLiLibReference.MOD_ID+".gui.tooltip.test.middle"));
+            list.accept(StringUtils.translateAsText(MaLiLibReference.MOD_ID+".gui.tooltip.test.middle"));
         }
     }
 
     @Override
-    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, List<Text> list)
+    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
-            list.add(StringUtils.translateAsText(MaLiLibReference.MOD_ID+".gui.tooltip.test.last"));
+            list.accept(StringUtils.translateAsText(MaLiLibReference.MOD_ID+".gui.tooltip.test.last"));
         }
     }
 
