@@ -30,12 +30,12 @@ public abstract class MixinInGameHud
     @Inject(method = "render", at = @At("TAIL"))
     private void malilib_onGameOverlayPost(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(context, this.client, tickCounter.getTickDelta(false));
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(context, this.client, tickCounter.getTickProgress(false));
     }
 
     @Unique
     private void malilib_renderGameOverlayLastDrawer(DrawContext context, RenderTickCounter tickCounter)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayLastDrawer(context, this.client, tickCounter.getTickDelta(false));
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayLastDrawer(context, this.client, tickCounter.getTickProgress(false));
     }
 }
