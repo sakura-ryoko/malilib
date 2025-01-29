@@ -1,11 +1,14 @@
 package fi.dy.masa.malilib.util.nbt;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
+import net.minecraft.class_10731;
+import net.minecraft.class_10733;
 import net.minecraft.entity.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -262,23 +265,32 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    public static Map<RegistryEntry<StatusEffect>, StatusEffectInstance> getActiveStatusEffectsFromNbt(@Nonnull NbtCompound nbt)
+    public static Map<RegistryEntry<StatusEffect>, StatusEffectInstance> getActiveStatusEffectsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         Map<RegistryEntry<StatusEffect>, StatusEffectInstance> statusEffects = Maps.newHashMap();
 
         if (nbt.contains(NbtKeys.EFFECTS, Constants.NBT.TAG_LIST))
         {
+            /*
             NbtList list = nbt.getList(NbtKeys.EFFECTS, Constants.NBT.TAG_COMPOUND);
 
             for (int i = 0; i < list.size(); i++)
             {
                 NbtCompound data = list.getCompound(i);
-                StatusEffectInstance instance = StatusEffectInstance.fromNbt(data);
+                StatusEffectInstance instance = new StatusEffectInstance(type);
 
                 if (instance != null)
                 {
                     statusEffects.put(instance.getEffectType(), instance);
                 }
+            }
+             */
+
+            List<StatusEffectInstance> list = nbt.method_67492(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(NbtOps.INSTANCE)).orElse(List.of());
+
+            for (StatusEffectInstance instance : list)
+            {
+                statusEffects.put(instance.getEffectType(), instance);
             }
         }
 
@@ -756,6 +768,7 @@ public class NbtEntityUtils
      * Get a Cat's Variant, and Collar Color from NBT.
      *
      * @param nbt ()
+     * @param registry ()
      * @return ()
      */
     public static Pair<RegistryKey<CatVariant>, DyeColor> getCatVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
@@ -765,17 +778,6 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
-            /*
-            Optional<RegistryEntry.Reference<CatVariant>> opt = registry.getOrThrow(RegistryKeys.CAT_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
-            Optional<RegistryEntry<CatVariant>> opt = CatVariant.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.VARIANT)).resultOrPartial();
-
-            if (opt.isPresent())
-            {
-                return opt.get().registryKey();
-            }
-             */
-
-            // TODO new Variants Parser class? (Does it work?)
             variantKey = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.CAT_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
         }
         if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
@@ -787,9 +789,27 @@ public class NbtEntityUtils
     }
 
     /**
+     * Get a Cow's Variant from NBT.
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
+    public static @Nullable RegistryKey<class_10731> getCowVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    {
+        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        {
+            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.COW_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(class_10733.field_56438);
+        }
+
+        return null;
+    }
+
+    /**
      * Get a Frog's Variant from NBT.
      *
      * @param nbt ()
+     * @param registry ()
      * @return ()
      */
     public static @Nullable RegistryKey<FrogVariant> getFrogVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)

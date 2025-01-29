@@ -1,6 +1,9 @@
 package fi.dy.masa.malilib.util;
 
 import com.mojang.datafixers.util.Either;
+import net.minecraft.class_10730;
+import net.minecraft.class_10731;
+import net.minecraft.class_10733;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -92,6 +95,18 @@ public class EntityUtils
         RegistryKey<CatVariant> key = entry != null ? entry.getKey().orElse(CatVariants.BLACK) : CatVariants.BLACK;
 
         return Pair.of(key, collar);
+    }
+
+    /**
+     * Get a Cow's Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable RegistryKey<class_10731> getCowVariantFromComponents(@Nonnull class_10730 entity)
+    {
+        RegistryEntry<class_10731> entry = entity.get(DataComponentTypes.VARIANT_COW);
+        return entry != null ? entry.getKey().orElse(class_10733.field_56438) :class_10733.field_56438;
     }
 
     /**
