@@ -1,9 +1,6 @@
 package fi.dy.masa.malilib.util;
 
 import com.mojang.datafixers.util.Either;
-import net.minecraft.class_10730;
-import net.minecraft.class_10731;
-import net.minecraft.class_10733;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -103,10 +100,10 @@ public class EntityUtils
      * @param entity ()
      * @return ()
      */
-    public static @Nullable RegistryKey<class_10731> getCowVariantFromComponents(@Nonnull class_10730 entity)
+    public static @Nullable RegistryKey<CowVariant> getCowVariantFromComponents(@Nonnull CowEntity entity)
     {
-        RegistryEntry<class_10731> entry = entity.get(DataComponentTypes.VARIANT_COW);
-        return entry != null ? entry.getKey().orElse(class_10733.field_56438) :class_10733.field_56438;
+        RegistryEntry<CowVariant> entry = entity.get(DataComponentTypes.COW_VARIANT);
+        return entry != null ? entry.getKey().orElse(CowVariants.DEFAULT) : CowVariants.DEFAULT;
     }
 
     /**

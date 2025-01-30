@@ -7,8 +7,6 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
-import net.minecraft.class_10731;
-import net.minecraft.class_10733;
 import net.minecraft.entity.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -271,22 +269,7 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.EFFECTS, Constants.NBT.TAG_LIST))
         {
-            /*
-            NbtList list = nbt.getList(NbtKeys.EFFECTS, Constants.NBT.TAG_COMPOUND);
-
-            for (int i = 0; i < list.size(); i++)
-            {
-                NbtCompound data = list.getCompound(i);
-                StatusEffectInstance instance = new StatusEffectInstance(type);
-
-                if (instance != null)
-                {
-                    statusEffects.put(instance.getEffectType(), instance);
-                }
-            }
-             */
-
-            List<StatusEffectInstance> list = nbt.method_67492(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(NbtOps.INSTANCE)).orElse(List.of());
+            List<StatusEffectInstance> list = nbt.get(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(NbtOps.INSTANCE)).orElse(List.of());
 
             for (StatusEffectInstance instance : list)
             {
@@ -795,11 +778,11 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
-    public static @Nullable RegistryKey<class_10731> getCowVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    public static @Nullable RegistryKey<CowVariant> getCowVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
-            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.COW_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(class_10733.field_56438);
+            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.COW_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(CowVariants.DEFAULT);
         }
 
         return null;
@@ -832,17 +815,6 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
-            /*
-            Optional<RegistryEntry.Reference<FrogVariant>> opt = registry.getOrThrow(RegistryKeys.FROG_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
-            Optional<RegistryEntry<FrogVariant>> opt2 = FrogVariant.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.VARIANT)).resultOrPartial();
-
-            if (opt.isPresent())
-            {
-                return opt.get().registryKey();
-            }
-             */
-
-            // TODO new Variants Parser class? (Does it work?)
             return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.FROG_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
         }
 
