@@ -110,6 +110,17 @@ public class EntityUtils
     }
 
     /**
+     * Get a Mooshroom Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable MooshroomEntity.Variant getMooshroomVariantFromComponents(@Nonnull MooshroomEntity entity)
+    {
+        return entity.get(DataComponentTypes.MOOSHROOM_VARIANT);
+    }
+
+    /**
      * Get a Fox's Variant type from Components.
      *
      * @param entity ()

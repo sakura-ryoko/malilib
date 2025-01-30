@@ -806,6 +806,22 @@ public class NbtEntityUtils
     }
 
     /**
+     * Get a Mooshroom Variant from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static @Nullable MooshroomEntity.Variant getMooshroomVariantFromNbt(@Nonnull NbtCompound nbt)
+    {
+        if (nbt.contains(NbtKeys.FOX_TYPE, Constants.NBT.TAG_STRING))
+        {
+            return MooshroomEntity.Variant.CODEC.byId(nbt.getString(NbtKeys.FOX_TYPE), MooshroomEntity.Variant.RED);
+        }
+
+        return null;
+    }
+
+    /**
      * Get a Frog's Variant from NBT.
      *
      * @param nbt ()
