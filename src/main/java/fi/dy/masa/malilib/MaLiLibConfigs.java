@@ -21,6 +21,8 @@ import fi.dy.masa.malilib.test.ConfigTestOptList;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.Color4f;
+import fi.dy.masa.malilib.util.time.DurationFormat;
+import fi.dy.masa.malilib.util.time.TimeFormat;
 
 public class MaLiLibConfigs implements IConfigHandler
 {
@@ -99,6 +101,9 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY_OG       = new ConfigBooleanHotkeyed("testInventoryOverlayOG", false, "").apply(TEST_KEY);
         public static final ConfigHotkey            TEST_INVENTORY_OVERLAY_TOGGLE   = new ConfigHotkey("testInventoryOverlayToggle", "BUTTON_3", OVERLAY_TOGGLE).apply(TEST_KEY);
         public static final ConfigHotkey            TEST_GUI_KEYBIND                = new ConfigHotkey("testGuiKeybind", "", GUI_RELAXED_CANCEL).apply(TEST_KEY);
+        public static final ConfigOptionList        TEST_DATE_TIME_OPTION           = new ConfigOptionList("testDateTimeList", TimeFormat.RFC1123).apply(TEST_KEY);
+        public static final ConfigOptionList        TEST_DURATION_OPTION            = new ConfigOptionList("testDurationList", DurationFormat.PRETTY).apply(TEST_KEY);
+        public static final ConfigHotkey            TEST_RUN_DATETIME_TEST          = new ConfigHotkey("testRunDateTimeTest", "").apply(TEST_KEY);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN,
@@ -117,7 +122,10 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_INVENTORY_OVERLAY,
                 TEST_INVENTORY_OVERLAY_OG,
                 TEST_INVENTORY_OVERLAY_TOGGLE,
-                TEST_GUI_KEYBIND
+                TEST_GUI_KEYBIND,
+                TEST_DATE_TIME_OPTION,
+                TEST_DURATION_OPTION,
+                TEST_RUN_DATETIME_TEST
         );
 
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
@@ -125,7 +133,8 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_INVENTORY_OVERLAY,
                 TEST_INVENTORY_OVERLAY_OG,
                 TEST_INVENTORY_OVERLAY_TOGGLE,
-                TEST_GUI_KEYBIND
+                TEST_GUI_KEYBIND,
+                TEST_RUN_DATETIME_TEST
         );
     }
 
