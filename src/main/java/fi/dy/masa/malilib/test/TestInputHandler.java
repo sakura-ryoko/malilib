@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.render.InventoryOverlayScreen;
+import fi.dy.masa.malilib.util.time.TimeTestExample;
 
 @ApiStatus.Experimental
 public class TestInputHandler implements IKeybindProvider
@@ -39,6 +41,7 @@ public class TestInputHandler implements IKeybindProvider
         MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().setCallback(this.callback);
         MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind().setCallback(this.callback);
         MaLiLibConfigs.Test.TEST_GUI_KEYBIND.getKeybind().setCallback(this.callback);
+        MaLiLibConfigs.Test.TEST_RUN_DATETIME_TEST.getKeybind().setCallback(this.callback);
     }
 
     @Override
@@ -99,6 +102,12 @@ public class TestInputHandler implements IKeybindProvider
             else if (key == MaLiLibConfigs.Test.TEST_GUI_KEYBIND.getKeybind())
             {
                 System.out.printf("testGuiKeybind Callback Action: [%s] (Cancel = false)\n", action.getStringValue());
+            }
+            else if (key == MaLiLibConfigs.Test.TEST_RUN_DATETIME_TEST.getKeybind())
+            {
+                mc.inGameHud.getChatHud().addMessage(Text.of(TimeTestExample.runTimeDateTest()));
+                mc.inGameHud.getChatHud().addMessage(Text.of(TimeTestExample.runDurationTest()));
+                return true;
             }
 
             return false;
