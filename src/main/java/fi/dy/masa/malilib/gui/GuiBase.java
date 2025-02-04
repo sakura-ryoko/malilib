@@ -202,8 +202,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         this.drawContents(drawContext, mouseX, mouseY, partialTicks);
 
-        this.drawButtonHoverTexts(mouseX, mouseY, partialTicks, drawContext);
         this.drawHoveredWidget(mouseX, mouseY, drawContext);
+        this.drawButtonHoverTexts(mouseX, mouseY, partialTicks, drawContext);
         this.drawGuiMessages(drawContext);
     }
 

@@ -13,6 +13,8 @@ import net.minecraft.client.gui.DrawContext;
 
 import java.util.function.IntConsumer;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+
 public class WidgetColorIndicator extends WidgetBase
 {
     protected final IConfigInteger config;
@@ -56,8 +58,10 @@ public class WidgetColorIndicator extends WidgetBase
         int width = this.getWidth();
         int height = this.getHeight();
 
+        RenderSystem.enableDepthTest();
         RenderUtils.drawRect(x    , y    , width    , height    , 0xFFFFFFFF, z);
         RenderUtils.drawRect(x + 1, y + 1, width - 2, height - 2, 0xFF000000, z);
         RenderUtils.drawRect(x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue(), z);
+        RenderSystem.disableDepthTest();
     }
 }

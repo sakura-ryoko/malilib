@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.gui.button;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 
@@ -75,8 +76,8 @@ public class ButtonGeneric extends ButtonBase
     /**
      * Set the icon aligment.<br>
      * Note: Only LEFT and RIGHT alignments work properly.
-     * @param alignment
-     * @return
+     * @param alignment ()
+     * @return ()
      */
     public ButtonGeneric setIconAlignment(LeftRight alignment)
     {
@@ -112,7 +113,9 @@ public class ButtonGeneric extends ButtonBase
                 int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
                 this.bindTexture(this.icon.getTexture());
+                RenderSystem.enableDepthTest();
                 RenderUtils.drawTexturedRect(this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight(), drawContext);
+                RenderSystem.disableDepthTest();
                 //RenderUtils.forceDraw(drawContext);
             }
 

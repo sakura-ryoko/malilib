@@ -3,6 +3,8 @@ package fi.dy.masa.malilib.gui.widgets;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
@@ -82,8 +84,10 @@ public class WidgetKeybindSettings extends WidgetBase
         int y = this.y;
 
         int edgeColor = this.keybind.areSettingsModified() ? 0xFFFFBB33 : 0xFFFFFFFF;
+        RenderSystem.enableDepthTest();
         RenderUtils.drawRect(x    , y + 0, 20, 20, edgeColor);
         RenderUtils.drawRect(x + 1, y + 1, 18, 18, 0xFF000000);
+        RenderSystem.disableDepthTest();
 
         RenderUtils.forceDraw(drawContext);
 
@@ -99,11 +103,13 @@ public class WidgetKeybindSettings extends WidgetBase
         //RenderUtils.drawTexturedRect(x, y, 54, v4, w, w, z);
         //RenderUtils.drawTexturedRect(x, y, 72, v5, w, w, z);
 
+        RenderSystem.enableDepthTest();
         RenderUtils.drawTexturedRect(TEXTURE, x, y,  0,  v1, w, w, z, drawContext);
         RenderUtils.drawTexturedRect(TEXTURE, x, y,  18, v2, w, w, z, drawContext);
         RenderUtils.drawTexturedRect(TEXTURE, x, y,  36, v3, w, w, z, drawContext);
         RenderUtils.drawTexturedRect(TEXTURE, x, y,  54, v4, w, w, z, drawContext);
         RenderUtils.drawTexturedRect(TEXTURE, x, y,  72, v5, w, w, z, drawContext);
+        RenderSystem.disableDepthTest();
 
         RenderUtils.forceDraw(drawContext);
     }
