@@ -256,7 +256,7 @@
   "malilib.message.formatting_code.warning": "§6",
   "malilib.message.layer_range.range_max": "макс",
   "malilib.message.layer_range.range_min": "мін",
-  "malilib.message.moved_layer_range": "Переміщено вул. дальність шарів на §a%s§r по осі §a%s§r",
+  "malilib.message.moved_layer_range": "Переміщено всю дальність шарів на §a%s§r по осі §a%s§r",
   "malilib.message.moved_layer_range_boundary": "Переміщено дальність шарів §a%s§r на §a%s§r на осі §a%s§r",
   "malilib.message.moved_max_layer_to": "Максимальний шар переміщено до %s",
   "malilib.message.moved_min_layer_to": "Мінальний шар переміщено до %s",
