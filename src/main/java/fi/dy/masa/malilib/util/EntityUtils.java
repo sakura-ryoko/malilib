@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.util;
 
 import com.mojang.datafixers.util.Either;
+import net.minecraft.class_10756;
+import net.minecraft.class_10758;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -10,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryPair;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
@@ -92,6 +95,18 @@ public class EntityUtils
         RegistryKey<CatVariant> key = entry != null ? entry.getKey().orElse(CatVariants.BLACK) : CatVariants.BLACK;
 
         return Pair.of(key, collar);
+    }
+
+    /**
+     * Get a Chicken's Variant type from Components.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static @Nullable RegistryKey<class_10756> getChickenVariantFromComponents(@Nonnull ChickenEntity entity)
+    {
+        RegistryPair<class_10756> entry = entity.get(DataComponentTypes.VARIANT_CHICKEN);
+        return entry != null ? entry.getKey().orElse(class_10758.field_56550) : class_10758.field_56550;
     }
 
     /**

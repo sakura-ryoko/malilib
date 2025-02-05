@@ -120,9 +120,14 @@ public class InventoryOverlay
     public static void renderInventoryBackground(InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc)
     {
         RenderUtils.setupBlend();
+        /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         BuiltBuffer builtBuffer;
+         */
+
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = ctx.getBuilder();
 
         RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
@@ -226,9 +231,13 @@ public class InventoryOverlay
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
         catch (Exception ignored) { }
     }
@@ -346,9 +355,13 @@ public class InventoryOverlay
     {
         RenderUtils.color(1f, 1f, 1f, 1f);
 
+        /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         BuiltBuffer builtBuffer;
+         */
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = ctx.getBuilder();
 
         RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
@@ -372,9 +385,13 @@ public class InventoryOverlay
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
         catch (Exception ignored) { }
 

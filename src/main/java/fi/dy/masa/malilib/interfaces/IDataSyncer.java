@@ -308,7 +308,8 @@ public interface IDataSyncer
             }
             else if (entity instanceof PlayerEntity player)
             {
-                inv = new SimpleInventory(player.getInventory().main.toArray(new ItemStack[36]));
+                // TODO get main()
+                inv = new SimpleInventory(player.getInventory().method_67533().toArray(new ItemStack[36]));
             }
             else if (entity instanceof VillagerEntity)
             {

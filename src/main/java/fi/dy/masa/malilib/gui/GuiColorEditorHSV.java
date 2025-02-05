@@ -12,6 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.render.RenderContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -500,9 +501,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF, z); // current color indicator
         RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF, z); // Hue vertical/full value
 
+        /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         BuiltBuffer builtBuffer;
+         */
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = ctx.getBuilder();
 
         RenderUtils.setupBlend();
 
@@ -518,15 +523,21 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
         catch (Exception ignored) { }
 
         // FIXME
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        //buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        ctx.reset();
+        buffer = ctx.start(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         int r = (int) (this.relR * 255f);
         int g = (int) (this.relG * 255f);
@@ -613,9 +624,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
         catch (Exception ignored) { }
 

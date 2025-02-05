@@ -302,7 +302,8 @@ public class InventoryUtils
         if (isCreative)
         {
             player.getInventory().swapStackWithHotbar(stackReference);
-            mc.interactionManager.clickCreativeStack(player.getMainHandStack(), 36 + player.getInventory().selectedSlot); // sendSlotPacket
+            // TODO get selectedSlot()
+            mc.interactionManager.clickCreativeStack(player.getMainHandStack(), 36 + player.getInventory().method_67532()); // sendSlotPacket
             return true;
         }
         else
@@ -311,7 +312,8 @@ public class InventoryUtils
 
             if (slot != -1)
             {
-                int currentHotbarSlot = player.getInventory().selectedSlot;
+                // TODO get selectedSlot()
+                int currentHotbarSlot = player.getInventory().method_67532();
                 mc.interactionManager.clickSlot(player.playerScreenHandler.syncId, slot, currentHotbarSlot, SlotActionType.SWAP, mc.player);
                 return true;
             }

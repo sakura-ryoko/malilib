@@ -7,6 +7,9 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
+
+import net.minecraft.class_10756;
+import net.minecraft.class_10758;
 import net.minecraft.entity.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -769,6 +772,23 @@ public class NbtEntityUtils
         }
 
         return Pair.of(variantKey, collar);
+    }
+
+    /**
+     * Get a Chicken's Variant from NBT.
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
+    public static @Nullable RegistryKey<class_10756> getChickenVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    {
+        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        {
+            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.CHICKEN_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(class_10758.field_56550);
+        }
+
+        return null;
     }
 
     /**

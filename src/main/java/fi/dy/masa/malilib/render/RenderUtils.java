@@ -14,7 +14,9 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gl.ShaderProgramKeys;
+import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
@@ -125,6 +127,26 @@ public class RenderUtils
         drawContext.draw();
     }
 
+    public static void globalDrawPhaseless(BuiltBuffer meshData)
+    {
+        //this.startDrawing();
+        VertexBuffer vertexBuffer = meshData.getDrawParameters().format().getBuffer();
+        vertexBuffer.bind();
+        vertexBuffer.upload(meshData);
+        vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+        //this.endDrawing();
+    }
+
+    public static <T extends RenderPhase> void globalDrawPhase(@Nonnull T renderPass, @Nonnull BuiltBuffer meshData)
+    {
+        renderPass.startDrawing();
+        VertexBuffer vertexBuffer = meshData.getDrawParameters().format().getBuffer();
+        vertexBuffer.bind();
+        vertexBuffer.upload(meshData);
+        vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+        renderPass.endDrawing();
+    }
+
     public static void color(float r, float g, float b, float a)
     {
         RenderSystem.setShaderColor(r, g, b, a);
@@ -168,10 +190,10 @@ public class RenderUtils
 
     public static void drawOutline(int x, int y, int width, int height, int colorBorder, float zLevel)
     {
-        drawRect(x                    , y,      1, height, colorBorder, zLevel); // left edge
-        drawRect(x + width - 1        , y,      1, height, colorBorder, zLevel); // right edge
-        drawRect(x + 1,              y, width - 2,      1, colorBorder, zLevel); // top edge
-        drawRect(x + 1, y + height - 1, width - 2,      1, colorBorder, zLevel); // bottom edge
+        drawRect(x, y, 1, height, colorBorder, zLevel); // left edge
+        drawRect(x + width - 1, y, 1, height, colorBorder, zLevel); // right edge
+        drawRect(x + 1, y, width - 2, 1, colorBorder, zLevel); // top edge
+        drawRect(x + 1, y + height - 1, width - 2, 1, colorBorder, zLevel); // bottom edge
     }
 
     public static void drawOutline(int x, int y, int width, int height, int borderWidth, int colorBorder)
@@ -181,10 +203,10 @@ public class RenderUtils
 
     public static void drawOutline(int x, int y, int width, int height, int borderWidth, int colorBorder, float zLevel)
     {
-        drawRect(x                      ,                        y, borderWidth            , height     , colorBorder, zLevel); // left edge
-        drawRect(x + width - borderWidth,                        y, borderWidth            , height     , colorBorder, zLevel); // right edge
-        drawRect(x + borderWidth        ,                        y, width - 2 * borderWidth, borderWidth, colorBorder, zLevel); // top edge
-        drawRect(x + borderWidth        , y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, zLevel); // bottom edge
+        drawRect(x, y, borderWidth, height, colorBorder, zLevel); // left edge
+        drawRect(x + width - borderWidth, y, borderWidth, height, colorBorder, zLevel); // right edge
+        drawRect(x + borderWidth, y, width - 2 * borderWidth, borderWidth, colorBorder, zLevel); // top edge
+        drawRect(x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, zLevel); // bottom edge
     }
 
     public static void drawTexturedRect(int x, int y, int u, int v, int width, int height)
@@ -206,30 +228,37 @@ public class RenderUtils
     {
         float a = (float) (color >> 24 & 255) / 255.0F;
         float r = (float) (color >> 16 & 255) / 255.0F;
-        float g = (float) (color >>  8 & 255) / 255.0F;
+        float g = (float) (color >> 8 & 255) / 255.0F;
         float b = (float) (color & 255) / 255.0F;
 
         RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        BuiltBuffer builtBuffer;
+        //Tessellator tessellator = Tessellator.getInstance();
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = ctx.getBuilder();
+        //BuiltBuffer builtBuffer;
 
         setupBlend();
 
-        buffer.vertex(x * scale,           y * scale,            zLevel).color(r, g, b, a);
-        buffer.vertex(x * scale,           (y + height) * scale, zLevel).color(r, g, b, a);
+        buffer.vertex(x * scale, y * scale, zLevel).color(r, g, b, a);
+        buffer.vertex(x * scale, (y + height) * scale, zLevel).color(r, g, b, a);
         buffer.vertex((x + width) * scale, (y + height) * scale, zLevel).color(r, g, b, a);
-        buffer.vertex((x + width) * scale, y * scale           , zLevel).color(r, g, b, a);
+        buffer.vertex((x + width) * scale, y * scale, zLevel).color(r, g, b, a);
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
 
         //RenderSystem.disableBlend();
     }
@@ -250,24 +279,32 @@ public class RenderUtils
         RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         //RenderSystem.applyModelViewMatrix();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        BuiltBuffer builtBuffer;
+        //Tessellator tessellator = Tessellator.getInstance();
+        //BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        //BuiltBuffer builtBuffer;
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = ctx.getBuilder();
 
         setupBlend();
 
-        buffer.vertex(x           , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth);
+        buffer.vertex(x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth);
         buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth);
-        buffer.vertex(x + width, y            , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth);
-        buffer.vertex(x           , y            , zLevel).texture( u          * pixelWidth,  v           * pixelWidth);
+        buffer.vertex(x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth);
+        buffer.vertex(x, y, zLevel).texture(u * pixelWidth, v * pixelWidth);
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
     }
 
     /**
@@ -340,10 +377,10 @@ public class RenderUtils
         VertexConsumer vertexConsumer = bindTexture(texture, drawContext);
         Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
 
-        vertexConsumer.vertex(matrix4f, x          , y + height   , zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth).color(argb);
-        vertexConsumer.vertex(matrix4f,x + width, y + height   , zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
-        vertexConsumer.vertex(matrix4f, x + width  , y            , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth).color(argb);
-        vertexConsumer.vertex(matrix4f, x             , y            , zLevel).texture( u          * pixelWidth,  v           * pixelWidth).color(argb);
+        vertexConsumer.vertex(matrix4f, x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth).color(argb);
+        vertexConsumer.vertex(matrix4f, x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
+        vertexConsumer.vertex(matrix4f, x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(argb);
+        vertexConsumer.vertex(matrix4f, x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
 
         //forceDraw(drawContext);
     }
@@ -357,10 +394,10 @@ public class RenderUtils
     {
         float pixelWidth = 0.00390625F;
 
-        buffer.vertex(x           , y + height, zLevel).texture( u          * pixelWidth, (v + height) * pixelWidth);
+        buffer.vertex(x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth);
         buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth);
-        buffer.vertex(x + width, y            , zLevel).texture((u + width) * pixelWidth,  v           * pixelWidth);
-        buffer.vertex(x           , y            , zLevel).texture( u          * pixelWidth,  v           * pixelWidth);
+        buffer.vertex(x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth);
+        buffer.vertex(x, y, zLevel).texture(u * pixelWidth, v * pixelWidth);
     }
 
     public static void drawHoverText(int x, int y, List<String> textLines, DrawContext drawContext)
@@ -447,12 +484,12 @@ public class RenderUtils
     {
         int sa = (startColor >> 24 & 0xFF);
         int sr = (startColor >> 16 & 0xFF);
-        int sg = (startColor >>  8 & 0xFF);
+        int sg = (startColor >> 8 & 0xFF);
         int sb = (startColor & 0xFF);
 
         int ea = (endColor >> 24 & 0xFF);
         int er = (endColor >> 16 & 0xFF);
-        int eg = (endColor >>  8 & 0xFF);
+        int eg = (endColor >> 8 & 0xFF);
         int eb = (endColor & 0xFF);
 
         setupBlend();
@@ -461,10 +498,14 @@ public class RenderUtils
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //RenderSystem.applyModelViewMatrix();
 
+        /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
-        
+         */
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = ctx.getBuilder();
+
         buffer.vertex(right, top, zLevel).color(sr, sg, sb, sa);
         buffer.vertex(left, top, zLevel).color(sr, sg, sb, sa);
         buffer.vertex(left, bottom, zLevel).color(er, eg, eb, ea);
@@ -472,11 +513,17 @@ public class RenderUtils
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
 
         RenderSystem.disableBlend();
     }
@@ -538,8 +585,8 @@ public class RenderUtils
     }
 
     public static int renderText(int xOff, int yOff, double scale, int textColor, int bgColor,
-            HudAlignment alignment, boolean useBackground, boolean useShadow, List<String> lines,
-            DrawContext drawContext)
+                                 HudAlignment alignment, boolean useBackground, boolean useShadow, List<String> lines,
+                                 DrawContext drawContext)
     {
         TextRenderer fontRenderer = mc().textRenderer;
         final int scaledWidth = GuiUtils.getScaledWindowWidth();
@@ -716,6 +763,7 @@ public class RenderUtils
     /**
      * Assumes a BufferBuilder in GL_LINES mode has been initialized.
      * The cameraPos value will be subtracted from the absolute coordinate values of the passed in BlockPos.
+     *
      * @param pos
      * @param cameraPos
      * @param color
@@ -738,7 +786,7 @@ public class RenderUtils
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
      */
     public static void drawBoxAllSidesBatchedQuads(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
-            Color4f color, BufferBuilder buffer)
+                                                   Color4f color, BufferBuilder buffer)
     {
         drawBoxHorizontalSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
         drawBoxTopBatchedQuads(minX, minZ, maxX, maxY, maxZ, color, buffer);
@@ -748,6 +796,7 @@ public class RenderUtils
     /**
      * Draws a box with outlines around the given corner positions.
      * Takes in buffers initialized for GL_QUADS and GL_LINES modes.
+     *
      * @param posMin
      * @param posMax
      * @param colorLines
@@ -764,6 +813,7 @@ public class RenderUtils
      * Draws a box with outlines around the given corner positions.
      * Takes in buffers initialized for GL_QUADS and GL_LINES modes.
      * The cameraPos value will be subtracted from the absolute coordinate values of the passed in block positions.
+     *
      * @param posMin
      * @param posMax
      * @param cameraPos
@@ -789,7 +839,7 @@ public class RenderUtils
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
      */
     public static void drawBoxHorizontalSidesBatchedQuads(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
-            Color4f color, BufferBuilder buffer)
+                                                          Color4f color, BufferBuilder buffer)
     {
         // West side
         buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
@@ -844,7 +894,7 @@ public class RenderUtils
      * Assumes a BufferBuilder in GL_LINES mode has been initialized
      */
     public static void drawBoxAllEdgesBatchedLines(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
-            Color4f color, BufferBuilder buffer)
+                                                   Color4f color, BufferBuilder buffer)
     {
         // West side
         buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
@@ -903,6 +953,7 @@ public class RenderUtils
     /**
      * Renders a text plate/billboard, similar to the player name plate.<br>
      * The plate will always face towards the viewer.
+     *
      * @param text
      * @param x
      * @param y
@@ -945,9 +996,13 @@ public class RenderUtils
 
         RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
+         */
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = ctx.getBuilder();
         int maxLineLen = 0;
 
         for (String line : text)
@@ -959,8 +1014,8 @@ public class RenderUtils
         int textHeight = textRenderer.fontHeight * text.size() - 1;
         int bga = ((bgColor >>> 24) & 0xFF);
         int bgr = ((bgColor >>> 16) & 0xFF);
-        int bgg = ((bgColor >>>  8) & 0xFF);
-        int bgb = (bgColor          & 0xFF);
+        int bgg = ((bgColor >>> 8) & 0xFF);
+        int bgb = (bgColor & 0xFF);
 
         if (disableDepth)
         {
@@ -975,11 +1030,17 @@ public class RenderUtils
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
 
         int textY = 0;
 
@@ -1043,9 +1104,14 @@ public class RenderUtils
         RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
+        /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
+         */
+
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = ctx.getBuilder();
 
         int quadAlpha = (int) (0.18f * 255f);
         int hr = (int) (color.r * 255f);
@@ -1097,16 +1163,24 @@ public class RenderUtils
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
 
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        //buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        ctx.reset();
+        buffer = ctx.start(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
         // Middle small rectangle
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
@@ -1117,13 +1191,22 @@ public class RenderUtils
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
-        }
-        catch (Exception ignored) { }
+             */
 
-        buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+            ctx.drawWithShaders(buffer.end());
+        }
+        catch (Exception ignored)
+        {
+        }
+
+        //buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        ctx.reset();
+        buffer = ctx.start(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+
         // Bottom left
         buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
@@ -1142,18 +1225,24 @@ public class RenderUtils
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
 
         global4fStack.popMatrix();
         //RenderSystem.applyModelViewMatrix();
     }
 
     public static void renderBlockTargetingOverlaySimple(Entity entity, BlockPos pos, Direction side,
-            Color4f color, Matrix4f posMatrix, MinecraftClient mc)
+                                                         Color4f color, Matrix4f posMatrix, MinecraftClient mc)
     {
         Direction playerFacing = entity.getHorizontalFacing();
         Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
@@ -1170,9 +1259,13 @@ public class RenderUtils
         RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
+        /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
+         */
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = ctx.getBuilder();
 
         int a = (int) (color.a * 255f);
         int r = (int) (color.r * 255f);
@@ -1188,16 +1281,24 @@ public class RenderUtils
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
 
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        ctx.reset();
+        //buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
+        buffer = ctx.start(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
         // Middle rectangle
         buffer.vertex((float) (x - 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c);
@@ -1207,11 +1308,17 @@ public class RenderUtils
 
         try
         {
+            /*
             builtBuffer = buffer.end();
             BufferRenderer.drawWithGlobalProgram(builtBuffer);
             builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
         }
-        catch (Exception ignored) { }
+        catch (Exception ignored)
+        {
+        }
 
         global4fStack.popMatrix();
         //RenderSystem.applyModelViewMatrix();
@@ -1222,7 +1329,7 @@ public class RenderUtils
      * (angle * 0.017453292F) --> easy fix with matrix4fRotateFix()
      */
     private static void blockTargetingOverlayTranslations(double x, double y, double z,
-            Direction side, Direction playerFacing, Matrix4fStack matrix4fStack)
+                                                          Direction side, Direction playerFacing, Matrix4fStack matrix4fStack)
     {
         matrix4fStack.translate((float) x, (float) y, (float) z);
 
@@ -1467,12 +1574,13 @@ public class RenderUtils
     }
 
     /**
-     *  Render's the Inventory Overlay using an NbtCompound Items[] List format instead of the Item Container Component,
-     *  Such as for a Crafter, etc.  This is meant to be simillar to the 1.20.4 behavior, minus the "BlockEntityTag";
-     *  since it no longer exists; but this can be used as such, if the "BlockEntityTag" or its eqivalent, is read in first.
-     *  -
-     * @param stackIn (Stack of the Entity for selecting the right textures)
-     * @param itemsTag (Nbt Items[] list)
+     * Render's the Inventory Overlay using an NbtCompound Items[] List format instead of the Item Container Component,
+     * Such as for a Crafter, etc.  This is meant to be simillar to the 1.20.4 behavior, minus the "BlockEntityTag";
+     * since it no longer exists; but this can be used as such, if the "BlockEntityTag" or its eqivalent, is read in first.
+     * -
+     *
+     * @param stackIn     (Stack of the Entity for selecting the right textures)
+     * @param itemsTag    (Nbt Items[] list)
      * @param baseX
      * @param baseY
      * @param useBgColors
@@ -1530,6 +1638,7 @@ public class RenderUtils
 
     /**
      * Calls RenderUtils.color() with the dye color of the provided shulker box block's color
+     *
      * @param block
      * @param useBgColors
      */
@@ -1560,7 +1669,7 @@ public class RenderUtils
         int k = (color & '\uff00') >> 8;
         int l = (color & 255) >> 0;
 
-        return new float[]{(float)j / 255.0F, (float)k / 255.0F, (float)l / 255.0F};
+        return new float[]{(float) j / 255.0F, (float) k / 255.0F, (float) l / 255.0F};
     }
 
     public static void setBundleBackgroundTintColor(ItemStack bundle, boolean useBgColors)
@@ -1801,29 +1910,39 @@ public class RenderUtils
         // TODO watch for side effects
         //if (model.isBuiltin() == false)
         //{
-            RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
-            //RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
-            //RenderSystem.applyModelViewMatrix();
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-            BuiltBuffer builtBuffer;
+        RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
+        //RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
+        //RenderSystem.applyModelViewMatrix();
+        /*
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+        BuiltBuffer builtBuffer;
+         */
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+        BufferBuilder buffer = ctx.getBuilder();
 
-            for (Direction face : Direction.values())
-            {
-                RAND.setSeed(0);
-                renderQuads(bufferbuilder, model.getQuads(state, face, RAND), state, color);
-            }
-
+        for (Direction face : Direction.values())
+        {
             RAND.setSeed(0);
-            renderQuads(bufferbuilder, model.getQuads(state, null, RAND), state, color);
+            renderQuads(buffer, model.getQuads(state, face, RAND), state, color);
+        }
 
-            try
-            {
-                builtBuffer = bufferbuilder.end();
-                BufferRenderer.drawWithGlobalProgram(builtBuffer);
-                builtBuffer.close();
-            }
-            catch (Exception ignored) { }
+        RAND.setSeed(0);
+        renderQuads(buffer, model.getQuads(state, null, RAND), state, color);
+
+        try
+        {
+            /*
+            builtBuffer = bufferbuilder.end();
+            BufferRenderer.drawWithGlobalProgram(builtBuffer);
+            builtBuffer.close();
+             */
+
+            ctx.drawWithShaders(buffer.end());
+        }
+        catch (Exception ignored)
+        {
+        }
         //}
 
         matrix4fStack.popMatrix();
@@ -1915,5 +2034,63 @@ public class RenderUtils
     /**
      * Only required for translating the values to their RotationAxis.POSITIVE_?.rotationDegrees() equivalence
      */
-    public static float matrix4fRotateFix(float ang) { return (ang * 0.017453292F); }
+    public static float matrix4fRotateFix(float ang) {return (ang * 0.017453292F);}
+
+    public class Phase extends RenderPhase
+    {
+        @Nullable
+        private static VertexBuffer buffer;
+
+        public Phase(String name, Runnable start, Runnable stop)
+        {
+            super(name, start, stop);
+        }
+
+        public static void drawWithSahders(BuiltBuffer buffer)
+        {
+            RenderSystem.assertOnRenderThreadOrInit();
+            VertexBuffer vertex = upload(buffer);
+            vertex.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
+        }
+
+        public static void reset()
+        {
+            if (buffer != null)
+            {
+                buffer.close();
+                buffer = null;
+                VertexBuffer.unbind();
+            }
+        }
+
+        public static void draw(BuiltBuffer buffer)
+        {
+            RenderSystem.assertOnRenderThreadOrInit();
+            VertexBuffer vertex = upload(buffer);
+            vertex.draw();
+        }
+
+        private static VertexBuffer upload(BuiltBuffer buffer)
+        {
+            VertexBuffer vertex = bind(buffer.getDrawParameters().format());
+            vertex.upload(buffer);
+            return vertex;
+        }
+
+        private static VertexBuffer bind(VertexFormat fmt)
+        {
+            VertexBuffer vertex = fmt.getBuffer();
+            bind(vertex);
+            return vertex;
+        }
+
+        private static void bind(VertexBuffer vertex)
+        {
+            if (vertex != buffer)
+            {
+                vertex.bind();
+                buffer = vertex;
+            }
+        }
+    }
 }
