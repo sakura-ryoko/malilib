@@ -15,6 +15,7 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.GlUsage;
+import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.gui.DrawContext;
@@ -231,13 +232,9 @@ public class RenderUtils
         float g = (float) (color >> 8 & 255) / 255.0F;
         float b = (float) (color & 255) / 255.0F;
 
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        //RenderSystem.applyModelViewMatrix();
-        //Tessellator tessellator = Tessellator.getInstance();
+        //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BufferBuilder buffer = ctx.getBuilder();
-        //BuiltBuffer builtBuffer;
 
         setupBlend();
 
@@ -248,13 +245,7 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_COLOR);
         }
         catch (Exception ignored)
         {
@@ -276,12 +267,7 @@ public class RenderUtils
     public static void drawTexturedRect(int x, int y, int u, int v, int width, int height, float zLevel)
     {
         float pixelWidth = 0.00390625F;
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        //RenderSystem.applyModelViewMatrix();
-        //Tessellator tessellator = Tessellator.getInstance();
-        //BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        //BuiltBuffer builtBuffer;
+        //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         BufferBuilder buffer = ctx.getBuilder();
 
@@ -294,13 +280,7 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_TEX);
         }
         catch (Exception ignored)
         {
@@ -494,9 +474,7 @@ public class RenderUtils
 
         setupBlend();
         //RenderSystem.enableBlend();
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        //RenderSystem.applyModelViewMatrix();
+        //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         /*
         Tessellator tessellator = Tessellator.getInstance();
@@ -519,7 +497,7 @@ public class RenderUtils
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_COLOR);
         }
         catch (Exception ignored)
         {
@@ -994,8 +972,8 @@ public class RenderUtils
         setupBlend();
         //RenderSystem.enableBlend();
 
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
+
         /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -1036,7 +1014,7 @@ public class RenderUtils
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_COLOR);
         }
         catch (Exception ignored)
         {
@@ -1099,10 +1077,8 @@ public class RenderUtils
         Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
         global4fStack.pushMatrix();
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
-        //RenderSystem.applyModelViewMatrix();
 
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         /*
         Tessellator tessellator = Tessellator.getInstance();
@@ -1112,6 +1088,7 @@ public class RenderUtils
 
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BufferBuilder buffer = ctx.getBuilder();
+        ShaderProgram shader = ctx.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         int quadAlpha = (int) (0.18f * 255f);
         int hr = (int) (color.r * 255f);
@@ -1169,7 +1146,7 @@ public class RenderUtils
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), shader);
         }
         catch (Exception ignored)
         {
@@ -1197,7 +1174,7 @@ public class RenderUtils
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), shader);
         }
         catch (Exception ignored)
         {
@@ -1231,7 +1208,7 @@ public class RenderUtils
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), shader);
         }
         catch (Exception ignored)
         {
@@ -1255,9 +1232,7 @@ public class RenderUtils
         global4fStack.pushMatrix();
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
-        //RenderSystem.applyModelViewMatrix();
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         /*
         Tessellator tessellator = Tessellator.getInstance();
@@ -1266,6 +1241,7 @@ public class RenderUtils
          */
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BufferBuilder buffer = ctx.getBuilder();
+        ShaderProgram shader = ctx.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         int a = (int) (color.a * 255f);
         int r = (int) (color.r * 255f);
@@ -1287,7 +1263,7 @@ public class RenderUtils
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), shader);
         }
         catch (Exception ignored)
         {
@@ -1314,7 +1290,7 @@ public class RenderUtils
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), shader);
         }
         catch (Exception ignored)
         {
@@ -1910,9 +1886,8 @@ public class RenderUtils
         // TODO watch for side effects
         //if (model.isBuiltin() == false)
         //{
-        RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
-        //RenderSystem.setShader(GameRenderer::getRenderTypeSolidProgram);
-        //RenderSystem.applyModelViewMatrix();
+        //RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
+
         /*
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
@@ -1938,7 +1913,7 @@ public class RenderUtils
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.RENDERTYPE_SOLID);
         }
         catch (Exception ignored)
         {
@@ -2035,62 +2010,4 @@ public class RenderUtils
      * Only required for translating the values to their RotationAxis.POSITIVE_?.rotationDegrees() equivalence
      */
     public static float matrix4fRotateFix(float ang) {return (ang * 0.017453292F);}
-
-    public class Phase extends RenderPhase
-    {
-        @Nullable
-        private static VertexBuffer buffer;
-
-        public Phase(String name, Runnable start, Runnable stop)
-        {
-            super(name, start, stop);
-        }
-
-        public static void drawWithSahders(BuiltBuffer buffer)
-        {
-            RenderSystem.assertOnRenderThreadOrInit();
-            VertexBuffer vertex = upload(buffer);
-            vertex.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
-        }
-
-        public static void reset()
-        {
-            if (buffer != null)
-            {
-                buffer.close();
-                buffer = null;
-                VertexBuffer.unbind();
-            }
-        }
-
-        public static void draw(BuiltBuffer buffer)
-        {
-            RenderSystem.assertOnRenderThreadOrInit();
-            VertexBuffer vertex = upload(buffer);
-            vertex.draw();
-        }
-
-        private static VertexBuffer upload(BuiltBuffer buffer)
-        {
-            VertexBuffer vertex = bind(buffer.getDrawParameters().format());
-            vertex.upload(buffer);
-            return vertex;
-        }
-
-        private static VertexBuffer bind(VertexFormat fmt)
-        {
-            VertexBuffer vertex = fmt.getBuffer();
-            bind(vertex);
-            return vertex;
-        }
-
-        private static void bind(VertexBuffer vertex)
-        {
-            if (vertex != buffer)
-            {
-                vertex.bind();
-                buffer = vertex;
-            }
-        }
-    }
 }

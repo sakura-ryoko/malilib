@@ -4,6 +4,7 @@ import java.awt.Color;
 import javax.annotation.Nullable;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
@@ -630,7 +631,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_COLOR);
         }
         catch (Exception ignored) { }
 

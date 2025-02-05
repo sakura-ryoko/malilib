@@ -129,9 +129,7 @@ public class InventoryOverlay
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         BufferBuilder buffer = ctx.getBuilder();
 
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        //RenderSystem.applyModelViewMatrix();
+        //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
 
         if (type == InventoryRenderType.FURNACE)
         {
@@ -237,7 +235,7 @@ public class InventoryOverlay
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_TEX);
         }
         catch (Exception ignored) { }
     }
@@ -363,9 +361,7 @@ public class InventoryOverlay
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         BufferBuilder buffer = ctx.getBuilder();
 
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        //RenderSystem.applyModelViewMatrix();
+        //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
 
         RenderUtils.bindTexture(TEXTURE_DISPENSER);
 
@@ -391,7 +387,7 @@ public class InventoryOverlay
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_TEX);
         }
         catch (Exception ignored) { }
 
