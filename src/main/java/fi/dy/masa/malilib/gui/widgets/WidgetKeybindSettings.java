@@ -104,14 +104,12 @@ public class WidgetKeybindSettings extends WidgetBase
         //RenderUtils.drawTexturedRect(x, y, 72, v5, w, w, z);
 
         RenderSystem.enableDepthTest();
-        RenderUtils.drawTexturedRect(TEXTURE, x, y,  0,  v1, w, w, z, drawContext);
-        RenderUtils.drawTexturedRect(TEXTURE, x, y,  18, v2, w, w, z, drawContext);
-        RenderUtils.drawTexturedRect(TEXTURE, x, y,  36, v3, w, w, z, drawContext);
-        RenderUtils.drawTexturedRect(TEXTURE, x, y,  54, v4, w, w, z, drawContext);
-        RenderUtils.drawTexturedRect(TEXTURE, x, y,  72, v5, w, w, z, drawContext);
+        RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  0,  v1, w, w, z, drawContext);
+        RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  18, v2, w, w, z, drawContext);
+        RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  36, v3, w, w, z, drawContext);
+        RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  54, v4, w, w, z, drawContext);
+        RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  72, v5, w, w, z, drawContext);
         RenderSystem.disableDepthTest();
-
-        RenderUtils.forceDraw(drawContext);
     }
 
     @Override

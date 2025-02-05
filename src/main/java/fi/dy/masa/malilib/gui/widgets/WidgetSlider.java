@@ -61,7 +61,6 @@ public class WidgetSlider extends WidgetBase
         int usableWidth = this.width - 4 - sw;
         int s = sw / 2;
 
-
         drawContext.drawGuiTexture(RenderLayer::getGuiTextured, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, 20);
 
         String str = this.callback.getFormattedDisplayValue();
