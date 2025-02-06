@@ -2,6 +2,9 @@ package fi.dy.masa.malilib.util;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nonnull;
@@ -433,6 +436,70 @@ public class JsonUtils
         catch (Exception e)
         {
             MaLiLib.LOGGER.warn("Failed to write JSON data to file '{}'", fileTmp.getAbsolutePath(), e);
+        }
+
+        return false;
+    }
+
+    @Nullable
+    public static JsonElement parseJsonFileAsPath(Path file)
+    {
+        if (file != null && Files.exists(file) && Files.isReadable(file))
+        {
+            String fileName = file.toString();
+
+            try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8))
+            {
+                return JsonParser.parseReader(reader);
+            }
+            catch (Exception e)
+            {
+                MaLiLib.LOGGER.error("parseJson: Failed to parse the JSON file '{}'", fileName, e);
+            }
+        }
+
+        return null;
+    }
+
+    public static boolean writeJsonToFileAsPath(JsonObject root, Path file)
+    {
+        Path fileTemp = Path.of(file.toString() + ".tmp");
+
+        if (Files.exists(fileTemp))
+        {
+            fileTemp = Path.of(file.toString() + UUID.randomUUID() + ".tmp");
+        }
+
+        try (OutputStreamWriter writer = new OutputStreamWriter(Files.newOutputStream(fileTemp), StandardCharsets.UTF_8))
+        {
+            writer.write(GSON.toJson(root));
+            writer.close();
+
+            if (Files.exists(file))
+            {
+                try
+                {
+                    Files.delete(file);
+                }
+                catch (Exception err)
+                {
+                    MaLiLib.LOGGER.warn("writeJson: Failed to delete file '{}'", file.toString());
+                }
+            }
+
+            try
+            {
+                Files.move(fileTemp, file);
+                return true;
+            }
+            catch (Exception err)
+            {
+                MaLiLib.LOGGER.warn("writeJson: Failed to move file '{}'", file.toString());
+            }
+        }
+        catch (Exception e)
+        {
+            MaLiLib.LOGGER.warn("writeJson: Failed to write JSON data to file '{}'", fileTemp.toString(), e);
         }
 
         return false;
