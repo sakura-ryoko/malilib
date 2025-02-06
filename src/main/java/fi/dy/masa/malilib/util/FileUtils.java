@@ -35,6 +35,12 @@ public class FileUtils
         return new File(GameWrap.getClient().runDirectory, "config");
     }
 
+    public static Path getConfigDirectoryAsPath()
+    {
+        //return new File(MinecraftClient.getInstance().runDirectory, "config");
+        return GameWrap.getClient().runDirectory.toPath().resolve("config");
+    }
+
     public static File getMinecraftDirectory()
     {
         //return MinecraftClient.getInstance().runDirectory;
@@ -82,14 +88,7 @@ public class FileUtils
     }
 
     public static boolean createDirectoriesIfMissing(Path dir,
-                                                     Consumer<String> messageConsumer)
-    {
-        return createDirectoriesIfMissing(dir, messageConsumer, "Failed to create the directory '%s'");
-    }
-
-    public static boolean createDirectoriesIfMissing(Path dir,
-                                                     @Nullable Consumer<String> messageConsumer,
-                                                     @Nullable String message)
+                                                     @Nullable Consumer<String> messageConsumer)
     {
         try
         {
@@ -100,9 +99,10 @@ public class FileUtils
         }
         catch (Exception e)
         {
-            if (messageConsumer != null && message != null)
+            if (messageConsumer != null)
             {
-                messageConsumer.accept(String.format(message, dir.toAbsolutePath()));
+                messageConsumer.accept(StringUtils.translate("malilib.message.error.failed_to_create_directory",
+                                                             dir.toAbsolutePath()));
             }
 
             return false;
@@ -118,13 +118,6 @@ public class FileUtils
 
     public static boolean createFile(Path file, Consumer<String> messageConsumer)
     {
-        return createFile(file, messageConsumer, "Failed to create the file '%s'");
-    }
-
-    public static boolean createFile(Path file,
-                                     @Nullable Consumer<String> messageConsumer,
-                                     @Nullable String message)
-    {
         try
         {
             Files.createFile(file);
@@ -132,9 +125,10 @@ public class FileUtils
         }
         catch (Exception e)
         {
-            if (messageConsumer != null && message != null)
+            if (messageConsumer != null)
             {
-                messageConsumer.accept(String.format(message, file.toAbsolutePath()));
+                messageConsumer.accept(StringUtils.translate("malilib.message.error.failed_to_create_file",
+                                                             file.toAbsolutePath()));
             }
         }
 
@@ -173,8 +167,8 @@ public class FileUtils
         }
         catch (Exception e)
         {
-            messageConsumer.accept(String.format("Failed to copy file '%s' to '%s'\n%s",
-                                                 srcFile.toAbsolutePath(), dstFile.toAbsolutePath(), e));
+            messageConsumer.accept(StringUtils.translate("malilib.message.error.failed_to_copy_file_with_message",
+                                                        srcFile.toAbsolutePath(), dstFile.toAbsolutePath(), e.getMessage()));
             return false;
         }
     }
@@ -211,7 +205,7 @@ public class FileUtils
         }
         catch (Exception e)
         {
-            messageConsumer.accept(String.format("Failed to move file '%s' to '%s'",
+            messageConsumer.accept(StringUtils.translate("malilib.message.error.failed_to_move_file",
                                                  srcFile.toAbsolutePath(), dstFile.toAbsolutePath()));
             return false;
         }
@@ -231,7 +225,8 @@ public class FileUtils
         }
         catch (Exception e)
         {
-            messageConsumer.accept(String.format("Failed to delete file '%s'", file.toAbsolutePath()));
+            messageConsumer.accept(StringUtils.translate("malilib.message.error.failed_to_delete_file",
+                                                         file.toAbsolutePath()));
             return false;
         }
     }
@@ -280,7 +275,7 @@ public class FileUtils
      * Checks that the target directory exists, and the file either doesn't exist,
      * or the canOverwrite argument is true and the file is writable
      */
-    public static boolean canWriteToFile(Path dir, String fileName, boolean canOverwrite)
+    public static boolean canWriteToFileAsPath(Path dir, String fileName, boolean canOverwrite)
     {
         if (Files.isDirectory(dir))
         {
