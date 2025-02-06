@@ -22,6 +22,7 @@ import fi.dy.masa.malilib.util.KeyCodes;
 
 public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntry, WidgetDirectoryEntry> implements IDirectoryNavigator
 {
+    // TODO -- Remove the file system; needs to deal with the FileFilter mechanism to make it compat with Path
     protected static final FileFilter DIRECTORY_FILTER = new FileFilterDirectories();
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
