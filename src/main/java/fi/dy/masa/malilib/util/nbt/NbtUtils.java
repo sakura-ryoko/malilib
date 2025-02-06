@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
@@ -482,6 +481,32 @@ public class NbtUtils
 	/**
 	 * Write the compound tag, gzipped, to the output stream.
 	 */
+	public static void writeCompressed(@Nonnull NbtCompound tag, @Nonnull OutputStream outputStream)
+    {
+		try
+		{
+			NbtIo.writeCompressed(tag, outputStream);
+		}
+		catch (Exception err)
+		{
+			MaLiLib.LOGGER.warn("writeCompressed: Failed to write NBT data to output stream");
+		}
+	}
+
+	public static void writeCompressed(@Nonnull NbtCompound tag, @Nonnull Path file)
+	{
+		try
+		{
+			NbtIo.writeCompressed(tag, file);
+		}
+		catch (Exception err)
+		{
+			MaLiLib.LOGGER.warn("writeCompressed: Failed to write NBT data to file");
+		}
+	}
+
+	// todo this must have been an older method for this that no longer works
+	/*
 	public static void writeCompressed(@Nonnull NbtCompound tag, String tagName, @Nonnull OutputStream outputStream)
     {
 		try
@@ -501,4 +526,5 @@ public class NbtUtils
 			MaLiLib.LOGGER.warn("writeCompressed: Failed to write NBT data to file");
 		}
 	}
+	 */
 }
