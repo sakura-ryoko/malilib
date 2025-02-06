@@ -586,7 +586,9 @@ public class StringUtils
                 // This used to be just MinecraftServer::getLevelName().
                 // Getting the name would now require an @Accessor for MinecraftServer.field_23784
                 String name = server.getSaveProperties().getLevelName();
-                return FileUtils.generateSimpleSafeFileName(name); 
+                // todo this was probably breaking non-US Locale file names
+                //return FileUtils.generateSimpleSafeFileName(name);
+                return FileUtils.generateSafeFileName(name);
             }
         }
         else
@@ -824,7 +826,6 @@ public class StringUtils
     public static void drawString(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawText(net.minecraft.client.MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
-        //RenderUtils.forceDraw(drawContext);
     }
 
     /**
