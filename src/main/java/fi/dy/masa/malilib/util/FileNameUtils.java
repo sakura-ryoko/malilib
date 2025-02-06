@@ -5,12 +5,10 @@ import java.util.Date;
 import java.util.Locale;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class FileNameUtils
 {
     public static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");

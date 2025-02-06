@@ -19,6 +19,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class WidgetDirectoryNavigation extends WidgetSearchBar
 {
+    // TODO -- Remove the file system; needs to deal with the FileFilter mechanism to make it compat with Path
     protected final File currentDir;
     protected final File rootDir;
     protected final IDirectoryNavigator navigator;
