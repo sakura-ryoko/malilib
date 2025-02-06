@@ -396,9 +396,9 @@ public class NbtUtils
 	}
 
 	@Nullable
-	public static NbtCompound readNbtFromFile(@Nonnull Path file)
+	public static NbtCompound readNbtFromFileAsPath(@Nonnull Path file)
 	{
-		return readNbtFromFile(file, NbtSizeTracker.ofUnlimitedBytes());
+		return readNbtFromFileAsPath(file, NbtSizeTracker.ofUnlimitedBytes());
 	}
 
 	@Nullable
@@ -417,7 +417,7 @@ public class NbtUtils
 		}
 		catch (Exception e)
 		{
-			MaLiLib.LOGGER.warn("Failed to read NBT data from file '{}' (failed to create the input stream)", file.getAbsolutePath());
+			MaLiLib.LOGGER.warn("readNbtFromFile: Failed to read NBT data from file '{}' (failed to create the input stream)", file.getAbsolutePath());
 			return null;
 		}
 
@@ -453,27 +453,27 @@ public class NbtUtils
 
 		if (nbt == null)
 		{
-			MaLiLib.LOGGER.warn("Failed to read NBT data from file '{}'", file.getAbsolutePath());
+			MaLiLib.LOGGER.warn("readNbtFromFile: Failed to read NBT data from file '{}'", file.getAbsolutePath());
 		}
 
 		return nbt;
 	}
 
 	@Nullable
-	public static NbtCompound readNbtFromFile(@Nonnull Path file, NbtSizeTracker tracker)
+	public static NbtCompound readNbtFromFileAsPath(@Nonnull Path file, NbtSizeTracker tracker)
 	{
-		if (Files.isReadable(file) == false)
+		if (!Files.exists(file) || !Files.isReadable(file))
 		{
 			return null;
 		}
 
-		try (InputStream is = Files.newInputStream(file))
+		try
 		{
-			NbtIo.readCompressed(is, tracker);
+			return NbtIo.readCompressed(Files.newInputStream(file), tracker);
 		}
 		catch (Exception e)
 		{
-			MaLiLib.LOGGER.warn("Failed to read NBT data from file '{}'", file.toAbsolutePath());
+			MaLiLib.LOGGER.warn("readNbtFromFileAsPath: Failed to read NBT data from file '{}'", file.toString());
 		}
 
 		return null;
@@ -483,23 +483,22 @@ public class NbtUtils
 	 * Write the compound tag, gzipped, to the output stream.
 	 */
 	public static void writeCompressed(@Nonnull NbtCompound tag, String tagName, @Nonnull OutputStream outputStream)
-			throws IOException
-	{
-		try (DataOutputStream dataoutputstream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(outputStream))))
+    {
+		try
 		{
-			writeTag(tag, tagName, dataoutputstream);
+			DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(outputStream)));
+			int typeId = NbtWrap.getTypeId(tag);
+			output.writeByte(typeId);
+
+			if (typeId != 0)
+			{
+				output.writeUTF(tagName);
+				tag.write(output);
+			}
 		}
-	}
-
-	private static void writeTag(NbtElement tag, String tagName, DataOutput output) throws IOException
-	{
-		int typeId = NbtWrap.getTypeId(tag);
-		output.writeByte(typeId);
-
-		if (typeId != 0)
+		catch (Exception err)
 		{
-			output.writeUTF(tagName);
-			tag.write(output);
+			MaLiLib.LOGGER.warn("writeCompressed: Failed to write NBT data to file");
 		}
 	}
 }
