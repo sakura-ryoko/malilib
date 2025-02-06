@@ -586,9 +586,9 @@ public class StringUtils
                 // This used to be just MinecraftServer::getLevelName().
                 // Getting the name would now require an @Accessor for MinecraftServer.field_23784
                 String name = server.getSaveProperties().getLevelName();
-                // todo this was probably breaking non-US Locale file names
+                // this was breaking non-US Locale file names
                 //return FileUtils.generateSimpleSafeFileName(name);
-                return FileUtils.generateSafeFileName(name);
+                return FileNameUtils.generateSafeFileName(name);
             }
         }
         else
@@ -658,7 +658,7 @@ public class StringUtils
             name = prefix + defaultName + suffix;
         }
 
-        return FileNameUtils.generateSimpleSafeFileName(name) + suffix;
+        return FileNameUtils.generateSafeFileName(name) + suffix;
     }
 
     public static String stringifyAddress(SocketAddress address)

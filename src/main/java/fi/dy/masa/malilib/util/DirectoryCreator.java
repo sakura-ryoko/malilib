@@ -8,6 +8,7 @@ import fi.dy.masa.malilib.interfaces.IStringConsumerFeedback;
 
 public class DirectoryCreator implements IStringConsumerFeedback
 {
+    // TODO -- Remove the file system; needs to deal with the FileFilter mechanism to make it compat with Path
     protected final File dir;
     @Nullable protected final IDirectoryNavigator navigator;
 
