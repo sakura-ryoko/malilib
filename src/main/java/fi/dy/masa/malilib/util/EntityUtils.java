@@ -1,8 +1,11 @@
 package fi.dy.masa.malilib.util;
 
+import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.mojang.datafixers.util.Either;
-import net.minecraft.class_10756;
-import net.minecraft.class_10758;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -16,11 +19,6 @@ import net.minecraft.registry.RegistryPair;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
-import org.apache.commons.lang3.tuple.Pair;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.UUID;
 
 public class EntityUtils
 {
@@ -103,10 +101,10 @@ public class EntityUtils
      * @param entity ()
      * @return ()
      */
-    public static @Nullable RegistryKey<class_10756> getChickenVariantFromComponents(@Nonnull ChickenEntity entity)
+    public static @Nullable RegistryKey<ChickenVariant> getChickenVariantFromComponents(@Nonnull ChickenEntity entity)
     {
-        RegistryPair<class_10756> entry = entity.get(DataComponentTypes.VARIANT_CHICKEN);
-        return entry != null ? entry.getKey().orElse(class_10758.field_56550) : class_10758.field_56550;
+        RegistryPair<ChickenVariant> entry = entity.get(DataComponentTypes.CHICKEN_VARIANT);
+        return entry != null ? entry.getKey().orElse(ChickenVariants.DEFAULT) : ChickenVariants.DEFAULT;
     }
 
     /**

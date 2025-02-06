@@ -154,6 +154,8 @@ public class RenderContext implements AutoCloseable
         {
             throw new RuntimeException("Buffer Builder not valid!");
         }
+
+        RenderSystem.assertOnRenderThread();
     }
 
     public void reset()
@@ -162,12 +164,13 @@ public class RenderContext implements AutoCloseable
         {
             this.vertex.close();
             this.vertex = null;
+            VertexBuffer.unbind();
         }
 
         if (this.alloc != null)
         {
             this.alloc.close();
-            this.builder = null;
+            this.alloc = null;
         }
 
         if (this.builder != null)
