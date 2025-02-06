@@ -162,10 +162,8 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static void loadFromFile()
     {
-        //File configFile = new File(FileUtils.getConfigDirectory(), CONFIG_FILE_NAME);
         Path configFile = FileUtils.getConfigDirectoryAsPath().resolve(CONFIG_FILE_NAME);
 
-        //if (configFile.exists() && configFile.isFile() && configFile.canRead())
         if (Files.exists(configFile) && Files.isReadable(configFile))
         {
             JsonElement element = JsonUtils.parseJsonFileAsPath(configFile);
@@ -188,29 +186,29 @@ public class MaLiLibConfigs implements IConfigHandler
                     ConfigUtils.readConfigBase(root, "Experimental", Experimental.OPTIONS);
                 }
 
-                MaLiLib.debugLog("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
+                //MaLiLib.debugLog("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
             }
             else
             {
-                MaLiLib.LOGGER.error("loadFromFile(): Failed to parse config file as a JSON element '{}'.", configFile.toAbsolutePath());
+                MaLiLib.LOGGER.error("loadFromFile(): Failed to parse config file '{}' as a JSON element.", configFile.toAbsolutePath());
             }
         }
+        /*
         else
         {
             MaLiLib.LOGGER.error("loadFromFile(): Failed to load config file '{}'.", configFile.toAbsolutePath());
         }
+         */
     }
 
     public static void saveToFile()
     {
-        //File dir = FileUtils.getConfigDirectory();
         Path dir = FileUtils.getConfigDirectoryAsPath();
 
-        //if ((dir.exists() && dir.isDirectory()) || dir.mkdirs())
         if (!Files.exists(dir))
         {
             FileUtils.createDirectoriesIfMissing(dir);
-            MaLiLib.debugLog("saveToFile(): Creating directory '{}'.", dir.toAbsolutePath());
+            //MaLiLib.debugLog("saveToFile(): Creating directory '{}'.", dir.toAbsolutePath());
         }
 
         if (Files.isDirectory(dir))
@@ -231,9 +229,9 @@ public class MaLiLibConfigs implements IConfigHandler
                 ConfigUtils.writeConfigBase(root, "Experimental", Experimental.OPTIONS);
             }
 
-            //JsonUtils.writeJsonToFile(root, new File(dir, CONFIG_FILE_NAME));
-            Path config = dir.resolve(CONFIG_FILE_NAME);
+            JsonUtils.writeJsonToFileAsPath(root, dir.resolve(CONFIG_FILE_NAME));
 
+            /*
             if (JsonUtils.writeJsonToFileAsPath(root, config))
             {
                 MaLiLib.debugLog("saveToFile(): Successfully saved config file '{}'.", config.toAbsolutePath());
@@ -242,11 +240,14 @@ public class MaLiLibConfigs implements IConfigHandler
             {
                 MaLiLib.LOGGER.error("saveToFile(): Failed to save config file '{}'.", config.toAbsolutePath());
             }
+             */
         }
+        /*
         else
         {
             MaLiLib.LOGGER.error("saveToFile(): Config Folder '{}' does not exist!", dir.toAbsolutePath());
         }
+         */
     }
 
     @Override
