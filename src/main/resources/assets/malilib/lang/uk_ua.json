@@ -29,7 +29,7 @@
   "malilib.config.debug.prettyName.printTranslationKeys": "Друкувати ключі перекладу",
   "malilib.config.experimental.comment.activeConfigProfile": "activeConfigProfile",
   "malilib.config.experimental.comment.sortConfigsByName": "Сортувати параметри за назвою",
-  "malilib.config.experimental.comment.sortExtensionModOptions": "Сортує параметри, показані на екранах налаштувань\nза показаною назвою парметрів\n\nЦе відбувається після того, як будь-які можливі розширення налаштувань модів були додані в\nкінець списку у базовому моді\nЗверніть увагу, що це також спричинить що базові налаштування мода\nбудуть відсортовані за алфавітом, якщо вони не були за замовчуванням\n\nЦе діє, лише якщо є деякі опції\nдодані розширенням мода. Також перегляньте §eСортувати параметри за назвою§r\n, яке примусово сортує параметри основного моду в будь-якому випадку",
+  "malilib.config.experimental.comment.sortExtensionModOptions": "Сортує параметри, показані на екранах налаштувань\nза показаною назвою параметрів\n\nЦе відбувається після того, як будь-які можливі розширення налаштувань модів були додані в\nкінець списку у базовому моді\nЗверніть увагу, що це також спричинить що базові налаштування мода\nбудуть відсортовані за алфавітом, якщо вони не були за замовчуванням\n\nЦе діє, лише якщо є деякі опції\nдодані розширенням мода. Також перегляньте §eСортувати параметри за назвою§r\n, яке примусово сортує параметри основного моду в будь-якому випадку",
   "malilib.config.experimental.name.activeConfigProfile": "activeConfigProfile",
   "malilib.config.experimental.name.sortConfigsByName": "sortConfigsByName",
   "malilib.config.experimental.name.sortExtensionModOptions": "sortExtensionModOptions",
