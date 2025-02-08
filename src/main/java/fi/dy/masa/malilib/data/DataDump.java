@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.data;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -338,7 +339,7 @@ public class DataDump
         if (values.length == 1 && this.columns > 1)
         {
             int space = this.totalWidth + (Math.max(this.columns - 1, 0) * 3);
-            String fmt = null;
+            String fmt;
             boolean isCenter = false;
 
             if (this.centerTitle)
@@ -497,12 +498,67 @@ public class DataDump
 
     public List<String> getLines()
     {
-        List<String> lines = new ArrayList<String>();
+        List<String> lines = new ArrayList<>();
 
         this.generateFormatStrings();
         this.getFormattedData(lines);
 
         return lines;
+    }
+
+    @Deprecated
+    @Nullable
+    public static File dumpDataToFile(File dir, String fileNameBase, List<String> lines, Format format)
+    {
+        Path dirPath = Paths.get(dir.toURI());
+        Path out;
+
+        if (format == Format.CSV)
+        {
+            out = dumpDataToFile(dirPath, fileNameBase + "-csv", ".csv", lines);
+        }
+        else
+        {
+            out = dumpDataToFile(dirPath, fileNameBase, ".txt", lines);
+        }
+
+        if (out != null)
+        {
+            return out.toFile();
+        }
+
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    public static File dumpDataToFile(File dir, String fileNameBase, List<String> lines)
+    {
+        Path dirPath = Paths.get(dir.toURI());
+        Path out = dumpDataToFile(dirPath, fileNameBase, ".txt", lines);
+
+        if (out != null)
+        {
+            return out.toFile();
+        }
+
+        return null;
+    }
+
+    @Deprecated
+    @Nullable
+    public static File dumpDataToFile(File dir, String fileNameBase, String fileNameExtension, List<String> lines)
+    {
+        Path dirPath = Paths.get(dir.toURI());
+
+        Path out = dumpDataToFile(dirPath, fileNameBase, fileNameExtension, lines);
+
+        if (out != null)
+        {
+            return out.toFile();
+        }
+
+        return null;
     }
 
     @Nullable
@@ -655,12 +711,12 @@ public class DataDump
     public enum Alignment
     {
         LEFT,
-        RIGHT;
+        RIGHT
     }
 
     public enum Format
     {
         ASCII,
-        CSV;
+        CSV
     }
 }
