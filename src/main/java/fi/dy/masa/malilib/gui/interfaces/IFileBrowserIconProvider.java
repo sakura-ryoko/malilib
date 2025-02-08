@@ -1,6 +1,6 @@
 package fi.dy.masa.malilib.gui.interfaces;
 
-import java.io.File;
+import java.nio.file.Path;
 import javax.annotation.Nullable;
 
 public interface IFileBrowserIconProvider
@@ -16,5 +16,5 @@ public interface IFileBrowserIconProvider
     IGuiIcon getIconDirectory();
 
     @Nullable
-    IGuiIcon getIconForFile(File file);
+    IGuiIcon getIconForFile(Path file);
 }

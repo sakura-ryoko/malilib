@@ -1,7 +1,5 @@
 package fi.dy.masa.malilib.gui.widgets;
 
-import java.io.File;
-
 import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
@@ -40,7 +38,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     {
         if (this.entry.getType() == DirectoryEntryType.DIRECTORY)
         {
-            this.navigator.switchToDirectory(new File(this.entry.getDirectory(), this.entry.getName()));
+            this.navigator.switchToDirectory(this.entry.getDirectory().resolve(this.entry.getName()));
         }
         else
         {

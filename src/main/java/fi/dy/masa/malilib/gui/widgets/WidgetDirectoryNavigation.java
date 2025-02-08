@@ -1,6 +1,6 @@
 package fi.dy.masa.malilib.gui.widgets;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import javax.annotation.Nullable;
 
@@ -19,16 +19,17 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class WidgetDirectoryNavigation extends WidgetSearchBar
 {
-    // TODO -- Remove the file system; needs to deal with the FileFilter mechanism to make it compat with Path
-    protected final File currentDir;
-    protected final File rootDir;
+    //protected final File currentDir;
+    //protected final File rootDir;
+    protected final Path currentDir;
+    protected final Path rootDir;
     protected final IDirectoryNavigator navigator;
     protected final WidgetIcon iconRoot;
     protected final WidgetIcon iconUp;
     protected final WidgetIcon iconCreateDir;
 
     public WidgetDirectoryNavigation(int x, int y, int width, int height,
-            File currentDir, File rootDir, IDirectoryNavigator navigator, IFileBrowserIconProvider iconProvider)
+                                     Path currentDir, Path rootDir, IDirectoryNavigator navigator, IFileBrowserIconProvider iconProvider)
     {
         super(x, y, width, height, 0, iconProvider.getIconSearch(), LeftRight.RIGHT);
 

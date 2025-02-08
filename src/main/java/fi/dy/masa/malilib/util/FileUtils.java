@@ -325,6 +325,17 @@ public class FileUtils
         return file;
     }
 
+    public static Path getRealPathIfPossible(Path file)
+    {
+        try
+        {
+            file = file.toRealPath();
+        }
+        catch (Exception ignored) { }
+
+        return file;
+    }
+
     public static String getJoinedTrailingPathElements(File file, File rootPath, int maxStringLength, String separator)
     {
         String path = "";

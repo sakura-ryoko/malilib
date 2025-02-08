@@ -1,18 +1,20 @@
 package fi.dy.masa.malilib.util;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import javax.annotation.Nullable;
+
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.interfaces.IStringConsumerFeedback;
 
 public class DirectoryCreator implements IStringConsumerFeedback
 {
-    // TODO -- Remove the file system; needs to deal with the FileFilter mechanism to make it compat with Path
-    protected final File dir;
+    //protected final File dir;
+    protected final Path dir;
     @Nullable protected final IDirectoryNavigator navigator;
 
-    public DirectoryCreator(File dir, @Nullable IDirectoryNavigator navigator)
+    public DirectoryCreator(Path dir, @Nullable IDirectoryNavigator navigator)
     {
         this.dir = dir;
         this.navigator = navigator;
@@ -27,17 +29,22 @@ public class DirectoryCreator implements IStringConsumerFeedback
             return false;
         }
 
-        File file = new File(this.dir, string);
+        //File file = new File(this.dir, string);
+        Path file = this.dir.resolve(string);
 
-        if (file.exists())
+        if (Files.exists(file))
         {
-            InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.error.file_or_directory_already_exists", file.getAbsolutePath());
+            InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.error.file_or_directory_already_exists", file.toAbsolutePath());
             return false;
         }
 
-        if (file.mkdirs() == false)
+        try
         {
-            InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.error.failed_to_create_directory", file.getAbsolutePath());
+            Files.createDirectory(file);
+        }
+        catch (Exception err)
+        {
+            InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.error.failed_to_create_directory", file.toAbsolutePath());
             return false;
         }
 

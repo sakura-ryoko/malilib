@@ -1,12 +1,13 @@
 package fi.dy.masa.malilib.gui.widgets;
 
-import java.io.File;
-import java.io.FileFilter;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
@@ -22,18 +23,18 @@ import fi.dy.masa.malilib.util.KeyCodes;
 
 public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntry, WidgetDirectoryEntry> implements IDirectoryNavigator
 {
-    // TODO -- Remove the file system; needs to deal with the FileFilter mechanism to make it compat with Path
-    protected static final FileFilter DIRECTORY_FILTER = new FileFilterDirectories();
+    protected static final PathFilter DIRECTORY_FILTER = new PathFilter();
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     protected final IDirectoryCache cache;
-    protected File currentDirectory;
+    //protected File currentDirectory;
+    protected Path currentDirectory;
     protected final String browserContext;
     protected final IFileBrowserIconProvider iconProvider;
     @Nullable protected WidgetDirectoryNavigation directoryNavigationWidget;
 
     public WidgetFileBrowserBase(int x, int y, int width, int height,
-            IDirectoryCache cache, String browserContext, File defaultDirectory,
+            IDirectoryCache cache, String browserContext, Path defaultDirectory,
             @Nullable ISelectionListener<DirectoryEntry> selectionListener, IFileBrowserIconProvider iconProvider)
     {
         super(x, y, width, height, selectionListener);
@@ -69,7 +70,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
         else if ((keyCode == KeyCodes.KEY_RIGHT || keyCode == KeyCodes.KEY_ENTER) &&
                   this.getLastSelectedEntry() != null && this.getLastSelectedEntry().getType() == DirectoryEntryType.DIRECTORY)
         {
-            this.switchToDirectory(new File(this.getLastSelectedEntry().getDirectory(), this.getLastSelectedEntry().getName()));
+            this.switchToDirectory(this.getLastSelectedEntry().getDirectory().resolve(this.getLastSelectedEntry().getName()));
             return true;
         }
 
@@ -128,9 +129,9 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     {
         this.listContents.clear();
 
-        File dir = this.currentDirectory;
+        Path dir = this.currentDirectory;
 
-        if (dir.isDirectory() && dir.canRead())
+        if (Files.isDirectory(dir))
         {
             if (this.hasFilter())
             {
@@ -145,7 +146,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
         this.reCreateListEntryWidgets();
     }
 
-    protected void addNonFilteredContents(File dir)
+    protected void addNonFilteredContents(Path dir)
     {
         List<DirectoryEntry> list = new ArrayList<>();
 
@@ -160,7 +161,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
         this.listContents.addAll(list);
     }
 
-    protected void addFilteredContents(File dir)
+    protected void addFilteredContents(Path dir)
     {
         String filterText = this.widgetSearchBar.getFilter();
         List<DirectoryEntry> list = new ArrayList<>();
@@ -168,25 +169,26 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
         this.listContents.addAll(list);
     }
 
-    protected void addFilteredContents(File dir, String filterText, List<DirectoryEntry> listOut, @Nullable String prefix)
+    protected void addFilteredContents(Path dir, String filterText, List<DirectoryEntry> listOut, @Nullable String prefix)
     {
         List<DirectoryEntry> list = new ArrayList<>();
+        List<Path> subDirs = this.getSubDirectories(dir);
         this.addMatchingEntriesToList(this.getDirectoryFilter(), dir, list, filterText, prefix);
         Collections.sort(list);
         listOut.addAll(list);
         list.clear();
 
-        for (File subDir : this.getSubDirectories(dir))
+        for (Path subDir : subDirs)
         {
             String pre;
 
             if (prefix != null)
             {
-                pre = prefix + subDir.getName() + "/";
+                pre = prefix + subDir.getFileName().toString() + "/";
             }
             else
             {
-                pre = subDir.getName() + "/";
+                pre = subDir.getFileName().toString() + "/";
             }
 
             this.addFilteredContents(subDir, filterText, list, pre);
@@ -200,34 +202,59 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
         listOut.addAll(list);
     }
 
-    protected void addMatchingEntriesToList(FileFilter filter, File dir, List<DirectoryEntry> list, @Nullable String filterText, @Nullable String displayNamePrefix)
+    protected void addMatchingEntriesToList(PathFilter filter, Path dir, List<DirectoryEntry> list, @Nullable String filterText, @Nullable String displayNamePrefix)
     {
-        for (File file : dir.listFiles(filter))
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, filter))
         {
-            String name = FileUtils.getNameWithoutExtension(file.getName().toLowerCase());
-
-            if (filterText == null || this.matchesFilter(name, filterText))
+            for (Path file : stream)
             {
-                list.add(new DirectoryEntry(DirectoryEntryType.fromFile(file), dir, file.getName(), displayNamePrefix));
+                String name = FileUtils.getNameWithoutExtension(file.getFileName().toString().toLowerCase());
+
+                if (filterText == null || this.matchesFilter(name, filterText))
+                {
+                    list.add(new DirectoryEntry(DirectoryEntryType.fromFile(file), dir, file.getFileName().toString(), displayNamePrefix));
+                }
             }
         }
+        catch (Exception ignored) { }
     }
 
-    protected List<File> getSubDirectories(File dir)
+    protected void addMatchingEntriesToList(FileFilter filter, Path dir, List<DirectoryEntry> list, @Nullable String filterText, @Nullable String displayNamePrefix)
     {
-        List<File> dirs = new ArrayList<>();
-
-        for (File file : dir.listFiles(DIRECTORY_FILTER))
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, filter))
         {
-            dirs.add(file);
+            for (Path file : stream)
+            {
+                String name = FileUtils.getNameWithoutExtension(file.getFileName().toString().toLowerCase());
+
+                if (filterText == null || this.matchesFilter(name, filterText))
+                {
+                    list.add(new DirectoryEntry(DirectoryEntryType.fromFile(file), dir, file.getFileName().toString(), displayNamePrefix));
+                }
+            }
         }
+        catch (Exception ignored) { }
+    }
+
+    protected List<Path> getSubDirectories(Path dir)
+    {
+        List<Path> dirs = new ArrayList<>();
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, DIRECTORY_FILTER))
+        {
+            for (Path file : stream)
+            {
+                dirs.add(file);
+            }
+        }
+        catch (Exception ignored) { }
 
         return dirs;
     }
 
-    protected abstract File getRootDirectory();
+    protected abstract Path getRootDirectory();
 
-    protected FileFilter getDirectoryFilter()
+    protected PathFilter getDirectoryFilter()
     {
         return DIRECTORY_FILTER;
     }
@@ -247,17 +274,17 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     }
 
     @Override
-    public File getCurrentDirectory()
+    public Path getCurrentDirectory()
     {
         return this.currentDirectory;
     }
 
     @Override
-    public void switchToDirectory(File dir)
+    public void switchToDirectory(Path dir)
     {
         this.clearSelection();
 
-        this.currentDirectory = FileUtils.getCanonicalFileIfPossible(dir);
+        this.currentDirectory = FileUtils.getRealPathIfPossible(dir);
         this.cache.setCurrentDirectoryForContext(this.browserContext, dir);
 
         this.refreshEntries();
@@ -273,11 +300,11 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     @Override
     public void switchToParentDirectory()
     {
-        File parent = this.currentDirectory.getParentFile();
+        Path parent = this.currentDirectory.getParent();
 
         if (this.currentDirectoryIsRoot() == false &&
             parent != null &&
-            this.currentDirectory.getAbsolutePath().contains(this.getRootDirectory().getAbsolutePath()))
+            this.currentDirectory.toAbsolutePath().compareTo(this.getRootDirectory().toAbsolutePath()) == 0)
         {
             this.switchToDirectory(parent);
         }
@@ -290,11 +317,12 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     public static class DirectoryEntry implements Comparable<DirectoryEntry>
     {
         private final DirectoryEntryType type;
-        private final File dir;
+        //private final File dir;
+        private final Path dir;
         private final String name;
         @Nullable private final String displaynamePrefix;
 
-        public DirectoryEntry(DirectoryEntryType type, File dir, String name, @Nullable String displaynamePrefix)
+        public DirectoryEntry(DirectoryEntryType type, Path dir, String name, @Nullable String displaynamePrefix)
         {
             this.type = type;
             this.dir = dir;
@@ -307,7 +335,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
             return this.type;
         }
 
-        public File getDirectory()
+        public Path getDirectory()
         {
             return this.dir;
         }
@@ -328,15 +356,16 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
             return this.displaynamePrefix != null ? this.displaynamePrefix + this.name : this.name;
         }
 
-        public File getFullPath()
+        public Path getFullPath()
         {
-            return new File(this.dir, this.name);
+            return this.dir.resolve(this.name);
         }
 
         @Override
         public int compareTo(DirectoryEntry other)
         {
-            return this.name.toLowerCase(Locale.US).compareTo(other.getName().toLowerCase(Locale.US));
+            //return this.name.toLowerCase(Locale.US).compareTo(other.getName().toLowerCase(Locale.US));
+            return this.name.toLowerCase().compareTo(other.getName().toLowerCase());
         }
     }
 
@@ -346,23 +375,28 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
         DIRECTORY,
         FILE;
 
-        public static DirectoryEntryType fromFile(File file)
+        public static DirectoryEntryType fromFile(Path file)
         {
-            if (file.exists() == false)
+            if (!Files.exists(file))
             {
                 return INVALID;
             }
-            else if (file.isDirectory())
+            else if (Files.isDirectory(file))
             {
                 return DIRECTORY;
             }
-            else
+            else if (Files.isRegularFile(file))
             {
                 return FILE;
+            }
+            else
+            {
+                return INVALID;
             }
         }
     }
 
+    /*
     public static class FileFilterDirectories implements FileFilter
     {
         @Override
@@ -371,4 +405,38 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
             return pathName.isDirectory() && pathName.getName().startsWith(".") == false;
         }
     }
+     */
+
+    public static class PathFilter implements DirectoryStream.Filter<Path>
+    {
+        @Override
+        public boolean accept(Path entry) throws IOException
+        {
+            try
+            {
+                return Files.isDirectory(entry) && !entry.getFileName().startsWith(".");
+            }
+            catch (Exception err)
+            {
+                throw new IOException(err.getMessage());
+            }
+        }
+    }
+
+    public static class FileFilter implements DirectoryStream.Filter<Path>
+    {
+        @Override
+        public boolean accept(Path entry) throws IOException
+        {
+            try
+            {
+                return Files.isRegularFile(entry) && !entry.getFileName().startsWith(".");
+            }
+            catch (Exception err)
+            {
+                throw new IOException(err.getMessage());
+            }
+        }
+    }
+
 }

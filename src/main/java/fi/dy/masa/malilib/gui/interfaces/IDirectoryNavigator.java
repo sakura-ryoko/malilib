@@ -1,13 +1,12 @@
 package fi.dy.masa.malilib.gui.interfaces;
 
-import java.io.File;
+import java.nio.file.Path;
 
 public interface IDirectoryNavigator
 {
-    // TODO -- Remove the file system; needs to deal with the FileFilter mechanism to make it compat with Path
-    File getCurrentDirectory();
+    Path getCurrentDirectory();
 
-    void switchToDirectory(File dir);
+    void switchToDirectory(Path dir);
 
     void switchToParentDirectory();
 
