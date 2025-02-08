@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.util;
 
 import java.io.File;
 import java.net.SocketAddress;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -173,8 +174,16 @@ public class StringUtils
     {
         Text name = Text.literal(file.getName())
             .formatted(net.minecraft.util.Formatting.UNDERLINE)
-            //.styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath())));
             .styled((style) -> style.withClickEvent(new ClickEvent.OpenFile(file.getAbsolutePath())));
+
+        sender.sendMessage(Text.translatable(messageKey, name), false);
+    }
+
+    public static void sendOpenFileChatMessage(PlayerEntity sender, String messageKey, Path file)
+    {
+        Text name = Text.literal(file.getFileName().toString())
+                        .formatted(net.minecraft.util.Formatting.UNDERLINE)
+                        .styled((style) -> style.withClickEvent(new ClickEvent.OpenFile(file.toAbsolutePath())));
 
         sender.sendMessage(Text.translatable(messageKey, name), false);
     }
