@@ -1,16 +1,18 @@
 package fi.dy.masa.malilib.data;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import fi.dy.masa.malilib.MaLiLib;
 
 public class DataDump
@@ -21,9 +23,9 @@ public class DataDump
     protected Alignment[] alignment;
     protected boolean[] columnIsNumeric;
     protected Row title;
-    protected List<Row> headers = new ArrayList<Row>();
-    protected List<Row> footers = new ArrayList<Row>();
-    protected List<Row> lines = new ArrayList<Row>();
+    protected List<Row> headers = new ArrayList<>();
+    protected List<Row> footers = new ArrayList<>();
+    protected List<Row> lines = new ArrayList<>();
     protected int[] widths;
     protected int totalWidth;
     protected String formatStringColumns;
@@ -36,7 +38,7 @@ public class DataDump
     protected boolean centerTitle = false;
     protected boolean repeatTitleAtBottom = true;
     private boolean sort = true;
-    private Format format = Format.ASCII;
+    private Format format;
 
     public DataDump(int columns)
     {
@@ -319,11 +321,7 @@ public class DataDump
                 sbFmt.append(String.format(" %%%ds %s", width, colSep));
             }
 
-            for (int j = 0; j < width + 2; j++)
-            {
-                sbSep.append("-");
-            }
-
+            sbSep.append("-".repeat(Math.max(0, width + 2)));
             sbSep.append(lineColSep);
         }
 
@@ -448,9 +446,9 @@ public class DataDump
 
             if (len > 0)
             {
-                for (int i = 0; i < len; i++)
+                for (Row header : this.headers)
                 {
-                    lines.add(this.getFormattedLine(this.headers.get(i)));
+                    lines.add(this.getFormattedLine(header));
                 }
 
                 lines.add(this.lineSeparator);
@@ -467,11 +465,9 @@ public class DataDump
             }
         }
 
-        int rows = this.lines.size();
-
-        for (int i = 0; i < rows; i++)
+        for (Row line : this.lines)
         {
-            lines.add(this.getFormattedLine(this.lines.get(i)));
+            lines.add(this.getFormattedLine(line));
         }
 
         if (this.format == Format.ASCII)
@@ -487,9 +483,9 @@ public class DataDump
 
             if (len > 0)
             {
-                for (int i = 0; i < len; i++)
+                for (Row footer : this.footers)
                 {
-                    lines.add(this.getFormattedLine(this.footers.get(i)));
+                    lines.add(this.getFormattedLine(footer));
                 }
 
                 lines.add(this.lineSeparator);
@@ -510,7 +506,7 @@ public class DataDump
     }
 
     @Nullable
-    public static File dumpDataToFile(File dir, String fileNameBase, List<String> lines, Format format)
+    public static Path dumpDataToFile(Path dir, String fileNameBase, List<String> lines, Format format)
     {
         if (format == Format.CSV)
         {
@@ -523,21 +519,21 @@ public class DataDump
     }
 
     @Nullable
-    public static File dumpDataToFile(File dir, String fileNameBase, List<String> lines)
+    public static Path dumpDataToFile(Path dir, String fileNameBase, List<String> lines)
     {
         return dumpDataToFile(dir, fileNameBase, ".txt", lines);
     }
 
     @Nullable
-    public static File dumpDataToFile(File dir, String fileNameBase, String fileNameExtension, List<String> lines)
+    public static Path dumpDataToFile(Path dir, String fileNameBase, String fileNameExtension, List<String> lines)
     {
-        File outFile = null;
+        Path outFile = null;
 
-        if (dir.exists() == false)
+        if (!Files.exists(dir))
         {
             try
             {
-                dir.mkdirs();
+                Files.createDirectory(dir);
             }
             catch (Exception e)
             {
@@ -548,17 +544,17 @@ public class DataDump
 
         String fileNameBaseWithDate = fileNameBase + "_" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date(System.currentTimeMillis()));
         String fileName = fileNameBaseWithDate + fileNameExtension;
-        outFile = new File(dir, fileName);
+        outFile = dir.resolve(fileName);
         int postFix = 1;
 
-        while (outFile.exists() && postFix < 100)
+        while (Files.exists(outFile) && postFix < 100)
         {
             fileName = fileNameBaseWithDate + "_" + postFix + fileNameExtension;
-            outFile = new File(dir, fileName);
+            outFile = dir.resolve(fileName);
             postFix++;
         }
 
-        if (outFile.exists())
+        if (Files.exists(outFile))
         {
             MaLiLib.LOGGER.error("dumpDataToFile(): Failed to create data dump file '{}', one already exists", fileName);
             return null;
@@ -566,7 +562,7 @@ public class DataDump
 
         try
         {
-            outFile.createNewFile();
+            Files.createFile(outFile);
         }
         catch (IOException e)
         {
@@ -576,18 +572,12 @@ public class DataDump
 
         try
         {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(outFile));
-            int size = lines.size();
-
-            for (int i = 0; i < size; i++)
+            for (String line : lines)
             {
-                writer.write(lines.get(i));
-                writer.newLine();
+                Files.writeString(outFile, line + System.lineSeparator(), StandardOpenOption.APPEND);
             }
-
-            writer.close();
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             MaLiLib.LOGGER.error("dumpDataToFile(): Exception while writing data dump to file '{}'", fileName, e);
         }
@@ -597,11 +587,9 @@ public class DataDump
 
     public static void printDataToLogger(List<String> lines)
     {
-        final int size = lines.size();
-
-        for (int i = 0; i < size; i++)
+        for (String line : lines)
         {
-            MaLiLib.LOGGER.info(lines.get(i));
+            MaLiLib.LOGGER.info(line);
         }
     }
 
@@ -621,7 +609,7 @@ public class DataDump
                 {
                     this.numbers[i] = Double.parseDouble(strings[i]);
                 }
-                catch (NumberFormatException e) {}
+                catch (NumberFormatException ignored) {}
             }
         }
 
@@ -631,7 +619,7 @@ public class DataDump
         }
 
         @Override
-        public int compareTo(Row other)
+        public int compareTo(@Nonnull Row other)
         {
             for (int i = 0; i < this.strings.length; i++)
             {
@@ -664,7 +652,7 @@ public class DataDump
         }
     }
 
-    public static enum Alignment
+    public enum Alignment
     {
         LEFT,
         RIGHT;
