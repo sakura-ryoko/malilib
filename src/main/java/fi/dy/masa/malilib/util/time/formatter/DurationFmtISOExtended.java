@@ -30,7 +30,7 @@ public class DurationFmtISOExtended extends DurationFmt
         {
             try
             {
-                return DurationFormatUtils.formatDuration(duration, fmt, false);
+                return DurationFormatUtils.formatDuration(duration, fmt, true);
             }
             catch (Exception err)
             {
@@ -39,6 +39,6 @@ public class DurationFmtISOExtended extends DurationFmt
             }
         }
 
-        return DurationFormatUtils.formatDuration(duration, this.defaultFormat, false);
+        return DurationFormatUtils.formatDuration(duration, this.defaultFormat, true);
     }
 }
