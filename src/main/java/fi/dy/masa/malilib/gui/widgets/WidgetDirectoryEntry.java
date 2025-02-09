@@ -10,7 +10,7 @@ import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntry;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntryType;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.FileUtils;
+import fi.dy.masa.malilib.util.FileNameUtils;
 
 public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
 {
@@ -110,7 +110,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         }
         else
         {
-            return FileUtils.getNameWithoutExtension(this.entry.getDisplayName());
+            return FileNameUtils.getFileNameWithoutExtension(this.entry.getDisplayName());
         }
     }
 }

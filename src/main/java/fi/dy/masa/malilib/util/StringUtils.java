@@ -183,7 +183,7 @@ public class StringUtils
     {
         Text name = Text.literal(file.getFileName().toString())
                         .formatted(net.minecraft.util.Formatting.UNDERLINE)
-                        .styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.toAbsolutePath())));
+                        .styled((style) -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.toAbsolutePath().toString())));
 
         sender.sendMessage(Text.translatable(messageKey, name), false);
     }
