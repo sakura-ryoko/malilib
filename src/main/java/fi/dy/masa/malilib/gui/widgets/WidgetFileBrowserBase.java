@@ -304,7 +304,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
 
         if (this.currentDirectoryIsRoot() == false &&
             parent != null &&
-            this.currentDirectory.toAbsolutePath().compareTo(this.getRootDirectory().toAbsolutePath()) == 0)
+            this.currentDirectory.toAbsolutePath().toString().contains(this.getRootDirectory().toAbsolutePath().toString()))
         {
             this.switchToDirectory(parent);
         }
