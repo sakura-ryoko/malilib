@@ -407,6 +407,13 @@ public class FileUtils
         return path.toString();
     }
 
+    @Deprecated(forRemoval = true)
+    public static String generateSafeFileName(String name)
+    {
+        return FileNameUtils.generateSafeFileName(name);
+    }
+
+    @Deprecated(forRemoval = true)
     public static String getNameWithoutExtension(String name)
     {
         int i = name.lastIndexOf(".");
