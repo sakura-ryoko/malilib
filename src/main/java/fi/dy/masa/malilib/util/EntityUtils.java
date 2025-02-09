@@ -15,7 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryPair;
+import net.minecraft.registry.entry.LazyRegistryEntryReference;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
@@ -103,7 +103,7 @@ public class EntityUtils
      */
     public static @Nullable RegistryKey<ChickenVariant> getChickenVariantFromComponents(@Nonnull ChickenEntity entity)
     {
-        RegistryPair<ChickenVariant> entry = entity.get(DataComponentTypes.CHICKEN_VARIANT);
+        LazyRegistryEntryReference<ChickenVariant> entry = entity.get(DataComponentTypes.CHICKEN_VARIANT);
         return entry != null ? entry.getKey().orElse(ChickenVariants.DEFAULT) : ChickenVariants.DEFAULT;
     }
 
