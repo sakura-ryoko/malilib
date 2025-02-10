@@ -37,9 +37,9 @@
 		"fabric-resource-loader-v0": "*"
 	},
 	"breaks": {
-		"itemscroller": "<0.25.4",
-		"litematica": "<0.20.4",
-		"minihud": "<0.33.6",
-		"tweakeroo": "<0.22.4"
+		"itemscroller": "<=0.25.3",
+		"litematica": "<=0.20.3",
+		"minihud": "<=0.33.3",
+		"tweakeroo": "<=0.22.3"
 	}
 }
