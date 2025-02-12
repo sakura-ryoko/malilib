@@ -1,0 +1,16 @@
+{
+  "values": [
+    "#malilib:concrete_powder_fix",
+    "minecraft:anvil",
+    "minecraft:chipped_anvil",
+    "minecraft:damaged_anvil",
+    "minecraft:sand",
+    "minecraft:red_sand",
+    "minecraft:gravel",
+    "minecraft:suspicious_gravel",
+    "minecraft:suspicious_sand",
+    "minecraft:pointed_dripstone",
+    "minecraft:scaffolding",
+    "minecraft:dragon_egg"
+  ]
+}

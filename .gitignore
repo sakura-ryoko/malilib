@@ -11,3 +11,4 @@ Task
 .idea/
 run/
 libs/
+/src/main/generated/.cache/
