@@ -9,6 +9,12 @@ repositories {
 	// maven { url = 'https://maven.quiltmc.org/repository/release/' }
 }
 
+fabricApi {
+	configureDataGeneration {
+		client = true
+	}
+}
+
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.mappings_version}:v2"
@@ -21,6 +27,7 @@ dependencies {
 	include(modApi(fabricApi.module("fabric-api-base", project.fabric_api_version)))
 	include(modApi(fabricApi.module("fabric-networking-api-v1", project.fabric_api_version)))
 	include(modApi(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
+	include(modApi(fabricApi.module("fabric-data-generation-api-v1", project.fabric_api_version)))
 
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 //	modRuntimeOnly 'me.fallenbreath:mixin-auditor:0.1.0'
