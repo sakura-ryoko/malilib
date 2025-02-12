@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.data;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
@@ -89,19 +88,5 @@ public class MaLiLibTag
     public static void register()
     {
         MaLiLib.debugLog("MaLiLibTag: init()");
-    }
-
-    public static boolean isInSameGroup(BlockState left, BlockState right)
-    {
-        for (TagKey<Block> tagKey : Blocks.REPLACEABLE_GROUPS)
-        {
-            if (left.isIn(tagKey) && right.isIn(tagKey))
-            {
-                MaLiLib.debugLog("isInSameGroup(): left [{}] vs right [{}] --> same group tag: [{}]", tagKey.id().toString());
-                return true;
-            }
-        }
-
-        return false;
     }
 }
