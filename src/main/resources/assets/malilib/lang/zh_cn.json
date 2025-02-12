@@ -232,8 +232,8 @@
   "malilib.label.nbt_tooltip.string_color": "§a",
   "malilib.message.directory_created": "目录 '%s' 创建完毕",
   "malilib.message.error.failed_to_copy_file": "Failed to copy file\n  §e'%s'§r\nto\n  §e'%s'§r",
-  "malilib.message.error.failed_to_copy_file_with_message": "Failed to copy file\n  §e'%s'§r\nto\n  §e'%s'§r\n%s",
   "malilib.message.error.failed_to_copy_file.destination_exists": "Won't copy file §e'%s'§r\nto §e'%s'§r,\nthe destination file already exists",
+  "malilib.message.error.failed_to_copy_file_with_message": "Failed to copy file\n  §e'%s'§r\nto\n  §e'%s'§r\n%s",
   "malilib.message.error.failed_to_create_directory": "Failed to create directory\n  §e'%s'§r",
   "malilib.message.error.failed_to_create_file": "Failed to create file\n  §e'%s'§r",
   "malilib.message.error.failed_to_delete_file": "Failed to delete file\n  §e'%s'§r",
@@ -270,5 +270,16 @@
   "malilib.message.value.on": "开启",
   "malilib.name.file_write_type.normal_write": "Normal Write",
   "malilib.name.file_write_type.temp_and_rename": "Temp and Rename",
-  "modmenu.descriptionTranslation.malilib": "A library required by client mods from masa"
+  "modmenu.descriptionTranslation.malilib": "A library required by client mods from masa",
+  "tag.block.malilib.all_signs_fix": "All Signs",
+  "tag.block.malilib.all_banners_fix": "All Banners",
+  "tag.block.malilib.concrete_blocks": "Concrete Blocks",
+  "tag.block.malilib.concrete_powder_fix": "Concrete Powders",
+  "tag.block.malilib.coral_fans_fix": "Coral Fans",
+  "tag.block.malilib.glass_blocks": "Glass Blocks",
+  "tag.block.malilib.glass_panes": "Glass Panes",
+  "tag.block.malilib.glazed_terracotta_blocks": "Glazed Terracotta Blocks",
+  "tag.block.malilib.gravity_blocks": "Gravity Blocks",
+  "tag.block.malilib.immovable_blocks": "Immovable Blocks",
+  "tag.block.malilib.needs_silk_touch": "Needs Silk Touch"
 }

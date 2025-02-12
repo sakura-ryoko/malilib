@@ -25,6 +25,9 @@
 		],
 		"modmenu": [
 			"fi.dy.masa.malilib.compat.modmenu.ModMenuImpl"
+		],
+		"fabric-datagen": [
+			"fi.dy.masa.malilib.MaLiLibDataGen"
 		]
 	},
 	"mixins": [
