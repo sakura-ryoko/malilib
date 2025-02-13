@@ -4,7 +4,7 @@ import java.awt.Color;
 import javax.annotation.Nullable;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.gl.ShaderProgramKeys;
+import fi.dy.masa.malilib.render.shader.ShaderProgramKeysTemp;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
@@ -530,12 +530,11 @@ public class GuiColorEditorHSV extends GuiDialogBase
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end());
+            ctx.draw(buffer.end());
         }
         catch (Exception ignored) { }
 
         // FIXME
-        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         //buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         ctx.reset();
         buffer = ctx.start(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
@@ -631,7 +630,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_COLOR);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
         }
         catch (Exception ignored) { }
 

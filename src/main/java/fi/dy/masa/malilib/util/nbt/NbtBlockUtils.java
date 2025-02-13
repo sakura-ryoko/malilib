@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.util.InventoryUtils;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -242,7 +244,7 @@ public class NbtBlockUtils
 
         if (nbt.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
         {
-            book = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
+            book = InventoryUtils.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
         }
         if (nbt.contains(NbtKeys.PAGE, Constants.NBT.TAG_INT))
         {

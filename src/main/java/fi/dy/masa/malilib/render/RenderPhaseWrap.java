@@ -1,10 +1,11 @@
 package fi.dy.masa.malilib.render;
 
 import javax.annotation.Nullable;
+
+import net.minecraft.class_10785;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gl.ShaderProgramKey;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.RenderPhase;
@@ -52,48 +53,20 @@ public class RenderPhaseWrap extends RenderPhase implements AutoCloseable
         vertex.draw();
     }
 
-    public net.minecraft.client.gl.ShaderProgram setShader(ShaderProgramKey key)
-    {
-        return RenderSystem.setShader(key);
-    }
-
-    public void drawWithShaders(BuiltBuffer meshData) throws RuntimeException
-    {
-        this.drawWithShaders(meshData, RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
-    }
-
-    public void drawWithShaders(BuiltBuffer meshData, ShaderProgramKey shaderKey) throws RuntimeException
+    public void drawWithShaders(BuiltBuffer meshData, class_10785 shaderKey) throws RuntimeException
     {
         if (RenderSystem.isOnRenderThread())
         {
             this.ensureSafe();
-            this.drawWithShaders(meshData, RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.setShader(shaderKey));
+            this.drawWithShaders(meshData, RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), shaderKey);
         }
     }
 
-    public void drawWithShaders(BuiltBuffer meshData, net.minecraft.client.gl.ShaderProgram shader) throws RuntimeException
-    {
-        if (RenderSystem.isOnRenderThread())
-        {
-            this.ensureSafe();
-            this.drawWithShaders(meshData, RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), shader);
-        }
-    }
-
-    public void drawWithShaders(BuiltBuffer meshData, Matrix4f modelView, Matrix4f posMatrix, ShaderProgramKey shaderKey) throws RuntimeException
-    {
-        if (RenderSystem.isOnRenderThread())
-        {
-            this.ensureSafe();
-            this.drawWithShaders(meshData, modelView, posMatrix, RenderSystem.setShader(shaderKey));
-        }
-    }
-
-    public void drawWithShaders(BuiltBuffer meshData, Matrix4f modelView, Matrix4f posMatrix, net.minecraft.client.gl.ShaderProgram shader) throws RuntimeException
+    public void drawWithShaders(BuiltBuffer meshData, Matrix4f modelView, Matrix4f posMatrix, class_10785 shaderKey) throws RuntimeException
     {
         this.ensureSafe();
         VertexBuffer vertex = this.upload(meshData);
-        vertex.draw(modelView, posMatrix, shader);
+        vertex.method_67804(modelView, posMatrix, shaderKey.method_67730());
     }
 
     private void ensureSafe() throws RuntimeException

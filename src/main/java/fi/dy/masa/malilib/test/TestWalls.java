@@ -3,7 +3,9 @@ package fi.dy.masa.malilib.test;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.render.shader.ShaderProgramKeysTemp;
 import fi.dy.masa.malilib.util.data.Color4f;
+import net.minecraft.class_10785;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.render.*;
@@ -24,8 +26,6 @@ public class TestWalls implements AutoCloseable
     protected static BufferBuilder BUFFER_2;
     protected static VertexBuffer VERTEX_1;
     protected static VertexBuffer VERTEX_2;
-    protected static ShaderProgramKey SHADER_1 = ShaderProgramKeys.POSITION_COLOR;
-    protected static ShaderProgramKey SHADER_2 = ShaderProgramKeys.POSITION_COLOR;
     protected static boolean renderThrough = false;
     protected static boolean useCulling = false;
     protected static float glLineWidth = 1f;
@@ -189,19 +189,20 @@ public class TestWalls implements AutoCloseable
         if (hasData)
         {
             preRender();
-            drawInternal(matrix4f, projMatrix, VERTEX_1, SHADER_1);
-            drawInternal(matrix4f, projMatrix, VERTEX_2, SHADER_2);
+            drawInternal(matrix4f, projMatrix, VERTEX_1, ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            drawInternal(matrix4f, projMatrix, VERTEX_2, ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
             postRender();
         }
     }
 
-    private static void drawInternal(Matrix4f matrix4f, Matrix4f projMatrix, VertexBuffer vertexBuffer, ShaderProgramKey shaderKey)
+    private static void drawInternal(Matrix4f matrix4f, Matrix4f projMatrix, VertexBuffer vertexBuffer, class_10785 shaderKey)
     {
         if (hasData)
         {
-            ShaderProgram shader = RenderSystem.setShader(shaderKey);
+            //ShaderProgram shader = RenderSystem.setShader(shaderKey);
             vertexBuffer.bind();
-            vertexBuffer.draw(matrix4f, projMatrix, shader);
+            // fixme draw()
+            vertexBuffer.method_67804(matrix4f, projMatrix, shaderKey.method_67730());
             VertexBuffer.unbind();
         }
     }

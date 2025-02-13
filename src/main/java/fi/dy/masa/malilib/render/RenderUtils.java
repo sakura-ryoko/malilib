@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.render.shader.ShaderProgramKeysTemp;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
@@ -16,7 +18,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
@@ -72,10 +73,12 @@ public class RenderUtils
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
     }
 
+    /*
     public static void setupBlendSimple()
     {
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
     }
+     */
 
     public static void bindTexture(Identifier texture)
     {
@@ -126,26 +129,6 @@ public class RenderUtils
     public static void forceDraw(DrawContext drawContext)
     {
         drawContext.draw();
-    }
-
-    public static void globalDrawPhaseless(BuiltBuffer meshData)
-    {
-        //this.startDrawing();
-        VertexBuffer vertexBuffer = meshData.getDrawParameters().format().getBuffer();
-        vertexBuffer.bind();
-        vertexBuffer.upload(meshData);
-        vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
-        //this.endDrawing();
-    }
-
-    public static <T extends RenderPhase> void globalDrawPhase(@Nonnull T renderPass, @Nonnull BuiltBuffer meshData)
-    {
-        renderPass.startDrawing();
-        VertexBuffer vertexBuffer = meshData.getDrawParameters().format().getBuffer();
-        vertexBuffer.bind();
-        vertexBuffer.upload(meshData);
-        vertexBuffer.draw(RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), RenderSystem.getShader());
-        renderPass.endDrawing();
     }
 
     public static void color(float r, float g, float b, float a)
@@ -245,7 +228,8 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_COLOR);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.close();
         }
         catch (Exception ignored)
         {
@@ -280,7 +264,8 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_TEX);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_TEX_LEGACY);
+            ctx.close();
         }
         catch (Exception ignored)
         {
@@ -352,7 +337,7 @@ public class RenderUtils
     {
         float pixelWidth = 0.00390625F;
 
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
+        //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         setupBlend();
         VertexConsumer vertexConsumer = bindTexture(texture, drawContext);
         Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
@@ -491,13 +476,8 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_COLOR);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.close();
         }
         catch (Exception ignored)
         {
@@ -510,7 +490,6 @@ public class RenderUtils
     {
         TextRenderer textRenderer = mc().textRenderer;
         drawContext.drawCenteredTextWithShadow(textRenderer, text, x, y, color);
-        //tryDraw(drawContext);
     }
 
     public static void drawHorizontalLine(int x, int y, int width, int color)
@@ -1008,13 +987,8 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.POSITION_COLOR);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.close();
         }
         catch (Exception ignored)
         {
@@ -1088,7 +1062,6 @@ public class RenderUtils
 
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BufferBuilder buffer = ctx.getBuilder();
-        ShaderProgram shader = ctx.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         int quadAlpha = (int) (0.18f * 255f);
         int hr = (int) (color.r * 255f);
@@ -1140,13 +1113,8 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), shader);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.reset();
         }
         catch (Exception ignored)
         {
@@ -1156,7 +1124,6 @@ public class RenderUtils
         RenderSystem.lineWidth(1.6f);
 
         //buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
-        ctx.reset();
         buffer = ctx.start(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
         // Middle small rectangle
@@ -1168,20 +1135,14 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), shader);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.reset();
         }
         catch (Exception ignored)
         {
         }
 
         //buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-        ctx.reset();
         buffer = ctx.start(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
 
         // Bottom left
@@ -1202,13 +1163,8 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), shader);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.close();
         }
         catch (Exception ignored)
         {
@@ -1241,7 +1197,6 @@ public class RenderUtils
          */
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BufferBuilder buffer = ctx.getBuilder();
-        ShaderProgram shader = ctx.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         int a = (int) (color.a * 255f);
         int r = (int) (color.r * 255f);
@@ -1257,13 +1212,8 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), shader);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.reset();
         }
         catch (Exception ignored)
         {
@@ -1272,7 +1222,6 @@ public class RenderUtils
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        ctx.reset();
         //buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
         buffer = ctx.start(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
@@ -1284,13 +1233,8 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), shader);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.close();
         }
         catch (Exception ignored)
         {
@@ -1849,11 +1793,12 @@ public class RenderUtils
         bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
         mc().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
 
-        RenderSystem.enableBlend();
-        setupBlendSimple();
+        //RenderSystem.enableBlend();
+        setupBlend();
         color(1f, 1f, 1f, 1f);
 
-        setupGuiTransform(x, y, model.hasDepth(), zLevel);
+        //setupGuiTransform(x, y, model.hasDepth(), zLevel);
+        setupGuiTransform(x, y, zLevel);
 
         matrix4fStack.rotateX(matrix4fRotateFix(30));
         matrix4fStack.rotateY(matrix4fRotateFix(225));
@@ -1864,7 +1809,7 @@ public class RenderUtils
         matrix4fStack.popMatrix();
     }
 
-    public static void setupGuiTransform(int xPosition, int yPosition, boolean isGui3d, float zLevel)
+    public static void setupGuiTransform(int xPosition, int yPosition, float zLevel)
     {
         setupGuiTransform(RenderSystem.getModelViewStack(), xPosition, yPosition, zLevel);
     }
@@ -1907,13 +1852,8 @@ public class RenderUtils
 
         try
         {
-            /*
-            builtBuffer = bufferbuilder.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeys.RENDERTYPE_SOLID);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.RENDER_TYPE_SOLID_LEGACY);
+            ctx.close();
         }
         catch (Exception ignored)
         {

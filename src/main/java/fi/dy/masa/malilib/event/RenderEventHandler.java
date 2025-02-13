@@ -203,7 +203,7 @@ public class RenderEventHandler implements IRenderDispatcher
             renderPass.setRenderer(() ->
             {
                 Fog fog = RenderSystem.getShaderFog();
-                ShaderProgram shaders = RenderSystem.getShader();
+                //ShaderProgram shaders = RenderSystem.getShader();
 
                 /*
                 if (handleTranslucent != null)
@@ -214,11 +214,13 @@ public class RenderEventHandler implements IRenderDispatcher
                 }
                  */
 
+                /*
                 if (shaders != null)
                 {
                     shaders.initializeUniforms(VertexFormat.DrawMode.QUADS, posMatrix, projMatrix, mc.getWindow());
                     shaders.bind();
                 }
+                 */
 
                 /*
                 if (handleTranslucent != null)
@@ -234,10 +236,12 @@ public class RenderEventHandler implements IRenderDispatcher
                     profiler.pop();
                 }
 
+                /*
                 if (shaders != null)
                 {
                     shaders.unbind();
                 }
+                 */
             });
         }
 
@@ -278,7 +282,7 @@ public class RenderEventHandler implements IRenderDispatcher
             renderPass.setRenderer(() ->
             {
                 Fog fog = RenderSystem.getShaderFog();
-                ShaderProgram shaders = RenderSystem.getShader();
+                //ShaderProgram shaders = RenderSystem.getShader();
 
                 //RenderSystem.setShaderFog(Fog.DUMMY);
 
@@ -291,11 +295,13 @@ public class RenderEventHandler implements IRenderDispatcher
                 }
                  */
 
+                /*
                 if (shaders != null)
                 {
                     shaders.initializeUniforms(VertexFormat.DrawMode.QUADS, posMatrix, projMatrix, mc.getWindow());
                     shaders.bind();
                 }
+                 */
 
                 /*
                 Framebuffer fb = null;
@@ -335,10 +341,12 @@ public class RenderEventHandler implements IRenderDispatcher
                 }
                  */
 
+                /*
                 if (shaders != null)
                 {
                     shaders.unbind();
                 }
+                 */
 
                 //RenderSystem.setShaderFog(fog);
             });

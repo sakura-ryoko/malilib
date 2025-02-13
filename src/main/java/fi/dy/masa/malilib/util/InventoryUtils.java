@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import org.apache.commons.lang3.math.Fraction;
 
 import com.mojang.brigadier.StringReader;
@@ -554,7 +556,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.ITEM))
         {
             // item (DecoratedPot, ItemEntity)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
+            ItemStack entry = fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
             DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
             items.add(0, entry);
 
@@ -563,7 +565,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.ITEM_2))
         {
             // Item (ItemFrame)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM_2));
+            ItemStack entry = fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM_2));
             DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
             items.add(0, entry);
 
@@ -572,7 +574,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.BOOK))
         {
             // Book (Lectern)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
+            ItemStack entry = fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
             DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
             items.add(0, entry);
 
@@ -581,7 +583,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.RECORD))
         {
             // RecordItem (Jukebox)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.RECORD));
+            ItemStack entry = fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.RECORD));
             DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
             items.add(0, entry);
 
@@ -691,7 +693,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.ITEM))
         {
             // item (DecoratedPot, ItemEntity)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
+            ItemStack entry = fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry.copy());
 
@@ -700,7 +702,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.ITEM_2))
         {
             // Item (Item Frame)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM_2));
+            ItemStack entry = fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM_2));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry.copy());
 
@@ -709,7 +711,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.BOOK))
         {
             // Book (Lectern)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
+            ItemStack entry = fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry.copy());
 
@@ -718,7 +720,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.RECORD))
         {
             // RecordItem (Jukebox)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.RECORD));
+            ItemStack entry = fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.RECORD));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry.copy());
 
@@ -783,7 +785,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.ITEM))
         {
             // item (DecoratedPot, ItemEntity)
-            ItemStack entry = ItemStack.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
+            ItemStack entry = fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.ITEM));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry.copy());
         }
@@ -1341,5 +1343,10 @@ public class InventoryUtils
         }
 
         return new NbtCompound();
+    }
+
+    public static ItemStack fromNbtOrEmpty(@Nonnull RegistryWrapper.WrapperLookup registry, @Nonnull NbtElement tags)
+    {
+        return ItemStack.CODEC.parse(registry.getOps(NbtOps.INSTANCE), tags).resultOrPartial().orElse(ItemStack.EMPTY);
     }
 }

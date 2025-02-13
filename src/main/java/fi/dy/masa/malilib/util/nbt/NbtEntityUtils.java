@@ -8,7 +8,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 
+import fi.dy.masa.malilib.util.game.wrap.NbtWrap;
 import net.minecraft.entity.*;
+import net.minecraft.util.Uuids;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -198,12 +200,38 @@ public class NbtEntityUtils
      */
     public static @Nullable UUID getUUIDFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.containsUuid(NbtKeys.UUID))
+        return getUUIDFromNbt(nbt, NbtKeys.UUID);
+    }
+
+    /**
+     * Get the Entity's UUID from NBT.
+     *
+     * @param nbt ()
+     * @param key ()
+     * @return ()
+     */
+    public static @Nullable UUID getUUIDFromNbt(@Nonnull NbtCompound nbt, String key)
+    {
+        if (nbt.contains(key))
         {
-            return nbt.getUuid(NbtKeys.UUID);
+            return nbt.get(key, Uuids.INT_STREAM_CODEC).orElse(null);
         }
 
         return null;
+    }
+
+    /**
+     * Get the Entity's UUID from NBT.
+     *
+     * @param nbtIn ()
+     * @param key ()
+     * @param uuid ()
+     * @return ()
+     */
+    public static NbtCompound putUUIDNbt(@Nonnull NbtCompound nbtIn, @Nonnull UUID uuid, String key)
+    {
+        nbtIn.method_68082(key, Uuids.INT_STREAM_CODEC, uuid);
+        return nbtIn;
     }
 
     /**
@@ -474,9 +502,9 @@ public class NbtEntityUtils
         UUID owner = Util.NIL_UUID;
         boolean sitting = false;
 
-        if (nbt.containsUuid(NbtKeys.OWNER))
+        if (nbt.contains(NbtKeys.OWNER))
         {
-            owner = nbt.getUuid(NbtKeys.OWNER);
+            owner = getUUIDFromNbt(nbt, NbtKeys.OWNER);
         }
         if (nbt.contains(NbtKeys.SITTING))
         {
@@ -567,9 +595,9 @@ public class NbtEntityUtils
         {
             timer = nbt.getInt(NbtKeys.ZOMBIE_CONVERSION);
         }
-        if (nbt.containsUuid(NbtKeys.CONVERSION_PLAYER))
+        if (nbt.contains(NbtKeys.CONVERSION_PLAYER))
         {
-            player = nbt.getUuid(NbtKeys.CONVERSION_PLAYER);
+            player = getUUIDFromNbt(nbt, NbtKeys.CONVERSION_PLAYER);
         }
 
         return Pair.of(timer, player);
@@ -643,10 +671,11 @@ public class NbtEntityUtils
     {
         EntityUtils.FakeLeashData data = null;
 
-        if (nbt.contains(NbtKeys.LEASH, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.LEASH))
         {
-            data = new EntityUtils.FakeLeashData(-1, null, Either.left(nbt.getCompound(NbtKeys.LEASH).getUuid(NbtKeys.UUID)));
+            data = nbt.get(NbtKeys.LEASH, EntityUtils.FakeLeashData.CODEC).orElse(null);
         }
+        /*
         else if (nbt.contains(NbtKeys.LEASH, Constants.NBT.TAG_INT_ARRAY))
         {
             Either<UUID, BlockPos> either = (Either) NbtHelper.toBlockPos(nbt, NbtKeys.LEASH).map(Either::right).orElse(null);
@@ -656,6 +685,7 @@ public class NbtEntityUtils
                 return new EntityUtils.FakeLeashData(-1, null, either);
             }
         }
+         */
 
         return data;
     }
@@ -671,13 +701,13 @@ public class NbtEntityUtils
         PandaEntity.Gene mainGene = null;
         PandaEntity.Gene hiddenGene = null;
 
-        if (nbt.contains(NbtKeys.MAIN_GENE, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.MAIN_GENE))
         {
-            mainGene = PandaEntity.Gene.byName(nbt.getString(NbtKeys.MAIN_GENE));
+            mainGene = nbt.get(NbtKeys.MAIN_GENE, PandaEntity.Gene.CODEC).orElse(PandaEntity.Gene.NORMAL);
         }
-        if (nbt.contains(NbtKeys.HIDDEN_GENE, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.HIDDEN_GENE))
         {
-            hiddenGene = PandaEntity.Gene.byName(nbt.getString(NbtKeys.HIDDEN_GENE));
+            hiddenGene = nbt.get(NbtKeys.HIDDEN_GENE, PandaEntity.Gene.CODEC).orElse(PandaEntity.Gene.NORMAL);
         }
 
         return Pair.of(mainGene, hiddenGene);
@@ -814,9 +844,9 @@ public class NbtEntityUtils
      */
     public static @Nullable MooshroomEntity.Variant getMooshroomVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.FOX_TYPE, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.FOX_TYPE))
         {
-            return MooshroomEntity.Variant.CODEC.byId(nbt.getString(NbtKeys.FOX_TYPE), MooshroomEntity.Variant.RED);
+            return nbt.get(NbtKeys.FOX_TYPE, MooshroomEntity.Variant.CODEC).orElse(MooshroomEntity.Variant.RED);
         }
 
         return null;
@@ -1009,9 +1039,9 @@ public class NbtEntityUtils
      */
     public static @Nullable FoxEntity.Variant getFoxVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.FOX_TYPE, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.FOX_TYPE))
         {
-            return FoxEntity.Variant.byId(nbt.getString(NbtKeys.FOX_TYPE));
+            return nbt.get(NbtKeys.FOX_TYPE, FoxEntity.Variant.CODEC).orElse(FoxEntity.Variant.RED);
         }
 
         return null;
