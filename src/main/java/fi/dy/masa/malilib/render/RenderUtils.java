@@ -1252,8 +1252,6 @@ public class RenderUtils
     {
         if (stack.getItem() instanceof FilledMapItem && (!requireShift || GuiBase.isShiftDown()))
         {
-            forceDraw(drawContext);
-            //RenderSystem.enableDepthTest();
             color(1f, 1f, 1f, 1f);
 
             int y1 = y - dimensions - 20;
@@ -1269,10 +1267,9 @@ public class RenderUtils
 
             Identifier bgTexture = mapState == null ? TEXTURE_MAP_BACKGROUND : TEXTURE_MAP_BACKGROUND_CHECKERBOARD;
             //bindTexture(bgTexture);
-            //setupBlend();
-
             VertexConsumer vertex = bindTexture(bgTexture, drawContext);
             Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
+            //setupBlend();
 
             vertex.vertex(matrix4f, x1, y2, z).color(-1).texture(0.0f, 1.0f).light(uv);
             vertex.vertex(matrix4f, x2, y2, z).color(-1).texture(1.0f, 1.0f).light(uv);
@@ -1281,10 +1278,10 @@ public class RenderUtils
 
             forceDraw(drawContext);
 
-            /*
-            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
+            //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
+            //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             //RenderSystem.applyModelViewMatrix();
-
+            /*
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
             BuiltBuffer builtBuffer;
@@ -1302,7 +1299,8 @@ public class RenderUtils
             }
             catch (Exception ignored) { }
 
-            //RenderSystem.disableBlend();
+            RenderSystem.disableBlend();
+
              */
 
             if (mapState != null)
@@ -1324,8 +1322,6 @@ public class RenderUtils
                 consumer.draw();
                 matrixStack.pop();
             }
-
-            //RenderSystem.disableDepthTest();
         }
     }
 
@@ -1356,8 +1352,7 @@ public class RenderUtils
             int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
 
             // Mask items behind the shulker box display, trying to minimize the sharp corners
-            //drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
-            forceDraw(drawContext);
+            drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
 
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof ShulkerBoxBlock)
             {
@@ -1438,8 +1433,8 @@ public class RenderUtils
             int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
 
             // Mask items behind the shulker box display, trying to minimize the sharp corners
-            //drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
-            forceDraw(drawContext);
+            drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
+
             setBundleBackgroundTintColor(stack, useBgColors);
             disableDiffuseLighting();
 
@@ -1501,8 +1496,8 @@ public class RenderUtils
             int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
 
             // Mask items behind the shulker box display, trying to minimize the sharp corners
-            //drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
-            forceDraw(drawContext);
+            drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
+
             color(1f, 1f, 1f, 1f);
             disableDiffuseLighting();
 
