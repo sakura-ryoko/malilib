@@ -18,15 +18,20 @@ public class MaLiLibTag
     {
         public static final TagKey<Block> ALL_SIGNS_FIX = createBlockTag("all_signs_fix");
         public static final TagKey<Block> ALL_BANNERS_FIX = createBlockTag("all_banners_fix");
-        public static final TagKey<Block> CONCRETE_BLOCKS = createBlockTag("concrete_blocks");
         public static final TagKey<Block> CONCRETE_POWDER_FIX = createBlockTag("concrete_powder_fix");
         public static final TagKey<Block> CORAL_FANS_FIX = createBlockTag("coral_fans_fix");
+        public static final TagKey<Block> LEAVES_FIX = createBlockTag("leaves_fix");
+        public static final TagKey<Block> WOOL_BLOCKS_FIX = createBlockTag("wool_blocks_fix");
+
+        public static final TagKey<Block> CONCRETE_BLOCKS = createBlockTag("concrete_blocks");
         public static final TagKey<Block> GLASS_BLOCKS = createBlockTag("glass_blocks");            // BlockTags.IMPERMEABLE (?)
         public static final TagKey<Block> GLASS_PANES = createBlockTag("glass_panes");
         public static final TagKey<Block> GLAZED_TERRACOTTA_BLOCKS = createBlockTag("glazed_terracotta_blocks");
+
         public static final TagKey<Block> GRAVITY_BLOCKS = createBlockTag("gravity_blocks");
         public static final TagKey<Block> IMMOVABLE_BLOCKS = createBlockTag("immovable_blocks");
         public static final TagKey<Block> NEEDS_SILK_TOUCH = createBlockTag("needs_silk_touch");
+        public static final TagKey<Block> NEEDS_SHEARS = createBlockTag("needs_shears");
 
         public static final ImmutableList<TagKey<Block>> REPLACEABLE_GROUPS = ImmutableList.of(
                 BlockTags.ANVIL,

@@ -276,10 +276,13 @@
   "tag.block.malilib.concrete_blocks": "Concrete Blocks",
   "tag.block.malilib.concrete_powder_fix": "Concrete Powders",
   "tag.block.malilib.coral_fans_fix": "Coral Fans",
+  "tag.block.malilib.leaves_fix": "Leaves",
+  "tag.block.malilib.wool_blocks_fix": "Wool Blocks",
   "tag.block.malilib.glass_blocks": "Glass Blocks",
   "tag.block.malilib.glass_panes": "Glass Panes",
   "tag.block.malilib.glazed_terracotta_blocks": "Glazed Terracotta Blocks",
   "tag.block.malilib.gravity_blocks": "Gravity Blocks",
   "tag.block.malilib.immovable_blocks": "Immovable Blocks",
-  "tag.block.malilib.needs_silk_touch": "Needs Silk Touch"
+  "tag.block.malilib.needs_silk_touch": "Needs Silk Touch",
+  "tag.block.malilib.needs_shears": "Needs Shears"
 }
