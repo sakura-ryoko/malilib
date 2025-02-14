@@ -122,7 +122,7 @@ public class NbtUtils
 	 */
 	public static NbtCompound putUUIDCodec(@Nonnull NbtCompound nbtIn, @Nonnull UUID uuid, String key)
 	{
-		nbtIn.method_68082(key, Uuids.INT_STREAM_CODEC, uuid);
+		nbtIn.put(key, Uuids.INT_STREAM_CODEC, uuid);
 		return nbtIn;
 	}
 
@@ -176,7 +176,7 @@ public class NbtUtils
 
 	public static @Nonnull NbtCompound putVec2fCodec(@Nonnull NbtCompound tag, @Nonnull Vec2f pos, String key)
 	{
-		tag.put(key, Vec2f.field_56695, pos);
+		tag.put(key, Vec2f.CODEC, pos);
 		return tag;
 	}
 
@@ -200,7 +200,7 @@ public class NbtUtils
 
 	public static Vec2f getVec2fCodec(@Nonnull NbtCompound tag, String key)
 	{
-		return tag.get(key, Vec2f.field_56695).orElse(Vec2f.ZERO);
+		return tag.get(key, Vec2f.CODEC).orElse(Vec2f.ZERO);
 	}
 
 	public static Vec3i getVec3iCodec(@Nonnull NbtCompound tag, String key)
