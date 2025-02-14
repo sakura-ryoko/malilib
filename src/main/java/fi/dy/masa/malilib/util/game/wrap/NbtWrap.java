@@ -79,6 +79,7 @@ public class NbtWrap
         return tag.contains(name, typeId);
     }
 
+    /*
     public static boolean hasUUID(NbtCompound tag)
     {
         return hasUUID(tag, "UUIDM", "UUIDL");
@@ -88,6 +89,7 @@ public class NbtWrap
     {
         return containsLong(tag, keyM) && containsLong(tag, keyL);
     }
+     */
 
     public static boolean getBoolean(NbtCompound tag, String name)
     {
@@ -341,11 +343,11 @@ public class NbtWrap
 
     public static NbtCompound copy(NbtCompound tag)
     {
-        return tag.copy();//copy();
+        return tag.copy();
     }
 
     public static NbtList copy(NbtList tag)
     {
-        return tag.copy();//copy();
+        return tag.copy();
     }
 }

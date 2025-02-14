@@ -25,7 +25,6 @@ public class RenderPhaseWrap extends RenderPhase implements AutoCloseable
     {
         VertexBuffer vertex = fmt.getBuffer();
         this.bind(vertex);
-
         return vertex;
     }
 
@@ -38,34 +37,25 @@ public class RenderPhaseWrap extends RenderPhase implements AutoCloseable
         }
     }
 
-    public VertexBuffer upload(BuiltBuffer buffer)
-    {
-        VertexBuffer vertex = this.bind(buffer.getDrawParameters().format());
-        vertex.upload(buffer);
-
-        return vertex;
-    }
-
-    public void draw(BuiltBuffer buffer)
+    public void draw(BuiltBuffer meshData)
     {
         this.ensureSafe();
-        VertexBuffer vertex = this.upload(buffer);
+        VertexBuffer vertex = this.bind(meshData.getDrawParameters().format());
+        vertex.upload(meshData);
         vertex.draw();
     }
 
     public void drawWithShaders(BuiltBuffer meshData, class_10785 shaderKey) throws RuntimeException
     {
-        if (RenderSystem.isOnRenderThread())
-        {
-            this.ensureSafe();
-            this.drawWithShaders(meshData, RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), shaderKey);
-        }
+        this.ensureSafe();
+        this.drawWithShaders(meshData, RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), shaderKey);
     }
 
     public void drawWithShaders(BuiltBuffer meshData, Matrix4f modelView, Matrix4f posMatrix, class_10785 shaderKey) throws RuntimeException
     {
         this.ensureSafe();
-        VertexBuffer vertex = this.upload(meshData);
+        VertexBuffer vertex = this.bind(meshData.getDrawParameters().format());
+        vertex.upload(meshData);
         vertex.method_67804(modelView, posMatrix, shaderKey.method_67730());
     }
 

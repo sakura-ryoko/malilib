@@ -1,20 +1,15 @@
 package fi.dy.masa.malilib.util.nbt;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import fi.dy.masa.malilib.util.InventoryUtils;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.block.entity.BeehiveBlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.SignText;
+import com.mojang.serialization.Codec;
+import net.minecraft.block.entity.*;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
@@ -24,7 +19,6 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -49,6 +43,11 @@ public class NbtBlockUtils
         }
 
         return null;
+    }
+
+    public static @Nullable Text getCustomNameFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry, String key)
+    {
+        return BlockEntity.tryParseCustomName(nbt.get(key), registry);
     }
 
     /**
@@ -110,24 +109,18 @@ public class NbtBlockUtils
      */
     public static Pair<RegistryEntry<StatusEffect>, RegistryEntry<StatusEffect>> getBeaconEffectsFromNbt(@Nonnull NbtCompound nbt)
     {
+        Set<RegistryEntry<StatusEffect>> EFFECTS = BeaconBlockEntity.EFFECTS_BY_LEVEL.stream().flatMap(Collection::stream).collect(Collectors.toSet());
         RegistryEntry<StatusEffect> primary = null;
         RegistryEntry<StatusEffect> secondary = null;
 
         if (nbt.contains(NbtKeys.PRIMARY_EFFECT, Constants.NBT.TAG_STRING))
         {
-            Identifier id = Identifier.tryParse(nbt.getString(NbtKeys.PRIMARY_EFFECT));
-            if (id != null)
-            {
-                primary = Registries.STATUS_EFFECT.getEntry(id).orElse(null);
-            }
+            primary = nbt.get(NbtKeys.PRIMARY_EFFECT, Registries.STATUS_EFFECT.getEntryCodec()).filter(EFFECTS::contains).orElse(null);
         }
+
         if (nbt.contains(NbtKeys.SECONDARY_EFFECT, Constants.NBT.TAG_STRING))
         {
-            Identifier id = Identifier.tryParse(nbt.getString(NbtKeys.SECONDARY_EFFECT));
-            if (id != null)
-            {
-                secondary = Registries.STATUS_EFFECT.getEntry(id).orElse(null);
-            }
+            primary = nbt.get(NbtKeys.SECONDARY_EFFECT, Registries.STATUS_EFFECT.getEntryCodec()).filter(EFFECTS::contains).orElse(null);
         }
 
         return Pair.of(primary, secondary);
@@ -145,11 +138,12 @@ public class NbtBlockUtils
 
         if (nbt.contains(NbtKeys.BEES))
         {
-            BeehiveBlockEntity.BeeData.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.get(NbtKeys.BEES)).resultOrPartial().ifPresent(bees::addAll);
+            bees = nbt.get(NbtKeys.BEES, BeehiveBlockEntity.BeeData.LIST_CODEC).orElse(List.of());
         }
-        if (nbt.contains(NbtKeys.FLOWER, Constants.NBT.TAG_INT_ARRAY))
+
+        if (nbt.contains(NbtKeys.FLOWER))
         {
-            flower = NbtUtils.readBlockPosFromIntArray(nbt, NbtKeys.FLOWER);
+            flower = NbtUtils.getPosCodec(nbt, NbtKeys.FLOWER);
         }
 
         return Pair.of(bees, flower);
@@ -164,19 +158,20 @@ public class NbtBlockUtils
      */
     public static Pair<Integer, Vibrations.ListenerData> getSkulkSensorVibrationsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        AtomicReference<Vibrations.ListenerData> data = new AtomicReference<>(null);
+        Vibrations.ListenerData data = null;
         int lastFreq = -1;
 
         if (nbt.contains(NbtKeys.VIBRATION, Constants.NBT.TAG_INT))
         {
             lastFreq = nbt.getInt(NbtKeys.VIBRATION);
         }
-        if (nbt.contains(NbtKeys.LISTENER, Constants.NBT.TAG_COMPOUND))
+
+        if (nbt.contains(NbtKeys.LISTENER))
         {
-            Vibrations.ListenerData.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(NbtKeys.LISTENER)).resultOrPartial().ifPresent(data::set);
+            data = nbt.get(NbtKeys.LISTENER, Vibrations.ListenerData.CODEC, registry.getOps(NbtOps.INSTANCE)).orElseGet(Vibrations.ListenerData::new);
         }
 
-        return Pair.of(lastFreq, data.get());
+        return Pair.of(lastFreq, data);
     }
 
     /**
@@ -193,9 +188,10 @@ public class NbtBlockUtils
         {
             age = nbt.getLong(NbtKeys.AGE);
         }
-        if (nbt.contains(NbtKeys.EXIT, Constants.NBT.TAG_INT_ARRAY))
+
+        if (nbt.contains(NbtKeys.EXIT))
         {
-            pos = NbtUtils.readBlockPosFromIntArray(nbt, NbtKeys.EXIT);
+            pos = NbtUtils.getPosCodec(nbt, NbtKeys.EXIT);
         }
 
         return Pair.of(age, pos);
@@ -216,12 +212,14 @@ public class NbtBlockUtils
 
         if (nbt.contains(NbtKeys.FRONT_TEXT))
         {
-            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(NbtKeys.FRONT_TEXT)).resultOrPartial().ifPresent(front::set);
+            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.FRONT_TEXT)).resultOrPartial().ifPresent(front::set);
         }
+
         if (nbt.contains(NbtKeys.BACK_TEXT))
         {
-            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.getCompound(NbtKeys.BACK_TEXT)).resultOrPartial().ifPresent(back::set);
+            SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.BACK_TEXT)).resultOrPartial().ifPresent(back::set);
         }
+
         if (nbt.contains(NbtKeys.WAXED))
         {
             waxed = nbt.getBoolean(NbtKeys.WAXED);
@@ -242,10 +240,11 @@ public class NbtBlockUtils
         ItemStack book = ItemStack.EMPTY;
         int current = -1;
 
-        if (nbt.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.BOOK))
         {
-            book = InventoryUtils.fromNbtOrEmpty(registry, nbt.getCompound(NbtKeys.BOOK));
+            book = nbt.get(NbtKeys.BOOK, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
         }
+
         if (nbt.contains(NbtKeys.PAGE, Constants.NBT.TAG_INT))
         {
             current = nbt.getInt(NbtKeys.PAGE);
@@ -263,16 +262,18 @@ public class NbtBlockUtils
      */
     public static Pair<ProfileComponent, Pair<Identifier, Text>> getSkullDataFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        AtomicReference<ProfileComponent> profile = new AtomicReference<>(null);
+        ProfileComponent profile = null;
         Identifier note = null;
-        Text name = Text.empty();
+        Text name = null;
 
-        if (nbt.contains(NbtKeys.NOTE, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.NOTE))
         {
-            note = Identifier.tryParse(nbt.getString(NbtKeys.NOTE));
+            note = nbt.get(NbtKeys.NOTE, Identifier.CODEC).orElse(null);
         }
-        if (nbt.contains(NbtKeys.SKULL_NAME, Constants.NBT.TAG_STRING))
+
+        if (nbt.contains(NbtKeys.SKULL_NAME))
         {
+            /*
             String str = nbt.getString(NbtKeys.SKULL_NAME);
 
             try
@@ -280,13 +281,18 @@ public class NbtBlockUtils
                 name = Text.Serialization.fromJson(str, registry);
             }
             catch (Exception ignored) {}
-        }
-        if (nbt.contains(NbtKeys.PROFILE))
-        {
-            ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get(NbtKeys.PROFILE)).resultOrPartial().ifPresent(profile::set);
+             */
+
+            name = getCustomNameFromNbt(nbt, registry, NbtKeys.SKULL_NAME);
         }
 
-        return Pair.of(profile.get(), Pair.of(note, name));
+        if (nbt.contains(NbtKeys.PROFILE))
+        {
+            //ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get(NbtKeys.PROFILE)).resultOrPartial().ifPresent(profile::set);
+            profile = nbt.get(NbtKeys.PROFILE, ProfileComponent.CODEC).orElse(null);
+        }
+
+        return Pair.of(profile, Pair.of(note, name));
     }
 
     /**
@@ -297,16 +303,21 @@ public class NbtBlockUtils
      */
     public static Reference2IntOpenHashMap<RegistryKey<Recipe<?>>> getRecipesUsedFromNbt(@Nonnull NbtCompound nbt)
     {
+        Codec<Map<RegistryKey<Recipe<?>>, Integer>> CODEC = Codec.unboundedMap(Recipe.field_56667, Codec.INT);
         Reference2IntOpenHashMap<RegistryKey<Recipe<?>>> list = new Reference2IntOpenHashMap<>();
 
-        if (nbt.contains(NbtKeys.RECIPES_USED, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.RECIPES_USED))
         {
+            /*
             NbtCompound compound = nbt.getCompound(NbtKeys.RECIPES_USED);
 
             for (String key : compound.getKeys())
             {
                 list.put(RegistryKey.of(RegistryKeys.RECIPE, Identifier.of(key)), compound.getInt(key));
             }
+             */
+
+            list.putAll(nbt.get(NbtKeys.RECIPES_USED, CODEC).orElse(Map.of()));
         }
 
         return list;

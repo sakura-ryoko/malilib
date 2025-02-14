@@ -12,7 +12,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.nbt.*;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
@@ -82,6 +84,48 @@ public class NbtUtils
 		return list;
 	}
 
+	/**
+	 * Get the Entity's UUID from NBT.
+	 *
+	 * @param nbt ()
+	 * @return ()
+	 */
+	public static @Nullable UUID getUUIDCodec(@Nonnull NbtCompound nbt)
+	{
+		return getUUIDCodec(nbt, NbtKeys.UUID);
+	}
+
+	/**
+	 * Get the Entity's UUID from NBT.
+	 *
+	 * @param nbt ()
+	 * @param key ()
+	 * @return ()
+	 */
+	public static @Nullable UUID getUUIDCodec(@Nonnull NbtCompound nbt, String key)
+	{
+		if (nbt.contains(key))
+		{
+			return nbt.get(key, Uuids.INT_STREAM_CODEC).orElse(null);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the Entity's UUID from NBT.
+	 *
+	 * @param nbtIn ()
+	 * @param key ()
+	 * @param uuid ()
+	 * @return ()
+	 */
+	public static NbtCompound putUUIDCodec(@Nonnull NbtCompound nbtIn, @Nonnull UUID uuid, String key)
+	{
+		nbtIn.method_68082(key, Uuids.INT_STREAM_CODEC, uuid);
+		return nbtIn;
+	}
+
 	public static @Nonnull NbtCompound createBlockPos(@Nonnull BlockPos pos)
 	{
 		return writeBlockPos(pos, new NbtCompound());
@@ -128,6 +172,50 @@ public class NbtUtils
 		NbtWrap.putInt(tag, "y", pos.getY());
 		NbtWrap.putInt(tag, "z", pos.getZ());
 		return tag;
+	}
+
+	public static @Nonnull NbtCompound putVec2fCodec(@Nonnull NbtCompound tag, @Nonnull Vec2f pos, String key)
+	{
+		tag.put(key, Vec2f.field_56695, pos);
+		return tag;
+	}
+
+	public static @Nonnull NbtCompound putVec3iCodec(@Nonnull NbtCompound tag, @Nonnull Vec3i pos, String key)
+	{
+		tag.put(key, Vec3i.CODEC, pos);
+		return tag;
+	}
+
+	public static @Nonnull NbtCompound putVec3dCodec(@Nonnull NbtCompound tag, @Nonnull Vec3d pos, String key)
+	{
+		tag.put(key, Vec3d.CODEC, pos);
+		return tag;
+	}
+
+	public static @Nonnull NbtCompound putPosCodec(@Nonnull NbtCompound tag, @Nonnull BlockPos pos, String key)
+	{
+		tag.put(key, BlockPos.CODEC, pos);
+		return tag;
+	}
+
+	public static Vec2f getVec2fCodec(@Nonnull NbtCompound tag, String key)
+	{
+		return tag.get(key, Vec2f.field_56695).orElse(Vec2f.ZERO);
+	}
+
+	public static Vec3i getVec3iCodec(@Nonnull NbtCompound tag, String key)
+	{
+		return tag.get(key, Vec3i.CODEC).orElse(Vec3i.ZERO);
+	}
+
+	public static Vec3d getVec3dCodec(@Nonnull NbtCompound tag, String key)
+	{
+		return tag.get(key, Vec3d.CODEC).orElse(Vec3d.ZERO);
+	}
+
+	public static BlockPos getPosCodec(@Nonnull NbtCompound tag, String key)
+	{
+		return tag.get(key, BlockPos.CODEC).orElse(BlockPos.ORIGIN);
 	}
 
 	public static @Nonnull NbtCompound writeBlockPosToTag(@Nonnull BlockPos pos, @Nonnull NbtCompound tag)

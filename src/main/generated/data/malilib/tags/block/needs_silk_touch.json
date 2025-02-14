@@ -3,6 +3,8 @@
     "#malilib:glass_blocks",
     "#malilib:glass_panes",
     "#malilib:coral_fans_fix",
-    "minecraft:ender_chest"
+    "#malilib:leaves_fix",
+    "minecraft:ender_chest",
+    "minecraft:bush"
   ]
 }

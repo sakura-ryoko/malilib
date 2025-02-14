@@ -7,15 +7,10 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
-
-import fi.dy.masa.malilib.util.game.wrap.NbtWrap;
-import net.minecraft.entity.*;
-import net.minecraft.util.Uuids;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
-import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Dynamic;
+import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -26,7 +21,9 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
@@ -35,17 +32,16 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerRecipeBook;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.data.Constants;
 
 public class NbtEntityUtils
@@ -193,48 +189,6 @@ public class NbtEntityUtils
     }
 
     /**
-     * Get the Entity's UUID from NBT.
-     *
-     * @param nbt ()
-     * @return ()
-     */
-    public static @Nullable UUID getUUIDFromNbt(@Nonnull NbtCompound nbt)
-    {
-        return getUUIDFromNbt(nbt, NbtKeys.UUID);
-    }
-
-    /**
-     * Get the Entity's UUID from NBT.
-     *
-     * @param nbt ()
-     * @param key ()
-     * @return ()
-     */
-    public static @Nullable UUID getUUIDFromNbt(@Nonnull NbtCompound nbt, String key)
-    {
-        if (nbt.contains(key))
-        {
-            return nbt.get(key, Uuids.INT_STREAM_CODEC).orElse(null);
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the Entity's UUID from NBT.
-     *
-     * @param nbtIn ()
-     * @param key ()
-     * @param uuid ()
-     * @return ()
-     */
-    public static NbtCompound putUUIDNbt(@Nonnull NbtCompound nbtIn, @Nonnull UUID uuid, String key)
-    {
-        nbtIn.method_68082(key, Uuids.INT_STREAM_CODEC, uuid);
-        return nbtIn;
-    }
-
-    /**
      * Read the CustomName from NBT
      *
      * @param nbt ()
@@ -243,8 +197,9 @@ public class NbtEntityUtils
      */
     public static @Nullable Text getCustomNameFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        if (nbt.contains(NbtKeys.CUSTOM_NAME, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.CUSTOM_NAME))
         {
+            /*
             String string = nbt.getString(NbtKeys.CUSTOM_NAME);
 
             try
@@ -252,6 +207,9 @@ public class NbtEntityUtils
                 return Text.Serialization.fromJson(string, registry);
             }
             catch (Exception ignored) { }
+             */
+
+            return nbt.get(NbtKeys.CUSTOM_NAME, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
         }
 
         return null;
@@ -263,12 +221,14 @@ public class NbtEntityUtils
      * @param name ()
      * @param registry ()
      * @param nbtIn ()
+     * @param key ()
      * @return (Nbt Out)
      */
-    public static NbtCompound setCustomNameToNbt(@Nonnull Text name, @Nonnull DynamicRegistryManager registry, @Nullable NbtCompound nbtIn)
+    public static NbtCompound setCustomNameToNbt(@Nonnull Text name, @Nonnull DynamicRegistryManager registry, @Nullable NbtCompound nbtIn, String key)
     {
-        NbtCompound nbt = new NbtCompound();
+        NbtCompound nbt = nbtIn != null ? nbtIn.copy() : new NbtCompound();
 
+        /*
         try
         {
             if (nbtIn != null)
@@ -282,6 +242,14 @@ public class NbtEntityUtils
             }
         }
         catch (Exception ignored) {}
+         */
+
+        if (key == null || key.isEmpty())
+        {
+            key = NbtKeys.CUSTOM_NAME;
+        }
+
+        nbt.put(key, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE), name);
 
         return nbt;
     }
@@ -504,8 +472,9 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.OWNER))
         {
-            owner = getUUIDFromNbt(nbt, NbtKeys.OWNER);
+            owner = NbtUtils.getUUIDCodec(nbt, NbtKeys.OWNER);
         }
+
         if (nbt.contains(NbtKeys.SITTING))
         {
             sitting = nbt.getBoolean(NbtKeys.SITTING);
@@ -529,6 +498,7 @@ public class NbtEntityUtils
         {
             breedingAge = nbt.getInt(NbtKeys.AGE);
         }
+
         if (nbt.contains(NbtKeys.FORCED_AGE))
         {
             forcedAge = nbt.getInt(NbtKeys.FORCED_AGE);
@@ -548,12 +518,16 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.OFFERS))
         {
+            /*
             Optional<TradeOfferList> opt = TradeOfferList.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.OFFERS)).resultOrPartial();
 
             if (opt.isPresent())
             {
                 return opt.get();
             }
+             */
+
+            return nbt.get(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
         }
 
         return null;
@@ -567,14 +541,18 @@ public class NbtEntityUtils
      */
     public static @Nullable VillagerData getVillagerDataFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.VILLAGER, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.VILLAGER))
         {
+            /*
             Optional<VillagerData> opt = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get(NbtKeys.VILLAGER))).resultOrPartial();
 
             if (opt.isPresent())
             {
                 return opt.get();
             }
+             */
+
+            return nbt.get(NbtKeys.VILLAGER, VillagerData.CODEC).orElse(null);
         }
 
         return null;
@@ -597,7 +575,7 @@ public class NbtEntityUtils
         }
         if (nbt.contains(NbtKeys.CONVERSION_PLAYER))
         {
-            player = getUUIDFromNbt(nbt, NbtKeys.CONVERSION_PLAYER);
+            player = NbtUtils.getUUIDCodec(nbt, NbtKeys.CONVERSION_PLAYER);
         }
 
         return Pair.of(timer, player);
@@ -662,32 +640,18 @@ public class NbtEntityUtils
     }
 
     /**
-     * Try to get the Leash Data from NBT using 'FakeLeashData' because LeashData is package-private
+     * Try to get the Leash Data from NBT using LeashData (Not Fake)
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("unchecked")
-    public static @Nullable EntityUtils.FakeLeashData getLeashDataFromNbt(@Nonnull NbtCompound nbt)
+    public static @Nullable Leashable.LeashData getLeashDataFromNbt(@Nonnull NbtCompound nbt)
     {
-        EntityUtils.FakeLeashData data = null;
-
         if (nbt.contains(NbtKeys.LEASH))
         {
-            data = nbt.get(NbtKeys.LEASH, EntityUtils.FakeLeashData.CODEC).orElse(null);
+            return nbt.get(NbtKeys.LEASH, Leashable.LeashData.field_56648).orElse(null);
         }
-        /*
-        else if (nbt.contains(NbtKeys.LEASH, Constants.NBT.TAG_INT_ARRAY))
-        {
-            Either<UUID, BlockPos> either = (Either) NbtHelper.toBlockPos(nbt, NbtKeys.LEASH).map(Either::right).orElse(null);
 
-            if (either != null)
-            {
-                return new EntityUtils.FakeLeashData(-1, null, either);
-            }
-        }
-         */
-
-        return data;
+        return null;
     }
 
     /**
@@ -719,14 +683,16 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static Pair<Direction, Direction> getItemFrameDirectionsFromNbt(@Nonnull NbtCompound nbt)
     {
         Direction facing = null;
         Direction rotation = null;
 
-        if (nbt.contains(NbtKeys.FACING_2, Constants.NBT.TAG_BYTE))
+        if (nbt.contains(NbtKeys.FACING_2))
         {
-            facing = Direction.byId(nbt.getByte(NbtKeys.FACING_2));
+            // Why is this newly used code deprecated?
+            facing = nbt.get(NbtKeys.FACING_2, Direction.field_57037).orElse(Direction.DOWN);
         }
         if (nbt.contains(NbtKeys.ITEM_ROTATION, Constants.NBT.TAG_BYTE))
         {
@@ -743,20 +709,25 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static Pair<Direction, PaintingVariant> getPaintingDataFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         Direction facing = null;
         RegistryEntry<PaintingVariant> variant = null;
 
-        if (nbt.contains(NbtKeys.FACING, Constants.NBT.TAG_BYTE))
+        if (nbt.contains(NbtKeys.FACING))
         {
-            facing = Direction.fromHorizontalQuarterTurns(nbt.getByte(NbtKeys.FACING));
+            // Why is this newly used code deprecated?
+            facing = nbt.get(NbtKeys.FACING, Direction.field_57038).orElse(Direction.SOUTH);
         }
-        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.VARIANT))
         {
+            /*
             variant = PaintingVariant.ENTRY_CODEC.fieldOf(NbtKeys.VARIANT).codec()
                                      .parse(registry.getOps(NbtOps.INSTANCE), nbt)
                                      .resultOrPartial().orElse(null);
+             */
+            variant = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.PAINTING_VARIANT).orElse(null);
         }
 
         return Pair.of(facing, variant != null ? variant.value() : null);
@@ -768,11 +739,13 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static @Nullable AxolotlEntity.Variant getAxolotlVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
-            return AxolotlEntity.Variant.byIndex(nbt.getInt(NbtKeys.VARIANT_2));
+            // Why is this newly used code deprecated?
+            return nbt.get(NbtKeys.VARIANT_2, AxolotlEntity.Variant.field_56659).orElse(AxolotlEntity.Variant.LUCY);
         }
 
         return null;
@@ -785,18 +758,20 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static Pair<RegistryKey<CatVariant>, DyeColor> getCatVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         RegistryKey<CatVariant> variantKey = null;
         DyeColor collar = null;
 
-        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.VARIANT))
         {
             variantKey = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.CAT_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
         }
-        if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.COLLAR))
         {
-            collar = DyeColor.byId(nbt.getInt(NbtKeys.COLLAR));
+            // Why is this newly used code deprecated?
+            collar = nbt.get(NbtKeys.COLLAR, DyeColor.field_56666).orElse(DyeColor.RED);
         }
 
         return Pair.of(variantKey, collar);
@@ -882,8 +857,8 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
             int variant = nbt.getInt(NbtKeys.VARIANT_2);
-            color = HorseColor.byIndex(variant & 255);
-            marking = HorseMarking.byIndex((variant & '\uff00') >> 8);
+            color = HorseColor.byIndex(variant & 0xFF);
+            marking = HorseMarking.byIndex((variant & 0xFF00) >> 8);
         }
 
         return Pair.of(color, marking);
@@ -895,11 +870,13 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static @Nullable ParrotEntity.Variant getParrotVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.VARIANT_2))
         {
-            return ParrotEntity.Variant.byIndex(nbt.getInt(NbtKeys.VARIANT_2));
+            // Why is this newly used code deprecated?
+            return nbt.get(NbtKeys.VARIANT_2, ParrotEntity.Variant.field_56653).orElse(ParrotEntity.Variant.RED_BLUE);
         }
 
         return null;
@@ -907,9 +884,9 @@ public class NbtEntityUtils
 
     public static @Nullable TropicalFishEntity.Pattern getFishVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.VARIANT_2))
         {
-            return TropicalFishEntity.Pattern.byIndex(nbt.getInt(NbtKeys.VARIANT_2) & '\uffff');
+            TropicalFishEntity.Variant variant = nbt.get(NbtKeys.VARIANT_2, TropicalFishEntity.Variant.CODEC).orElse(TropicalFishEntity.DEFAULT_VARIANT);
         }
         else if (nbt.contains(NbtKeys.BUCKET_VARIANT, Constants.NBT.TAG_INT))
         {
@@ -925,18 +902,26 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull NbtCompound nbt)
+    @SuppressWarnings("deprecation")
+    public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         RegistryKey<WolfVariant> variantKey = null;
         DyeColor collar = null;
 
-        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.VARIANT))
         {
-            variantKey = RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+            //variantKey = RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+            Optional<RegistryEntry<WolfVariant>> entry = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.WOLF_VARIANT);
+
+            if (entry.isPresent())
+            {
+                variantKey = entry.get().getKey().orElse(WolfVariants.DEFAULT);
+            }
         }
-        if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.COLLAR))
         {
-            collar = DyeColor.byId(nbt.getInt(NbtKeys.COLLAR));
+            // Why is this newly used code deprecated?
+            collar = nbt.get(NbtKeys.COLLAR, DyeColor.field_56666).orElse(DyeColor.RED);
         }
 
         if (variantKey == null)
@@ -958,11 +943,13 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static @Nullable DyeColor getSheepColorFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.COLOR, Constants.NBT.TAG_BYTE))
+        if (nbt.contains(NbtKeys.COLOR))
         {
-            return DyeColor.byId(nbt.getByte(NbtKeys.COLOR));
+            // Why is this newly used code deprecated?
+            return nbt.get(NbtKeys.COLOR, DyeColor.field_56666).orElse(DyeColor.WHITE);
         }
 
         return null;
@@ -974,11 +961,13 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static @Nullable RabbitEntity.Variant getRabbitTypeFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.RABBIT_TYPE, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.RABBIT_TYPE))
         {
-            return RabbitEntity.Variant.byIndex(nbt.getInt(NbtKeys.RABBIT_TYPE));
+            // Why is this newly used code deprecated?
+            return nbt.get(NbtKeys.RABBIT_TYPE, RabbitEntity.Variant.field_56654).orElse(RabbitEntity.Variant.BROWN);
         }
 
         return null;
@@ -990,15 +979,18 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static Pair<LlamaEntity.Variant, Integer> getLlamaTypeFromNbt(@Nonnull NbtCompound nbt)
     {
         LlamaEntity.Variant variant = null;
         int strength = -1;
 
-        if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.VARIANT_2))
         {
-            variant = LlamaEntity.Variant.byIndex(nbt.getInt(NbtKeys.VARIANT_2));
+            // Why is this newly used code deprecated?
+            variant = nbt.get(NbtKeys.VARIANT_2, LlamaEntity.Variant.field_56660).orElse(LlamaEntity.Variant.CREAMY);
         }
+
         if (nbt.contains(NbtKeys.STRENGTH, Constants.NBT.TAG_INT))
         {
             strength = nbt.getInt(NbtKeys.STRENGTH);
@@ -1057,7 +1049,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.SALMON_TYPE, Constants.NBT.TAG_STRING))
         {
-            return SalmonEntity.Variant.CODEC.byId(nbt.getString(NbtKeys.SALMON_TYPE), SalmonEntity.Variant.MEDIUM);
+            return nbt.get(NbtKeys.SALMON_TYPE, SalmonEntity.Variant.CODEC).orElse(SalmonEntity.Variant.MEDIUM);
         }
 
         return null;
@@ -1069,18 +1061,10 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    public static Triple<BlockPos, Integer, Boolean> getDolphinDataFromNbt(@Nonnull NbtCompound nbt)
+    public static Pair<Integer, Boolean> getDolphinDataFromNbt(@Nonnull NbtCompound nbt)
     {
-        BlockPos treasure = BlockPos.ORIGIN;
-        int moist = -1;
         boolean hasFish = false;
-
-        if (nbt.contains(NbtKeys.TREASURE_X, Constants.NBT.TAG_INT) &&
-            nbt.contains(NbtKeys.TREASURE_Y, Constants.NBT.TAG_INT) &&
-            nbt.contains(NbtKeys.TREASURE_Z, Constants.NBT.TAG_INT))
-        {
-            treasure = new BlockPos(nbt.getInt(NbtKeys.TREASURE_X), nbt.getInt(NbtKeys.TREASURE_Y), nbt.getInt(NbtKeys.TREASURE_Z));
-        }
+        int moist = -1;
 
         if (nbt.contains(NbtKeys.MOISTNESS, Constants.NBT.TAG_INT))
         {
@@ -1092,7 +1076,7 @@ public class NbtEntityUtils
             hasFish = nbt.getBoolean(NbtKeys.GOT_FISH);
         }
 
-        return Triple.of(treasure, moist, hasFish);
+        return Pair.of(moist, hasFish);
     }
 
     /**
@@ -1162,7 +1146,7 @@ public class NbtEntityUtils
     }
 
     /**
-     * Get Equipment Slot values from NBT.
+     * Decode Equipment Slot values from NBT.
      *
      * @param nbt ()
      * @param registry ()

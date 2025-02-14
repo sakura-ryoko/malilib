@@ -1,18 +1,9 @@
 package fi.dy.masa.malilib.util;
 
-import java.util.Objects;
-import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import com.mojang.serialization.Codec;
-import fi.dy.masa.malilib.util.nbt.NbtKeys;
-import net.minecraft.entity.Leashable;
-import net.minecraft.entity.decoration.LeashKnotEntity;
-import net.minecraft.util.Uuids;
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.mojang.datafixers.util.Either;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -25,7 +16,6 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.LazyRegistryEntryReference;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.BlockPos;
 
 public class EntityUtils
 {
@@ -64,66 +54,6 @@ public class EntityUtils
         ItemStack stack = player.getEquippedStack(EquipmentSlot.HEAD);
 
         return !stack.isEmpty() && stack.isOf(Items.TURTLE_HELMET);
-    }
-
-    /**
-     * Fake "LeashData" record.  To change the values, just make a new one.
-     *
-     */
-    public static final class FakeLeashData
-    {
-        public static final Codec<FakeLeashData> CODEC = Codec.xor(Uuids.INT_STREAM_CODEC.fieldOf(NbtKeys.UUID).codec(), BlockPos.CODEC)
-                .xmap(FakeLeashData::new,
-                        leashData ->
-                        {
-                            if (leashData.leashHolder instanceof LeashKnotEntity leashKnotEntity)
-                            {
-                                return Either.right(leashKnotEntity.getAttachedBlockPos());
-                            }
-                            else
-                            {
-                                return leashData.leashHolder != null
-                                        ? Either.left(leashData.leashHolder.getUuid())
-                                        : Objects.requireNonNull(leashData.unresolvedLeashData, "Invalid LeashData had no attachment");
-                            }
-                        }
-                );
-
-        int unresolvedLeashHolderId;
-        @Nullable
-        public Entity leashHolder;
-        @Nullable
-        public Either<UUID, BlockPos> unresolvedLeashData;
-
-        public FakeLeashData(int unresolvedLeashHolderId, @Nullable Entity leashHolder,
-                             @Nullable Either<UUID, BlockPos> unresolvedLeashData)
-        {
-            this.unresolvedLeashHolderId = unresolvedLeashHolderId;
-            this.leashHolder = leashHolder;
-            this.unresolvedLeashData = unresolvedLeashData;
-        }
-
-        private FakeLeashData(Either<UUID, BlockPos> unresolvedLeashData)
-        {
-            this.unresolvedLeashData = unresolvedLeashData;
-        }
-
-        FakeLeashData(Entity leashHolder)
-        {
-            this.leashHolder = leashHolder;
-        }
-
-        FakeLeashData(int unresolvedLeashHolderId)
-        {
-            this.unresolvedLeashHolderId = unresolvedLeashHolderId;
-        }
-
-        public void setLeashHolder(Entity leashHolder)
-        {
-            this.leashHolder = leashHolder;
-            this.unresolvedLeashData = null;
-            this.unresolvedLeashHolderId = 0;
-        }
     }
 
     /**

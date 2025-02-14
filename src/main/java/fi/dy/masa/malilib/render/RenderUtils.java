@@ -1288,6 +1288,7 @@ public class RenderUtils
     {
         if (stack.getItem() instanceof FilledMapItem && (!requireShift || GuiBase.isShiftDown()))
         {
+            forceDraw(drawContext);
             color(1f, 1f, 1f, 1f);
 
             int y1 = y - dimensions - 20;
@@ -1388,7 +1389,9 @@ public class RenderUtils
             int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
 
             // Mask items behind the shulker box display, trying to minimize the sharp corners
-            drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
+            //drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
+            forceDraw(drawContext);
+            RenderSystem.enableDepthTest();
 
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof ShulkerBoxBlock)
             {
@@ -1429,6 +1432,7 @@ public class RenderUtils
             }
 
             matrix4fStack.popMatrix();
+            RenderSystem.disableDepthTest();
             //drawContext.getMatrices().pop();
             //forceDraw(drawContext);
             //RenderSystem.applyModelViewMatrix();
@@ -1467,8 +1471,9 @@ public class RenderUtils
             int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
 
             // Mask items behind the shulker box display, trying to minimize the sharp corners
-            drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
-
+            //drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
+            forceDraw(drawContext);
+            RenderSystem.enableDepthTest();
             setBundleBackgroundTintColor(stack, useBgColors);
             disableDiffuseLighting();
 
@@ -1487,6 +1492,7 @@ public class RenderUtils
             InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, count, mc(), drawContext);
 
             matrix4fStack.popMatrix();
+            RenderSystem.disableDepthTest();
             //drawContext.getMatrices().pop();
             //forceDraw(drawContext);
             //RenderSystem.applyModelViewMatrix();
@@ -1531,7 +1537,9 @@ public class RenderUtils
             int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
 
             // Mask items behind the shulker box display, trying to minimize the sharp corners
-            drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
+            //drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
+            forceDraw(drawContext);
+            RenderSystem.enableDepthTest();
 
             color(1f, 1f, 1f, 1f);
             disableDiffuseLighting();
@@ -1551,7 +1559,9 @@ public class RenderUtils
             InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc(), drawContext);
 
             matrix4fStack.popMatrix();
+            RenderSystem.disableDepthTest();
             //drawContext.getMatrices().pop();
+            //forceDraw(drawContext);
             //RenderSystem.applyModelViewMatrix();
         }
     }
