@@ -9,7 +9,6 @@
     "minecraft:jungle_sign",
     "minecraft:mangrove_sign",
     "minecraft:oak_sign",
-    "minecraft:pale_oak_sign",
     "minecraft:spruce_sign",
     "minecraft:warped_sign",
     "minecraft:acacia_wall_sign",
@@ -21,7 +20,6 @@
     "minecraft:jungle_wall_sign",
     "minecraft:mangrove_wall_sign",
     "minecraft:oak_wall_sign",
-    "minecraft:pale_oak_wall_sign",
     "minecraft:spruce_wall_sign",
     "minecraft:warped_wall_sign",
     "minecraft:acacia_hanging_sign",
@@ -33,7 +31,6 @@
     "minecraft:jungle_hanging_sign",
     "minecraft:mangrove_hanging_sign",
     "minecraft:oak_hanging_sign",
-    "minecraft:pale_oak_hanging_sign",
     "minecraft:spruce_hanging_sign",
     "minecraft:warped_hanging_sign",
     "minecraft:acacia_wall_hanging_sign",
@@ -45,7 +42,6 @@
     "minecraft:jungle_wall_hanging_sign",
     "minecraft:mangrove_wall_hanging_sign",
     "minecraft:oak_wall_hanging_sign",
-    "minecraft:pale_oak_wall_hanging_sign",
     "minecraft:spruce_wall_hanging_sign",
     "minecraft:warped_wall_hanging_sign"
   ]

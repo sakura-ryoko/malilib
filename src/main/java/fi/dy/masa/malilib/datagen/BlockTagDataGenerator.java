@@ -127,7 +127,8 @@ public class BlockTagDataGenerator extends FabricTagProvider.BlockTagProvider
                 .add(Blocks.JUNGLE_SIGN)
                 .add(Blocks.MANGROVE_SIGN)
                 .add(Blocks.OAK_SIGN)
-                .add(Blocks.PALE_OAK_SIGN)
+                // todo 1.21.3+
+                //.add(Blocks.PALE_OAK_SIGN)
                 .add(Blocks.SPRUCE_SIGN)
                 .add(Blocks.WARPED_SIGN)
                 .add(Blocks.ACACIA_WALL_SIGN)
@@ -139,7 +140,8 @@ public class BlockTagDataGenerator extends FabricTagProvider.BlockTagProvider
                 .add(Blocks.JUNGLE_WALL_SIGN)
                 .add(Blocks.MANGROVE_WALL_SIGN)
                 .add(Blocks.OAK_WALL_SIGN)
-                .add(Blocks.PALE_OAK_WALL_SIGN)
+                // todo 1.21.3+
+                //.add(Blocks.PALE_OAK_WALL_SIGN)
                 .add(Blocks.SPRUCE_WALL_SIGN)
                 .add(Blocks.WARPED_WALL_SIGN)
                 .add(Blocks.ACACIA_HANGING_SIGN)
@@ -151,7 +153,8 @@ public class BlockTagDataGenerator extends FabricTagProvider.BlockTagProvider
                 .add(Blocks.JUNGLE_HANGING_SIGN)
                 .add(Blocks.MANGROVE_HANGING_SIGN)
                 .add(Blocks.OAK_HANGING_SIGN)
-                .add(Blocks.PALE_OAK_HANGING_SIGN)
+                // todo 1.21.3+
+                //.add(Blocks.PALE_OAK_HANGING_SIGN)
                 .add(Blocks.SPRUCE_HANGING_SIGN)
                 .add(Blocks.WARPED_HANGING_SIGN)
                 .add(Blocks.ACACIA_WALL_HANGING_SIGN)
@@ -163,7 +166,8 @@ public class BlockTagDataGenerator extends FabricTagProvider.BlockTagProvider
                 .add(Blocks.JUNGLE_WALL_HANGING_SIGN)
                 .add(Blocks.MANGROVE_WALL_HANGING_SIGN)
                 .add(Blocks.OAK_WALL_HANGING_SIGN)
-                .add(Blocks.PALE_OAK_WALL_HANGING_SIGN)
+                // todo 1.21.3+
+                //.add(Blocks.PALE_OAK_WALL_HANGING_SIGN)
                 .add(Blocks.SPRUCE_WALL_HANGING_SIGN)
                 .add(Blocks.WARPED_WALL_HANGING_SIGN)
         ;
@@ -226,11 +230,76 @@ public class BlockTagDataGenerator extends FabricTagProvider.BlockTagProvider
                 .add(Blocks.DEAD_HORN_CORAL_WALL_FAN)
         ;
 
+        getOrCreateTagBuilder(MaLiLibTag.Blocks.LEAVES_FIX)
+                .add(Blocks.ACACIA_LEAVES)
+                .add(Blocks.BIRCH_LEAVES)
+                .add(Blocks.CHERRY_LEAVES)
+                .add(Blocks.DARK_OAK_LEAVES)
+                .add(Blocks.JUNGLE_LEAVES)
+                .add(Blocks.MANGROVE_LEAVES)
+                .add(Blocks.OAK_LEAVES)
+                // todo 1.21.3+
+                //.add(Blocks.PALE_OAK_LEAVES)
+                .add(Blocks.SPRUCE_LEAVES)
+        ;
+
+        getOrCreateTagBuilder(MaLiLibTag.Blocks.WOOL_BLOCKS_FIX)
+                .add(Blocks.BLACK_WOOL)
+                .add(Blocks.BLUE_WOOL)
+                .add(Blocks.BROWN_WOOL)
+                .add(Blocks.CYAN_WOOL)
+                .add(Blocks.GRAY_WOOL)
+                .add(Blocks.GREEN_WOOL)
+                .add(Blocks.LIGHT_BLUE_WOOL)
+                .add(Blocks.LIGHT_GRAY_WOOL)
+                .add(Blocks.LIME_WOOL)
+                .add(Blocks.MAGENTA_WOOL)
+                .add(Blocks.ORANGE_WOOL)
+                .add(Blocks.PINK_WOOL)
+                .add(Blocks.PURPLE_WOOL)
+                .add(Blocks.RED_WOOL)
+                .add(Blocks.YELLOW_WOOL)
+                .add(Blocks.WHITE_WOOL)
+        ;
+
         getOrCreateTagBuilder(MaLiLibTag.Blocks.NEEDS_SILK_TOUCH)
                 .addTag(MaLiLibTag.Blocks.GLASS_BLOCKS)
                 .addTag(MaLiLibTag.Blocks.GLASS_PANES)
                 .addTag(MaLiLibTag.Blocks.CORAL_FANS_FIX)
+                .addTag(MaLiLibTag.Blocks.LEAVES_FIX)
                 .add(Blocks.ENDER_CHEST)
+                // todo 1.21.5+
+                //.add(Blocks.BUSH)
+        ;
+
+        getOrCreateTagBuilder(MaLiLibTag.Blocks.NEEDS_SHEARS)
+                .addTag(MaLiLibTag.Blocks.LEAVES_FIX)
+                .addTag(MaLiLibTag.Blocks.WOOL_BLOCKS_FIX)
+                .add(Blocks.CAVE_VINES)
+                .add(Blocks.CAVE_VINES_PLANT)
+                .add(Blocks.COBWEB)
+                .add(Blocks.DEAD_BUSH)
+                .add(Blocks.FERN)
+                .add(Blocks.GLOW_LICHEN)
+                .add(Blocks.HANGING_ROOTS)
+                .add(Blocks.LARGE_FERN)
+                .add(Blocks.NETHER_SPROUTS)
+                // todo 1.21.3+
+                //.add(Blocks.PALE_HANGING_MOSS)
+                .add(Blocks.SHORT_GRASS)
+                // todo 1.21.5+
+                //.add(Blocks.SHORT_DRY_GRASS)
+                .add(Blocks.SEAGRASS)
+                .add(Blocks.TALL_GRASS)
+                // todo 1.21.5+
+                //.add(Blocks.TALL_DRY_GRASS)
+                .add(Blocks.TALL_SEAGRASS)
+                .add(Blocks.TRIPWIRE)
+                .add(Blocks.TWISTING_VINES)
+                .add(Blocks.TWISTING_VINES_PLANT)
+                .add(Blocks.WEEPING_VINES)
+                .add(Blocks.WEEPING_VINES_PLANT)
+                .add(Blocks.VINE)
         ;
 
         getOrCreateTagBuilder(MaLiLibTag.Blocks.GRAVITY_BLOCKS)
