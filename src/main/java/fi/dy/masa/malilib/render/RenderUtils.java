@@ -49,7 +49,6 @@ import net.minecraft.village.VillagerProfession;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinDrawContext;
-import fi.dy.masa.malilib.render.shader.ShaderProgramKeysTemp;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;

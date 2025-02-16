@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import fi.dy.masa.malilib.render.shader.ShaderProgramKeysTemp;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
