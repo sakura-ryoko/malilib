@@ -303,7 +303,7 @@ public class NbtBlockUtils
      */
     public static Reference2IntOpenHashMap<RegistryKey<Recipe<?>>> getRecipesUsedFromNbt(@Nonnull NbtCompound nbt)
     {
-        Codec<Map<RegistryKey<Recipe<?>>, Integer>> CODEC = Codec.unboundedMap(Recipe.field_56667, Codec.INT);
+        Codec<Map<RegistryKey<Recipe<?>>, Integer>> CODEC = Codec.unboundedMap(Recipe.KEY_CODEC, Codec.INT);
         Reference2IntOpenHashMap<RegistryKey<Recipe<?>>> list = new Reference2IntOpenHashMap<>();
 
         if (nbt.contains(NbtKeys.RECIPES_USED))

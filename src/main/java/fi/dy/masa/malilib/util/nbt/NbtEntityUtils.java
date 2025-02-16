@@ -648,7 +648,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.LEASH))
         {
-            return nbt.get(NbtKeys.LEASH, Leashable.LeashData.field_56648).orElse(null);
+            return nbt.get(NbtKeys.LEASH, Leashable.LeashData.CODEC).orElse(null);
         }
 
         return null;
@@ -745,7 +745,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
             // Why is this newly used code deprecated?
-            return nbt.get(NbtKeys.VARIANT_2, AxolotlEntity.Variant.field_56659).orElse(AxolotlEntity.Variant.LUCY);
+            return nbt.get(NbtKeys.VARIANT_2, AxolotlEntity.Variant.CODEC).orElse(AxolotlEntity.Variant.LUCY);
         }
 
         return null;
@@ -771,7 +771,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.COLLAR))
         {
             // Why is this newly used code deprecated?
-            collar = nbt.get(NbtKeys.COLLAR, DyeColor.field_56666).orElse(DyeColor.RED);
+            collar = nbt.get(NbtKeys.COLLAR, DyeColor.CODEC).orElse(DyeColor.RED);
         }
 
         return Pair.of(variantKey, collar);
@@ -876,7 +876,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.VARIANT_2))
         {
             // Why is this newly used code deprecated?
-            return nbt.get(NbtKeys.VARIANT_2, ParrotEntity.Variant.field_56653).orElse(ParrotEntity.Variant.RED_BLUE);
+            return nbt.get(NbtKeys.VARIANT_2, ParrotEntity.Variant.CODEC).orElse(ParrotEntity.Variant.RED_BLUE);
         }
 
         return null;
@@ -921,7 +921,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.COLLAR))
         {
             // Why is this newly used code deprecated?
-            collar = nbt.get(NbtKeys.COLLAR, DyeColor.field_56666).orElse(DyeColor.RED);
+            collar = nbt.get(NbtKeys.COLLAR, DyeColor.CODEC).orElse(DyeColor.RED);
         }
 
         if (variantKey == null)
@@ -949,7 +949,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.COLOR))
         {
             // Why is this newly used code deprecated?
-            return nbt.get(NbtKeys.COLOR, DyeColor.field_56666).orElse(DyeColor.WHITE);
+            return nbt.get(NbtKeys.COLOR, DyeColor.CODEC).orElse(DyeColor.WHITE);
         }
 
         return null;
@@ -967,7 +967,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.RABBIT_TYPE))
         {
             // Why is this newly used code deprecated?
-            return nbt.get(NbtKeys.RABBIT_TYPE, RabbitEntity.Variant.field_56654).orElse(RabbitEntity.Variant.BROWN);
+            return nbt.get(NbtKeys.RABBIT_TYPE, RabbitEntity.Variant.CODEC).orElse(RabbitEntity.Variant.BROWN);
         }
 
         return null;
@@ -988,7 +988,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.VARIANT_2))
         {
             // Why is this newly used code deprecated?
-            variant = nbt.get(NbtKeys.VARIANT_2, LlamaEntity.Variant.field_56660).orElse(LlamaEntity.Variant.CREAMY);
+            variant = nbt.get(NbtKeys.VARIANT_2, LlamaEntity.Variant.CODEC).orElse(LlamaEntity.Variant.CREAMY);
         }
 
         if (nbt.contains(NbtKeys.STRENGTH, Constants.NBT.TAG_INT))
