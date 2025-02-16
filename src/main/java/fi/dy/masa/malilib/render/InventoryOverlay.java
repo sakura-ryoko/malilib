@@ -11,6 +11,7 @@ import fi.dy.masa.malilib.render.shader.ShaderProgramKeysTemp;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgramLayers;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -235,7 +236,7 @@ public class InventoryOverlay
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_TEX_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.POSITION_TEX_PANORAMA);
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -388,7 +389,7 @@ public class InventoryOverlay
             builtBuffer.close();
              */
 
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_TEX_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.POSITION_TEX_PANORAMA);
             ctx.close();
         }
         catch (Exception ignored) { }

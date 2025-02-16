@@ -692,7 +692,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.FACING_2))
         {
             // Why is this newly used code deprecated?
-            facing = nbt.get(NbtKeys.FACING_2, Direction.field_57037).orElse(Direction.DOWN);
+            facing = nbt.get(NbtKeys.FACING_2, Direction.CODEC).orElse(Direction.DOWN);
         }
         if (nbt.contains(NbtKeys.ITEM_ROTATION, Constants.NBT.TAG_BYTE))
         {
@@ -718,7 +718,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.FACING))
         {
             // Why is this newly used code deprecated?
-            facing = nbt.get(NbtKeys.FACING, Direction.field_57038).orElse(Direction.SOUTH);
+            facing = nbt.get(NbtKeys.FACING, Direction.CODEC).orElse(Direction.SOUTH);
         }
         if (nbt.contains(NbtKeys.VARIANT))
         {

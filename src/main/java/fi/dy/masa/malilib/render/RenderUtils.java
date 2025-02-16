@@ -4,8 +4,6 @@ import java.util.*;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import fi.dy.masa.malilib.render.shader.ShaderProgramKeysTemp;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
@@ -16,9 +14,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.GlUsage;
-import net.minecraft.client.gl.ShaderProgram;
-import net.minecraft.client.gl.VertexBuffer;
+import net.minecraft.client.gl.ShaderProgramLayers;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
@@ -53,6 +49,7 @@ import net.minecraft.village.VillagerProfession;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinDrawContext;
+import fi.dy.masa.malilib.render.shader.ShaderProgramKeysTemp;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
@@ -228,7 +225,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
             ctx.close();
         }
         catch (Exception ignored)
@@ -264,7 +261,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_TEX_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.POSITION_TEX_PANORAMA);
             ctx.close();
         }
         catch (Exception ignored)
@@ -476,7 +473,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
             ctx.close();
         }
         catch (Exception ignored)
@@ -987,7 +984,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
             ctx.close();
         }
         catch (Exception ignored)
@@ -1113,7 +1110,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
             ctx.reset();
         }
         catch (Exception ignored)
@@ -1135,7 +1132,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
             ctx.reset();
         }
         catch (Exception ignored)
@@ -1163,7 +1160,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
             ctx.close();
         }
         catch (Exception ignored)
@@ -1212,7 +1209,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
             ctx.reset();
         }
         catch (Exception ignored)
@@ -1233,7 +1230,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
             ctx.close();
         }
         catch (Exception ignored)
@@ -1799,7 +1796,6 @@ public class RenderUtils
 
         Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
         matrix4fStack.pushMatrix();
-        // FIXME -- Deprecation (BLOCK_ATLAS_TEXTURE)
         bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
         mc().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
 
@@ -1843,11 +1839,6 @@ public class RenderUtils
         //{
         //RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
 
-        /*
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
-        BuiltBuffer builtBuffer;
-         */
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
         BufferBuilder buffer = ctx.getBuilder();
 
@@ -1862,13 +1853,10 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramKeysTemp.RENDER_TYPE_SOLID_LEGACY);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.SOLID);
             ctx.close();
         }
-        catch (Exception ignored)
-        {
-        }
-        //}
+        catch (Exception ignored) { }
 
         matrix4fStack.popMatrix();
     }

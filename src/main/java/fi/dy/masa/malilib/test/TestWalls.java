@@ -1,21 +1,24 @@
 package fi.dy.masa.malilib.test;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.render.shader.ShaderProgramKeysTemp;
-import fi.dy.masa.malilib.util.data.Color4f;
-import net.minecraft.class_10785;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.*;
-import net.minecraft.client.render.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.Profiler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.GlUsage;
+import net.minecraft.client.gl.ShaderProgramLayer;
+import net.minecraft.client.gl.ShaderProgramLayers;
+import net.minecraft.client.gl.VertexBuffer;
+import net.minecraft.client.render.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
+
+import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.util.data.Color4f;
 
 @ApiStatus.Experimental
 public class TestWalls implements AutoCloseable
@@ -189,20 +192,20 @@ public class TestWalls implements AutoCloseable
         if (hasData)
         {
             preRender();
-            drawInternal(matrix4f, projMatrix, VERTEX_1, ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
-            drawInternal(matrix4f, projMatrix, VERTEX_2, ShaderProgramKeysTemp.POSITION_COLOR_LEGACY);
+            drawInternal(matrix4f, projMatrix, VERTEX_1, ShaderProgramLayers.DEBUG_LINE_STRIP);
+            drawInternal(matrix4f, projMatrix, VERTEX_2, ShaderProgramLayers.DEBUG_LINE_STRIP);
             postRender();
         }
     }
 
-    private static void drawInternal(Matrix4f matrix4f, Matrix4f projMatrix, VertexBuffer vertexBuffer, class_10785 shaderKey)
+    private static void drawInternal(Matrix4f matrix4f, Matrix4f projMatrix, VertexBuffer vertexBuffer, ShaderProgramLayer shaderKey)
     {
         if (hasData)
         {
             //ShaderProgram shader = RenderSystem.setShader(shaderKey);
             vertexBuffer.bind();
             // fixme draw()
-            vertexBuffer.method_67804(matrix4f, projMatrix, shaderKey.method_67730());
+            vertexBuffer.method_67804(matrix4f, projMatrix, shaderKey.getProgram());
             VertexBuffer.unbind();
         }
     }
