@@ -56,7 +56,7 @@ public class RenderPhaseWrap extends RenderPhase implements AutoCloseable
         this.ensureSafe();
         VertexBuffer vertex = this.bind(meshData.getDrawParameters().format());
         vertex.upload(meshData);
-        vertex.method_67804(modelView, posMatrix, shaderKey.getProgram());
+        vertex.draw(modelView, posMatrix, shaderKey.getProgram());
     }
 
     private void ensureSafe() throws RuntimeException

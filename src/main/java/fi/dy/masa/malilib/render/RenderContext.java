@@ -107,8 +107,7 @@ public class RenderContext implements AutoCloseable
             this.ensureSafe();
             this.vertex.bind();
             this.vertex.upload(meshData);
-            // fixme draw()
-            this.vertex.method_67804(modelView, posMatrix, shaderKey.getProgram());
+            this.vertex.draw(modelView, posMatrix, shaderKey.getProgram());
             VertexBuffer.unbind();
             meshData.close();
         }

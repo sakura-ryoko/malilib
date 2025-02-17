@@ -204,8 +204,7 @@ public class TestWalls implements AutoCloseable
         {
             //ShaderProgram shader = RenderSystem.setShader(shaderKey);
             vertexBuffer.bind();
-            // fixme draw()
-            vertexBuffer.method_67804(matrix4f, projMatrix, shaderKey.getProgram());
+            vertexBuffer.draw(matrix4f, projMatrix, shaderKey.getProgram());
             VertexBuffer.unbind();
         }
     }
