@@ -1,9 +1,7 @@
-package fi.dy.masa.malilib;
+package fi.dy.masa.malilib.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-
-import fi.dy.masa.malilib.datagen.BlockTagDataGenerator;
 
 public class MaLiLibDataGen implements DataGeneratorEntrypoint
 {

@@ -27,7 +27,9 @@ dependencies {
 	include(modApi(fabricApi.module("fabric-api-base", project.fabric_api_version)))
 	include(modApi(fabricApi.module("fabric-networking-api-v1", project.fabric_api_version)))
 	include(modApi(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
-	include(modApi(fabricApi.module("fabric-data-generation-api-v1", project.fabric_api_version)))
+
+	// Used to run DataGen only
+	modImplementation(modApi(fabricApi.module("fabric-data-generation-api-v1", project.fabric_api_version)))
 
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 //	modRuntimeOnly 'me.fallenbreath:mixin-auditor:0.1.0'
@@ -106,10 +108,9 @@ tasks.publish.dependsOn build
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			artifactId = base.archivesName.get()
-
 			// add all the jars that should be included when publishing to maven
 			//artifact(jar)             { builtBy remapJar }
+			artifactId = base.archivesName.get()
 			from components.java
 		}
 	}
