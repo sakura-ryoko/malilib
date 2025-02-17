@@ -27,7 +27,7 @@
 			"fi.dy.masa.malilib.compat.modmenu.ModMenuImpl"
 		],
 		"fabric-datagen": [
-			"fi.dy.masa.malilib.MaLiLibDataGen"
+			"fi.dy.masa.malilib.datagen.MaLiLibDataGen"
 		]
 	},
 	"mixins": [
@@ -36,7 +36,7 @@
 
 	"depends": {
 		"minecraft": ">1.21.4 <1.21.6",
-		"fabric-networking-api-v1": ">=4.3.13",
+		"fabric-networking-api-v1": ">=4.3.15",
 		"fabric-resource-loader-v0": "*"
 	}
 }
