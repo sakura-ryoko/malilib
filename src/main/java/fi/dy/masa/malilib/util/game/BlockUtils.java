@@ -521,12 +521,10 @@ public class BlockUtils
         {
             if (left.isIn(tagKey) && right.isIn(tagKey))
             {
-                MaLiLib.debugLog("isInSameGroup(): left [{}] vs right [{}] --> same group tag: [{}]", left.getBlock().toString(), right.getBlock().toString(), tagKey.id().toString());
                 return true;
             }
         }
 
-        MaLiLib.debugLog("isInSameGroup(): FALSE");
         return false;
     }
 
@@ -555,24 +553,17 @@ public class BlockUtils
             {
                 T value = state.get(p);
 
-                if (value.equals(otherState.get(p)))
+                if (!value.equals(otherState.get(p)))
                 {
-                    MaLiLib.debugLog("compareProperties(): property [{}] -> value [{}] matches other state", p.getName(), p.name(value));
-                }
-                else
-                {
-                    MaLiLib.debugLog("compareProperties(): property [{}] -> value [{}] does not match", p.getName(), p.name(value));
                     return false;
                 }
             }
             else
             {
-                MaLiLib.debugLog("compareProperties(): property [{}] does not exist in other block state", p.getName());
                 return false;
             }
         }
 
-        MaLiLib.debugLog("compareProperties(): PASS");
         return true;
     }
 }
