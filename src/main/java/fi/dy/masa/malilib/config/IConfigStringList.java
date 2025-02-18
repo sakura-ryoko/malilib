@@ -10,4 +10,6 @@ public interface IConfigStringList extends IConfigBase
     ImmutableList<String> getDefaultStrings();
 
     void setStrings(List<String> strings);
+
+    void setModified();
 }

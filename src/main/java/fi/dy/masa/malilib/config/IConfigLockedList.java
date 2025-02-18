@@ -21,4 +21,6 @@ public interface IConfigLockedList extends IConfigBase
     IConfigLockedListEntry getEntry(String key);
 
     int getEntryIndex(IConfigLockedListEntry entry);
+
+    void setModified();
 }

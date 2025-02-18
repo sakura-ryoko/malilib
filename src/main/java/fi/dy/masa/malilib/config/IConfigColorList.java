@@ -12,4 +12,6 @@ public interface IConfigColorList extends IConfigBase
     ImmutableList<Color4f> getDefaultColors();
 
     void setColors(List<Color4f> colors);
+
+    void setModified();
 }

@@ -134,6 +134,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
             {
                 list.set(this.listIndex, value);
                 this.lastAppliedValue = value.toString();
+                config.setModified();
             }
         }
     }
@@ -144,6 +145,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         final int size = list.size();
         int index = this.listIndex < 0 ? size : (Math.min(this.listIndex, size));
         list.add(index, Color4f.ZERO);
+        this.parent.getConfig().setModified();
         this.parent.refreshEntries();
         this.parent.markConfigsModified();
     }
@@ -156,6 +158,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         if (this.listIndex >= 0 && this.listIndex < size)
         {
             list.remove(this.listIndex);
+            this.parent.getConfig().setModified();
             this.parent.refreshEntries();
             this.parent.markConfigsModified();
         }
@@ -183,6 +186,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 
             if (index2 >= 0)
             {
+                this.parent.getConfig().setModified();
                 this.parent.markConfigsModified();
                 this.parent.applyPendingModifications();
 
