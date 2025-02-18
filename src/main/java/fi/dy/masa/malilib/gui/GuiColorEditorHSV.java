@@ -532,13 +532,12 @@ public class GuiColorEditorHSV extends GuiDialogBase
             builtBuffer.close();
              */
 
-            ctx.draw(buffer.end());
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.reset();
         }
         catch (Exception ignored) { }
 
-        // FIXME
         //buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        ctx.reset();
         buffer = ctx.start(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         int r = (int) (this.relR * 255f);
@@ -633,6 +632,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
              */
 
             ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.close();
         }
         catch (Exception ignored) { }
 

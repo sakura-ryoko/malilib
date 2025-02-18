@@ -14,6 +14,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.ShaderProgramLayer;
 import net.minecraft.client.gl.ShaderProgramLayers;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
@@ -60,6 +61,7 @@ public class RenderUtils
     public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.ofVanilla("textures/map/map_background_checkerboard.png");
 
     private static final LocalRandom RAND = new LocalRandom(0);
+
     //private static final Vec3d LIGHT0_POS = (new Vec3d( 0.2D, 1.0D, -0.7D)).normalize();
     //private static final Vec3d LIGHT1_POS = (new Vec3d(-0.2D, 1.0D,  0.7D)).normalize();
 
@@ -170,10 +172,10 @@ public class RenderUtils
 
     public static void drawOutline(int x, int y, int width, int height, int colorBorder, float zLevel)
     {
-        drawRect(x, y, 1, height, colorBorder, zLevel); // left edge
-        drawRect(x + width - 1, y, 1, height, colorBorder, zLevel); // right edge
-        drawRect(x + 1, y, width - 2, 1, colorBorder, zLevel); // top edge
-        drawRect(x + 1, y + height - 1, width - 2, 1, colorBorder, zLevel); // bottom edge
+        drawRect(x                    , y,      1, height, colorBorder, zLevel); // left edge
+        drawRect(x + width - 1        , y,      1, height, colorBorder, zLevel); // right edge
+        drawRect(x + 1,              y, width - 2,      1, colorBorder, zLevel); // top edge
+        drawRect(x + 1, y + height - 1, width - 2,      1, colorBorder, zLevel); // bot
     }
 
     public static void drawOutline(int x, int y, int width, int height, int borderWidth, int colorBorder)
@@ -183,15 +185,15 @@ public class RenderUtils
 
     public static void drawOutline(int x, int y, int width, int height, int borderWidth, int colorBorder, float zLevel)
     {
-        drawRect(x, y, borderWidth, height, colorBorder, zLevel); // left edge
-        drawRect(x + width - borderWidth, y, borderWidth, height, colorBorder, zLevel); // right edge
-        drawRect(x + borderWidth, y, width - 2 * borderWidth, borderWidth, colorBorder, zLevel); // top edge
-        drawRect(x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, zLevel); // bottom edge
+        drawRect(x                      ,                        y, borderWidth            , height     , colorBorder, zLevel); // left edge
+        drawRect(x + width - borderWidth,                        y, borderWidth            , height     , colorBorder, zLevel); // right edge
+        drawRect(x + borderWidth        ,                        y, width - 2 * borderWidth, borderWidth, colorBorder, zLevel); // top edge
+        drawRect(x + borderWidth        , y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, zLevel); // bottom edge
     }
 
     public static void drawTexturedRect(int x, int y, int u, int v, int width, int height)
     {
-        drawTexturedRect(x, y, u, v, width, height, 0);
+        drawTexturedRect(x, y, u, v, width, height, 0f);
     }
 
     public static void drawRect(int x, int y, int width, int height, int color)
@@ -217,14 +219,15 @@ public class RenderUtils
 
         setupBlend();
 
-        buffer.vertex(x * scale, y * scale, zLevel).color(r, g, b, a);
-        buffer.vertex(x * scale, (y + height) * scale, zLevel).color(r, g, b, a);
+        buffer.vertex(x * scale,           y * scale,            zLevel).color(r, g, b, a);
+        buffer.vertex(x * scale,           (y + height) * scale, zLevel).color(r, g, b, a);
         buffer.vertex((x + width) * scale, (y + height) * scale, zLevel).color(r, g, b, a);
-        buffer.vertex((x + width) * scale, y * scale, zLevel).color(r, g, b, a);
+        buffer.vertex((x + width) * scale, y * scale           , zLevel).color(r, g, b, a);
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            //ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.GUI_OVERLAY);
             ctx.close();
         }
         catch (Exception ignored)
@@ -260,7 +263,8 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.POSITION_TEX_PANORAMA);
+            //ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.POSITION_TEX_PANORAMA);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.GUI_TEXTURED_OVERLAY);
             ctx.close();
         }
         catch (Exception ignored)
@@ -472,7 +476,8 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            //ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.GUI_OVERLAY);
             ctx.close();
         }
         catch (Exception ignored)

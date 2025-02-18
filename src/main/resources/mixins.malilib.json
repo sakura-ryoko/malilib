@@ -3,16 +3,7 @@
   "package": "fi.dy.masa.malilib.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
-  "client": [
-    "test.MixinBundleItem",
-    "entity.IMixinAbstractHorseEntity",
-    "entity.IMixinDataQueryHandler",
-    "entity.IMixinMerchantEntity",
-    "entity.IMixinPiglinEntity",
-    "entity.IMixinPlayerEntity",
-    "entity.MixinAbstractHorseEntity",
-    "entity.MixinPiglinEntity",
-    "entity.MixinSimpleInventory",
+  "mixins": [
     "IMixinDrawContext",
     "IMixinHandledScreen",
     "MixinClientConfigurationNetworkHandler",
@@ -27,7 +18,16 @@
     "MixinMinecraftClient",
     "MixinMinecraftServer",
     "MixinMouse",
-    "MixinWorldRenderer"
+    "MixinWorldRenderer",
+    "entity.IMixinAbstractHorseEntity",
+    "entity.IMixinDataQueryHandler",
+    "entity.IMixinMerchantEntity",
+    "entity.IMixinPiglinEntity",
+    "entity.IMixinPlayerEntity",
+    "entity.MixinAbstractHorseEntity",
+    "entity.MixinPiglinEntity",
+    "entity.MixinSimpleInventory",
+    "test.MixinBundleItem"
   ],
   "injectors": {
     "defaultRequire": 1
