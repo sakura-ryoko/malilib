@@ -127,6 +127,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
             {
                 list.set(this.listIndex, value);
                 this.lastAppliedValue = value;
+                config.setModified();
             }
         }
     }
@@ -137,6 +138,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         final int size = list.size();
         int index = this.listIndex < 0 ? size : (this.listIndex >= size ? size : this.listIndex);
         list.add(index, "");
+        this.parent.getConfig().setModified();
         this.parent.refreshEntries();
         this.parent.markConfigsModified();
     }
@@ -149,6 +151,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         if (this.listIndex >= 0 && this.listIndex < size)
         {
             list.remove(this.listIndex);
+            this.parent.getConfig().setModified();
             this.parent.refreshEntries();
             this.parent.markConfigsModified();
         }
@@ -176,6 +179,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
 
             if (index2 >= 0)
             {
+                this.parent.getConfig().setModified();
                 this.parent.markConfigsModified();
                 this.parent.applyPendingModifications();
 
