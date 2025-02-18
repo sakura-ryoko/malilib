@@ -118,6 +118,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
             {
                 list.set(this.listIndex, config.getEntry(value));
                 this.lastAppliedValue = value;
+                config.setModified();
             }
         }
     }
@@ -144,6 +145,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
 
             if (index2 >= 0)
             {
+                this.parent.getConfig().setModified();
                 this.parent.markConfigsModified();
                 this.parent.applyPendingModifications();
 

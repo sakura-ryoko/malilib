@@ -59,7 +59,7 @@ public class WidgetListLockedListEdit extends WidgetListConfigOptionsBase<String
             IConfigLockedListEntry defaultValue = config.getDefaultEntries().size() > listIndex ? config.getDefaultEntries().get(listIndex) : IConfigLockedListEntry.empty();
 
             return new WidgetLockedListEditEntry(x, y, this.browserEntryWidth, this.browserEntryHeight,
-                    listIndex, isOdd, config.getEntries().get(listIndex), defaultValue, this);
+                                                 listIndex, isOdd, config.getEntries().get(listIndex), defaultValue, this);
         }
         else
         {
