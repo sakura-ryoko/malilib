@@ -150,7 +150,7 @@ public class LayerRange
         this.axis = axis;
 
         this.refresher.updateAll();
-        String val = GuiBase.TXT_GREEN + axis.getName();
+        String val = GuiBase.TXT_GREEN + axis.name();
         InfoUtils.printActionbarMessage("malilib.message.set_layer_axis_to", val);
     }
 
@@ -350,7 +350,7 @@ public class LayerRange
 
     public boolean moveLayer(int amount)
     {
-        String axisName = this.axis.getName().toLowerCase();
+        String axisName = this.axis.name().toLowerCase();
         String strTo = GuiBase.TXT_GREEN + axisName + " = ";
 
         switch (this.layerMode)
@@ -416,7 +416,7 @@ public class LayerRange
 
         if (moved)
         {
-            String axisName = this.axis.getName().toLowerCase();
+            String axisName = this.axis.name().toLowerCase();
 
             if (moveMin && moveMax)
             {
@@ -732,7 +732,7 @@ public class LayerRange
         JsonObject obj = new JsonObject();
 
         obj.add("mode", new JsonPrimitive(this.layerMode.name()));
-        obj.add("axis", new JsonPrimitive(this.axis.getName()));
+        obj.add("axis", new JsonPrimitive(this.axis.name()));
         obj.add("layer_single", new JsonPrimitive(this.layerSingle));
         obj.add("layer_above", new JsonPrimitive(this.layerAbove));
         obj.add("layer_below", new JsonPrimitive(this.layerBelow));
@@ -754,7 +754,7 @@ public class LayerRange
     public void fromJson(JsonObject obj)
     {
         this.layerMode = LayerMode.fromStringStatic(JsonUtils.getString(obj, "mode"));
-        this.axis = Direction.Axis.fromName(JsonUtils.getString(obj, "axis"));
+        this.axis = Direction.Axis.fromId(JsonUtils.getString(obj, "axis"));
         if (this.axis == null) { this.axis = Direction.Axis.Y; }
 
         this.layerSingle = JsonUtils.getInteger(obj, "layer_single");

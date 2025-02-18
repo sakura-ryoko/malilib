@@ -132,7 +132,7 @@ public class BlockUtils
     {
         if (isFacingValidForDirection(stack, facing))
         {
-            return facing.getId();
+            return facing.getIndex();
         }
 
         return -1;

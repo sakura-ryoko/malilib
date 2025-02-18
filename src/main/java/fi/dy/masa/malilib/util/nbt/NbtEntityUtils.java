@@ -696,7 +696,7 @@ public class NbtEntityUtils
         }
         if (nbt.contains(NbtKeys.ITEM_ROTATION, Constants.NBT.TAG_BYTE))
         {
-            rotation = Direction.byId(nbt.getByte(NbtKeys.ITEM_ROTATION));
+            rotation = Direction.byIndex(nbt.getByte(NbtKeys.ITEM_ROTATION));
         }
 
         return Pair.of(facing, rotation);
