@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
+import net.minecraft.class_10823;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
@@ -683,7 +684,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<Direction, Direction> getItemFrameDirectionsFromNbt(@Nonnull NbtCompound nbt)
     {
         Direction facing = null;
@@ -691,7 +691,6 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.FACING_2))
         {
-            // Why is this newly used code deprecated?
             facing = nbt.get(NbtKeys.FACING_2, Direction.CODEC).orElse(Direction.DOWN);
         }
         if (nbt.contains(NbtKeys.ITEM_ROTATION, Constants.NBT.TAG_BYTE))
@@ -709,7 +708,6 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<Direction, PaintingVariant> getPaintingDataFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         Direction facing = null;
@@ -717,7 +715,6 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.FACING))
         {
-            // Why is this newly used code deprecated?
             facing = nbt.get(NbtKeys.FACING, Direction.CODEC).orElse(Direction.SOUTH);
         }
         if (nbt.contains(NbtKeys.VARIANT))
@@ -739,12 +736,10 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static @Nullable AxolotlEntity.Variant getAxolotlVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
-            // Why is this newly used code deprecated?
             return nbt.get(NbtKeys.VARIANT_2, AxolotlEntity.Variant.CODEC).orElse(AxolotlEntity.Variant.LUCY);
         }
 
@@ -758,7 +753,6 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<RegistryKey<CatVariant>, DyeColor> getCatVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         RegistryKey<CatVariant> variantKey = null;
@@ -770,7 +764,6 @@ public class NbtEntityUtils
         }
         if (nbt.contains(NbtKeys.COLLAR))
         {
-            // Why is this newly used code deprecated?
             collar = nbt.get(NbtKeys.COLLAR, DyeColor.CODEC).orElse(DyeColor.RED);
         }
 
@@ -819,9 +812,9 @@ public class NbtEntityUtils
      */
     public static @Nullable MooshroomEntity.Variant getMooshroomVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.FOX_TYPE))
+        if (nbt.contains(NbtKeys.TYPE_2))
         {
-            return nbt.get(NbtKeys.FOX_TYPE, MooshroomEntity.Variant.CODEC).orElse(MooshroomEntity.Variant.RED);
+            return nbt.get(NbtKeys.TYPE_2, MooshroomEntity.Variant.CODEC).orElse(MooshroomEntity.Variant.RED);
         }
 
         return null;
@@ -870,18 +863,22 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static @Nullable ParrotEntity.Variant getParrotVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2))
         {
-            // Why is this newly used code deprecated?
             return nbt.get(NbtKeys.VARIANT_2, ParrotEntity.Variant.CODEC).orElse(ParrotEntity.Variant.RED_BLUE);
         }
 
         return null;
     }
 
+    /**
+     * Get a Tropical Fish Variant from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
     public static @Nullable TropicalFishEntity.Pattern getFishVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2))
@@ -902,7 +899,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         RegistryKey<WolfVariant> variantKey = null;
@@ -920,7 +916,6 @@ public class NbtEntityUtils
         }
         if (nbt.contains(NbtKeys.COLLAR))
         {
-            // Why is this newly used code deprecated?
             collar = nbt.get(NbtKeys.COLLAR, DyeColor.CODEC).orElse(DyeColor.RED);
         }
 
@@ -938,17 +933,36 @@ public class NbtEntityUtils
     }
 
     /**
+     * Get a Wolves' Sound Type Variant from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static @Nullable RegistryKey<class_10823> getWolfSoundTypeFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    {
+        if (nbt.contains(NbtKeys.SOUND_VARIANT, Constants.NBT.TAG_STRING))
+        {
+            RegistryEntry.Reference<class_10823> soundVariant = registry.getOrThrow(RegistryKeys.WOLF_SOUND_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.SOUND_VARIANT))).orElse(null);
+
+            if (soundVariant != null)
+            {
+                return soundVariant.registryKey();
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get a Sheep's Color from NBT.
      *
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static @Nullable DyeColor getSheepColorFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.COLOR))
         {
-            // Why is this newly used code deprecated?
             return nbt.get(NbtKeys.COLOR, DyeColor.CODEC).orElse(DyeColor.WHITE);
         }
 
@@ -961,12 +975,10 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static @Nullable RabbitEntity.Variant getRabbitTypeFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.RABBIT_TYPE))
         {
-            // Why is this newly used code deprecated?
             return nbt.get(NbtKeys.RABBIT_TYPE, RabbitEntity.Variant.CODEC).orElse(RabbitEntity.Variant.BROWN);
         }
 
@@ -979,7 +991,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<LlamaEntity.Variant, Integer> getLlamaTypeFromNbt(@Nonnull NbtCompound nbt)
     {
         LlamaEntity.Variant variant = null;
@@ -987,7 +998,6 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.VARIANT_2))
         {
-            // Why is this newly used code deprecated?
             variant = nbt.get(NbtKeys.VARIANT_2, LlamaEntity.Variant.CODEC).orElse(LlamaEntity.Variant.CREAMY);
         }
 
@@ -1031,9 +1041,9 @@ public class NbtEntityUtils
      */
     public static @Nullable FoxEntity.Variant getFoxVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.FOX_TYPE))
+        if (nbt.contains(NbtKeys.TYPE_2))
         {
-            return nbt.get(NbtKeys.FOX_TYPE, FoxEntity.Variant.CODEC).orElse(FoxEntity.Variant.RED);
+            return nbt.get(NbtKeys.TYPE_2, FoxEntity.Variant.CODEC).orElse(FoxEntity.Variant.RED);
         }
 
         return null;
@@ -1047,9 +1057,9 @@ public class NbtEntityUtils
      */
     public static @Nullable SalmonEntity.Variant getSalmonVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.SALMON_TYPE, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.TYPE, Constants.NBT.TAG_STRING))
         {
-            return nbt.get(NbtKeys.SALMON_TYPE, SalmonEntity.Variant.CODEC).orElse(SalmonEntity.Variant.MEDIUM);
+            return nbt.get(NbtKeys.TYPE, SalmonEntity.Variant.CODEC).orElse(SalmonEntity.Variant.MEDIUM);
         }
 
         return null;

@@ -4,6 +4,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 
+import net.minecraft.class_10823;
+import net.minecraft.class_10824;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -222,7 +224,7 @@ public class EntityUtils
      * @param entity ()
      * @return ()
      */
-    public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull WolfEntity entity)
+    public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromComponents(@Nonnull WolfEntity entity)
     {
         RegistryEntry<WolfVariant> entry = entity.get(DataComponentTypes.WOLF_VARIANT);
         DyeColor collar = entity.get(DataComponentTypes.WOLF_COLLAR);
@@ -234,6 +236,18 @@ public class EntityUtils
         }
 
         return Pair.of(variantKey, collar);
+    }
+
+    /**
+     * Get a Wolves' Sound Variant and Collar Color from NBT.
+     *
+     * @param entity ()
+     * @return ()
+     */
+    public static RegistryKey<class_10823> getWolfSoundTypeFromComponents(@Nonnull WolfEntity entity)
+    {
+        RegistryEntry<class_10823> entry = entity.get(DataComponentTypes.SOUND_VARIANT_WOLF);
+        return entry != null ? entry.getKey().orElse(class_10824.field_57080) : class_10824.field_57080;
     }
 
     /**

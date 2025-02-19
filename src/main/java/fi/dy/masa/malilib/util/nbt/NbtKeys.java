@@ -77,8 +77,9 @@ public class NbtKeys
     public static final String COLOR               = "Color";
     public static final String BUCKET_VARIANT      = "BucketVariantTag";
     public static final String RABBIT_TYPE         = "RabbitType";
-    public static final String FOX_TYPE            = "Type";
-    public static final String SALMON_TYPE         = "type";
+    public static final String TYPE                = "type";
+    public static final String TYPE_2              = "Type";
+    public static final String SOUND_VARIANT       = "sound_variant";
     public static final String STRENGTH            = "Strength";
     public static final String EXP_LEVEL           = "XpLevel";
     public static final String EXP_TOTAL           = "XpTotal";
@@ -94,9 +95,6 @@ public class NbtKeys
     public static final String HORSE_TEMPER        = "Temper";
     public static final String SITTING             = "Sitting";
     public static final String FALL_FLYING         = "FallFlying";
-    public static final String TREASURE_X          = "TreasurePosX";
-    public static final String TREASURE_Y          = "TreasurePosY";
-    public static final String TREASURE_Z          = "TreasurePosZ";
     public static final String GOT_FISH            = "GotFish";
     public static final String MOISTNESS           = "Moistness";
 
@@ -131,4 +129,7 @@ public class NbtKeys
     public static final String OLD_ARMOR_ITEMS     = "ArmorItems";
     public static final String OLD_BODY_ARMOR      = "body_armor_item";
     public static final String OLD_SADDLE          = "SaddleItem";
+    public static final String OLD_TREASURE_X      = "TreasurePosX";
+    public static final String OLD_TREASURE_Y      = "TreasurePosY";
+    public static final String OLD_TREASURE_Z      = "TreasurePosZ";
 }
