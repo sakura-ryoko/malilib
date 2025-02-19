@@ -12,9 +12,9 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigBoolean
 {
-    public Codec<ConfigBoolean> CODEC = RecordCodecBuilder.create(
+    public static final Codec<ConfigBoolean> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
-                        PrimitiveCodec.STRING.fieldOf("name").forGetter(get -> get.name),
+                        PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
                         PrimitiveCodec.BOOL.fieldOf("defaultValue").forGetter(get -> get.defaultValue),
                         PrimitiveCodec.BOOL.fieldOf("value").forGetter(get -> get.value),
                         PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
@@ -51,8 +51,7 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
 
     private ConfigBoolean(String name, Boolean defaultValue, Boolean value, String comment, String prettyName, String translatedName)
     {
-        super(ConfigType.BOOLEAN, name, comment, prettyName, translatedName);
-        this.defaultValue = defaultValue;
+        this(name, defaultValue, comment, prettyName, translatedName);
         this.value = value;
     }
 

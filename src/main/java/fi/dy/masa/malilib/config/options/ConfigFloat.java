@@ -3,6 +3,9 @@ package fi.dy.masa.malilib.config.options;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -12,6 +15,20 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
 {
+    public static final Codec<ConfigFloat> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                            PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
+                            PrimitiveCodec.FLOAT.fieldOf("defaultValue").forGetter(get -> get.defaultValue),
+                            PrimitiveCodec.FLOAT.fieldOf("minValue").forGetter(get -> get.minValue),
+                            PrimitiveCodec.FLOAT.fieldOf("maxValue").forGetter(get -> get.maxValue),
+                            PrimitiveCodec.FLOAT.fieldOf("value").forGetter(get -> get.value),
+                            PrimitiveCodec.BOOL.fieldOf("useSlider").forGetter(get -> get.useSlider),
+                            PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
+                            PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
+                            PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)
+                    )
+                    .apply(instance, ConfigFloat::new)
+    );
     protected final float minValue;
     protected final float maxValue;
     protected final float defaultValue;
@@ -77,6 +94,12 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.useSlider = useSlider;
+    }
+
+    private ConfigFloat(String name, Float defaultValue, Float minValue, Float maxValue, Float value, Boolean useSlider, String comment, String prettyName, String translatedName)
+    {
+        this(name, defaultValue, minValue, maxValue, useSlider, comment, prettyName, translatedName);
+        this.value = value;
     }
 
     @Override

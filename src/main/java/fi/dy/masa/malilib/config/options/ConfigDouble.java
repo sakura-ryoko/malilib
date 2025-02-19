@@ -2,6 +2,9 @@ package fi.dy.masa.malilib.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.MathHelper;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
@@ -10,6 +13,20 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDouble
 {
+    public static final Codec<ConfigDouble> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                            PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
+                            PrimitiveCodec.DOUBLE.fieldOf("defaultValue").forGetter(get -> get.defaultValue),
+                            PrimitiveCodec.DOUBLE.fieldOf("minValue").forGetter(get -> get.minValue),
+                            PrimitiveCodec.DOUBLE.fieldOf("maxValue").forGetter(get -> get.maxValue),
+                            PrimitiveCodec.DOUBLE.fieldOf("value").forGetter(get -> get.value),
+                            PrimitiveCodec.BOOL.fieldOf("useSlider").forGetter(get -> get.useSlider),
+                            PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
+                            PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
+                            PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)
+                    )
+                    .apply(instance, ConfigDouble::new)
+    );
     private final double minValue;
     private final double maxValue;
     private final double defaultValue;
@@ -80,6 +97,12 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.useSlider = useSlider;
+    }
+
+    private ConfigDouble(String name, Double defaultValue, Double minValue, Double maxValue, Double value, Boolean useSlider, String comment, String prettyName, String translatedName)
+    {
+        this(name, defaultValue, minValue, maxValue, useSlider, comment, prettyName, translatedName);
+        this.value = value;
     }
 
     @Override

@@ -1,7 +1,5 @@
 package fi.dy.masa.malilib.config.options;
 
-import javax.annotation.Nullable;
-
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -12,10 +10,12 @@ import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import fi.dy.masa.malilib.util.StringUtils;
 
+import javax.annotation.Nullable;
+
 public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, IConfigResettable, IConfigNotifiable<T>
 {
     private final ConfigType type;
-    protected final String name;
+    private final String name;
     protected String prettyName;
     protected String comment;
     protected String translatedName;

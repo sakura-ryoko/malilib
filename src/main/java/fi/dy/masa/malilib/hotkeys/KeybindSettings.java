@@ -7,6 +7,14 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class KeybindSettings
 {
+    /*
+    public static final Codec<KeybindSettings> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                            MapLike.forMap()
+                    )
+                    .apply(instance, KeybindSettings::new)
+    );
+     */
     public static final KeybindSettings DEFAULT                     = new KeybindSettings(Context.INGAME, KeyAction.PRESS, false, true, false, true);
     public static final KeybindSettings EXCLUSIVE                   = new KeybindSettings(Context.INGAME, KeyAction.PRESS, false, true, true, true);
     public static final KeybindSettings RELEASE                     = new KeybindSettings(Context.INGAME, KeyAction.RELEASE, false, true, false, false);
