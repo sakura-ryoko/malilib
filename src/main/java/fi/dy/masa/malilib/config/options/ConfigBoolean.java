@@ -2,6 +2,9 @@ package fi.dy.masa.malilib.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigBoolean;
@@ -9,6 +12,17 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigBoolean
 {
+    public Codec<ConfigBoolean> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                        PrimitiveCodec.STRING.fieldOf("name").forGetter(get -> get.name),
+                        PrimitiveCodec.BOOL.fieldOf("defaultValue").forGetter(get -> get.defaultValue),
+                        PrimitiveCodec.BOOL.fieldOf("value").forGetter(get -> get.value),
+                        PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
+                        PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
+                        PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)
+                    )
+                    .apply(instance, ConfigBoolean::new)
+    );
     private final boolean defaultValue;
     private boolean value;
 
@@ -33,6 +47,13 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
+    }
+
+    private ConfigBoolean(String name, Boolean defaultValue, Boolean value, String comment, String prettyName, String translatedName)
+    {
+        super(ConfigType.BOOLEAN, name, comment, prettyName, translatedName);
+        this.defaultValue = defaultValue;
+        this.value = value;
     }
 
     @Override

@@ -15,10 +15,10 @@ import fi.dy.masa.malilib.util.StringUtils;
 public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, IConfigResettable, IConfigNotifiable<T>
 {
     private final ConfigType type;
-    private final String name;
-    private String prettyName;
-    private String comment;
-    private String translatedName;
+    protected final String name;
+    protected String prettyName;
+    protected String comment;
+    protected String translatedName;
     private String translationPrefix = "";
     @Nullable
     private IValueChangeCallback<T> callback;
