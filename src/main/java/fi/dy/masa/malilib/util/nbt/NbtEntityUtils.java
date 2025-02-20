@@ -690,7 +690,7 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.FACING_2))
         {
-            facing = nbt.get(NbtKeys.FACING_2, Direction.CODEC).orElse(Direction.DOWN);
+            facing = nbt.get(NbtKeys.FACING_2, Direction.INDEX_CODEC).orElse(Direction.DOWN);
         }
         if (nbt.contains(NbtKeys.ITEM_ROTATION, Constants.NBT.TAG_BYTE))
         {
@@ -714,7 +714,7 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.FACING))
         {
-            facing = nbt.get(NbtKeys.FACING, Direction.CODEC).orElse(Direction.SOUTH);
+            facing = nbt.get(NbtKeys.FACING, Direction.INDEX_CODEC).orElse(Direction.SOUTH);
         }
         if (nbt.contains(NbtKeys.VARIANT))
         {
@@ -739,7 +739,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
         {
-            return nbt.get(NbtKeys.VARIANT_2, AxolotlEntity.Variant.CODEC).orElse(AxolotlEntity.Variant.LUCY);
+            return nbt.get(NbtKeys.VARIANT_2, AxolotlEntity.Variant.INDEX_CODEC).orElse(AxolotlEntity.Variant.LUCY);
         }
 
         return null;
@@ -763,7 +763,7 @@ public class NbtEntityUtils
         }
         if (nbt.contains(NbtKeys.COLLAR))
         {
-            collar = nbt.get(NbtKeys.COLLAR, DyeColor.CODEC).orElse(DyeColor.RED);
+            collar = nbt.get(NbtKeys.COLLAR, DyeColor.INDEX_CODEC).orElse(DyeColor.RED);
         }
 
         return Pair.of(variantKey, collar);
@@ -866,7 +866,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT_2))
         {
-            return nbt.get(NbtKeys.VARIANT_2, ParrotEntity.Variant.CODEC).orElse(ParrotEntity.Variant.RED_BLUE);
+            return nbt.get(NbtKeys.VARIANT_2, ParrotEntity.Variant.INDEX_CODEC).orElse(ParrotEntity.Variant.RED_BLUE);
         }
 
         return null;
@@ -915,7 +915,7 @@ public class NbtEntityUtils
         }
         if (nbt.contains(NbtKeys.COLLAR))
         {
-            collar = nbt.get(NbtKeys.COLLAR, DyeColor.CODEC).orElse(DyeColor.RED);
+            collar = nbt.get(NbtKeys.COLLAR, DyeColor.INDEX_CODEC).orElse(DyeColor.RED);
         }
 
         if (variantKey == null)
@@ -962,7 +962,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.COLOR))
         {
-            return nbt.get(NbtKeys.COLOR, DyeColor.CODEC).orElse(DyeColor.WHITE);
+            return nbt.get(NbtKeys.COLOR, DyeColor.INDEX_CODEC).orElse(DyeColor.WHITE);
         }
 
         return null;
@@ -978,7 +978,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.RABBIT_TYPE))
         {
-            return nbt.get(NbtKeys.RABBIT_TYPE, RabbitEntity.Variant.CODEC).orElse(RabbitEntity.Variant.BROWN);
+            return nbt.get(NbtKeys.RABBIT_TYPE, RabbitEntity.Variant.INDEX_CODEC).orElse(RabbitEntity.Variant.BROWN);
         }
 
         return null;
@@ -997,7 +997,7 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.VARIANT_2))
         {
-            variant = nbt.get(NbtKeys.VARIANT_2, LlamaEntity.Variant.CODEC).orElse(LlamaEntity.Variant.CREAMY);
+            variant = nbt.get(NbtKeys.VARIANT_2, LlamaEntity.Variant.INDEX_CODEC).orElse(LlamaEntity.Variant.CREAMY);
         }
 
         if (nbt.contains(NbtKeys.STRENGTH, Constants.NBT.TAG_INT))
