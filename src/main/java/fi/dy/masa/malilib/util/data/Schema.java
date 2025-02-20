@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.util.data;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
@@ -124,7 +126,7 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_1_09_00 (169,  "1.9"),
     SCHEMA_15W32A  (100,  "15w32a");
 
-    public static final EnumCodec<Schema> CODEC = StringIdentifiable.createCodec(Schema::values);
+    public static final EnumCodec<Schema> CODEC = StringIdentifiable.createCodec(Schema::sorted);
     public static final IntFunction<Schema> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(Schema::getDataVersion, values(), ValueLists.OutOfBoundsHandling.WRAP);
     public static final PacketCodec<ByteBuf, Schema> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, Schema::getDataVersion);
     public static final ImmutableList<Schema> VALUES = ImmutableList.copyOf(values());
@@ -199,12 +201,26 @@ public enum Schema implements IEnumCodecProvider
     @Override
     public int getIndex()
     {
-        return this.getDataVersion();
+        return this.schemaId;
     }
 
     @Override
     public String getName()
     {
-        return this.getString();
+        return this.str;
+    }
+
+    private static Schema[] sorted()
+    {
+        return (Schema[]) Arrays.stream(values()).sorted(new SchemaCompare()).toArray();
+    }
+
+    static class SchemaCompare implements Comparator<Schema>
+    {
+        @Override
+        public int compare(Schema left, Schema right)
+        {
+            return right.getIndex() - left.getIndex();
+        }
     }
 }
