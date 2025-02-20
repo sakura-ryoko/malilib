@@ -1,16 +1,12 @@
 package fi.dy.masa.malilib.util.data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.function.IntFunction;
+import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
-import io.netty.buffer.ByteBuf;
 
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
 
 /**
  * A Utility Table of Minecraft Data Versions and their respective Version strings.
@@ -127,8 +123,6 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_15W32A  (100,  "15w32a");
 
     public static final EnumCodec<Schema> CODEC = StringIdentifiable.createCodec(Schema::sorted);
-    public static final IntFunction<Schema> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(Schema::getDataVersion, values(), ValueLists.OutOfBoundsHandling.WRAP);
-    public static final PacketCodec<ByteBuf, Schema> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, Schema::getDataVersion);
     public static final ImmutableList<Schema> VALUES = ImmutableList.copyOf(values());
 
     private final int schemaId;
@@ -212,15 +206,14 @@ public enum Schema implements IEnumCodecProvider
 
     private static Schema[] sorted()
     {
-        return (Schema[]) Arrays.stream(values()).sorted(new SchemaCompare()).toArray();
-    }
+        List<Schema> copy = new ArrayList<>(Arrays.stream(values()).toList());
+        Schema[] result = new Schema[values().length];
 
-    static class SchemaCompare implements Comparator<Schema>
-    {
-        @Override
-        public int compare(Schema left, Schema right)
+        for (int i = 0; i < values().length; i++)
         {
-            return right.getIndex() - left.getIndex();
+            result[i] = copy.removeLast();
         }
+
+        return result;
     }
 }
