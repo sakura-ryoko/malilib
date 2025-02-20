@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.ApiStatus;
-
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Identifier;
 
 /**
@@ -13,9 +13,13 @@ import net.minecraft.util.Identifier;
  * -
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class ResourceLocation
 {
+    Codec<ResourceLocation> CODEC = RecordCodecBuilder.create(
+            resourceLocationInstance -> resourceLocationInstance.group(
+                    Identifier.CODEC.fieldOf("id").forGetter(get -> get.id)
+            ).apply(resourceLocationInstance, ResourceLocation::new)
+    );
     private final Identifier id;
 
     public ResourceLocation(String str)

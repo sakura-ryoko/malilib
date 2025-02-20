@@ -449,14 +449,7 @@ public class NbtUtils
 	@Nullable
 	public static BlockPos readAttachedPosFromTag(@Nonnull NbtCompound tag)
 	{
-		if (tag.contains("TileX", Constants.NBT.TAG_INT) &&
-				tag.contains("TileY", Constants.NBT.TAG_INT) &&
-				tag.contains("TileZ", Constants.NBT.TAG_INT))
-		{
-			return new BlockPos(tag.getInt("TileX"), tag.getInt("TileY"), tag.getInt("TileZ"));
-		}
-
-		return null;
+		return readPrefixedPosFromTag(tag, "Tile");
 	}
 
 	/**
@@ -468,9 +461,42 @@ public class NbtUtils
 	 */
 	public static @Nonnull NbtCompound writeAttachedPosToTag(@Nonnull BlockPos pos, @Nonnull NbtCompound tag)
 	{
-		tag.putInt("TileX", pos.getX());
-		tag.putInt("TileY", pos.getY());
-		tag.putInt("TileZ", pos.getZ());
+		return writePrefixedPosToTag(pos, tag, "Tile");
+	}
+
+	/**
+	 * Read a prefixed BlockPos from NBT.
+	 *
+	 * @param tag ()
+	 * @param pre ()
+	 * @return ()
+	 */
+	@Nullable
+	public static BlockPos readPrefixedPosFromTag(@Nonnull NbtCompound tag, String pre)
+	{
+		if (tag.contains(pre+"X", Constants.NBT.TAG_INT) &&
+			tag.contains(pre+"Y", Constants.NBT.TAG_INT) &&
+			tag.contains(pre+"Z", Constants.NBT.TAG_INT))
+		{
+			return new BlockPos(tag.getInt(pre+"X"), tag.getInt(pre+"Y"), tag.getInt(pre+"Z"));
+		}
+
+		return null;
+	}
+
+	/**
+	 * Write a prefixed BlockPos to NBT.
+	 *
+	 * @param pos ()
+	 * @param tag ()
+	 * @param pre ()
+	 * @return ()
+	 */
+	public static @Nonnull NbtCompound writePrefixedPosToTag(@Nonnull BlockPos pos, @Nonnull NbtCompound tag, String pre)
+	{
+		tag.putInt(pre+"X", pos.getX());
+		tag.putInt(pre+"Y", pos.getY());
+		tag.putInt(pre+"Z", pos.getZ());
 
 		return tag;
 	}

@@ -10,7 +10,6 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
-import net.minecraft.class_10823;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.DefaultAttributeRegistry;
@@ -938,11 +937,11 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    public static @Nullable RegistryKey<class_10823> getWolfSoundTypeFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+    public static @Nullable RegistryKey<WolfSoundVariant> getWolfSoundTypeFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains(NbtKeys.SOUND_VARIANT, Constants.NBT.TAG_STRING))
         {
-            RegistryEntry.Reference<class_10823> soundVariant = registry.getOrThrow(RegistryKeys.WOLF_SOUND_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.SOUND_VARIANT))).orElse(null);
+            RegistryEntry.Reference<WolfSoundVariant> soundVariant = registry.getOrThrow(RegistryKeys.WOLF_SOUND_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.SOUND_VARIANT))).orElse(null);
 
             if (soundVariant != null)
             {

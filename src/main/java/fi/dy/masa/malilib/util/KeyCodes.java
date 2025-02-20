@@ -14,6 +14,7 @@ public class KeyCodes
 
     public static final int KEY_NONE = GLFW.GLFW_KEY_UNKNOWN;
 
+    // Printable
     public static final int KEY_SPACE           = GLFW.GLFW_KEY_SPACE;
     public static final int KEY_APOSTROPHE      = GLFW.GLFW_KEY_APOSTROPHE;
     public static final int KEY_COMMA           = GLFW.GLFW_KEY_COMMA;
@@ -64,6 +65,7 @@ public class KeyCodes
     public static final int KEY_GRAVE_ACCENT    = GLFW.GLFW_KEY_GRAVE_ACCENT;
     public static final int KEY_WORLD_1         = GLFW.GLFW_KEY_WORLD_1;
     public static final int KEY_WORLD_2         = GLFW.GLFW_KEY_WORLD_2;
+    // Control Keys
     public static final int KEY_ESCAPE          = GLFW.GLFW_KEY_ESCAPE;
     public static final int KEY_ENTER           = GLFW.GLFW_KEY_ENTER;
     public static final int KEY_TAB             = GLFW.GLFW_KEY_TAB;
@@ -83,6 +85,7 @@ public class KeyCodes
     public static final int KEY_NUM_LOCK        = GLFW.GLFW_KEY_NUM_LOCK;
     public static final int KEY_PRINT_SCREEN    = GLFW.GLFW_KEY_PRINT_SCREEN;
     public static final int KEY_PAUSE           = GLFW.GLFW_KEY_PAUSE;
+    // Function Keys
     public static final int KEY_F1              = GLFW.GLFW_KEY_F1;
     public static final int KEY_F2              = GLFW.GLFW_KEY_F2;
     public static final int KEY_F3              = GLFW.GLFW_KEY_F3;
@@ -134,7 +137,7 @@ public class KeyCodes
     public static final int KEY_RIGHT_ALT       = GLFW.GLFW_KEY_RIGHT_ALT;
     public static final int KEY_RIGHT_SUPER     = GLFW.GLFW_KEY_RIGHT_SUPER;
     public static final int KEY_MENU            = GLFW.GLFW_KEY_MENU;
-
+    // Mouse
     public static final int MOUSE_BUTTON_1      = GLFW.GLFW_MOUSE_BUTTON_1 - 100;
     public static final int MOUSE_BUTTON_2      = GLFW.GLFW_MOUSE_BUTTON_2 - 100;
     public static final int MOUSE_BUTTON_3      = GLFW.GLFW_MOUSE_BUTTON_3 - 100;

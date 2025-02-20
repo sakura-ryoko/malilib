@@ -1,20 +1,40 @@
 package fi.dy.masa.malilib.hotkeys;
 
+import java.util.function.IntFunction;
+import javax.annotation.Nullable;
+import com.google.common.collect.ImmutableList;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.netty.buffer.ByteBuf;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
+
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
 
 public class KeybindSettings
 {
-    /*
     public static final Codec<KeybindSettings> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
-                            MapLike.forMap()
+                            Context.CODEC.fieldOf("context").forGetter(get -> get.context),
+                            KeyAction.CODEC.fieldOf("activateOn").forGetter(get -> get.activateOn),
+                            Codec.BOOL.fieldOf("allowExtraKeys").forGetter(get -> get.allowExtraKeys),
+                            Codec.BOOL.fieldOf("orderSensitive").forGetter(get -> get.orderSensitive),
+                            Codec.BOOL.fieldOf("exclusive").forGetter(get -> get.exclusive),
+                            Codec.BOOL.fieldOf("cancel").forGetter(get -> get.cancel),
+                            Codec.BOOL.optionalFieldOf("allowEmpty", false).forGetter(get -> get.allowEmpty)
                     )
                     .apply(instance, KeybindSettings::new)
     );
-     */
     public static final KeybindSettings DEFAULT                     = new KeybindSettings(Context.INGAME, KeyAction.PRESS, false, true, false, true);
     public static final KeybindSettings EXCLUSIVE                   = new KeybindSettings(Context.INGAME, KeyAction.PRESS, false, true, true, true);
     public static final KeybindSettings RELEASE                     = new KeybindSettings(Context.INGAME, KeyAction.RELEASE, false, true, false, false);
@@ -114,6 +134,29 @@ public class KeybindSettings
         return obj;
     }
 
+    public JsonObject toJsonCodec()
+    {
+        return (JsonObject) CODEC
+                .encodeStart(JsonOps.INSTANCE, this)
+                .resultOrPartial((err) -> MaLiLib.LOGGER.warn("KeybindSettings#toJsonCodec(): Error {}", err))
+                .orElse(new JsonObject());
+    }
+
+    public static @Nullable KeybindSettings fromJsonCodec(JsonObject obj)
+    {
+        com.mojang.datafixers.util.Pair<KeybindSettings, JsonElement> pair = CODEC
+                .decode(JsonOps.INSTANCE, obj)
+                .resultOrPartial((err) -> MaLiLib.LOGGER.warn("KeybindSettings#fromJsonCodec(): Error {}", err))
+                .orElse(null);
+
+        if (pair != null && pair.getFirst() != null)
+        {
+            return pair.getFirst();
+        }
+
+        return null;
+    }
+
     public static KeybindSettings fromJson(JsonObject obj)
     {
         Context context = Context.INGAME;
@@ -181,19 +224,44 @@ public class KeybindSettings
         return true;
     }
 
-    public enum Context implements IConfigOptionListEntry
+    public enum Context implements IConfigOptionListEntry, IEnumCodecProvider
     {
-        INGAME  ("ingame",  "malilib.label.key_context.ingame"),
-        GUI     ("gui",     "malilib.label.key_context.gui"),
-        ANY     ("any",     "malilib.label.key_context.any");
+        INGAME  (0, "ingame",  "malilib.label.key_context.ingame"),
+        GUI     (1, "gui",     "malilib.label.key_context.gui"),
+        ANY     (2, "any",     "malilib.label.key_context.any");
 
+        public static final StringIdentifiable.EnumCodec<Context> CODEC = StringIdentifiable.createCodec(Context::values);
+        public static final IntFunction<Context> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(Context::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
+        public static final PacketCodec<ByteBuf, Context> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, Context::getIndex);
+        public static final ImmutableList<Context> VALUES = ImmutableList.copyOf(values());
+
+        private final int index;
         private final String configString;
         private final String translationKey;
 
-        private Context(String configString, String translationKey)
+        Context(int index, String configString, String translationKey)
         {
+            this.index = index;
             this.configString = configString;
             this.translationKey = translationKey;
+        }
+
+        @Override
+        public int getIndex()
+        {
+            return this.index;
+        }
+
+        @Override
+        public String getName()
+        {
+            return this.configString;
+        }
+
+        @Override
+        public String asString()
+        {
+            return this.configString;
         }
 
         @Override

@@ -6,7 +6,7 @@ import net.minecraft.inventory.SimpleInventory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-import fi.dy.masa.malilib.util.IEntityOwnedInventory;
+import fi.dy.masa.malilib.util.game.IEntityOwnedInventory;
 
 @Mixin(SimpleInventory.class)
 public abstract class MixinSimpleInventory implements IEntityOwnedInventory, Inventory

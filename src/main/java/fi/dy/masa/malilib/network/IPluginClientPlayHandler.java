@@ -160,7 +160,6 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * @param data (Data Codec)
      */
     default void decodeNbtCompound(Identifier channel, NbtCompound data) {}
-    default void decodeByteBuf(Identifier channel, MaLiLibBuf data) {}
     default <D> void decodeObject(Identifier channel, D data1) {}
     default <P extends IClientPayloadData> void decodeClientData(Identifier channel, P data) {}
 
@@ -171,7 +170,6 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * @param data (Data Codec)
      */
     default void encodeNbtCompound(NbtCompound data) {}
-    default void encodeByteBuf(MaLiLibBuf data) {}
     default <D> void encodeObject(D data1) {}
     default <P extends IClientPayloadData> void encodeClientData(P data) {}
 

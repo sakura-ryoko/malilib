@@ -1,14 +1,22 @@
 package fi.dy.masa.malilib.util.position;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector2i;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class Vec2i
 {
+    public static final Codec<Vec2i> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.INT.fieldOf("x").forGetter(get -> get.x),
+                    PrimitiveCodec.INT.fieldOf("y").forGetter(get -> get.y)
+            ).apply(inst, Vec2i::new)
+    );
     public static final Vec2i ZERO = new Vec2i(0, 0);
 
     public final int x;

@@ -2,6 +2,9 @@ package fi.dy.masa.malilib.util;
 
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -11,6 +14,16 @@ import net.minecraft.world.World;
 
 public class IntBoundingBox
 {
+    public static final Codec<IntBoundingBox> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.INT.fieldOf("minX").forGetter(get -> get.minX),
+                    PrimitiveCodec.INT.fieldOf("minY").forGetter(get -> get.minY),
+                    PrimitiveCodec.INT.fieldOf("minZ").forGetter(get -> get.minZ),
+                    PrimitiveCodec.INT.fieldOf("maxX").forGetter(get -> get.maxX),
+                    PrimitiveCodec.INT.fieldOf("maxY").forGetter(get -> get.maxY),
+                    PrimitiveCodec.INT.fieldOf("maxZ").forGetter(get -> get.maxZ)
+            ).apply(inst, IntBoundingBox::new)
+    );
     public final int minX;
     public final int minY;
     public final int minZ;

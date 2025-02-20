@@ -4,8 +4,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 
-import net.minecraft.class_10823;
-import net.minecraft.class_10824;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -244,10 +242,10 @@ public class EntityUtils
      * @param entity ()
      * @return ()
      */
-    public static RegistryKey<class_10823> getWolfSoundTypeFromComponents(@Nonnull WolfEntity entity)
+    public static RegistryKey<WolfSoundVariant> getWolfSoundTypeFromComponents(@Nonnull WolfEntity entity)
     {
-        RegistryEntry<class_10823> entry = entity.get(DataComponentTypes.SOUND_VARIANT_WOLF);
-        return entry != null ? entry.getKey().orElse(class_10824.field_57080) : class_10824.field_57080;
+        RegistryEntry<WolfSoundVariant> entry = entity.get(DataComponentTypes.WOLF_SOUND_VARIANT);
+        return entry != null ? entry.getKey().orElse(WolfSoundVariants.CLASSIC) : WolfSoundVariants.CLASSIC;
     }
 
     /**

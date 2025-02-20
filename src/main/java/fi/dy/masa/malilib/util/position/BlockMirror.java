@@ -1,25 +1,32 @@
 package fi.dy.masa.malilib.util.position;
 
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
+import io.netty.buffer.ByteBuf;
 
-import org.jetbrains.annotations.ApiStatus;
-
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.Direction;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
-public enum BlockMirror
+public enum BlockMirror implements IEnumCodecProvider
 {
     NONE (0, "none", null, net.minecraft.util.BlockMirror.NONE),
     X    (1, "x", Direction.Axis.X, net.minecraft.util.BlockMirror.FRONT_BACK),
     Y    (2, "y", Direction.Axis.Y, net.minecraft.util.BlockMirror.NONE),
     Z    (3, "z", Direction.Axis.Z, net.minecraft.util.BlockMirror.LEFT_RIGHT);
 
+    public static final StringIdentifiable.EnumCodec<BlockMirror> CODEC = StringIdentifiable.createCodec(BlockMirror::values);
+    public static final IntFunction<BlockMirror> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(BlockMirror::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
+    public static final PacketCodec<ByteBuf, BlockMirror> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, BlockMirror::getIndex);
     public static final BlockMirror[] VALUES = values();
 
     private final int index;
@@ -37,11 +44,13 @@ public enum BlockMirror
         this.axis = axis;
     }
 
+    @Override
     public int getIndex()
     {
         return this.index;
     }
 
+    @Override
     public String getName()
     {
         return this.name;
@@ -50,6 +59,12 @@ public enum BlockMirror
     public String getDisplayName()
     {
         return StringUtils.translate(this.translationKey);
+    }
+
+    @Override
+    public String asString()
+    {
+        return this.name;
     }
 
     /**

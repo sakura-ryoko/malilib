@@ -4,6 +4,10 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import fi.dy.masa.malilib.util.MathUtils;
 
 /**
@@ -11,6 +15,22 @@ import fi.dy.masa.malilib.util.MathUtils;
  */
 public class Color4f
 {
+    public static final Codec<Color4f> RGBA_CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    PrimitiveCodec.FLOAT.fieldOf("red").forGetter(get -> get.r),
+                    PrimitiveCodec.FLOAT.fieldOf("green").forGetter(get -> get.g),
+                    PrimitiveCodec.FLOAT.fieldOf("blue").forGetter(get -> get.b),
+                    PrimitiveCodec.FLOAT.fieldOf("alpha").forGetter(get -> get.a)
+            ).apply(instance, Color4f::new)
+    );
+    public static final Codec<Color4f> RGB_CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    PrimitiveCodec.FLOAT.fieldOf("red").forGetter(get -> get.r),
+                    PrimitiveCodec.FLOAT.fieldOf("green").forGetter(get -> get.g),
+                    PrimitiveCodec.FLOAT.fieldOf("blue").forGetter(get -> get.b)
+            ).apply(instance, Color4f::new)
+    );
+    public static final Codec<Color4f> CODEC = RGBA_CODEC;
     public static final Pattern HEX_8 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{8})");
     public static final Pattern HEX_6 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{6})");
     public static final Pattern HEX_4 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{4})");

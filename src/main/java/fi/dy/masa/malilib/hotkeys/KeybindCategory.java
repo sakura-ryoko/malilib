@@ -1,10 +1,21 @@
 package fi.dy.masa.malilib.hotkeys;
 
 import java.util.List;
+
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class KeybindCategory implements Comparable<KeybindCategory>
 {
+    // todo how do you make a CODEC of a generic list type, as an interface? (IHotkey)
+    /*
+    public static final Codec<KeybindCategory> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.STRING.fieldOf("modName").forGetter(get -> get.modName),
+                    PrimitiveCodec.STRING.fieldOf("categoryName").forGetter(get -> get.categoryName)
+            ).apply(inst, KeybindCategory::new)
+    );
+    private static final Codec<List<? extends IHotkey>> LIST_CODEC = IHotk
+     */
     private final String modName;
     private final String categoryName;
     private final List<? extends IHotkey> hotkeys;

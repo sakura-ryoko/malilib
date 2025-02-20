@@ -2,6 +2,9 @@ package fi.dy.masa.malilib.util;
 
 import java.util.Objects;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
@@ -13,12 +16,28 @@ import net.minecraft.util.Identifier;
  */
 public class ItemType
 {
+    public static final Codec<ItemType> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    ItemStack.CODEC.fieldOf("stack").forGetter(get -> get.stack),
+                    PrimitiveCodec.BOOL.fieldOf("checkNBT").forGetter(get -> get.checkNBT)
+            ).apply(inst, ItemType::new)
+    );
+    public static final Codec<ItemType> SIMPLE_CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    ItemStack.CODEC.fieldOf("stack").forGetter(get -> get.stack)
+            ).apply(inst, ItemType::new)
+    );
     private ItemStack stack;
     private final boolean checkNBT;
 
     public ItemType(ItemStack stack)
     {
         this(stack, true, true);
+    }
+
+    public ItemType(ItemStack stack, boolean checkNBT)
+    {
+        this(stack, true, checkNBT);
     }
 
     public ItemType(ItemStack stack, boolean copy, boolean checkNBT)

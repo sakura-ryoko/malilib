@@ -1,9 +1,13 @@
 package fi.dy.masa.malilib.util;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -16,7 +20,21 @@ import fi.dy.masa.malilib.interfaces.IRangeChangeListener;
 
 public class LayerRange
 {
-    protected final IRangeChangeListener refresher;
+    public static Codec<LayerRange> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    LayerMode.CODEC.fieldOf("mode").forGetter(get -> get.layerMode),
+                    Direction.Axis.CODEC.fieldOf("axis").forGetter(get -> get.axis),
+                    PrimitiveCodec.INT.fieldOf("layer_single").forGetter(get -> get.layerSingle),
+                    PrimitiveCodec.INT.fieldOf("layer_above").forGetter(get -> get.layerAbove),
+                    PrimitiveCodec.INT.fieldOf("layer_below").forGetter(get -> get.layerBelow),
+                    PrimitiveCodec.INT.fieldOf("layer_range_min").forGetter(get -> get.layerRangeMin),
+                    PrimitiveCodec.INT.fieldOf("layer_range_max").forGetter(get -> get.layerRangeMax),
+                    PrimitiveCodec.BOOL.fieldOf("hotkey_range_min").forGetter(get -> get.hotkeyRangeMin),
+                    PrimitiveCodec.BOOL.fieldOf("hotkey_range_max").forGetter(get -> get.hotkeyRangeMax)
+            ).apply(inst, LayerRange::new)
+    );
+
+    protected IRangeChangeListener refresher;
     protected LayerMode layerMode = LayerMode.ALL;
     protected Direction.Axis axis = Direction.Axis.Y;
     protected int layerSingle = 0;
@@ -27,9 +45,29 @@ public class LayerRange
     protected boolean hotkeyRangeMin;
     protected boolean hotkeyRangeMax;
 
+    private LayerRange(LayerMode mode, Direction.Axis axis, int single, int above, int below, int min, int max, boolean minRange, boolean maxRange)
+    {
+        this.refresher = null;
+        this.layerMode = mode;
+        this.axis = axis;
+        this.layerSingle = single;
+        this.layerAbove = above;
+        this.layerBelow = below;
+        this.layerRangeMin = min;
+        this.layerRangeMax = max;
+        this.hotkeyRangeMin = minRange;
+        this.hotkeyRangeMax = maxRange;
+    }
+
     public LayerRange(IRangeChangeListener refresher)
     {
         this.refresher = refresher;
+    }
+
+    public LayerRange setRefresher(IRangeChangeListener refresher)
+    {
+        this.refresher = refresher;
+        return this;
     }
 
     public LayerMode getLayerMode()

@@ -1,6 +1,6 @@
 package fi.dy.masa.malilib.mixin.entity;
 
-import fi.dy.masa.malilib.util.IEntityOwnedInventory;
+import fi.dy.masa.malilib.util.game.IEntityOwnedInventory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.AbstractHorseEntity;

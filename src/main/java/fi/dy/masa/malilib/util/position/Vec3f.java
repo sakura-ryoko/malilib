@@ -1,14 +1,31 @@
 package fi.dy.masa.malilib.util.position;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Vector3f;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class Vec3f
 {
+    public static final Codec<Vec3f> FLOAT_CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.FLOAT.fieldOf("x").forGetter(get -> get.x),
+                    PrimitiveCodec.FLOAT.fieldOf("y").forGetter(get -> get.y),
+                    PrimitiveCodec.FLOAT.fieldOf("z").forGetter(get -> get.z)
+            ).apply(inst, Vec3f::new)
+    );
+    public static final Codec<Vec3f> DOUBLE_CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.DOUBLE.fieldOf("x").forGetter(get -> Double.valueOf(get.x)),
+                    PrimitiveCodec.DOUBLE.fieldOf("y").forGetter(get -> Double.valueOf(get.y)),
+                    PrimitiveCodec.DOUBLE.fieldOf("z").forGetter(get -> Double.valueOf(get.z))
+            ).apply(inst, Vec3f::new)
+    );
+    public static final Codec<Vec3f> CODEC = FLOAT_CODEC;
     public static final Vec3f ZERO = new Vec3f(0.0F, 0.0F, 0.0F);
 
     public final float x;
