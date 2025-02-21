@@ -3,6 +3,9 @@ package fi.dy.masa.malilib.config;
 import java.util.Locale;
 import javax.annotation.Nullable;
 import com.google.gson.JsonElement;
+import org.jetbrains.annotations.ApiStatus;
+
+import com.mojang.serialization.Codec;
 
 public interface IConfigBase
 {
@@ -12,6 +15,9 @@ public interface IConfigBase
      * @return the type of this config
      */
     ConfigType getType();
+
+    @ApiStatus.Experimental
+    Codec<? extends IConfigBase> codec();
 
     /**
      * Returns the config name to display in the config GUIs

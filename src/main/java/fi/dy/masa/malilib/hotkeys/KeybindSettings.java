@@ -224,38 +224,28 @@ public class KeybindSettings
         return true;
     }
 
-    public enum Context implements IConfigOptionListEntry, IEnumCodecProvider
+    public enum Context implements IConfigOptionListEntry, StringIdentifiable
     {
-        INGAME  (0, "ingame",  "malilib.label.key_context.ingame"),
-        GUI     (1, "gui",     "malilib.label.key_context.gui"),
-        ANY     (2, "any",     "malilib.label.key_context.any");
+        INGAME  ("ingame",  "malilib.label.key_context.ingame"),
+        GUI     ("gui",     "malilib.label.key_context.gui"),
+        ANY     ("any",     "malilib.label.key_context.any");
 
         public static final StringIdentifiable.EnumCodec<Context> CODEC = StringIdentifiable.createCodec(Context::values);
-        public static final IntFunction<Context> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(Context::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
-        public static final PacketCodec<ByteBuf, Context> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, Context::getIndex);
         public static final ImmutableList<Context> VALUES = ImmutableList.copyOf(values());
 
-        private final int index;
         private final String configString;
         private final String translationKey;
 
-        Context(int index, String configString, String translationKey)
+        Context(String configString, String translationKey)
         {
-            this.index = index;
             this.configString = configString;
             this.translationKey = translationKey;
         }
 
         @Override
-        public int getIndex()
+        public Codec<Context> codec()
         {
-            return this.index;
-        }
-
-        @Override
-        public String getName()
-        {
-            return this.configString;
+            return CODEC;
         }
 
         @Override

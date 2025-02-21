@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.config;
 
-public enum ConfigType
+import net.minecraft.util.StringIdentifiable;
+
+public enum ConfigType implements StringIdentifiable
 {
     BOOLEAN,
     INTEGER,
@@ -13,4 +15,13 @@ public enum ConfigType
     COLOR_LIST,
     OPTION_LIST,
     HOTKEY
+    ;
+
+    @Override
+    public String asString()
+    {
+        return name().toLowerCase();
+    }
+
+    public static final StringIdentifiable.EnumCodec<ConfigType> CODEC = StringIdentifiable.createCodec(ConfigType::values);
 }

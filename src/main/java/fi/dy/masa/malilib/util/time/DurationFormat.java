@@ -1,59 +1,44 @@
 package fi.dy.masa.malilib.util.time;
 
-import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
-import io.netty.buffer.ByteBuf;
 
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
+import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
 import fi.dy.masa.malilib.util.time.formatter.DurationFmt;
 
 /**
  * Ported from CoreLib by Sakura Ryoko
  */
-public enum DurationFormat implements IConfigOptionListEntry, IEnumCodecProvider
+public enum DurationFormat implements IConfigOptionListEntry, StringIdentifiable
 {
-    REGULAR      (0, "regular",      DurationFmtType.REGULAR,      "malilib.gui.label.duration_format.regular"),
-    PRETTY       (1, "pretty",       DurationFmtType.PRETTY,       "malilib.gui.label.duration_format.pretty"),
-    ISO_EXTENDED (2, "iso_extended", DurationFmtType.ISO_EXTENDED, "malilib.gui.label.duration_format.iso_extended"),
-    FORMATTED    (3, "formatted",    DurationFmtType.FORMATTED,    "malilib.gui.label.duration_format.formatted"),
+    REGULAR      ("regular",      DurationFmtType.REGULAR,      "malilib.gui.label.duration_format.regular"),
+    PRETTY       ("pretty",       DurationFmtType.PRETTY,       "malilib.gui.label.duration_format.pretty"),
+    ISO_EXTENDED ("iso_extended", DurationFmtType.ISO_EXTENDED, "malilib.gui.label.duration_format.iso_extended"),
+    FORMATTED    ("formatted",    DurationFmtType.FORMATTED,    "malilib.gui.label.duration_format.formatted"),
     ;
 
     public static final StringIdentifiable.EnumCodec<DurationFormat> CODEC = StringIdentifiable.createCodec(DurationFormat::values);
-    public static final IntFunction<DurationFormat> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(DurationFormat::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
-    public static final PacketCodec<ByteBuf, DurationFormat> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, DurationFormat::getIndex);
     public static final ImmutableList<DurationFormat> VALUES = ImmutableList.copyOf(values());
 
-    private final int index;
     private final String configString;
     private final DurationFmtType<?> type;
     private final String translationKey;
 
-    DurationFormat(int index, String name, DurationFmtType<?> type, String translationKey)
+    DurationFormat(String name, DurationFmtType<?> type, String translationKey)
     {
-        this.index = index;
         this.configString = name;
         this.type = type;
         this.translationKey = translationKey;
     }
 
     @Override
-    public int getIndex()
+    public Codec<DurationFormat> codec()
     {
-        return this.index;
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.configString;
+        return CODEC;
     }
 
     @Override

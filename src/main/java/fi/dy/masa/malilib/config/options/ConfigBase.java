@@ -1,5 +1,13 @@
 package fi.dy.masa.malilib.config.options;
 
+import javax.annotation.Nullable;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.jetbrains.annotations.ApiStatus;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -9,8 +17,6 @@ import fi.dy.masa.malilib.config.IConfigNotifiable;
 import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import fi.dy.masa.malilib.util.StringUtils;
-
-import javax.annotation.Nullable;
 
 public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, IConfigResettable, IConfigNotifiable<T>
 {
@@ -61,6 +67,8 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
             MaLiLib.LOGGER.info("NEW CONFIG: [{}]", this.toString());
         }
     }
+
+    public abstract Codec<T> codec();
 
     public ConfigType getType()
     {
@@ -221,6 +229,39 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
         if (CONFIG_TYPE_DEBUG || (MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG != null && MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG.getBooleanValue()))
         {
             MaLiLib.LOGGER.info("CONFIG: type [{}], element [{}], oldStr [{}], newStr [{}]", type.name(), element, oldStr, newStr);
+        }
+    }
+
+    @ApiStatus.Experimental
+    public @Nullable T fromJsonCodec(JsonElement json)
+    {
+        if (this.codec() == null) return null;
+
+        try
+        {
+            return this.codec().decode(JsonOps.INSTANCE, json).resultOrPartial().orElseThrow().getFirst();
+        }
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.warn("ConfigBase#fromJsonCodec(): Error: {}", err.getMessage());
+            return null;
+        }
+    }
+
+    @ApiStatus.Experimental
+    @SuppressWarnings("unchecked")
+    public JsonElement toJsonCodec(@Nullable T input)
+    {
+        if (this.codec() == null) return new JsonObject();
+
+        try
+        {
+            return this.codec().encodeStart(JsonOps.INSTANCE, input != null ? input : (T) this).resultOrPartial().orElse(new JsonObject());
+        }
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.warn("ConfigBase#toJsonCodec(): Error: {}", err.getMessage());
+            return new JsonObject();
         }
     }
 

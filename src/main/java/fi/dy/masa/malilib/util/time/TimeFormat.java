@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
@@ -44,6 +45,12 @@ public enum TimeFormat implements IConfigOptionListEntry, IEnumCodecProvider
         this.configString = name;
         this.type = type;
         this.translationKey = translationKey;
+    }
+
+    @Override
+    public Codec<TimeFormat> codec()
+    {
+        return CODEC;
     }
 
     @Override

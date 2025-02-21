@@ -103,6 +103,12 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
     }
 
     @Override
+    public Codec<ConfigFloat> codec()
+    {
+        return CODEC;
+    }
+
+    @Override
     public boolean shouldUseSlider()
     {
         return this.useSlider;
@@ -168,7 +174,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
         {
             return Float.parseFloat(newValue) != this.defaultValue;
         }
-        catch (Exception e)
+        catch (Exception ignored)
         {
         }
 

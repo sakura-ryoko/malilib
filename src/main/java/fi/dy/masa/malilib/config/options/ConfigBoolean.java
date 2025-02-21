@@ -2,9 +2,11 @@ package fi.dy.masa.malilib.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigBoolean;
@@ -53,6 +55,12 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
     {
         this(name, defaultValue, comment, prettyName, translatedName);
         this.value = value;
+    }
+
+    @Override
+    public Codec<ConfigBoolean> codec()
+    {
+        return CODEC;
     }
 
     @Override

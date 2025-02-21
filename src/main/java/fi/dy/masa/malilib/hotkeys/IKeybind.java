@@ -6,6 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+import com.mojang.serialization.Codec;
+
 import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.config.IStringRepresentable;
 import fi.dy.masa.malilib.util.JsonUtils;
@@ -13,6 +15,8 @@ import fi.dy.masa.malilib.util.JsonUtils;
 public interface IKeybind extends IConfigResettable, IStringRepresentable
 {
     boolean isValid();
+
+    Codec<? extends IKeybind> codec();
 
     /**
      * Returns true if the keybind was pressed down during the current game tick.

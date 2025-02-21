@@ -3,6 +3,11 @@ package fi.dy.masa.malilib.util.restrictions;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import com.google.common.collect.ImmutableList;
+
+import com.mojang.serialization.Codec;
+import net.minecraft.util.StringIdentifiable;
+
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -59,19 +64,28 @@ public abstract class UsageRestriction<TYPE>
         }
     }
 
-    public enum ListType implements IConfigOptionListEntry
+    public enum ListType implements IConfigOptionListEntry, StringIdentifiable
     {
         NONE        ("none",        "malilib.label.list_type.none"),
         BLACKLIST   ("blacklist",   "malilib.label.list_type.blacklist"),
         WHITELIST   ("whitelist",   "malilib.label.list_type.whitelist");
 
+        public static final StringIdentifiable.EnumCodec<ListType> CODEC = StringIdentifiable.createCodec(ListType::values);
+        public static final ImmutableList<ListType> VALUES = ImmutableList.copyOf(values());
+
         private final String configString;
         private final String translationKey;
 
-        private ListType(String configString, String translationKey)
+        ListType(String configString, String translationKey)
         {
             this.configString = configString;
             this.translationKey = translationKey;
+        }
+
+        @Override
+        public Codec<ListType> codec()
+        {
+            return CODEC;
         }
 
         @Override
@@ -126,6 +140,12 @@ public abstract class UsageRestriction<TYPE>
             }
 
             return ListType.NONE;
+        }
+
+        @Override
+        public String asString()
+        {
+            return this.configString;
         }
     }
 }

@@ -8,6 +8,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
+import com.mojang.serialization.Codec;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigLockedList;
@@ -42,6 +44,12 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
         this.handler = handler;
         this.defaultList = handler.getDefaultEntries();
         this.values.addAll(this.defaultList);
+    }
+
+    @Override
+    public Codec<ConfigLockedList> codec()
+    {
+        return null;
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.function.IntFunction;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
@@ -34,6 +35,12 @@ public enum LayerMode implements IConfigOptionListEntry, IEnumCodecProvider
         this.index = index;
         this.configString = configString;
         this.translationKey = translationKey;
+    }
+
+    @Override
+    public Codec<LayerMode> codec()
+    {
+        return CODEC;
     }
 
     public int getIndex()

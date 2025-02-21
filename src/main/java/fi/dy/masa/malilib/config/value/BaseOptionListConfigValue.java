@@ -3,16 +3,24 @@ package fi.dy.masa.malilib.config.value;
 import java.util.List;
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.ApiStatus;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import fi.dy.masa.malilib.util.StringUtils;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class BaseOptionListConfigValue implements OptionListConfigValue
 {
+    public static final Codec<BaseOptionListConfigValue> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.STRING.fieldOf("name").forGetter(get -> get.name),
+                    PrimitiveCodec.STRING.fieldOf("translationKey").forGetter(get -> get.translationKey)
+            ).apply(inst, BaseOptionListConfigValue::new)
+    );
+
     protected final String name;
     protected final String translationKey;
 

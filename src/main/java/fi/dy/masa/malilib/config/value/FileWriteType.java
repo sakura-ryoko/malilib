@@ -1,12 +1,10 @@
 package fi.dy.masa.malilib.config.value;
 
 import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class FileWriteType extends BaseOptionListConfigValue
 {
     public static final FileWriteType NORMAL_WRITE    = new FileWriteType("normal_write",    "malilib.name.file_write_type.normal_write");

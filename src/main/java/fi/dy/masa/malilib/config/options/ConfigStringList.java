@@ -6,6 +6,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.dynamic.Codecs;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigStringList;
@@ -13,6 +19,16 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigStringList extends ConfigBase<ConfigStringList> implements IConfigStringList
 {
+    public static final Codec<ConfigStringList> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
+                    Codecs.listOrSingle(PrimitiveCodec.STRING).fieldOf("defaultValue").forGetter(get -> get.defaultValue.stream().toList()),
+                    Codecs.listOrSingle(PrimitiveCodec.STRING).fieldOf("values").forGetter(get -> get.strings),
+                    PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
+                    PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
+                    PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)
+            ).apply(inst, ConfigStringList::new)
+    );
     private final ImmutableList<String> defaultValue;
     private final List<String> strings = new ArrayList<>();
 
@@ -37,6 +53,18 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
 
         this.defaultValue = defaultValue;
         this.strings.addAll(defaultValue);
+    }
+
+    private ConfigStringList(String name, List<String> defaultValue, List<String> values, String comment, String prettyName, String translatedName)
+    {
+        this(name, ImmutableList.copyOf(defaultValue), comment, prettyName, translatedName);
+        this.strings.addAll(values);
+    }
+
+    @Override
+    public Codec<ConfigStringList> codec()
+    {
+        return CODEC;
     }
 
     @Override

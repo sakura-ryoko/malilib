@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.util.data;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +32,7 @@ public class Color4f
             ).apply(instance, Color4f::new)
     );
     public static final Codec<Color4f> CODEC = RGBA_CODEC;
+    public static final Codec<List<Color4f>> LIST_CODEC = CODEC.listOf();
     public static final Pattern HEX_8 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{8})");
     public static final Pattern HEX_6 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{6})");
     public static final Pattern HEX_4 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{4})");

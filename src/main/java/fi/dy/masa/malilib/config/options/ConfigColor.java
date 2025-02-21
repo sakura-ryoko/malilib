@@ -2,6 +2,11 @@ package fi.dy.masa.malilib.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.util.data.Color4f;
@@ -9,6 +14,16 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigColor extends ConfigInteger
 {
+    public static final Codec<ConfigColor> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
+                    PrimitiveCodec.STRING.fieldOf("defaultValue").forGetter(ConfigColor::getDefaultStringValue),
+                    Color4f.CODEC.fieldOf("value").forGetter(get -> get.color),
+                    PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
+                    PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
+                    PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)
+            ).apply(inst, ConfigColor::new)
+    );
     private Color4f color;
 
     public ConfigColor(String name, String defaultValue)
@@ -31,6 +46,18 @@ public class ConfigColor extends ConfigInteger
         super(name, StringUtils.getColor(defaultValue, 0), comment, prettyName, translatedName);
 
         this.color = Color4f.fromColor(this.getIntegerValue());
+    }
+
+    private ConfigColor(String name, String defaultValue, Color4f color, String comment, String prettyName, String translatedName)
+    {
+        this(name, defaultValue, comment, prettyName, translatedName);
+        this.color = color;
+    }
+
+    //@Override
+    public Codec<ConfigColor> colorCodec()
+    {
+        return CODEC;
     }
 
     @Override

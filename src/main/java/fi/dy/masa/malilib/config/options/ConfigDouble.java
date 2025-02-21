@@ -106,6 +106,12 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
     }
 
     @Override
+    public Codec<ConfigDouble> codec()
+    {
+        return CODEC;
+    }
+
+    @Override
     public boolean shouldUseSlider()
     {
         return this.useSlider;
@@ -171,7 +177,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
         {
             return Double.parseDouble(newValue) != this.defaultValue;
         }
-        catch (Exception e)
+        catch (Exception ignored)
         {
         }
 

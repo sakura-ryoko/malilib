@@ -106,6 +106,12 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
     }
 
     @Override
+    public Codec<ConfigInteger> codec()
+    {
+        return CODEC;
+    }
+
+    @Override
     public boolean shouldUseSlider()
     {
         return this.useSlider;
@@ -171,7 +177,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
         {
             return Integer.parseInt(newValue) != this.defaultValue;
         }
-        catch (Exception e)
+        catch (Exception ignored)
         {
         }
 

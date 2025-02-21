@@ -1,6 +1,11 @@
 package fi.dy.masa.malilib.config.options;
 
 import com.google.gson.JsonElement;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
@@ -11,6 +16,17 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigHotkey extends ConfigBase<ConfigHotkey> implements IHotkey
 {
+    public static final Codec<ConfigHotkey> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                                        PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
+                                        PrimitiveCodec.STRING.fieldOf("defaultHotkey").forGetter(get -> get.keybind.getDefaultStringValue()),
+                                        KeybindSettings.CODEC.fieldOf("keybindSettings").forGetter(get -> get.keybind.getSettings()),
+                                        PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
+                                        PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
+                                        PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)
+                                )
+                                .apply(instance, ConfigHotkey::new)
+    );
     private final IKeybind keybind;
 
     public ConfigHotkey(String name, String defaultStorageString)
@@ -53,6 +69,12 @@ public class ConfigHotkey extends ConfigBase<ConfigHotkey> implements IHotkey
         super(ConfigType.HOTKEY, name, comment, prettyName, translatedName);
 
         this.keybind = KeybindMulti.fromStorageString(defaultStorageString, settings);
+    }
+
+    @Override
+    public Codec<ConfigHotkey> codec()
+    {
+        return CODEC;
     }
 
     @Override

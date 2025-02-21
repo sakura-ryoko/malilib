@@ -683,6 +683,7 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static Pair<Direction, Direction> getItemFrameDirectionsFromNbt(@Nonnull NbtCompound nbt)
     {
         Direction facing = null;
@@ -707,6 +708,7 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static Pair<Direction, PaintingVariant> getPaintingDataFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         Direction facing = null;
@@ -735,6 +737,7 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static @Nullable AxolotlEntity.Variant getAxolotlVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
@@ -752,6 +755,7 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static Pair<RegistryKey<CatVariant>, DyeColor> getCatVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         RegistryKey<CatVariant> variantKey = null;
@@ -862,6 +866,7 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static @Nullable ParrotEntity.Variant getParrotVariantFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2))
@@ -898,6 +903,7 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         RegistryKey<WolfVariant> variantKey = null;
@@ -958,6 +964,7 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static @Nullable DyeColor getSheepColorFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.COLOR))
@@ -974,6 +981,7 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static @Nullable RabbitEntity.Variant getRabbitTypeFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.RABBIT_TYPE))
@@ -990,6 +998,7 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
+    @SuppressWarnings("deprecation")
     public static Pair<LlamaEntity.Variant, Integer> getLlamaTypeFromNbt(@Nonnull NbtCompound nbt)
     {
         LlamaEntity.Variant variant = null;
