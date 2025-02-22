@@ -14,8 +14,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.ShaderProgramLayer;
-import net.minecraft.client.gl.ShaderProgramLayers;
+import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedModel;
@@ -226,8 +225,8 @@ public class RenderUtils
 
         try
         {
-            //ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.GUI_OVERLAY);
+            //ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.GUI_OVERLAY);
             ctx.close();
         }
         catch (Exception ignored)
@@ -263,8 +262,8 @@ public class RenderUtils
 
         try
         {
-            //ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.POSITION_TEX_PANORAMA);
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.GUI_TEXTURED_OVERLAY);
+            //ctx.drawWithShaders(buffer.end(), ShaderPipelines.POSITION_TEX_PANORAMA);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.GUI_TEXTURED_OVERLAY);
             ctx.close();
         }
         catch (Exception ignored)
@@ -476,8 +475,8 @@ public class RenderUtils
 
         try
         {
-            //ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.GUI_OVERLAY);
+            //ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.GUI_OVERLAY);
             ctx.close();
         }
         catch (Exception ignored)
@@ -988,7 +987,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
             ctx.close();
         }
         catch (Exception ignored)
@@ -1114,7 +1113,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
             ctx.reset();
         }
         catch (Exception ignored)
@@ -1136,7 +1135,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
             ctx.reset();
         }
         catch (Exception ignored)
@@ -1164,7 +1163,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
             ctx.close();
         }
         catch (Exception ignored)
@@ -1213,7 +1212,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
             ctx.reset();
         }
         catch (Exception ignored)
@@ -1234,7 +1233,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.DEBUG_LINE_STRIP);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
             ctx.close();
         }
         catch (Exception ignored)
@@ -1857,7 +1856,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawWithShaders(buffer.end(), ShaderProgramLayers.SOLID);
+            ctx.drawWithShaders(buffer.end(), ShaderPipelines.SOLID);
             ctx.close();
         }
         catch (Exception ignored) { }

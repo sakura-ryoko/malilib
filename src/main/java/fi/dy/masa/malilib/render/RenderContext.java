@@ -6,7 +6,7 @@ import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gl.GlUsage;
-import net.minecraft.client.gl.ShaderProgramLayer;
+import net.minecraft.client.gl.ShaderPipeline;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
@@ -86,7 +86,7 @@ public class RenderContext implements AutoCloseable
         }
     }
 
-    public void drawWithShaders(BuiltBuffer meshData, ShaderProgramLayer shaderKey) throws RuntimeException
+    public void drawWithShaders(BuiltBuffer meshData, ShaderPipeline shaderKey) throws RuntimeException
     {
         if (RenderSystem.isOnRenderThread())
         {
@@ -95,7 +95,7 @@ public class RenderContext implements AutoCloseable
         }
     }
 
-    public void drawWithShaders(BuiltBuffer meshData, Matrix4f modelView, Matrix4f posMatrix, ShaderProgramLayer shaderKey) throws RuntimeException
+    public void drawWithShaders(BuiltBuffer meshData, Matrix4f modelView, Matrix4f posMatrix, ShaderPipeline shaderKey) throws RuntimeException
     {
         if (this.vertex == null)
         {

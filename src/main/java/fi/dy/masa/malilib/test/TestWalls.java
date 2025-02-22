@@ -8,8 +8,8 @@ import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlUsage;
-import net.minecraft.client.gl.ShaderProgramLayer;
-import net.minecraft.client.gl.ShaderProgramLayers;
+import net.minecraft.client.gl.ShaderPipeline;
+import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.util.math.BlockPos;
@@ -192,13 +192,13 @@ public class TestWalls implements AutoCloseable
         if (hasData)
         {
             preRender();
-            drawInternal(matrix4f, projMatrix, VERTEX_1, ShaderProgramLayers.DEBUG_LINE_STRIP);
-            drawInternal(matrix4f, projMatrix, VERTEX_2, ShaderProgramLayers.DEBUG_LINE_STRIP);
+            drawInternal(matrix4f, projMatrix, VERTEX_1, ShaderPipelines.DEBUG_LINE_STRIP);
+            drawInternal(matrix4f, projMatrix, VERTEX_2, ShaderPipelines.DEBUG_LINE_STRIP);
             postRender();
         }
     }
 
-    private static void drawInternal(Matrix4f matrix4f, Matrix4f projMatrix, VertexBuffer vertexBuffer, ShaderProgramLayer shaderKey)
+    private static void drawInternal(Matrix4f matrix4f, Matrix4f projMatrix, VertexBuffer vertexBuffer, ShaderPipeline shaderKey)
     {
         if (hasData)
         {
