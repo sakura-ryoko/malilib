@@ -48,6 +48,7 @@ import net.minecraft.village.VillagerProfession;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinDrawContext;
