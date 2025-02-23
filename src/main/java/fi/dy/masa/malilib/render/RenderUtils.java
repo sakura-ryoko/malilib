@@ -408,9 +408,16 @@ public class RenderUtils
         }
     }
 
-    public static int renderText(int xOff, int yOff, double scale, int textColor, int bgColor,
-            HudAlignment alignment, boolean useBackground, boolean useShadow, List<String> lines,
-            DrawContext drawContext)
+    public static int renderText(int xOff, int yOff, double scale, int textColor, int bgColor, HudAlignment alignment,
+                                 boolean useBackground, boolean useShadow,
+                                 List<String> lines, DrawContext drawContext)
+    {
+        return renderText(xOff, yOff, scale, textColor, bgColor, alignment, useBackground, useShadow, true, lines, drawContext);
+    }
+
+    public static int renderText(int xOff, int yOff, double scale, int textColor, int bgColor, HudAlignment alignment,
+                                 boolean useBackground, boolean useShadow, boolean useStatusShift,
+                                 List<String> lines, DrawContext drawContext)
     {
         TextRenderer fontRenderer = mc().textRenderer;
         final int scaledWidth = GuiUtils.getScaledWindowWidth();
@@ -445,7 +452,11 @@ public class RenderUtils
         double posY = yOff + bgMargin;
 
         posY = getHudPosY((int) posY, yOff, contentHeight, scale, alignment);
-        posY += getHudOffsetForPotions(alignment, scale, mc().player);
+
+        if (useStatusShift)
+        {
+            posY += getHudOffsetForPotions(alignment, scale, mc().player);
+        }
 
         for (String line : lines)
         {
