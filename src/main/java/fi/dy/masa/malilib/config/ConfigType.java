@@ -1,5 +1,9 @@
 package fi.dy.masa.malilib.config;
 
+import io.netty.buffer.ByteBuf;
+
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 
 public enum ConfigType implements StringIdentifiable
@@ -23,5 +27,19 @@ public enum ConfigType implements StringIdentifiable
         return name().toLowerCase();
     }
 
+    public static ConfigType fromString(String entry)
+    {
+        for (ConfigType type : values())
+        {
+            if (type.name().equalsIgnoreCase(entry))
+            {
+                return type;
+            }
+        }
+
+        return null;
+    }
+
     public static final StringIdentifiable.EnumCodec<ConfigType> CODEC = StringIdentifiable.createCodec(ConfigType::values);
+    public static final PacketCodec<ByteBuf, ConfigType> PACKET_CODEC = PacketCodecs.STRING.xmap(ConfigType::fromString, ConfigType::asString);
 }

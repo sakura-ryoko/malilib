@@ -55,8 +55,13 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
         this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
     }
 
-    //@Override
-    public Codec<BooleanHotkeyGuiWrapper> booleanHotkeyGuiWrapperCodec()
+    @Override
+    public Codec<ConfigBoolean> codec()
+    {
+        return null;
+    }
+
+    public Codec<BooleanHotkeyGuiWrapper> codecFixed()
     {
         return CODEC;
     }
@@ -121,11 +126,11 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
     @ApiStatus.Experimental
     public @Nullable BooleanHotkeyGuiWrapper fromJsonCodec(JsonElement json)
     {
-        if (this.booleanHotkeyGuiWrapperCodec() == null) return null;
+        if (this.codecFixed() == null) return null;
 
         try
         {
-            return this.booleanHotkeyGuiWrapperCodec().decode(JsonOps.INSTANCE, json).resultOrPartial().orElseThrow().getFirst();
+            return this.codecFixed().decode(JsonOps.INSTANCE, json).resultOrPartial().orElseThrow().getFirst();
         }
         catch (Exception err)
         {
@@ -137,11 +142,11 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
     @ApiStatus.Experimental
     public JsonElement toJsonCodec(@Nullable BooleanHotkeyGuiWrapper input)
     {
-        if (this.booleanHotkeyGuiWrapperCodec() == null) return new JsonObject();
+        if (this.codecFixed() == null) return new JsonObject();
 
         try
         {
-            return this.booleanHotkeyGuiWrapperCodec().encodeStart(JsonOps.INSTANCE, input != null ? input : this).resultOrPartial().orElse(new JsonObject());
+            return this.codecFixed().encodeStart(JsonOps.INSTANCE, input != null ? input : this).resultOrPartial().orElse(new JsonObject());
         }
         catch (Exception err)
         {

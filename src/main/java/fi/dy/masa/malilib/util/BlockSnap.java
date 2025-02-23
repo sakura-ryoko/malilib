@@ -1,6 +1,5 @@
 package fi.dy.masa.malilib.util;
 
-import java.util.function.IntFunction;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 
@@ -8,10 +7,8 @@ import com.mojang.serialization.Codec;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
-import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
 
 public enum BlockSnap implements IConfigOptionListEntry, StringIdentifiable
 {
@@ -20,6 +17,7 @@ public enum BlockSnap implements IConfigOptionListEntry, StringIdentifiable
     CORNER      ("corner",  "malilib.gui.label.block_snap.corner");
 
     public static final StringIdentifiable.EnumCodec<BlockSnap> CODEC = StringIdentifiable.createCodec(BlockSnap::values);
+    public static final PacketCodec<ByteBuf, BlockSnap> PACKET_CODEC = PacketCodecs.STRING.xmap(BlockSnap::fromStringStatic, BlockSnap::asString);
     public static final ImmutableList<BlockSnap> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;

@@ -5,7 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
+import io.netty.buffer.ByteBuf;
 
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 
 /**
@@ -123,6 +126,20 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_15W32A  (100,  "15w32a");
 
     public static final EnumCodec<Schema> CODEC = StringIdentifiable.createCodec(Schema::sorted);
+    public static final PacketCodec<ByteBuf, Schema> PACKET_CODEC = new PacketCodec<>()
+    {
+        @Override
+        public void encode(ByteBuf buf, Schema value)
+        {
+            PacketCodecs.INTEGER.encode(buf, value.schemaId);
+        }
+
+        @Override
+        public Schema decode(ByteBuf buf)
+        {
+            return Schema.getSchemaByDataVersion(PacketCodecs.INTEGER.decode(buf));
+        }
+    };
     public static final ImmutableList<Schema> VALUES = ImmutableList.copyOf(values());
 
     private final int schemaId;

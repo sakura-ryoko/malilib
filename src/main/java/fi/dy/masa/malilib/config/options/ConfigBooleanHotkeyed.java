@@ -85,7 +85,13 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
         this.setBooleanValue(value);
     }
 
-    public Codec<ConfigBooleanHotkeyed> booleanHotkeyedCodec()
+    @Override
+    public Codec<ConfigBoolean> codec()
+    {
+        return null;
+    }
+
+    public Codec<ConfigBooleanHotkeyed> codecFixed()
     {
         return CODEC;
     }
@@ -174,11 +180,11 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
     @ApiStatus.Experimental
     public @Nullable ConfigBooleanHotkeyed fromJsonCodec(JsonElement json)
     {
-        if (this.booleanHotkeyedCodec() == null) return null;
+        if (this.codecFixed() == null) return null;
 
         try
         {
-            return this.booleanHotkeyedCodec().decode(JsonOps.INSTANCE, json).resultOrPartial().orElseThrow().getFirst();
+            return this.codecFixed().decode(JsonOps.INSTANCE, json).resultOrPartial().orElseThrow().getFirst();
         }
         catch (Exception err)
         {
@@ -190,11 +196,11 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
     @ApiStatus.Experimental
     public JsonElement toJsonCodec(@Nullable ConfigBooleanHotkeyed input)
     {
-        if (this.booleanHotkeyedCodec() == null) return new JsonObject();
+        if (this.codecFixed() == null) return new JsonObject();
 
         try
         {
-            return this.booleanHotkeyedCodec().encodeStart(JsonOps.INSTANCE, input != null ? input : this).resultOrPartial().orElse(new JsonObject());
+            return this.codecFixed().encodeStart(JsonOps.INSTANCE, input != null ? input : this).resultOrPartial().orElse(new JsonObject());
         }
         catch (Exception err)
         {

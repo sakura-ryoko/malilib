@@ -4,11 +4,14 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.netty.buffer.ByteBuf;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
@@ -20,7 +23,7 @@ import fi.dy.masa.malilib.interfaces.IRangeChangeListener;
 
 public class LayerRange
 {
-    public static Codec<LayerRange> CODEC = RecordCodecBuilder.create(
+    public static final Codec<LayerRange> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     LayerMode.CODEC.fieldOf("mode").forGetter(get -> get.layerMode),
                     Direction.Axis.CODEC.fieldOf("axis").forGetter(get -> get.axis),
@@ -33,7 +36,38 @@ public class LayerRange
                     PrimitiveCodec.BOOL.fieldOf("hotkey_range_max").forGetter(get -> get.hotkeyRangeMax)
             ).apply(inst, LayerRange::new)
     );
+    public static final PacketCodec<ByteBuf, LayerRange> PACKET_CODEC = new PacketCodec<ByteBuf, LayerRange>()
+    {
+        @Override
+        public void encode(ByteBuf buf, LayerRange value)
+        {
+            LayerMode.PACKET_CODEC.encode(buf, value.layerMode);
+            PacketCodecs.STRING.encode(buf, value.axis.asString());
+            PacketCodecs.INTEGER.encode(buf, value.layerSingle);
+            PacketCodecs.INTEGER.encode(buf, value.layerAbove);
+            PacketCodecs.INTEGER.encode(buf, value.layerBelow);
+            PacketCodecs.INTEGER.encode(buf, value.layerRangeMin);
+            PacketCodecs.INTEGER.encode(buf, value.layerRangeMax);
+            PacketCodecs.BOOLEAN.encode(buf, value.hotkeyRangeMin);
+            PacketCodecs.BOOLEAN.encode(buf, value.hotkeyRangeMax);
+        }
 
+        @Override
+        public LayerRange decode(ByteBuf buf)
+        {
+            return new LayerRange(
+                    LayerMode.PACKET_CODEC.decode(buf),
+                    Direction.Axis.fromId(PacketCodecs.STRING.decode(buf)),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.BOOLEAN.decode(buf),
+                    PacketCodecs.BOOLEAN.decode(buf)
+            );
+        }
+    };
     protected IRangeChangeListener refresher;
     protected LayerMode layerMode = LayerMode.ALL;
     protected Direction.Axis axis = Direction.Axis.Y;

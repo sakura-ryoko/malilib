@@ -1,8 +1,11 @@
 package fi.dy.masa.malilib.util;
 
 import com.google.common.collect.ImmutableList;
+import io.netty.buffer.ByteBuf;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
@@ -14,6 +17,7 @@ public enum MessageOutputType implements IConfigOptionListEntry, StringIdentifia
     MESSAGE   ("message",   "malilib.label.message_output_type.message");
 
     public static final StringIdentifiable.EnumCodec<MessageOutputType> CODEC = StringIdentifiable.createCodec(MessageOutputType::values);
+    public static final PacketCodec<ByteBuf, MessageOutputType> PACKET_CODEC = PacketCodecs.STRING.xmap(MessageOutputType::fromStringStatic, MessageOutputType::asString);
     public static final ImmutableList<MessageOutputType> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;

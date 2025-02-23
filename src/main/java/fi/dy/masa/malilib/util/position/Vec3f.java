@@ -1,10 +1,13 @@
 package fi.dy.masa.malilib.util.position;
 
+import io.netty.buffer.ByteBuf;
 import org.joml.Vector3f;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 
 /**
  * Post-ReWrite code
@@ -26,6 +29,26 @@ public class Vec3f
             ).apply(inst, Vec3f::new)
     );
     public static final Codec<Vec3f> CODEC = FLOAT_CODEC;
+    public static final PacketCodec<ByteBuf, Vec3f> PACKET_CODEC = new PacketCodec<>()
+    {
+        @Override
+        public void encode(ByteBuf buf, Vec3f value)
+        {
+            PacketCodecs.FLOAT.encode(buf, value.x);
+            PacketCodecs.FLOAT.encode(buf, value.y);
+            PacketCodecs.FLOAT.encode(buf, value.z);
+        }
+
+        @Override
+        public Vec3f decode(ByteBuf buf)
+        {
+            return new Vec3f(
+                    PacketCodecs.FLOAT.decode(buf),
+                    PacketCodecs.FLOAT.decode(buf),
+                    PacketCodecs.FLOAT.decode(buf)
+            );
+        }
+    };
     public static final Vec3f ZERO = new Vec3f(0.0F, 0.0F, 0.0F);
 
     public final float x;

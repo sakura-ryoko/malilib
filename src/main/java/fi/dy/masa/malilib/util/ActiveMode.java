@@ -1,8 +1,11 @@
 package fi.dy.masa.malilib.util;
 
 import com.google.common.collect.ImmutableList;
+import io.netty.buffer.ByteBuf;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
@@ -14,6 +17,7 @@ public enum ActiveMode implements IConfigOptionListEntry, StringIdentifiable
     ALWAYS      ("always",      "malilib.label.active_mode.always");
 
     public static final StringIdentifiable.EnumCodec<ActiveMode> CODEC = StringIdentifiable.createCodec(ActiveMode::values);
+    public static final PacketCodec<ByteBuf, ActiveMode> PACKET_CODEC = PacketCodecs.STRING.xmap(ActiveMode::fromStringStatic, ActiveMode::asString);
     public static final ImmutableList<ActiveMode> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;

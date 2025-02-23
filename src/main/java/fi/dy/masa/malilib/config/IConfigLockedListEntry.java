@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 public interface IConfigLockedListEntry
 {
     @ApiStatus.Experimental
-    Codec<? extends IConfigLockedListEntry> codec();
+    default Codec<? extends IConfigLockedListEntry> codec() { return null; }
 
     static IConfigLockedListEntry empty() { return null; }
 

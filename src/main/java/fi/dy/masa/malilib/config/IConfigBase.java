@@ -17,7 +17,7 @@ public interface IConfigBase
     ConfigType getType();
 
     @ApiStatus.Experimental
-    Codec<? extends IConfigBase> codec();
+    default Codec<? extends IConfigBase> codec() { return null; }
 
     /**
      * Returns the config name to display in the config GUIs

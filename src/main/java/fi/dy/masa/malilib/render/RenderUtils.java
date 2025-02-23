@@ -46,6 +46,7 @@ import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
 
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.IMixinDrawContext;
@@ -627,6 +628,11 @@ public class RenderUtils
         {
             // Only Chuck Norris can divide by zero
             if (scale == 0d)
+            {
+                return 0;
+            }
+
+            if (!MaLiLibConfigs.Generic.ENABLE_STATUS_EFFECTS_SHIFT.getBooleanValue())
             {
                 return 0;
             }

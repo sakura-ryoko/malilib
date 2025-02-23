@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 public interface IConfigOptionListEntry
 {
     @ApiStatus.Experimental
-    Codec<? extends IConfigOptionListEntry> codec();
+    default Codec<? extends IConfigOptionListEntry> codec() { return null; }
 
     String getStringValue();
 

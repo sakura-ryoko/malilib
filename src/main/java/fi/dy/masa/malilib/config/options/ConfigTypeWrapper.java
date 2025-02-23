@@ -37,12 +37,13 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigDouble, IConfig
     }
      */
 
+    @Override
     public Codec<ConfigTypeWrapper> codec()
     {
         return null;
     }
 
-    public Codec<? extends IConfigBase> getWrappedCodec()
+    public Codec<? extends IConfigBase> codecWrapped()
     {
         return this.wrappedConfig.codec();
     }
