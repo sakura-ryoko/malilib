@@ -546,7 +546,9 @@ public class RenderUtils
                                  boolean useBackground, boolean useShadow,
                                  List<String> lines, DrawContext drawContext)
     {
-        return renderText(xOff, yOff, scale, textColor, bgColor, alignment, useBackground, useShadow, true, lines, drawContext);
+        return renderText(xOff, yOff, scale, textColor, bgColor, alignment,
+                          useBackground, useShadow, MaLiLibConfigs.Generic.ENABLE_STATUS_EFFECTS_SHIFT.getBooleanValue(),
+                          lines, drawContext);
     }
 
     public static int renderText(int xOff, int yOff, double scale, int textColor, int bgColor, HudAlignment alignment,
@@ -639,11 +641,6 @@ public class RenderUtils
         {
             // Only Chuck Norris can divide by zero
             if (scale == 0d)
-            {
-                return 0;
-            }
-
-            if (!MaLiLibConfigs.Generic.ENABLE_STATUS_EFFECTS_SHIFT.getBooleanValue())
             {
                 return 0;
             }
