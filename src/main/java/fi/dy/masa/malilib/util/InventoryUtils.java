@@ -750,8 +750,6 @@ public class InventoryUtils
         // Shift inv ahead by 1 slot for horses (1.21 only)
         if (nbt.contains(NbtKeys.ITEMS))
         {
-            // Standard 'Items' tag for most Block Entities --
-            // -- Furnace, Brewing Stand, Shulker Box, Crafter, Barrel, Chest, Dispenser, Hopper, Bookshelf, Campfire
             if (slotCount < 0)
             {
                 NbtList list = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
@@ -761,15 +759,15 @@ public class InventoryUtils
             SimpleInventory inv = new SimpleInventory(slotCount + 1);
             DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
             Inventories.readNbt(nbt, items, registry);
-
-            if (items.isEmpty())
-            {
-                return null;
-            }
             inv.setStack(0, horseEquipment.getLast());
-            for (int i = 0; i < slotCount; i++)
+
+            // Chested Horse
+            if (!items.isEmpty())
             {
-                inv.setStack(i + 1, items.get(i));
+                for (int i = 0; i < slotCount; i++)
+                {
+                    inv.setStack(i + 1, items.get(i));
+                }
             }
 
             return inv;
@@ -788,6 +786,8 @@ public class InventoryUtils
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.ITEM));
             SimpleInventory inv = new SimpleInventory(1);
             inv.setStack(0, entry.copy());
+
+            return inv;
         }
 
         return null;
