@@ -881,8 +881,9 @@ public class RenderUtils
         }
 
         Matrix4f modelMatrix = new Matrix4f();
-        BufferAllocator byteBufferBuilder = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
         modelMatrix.identity();
+
+        BufferAllocator allocator = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
 
         for (String line : text)
         {
@@ -890,18 +891,20 @@ public class RenderUtils
             {
                 //RenderSystem.depthMask(false);
                 RenderSystem.disableDepthTest();
-                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(byteBufferBuilder);
+                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(allocator);
                 textRenderer.draw(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFF), false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
                 immediate.draw();
                 RenderSystem.enableDepthTest();
                 //RenderSystem.depthMask(true);
             }
 
-            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(byteBufferBuilder);
+            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(allocator);
             textRenderer.draw(line, -strLenHalf, textY, textColor, false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
             immediate.draw();
             textY += textRenderer.fontHeight;
         }
+
+        allocator.close();
 
         if (disableDepth == false)
         {
@@ -1192,7 +1195,8 @@ public class RenderUtils
                 x1 += 8;
                 y1 += 8;
                 z = 310;
-                VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE));
+                BufferAllocator allocator = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
+                VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(allocator);
                 double scale = (double) (dimensions - 16) / 128.0D;
 
                 // TODO -- MapRenderer still uses MatrixStack
@@ -1203,6 +1207,7 @@ public class RenderUtils
                 mc().gameRenderer.getMapRenderer().draw(matrixStack, consumer, mapId, mapState, false, 0xF000F0);
                 consumer.draw();
                 matrixStack.pop();
+                allocator.close();
             }
         }
     }
@@ -1353,6 +1358,10 @@ public class RenderUtils
     {
         if (InventoryUtils.hasNbtItems(itemsTag))
         {
+            if (mc().world == null)
+            {
+                return;
+            }
             DefaultedList<ItemStack> items = InventoryUtils.getNbtItems(itemsTag, -1, mc().world.getRegistryManager());
 
             if (items.size() == 0)
