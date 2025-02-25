@@ -51,7 +51,7 @@
     "malilib.config.generic.prettyName.ignoredKeys": "비활성 키",
     "malilib.config.generic.prettyName.openGuiConfigs": "GUI 설정 열기",
     "malilib.config.generic.prettyName.realmsCommonConfig": "렐름 일반 설정",
-    "malilib.config.test.comment.testBoolean": "[X] 테스트 boolean 설명!",
+    "malilib.config.test.comment.testBoolean": "[X] 테스트 boolean 설명.",
     "malilib.config.test.comment.testBooleanHotkeyed": "[X] 테스트 boolean 단축키 설명!",
     "malilib.config.test.comment.testBundlePreviewWidth": "꾸러미 미리보기 너비를 테스트하기 위한 설정입니다. (최소: 6, 최대: 9)",
     "malilib.config.test.comment.testColor": "[X] 테스트 색상 설명!",
