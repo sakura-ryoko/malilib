@@ -998,24 +998,28 @@ public class RenderUtils
         Matrix4f modelMatrix = new Matrix4f();
         modelMatrix.identity();
 
+        BufferAllocator allocator = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
+
         for (String line : text)
         {
             if (disableDepth)
             {
                 RenderSystem.depthMask(false);
                 RenderSystem.disableDepthTest();
-                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE));
+                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(allocator);
                 textRenderer.draw(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFF), false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
                 immediate.draw();
                 RenderSystem.enableDepthTest();
                 RenderSystem.depthMask(true);
             }
 
-            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE));
+            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(allocator);
             textRenderer.draw(line, -strLenHalf, textY, textColor, false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
             immediate.draw();
             textY += textRenderer.fontHeight;
         }
+
+        allocator.close();
 
         if (disableDepth == false)
         {
@@ -1324,7 +1328,8 @@ public class RenderUtils
                 x1 += 8;
                 y1 += 8;
                 z = 310;
-                VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE));
+                BufferAllocator allocator = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
+                VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(allocator);
                 double scale = (double) (dimensions - 16) / 128.0D;
 
                 MatrixStack matrixStack = new MatrixStack();
@@ -1337,6 +1342,7 @@ public class RenderUtils
                 mc().getMapRenderer().draw(mapRenderState, matrixStack, consumer, false, uv);
                 consumer.draw();
                 matrixStack.pop();
+                allocator.close();
             }
 
             //RenderSystem.disableDepthTest();
