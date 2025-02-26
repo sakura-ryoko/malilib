@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.gui;
 import java.awt.*;
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -470,6 +470,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
     protected void drawColorSelector()
     {
+        if (this.client == null) return;
+
         int x = this.xH - 1;
         int y = this.yH - 1;
         int w = this.widthSlider + 2;
@@ -504,15 +506,11 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF, z); // current color indicator
         RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF, z); // Hue vertical/full value
 
-        /*
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        BuiltBuffer builtBuffer;
-         */
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        Framebuffer fb = this.client.getFramebuffer();
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE, ShaderPipelines.DEBUG_LINE_STRIP);
         BufferBuilder buffer = ctx.getBuilder();
 
-        RenderUtils.setupBlend();
+        //RenderUtils.setupBlend();
 
         RenderUtils.color(1, 1, 1, 1);
 
@@ -526,19 +524,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
+            ctx.draw(fb, buffer.end());
             ctx.reset();
         }
         catch (Exception ignored) { }
 
         //buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        buffer = ctx.start(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        buffer = ctx.start(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.DEBUG_LINE_STRIP);
 
         int r = (int) (this.relR * 255f);
         int g = (int) (this.relG * 255f);
@@ -625,18 +617,12 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), ShaderPipelines.DEBUG_LINE_STRIP);
+            ctx.draw(fb, buffer.end());
             ctx.close();
         }
         catch (Exception ignored) { }
 
-        RenderSystem.disableBlend();
+        //RenderSystem.disableBlend();
     }
 
     public static void renderGradientColorBar(int x, int y, float z, int width, int height, int colorStart, int colorEnd, BufferBuilder buffer)

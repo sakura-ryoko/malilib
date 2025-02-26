@@ -122,14 +122,8 @@ public class InventoryOverlay
 
     public static void renderInventoryBackground(InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc)
     {
-        RenderUtils.setupBlend();
-        /*
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        BuiltBuffer builtBuffer;
-         */
-
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        //RenderUtils.setupBlend();
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE, ShaderPipelines.POSITION_TEX_PANORAMA);
         BufferBuilder buffer = ctx.getBuilder();
 
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
@@ -228,17 +222,11 @@ public class InventoryOverlay
         }
 
         //RenderSystem.enableDepthTest();
-        RenderSystem.enableBlend();
+        //RenderSystem.enableBlend();
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), ShaderPipelines.POSITION_TEX_PANORAMA);
+            ctx.draw(mc.getFramebuffer(), buffer.end());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -353,16 +341,10 @@ public class InventoryOverlay
         }
     }
 
-    public static void renderEquipmentOverlayBackground(int x, int y, LivingEntity entity, DrawContext drawContext)
+    public static void renderEquipmentOverlayBackground(int x, int y, LivingEntity entity, DrawContext drawContext, MinecraftClient mc)
     {
         RenderUtils.color(1f, 1f, 1f, 1f);
-
-        /*
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        BuiltBuffer builtBuffer;
-         */
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE, ShaderPipelines.POSITION_TEX_PANORAMA);
         BufferBuilder buffer = ctx.getBuilder();
 
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
@@ -385,13 +367,7 @@ public class InventoryOverlay
 
         try
         {
-            /*
-            builtBuffer = buffer.end();
-            BufferRenderer.drawWithGlobalProgram(builtBuffer);
-            builtBuffer.close();
-             */
-
-            ctx.drawWithShaders(buffer.end(), ShaderPipelines.POSITION_TEX_PANORAMA);
+            ctx.draw(mc.getFramebuffer(), buffer.end());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -557,7 +533,7 @@ public class InventoryOverlay
             {
                 if (nbt.contains(NbtKeys.ITEMS))
                 {
-                    NbtList list = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
+                    NbtList list = nbt.getList(NbtKeys.ITEMS).orElse(new NbtList());
 
                     if (list.size() > 27)
                     {

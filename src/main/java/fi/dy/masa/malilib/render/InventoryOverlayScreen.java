@@ -252,7 +252,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
             // Entity Display
             if (previewData.entity() != null)
             {
-                InventoryOverlay.renderEquipmentOverlayBackground(x, y, previewData.entity(), drawContext);
+                InventoryOverlay.renderEquipmentOverlayBackground(x, y, previewData.entity(), drawContext, mc);
                 InventoryOverlay.renderEquipmentStacks(previewData.entity(), x, y, mc, drawContext, mouseX, mouseY);
             }
 

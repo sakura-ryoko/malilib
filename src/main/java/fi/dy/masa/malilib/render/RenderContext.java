@@ -1,48 +1,60 @@
 package fi.dy.masa.malilib.render;
 
-import javax.annotation.Nullable;
-
-import org.joml.Matrix4f;
-
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gl.GlUsage;
-import net.minecraft.client.gl.ShaderPipeline;
-import net.minecraft.client.gl.VertexBuffer;
+import net.minecraft.class_10883;
+import net.minecraft.client.gl.*;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.texture.DrawableTexture;
 import net.minecraft.client.util.BufferAllocator;
+
+import javax.annotation.Nullable;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
 
 public class RenderContext implements AutoCloseable
 {
-
-    @Nullable
-    private VertexBuffer vertex;
+    private GlUsage usage;
     private BufferAllocator alloc;
     private BufferBuilder builder;
+    private VertexFormat format;
+    private VertexFormat.DrawMode drawMode;
+    private ShaderPipeline shader;
 
     public RenderContext(VertexFormat.DrawMode drawMode, VertexFormat format)
     {
-        this(drawMode, format, GlUsage.STATIC_WRITE);
+        this(drawMode, format, ShaderPipelines.DEBUG_QUADS, GlUsage.STATIC_WRITE);
     }
 
-    public RenderContext(VertexFormat.DrawMode drawMode, VertexFormat format, GlUsage usage)
+    public RenderContext(VertexFormat.DrawMode drawMode, VertexFormat format, ShaderPipeline shader)
+    {
+        this(drawMode, format, shader, GlUsage.STATIC_WRITE);
+    }
+
+    public RenderContext(VertexFormat.DrawMode drawMode, VertexFormat format, ShaderPipeline shader, GlUsage usage)
     {
         this.alloc = new BufferAllocator(format.getVertexSizeByte());
         this.builder = new BufferBuilder(this.alloc, drawMode, format);
-        this.vertex = new VertexBuffer(usage);
+        this.usage = usage;
+        this.format = format;
+        this.drawMode = drawMode;
+        this.shader = shader;
     }
 
-    public BufferBuilder start(VertexFormat.DrawMode drawMode, VertexFormat format)
+    public BufferBuilder start(VertexFormat.DrawMode drawMode, VertexFormat format, ShaderPipeline shader)
     {
-        return this.start(drawMode, format, GlUsage.STATIC_WRITE);
+        return this.start(drawMode, format, shader, GlUsage.STATIC_WRITE);
     }
 
-    public BufferBuilder start(VertexFormat.DrawMode drawMode, VertexFormat format, GlUsage usage)
+    public BufferBuilder start(VertexFormat.DrawMode drawMode, VertexFormat format, ShaderPipeline shader, GlUsage usage)
     {
         this.alloc = new BufferAllocator(format.getVertexSizeByte());
         this.builder = new BufferBuilder(this.alloc, drawMode, format);
-        this.vertex = new VertexBuffer(usage);
+        this.usage = usage;
+        this.format = format;
+        this.drawMode = drawMode;
+        this.shader = shader;
 
         return this.builder;
     }
@@ -52,79 +64,101 @@ public class RenderContext implements AutoCloseable
         return this.builder;
     }
 
-    public void draw() throws RuntimeException
+    public GlUsage getUsage()
     {
-        if (this.vertex == null)
-        {
-            throw new RuntimeException("Vertex Buffer is null!");
-        }
-
-        if (RenderSystem.isOnRenderThread())
-        {
-            this.ensureSafe();
-            this.vertex.bind();
-            this.vertex.upload(this.builder.end());
-            this.vertex.draw();
-            VertexBuffer.unbind();
-        }
+        return this.usage;
     }
 
-    public void draw(BuiltBuffer meshData) throws RuntimeException
+    public VertexFormat getFormat()
     {
-        if (this.vertex == null)
-        {
-            throw new RuntimeException("Vertex Buffer is null!");
-        }
-
-        if (RenderSystem.isOnRenderThread())
-        {
-            this.ensureSafe();
-            this.vertex.bind();
-            this.vertex.upload(meshData);
-            this.vertex.draw();
-            VertexBuffer.unbind();
-        }
+        return this.format;
     }
 
-    public void drawWithShaders(BuiltBuffer meshData, ShaderPipeline shaderKey) throws RuntimeException
+    public VertexFormat.DrawMode getDrawMode()
     {
-        if (RenderSystem.isOnRenderThread())
-        {
-            this.ensureSafe();
-            this.drawWithShaders(meshData, RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), shaderKey);
-        }
+        return this.drawMode;
     }
 
-    public void drawWithShaders(BuiltBuffer meshData, Matrix4f modelView, Matrix4f posMatrix, ShaderPipeline shaderKey) throws RuntimeException
+    public void draw(Framebuffer fb, BuiltBuffer meshData) throws RuntimeException
     {
-        if (this.vertex == null)
-        {
-            throw new RuntimeException("Vertex Buffer is null!");
-        }
+        this.ensureSafe();
 
         if (RenderSystem.isOnRenderThread())
         {
-            this.ensureSafe();
-            this.vertex.bind();
-            this.vertex.upload(meshData);
-            this.vertex.draw(modelView, posMatrix, shaderKey.getProgram());
-            VertexBuffer.unbind();
+            try (GpuBuffer gpuBuffer = this.shader.getFormat().method_68460(meshData.getBuffer()))
+            {
+                try (GpuBuffer sortedBuffer = meshData.getSortedBuffer() != null ? this.shader.getFormat().method_68461(meshData.getSortedBuffer()) : null)
+                {
+                    try (class_10883 dev = RenderSystem.getDevice().method_68389()
+                            .method_68368(fb.getColorAttachment(), OptionalInt.empty(), fb.useDepthAttachment ? fb.getDepthAttachment() : null, OptionalDouble.empty()))
+                    {
+                        // SetShader ?
+                        dev.method_68412(this.shader);
+                        dev.method_68410(0, gpuBuffer);
+
+                        // Scissor
+                        if (RenderSystem.SCISSOR_STATE.method_68455())
+                        {
+                            dev.method_68413(RenderSystem.SCISSOR_STATE);
+                        }
+
+                        // Draw Textures
+                        for (int i = 0; i < 12; i++)
+                        {
+                            DrawableTexture texture = RenderSystem.getShaderTexture(i);
+
+                            if (texture != null)
+                            {
+                                dev.method_68414("RenderContext"+ i, texture);
+                            }
+                        }
+
+                        // Sorting
+                        if (sortedBuffer != null)
+                        {
+                            dev.method_68411(sortedBuffer, meshData.getDrawParameters().indexType());
+                        }
+                        else
+                        {
+                            RenderSystem.ShapeIndexBuffer shapeIndex = RenderSystem.getSequentialBuffer(meshData.getDrawParameters().mode());
+                            dev.method_68411(shapeIndex.method_68274(meshData.getDrawParameters().indexCount()), shapeIndex.getIndexType());
+                        }
+
+                        // Unbind ?
+                        dev.method_68408(0, meshData.getDrawParameters().indexCount());
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                if (meshData != null)
+                {
+                    meshData.close();
+                }
+
+                throw new RuntimeException(e);
+            }
+
             meshData.close();
         }
     }
 
+    public void drawWithShaders(Framebuffer fb, BuiltBuffer meshData, ShaderPipeline shaderKey) throws RuntimeException
+    {
+//
+//        if (RenderSystem.isOnRenderThread())
+//        {
+//            this.drawWithShaders(meshData, RenderSystem.getModelViewMatrix(), RenderSystem.getProjectionMatrix(), shaderKey);
+//        }
+
+        this.ensureSafe();
+        this.shader = shaderKey;
+        this.draw(fb, meshData);
+    }
+
     private void ensureSafe() throws RuntimeException
     {
-        if (this.vertex == null)
-        {
-            throw new RuntimeException("Vertex Buffer is null!");
-        }
-
-        if (this.vertex.isClosed())
-        {
-            throw new RuntimeException("Vertex Buffer is closed!");
-        }
-
         if (this.alloc == null)
         {
             throw new RuntimeException("Allocator not valid!");
@@ -134,19 +168,10 @@ public class RenderContext implements AutoCloseable
         {
             throw new RuntimeException("Buffer Builder not valid!");
         }
-
-        RenderSystem.assertOnRenderThread();
     }
 
     public void reset()
     {
-        if (this.vertex != null && !this.vertex.isClosed())
-        {
-            this.vertex.close();
-            this.vertex = null;
-            VertexBuffer.unbind();
-        }
-
         if (this.alloc != null)
         {
             this.alloc.close();
