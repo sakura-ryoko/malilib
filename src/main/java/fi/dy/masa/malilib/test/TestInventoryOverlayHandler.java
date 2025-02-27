@@ -23,6 +23,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -39,8 +40,9 @@ import fi.dy.masa.malilib.interfaces.IInventoryOverlayHandler;
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.entity.IMixinPiglinEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
-import fi.dy.masa.malilib.util.*;
-import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.EntityUtils;
+import fi.dy.masa.malilib.util.InventoryUtils;
+import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
@@ -375,7 +377,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             // Fix for empty horse inv
             if (inv != null &&
                 nbt.contains(NbtKeys.ITEMS) &&
-                nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND).size() > 1)
+                nbt.getList(NbtKeys.ITEMS).orElse(new NbtList()).size() > 1)
             {
                 if (entity instanceof AbstractHorseEntity)
                 {
@@ -397,7 +399,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             // Fix for empty Villager/Piglin inv
             else if (inv != null && inv.size() == 8 &&
                     nbt.contains(NbtKeys.INVENTORY) &&
-                    !nbt.getList(NbtKeys.INVENTORY, Constants.NBT.TAG_COMPOUND).isEmpty())
+                    !nbt.getList(NbtKeys.INVENTORY).orElse(new NbtList()).isEmpty())
             {
                 inv2 = InventoryUtils.getNbtInventory(nbt, 8, entity.getRegistryManager());
                 inv = null;

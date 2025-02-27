@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -503,9 +504,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.messageRenderer.drawMessages(this.width / 2, this.height / 2, drawContext);
     }
 
-    public void bindTexture(Identifier texture)
+    public VertexConsumer bindTexture(Identifier texture, DrawContext context)
     {
-        RenderUtils.bindTexture(texture);
+        return RenderUtils.bindTexture(texture, context);
     }
 
     public <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)

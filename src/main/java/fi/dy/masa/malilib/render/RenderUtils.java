@@ -7,12 +7,12 @@ import javax.annotation.Nullable;
 
 import net.minecraft.class_10889;
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.ShaderPipeline;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -43,18 +43,16 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
 
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.mixin.IMixinDrawContext;
+import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
@@ -85,6 +83,7 @@ public class RenderUtils
     }
      */
 
+    @Deprecated
     public static void bindTexture(Identifier texture)
     {
         TextureManager manager = mc().getTextureManager();
@@ -138,9 +137,10 @@ public class RenderUtils
         drawContext.draw();
     }
 
-    public static void color(float r, float g, float b, float a)
+    public static int color(float r, float g, float b, float a)
     {
         RenderSystem.setShaderColor(r, g, b, a);
+        return ColorHelper.fromFloats(a, r, g, b);
     }
 
     public static void disableDiffuseLighting()
@@ -200,9 +200,14 @@ public class RenderUtils
         drawRect(x + borderWidth        , y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, zLevel); // bottom edge
     }
 
-    public static void drawTexturedRect(int x, int y, int u, int v, int width, int height)
+    public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
     {
-        drawTexturedRect(x, y, u, v, width, height, 0f);
+        drawTexturedRect(posMatrix, x, y, u, v, width, height, 0f, -1, buffer);
+    }
+
+    public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, int color, VertexConsumer buffer)
+    {
+        drawTexturedRect(posMatrix, x, y, u, v, width, height, 0f, color, buffer);
     }
 
     public static void drawRect(int x, int y, int width, int height, int color)
@@ -223,7 +228,7 @@ public class RenderUtils
         float b = (float) (color & 255) / 255.0F;
 
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.GUI_OVERLAY);
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.DEBUG_LINE_STRIP);
         BufferBuilder buffer = ctx.getBuilder();
 
         //setupBlend();
@@ -256,20 +261,23 @@ public class RenderUtils
         mc.gameRenderer.renderBlur();
     }
 
-    public static void drawTexturedRect(int x, int y, int u, int v, int width, int height, float zLevel)
+    public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, float zLevel, int color, VertexConsumer buffer)
     {
         float pixelWidth = 0.00390625F;
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE, ShaderPipelines.GUI_TEXTURED_OVERLAY);
+        /*
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE, MaLiLibPipelines.POSITION_TEX_COLOR_DEPTH_TEST_EQUAL);
         BufferBuilder buffer = ctx.getBuilder();
+         */
 
         //setupBlend();
 
-        buffer.vertex(x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth);
-        buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth);
-        buffer.vertex(x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth);
-        buffer.vertex(x, y, zLevel).texture(u * pixelWidth, v * pixelWidth);
+        buffer.vertex(posMatrix, x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth).color(color);
+        buffer.vertex(posMatrix, x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(color);
+        buffer.vertex(posMatrix, x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(color);
+        buffer.vertex(posMatrix, x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(color);
 
+        /*
         try
         {
             //ctx.drawWithShaders(buffer.end(), ShaderPipelines.POSITION_TEX_PANORAMA);
@@ -279,6 +287,7 @@ public class RenderUtils
         catch (Exception ignored)
         {
         }
+         */
     }
 
     /**
@@ -359,19 +368,24 @@ public class RenderUtils
         //forceDraw(drawContext);
     }
 
-    public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, BufferBuilder buffer)
+    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
     {
-        drawTexturedRectBatched(x, y, u, v, width, height, 0, buffer);
+        drawTexturedRectBatched(posMatrix, x, y, u, v, width, height, 0, -1, buffer);
     }
 
-    public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, float zLevel, BufferBuilder buffer)
+    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, int argb, VertexConsumer buffer)
+    {
+        drawTexturedRectBatched(posMatrix, x, y, u, v, width, height, 0, argb, buffer);
+    }
+
+    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, float zLevel, int argb, VertexConsumer buffer)
     {
         float pixelWidth = 0.00390625F;
 
-        buffer.vertex(x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth);
-        buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth);
-        buffer.vertex(x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth);
-        buffer.vertex(x, y, zLevel).texture(u * pixelWidth, v * pixelWidth);
+        buffer.vertex(posMatrix, x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth).color(argb);
+        buffer.vertex(posMatrix, x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
+        buffer.vertex(posMatrix, x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(argb);
+        buffer.vertex(posMatrix, x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
     }
 
     public static void drawHoverText(int x, int y, List<String> textLines, DrawContext drawContext)
@@ -419,7 +433,6 @@ public class RenderUtils
 
             drawContext.getMatrices().push();
             drawContext.getMatrices().translate(0, 0, 300);
-            //RenderSystem.applyModelViewMatrix();
 
             float zLevel = (float) 300;
             int borderColor = 0xF0100010;
@@ -441,13 +454,11 @@ public class RenderUtils
                 String str = textLines.get(i);
 
                 drawContext.drawText(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
-
                 textStartY += lineHeight;
             }
 
-            forceDraw(drawContext);
+            //forceDraw(drawContext);
             drawContext.getMatrices().pop();
-            //RenderSystem.applyModelViewMatrix();
 
             //RenderSystem.disableDepthTest();
             //enableDiffuseLightingGui3D();
@@ -974,7 +985,7 @@ public class RenderUtils
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
          */
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.DEBUG_LINE_STRIP);
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.DEBUG_QUADS);
         BufferBuilder buffer = ctx.getBuilder();
         int maxLineLen = 0;
 
@@ -1078,7 +1089,7 @@ public class RenderUtils
 
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.DEBUG_LINE_STRIP);
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.DEBUG_QUADS);
         BufferBuilder buffer = ctx.getBuilder();
 
         int quadAlpha = (int) (0.18f * 255f);
@@ -1134,8 +1145,9 @@ public class RenderUtils
             ctx.draw(fb(), buffer.end());
             ctx.reset();
         }
-        catch (Exception ignored)
+        catch (Exception err)
         {
+            MaLiLib.LOGGER.error("renderBlockTargetingOverlay():1: Draw Exception; {}", err.getMessage());
         }
 
         // FIXME: line width doesn't work currently
@@ -1156,8 +1168,9 @@ public class RenderUtils
             ctx.draw(fb(), buffer.end());
             ctx.reset();
         }
-        catch (Exception ignored)
+        catch (Exception err)
         {
+            MaLiLib.LOGGER.error("renderBlockTargetingOverlay():2: Draw Exception; {}", err.getMessage());
         }
 
         //buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
@@ -1184,8 +1197,9 @@ public class RenderUtils
             ctx.draw(fb(), buffer.end());
             ctx.close();
         }
-        catch (Exception ignored)
+        catch (Exception err)
         {
+            MaLiLib.LOGGER.error("renderBlockTargetingOverlay():3: Draw Exception; {}", err.getMessage());
         }
 
         global4fStack.popMatrix();
@@ -1208,7 +1222,7 @@ public class RenderUtils
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.DEBUG_LINE_STRIP);
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.DEBUG_QUADS);
         BufferBuilder buffer = ctx.getBuilder();
 
         int a = (int) (color.a * 255f);
@@ -1328,31 +1342,6 @@ public class RenderUtils
 
             forceDraw(drawContext);
 
-            //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
-            //RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-            //RenderSystem.applyModelViewMatrix();
-            /*
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-            BuiltBuffer builtBuffer;
-
-            buffer.vertex(x1, y2, z).texture(0.0f, 1.0f);
-            buffer.vertex(x2, y2, z).texture(1.0f, 1.0f);
-            buffer.vertex(x2, y1, z).texture(1.0f, 0.0f);
-            buffer.vertex(x1, y1, z).texture(0.0f, 0.0f);
-
-            try
-            {
-                builtBuffer = buffer.end();
-                BufferRenderer.drawWithGlobalProgram(builtBuffer);
-                builtBuffer.close();
-            }
-            catch (Exception ignored) { }
-
-            RenderSystem.disableBlend();
-
-             */
-
             if (mapState != null)
             {
                 x1 += 8;
@@ -1402,6 +1391,7 @@ public class RenderUtils
             int height = props.height + 18;
             int x = MathHelper.clamp(baseX + 8, 0, screenWidth - props.width);
             int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
+            int color;
 
             // Mask items behind the shulker box display, trying to minimize the sharp corners
             //drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
@@ -1410,11 +1400,11 @@ public class RenderUtils
 
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof ShulkerBoxBlock)
             {
-                setShulkerboxBackgroundTintColor((ShulkerBoxBlock) ((BlockItem) stack.getItem()).getBlock(), useBgColors);
+                color = setShulkerboxBackgroundTintColor((ShulkerBoxBlock) ((BlockItem) stack.getItem()).getBlock(), useBgColors);
             }
             else
             {
-                color(1f, 1f, 1f, 1f);
+                color = color(1f, 1f, 1f, 1f);
             }
 
             disableDiffuseLighting();
@@ -1426,8 +1416,8 @@ public class RenderUtils
             //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
 
-            InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, props.totalSlots, mc());
-            color(1f, 1f, 1f, 1f);
+            InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, props.totalSlots, color, mc(), drawContext);
+            color = color(1f, 1f, 1f, 1f);
 
             enableDiffuseLightingGui3D();
 
@@ -1489,7 +1479,7 @@ public class RenderUtils
             //drawTexturedRect(GuiBase.BG_TEXTURE, x + 1, y + 1, 0, 0, props.width - 2, props.height - 2, drawContext);
             forceDraw(drawContext);
             //RenderSystem.enableDepthTest();
-            setBundleBackgroundTintColor(stack, useBgColors);
+            int color = setBundleBackgroundTintColor(stack, useBgColors);
             disableDiffuseLighting();
 
             Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
@@ -1499,7 +1489,7 @@ public class RenderUtils
             //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
 
-            InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, props.totalSlots, mc());
+            InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, props.totalSlots, color, mc(), drawContext);
             color(1f, 1f, 1f, 1f);
 
             enableDiffuseLightingGui3D();
@@ -1556,7 +1546,7 @@ public class RenderUtils
             forceDraw(drawContext);
             //RenderSystem.enableDepthTest();
 
-            color(1f, 1f, 1f, 1f);
+            int color = color(1f, 1f, 1f, 1f);
             disableDiffuseLighting();
 
             Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
@@ -1566,7 +1556,7 @@ public class RenderUtils
             //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
 
-            InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), mc());
+            InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), color, mc(), drawContext);
 
             enableDiffuseLightingGui3D();
 
@@ -1587,18 +1577,18 @@ public class RenderUtils
      * @param block
      * @param useBgColors
      */
-    public static void setShulkerboxBackgroundTintColor(@Nullable ShulkerBoxBlock block, boolean useBgColors)
+    public static int setShulkerboxBackgroundTintColor(@Nullable ShulkerBoxBlock block, boolean useBgColors)
     {
         if (block != null && useBgColors)
         {
             // In 1.13+ there is the uncolored Shulker Box variant, which returns null from getColor()
             final DyeColor dye = block.getColor() != null ? block.getColor() : DyeColor.PURPLE;
             final float[] colors = getColorComponents(dye.getEntityColor());
-            color(colors[0], colors[1], colors[2], 1f);
+            return color(colors[0], colors[1], colors[2], 1f);
         }
         else
         {
-            color(1f, 1f, 1f, 1f);
+            return color(1f, 1f, 1f, 1f);
         }
     }
 
@@ -1617,7 +1607,7 @@ public class RenderUtils
         return new float[]{(float) j / 255.0F, (float) k / 255.0F, (float) l / 255.0F};
     }
 
-    public static void setBundleBackgroundTintColor(ItemStack bundle, boolean useBgColors)
+    public static int setBundleBackgroundTintColor(ItemStack bundle, boolean useBgColors)
     {
         if (useBgColors)
         {
@@ -1626,12 +1616,11 @@ public class RenderUtils
             if (dye != null)
             {
                 final float[] colors = getColorComponents(dye.getEntityColor());
-                color(colors[0], colors[1], colors[2], 1f);
-                return;
+                return color(colors[0], colors[1], colors[2], 1f);
             }
         }
 
-        color(1f, 1f, 1f, 1f);
+        return color(1f, 1f, 1f, 1f);
     }
 
     public static DyeColor getBundleColor(ItemStack bundle)
@@ -1712,13 +1701,13 @@ public class RenderUtils
         }
     }
 
-    public static void setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
+    public static int setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
     {
         RegistryEntry<VillagerProfession> profession = data != null ? data.profession() : null;
-        setVillagerBackgroundTintColor(profession, useBgColors);
+        return setVillagerBackgroundTintColor(profession, useBgColors);
     }
 
-    public static void setVillagerBackgroundTintColor(RegistryEntry<VillagerProfession> profession, boolean useBgColors)
+    public static int setVillagerBackgroundTintColor(RegistryEntry<VillagerProfession> profession, boolean useBgColors)
     {
         if (useBgColors)
         {
@@ -1727,12 +1716,11 @@ public class RenderUtils
             if (dye != null)
             {
                 final float[] colors = getColorComponents(dye.getEntityColor());
-                color(colors[0], colors[1], colors[2], 1f);
-                return;
+                return color(colors[0], colors[1], colors[2], 1f);
             }
         }
 
-        color(1f, 1f, 1f, 1f);
+        return color(1f, 1f, 1f, 1f);
     }
 
     public static DyeColor getVillagerColor(RegistryEntry<VillagerProfession> profession)
@@ -1805,7 +1793,7 @@ public class RenderUtils
     }
 
     @SuppressWarnings("deprecation")
-    public static void renderModelInGui(int x, int y, BakedModel model, BlockState state, float zLevel)
+    public static void renderModelInGui(int x, int y, BakedModel model, BlockState state, float zLevel, DrawContext context)
     {
         if (state.getBlock() == Blocks.AIR)
         {
@@ -1814,7 +1802,7 @@ public class RenderUtils
 
         Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
         matrix4fStack.pushMatrix();
-        bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+        bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, context);
         mc().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
 
         //RenderSystem.enableBlend();

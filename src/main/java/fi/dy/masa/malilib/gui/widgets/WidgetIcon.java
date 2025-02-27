@@ -19,7 +19,7 @@ public class WidgetIcon extends WidgetBase
     public void render(boolean enabled, boolean selected, DrawContext drawContext)
     {
         RenderUtils.color(1f, 1f, 1f, 1f);
-        this.bindTexture(this.icon.getTexture());
+        this.bindTexture(this.icon.getTexture(), drawContext);
         this.icon.renderAt(this.x, this.y, this.zLevel, enabled, selected, drawContext);
 
         if (selected)

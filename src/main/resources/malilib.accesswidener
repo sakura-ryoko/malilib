@@ -1,0 +1,5 @@
+accessWidener v1 named
+accessible method net/minecraft/client/gl/ShaderPipelines register (Lnet/minecraft/client/gl/ShaderPipeline;)Lnet/minecraft/client/gl/ShaderPipeline;
+accessible field net/minecraft/client/gl/ShaderPipelines PIPELINES Ljava/util/Map;
+accessible field net/minecraft/client/gl/ShaderPipelines MATRICES_COLOR Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines MATRICES Lnet/minecraft/client/gl/ShaderPipeline$Stage;

@@ -92,7 +92,7 @@ public class WidgetCheckBox extends WidgetBase
         IGuiIcon icon = this.checked ? this.widgetChecked : this.widgetUnchecked;
 
         RenderUtils.color(1f, 1f, 1f, 1f);
-        this.bindTexture(icon.getTexture());
+        this.bindTexture(icon.getTexture(), drawContext);
         icon.renderAt(this.x, this.y, this.zLevel, false, false, drawContext);
 
         int iw = icon.getWidth();

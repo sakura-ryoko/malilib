@@ -25,8 +25,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.Vibrations;
 
-import fi.dy.masa.malilib.util.data.Constants;
-
 public class NbtBlockUtils
 {
     /**
@@ -37,9 +35,9 @@ public class NbtBlockUtils
      */
     public static @Nullable BlockEntityType<?> getBlockEntityTypeFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.ID))
         {
-            return Registries.BLOCK_ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString(NbtKeys.ID))).orElse(null);
+            return Registries.BLOCK_ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.method_68564(NbtKeys.ID, ""))).orElse(null);
         }
 
         return null;
@@ -88,9 +86,9 @@ public class NbtBlockUtils
     {
         Set<Integer> list = new HashSet<>();
 
-        if (nbt.contains(NbtKeys.DISABLED_SLOTS, Constants.NBT.TAG_INT_ARRAY))
+        if (nbt.contains(NbtKeys.DISABLED_SLOTS))
         {
-            int[] is = nbt.getIntArray(NbtKeys.DISABLED_SLOTS);
+            int[] is = nbt.getIntArray(NbtKeys.DISABLED_SLOTS).orElse(new int[0]);
 
             for (int j : is)
             {
@@ -113,12 +111,12 @@ public class NbtBlockUtils
         RegistryEntry<StatusEffect> primary = null;
         RegistryEntry<StatusEffect> secondary = null;
 
-        if (nbt.contains(NbtKeys.PRIMARY_EFFECT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.PRIMARY_EFFECT))
         {
             primary = nbt.get(NbtKeys.PRIMARY_EFFECT, Registries.STATUS_EFFECT.getEntryCodec()).filter(EFFECTS::contains).orElse(null);
         }
 
-        if (nbt.contains(NbtKeys.SECONDARY_EFFECT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.SECONDARY_EFFECT))
         {
             primary = nbt.get(NbtKeys.SECONDARY_EFFECT, Registries.STATUS_EFFECT.getEntryCodec()).filter(EFFECTS::contains).orElse(null);
         }
@@ -161,9 +159,9 @@ public class NbtBlockUtils
         Vibrations.ListenerData data = null;
         int lastFreq = -1;
 
-        if (nbt.contains(NbtKeys.VIBRATION, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.VIBRATION))
         {
-            lastFreq = nbt.getInt(NbtKeys.VIBRATION);
+            lastFreq = nbt.getInt(NbtKeys.VIBRATION, 0);
         }
 
         if (nbt.contains(NbtKeys.LISTENER))
@@ -184,9 +182,9 @@ public class NbtBlockUtils
         long age = -1;
         BlockPos pos = BlockPos.ORIGIN;
 
-        if (nbt.contains(NbtKeys.AGE, Constants.NBT.TAG_LONG))
+        if (nbt.contains(NbtKeys.AGE))
         {
-            age = nbt.getLong(NbtKeys.AGE);
+            age = nbt.getLong(NbtKeys.AGE, -1L);
         }
 
         if (nbt.contains(NbtKeys.EXIT))
@@ -222,7 +220,7 @@ public class NbtBlockUtils
 
         if (nbt.contains(NbtKeys.WAXED))
         {
-            waxed = nbt.getBoolean(NbtKeys.WAXED);
+            waxed = nbt.getBoolean(NbtKeys.WAXED).orElse(false);
         }
 
         return Pair.of(Pair.of(front.get(), back.get()), waxed);
@@ -245,9 +243,9 @@ public class NbtBlockUtils
             book = nbt.get(NbtKeys.BOOK, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
         }
 
-        if (nbt.contains(NbtKeys.PAGE, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.PAGE))
         {
-            current = nbt.getInt(NbtKeys.PAGE);
+            current = nbt.getInt(NbtKeys.PAGE, -1);
         }
 
         return Pair.of(book, current);
@@ -325,9 +323,9 @@ public class NbtBlockUtils
 
     public static int getOutputSignalFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.OUTPUT_SIGNAL, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.OUTPUT_SIGNAL))
         {
-            return nbt.getInt(NbtKeys.OUTPUT_SIGNAL);
+            return nbt.getInt(NbtKeys.OUTPUT_SIGNAL, 0);
         }
 
         return 0;

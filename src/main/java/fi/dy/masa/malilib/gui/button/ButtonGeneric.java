@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.gui.button;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 
@@ -112,11 +111,10 @@ public class ButtonGeneric extends ButtonBase
                 int y = this.y + (this.height - this.icon.getHeight()) / 2;
                 int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
-                this.bindTexture(this.icon.getTexture());
-                RenderSystem.enableDepthTest();
+                this.bindTexture(this.icon.getTexture(), drawContext);
+                //RenderSystem.enableDepthTest();
                 RenderUtils.drawTexturedRect(this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight(), drawContext);
-                RenderSystem.disableDepthTest();
-                //RenderUtils.forceDraw(drawContext);
+                //RenderSystem.disableDepthTest();
             }
 
             if (StringUtils.isBlank(this.displayString) == false)

@@ -1,35 +1,40 @@
 {
-  "required": true,
-  "package": "fi.dy.masa.malilib.mixin",
-  "compatibilityLevel": "JAVA_21",
-  "minVersion": "0.8",
-  "mixins": [
-    "IMixinDrawContext",
-    "IMixinHandledScreen",
-    "MixinClientConfigurationNetworkHandler",
-    "MixinClientPlayNetworkHandler",
-    "MixinDrawContext",
-    "MixinHandledScreen",
-    "MixinInGameHud",
-    "MixinIntegratedServer",
-    "MixinInventoryScreen",
-    "MixinItemStack",
-    "MixinKeyboard",
-    "MixinMinecraftClient",
-    "MixinMinecraftServer",
-    "MixinMouse",
-    "MixinWorldRenderer",
-    "entity.IMixinAbstractHorseEntity",
-    "entity.IMixinDataQueryHandler",
-    "entity.IMixinMerchantEntity",
-    "entity.IMixinPiglinEntity",
-    "entity.IMixinPlayerEntity",
-    "entity.MixinAbstractHorseEntity",
-    "entity.MixinPiglinEntity",
-    "entity.MixinSimpleInventory",
-    "test.MixinBundleItem"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+    "required": true,
+    "package": "fi.dy.masa.malilib.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "minVersion": "0.8",
+    "mixins": [
+        "MixinClientConfigurationNetworkHandler",
+        "MixinClientPlayNetworkHandler",
+        "MixinIntegratedServer",
+        "MixinItemStack",
+        "MixinKeyboard",
+        "MixinMinecraftClient",
+        "MixinMinecraftServer",
+        "MixinMouse",
+        "entity.IMixinAbstractHorseEntity",
+        "entity.IMixinDataQueryHandler",
+        "entity.IMixinMerchantEntity",
+        "entity.IMixinPiglinEntity",
+        "entity.IMixinPlayerEntity",
+        "entity.MixinAbstractHorseEntity",
+        "entity.MixinPiglinEntity",
+        "entity.MixinSimpleInventory",
+        "render.IMixinBufferBuilder",
+        "render.IMixinDrawContext",
+        "render.IMixinHandledScreen",
+        "render.MixinDrawContext",
+        "render.MixinHandledScreen",
+        "render.MixinInGameHud",
+        "render.MixinInventoryScreen",
+        "render.MixinWorldRenderer",
+        "test.MixinBundleItem"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "client": [
+        "render.MixinShaderPipelines",
+        "render.MixinWorldBorderRendering"
+  ]
 }

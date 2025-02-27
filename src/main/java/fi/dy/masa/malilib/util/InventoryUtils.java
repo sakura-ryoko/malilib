@@ -432,19 +432,19 @@ public class InventoryUtils
      */
     public static boolean hasNbtItems(NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.ITEMS))
         {
-            NbtList tagList = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
+            NbtList tagList = nbt.method_68569(NbtKeys.ITEMS);
             return !tagList.isEmpty();
         }
-        else if (nbt.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST))
+        else if (nbt.contains(NbtKeys.INVENTORY))
         {
-            NbtList tagList = nbt.getList(NbtKeys.INVENTORY, Constants.NBT.TAG_COMPOUND);
+            NbtList tagList = nbt.method_68569(NbtKeys.INVENTORY);
             return !tagList.isEmpty();
         }
-        else if (nbt.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
+        else if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
-            NbtList tagList = nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND);
+            NbtList tagList = nbt.method_68569(NbtKeys.ENDER_ITEMS);
             return !tagList.isEmpty();
         }
         else if (nbt.contains(NbtKeys.ITEM))
@@ -498,7 +498,7 @@ public class InventoryUtils
         // Most Common Tag --> NbtElement.LIST_TYPE ???
         if (nbt.contains(NbtKeys.ITEMS))
         {
-            NbtList list = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
+            NbtList list = nbt.method_68569(NbtKeys.ITEMS);
             if (slotCount < 0)
             {
                 slotCount = list.size();
@@ -510,9 +510,9 @@ public class InventoryUtils
             return items;
         }
         // A few Entities use this
-        else if (nbt.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST))
+        else if (nbt.contains(NbtKeys.INVENTORY))
         {
-            NbtList list = nbt.getList(NbtKeys.INVENTORY, Constants.NBT.TAG_COMPOUND);
+            NbtList list = nbt.method_68569(NbtKeys.INVENTORY);
             if (slotCount < 0)
             {
                 slotCount = list.size();
@@ -523,15 +523,15 @@ public class InventoryUtils
             for (int i = 0; i < list.size(); i++)
             {
                 final int index = i;
-                ItemStack.fromNbt(registry, list.getCompound(i)).ifPresent(itemStack -> items.set(index, itemStack));
+                ItemStack.fromNbt(registry, list.method_68582(i)).ifPresent(itemStack -> items.set(index, itemStack));
             }
             
             return items;
         }
         // Ender Chest
-        else if (nbt.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
+        else if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
-            NbtList list = nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND);
+            NbtList list = nbt.method_68569(NbtKeys.ENDER_ITEMS);
 
             if (slotCount < 0)
             {
@@ -542,8 +542,8 @@ public class InventoryUtils
 
             for (int i = 0; i < list.size(); i++)
             {
-                NbtCompound entry = list.getCompound(i);
-                int slot = entry.getByte(NbtKeys.SLOT) & 255;
+                NbtCompound entry = list.method_68582(i);
+                int slot = entry.method_68562(NbtKeys.SLOT, (byte) 0) & 255;
 
                 if (slot < items.size())
                 {
@@ -632,7 +632,7 @@ public class InventoryUtils
             // -- Furnace, Brewing Stand, Shulker Box, Crafter, Barrel, Chest, Dispenser, Hopper, Bookshelf, Campfire
             if (slotCount < 0)
             {
-                NbtList list = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
+                NbtList list = nbt.method_68569(NbtKeys.ITEMS);
                 slotCount = list.size();
             }
 
@@ -657,12 +657,12 @@ public class InventoryUtils
             // Entities use this (Piglin, Villager, a few others)
             if (slotCount < 0)
             {
-                NbtList list = nbt.getList(NbtKeys.INVENTORY, Constants.NBT.TAG_COMPOUND);
+                NbtList list = nbt.method_68569(NbtKeys.INVENTORY);
                 slotCount = list.size();
             }
 
             SimpleInventory inv = new SimpleInventory(slotCount);
-            inv.readNbtList(nbt.getList(NbtKeys.INVENTORY, Constants.NBT.TAG_COMPOUND), registry);
+            inv.readNbtList(nbt.method_68569(NbtKeys.INVENTORY), registry);
 
             if (inv.isEmpty())
             {
@@ -676,12 +676,12 @@ public class InventoryUtils
             // Ender Chest
             if (slotCount < 0)
             {
-                NbtList list = nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND);
+                NbtList list = nbt.method_68569(NbtKeys.ENDER_ITEMS);
                 slotCount = list.size();
             }
 
             SimpleInventory inv = new SimpleInventory(slotCount);
-            inv.readNbtList(nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND), registry);
+            inv.readNbtList(nbt.method_68569(NbtKeys.ENDER_ITEMS), registry);
 
             if (inv.isEmpty())
             {
@@ -752,7 +752,7 @@ public class InventoryUtils
         {
             if (slotCount < 0)
             {
-                NbtList list = nbt.getList(NbtKeys.ITEMS, Constants.NBT.TAG_COMPOUND);
+                NbtList list = nbt.method_68569(NbtKeys.ITEMS);
                 slotCount = list.size();
             }
 
@@ -807,10 +807,10 @@ public class InventoryUtils
     @Nullable
     public static EnderChestInventory getPlayerEnderItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull RegistryWrapper.WrapperLookup registry)
     {
-        if (nbt.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
+        if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
             EnderChestInventory inv = new EnderChestInventory();
-            inv.readNbtList(nbt.getList(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_COMPOUND), registry);
+            inv.readNbtList(nbt.method_68569(NbtKeys.ENDER_ITEMS), registry);
 
             return inv;
         }

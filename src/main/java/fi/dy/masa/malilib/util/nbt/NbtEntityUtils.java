@@ -42,7 +42,6 @@ import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.util.data.Constants;
 
 public class NbtEntityUtils
 {
@@ -54,9 +53,9 @@ public class NbtEntityUtils
      */
     public static @Nullable EntityType<?> getEntityTypeFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.ID))
         {
-            return Registries.ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString(NbtKeys.ID))).orElse(null);
+            return Registries.ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.method_68564(NbtKeys.ID, ""))).orElse(null);
         }
 
         return null;
@@ -101,10 +100,10 @@ public class NbtEntityUtils
     {
         EntityType<?> type = getEntityTypeFromNbt(nbt);
 
-        if (type != null && nbt.contains(NbtKeys.ATTRIB, Constants.NBT.TAG_LIST))
+        if (type != null && nbt.contains(NbtKeys.ATTRIB))
         {
             AttributeContainer container = new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
-            container.readNbt(nbt.getList(NbtKeys.ATTRIB, Constants.NBT.TAG_COMPOUND));
+            container.readNbt(nbt.method_68569(NbtKeys.ATTRIB));
             return container;
         }
 
@@ -152,9 +151,9 @@ public class NbtEntityUtils
         double health = 0;
         double maxHealth;
 
-        if (nbt.contains(NbtKeys.HEALTH, Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.HEALTH))
         {
-            health = nbt.getFloat(NbtKeys.HEALTH);
+            health = nbt.getFloat(NbtKeys.HEALTH, 0f);
         }
 
         maxHealth = getAttributeValueFromNbt(nbt, EntityAttributes.MAX_HEALTH);
@@ -264,7 +263,7 @@ public class NbtEntityUtils
     {
         Map<RegistryEntry<StatusEffect>, StatusEffectInstance> statusEffects = Maps.newHashMap();
 
-        if (nbt.contains(NbtKeys.EFFECTS, Constants.NBT.TAG_LIST))
+        if (nbt.contains(NbtKeys.EFFECTS))
         {
             List<StatusEffectInstance> list = nbt.get(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(NbtOps.INSTANCE)).orElse(List.of());
 
@@ -477,7 +476,7 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.SITTING))
         {
-            sitting = nbt.getBoolean(NbtKeys.SITTING);
+            sitting = nbt.getBoolean(NbtKeys.SITTING).orElse(false);
         }
 
         return Pair.of(owner, sitting);
@@ -496,12 +495,12 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.AGE))
         {
-            breedingAge = nbt.getInt(NbtKeys.AGE);
+            breedingAge = nbt.getInt(NbtKeys.AGE, 0);
         }
 
         if (nbt.contains(NbtKeys.FORCED_AGE))
         {
-            forcedAge = nbt.getInt(NbtKeys.FORCED_AGE);
+            forcedAge = nbt.getInt(NbtKeys.FORCED_AGE, 0);
         }
 
         return Pair.of(breedingAge, forcedAge);
@@ -569,9 +568,9 @@ public class NbtEntityUtils
         int timer = -1;
         UUID player = Util.NIL_UUID;
 
-        if (nbt.contains(NbtKeys.ZOMBIE_CONVERSION, Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.ZOMBIE_CONVERSION))
         {
-            timer = nbt.getInt(NbtKeys.ZOMBIE_CONVERSION);
+            timer = nbt.getInt(NbtKeys.ZOMBIE_CONVERSION, -1);
         }
         if (nbt.contains(NbtKeys.CONVERSION_PLAYER))
         {
@@ -592,13 +591,13 @@ public class NbtEntityUtils
         int drowning = -1;
         int inWater = -1;
 
-        if (nbt.contains(NbtKeys.DROWNED_CONVERSION, Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.DROWNED_CONVERSION))
         {
-            drowning = nbt.getInt(NbtKeys.DROWNED_CONVERSION);
+            drowning = nbt.getInt(NbtKeys.DROWNED_CONVERSION, -1);
         }
-        if (nbt.contains(NbtKeys.IN_WATER, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.IN_WATER))
         {
-            inWater = nbt.getInt(NbtKeys.IN_WATER);
+            inWater = nbt.getInt(NbtKeys.IN_WATER, -1);
         }
 
         return Pair.of(drowning, inWater);
@@ -612,9 +611,9 @@ public class NbtEntityUtils
      */
     public static int getStrayConversionTimeFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.STRAY_CONVERSION, Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.STRAY_CONVERSION))
         {
-            return nbt.getInt(NbtKeys.STRAY_CONVERSION);
+            return nbt.getInt(NbtKeys.STRAY_CONVERSION, -1);
         }
 
         return -1;
@@ -693,9 +692,9 @@ public class NbtEntityUtils
         {
             facing = nbt.get(NbtKeys.FACING_2, Direction.INDEX_CODEC).orElse(Direction.DOWN);
         }
-        if (nbt.contains(NbtKeys.ITEM_ROTATION, Constants.NBT.TAG_BYTE))
+        if (nbt.contains(NbtKeys.ITEM_ROTATION))
         {
-            rotation = Direction.byIndex(nbt.getByte(NbtKeys.ITEM_ROTATION));
+            rotation = Direction.byIndex(nbt.method_68562(NbtKeys.ITEM_ROTATION, (byte) 0));
         }
 
         return Pair.of(facing, rotation);
@@ -740,7 +739,7 @@ public class NbtEntityUtils
     @SuppressWarnings("deprecation")
     public static @Nullable AxolotlEntity.Variant getAxolotlVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.VARIANT_2))
         {
             return nbt.get(NbtKeys.VARIANT_2, AxolotlEntity.Variant.INDEX_CODEC).orElse(AxolotlEntity.Variant.LUCY);
         }
@@ -782,7 +781,7 @@ public class NbtEntityUtils
      */
     public static @Nullable RegistryKey<ChickenVariant> getChickenVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.VARIANT))
         {
             return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.CHICKEN_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(ChickenVariants.DEFAULT);
         }
@@ -799,7 +798,7 @@ public class NbtEntityUtils
      */
     public static @Nullable RegistryKey<CowVariant> getCowVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.VARIANT))
         {
             return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.COW_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(CowVariants.DEFAULT);
         }
@@ -832,7 +831,7 @@ public class NbtEntityUtils
      */
     public static @Nullable RegistryKey<FrogVariant> getFrogVariantFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.VARIANT))
         {
             return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.FROG_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
         }
@@ -850,9 +849,9 @@ public class NbtEntityUtils
         HorseColor color = null;
         HorseMarking marking = null;
 
-        if (nbt.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.VARIANT_2))
         {
-            int variant = nbt.getInt(NbtKeys.VARIANT_2);
+            int variant = nbt.getInt(NbtKeys.VARIANT_2, 0);
             color = HorseColor.byIndex(variant & 0xFF);
             marking = HorseMarking.byIndex((variant & 0xFF00) >> 8);
         }
@@ -889,9 +888,9 @@ public class NbtEntityUtils
         {
             TropicalFishEntity.Variant variant = nbt.get(NbtKeys.VARIANT_2, TropicalFishEntity.Variant.CODEC).orElse(TropicalFishEntity.DEFAULT_VARIANT);
         }
-        else if (nbt.contains(NbtKeys.BUCKET_VARIANT, Constants.NBT.TAG_INT))
+        else if (nbt.contains(NbtKeys.BUCKET_VARIANT))
         {
-            return TropicalFishEntity.Pattern.byIndex(nbt.getInt(NbtKeys.BUCKET_VARIANT) & '\uffff');
+            return TropicalFishEntity.Pattern.byIndex(nbt.getInt(NbtKeys.BUCKET_VARIANT, 0) & '\uffff');
         }
 
         return null;
@@ -945,9 +944,9 @@ public class NbtEntityUtils
      */
     public static @Nullable RegistryKey<WolfSoundVariant> getWolfSoundTypeFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        if (nbt.contains(NbtKeys.SOUND_VARIANT, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.SOUND_VARIANT))
         {
-            RegistryEntry.Reference<WolfSoundVariant> soundVariant = registry.getOrThrow(RegistryKeys.WOLF_SOUND_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.SOUND_VARIANT))).orElse(null);
+            RegistryEntry.Reference<WolfSoundVariant> soundVariant = registry.getOrThrow(RegistryKeys.WOLF_SOUND_VARIANT).getEntry(Identifier.tryParse(nbt.method_68564(NbtKeys.SOUND_VARIANT, ""))).orElse(null);
 
             if (soundVariant != null)
             {
@@ -1009,9 +1008,9 @@ public class NbtEntityUtils
             variant = nbt.get(NbtKeys.VARIANT_2, LlamaEntity.Variant.INDEX_CODEC).orElse(LlamaEntity.Variant.CREAMY);
         }
 
-        if (nbt.contains(NbtKeys.STRENGTH, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.STRENGTH))
         {
-            strength = nbt.getInt(NbtKeys.STRENGTH);
+            strength = nbt.getInt(NbtKeys.STRENGTH, -1);
         }
 
         return Pair.of(variant, strength);
@@ -1028,7 +1027,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT))
         {
-			Optional<RegistryEntry.Reference<PigVariant>> opt = registry.getOrThrow(RegistryKeys.PIG_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
+			Optional<RegistryEntry.Reference<PigVariant>> opt = registry.getOrThrow(RegistryKeys.PIG_VARIANT).getEntry(Identifier.tryParse(nbt.method_68564(NbtKeys.VARIANT, "")));
 
             if (opt.isPresent())
             {
@@ -1065,7 +1064,7 @@ public class NbtEntityUtils
      */
     public static @Nullable SalmonEntity.Variant getSalmonVariantFromNbt(@Nonnull NbtCompound nbt)
     {
-        if (nbt.contains(NbtKeys.TYPE, Constants.NBT.TAG_STRING))
+        if (nbt.contains(NbtKeys.TYPE))
         {
             return nbt.get(NbtKeys.TYPE, SalmonEntity.Variant.CODEC).orElse(SalmonEntity.Variant.MEDIUM);
         }
@@ -1084,14 +1083,14 @@ public class NbtEntityUtils
         boolean hasFish = false;
         int moist = -1;
 
-        if (nbt.contains(NbtKeys.MOISTNESS, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.MOISTNESS))
         {
-            moist = nbt.getInt(NbtKeys.MOISTNESS);
+            moist = nbt.getInt(NbtKeys.MOISTNESS, -1);
         }
 
         if (nbt.contains(NbtKeys.GOT_FISH))
         {
-            hasFish = nbt.getBoolean(NbtKeys.GOT_FISH);
+            hasFish = nbt.getBoolean(NbtKeys.GOT_FISH).orElse(false);
         }
 
         return Pair.of(moist, hasFish);
@@ -1109,17 +1108,17 @@ public class NbtEntityUtils
         int total = -1;
         float progress = 0.0f;
 
-        if (nbt.contains(NbtKeys.EXP_LEVEL, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.EXP_LEVEL))
         {
-            level = nbt.getInt(NbtKeys.EXP_LEVEL);
+            level = nbt.getInt(NbtKeys.EXP_LEVEL, -1);
         }
-        if (nbt.contains(NbtKeys.EXP_TOTAL, Constants.NBT.TAG_INT))
+        if (nbt.contains(NbtKeys.EXP_TOTAL))
         {
-            total = nbt.getInt(NbtKeys.EXP_TOTAL);
+            total = nbt.getInt(NbtKeys.EXP_TOTAL, -1);
         }
-        if (nbt.contains(NbtKeys.EXP_PROGRESS, Constants.NBT.TAG_FLOAT))
+        if (nbt.contains(NbtKeys.EXP_PROGRESS))
         {
-            progress = nbt.getFloat(NbtKeys.EXP_PROGRESS);
+            progress = nbt.getFloat(NbtKeys.EXP_PROGRESS, 0.0f);
         }
 
         return Triple.of(level, total, progress);
@@ -1135,7 +1134,7 @@ public class NbtEntityUtils
     {
         HungerManager hunger = null;
 
-        if (nbt.contains(NbtKeys.FOOD_LEVEL, Constants.NBT.TAG_ANY_NUMERIC))
+        if (nbt.contains(NbtKeys.FOOD_LEVEL))
         {
             hunger = new HungerManager();
             hunger.readNbt(nbt);
@@ -1154,10 +1153,10 @@ public class NbtEntityUtils
     {
         ServerRecipeBook book = null;
 
-        if (nbt.contains(NbtKeys.RECIPE_BOOK, Constants.NBT.TAG_COMPOUND))
+        if (nbt.contains(NbtKeys.RECIPE_BOOK))
         {
             book = new ServerRecipeBook(manager::forEachRecipeDisplay);
-            book.readNbt(nbt.getCompound(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
+            book.readNbt(nbt.method_68568(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
         }
 
         return book;

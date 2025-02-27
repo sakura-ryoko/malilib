@@ -5,17 +5,14 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.joml.Matrix4f;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EntityType;
@@ -50,7 +47,6 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
-import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.game.IEntityOwnedInventory;
 import fi.dy.masa.malilib.util.game.wrap.GameWrap;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
@@ -120,136 +116,162 @@ public class InventoryOverlay
 
     private static ItemStack hoveredStack = null;
 
-    public static void renderInventoryBackground(InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc)
+    public static void renderInventoryBackground(InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc, DrawContext context)
     {
-        //RenderUtils.setupBlend();
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE, ShaderPipelines.POSITION_TEX_PANORAMA);
+        renderInventoryBackground(type, x, y, slotsPerRow, totalSlots, -1, mc, context);
+    }
+
+    public static void renderInventoryBackground(InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, int color, MinecraftClient mc, DrawContext context)
+    {
+        VertexConsumer buffer;
+        Matrix4f posMatrix;
+        //RenderUtils.setupBlend(); // ShaderPipelines.POSITION_TEX_PANORAMA
+        /*
+        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR, ShaderPipelines.GUI_TEXTURED);
         BufferBuilder buffer = ctx.getBuilder();
-
-        //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-
+         */
+        
         if (type == InventoryRenderType.FURNACE)
         {
-            RenderUtils.bindTexture(TEXTURE_FURNACE);
-            RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0,   4,  64, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +  4, y     ,  84,   0,  92,   4, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x     , y + 64,   0, 162,  92,   4, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 92, y +  4, 172, 102,   4,  64, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +  4, y +  4,  52,  13,  88,  60, buffer); // middle
+            buffer = RenderUtils.bindTexture(TEXTURE_FURNACE, context);
+            posMatrix = context.getMatrices().peek().getPositionMatrix();
+            
+            RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0,   4,  64, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +  4, y     ,  84,   0,  92,   4, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x     , y + 64,   0, 162,  92,   4, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x + 92, y +  4, 172, 102,   4,  64, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +  4, y +  4,  52,  13,  88,  60, buffer); // middle
         }
         else if (type == InventoryRenderType.BREWING_STAND)
         {
-            RenderUtils.bindTexture(TEXTURE_BREWING_STAND);
-            RenderUtils.drawTexturedRectBatched(x      , y     ,   0,   0,   4,  68, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +   4, y     ,  63,   0, 113,   4, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x      , y + 68,   0, 162, 113,   4, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 113, y +  4, 172,  98,   4,  68, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +   4, y +  4,  13,  13, 109,  64, buffer); // middle
+            buffer = RenderUtils.bindTexture(TEXTURE_BREWING_STAND, context);
+            posMatrix = context.getMatrices().peek().getPositionMatrix();
+            
+            RenderUtils.drawTexturedRectBatched(posMatrix, x      , y     ,   0,   0,   4,  68, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +   4, y     ,  63,   0, 113,   4, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x      , y + 68,   0, 162, 113,   4, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x + 113, y +  4, 172,  98,   4,  68, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +   4, y +  4,  13,  13, 109,  64, buffer); // middle
         }
         else if (type == InventoryRenderType.CRAFTER)
         {
             // We just hack in the Dispenser Texture, so it displays right.  Easy.
-            RenderUtils.bindTexture(TEXTURE_DISPENSER);
-            RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0,   7,  61, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +  7, y     , 115,   0,  61,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x     , y + 61,   0, 159,  61,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 61, y +  7, 169, 105,   7,  61, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +  7, y +  7,  61,  16,  54,  54, buffer); // middle
+            buffer = RenderUtils.bindTexture(TEXTURE_DISPENSER, context);
+            posMatrix = context.getMatrices().peek().getPositionMatrix();
+
+            RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0,   7,  61, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +  7, y     , 115,   0,  61,   7, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x     , y + 61,   0, 159,  61,   7, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x + 61, y +  7, 169, 105,   7,  61, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +  7, y +  7,  61,  16,  54,  54, buffer); // middle
         }
         else if (type == InventoryRenderType.DISPENSER)
         {
-            RenderUtils.bindTexture(TEXTURE_DISPENSER);
-            RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0,   7,  61, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +  7, y     , 115,   0,  61,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x     , y + 61,   0, 159,  61,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 61, y +  7, 169, 105,   7,  61, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +  7, y +  7,  61,  16,  54,  54, buffer); // middle
+            buffer = RenderUtils.bindTexture(TEXTURE_DISPENSER, context);
+            posMatrix = context.getMatrices().peek().getPositionMatrix();
+
+            RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0,   7,  61, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +  7, y     , 115,   0,  61,   7, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x     , y + 61,   0, 159,  61,   7, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x + 61, y +  7, 169, 105,   7,  61, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +  7, y +  7,  61,  16,  54,  54, buffer); // middle
         }
         else if (type == InventoryRenderType.HOPPER)
         {
-            RenderUtils.bindTexture(TEXTURE_HOPPER);
-            RenderUtils.drawTexturedRectBatched(x      , y     ,   0,   0,   7,  25, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +   7, y     ,  79,   0,  97,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x      , y + 25,   0, 126,  97,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x +  97, y +  7, 169, 108,   7,  25, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +   7, y +  7,  43,  19,  90,  18, buffer); // middle
+            buffer = RenderUtils.bindTexture(TEXTURE_HOPPER, context);
+            posMatrix = context.getMatrices().peek().getPositionMatrix();
+
+            RenderUtils.drawTexturedRectBatched(posMatrix, x      , y     ,   0,   0,   7,  25, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +   7, y     ,  79,   0,  97,   7, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x      , y + 25,   0, 126,  97,   7, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +  97, y +  7, 169, 108,   7,  25, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +   7, y +  7,  43,  19,  90,  18, buffer); // middle
         }
         // Most likely a Villager, or possibly a Llama
         else if (type == InventoryRenderType.VILLAGER)
         {
-            RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST);
-            RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0,   7,  79, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +  7, y     , 133,   0,  43,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x     , y + 79,   0, 215,  43,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + 43, y +  7, 169, 143,   7,  79, buffer); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(x +  7, y +  7,   7,  17,  36,  72, buffer); // 2x4 slots
+            buffer = RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST, context);
+            posMatrix = context.getMatrices().peek().getPositionMatrix();
+
+            RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0,   7,  79, color, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +  7, y     , 133,   0,  43,   7, color, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x     , y + 79,   0, 215,  43,   7, color, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x + 43, y +  7, 169, 143,   7,  79, color, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +  7, y +  7,   7,  17,  36,  72, color, buffer); // 2x4 slots
         }
         else if (type == InventoryRenderType.FIXED_27)
         {
-            renderInventoryBackground27(x, y, buffer, mc);
+            renderInventoryBackground27(x, y, color, mc, context);
         }
         else if (type == InventoryRenderType.FIXED_54)
         {
-            renderInventoryBackground54(x, y, buffer, mc);
+            renderInventoryBackground54(x, y, color, mc, context);
         }
         else
         {
-            RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST);
+            buffer = RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST, context);
+            posMatrix = context.getMatrices().peek().getPositionMatrix();
 
             // Draw the slot backgrounds according to how many slots there actually are
             int rows = (int) (Math.ceil((double) totalSlots / (double) slotsPerRow));
             int bgw = Math.min(totalSlots, slotsPerRow) * 18 + 7;
             int bgh = rows * 18 + 7;
 
-            RenderUtils.drawTexturedRectBatched(x      , y      ,         0,         0,   7, bgh, buffer); // left (top)
-            RenderUtils.drawTexturedRectBatched(x +   7, y      , 176 - bgw,         0, bgw,   7, buffer); // top (right)
-            RenderUtils.drawTexturedRectBatched(x      , y + bgh,         0,       215, bgw,   7, buffer); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(x + bgw, y +   7,       169, 222 - bgh,   7, bgh, buffer); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x      , y      ,         0,         0,   7, bgh, color, buffer); // left (top)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x +   7, y      , 176 - bgw,         0, bgw,   7, color, buffer); // top (right)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x      , y + bgh,         0,       215, bgw,   7, color, buffer); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(posMatrix, x + bgw, y +   7,       169, 222 - bgh,   7, bgh, color, buffer); // right (bottom)
 
             for (int row = 0; row < rows; row++)
             {
                 int rowLen = MathHelper.clamp(totalSlots - (row * slotsPerRow), 1, slotsPerRow);
-                RenderUtils.drawTexturedRectBatched(x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, buffer);
+                RenderUtils.drawTexturedRectBatched(posMatrix, x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, color, buffer);
 
                 // Render the background for the last non-existing slots on the last row,
                 // in two strips of the background texture from the double chest texture's top part.
                 if (rows > 1 && rowLen < slotsPerRow)
                 {
-                    RenderUtils.drawTexturedRectBatched(x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, buffer);
-                    RenderUtils.drawTexturedRectBatched(x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, buffer);
+                    RenderUtils.drawTexturedRectBatched(posMatrix, x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, color, buffer);
+                    RenderUtils.drawTexturedRectBatched(posMatrix, x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, color, buffer);
                 }
             }
         }
 
         //RenderSystem.enableDepthTest();
         //RenderSystem.enableBlend();
-
+        
+        /*
         try
         {
             ctx.draw(mc.getFramebuffer(), buffer.end());
             ctx.close();
         }
         catch (Exception ignored) { }
+         */
     }
 
-    public static void renderInventoryBackground27(int x, int y, BufferBuilder buffer, MinecraftClient mc)
+    public static void renderInventoryBackground27(int x, int y, int color, MinecraftClient mc, DrawContext context)
     {
-        RenderUtils.bindTexture(TEXTURE_SINGLE_CHEST);
-        RenderUtils.drawTexturedRectBatched(x      , y     ,   0,   0,   7,  61, buffer); // left (top)
-        RenderUtils.drawTexturedRectBatched(x +   7, y     ,   7,   0, 169,   7, buffer); // top (right)
-        RenderUtils.drawTexturedRectBatched(x      , y + 61,   0, 159, 169,   7, buffer); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(x + 169, y +  7, 169, 105,   7,  61, buffer); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(x +   7, y +  7,   7,  17, 162,  54, buffer); // middle
+        VertexConsumer buffer = RenderUtils.bindTexture(TEXTURE_SINGLE_CHEST, context);
+        Matrix4f posMatrix = context.getMatrices().peek().getPositionMatrix();
+
+        RenderUtils.drawTexturedRectBatched(posMatrix, x      , y     ,   0,   0,   7,  61, color, buffer); // left (top)
+        RenderUtils.drawTexturedRectBatched(posMatrix, x +   7, y     ,   7,   0, 169,   7, color, buffer); // top (right)
+        RenderUtils.drawTexturedRectBatched(posMatrix, x      , y + 61,   0, 159, 169,   7, color, buffer); // bottom (left)
+        RenderUtils.drawTexturedRectBatched(posMatrix, x + 169, y +  7, 169, 105,   7,  61, color, buffer); // right (bottom)
+        RenderUtils.drawTexturedRectBatched(posMatrix, x +   7, y +  7,   7,  17, 162,  54, color, buffer); // middle
     }
 
-    public static void renderInventoryBackground54(int x, int y, BufferBuilder buffer, MinecraftClient mc)
+    public static void renderInventoryBackground54(int x, int y, int color, MinecraftClient mc, DrawContext context)
     {
-        RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST);
-        RenderUtils.drawTexturedRectBatched(x      , y      ,   0,   0,   7, 115, buffer); // left (top)
-        RenderUtils.drawTexturedRectBatched(x +   7, y      ,   7,   0, 169,   7, buffer); // top (right)
-        RenderUtils.drawTexturedRectBatched(x      , y + 115,   0, 215, 169,   7, buffer); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(x + 169, y +   7, 169, 107,   7, 115, buffer); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(x +   7, y +   7,   7,  17, 162, 108, buffer); // middle
+        VertexConsumer buffer = RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST, context);
+        Matrix4f posMatrix = context.getMatrices().peek().getPositionMatrix();
+
+        RenderUtils.drawTexturedRectBatched(posMatrix, x      , y      ,   0,   0,   7, 115, color, buffer); // left (top)
+        RenderUtils.drawTexturedRectBatched(posMatrix, x +   7, y      ,   7,   0, 169,   7, color, buffer); // top (right)
+        RenderUtils.drawTexturedRectBatched(posMatrix, x      , y + 115,   0, 215, 169,   7, color, buffer); // bottom (left)
+        RenderUtils.drawTexturedRectBatched(posMatrix, x + 169, y +   7, 169, 107,   7, 115, color, buffer); // right (bottom)
+        RenderUtils.drawTexturedRectBatched(posMatrix, x +   7, y +   7,   7,  17, 162, 108, color, buffer); // middle
     }
 
     public static void renderInventoryBackgroundSlots(InventoryRenderType type, Inventory inv, int x, int y, DrawContext drawContext)
@@ -341,38 +363,39 @@ public class InventoryOverlay
         }
     }
 
-    public static void renderEquipmentOverlayBackground(int x, int y, LivingEntity entity, DrawContext drawContext, MinecraftClient mc)
+    public static void renderEquipmentOverlayBackground(int x, int y, LivingEntity entity, DrawContext drawContext)
     {
         RenderUtils.color(1f, 1f, 1f, 1f);
+        /*
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE, ShaderPipelines.POSITION_TEX_PANORAMA);
         BufferBuilder buffer = ctx.getBuilder();
+         */
 
-        //RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
+        VertexConsumer buffer = RenderUtils.bindTexture(TEXTURE_DISPENSER, drawContext);
+        Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
 
-        RenderUtils.bindTexture(TEXTURE_DISPENSER);
-
-        RenderUtils.drawTexturedRectBatched(x     , y     ,   0,   0, 50, 83, buffer); // top-left (main part)
-        RenderUtils.drawTexturedRectBatched(x + 50, y     , 173,   0,  3, 83, buffer); // right edge top
-        RenderUtils.drawTexturedRectBatched(x     , y + 83,   0, 163, 50,  3, buffer); // bottom edge left
-        RenderUtils.drawTexturedRectBatched(x + 50, y + 83, 173, 163,  3,  3, buffer); // bottom right corner
+        RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0, 50, 83, buffer); // top-left (main part)
+        RenderUtils.drawTexturedRectBatched(posMatrix, x + 50, y     , 173,   0,  3, 83, buffer); // right edge top
+        RenderUtils.drawTexturedRectBatched(posMatrix, x     , y + 83,   0, 163, 50,  3, buffer); // bottom edge left
+        RenderUtils.drawTexturedRectBatched(posMatrix, x + 50, y + 83, 173, 163,  3,  3, buffer); // bottom right corner
 
         for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
         {
-            RenderUtils.drawTexturedRectBatched(x + xOff, y + yOff, 61, 16, 18, 18, buffer);
+            RenderUtils.drawTexturedRectBatched(posMatrix, x + xOff, y + yOff, 61, 16, 18, 18, buffer);
         }
 
         // Main hand and offhand
-        RenderUtils.drawTexturedRectBatched(x + 28, y + 2 * 18 + 7, 61, 16, 18, 18, buffer);
-        RenderUtils.drawTexturedRectBatched(x + 28, y + 3 * 18 + 7, 61, 16, 18, 18, buffer);
+        RenderUtils.drawTexturedRectBatched(posMatrix, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18, buffer);
+        RenderUtils.drawTexturedRectBatched(posMatrix, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18, buffer);
 
+        /*
         try
         {
-            ctx.draw(mc.getFramebuffer(), buffer.end());
+            ctx.draw(RenderUtils.fb(), buffer.end());
             ctx.close();
         }
         catch (Exception ignored) { }
-
-        //RenderUtils.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+         */
 
         if (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
         {
@@ -1107,12 +1130,12 @@ public class InventoryOverlay
         matrixStack.scale(scale, scale, 1);
 
         RenderUtils.enableDiffuseLightingGui3D();
-        RenderUtils.color(1f, 1f, 1f, 1f);
+        color = RenderUtils.color(1f, 1f, 1f, 1f);
 
         drawContext.drawGuiTexture(RenderLayer::getGuiTextured, texture, 0, 0, 18, 18, color);
         RenderUtils.forceDraw(drawContext);
 
-        RenderUtils.color(1f, 1f, 1f, 1f);
+        color = RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)

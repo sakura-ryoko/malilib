@@ -1,19 +1,12 @@
 package fi.dy.masa.malilib.test;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.interfaces.IRenderer;
-import fi.dy.masa.malilib.render.InventoryOverlay;
-import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.InventoryUtils;
-import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.game.BlockUtils;
-import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import org.jetbrains.annotations.ApiStatus;
+import org.joml.Matrix4f;
+
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CrafterBlockEntity;
@@ -39,13 +32,20 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.Profilers;
-import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.interfaces.IRenderer;
+import fi.dy.masa.malilib.render.InventoryOverlay;
+import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.malilib.util.InventoryUtils;
+import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.game.BlockUtils;
+import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 
 @ApiStatus.Experimental
 public class TestRenderHandler implements IRenderer
@@ -206,11 +206,13 @@ public class TestRenderHandler implements IRenderer
             GuiBase.isCtrlDown())
         {
             BlockHitResult hitResult = (BlockHitResult) mc.crosshairTarget;
+            /*
             RenderSystem.depthMask(false);
             RenderSystem.disableCull();
             RenderSystem.disableDepthTest();
 
             RenderUtils.setupBlend();
+             */
 
             Color4f color = Color4f.fromColor(StringUtils.getColor("#C03030F0", 0));
 
@@ -223,10 +225,12 @@ public class TestRenderHandler implements IRenderer
                     posMatrix,
                     mc);
 
+            /*
             RenderSystem.enableDepthTest();
             RenderSystem.disableBlend();
             RenderSystem.enableCull();
             RenderSystem.depthMask(true);
+             */
         }
     }
 
@@ -327,7 +331,7 @@ public class TestRenderHandler implements IRenderer
                 horseInv.setStack(0, horseArmor != null && !horseArmor.isEmpty() ? horseArmor : ItemStack.EMPTY);
                 horseInv.setStack(1, inv.getStack(0));
 
-                InventoryOverlay.renderInventoryBackground(type, xInv, yInv, 1, 2, mc);
+                InventoryOverlay.renderInventoryBackground(type, xInv, yInv, 1, 2, mc, drawContext);
                 if (type == InventoryOverlay.InventoryRenderType.LLAMA)
                 {
                     InventoryOverlay.renderLlamaArmorBackgroundSlots(horseInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, drawContext);
@@ -342,7 +346,7 @@ public class TestRenderHandler implements IRenderer
 
             if (totalSlots > 0)
             {
-                InventoryOverlay.renderInventoryBackground(type, xInv, yInv, props.slotsPerRow, totalSlots, mc);
+                InventoryOverlay.renderInventoryBackground(type, xInv, yInv, props.slotsPerRow, totalSlots, mc, drawContext);
                 // TODO 1.21.4+
                 if (type == InventoryOverlay.InventoryRenderType.BREWING_STAND)
                 {
@@ -373,7 +377,7 @@ public class TestRenderHandler implements IRenderer
             Inventory wolfInv = new SimpleInventory(2);
             ItemStack wolfArmor = ((WolfEntity) entityLivingBase).getBodyArmor();
             wolfInv.setStack(0, wolfArmor != null && !wolfArmor.isEmpty() ? wolfArmor : ItemStack.EMPTY);
-            InventoryOverlay.renderInventoryBackground(type, xInv, yInv, 1, 2, mc);
+            InventoryOverlay.renderInventoryBackground(type, xInv, yInv, 1, 2, mc, drawContext);
             InventoryOverlay.renderWolfArmorBackgroundSlots(wolfInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, drawContext);
             InventoryOverlay.renderInventoryStacks(type, wolfInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, 1, 0, 2, mc, drawContext);
         }

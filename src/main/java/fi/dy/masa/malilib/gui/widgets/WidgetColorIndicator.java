@@ -1,6 +1,10 @@
 package fi.dy.masa.malilib.gui.widgets;
 
+import java.util.function.IntConsumer;
 import com.google.common.collect.ImmutableList;
+
+import net.minecraft.client.gui.DrawContext;
+
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.config.options.ConfigInteger;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -9,11 +13,6 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
-import net.minecraft.client.gui.DrawContext;
-
-import java.util.function.IntConsumer;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 
 public class WidgetColorIndicator extends WidgetBase
 {
@@ -58,10 +57,10 @@ public class WidgetColorIndicator extends WidgetBase
         int width = this.getWidth();
         int height = this.getHeight();
 
-        RenderSystem.enableDepthTest();
+        //RenderSystem.enableDepthTest();
         RenderUtils.drawRect(x    , y    , width    , height    , 0xFFFFFFFF, z);
         RenderUtils.drawRect(x + 1, y + 1, width - 2, height - 2, 0xFF000000, z);
         RenderUtils.drawRect(x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue(), z);
-        RenderSystem.disableDepthTest();
+        //RenderSystem.disableDepthTest();
     }
 }

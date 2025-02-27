@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.util.nbt;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -12,7 +13,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 
 import fi.dy.masa.malilib.util.data.Constants;
-import fi.dy.masa.malilib.util.game.wrap.NbtWrap;
 
 /**
  * Post-ReWrite code
@@ -87,7 +87,7 @@ public class PrettyNbtStringifier extends BaseNbtStringifier
 
         if (this.printTagType)
         {
-            String tagType = NbtWrap.getCommandFeedbackName(tag);
+            String tagType = tag.getNbtType().getCommandFeedbackName();
             this.addIndentedLine(String.format("[%s] %s: %s", tagType, name, value));
         }
         else if (StringUtils.isBlank(name) == false)
@@ -103,7 +103,7 @@ public class PrettyNbtStringifier extends BaseNbtStringifier
     @Override
     protected void appendCompound(String tagName, NbtCompound compound)
     {
-        List<String> keys = Lists.newArrayList(NbtWrap.getKeys(compound));
+        List<String> keys = Lists.newArrayList(compound.getKeys());
         Collections.sort(keys);
 
         String name = this.getFormattedTagName(tagName);
@@ -123,7 +123,10 @@ public class PrettyNbtStringifier extends BaseNbtStringifier
 
         for (String key : keys)
         {
-            this.appendTag(key, NbtWrap.getTag(compound, key));
+            if (compound.contains(key))
+            {
+                this.appendTag(key, Objects.requireNonNull(compound.get(key)));
+            }
         }
 
         this.setIndentationLevel(this.indentationLevel - 1);
@@ -133,8 +136,8 @@ public class PrettyNbtStringifier extends BaseNbtStringifier
     @Override
     protected void appendList(String tagName, NbtList list)
     {
-        final int size = NbtWrap.getListSize(list);
-        String containedTypeName = size > 0 ? NbtWrap.getCommandFeedbackName(list.get(0)) : "?";
+        final int size = list.size();
+        String containedTypeName = size > 0 ? list.getFirst().getNbtType().getCommandFeedbackName() : "?";
         String name = this.getFormattedTagName(tagName);
 
         if (this.printTagType)

@@ -9,7 +9,6 @@ import org.joml.Matrix4f;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.ShaderProgram;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.Handle;
@@ -181,54 +180,14 @@ public class RenderEventHandler implements IRenderDispatcher
 
         if (this.worldPreWeatherRenderers.isEmpty() == false)
         {
-            Handle<Framebuffer> handleMain;
-            //Handle<Framebuffer> handleTranslucent;
             RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_weather");
-
-            /*
-            if (fbSet.translucentFramebuffer != null)
-            {
-                fbSet.translucentFramebuffer = renderPass.transfer(fbSet.translucentFramebuffer);
-                handleTranslucent = fbSet.translucentFramebuffer;
-            }
-            else
-            {
-                handleTranslucent = null;
-            }
-             */
-
             fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
-            handleMain = fbSet.mainFramebuffer;
+            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
 
             renderPass.setRenderer(() ->
             {
                 Fog fog = RenderSystem.getShaderFog();
-                //ShaderProgram shaders = RenderSystem.getShader();
-
-                /*
-                if (handleTranslucent != null)
-                {
-                    handleTranslucent.get().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-                    handleTranslucent.get().clear();
-                    handleTranslucent.get().copyDepthFrom(handleMain.get());
-                }
-                 */
-
-                /*
-                if (shaders != null)
-                {
-                    shaders.initializeUniforms(VertexFormat.DrawMode.QUADS, posMatrix, projMatrix, mc.getWindow());
-                    shaders.bind();
-                }
-                 */
-
-                /*
-                if (handleTranslucent != null)
-                {
-                    handleTranslucent.get().beginWrite(false);
-                }
-                 */
-                handleMain.get().beginWrite(false);
+                //handleMain.get().beginWrite(false);
                 for (IRenderer renderer : this.worldPreWeatherRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
@@ -237,12 +196,17 @@ public class RenderEventHandler implements IRenderDispatcher
                 }
 
                 /*
-                if (shaders != null)
+                if (!this.worldPreWeatherRenderers.isEmpty())
                 {
-                    shaders.unbind();
+                    handleMain.get().draw();
                 }
                  */
             });
+
+            if (!this.worldPreWeatherRenderers.isEmpty())
+            {
+                renderPass.markToBeVisited();
+            }
         }
 
         profiler.pop();
@@ -257,73 +221,15 @@ public class RenderEventHandler implements IRenderDispatcher
 
         if (this.worldLastRenderers.isEmpty() == false)
         {
-            Handle<Framebuffer> handleMain;
-            //Handle<Framebuffer> handleTranslucent;
             RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_world_last");
-
-            // Don't write to translucent Frame Buffer, bad things will happen,
-            //  at Best, the Player will be able to see through objects ...
-            //  or just through the world ...
-            /*
-            if (fbSet.translucentFramebuffer != null)
-            {
-                fbSet.translucentFramebuffer = renderPass.transfer(fbSet.translucentFramebuffer);
-                handleTranslucent = fbSet.translucentFramebuffer;
-            }
-            else
-            {
-                handleTranslucent = null;
-            }
-             */
-
             fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
-            handleMain = fbSet.mainFramebuffer;
+            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
 
             renderPass.setRenderer(() ->
             {
                 Fog fog = RenderSystem.getShaderFog();
-                //ShaderProgram shaders = RenderSystem.getShader();
-
-                //RenderSystem.setShaderFog(Fog.DUMMY);
-
-                /*
-                if (handleTranslucent != null)
-                {
-                    handleTranslucent.get().setClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-                    handleTranslucent.get().clear();
-                    handleTranslucent.get().copyDepthFrom(handleMain.get());
-                }
-                 */
-
-                /*
-                if (shaders != null)
-                {
-                    shaders.initializeUniforms(VertexFormat.DrawMode.QUADS, posMatrix, projMatrix, mc.getWindow());
-                    shaders.bind();
-                }
-                 */
-
-                /*
-                Framebuffer fb = null;
-                if (fbSet.translucentFramebuffer != null && mc.worldRenderer != null)
-                {
-                    try
-                    {
-                        fb = MinecraftClient.isFabulousGraphicsOrBetter() ? fbSet.translucentFramebuffer.get() : null;
-                    }
-                    catch (Exception e)
-                    {
-                        MaLiLib.logger.warn("onRenderWorldPost: getTranslucentFramebuffer() throw: [{}]", e.getMessage());
-                    }
-                }
-
-                if (fb != null)
-                {
-                    fb.beginWrite(false);
-                }
-                 */
                 // Trusty and reliable Main Framebuffer write.
-                handleMain.get().beginWrite(false);
+                //handleMain.get().beginWrite(false);
 
                 for (IRenderer renderer : this.worldLastRenderers)
                 {
@@ -335,21 +241,18 @@ public class RenderEventHandler implements IRenderDispatcher
                 }
 
                 /*
-                if (fb != null)
+                if (!this.worldLastRenderers.isEmpty())
                 {
-                    mc.getFramebuffer().beginWrite(false);
+                    handleMain.get().draw();
                 }
                  */
-
-                /*
-                if (shaders != null)
-                {
-                    shaders.unbind();
-                }
-                 */
-
                 //RenderSystem.setShaderFog(fog);
             });
+
+            if (!this.worldLastRenderers.isEmpty())
+            {
+                renderPass.markToBeVisited();
+            }
         }
 
         profiler.pop();

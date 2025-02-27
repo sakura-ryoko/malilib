@@ -27,7 +27,6 @@ import net.minecraft.util.math.Direction;
 import fi.dy.masa.malilib.data.MaLiLibTag;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.ResourceLocation;
-import fi.dy.masa.malilib.util.game.wrap.NbtWrap;
 import fi.dy.masa.malilib.util.game.wrap.RegistryUtils;
 
 /**
@@ -105,7 +104,7 @@ public class BlockUtils
         String blockName = index != -1 ? stateString.substring(0, index) : stateString;
         NbtCompound tag = new NbtCompound();
 
-        NbtWrap.putString(tag, "Name", blockName);
+        tag.putString("Name", blockName);
 
         if (index != -1 && stateString.length() > (index + 4) && stateString.charAt(stateString.length() - 1) == ']')
         {
@@ -130,10 +129,10 @@ public class BlockUtils
 
                 String valStr = valIter.next();
 
-                NbtWrap.putString(propsTag, propName, valStr);
+                propsTag.putString(propName, valStr);
             }
 
-            NbtWrap.putTag(tag, "Properties", propsTag);
+            tag.put("Properties", propsTag);
         }
 
         return tag;
@@ -147,19 +146,19 @@ public class BlockUtils
      */
     public static String getBlockStateStringFromTag(NbtCompound stateTag)
     {
-        String name = NbtWrap.getString(stateTag, "Name");
+        String name = stateTag.method_68564("Name", "");
 
-        if (NbtWrap.containsCompound(stateTag, "Properties") == false)
+        if (stateTag.contains("Properties") == false)
         {
             return name;
         }
 
-        NbtCompound propTag = NbtWrap.getCompound(stateTag, "Properties");
+        NbtCompound propTag = stateTag.method_68568("Properties");
         ArrayList<Pair<String, String>> props = new ArrayList<>();
 
-        for (String key : NbtWrap.getKeys(propTag))
+        for (String key : propTag.getKeys())
         {
-            props.add(Pair.of(key, NbtWrap.getString(propTag, key)));
+            props.add(Pair.of(key, propTag.method_68564(key, "")));
         }
 
         final int size = props.size();

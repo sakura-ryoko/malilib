@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.gui.widgets;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.Identifier;
 
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -154,9 +155,9 @@ public abstract class WidgetBase
         return this.isMouseOver(mouseX, mouseY);
     }
 
-    public void bindTexture(Identifier texture)
+    public VertexConsumer bindTexture(Identifier texture, DrawContext context)
     {
-        RenderUtils.bindTexture(texture);
+        return RenderUtils.bindTexture(texture, context);
     }
 
     public int getStringWidth(String text)

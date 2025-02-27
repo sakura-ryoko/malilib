@@ -1,8 +1,11 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
+import org.joml.Matrix4f;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.MathHelper;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -91,14 +94,15 @@ public class GuiScrollBar
             if (this.barTexture != null && barHeight >= 4)
             {
                 RenderUtils.color(1f, 1f, 1f, 1f);
-                RenderUtils.bindTexture(this.barTexture.getTexture());
+                VertexConsumer buffer = RenderUtils.bindTexture(this.barTexture.getTexture(), drawContext);
+                Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
                 int u = this.barTexture.getU();
                 int v = this.barTexture.getV();
                 int w = this.barTexture.getWidth();
                 int h = this.barTexture.getHeight();
 
-                RenderUtils.drawTexturedRect(xPosition + 1, barPosition                , u, v        , w, barHeight - 2);
-                RenderUtils.drawTexturedRect(xPosition + 1, barPosition + barHeight - 2, u, v + h - 2, w, 2            );
+                RenderUtils.drawTexturedRect(posMatrix, xPosition + 1, barPosition                , u, v        , w, barHeight - 2, buffer);
+                RenderUtils.drawTexturedRect(posMatrix, xPosition + 1, barPosition + barHeight - 2, u, v + h - 2, w, 2, buffer);
             }
             else
             {

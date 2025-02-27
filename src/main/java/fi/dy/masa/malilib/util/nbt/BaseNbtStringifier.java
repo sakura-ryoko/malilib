@@ -8,7 +8,6 @@ import net.minecraft.nbt.*;
 
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.game.wrap.NbtWrap;
 
 /**
  * Post-ReWrite code
@@ -71,7 +70,7 @@ public abstract class BaseNbtStringifier
     @Nullable
     protected String getPrimitiveValue(NbtElement tag)
     {
-        switch (NbtWrap.getTypeId(tag))
+        switch (tag.getType())
         {
             case Constants.NBT.TAG_BYTE:    return String.valueOf(((NbtByte) tag).byteValue());
             case Constants.NBT.TAG_SHORT:   return String.valueOf(((NbtShort) tag).shortValue());
@@ -79,7 +78,7 @@ public abstract class BaseNbtStringifier
             case Constants.NBT.TAG_LONG:    return String.valueOf(((NbtLong) tag).longValue());
             case Constants.NBT.TAG_FLOAT:   return String.valueOf(((NbtFloat) tag).floatValue());
             case Constants.NBT.TAG_DOUBLE:  return String.valueOf(((NbtDouble) tag).doubleValue());
-            case Constants.NBT.TAG_STRING:  return ((NbtString) tag).asString();
+            case Constants.NBT.TAG_STRING:  return ((NbtString) tag).value();
         }
 
         return null;
@@ -122,7 +121,7 @@ public abstract class BaseNbtStringifier
 
     protected String getFormattedPrimitiveString(NbtElement tag)
     {
-        int typeId = NbtWrap.getTypeId(tag);
+        int typeId = tag.getType();
         String valueStr = this.getPrimitiveValue(tag);
         String valueColorStr = this.colored ? this.getPrimitiveColorCode(typeId) : null;
         String numberSuffixStr = this.useNumberSuffix ? this.getNumberSuffix(typeId) : null;
@@ -177,7 +176,7 @@ public abstract class BaseNbtStringifier
 
     protected void appendTag(String tagName, NbtElement tag)
     {
-        switch (NbtWrap.getTypeId(tag))
+        switch (tag.getType())
         {
             case Constants.NBT.TAG_COMPOUND:
                 this.appendCompound(tagName, (NbtCompound) tag);
