@@ -28,7 +28,7 @@ public class WidgetSlider extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
         this.callback.setValueRelative(this.getRelativePosition(mouseX));
         this.lastMouseX = mouseX;
@@ -46,6 +46,8 @@ public class WidgetSlider extends WidgetBase
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
+
         if (this.dragging && mouseX != this.lastMouseX)
         {
             this.callback.setValueRelative(this.getRelativePosition(mouseX));

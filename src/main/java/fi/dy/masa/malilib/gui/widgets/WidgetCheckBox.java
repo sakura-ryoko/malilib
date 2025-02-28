@@ -80,7 +80,7 @@ public class WidgetCheckBox extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
         this.setChecked(! this.checked);
         return true;
@@ -89,6 +89,7 @@ public class WidgetCheckBox extends WidgetBase
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
         IGuiIcon icon = this.checked ? this.widgetChecked : this.widgetUnchecked;
 
         RenderUtils.color(1f, 1f, 1f, 1f);
@@ -105,6 +106,8 @@ public class WidgetCheckBox extends WidgetBase
     @Override
     public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.postRenderHovered(mouseX, mouseY, selected, drawContext);
+
         if (this.hoverInfo.isEmpty() == false)
         {
             RenderUtils.drawHoverText(mouseX, mouseY, this.hoverInfo, drawContext);

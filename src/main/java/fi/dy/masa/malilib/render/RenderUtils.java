@@ -201,7 +201,10 @@ public class RenderUtils
      */
     public static void forceDraw(DrawContext drawContext)
     {
-        drawContext.draw();
+        if (drawContext != null)
+        {
+            drawContext.draw();
+        }
     }
 
     public static int color(float r, float g, float b, float a)

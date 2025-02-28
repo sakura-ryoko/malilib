@@ -92,6 +92,8 @@ public class ButtonGeneric extends ButtonBase
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
+
         if (this.visible)
         {
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;

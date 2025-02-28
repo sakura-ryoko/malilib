@@ -57,7 +57,7 @@ public class WidgetSearchBar extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
         if (this.searchOpen && this.searchBox.mouseClicked(mouseX, mouseY, mouseButton))
         {
@@ -123,6 +123,7 @@ public class WidgetSearchBar extends WidgetBase
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
         RenderUtils.color(1f, 1f, 1f, 1f);
         this.iconSearch.render(false, this.iconSearch.isMouseOver(mouseX, mouseY), drawContext);
 

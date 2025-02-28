@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -210,7 +209,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.drawGuiMessages(drawContext);
     }
 
-    protected DrawContext getDrawContext()
+    public DrawContext getDrawContext()
     {
         return this.drawContext;
     }
@@ -241,7 +240,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.mouseWheelHorizontalDeltaSum -= horizontalAmount;
             this.mouseWheelVerticalDeltaSum -= verticalAmount;
 
-            if (this.onMouseScrolled((int) mouseX, (int) mouseY, horizontalAmount, verticalAmount, this.drawContext))
+            if (this.onMouseScrolled((int) mouseX, (int) mouseY, horizontalAmount, verticalAmount))
             {
                 return true;
             }
@@ -253,7 +252,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
     {
-        if (this.onMouseClicked((int) mouseX, (int) mouseY, mouseButton, this.drawContext) == false)
+        if (this.onMouseClicked((int) mouseX, (int) mouseY, mouseButton) == false)
         {
             return super.mouseClicked(mouseX, mouseY, mouseButton);
         }
@@ -307,11 +306,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return super.charTyped(charIn, modifiers);
     }
 
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
     {
         for (ButtonBase button : this.buttons)
         {
-            if (button.onMouseClicked(mouseX, mouseY, mouseButton, drawContext))
+            if (button.onMouseClicked(mouseX, mouseY, mouseButton))
             {
                 // Don't call super if the button press got handled
                 return true;
@@ -333,7 +332,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
-                if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, drawContext))
+                if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton))
                 {
                     // Don't call super if the button press got handled
                     handled = true;
@@ -355,11 +354,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return false;
     }
 
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
+    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
     {
         for (ButtonBase button : this.buttons)
         {
-            if (button.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext))
+            if (button.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
             {
                 // Don't call super if the button press got handled
                 return true;
@@ -368,7 +367,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         for (WidgetBase widget : this.widgets)
         {
-            if (widget.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext))
+            if (widget.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
             {
                 // Don't call super if the action got handled
                 return true;

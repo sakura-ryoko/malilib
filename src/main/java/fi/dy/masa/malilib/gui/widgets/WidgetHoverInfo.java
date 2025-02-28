@@ -56,11 +56,13 @@ public class WidgetHoverInfo extends WidgetBase
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
     }
 
     @Override
     public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.postRenderHovered(mouseX, mouseY, selected, drawContext);
         RenderUtils.drawHoverText(mouseX, mouseY, this.lines, drawContext);
     }
 }

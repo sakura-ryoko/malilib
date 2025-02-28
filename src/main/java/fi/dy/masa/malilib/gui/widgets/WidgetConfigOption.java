@@ -399,6 +399,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
         RenderUtils.color(1f, 1f, 1f, 1f);
 
         this.drawSubWidgets(mouseX, mouseY, drawContext);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.gui.DrawContext;
 import org.apache.commons.lang3.StringUtils;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -34,9 +33,9 @@ public class ConfigButtonKeybind extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
-        super.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
+        super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
 
         if (this.selected)
         {

@@ -40,11 +40,11 @@ public class WidgetKeybindSettings extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
         if (mouseButton == 0)
         {
-            RenderUtils.forceDraw(drawContext);
+            RenderUtils.forceDraw(this.drawContext);
             RenderUtils.depthTest(false);
 
             if (this.dialogHandler != null)
@@ -72,6 +72,7 @@ public class WidgetKeybindSettings extends WidgetBase
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
         RenderUtils.color(1f, 1f, 1f, 1f);
         //this.bindTexture(TEXTURE, drawContext);
 
@@ -111,6 +112,7 @@ public class WidgetKeybindSettings extends WidgetBase
     @Override
     public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.postRenderHovered(mouseX, mouseY, selected, drawContext);
         List<String> text = new ArrayList<>();
         String name, val;
         String strYes = StringUtils.translate("malilib.gui.label.yes");

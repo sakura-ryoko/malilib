@@ -7,7 +7,6 @@ import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.util.Colors;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.config.IConfigInteger;
@@ -211,7 +210,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
     {
         this.clickedElement = this.getHoveredElement(mouseX, mouseY);
 
@@ -221,7 +220,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
             this.updateColorFromMouseInput(this.clickedElement, mouseX, mouseY);
         }
 
-        return super.onMouseClicked(mouseX, mouseY, mouseButton, drawContext);
+        return super.onMouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override

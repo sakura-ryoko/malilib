@@ -132,7 +132,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
         if (this.isOpen && mouseY > this.y + this.height)
         {
@@ -178,7 +178,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
+    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
     {
         if (this.isOpen)
         {
@@ -261,6 +261,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
         RenderUtils.color(1f, 1f, 1f, 1f);
 
         Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
@@ -351,6 +352,8 @@ public class WidgetDropDownList<T> extends WidgetBase
     @Override
     public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.postRenderHovered(mouseX, mouseY, selected, drawContext);
+
         // Draw it again to cover up other elements, when open
         if (this.isOpen)
         {

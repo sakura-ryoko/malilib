@@ -14,6 +14,7 @@ public abstract class WidgetBase
     protected final MinecraftClient mc;
     protected final TextRenderer textRenderer;
     protected final int fontHeight;
+    protected DrawContext drawContext;
     protected int x;
     protected int y;
     protected int width;
@@ -88,17 +89,17 @@ public abstract class WidgetBase
                mouseY >= this.y && mouseY < this.y + this.height;
     }
 
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
     {
         if (this.isMouseOver(mouseX, mouseY))
         {
-            return this.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
+            return this.onMouseClickedImpl(mouseX, mouseY, mouseButton);
         }
 
         return false;
     }
 
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
         return false;
     }
@@ -112,17 +113,17 @@ public abstract class WidgetBase
     {
     }
 
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
+    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
     {
         if (this.isMouseOver(mouseX, mouseY))
         {
-            return this.onMouseScrolledImpl(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext);
+            return this.onMouseScrolledImpl(mouseX, mouseY, horizontalAmount, verticalAmount);
         }
 
         return false;
     }
 
-    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
+    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
     {
         return false;
     }
@@ -192,9 +193,17 @@ public abstract class WidgetBase
 
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        if (this.drawContext == null || !this.drawContext.equals(drawContext))
+        {
+            this.drawContext = drawContext;
+        }
     }
 
     public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        if (this.drawContext == null || !this.drawContext.equals(drawContext))
+        {
+            this.drawContext = drawContext;
+        }
     }
 }

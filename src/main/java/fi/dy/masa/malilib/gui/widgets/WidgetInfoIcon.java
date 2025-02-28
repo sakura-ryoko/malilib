@@ -19,6 +19,7 @@ public class WidgetInfoIcon extends WidgetHoverInfo
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
         RenderUtils.color(1f, 1f, 1f, 1f);
         this.bindTexture(this.icon.getTexture(), drawContext);
         this.icon.renderAt(this.x, this.y, this.zLevel, false, selected, drawContext);

@@ -52,7 +52,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
     {
         boolean handled = false;
 
@@ -62,7 +62,7 @@ public abstract class WidgetContainer extends WidgetBase
             {
                 for (WidgetBase widget : this.subWidgets)
                 {
-                    if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, drawContext))
+                    if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton))
                     {
                         // Don't call super if the button press got handled
                         handled = true;
@@ -72,7 +72,7 @@ public abstract class WidgetContainer extends WidgetBase
 
             if (handled == false)
             {
-                handled = this.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
+                handled = this.onMouseClickedImpl(mouseX, mouseY, mouseButton);
             }
         }
 
@@ -94,7 +94,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
+    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
     {
         if (this.isMouseOver(mouseX, mouseY))
         {
@@ -102,14 +102,14 @@ public abstract class WidgetContainer extends WidgetBase
             {
                 for (WidgetBase widget : this.subWidgets)
                 {
-                    if (widget.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext))
+                    if (widget.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
                     {
                         return true;
                     }
                 }
             }
 
-            return this.onMouseScrolledImpl(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext);
+            return this.onMouseScrolledImpl(mouseX, mouseY, horizontalAmount, verticalAmount);
         }
 
         return false;
@@ -168,12 +168,14 @@ public abstract class WidgetContainer extends WidgetBase
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
         this.drawSubWidgets(mouseX, mouseY, drawContext);
     }
 
     @Override
     public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.postRenderHovered(mouseX, mouseY, selected, drawContext);
         this.drawHoveredSubWidget(mouseX, mouseY, drawContext);
     }
 

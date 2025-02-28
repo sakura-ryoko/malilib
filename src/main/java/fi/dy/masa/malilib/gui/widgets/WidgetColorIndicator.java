@@ -35,9 +35,9 @@ public class WidgetColorIndicator extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
-        RenderUtils.forceDraw(drawContext);
+        RenderUtils.forceDraw(this.drawContext);
         RenderUtils.depthTest(false);
         GuiColorEditorHSV gui = new GuiColorEditorHSV(this.config, null, GuiUtils.getCurrentScreen());
         GuiBase.openGui(gui);
@@ -47,12 +47,14 @@ public class WidgetColorIndicator extends WidgetBase
     @Override
     public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.postRenderHovered(mouseX, mouseY, selected, drawContext);
         RenderUtils.drawHoverText(mouseX, mouseY, this.hoverText, drawContext);
     }
 
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
         int x = this.getX();
         int y = this.getY();
         int z = this.zLevel;

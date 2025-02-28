@@ -10,7 +10,6 @@ import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.client.gui.DrawContext;
 
 public class ConfigButtonLockedList extends ButtonGeneric
 {
@@ -30,11 +29,11 @@ public class ConfigButtonLockedList extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
-        super.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
+        super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
 
-        RenderUtils.forceDraw(drawContext);
+        RenderUtils.forceDraw(this.drawContext);
         RenderUtils.depthTest(false);
 
         if (this.dialogHandler != null)

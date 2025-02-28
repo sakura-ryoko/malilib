@@ -34,7 +34,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
         if (this.entry.getType() == DirectoryEntryType.DIRECTORY)
         {
@@ -42,7 +42,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         }
         else
         {
-            return super.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
+            return super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
         }
 
         return true;
@@ -51,6 +51,8 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
+
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY))
         {

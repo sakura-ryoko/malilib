@@ -60,6 +60,8 @@ public class WidgetLabel extends WidgetBase
     @Override
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
+        super.render(mouseX, mouseY, selected, drawContext);
+
         if (this.visible)
         {
             RenderUtils.blend(true);
