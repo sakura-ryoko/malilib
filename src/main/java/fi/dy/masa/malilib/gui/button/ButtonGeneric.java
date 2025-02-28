@@ -55,7 +55,6 @@ public class ButtonGeneric extends ButtonBase
     public ButtonGeneric(int x, int y, IGuiIcon icon, String... hoverStrings)
     {
         this(x, y, icon.getWidth(), icon.getHeight(), "", icon, hoverStrings);
-
         this.setRenderDefaultBackground(false);
     }
 
@@ -112,7 +111,7 @@ public class ButtonGeneric extends ButtonBase
                 int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
                 //RenderUtils.depthTest(true);
-                RenderUtils.drawTexturedRect(this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight(), drawContext);
+                RenderUtils.drawTexturedRectAndDraw(this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight(), drawContext);
                 //RenderUtils.depthTest(false);
             }
 

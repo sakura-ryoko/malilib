@@ -57,7 +57,7 @@ public class WidgetSearchBar extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         if (this.searchOpen && this.searchBox.mouseClicked(mouseX, mouseY, mouseButton))
         {

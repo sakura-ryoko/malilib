@@ -132,7 +132,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         if (this.isOpen && mouseY > this.y + this.height)
         {
@@ -178,7 +178,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
     {
         if (this.isOpen)
         {
@@ -342,8 +342,8 @@ public class WidgetDropDownList<T> extends WidgetBase
             RenderUtils.drawTexturedRect(posMatrix, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight(), buffer);
         }
 
-        //RenderUtils.depthMask(false);
-        //RenderUtils.depthTest(false);
+        RenderUtils.depthMask(false);
+        RenderUtils.depthTest(false);
         matrixStack.popMatrix();
         matrixStackIn.pop();
     }
@@ -355,7 +355,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         if (this.isOpen)
         {
             this.render(mouseX, mouseY, selected, drawContext);
-            RenderUtils.forceDraw(drawContext);
+            //RenderUtils.forceDraw(drawContext);
         }
     }
 

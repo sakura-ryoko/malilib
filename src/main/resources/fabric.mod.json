@@ -33,10 +33,10 @@
 	"mixins": [
 		"mixins.malilib.json"
 	],
-	"accessWidener": "malilib.accesswidener",
+
 	"depends": {
 		"minecraft": ">1.21.4 <1.21.6",
-		"fabric-networking-api-v1": ">=4.3.17",
+		"fabric-networking-api-v1": ">=4.3.18",
 		"fabric-resource-loader-v0": "*"
 	}
 }

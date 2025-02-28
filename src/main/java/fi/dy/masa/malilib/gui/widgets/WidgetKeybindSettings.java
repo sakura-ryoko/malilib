@@ -40,10 +40,13 @@ public class WidgetKeybindSettings extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         if (mouseButton == 0)
         {
+            RenderUtils.forceDraw(drawContext);
+            RenderUtils.depthTest(false);
+
             if (this.dialogHandler != null)
             {
                 this.dialogHandler.openDialog(new GuiKeybindSettings(this.keybind, this.keybindName, this.dialogHandler, GuiUtils.getCurrentScreen()));
@@ -70,7 +73,7 @@ public class WidgetKeybindSettings extends WidgetBase
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
     {
         RenderUtils.color(1f, 1f, 1f, 1f);
-        this.bindTexture(TEXTURE, drawContext);
+        //this.bindTexture(TEXTURE, drawContext);
 
         int w = 18;
         int v1 = this.settings.getActivateOn().ordinal() * w;
@@ -83,10 +86,10 @@ public class WidgetKeybindSettings extends WidgetBase
         int y = this.y;
 
         int edgeColor = this.keybind.areSettingsModified() ? 0xFFFFBB33 : 0xFFFFFFFF;
-        RenderUtils.depthTest(true);
+        //RenderUtils.depthTest(true);
         RenderUtils.drawRect(x    , y + 0, 20, 20, edgeColor);
         RenderUtils.drawRect(x + 1, y + 1, 18, 18, 0xFF000000);
-        RenderUtils.depthTest(false);
+        //RenderUtils.depthTest(false);
 
         RenderUtils.forceDraw(drawContext);
 
@@ -96,13 +99,13 @@ public class WidgetKeybindSettings extends WidgetBase
 
         RenderUtils.color(1f, 1f, 1f, 1f);
 
-        RenderUtils.depthTest(true);
+        //RenderUtils.depthTest(true);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  0,  v1, w, w, z, drawContext);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  18, v2, w, w, z, drawContext);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  36, v3, w, w, z, drawContext);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  54, v4, w, w, z, drawContext);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  72, v5, w, w, z, drawContext);
-        RenderUtils.depthTest(false);
+        //RenderUtils.depthTest(false);
     }
 
     @Override

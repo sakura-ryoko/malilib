@@ -87,14 +87,14 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
-        if (super.onMouseClicked(mouseX, mouseY, mouseButton))
+        if (super.onMouseClicked(mouseX, mouseY, mouseButton, drawContext))
         {
             return true;
         }
 
-        return this.getListWidget() != null && this.getListWidget().onMouseClicked(mouseX, mouseY, mouseButton);
+        return this.getListWidget() != null && this.getListWidget().onMouseClicked(mouseX, mouseY, mouseButton, drawContext);
     }
 
     @Override
@@ -109,14 +109,14 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
     {
-        if (super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+        if (super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext))
         {
             return true;
         }
 
-        return this.getListWidget() != null && this.getListWidget().onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        return this.getListWidget() != null && this.getListWidget().onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class WidgetSlider extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         this.callback.setValueRelative(this.getRelativePosition(mouseX));
         this.lastMouseX = mouseX;

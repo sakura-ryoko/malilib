@@ -37,7 +37,7 @@ public class NbtBlockUtils
     {
         if (nbt.contains(NbtKeys.ID))
         {
-            return Registries.BLOCK_ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.method_68564(NbtKeys.ID, ""))).orElse(null);
+            return Registries.BLOCK_ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString(NbtKeys.ID, ""))).orElse(null);
         }
 
         return null;

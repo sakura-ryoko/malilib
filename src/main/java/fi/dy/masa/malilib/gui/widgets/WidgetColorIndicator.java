@@ -35,8 +35,10 @@ public class WidgetColorIndicator extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
+        RenderUtils.forceDraw(drawContext);
+        RenderUtils.depthTest(false);
         GuiColorEditorHSV gui = new GuiColorEditorHSV(this.config, null, GuiUtils.getCurrentScreen());
         GuiBase.openGui(gui);
         return true;
@@ -57,10 +59,10 @@ public class WidgetColorIndicator extends WidgetBase
         int width = this.getWidth();
         int height = this.getHeight();
 
-        RenderUtils.depthTest(true);
+        //RenderUtils.depthTest(true);
         RenderUtils.drawRect(x    , y    , width    , height    , 0xFFFFFFFF, z);
         RenderUtils.drawRect(x + 1, y + 1, width - 2, height - 2, 0xFF000000, z);
         RenderUtils.drawRect(x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue(), z);
-        RenderUtils.depthTest(false);
+        //RenderUtils.depthTest(false);
     }
 }

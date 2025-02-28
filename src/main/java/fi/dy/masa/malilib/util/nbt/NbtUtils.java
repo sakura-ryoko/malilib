@@ -60,7 +60,7 @@ public class NbtUtils
 
 		if (tagIn.contains(tagName))
 		{
-			nbt = tagIn.method_68568(tagName);
+			nbt = tagIn.getOrCreateCompound(tagName);
 		}
 		else
 		{
@@ -301,11 +301,11 @@ public class NbtUtils
 	{
 		if (tag.contains(tagName))
 		{
-			NbtList tagList = tag.method_68569(tagName);
+			NbtList tagList = tag.getOrCreateList(tagName);
 
 			if (tagList.size() == 3)
 			{
-				return new BlockPos(tagList.method_68576(0, 0), tagList.method_68576(1, 0), tagList.method_68576(2, 0));
+				return new BlockPos(tagList.getInt(0, 0), tagList.getInt(1, 0), tagList.getInt(2, 0));
 			}
 		}
 
@@ -405,7 +405,7 @@ public class NbtUtils
 			tag.contains("dy") &&
 			tag.contains("dz"))
 		{
-			return new Vec3d(tag.method_68563("dx", 0d), tag.method_68563("dy", 0d), tag.method_68563("dz", 0d));
+			return new Vec3d(tag.getDouble("dx", 0d), tag.getDouble("dy", 0d), tag.getDouble("dz", 0d));
 		}
 
 		return null;
@@ -428,11 +428,11 @@ public class NbtUtils
 	{
 		if (tag != null && tag.contains(tagName))
 		{
-			NbtList tagList = tag.method_68569(tagName);
+			NbtList tagList = tag.getOrCreateList(tagName);
 
 			if (tagList.getType() == Constants.NBT.TAG_DOUBLE && tagList.size() == 3)
 			{
-				return new Vec3d(tagList.method_68574(0, 0d), tagList.method_68574(1, 0d), tagList.method_68574(2, 0d));
+				return new Vec3d(tagList.getDouble(0, 0d), tagList.getDouble(1, 0d), tagList.getDouble(2, 0d));
 			}
 		}
 

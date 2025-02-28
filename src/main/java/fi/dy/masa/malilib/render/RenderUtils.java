@@ -295,8 +295,6 @@ public class RenderUtils
         float b = (float) (color & 255) / 255.0F;
 
         blend(true);
-        depthTest(true);
-        depthMask(true);
 
         // POSITION_COLOR_SIMPLE
         RenderContext ctx = new RenderContext(ShaderPipelines.GUI_OVERLAY, GlUsage.STATIC_WRITE);
@@ -316,9 +314,7 @@ public class RenderUtils
         {
         }
 
-        depthMask(false);
-        depthTest(false);
-        //RenderSystem.disableBlend();
+        blend(false);
     }
 
     /**
@@ -499,6 +495,8 @@ public class RenderUtils
             drawGradientRect(textStartX + maxLineLength + 2, textStartY - 3 + 1, textStartX + maxLineLength + 3, textStartY + textHeight + 3 - 1, zLevel, fillColor1, fillColor2);
             drawGradientRect(textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY - 3 + 1, zLevel, fillColor1, fillColor1);
             drawGradientRect(textStartX - 3, textStartY + textHeight + 2, textStartX + maxLineLength + 3, textStartY + textHeight + 3, zLevel, fillColor2, fillColor2);
+
+            forceDraw(drawContext);
 
             for (int i = 0; i < textLines.size(); ++i)
             {

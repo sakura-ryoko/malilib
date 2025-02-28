@@ -55,7 +55,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.ID))
         {
-            return Registries.ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.method_68564(NbtKeys.ID, ""))).orElse(null);
+            return Registries.ENTITY_TYPE.getOptionalValue(Identifier.tryParse(nbt.getString(NbtKeys.ID, ""))).orElse(null);
         }
 
         return null;
@@ -103,7 +103,7 @@ public class NbtEntityUtils
         if (type != null && nbt.contains(NbtKeys.ATTRIB))
         {
             AttributeContainer container = new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
-            container.readNbt(nbt.method_68569(NbtKeys.ATTRIB));
+            container.readNbt(nbt.getOrCreateList(NbtKeys.ATTRIB));
             return container;
         }
 
@@ -694,7 +694,7 @@ public class NbtEntityUtils
         }
         if (nbt.contains(NbtKeys.ITEM_ROTATION))
         {
-            rotation = Direction.byIndex(nbt.method_68562(NbtKeys.ITEM_ROTATION, (byte) 0));
+            rotation = Direction.byIndex(nbt.getByte(NbtKeys.ITEM_ROTATION, (byte) 0));
         }
 
         return Pair.of(facing, rotation);
@@ -946,7 +946,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.SOUND_VARIANT))
         {
-            RegistryEntry.Reference<WolfSoundVariant> soundVariant = registry.getOrThrow(RegistryKeys.WOLF_SOUND_VARIANT).getEntry(Identifier.tryParse(nbt.method_68564(NbtKeys.SOUND_VARIANT, ""))).orElse(null);
+            RegistryEntry.Reference<WolfSoundVariant> soundVariant = registry.getOrThrow(RegistryKeys.WOLF_SOUND_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.SOUND_VARIANT, ""))).orElse(null);
 
             if (soundVariant != null)
             {
@@ -1027,7 +1027,7 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT))
         {
-			Optional<RegistryEntry.Reference<PigVariant>> opt = registry.getOrThrow(RegistryKeys.PIG_VARIANT).getEntry(Identifier.tryParse(nbt.method_68564(NbtKeys.VARIANT, "")));
+			Optional<RegistryEntry.Reference<PigVariant>> opt = registry.getOrThrow(RegistryKeys.PIG_VARIANT).getEntry(Identifier.tryParse(nbt.getString(NbtKeys.VARIANT, "")));
 
             if (opt.isPresent())
             {
@@ -1156,7 +1156,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.RECIPE_BOOK))
         {
             book = new ServerRecipeBook(manager::forEachRecipeDisplay);
-            book.readNbt(nbt.method_68568(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
+            book.readNbt(nbt.getOrCreateCompound(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
         }
 
         return book;

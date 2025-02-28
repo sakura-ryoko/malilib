@@ -146,19 +146,19 @@ public class BlockUtils
      */
     public static String getBlockStateStringFromTag(NbtCompound stateTag)
     {
-        String name = stateTag.method_68564("Name", "");
+        String name = stateTag.getString("Name", "");
 
         if (stateTag.contains("Properties") == false)
         {
             return name;
         }
 
-        NbtCompound propTag = stateTag.method_68568("Properties");
+        NbtCompound propTag = stateTag.getOrCreateCompound("Properties");
         ArrayList<Pair<String, String>> props = new ArrayList<>();
 
         for (String key : propTag.getKeys())
         {
-            props.add(Pair.of(key, propTag.method_68564(key, "")));
+            props.add(Pair.of(key, propTag.getString(key, "")));
         }
 
         final int size = props.size();

@@ -39,14 +39,14 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         if (this.searchOpen)
         {
             if (this.button.isMouseOver(mouseX, mouseY))
             {
                 boolean selectedPre = this.button.isSelected();
-                this.button.onMouseClicked(mouseX, mouseY, mouseButton);
+                this.button.onMouseClicked(mouseX, mouseY, mouseButton, drawContext);
 
                 if (selectedPre == false)
                 {
@@ -62,7 +62,7 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
             }
         }
 
-        return super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+        return super.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
     }
 
     @Override

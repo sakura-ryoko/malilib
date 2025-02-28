@@ -195,6 +195,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.drawContext = drawContext;
         }
 
+        RenderUtils.forceDraw(drawContext);
         // Draw Background / Title
         this.drawScreenBackground(drawContext, mouseX, mouseY);
         this.drawTitle(drawContext, mouseX, mouseY, partialTicks);
@@ -240,7 +241,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.mouseWheelHorizontalDeltaSum -= horizontalAmount;
             this.mouseWheelVerticalDeltaSum -= verticalAmount;
 
-            if (this.onMouseScrolled((int) mouseX, (int) mouseY, horizontalAmount, verticalAmount))
+            if (this.onMouseScrolled((int) mouseX, (int) mouseY, horizontalAmount, verticalAmount, this.drawContext))
             {
                 return true;
             }
@@ -252,7 +253,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
     {
-        if (this.onMouseClicked((int) mouseX, (int) mouseY, mouseButton) == false)
+        if (this.onMouseClicked((int) mouseX, (int) mouseY, mouseButton, this.drawContext) == false)
         {
             return super.mouseClicked(mouseX, mouseY, mouseButton);
         }
@@ -306,11 +307,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return super.charTyped(charIn, modifiers);
     }
 
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         for (ButtonBase button : this.buttons)
         {
-            if (button.onMouseClicked(mouseX, mouseY, mouseButton))
+            if (button.onMouseClicked(mouseX, mouseY, mouseButton, drawContext))
             {
                 // Don't call super if the button press got handled
                 return true;
@@ -332,7 +333,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
-                if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton))
+                if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, drawContext))
                 {
                     // Don't call super if the button press got handled
                     handled = true;
@@ -354,11 +355,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return false;
     }
 
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
     {
         for (ButtonBase button : this.buttons)
         {
-            if (button.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+            if (button.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext))
             {
                 // Don't call super if the button press got handled
                 return true;
@@ -367,7 +368,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         for (WidgetBase widget : this.widgets)
         {
-            if (widget.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+            if (widget.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext))
             {
                 // Don't call super if the action got handled
                 return true;
@@ -593,6 +594,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
     {
         // Draw the dark background
+        RenderUtils.forceDraw(drawContext);
         RenderUtils.drawRect(0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
     }
 
@@ -630,6 +632,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         for (ButtonBase button : this.buttons)
         {
+            RenderUtils.forceDraw(drawContext);
             button.render(mouseX, mouseY, button.isMouseOver(), drawContext);
         }
     }
@@ -638,6 +641,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         for (TextFieldWrapper<?> entry : this.textFields)
         {
+            RenderUtils.forceDraw(drawContext);
             entry.draw(mouseX, mouseY, drawContext);
         }
     }
@@ -650,6 +654,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
+                RenderUtils.forceDraw(drawContext);
                 widget.render(mouseX, mouseY, false, drawContext);
 
                 if (widget.isMouseOver(mouseX, mouseY))
@@ -671,6 +676,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             if (button.hasHoverText() && button.isMouseOver())
             {
+                RenderUtils.forceDraw(drawContext);
                 RenderUtils.drawHoverText(mouseX, mouseY, button.getHoverStrings(), drawContext);
             }
         }
@@ -690,6 +696,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (this.hoveredWidget != null)
         {
+            RenderUtils.forceDraw(drawContext);
             this.hoveredWidget.postRenderHovered(mouseX, mouseY, false, drawContext);
         }
     }

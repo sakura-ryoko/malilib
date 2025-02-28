@@ -72,7 +72,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         if (mouseButton == 0 && this.scrollBar.wasMouseOver())
         {
@@ -80,7 +80,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             return true;
         }
 
-        if (this.onMouseClickedSearchBar(mouseX, mouseY, mouseButton))
+        if (this.onMouseClickedSearchBar(mouseX, mouseY, mouseButton, drawContext))
         {
             return true;
         }
@@ -107,12 +107,12 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
                         }
                     }
 
-                    return widget.onMouseClicked(mouseX, mouseY, mouseButton);
+                    return widget.onMouseClicked(mouseX, mouseY, mouseButton, drawContext);
                 }
             }
         }
 
-        return super.onMouseClicked(mouseX, mouseY, mouseButton);
+        return super.onMouseClicked(mouseX, mouseY, mouseButton, drawContext);
     }
 
     @Override
@@ -132,9 +132,9 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
     {
-        if (super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+        if (super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext))
         {
             return true;
         }
@@ -152,13 +152,13 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         return false;
     }
 
-    protected boolean onMouseClickedSearchBar(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedSearchBar(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         if (this.widgetSearchBar != null)
         {
             boolean searchOpenPre = this.widgetSearchBar.isSearchOpen();
 
-            if (this.widgetSearchBar.onMouseClickedImpl(mouseX, mouseY, mouseButton))
+            if (this.widgetSearchBar.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext))
             {
                 // Toggled the search bar on or off
                 if (this.widgetSearchBar.isSearchOpen() != searchOpenPre)

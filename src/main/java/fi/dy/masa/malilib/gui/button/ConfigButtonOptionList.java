@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.gui.button;
 import javax.annotation.Nullable;
 import fi.dy.masa.malilib.config.IConfigOptionList;
 import fi.dy.masa.malilib.util.StringUtils;
+import net.minecraft.client.gui.DrawContext;
 
 public class ConfigButtonOptionList extends ButtonGeneric
 {
@@ -24,12 +25,12 @@ public class ConfigButtonOptionList extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         this.config.setOptionListValue(this.config.getOptionListValue().cycle(mouseButton == 0));
         this.updateDisplayString();
 
-        return super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+        return super.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
     }
 
     @Override

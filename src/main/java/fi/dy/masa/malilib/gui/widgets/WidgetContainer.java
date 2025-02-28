@@ -52,7 +52,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         boolean handled = false;
 
@@ -62,7 +62,7 @@ public abstract class WidgetContainer extends WidgetBase
             {
                 for (WidgetBase widget : this.subWidgets)
                 {
-                    if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton))
+                    if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, drawContext))
                     {
                         // Don't call super if the button press got handled
                         handled = true;
@@ -72,7 +72,7 @@ public abstract class WidgetContainer extends WidgetBase
 
             if (handled == false)
             {
-                handled = this.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+                handled = this.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
             }
         }
 
@@ -94,7 +94,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
     {
         if (this.isMouseOver(mouseX, mouseY))
         {
@@ -102,14 +102,14 @@ public abstract class WidgetContainer extends WidgetBase
             {
                 for (WidgetBase widget : this.subWidgets)
                 {
-                    if (widget.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+                    if (widget.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext))
                     {
                         return true;
                     }
                 }
             }
 
-            return this.onMouseScrolledImpl(mouseX, mouseY, horizontalAmount, verticalAmount);
+            return this.onMouseScrolledImpl(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext);
         }
 
         return false;

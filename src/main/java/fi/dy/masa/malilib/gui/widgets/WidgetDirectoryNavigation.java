@@ -46,7 +46,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         if (this.searchOpen == false)
         {
@@ -72,7 +72,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             }
         }
 
-        return super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+        return super.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
     }
 
     @Nullable

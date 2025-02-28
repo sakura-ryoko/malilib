@@ -88,17 +88,17 @@ public abstract class WidgetBase
                mouseY >= this.y && mouseY < this.y + this.height;
     }
 
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         if (this.isMouseOver(mouseX, mouseY))
         {
-            return this.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+            return this.onMouseClickedImpl(mouseX, mouseY, mouseButton, drawContext);
         }
 
         return false;
     }
 
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, DrawContext drawContext)
     {
         return false;
     }
@@ -112,17 +112,17 @@ public abstract class WidgetBase
     {
     }
 
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
     {
         if (this.isMouseOver(mouseX, mouseY))
         {
-            return this.onMouseScrolledImpl(mouseX, mouseY, horizontalAmount, verticalAmount);
+            return this.onMouseScrolledImpl(mouseX, mouseY, horizontalAmount, verticalAmount, drawContext);
         }
 
         return false;
     }
 
-    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount, DrawContext drawContext)
     {
         return false;
     }
@@ -168,30 +168,26 @@ public abstract class WidgetBase
     public void drawString(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawText(this.textRenderer, text, x, y, color, false);
-        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawCenteredString(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawText(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
-        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawStringWithShadow(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
-        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawCenteredStringWithShadow(int x, int y, int color, String text, DrawContext drawContext)
     {
         drawContext.drawCenteredTextWithShadow(this.textRenderer, text, x, y, color);
-        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawBackgroundMask(DrawContext drawContext)
     {
-        RenderUtils.drawTexturedRect(GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2, drawContext);
+        RenderUtils.drawTexturedRectAndDraw(GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2, drawContext);
     }
 
     public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
