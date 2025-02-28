@@ -7,7 +7,6 @@ import com.mojang.blaze3d.platform.SourceFactor;
 import net.minecraft.client.gl.BlendPrograms;
 import net.minecraft.client.gl.ShaderPipeline;
 import net.minecraft.client.gl.ShaderPipelines;
-import net.minecraft.client.render.DepthTestState;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
@@ -44,206 +43,60 @@ public abstract class MixinShaderPipelines
     @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void malilib_onRegisterPipelines(CallbackInfo ci)
     {
+        // STAGES
+        MaLiLibPipelines.POSITION_STAGE =
+                ShaderPipeline.builder(MATRICES)
+                              .vertices("core/position")
+                              .pass("core/position")
+                              .blender(BlendPrograms.TRANSLUCENT)
+                              .format(VertexFormats.POSITION, VertexFormat.DrawMode.QUADS)
+                              .build();
+
+        MaLiLibPipelines.POSITION_TEX_STAGE =
+                ShaderPipeline.builder(MATRICES)
+                              .vertices("core/position_tex")
+                              .pass("core/position_tex")
+                              .blender(BlendPrograms.TRANSLUCENT)
+                              .format(VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS)
+                              .build();
+
+        // POSITION
+        MaLiLibPipelines.POSITION_SIMPLE =
+                register(ShaderPipeline.builder(MaLiLibPipelines.POSITION_STAGE)
+                                       .id("pipeline/position_simple")
+                                       .create()
+                );
+
+        // POSITION_COLOR
+        MaLiLibPipelines.POSITION_COLOR_SIMPLE =
+                register(ShaderPipeline.builder(POSITION_COLOR)
+                                 .id("pipeline/position_color_simple")
+                                 .create()
+                );
+
         // POSITION_TEX
-        MaLiLibPipelines.POSITION_COLOR_DEPTH_TEST_OFF =
-                register(ShaderPipeline.builder(POSITION_COLOR)
-                                       .id("pipeline/position_color_depth_off")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.POSITION_COLOR_DEPTH_TEST_LESSER =
-                register(ShaderPipeline.builder(POSITION_COLOR)
-                                       .id("pipeline/position_color_depth_equal")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.LESS_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.POSITION_COLOR_DEPTH_TEST_EQUAL =
-                register(ShaderPipeline.builder(POSITION_COLOR)
-                                       .id("pipeline/position_color_depth_equal")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.EQUAL_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.POSITION_COLOR_DEPTH_TEST_GREATER =
-                register(ShaderPipeline.builder(POSITION_COLOR)
-                                       .id("pipeline/position_color_depth_greater")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.GREATER_DEPTH_TEST)
+        MaLiLibPipelines.POSITION_TEX_SIMPLE =
+                register(ShaderPipeline.builder(MaLiLibPipelines.POSITION_TEX_STAGE)
+                                       .id("pipeline/position_tex_simple")
                                        .create()
                 );
 
         // POSITION_TEX_COLOR
-        MaLiLibPipelines.POSITION_TEX_COLOR_DEPTH_TEST_OFF =
+        MaLiLibPipelines.POSITION_TEX_COLOR_SIMPLE =
                 register(ShaderPipeline.builder(POSITION_TEX_COLOR)
-                                       .id("pipeline/position_tex_depth_off")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.POSITION_TEX_COLOR_DEPTH_TEST_LESSER =
-                register(ShaderPipeline.builder(POSITION_TEX_COLOR)
-                                       .id("pipeline/position_tex_depth_lesser")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.LESS_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.POSITION_TEX_COLOR_DEPTH_TEST_EQUAL =
-                register(ShaderPipeline.builder(POSITION_TEX_COLOR)
-                                       .id("pipeline/position_tex_depth_equal")
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.EQUAL_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.POSITION_TEX_COLOR_DEPTH_TEST_GREATER =
-                register(ShaderPipeline.builder(POSITION_TEX_COLOR)
-                                       .id("pipeline/position_tex_depth_greater")
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.GREATER_DEPTH_TEST)
+                                       .id("pipeline/position_tex_color_simple")
                                        .create()
                 );
 
         // DEBUG_LINES
-        MaLiLibPipelines.DEBUG_LINES_BLEND_FUNC =
+        MaLiLibPipelines.DEBUG_LINES_SIMPLE =
                 register(ShaderPipeline.builder(MATRICES_COLOR)
-                                       .id("pipeline/debug_lines_depth_off")
+                                       .id("pipeline/debug_lines_simple")
                                        .vertices("core/position_color")
                                        .pass("core/position_color")
                                        .culling(false)
                                        .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .create()
-                );
-
-        MaLiLibPipelines.DEBUG_LINES_DEPTH_TEST_OFF =
-                register(ShaderPipeline.builder(MATRICES_COLOR)
-                                       .id("pipeline/debug_lines_depth_off")
-                                       .vertices("core/position_color")
-                                       .pass("core/position_color")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.DEBUG_LINES_DEPTH_TEST_LESSER =
-                register(ShaderPipeline.builder(MATRICES_COLOR)
-                                       .id("pipeline/debug_lines_depth_lesser")
-                                       .vertices("core/position_color")
-                                       .pass("core/position_color")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.LESS_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.DEBUG_LINES_DEPTH_TEST_EQUAL =
-                register(ShaderPipeline.builder(MATRICES_COLOR)
-                                       .id("pipeline/debug_lines_depth_equal")
-                                       .vertices("core/position_color")
-                                       .pass("core/position_color")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.EQUAL_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.DEBUG_LINES_DEPTH_TEST_GREATER =
-                register(ShaderPipeline.builder(MATRICES_COLOR)
-                                       .id("pipeline/debug_lines_depth_greater")
-                                       .vertices("core/position_color")
-                                       .pass("core/position_color")
-                                       .culling(false)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.GREATER_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.DEBUG_LINES_CULLING_DEPTH_TEST_OFF =
-                register(ShaderPipeline.builder(MATRICES_COLOR)
-                                       .id("pipeline/debug_lines_depth_off")
-                                       .vertices("core/position_color")
-                                       .pass("core/position_color")
-                                       .culling(true)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.DEBUG_LINES_CULLING_DEPTH_TEST_LESSER =
-                register(ShaderPipeline.builder(MATRICES_COLOR)
-                                       .id("pipeline/debug_lines_depth_lesser")
-                                       .vertices("core/position_color")
-                                       .pass("core/position_color")
-                                       .culling(true)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.LESS_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.DEBUG_LINES_CULLING_DEPTH_TEST_EQUAL =
-                register(ShaderPipeline.builder(MATRICES_COLOR)
-                                       .id("pipeline/debug_lines_depth_equal")
-                                       .vertices("core/position_color")
-                                       .pass("core/position_color")
-                                       .culling(true)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.EQUAL_DEPTH_TEST)
-                                       .create()
-                );
-
-        MaLiLibPipelines.DEBUG_LINES_CULLING_DEPTH_TEST_GREATER =
-                register(ShaderPipeline.builder(MATRICES_COLOR)
-                                       .id("pipeline/debug_lines_depth_greater")
-                                       .vertices("core/position_color")
-                                       .pass("core/position_color")
-                                       .culling(true)
-                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
-                                       .depth(false)
-                                       .blender(BLENDER)
-                                       .depthTest(DepthTestState.GREATER_DEPTH_TEST)
+                                       .blender(BlendPrograms.TRANSLUCENT)
                                        .create()
                 );
     }

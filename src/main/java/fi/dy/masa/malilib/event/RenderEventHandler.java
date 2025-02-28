@@ -21,6 +21,7 @@ import net.minecraft.util.profiler.Profilers;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IRenderDispatcher;
 import fi.dy.masa.malilib.interfaces.IRenderer;
+import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
 
 public class RenderEventHandler implements IRenderDispatcher
@@ -174,33 +175,55 @@ public class RenderEventHandler implements IRenderDispatcher
     @ApiStatus.Internal
     public void runRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
                                          FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
-                                         Frustum frustum, Camera camera, Profiler profiler)
+                                         Frustum frustum, Camera camera, BufferBuilderStorage buffers,
+                                         Profiler profiler)
     {
         profiler.push(MaLiLibReference.MOD_ID+"_pre_weather");
 
         if (this.worldPreWeatherRenderers.isEmpty() == false)
         {
             RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_weather");
-            fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
+
+            if (fbSet.weatherFramebuffer != null)
+            {
+                fbSet.weatherFramebuffer = renderPass.transfer(fbSet.weatherFramebuffer);
+                renderPass.dependsOn(fbSet.mainFramebuffer);
+            }
+            else
+            {
+                fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
+            }
+
             Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
+            Handle<Framebuffer> handleWeather = fbSet.weatherFramebuffer;
 
             renderPass.setRenderer(() ->
             {
                 Fog fog = RenderSystem.getShaderFog();
+                RenderSystem.setShaderFog(Fog.DUMMY);
+
+                if (handleWeather != null)
+                {
+                    handleWeather.get().copyDepthFrom(handleMain.get());
+                }
+
+                Framebuffer fb = handleWeather != null ? handleWeather.get() : handleMain.get();
                 //handleMain.get().beginWrite(false);
+                RenderUtils.fbStartDrawing();
+
                 for (IRenderer renderer : this.worldPreWeatherRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreWeather(posMatrix, projMatrix, frustum, camera, fog, profiler);
+                    renderer.onRenderWorldPreWeather(fb, posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
                     profiler.pop();
                 }
 
-                /*
                 if (!this.worldPreWeatherRenderers.isEmpty())
                 {
-                    handleMain.get().draw();
+                    fb.draw();
                 }
-                 */
+
+                RenderSystem.setShaderFog(fog);
             });
 
             if (!this.worldPreWeatherRenderers.isEmpty())
@@ -215,38 +238,57 @@ public class RenderEventHandler implements IRenderDispatcher
     @ApiStatus.Internal
     public void runRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
                                    FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
-                                   Frustum frustum, Camera camera, Profiler profiler)
+                                   Frustum frustum, Camera camera, BufferBuilderStorage buffers,
+                                   Profiler profiler)
     {
         profiler.push(MaLiLibReference.MOD_ID+"_world_last");
 
         if (this.worldLastRenderers.isEmpty() == false)
         {
             RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_world_last");
-            fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
+
+            if (fbSet.entityOutlineFramebuffer != null)
+            {
+                fbSet.entityOutlineFramebuffer = renderPass.transfer(fbSet.entityOutlineFramebuffer);
+                renderPass.dependsOn(fbSet.mainFramebuffer);
+            }
+            else
+            {
+                fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
+            }
+
             Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
+            Handle<Framebuffer> handleOutlines = fbSet.entityOutlineFramebuffer;
 
             renderPass.setRenderer(() ->
             {
                 Fog fog = RenderSystem.getShaderFog();
-                // Trusty and reliable Main Framebuffer write.
+                RenderSystem.setShaderFog(Fog.DUMMY);
+
+                if (handleOutlines != null)
+                {
+                    handleOutlines.get().copyDepthFrom(handleMain.get());
+                }
+
+                Framebuffer fb = handleOutlines != null ? handleOutlines.get() : handleMain.get();
                 //handleMain.get().beginWrite(false);
+                RenderUtils.fbStartDrawing();
 
                 for (IRenderer renderer : this.worldLastRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
                     // This really should be used either or, and never both in the same mod.
-                    renderer.onRenderWorldLastAdvanced(posMatrix, projMatrix, frustum, camera, fog, profiler);
+                    renderer.onRenderWorldLastAdvanced(fb, posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
                     renderer.onRenderWorldLast(posMatrix, projMatrix);
                     profiler.pop();
                 }
 
-                /*
                 if (!this.worldLastRenderers.isEmpty())
                 {
-                    handleMain.get().draw();
+                    fb.draw();
                 }
-                 */
-                //RenderSystem.setShaderFog(fog);
+
+                RenderSystem.setShaderFog(fog);
             });
 
             if (!this.worldLastRenderers.isEmpty())

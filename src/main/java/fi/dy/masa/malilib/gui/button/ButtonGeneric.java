@@ -111,10 +111,9 @@ public class ButtonGeneric extends ButtonBase
                 int y = this.y + (this.height - this.icon.getHeight()) / 2;
                 int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
-                this.bindTexture(this.icon.getTexture(), drawContext);
-                //RenderSystem.enableDepthTest();
+                //RenderUtils.depthTest(true);
                 RenderUtils.drawTexturedRect(this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight(), drawContext);
-                //RenderSystem.disableDepthTest();
+                //RenderUtils.depthTest(false);
             }
 
             if (StringUtils.isBlank(this.displayString) == false)

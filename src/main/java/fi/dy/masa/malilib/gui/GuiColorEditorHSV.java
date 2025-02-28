@@ -3,18 +3,16 @@ package fi.dy.masa.malilib.gui;
 import java.awt.*;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.ShaderPipelines;
+import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.render.RenderContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -482,37 +480,41 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int cy = this.yHS + this.sizeHS + 8;
         int cw = this.sizeHS;
         int ch = 16;
+        int border = -1;
 
-        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, z); // H
+        /*
+        RenderUtils.depthMask(true);
+        RenderUtils.depthTest(true);
+        RenderUtils.depthFunc(GL11.GL_GREATER);
+         */
+        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, border, z); // H
         y += yd;
-        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, z); // S
+        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, border, z); // S
         y += yd;
-        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, z); // V
+        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, border, z); // V
         y += yd;
-        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, z); // R
+        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, border, z); // R
         y += yd;
-        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, z); // G
+        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, border, z); // G
         y += yd;
-        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, z); // B
+        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, border, z); // B
         y += yd;
-        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, z); // A
+        RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF, border, z); // A
 
         x = this.xHS;
         y = this.yHS;
         w = this.sizeHS;
         h = this.sizeHS;
 
-        RenderUtils.drawOutline(x - 1, y - 1, w + 2, h + 2, 0xC0FFFFFF, z); // main color selector
-        RenderUtils.drawOutline(cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF, z); // current color indicator
-        RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF, z); // Hue vertical/full value
+        RenderUtils.drawOutline(x - 1, y - 1, w + 2, h + 2, 0xC0FFFFFF, border, z);                      // main color selector
+        RenderUtils.drawOutline(cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF, border, z);                  // current color indicator
+        RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF, border, z); // Hue vertical/full value
 
-        Framebuffer fb = this.client.getFramebuffer();
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE, ShaderPipelines.DEBUG_LINE_STRIP);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_TEX_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
-        //RenderUtils.setupBlend();
-
-        RenderUtils.color(1, 1, 1, 1);
+        RenderUtils.blend(true);
+        RenderUtils.color(1f, 1f, 1f, 1f);
 
         //GlProgramManager.useProgram(SHADER_HUE.getProgram());
         //GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
@@ -524,13 +526,12 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
-            ctx.draw(fb, buffer.end());
+            ctx.draw(() -> "ColorSelector A", buffer.endNullable());
             ctx.reset();
         }
         catch (Exception ignored) { }
 
-        //buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        buffer = ctx.start(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR, ShaderPipelines.DEBUG_LINE_STRIP);
+        buffer = ctx.start(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
 
         int r = (int) (this.relR * 255f);
         int g = (int) (this.relG * 255f);
@@ -617,12 +618,16 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
-            ctx.draw(fb, buffer.end());
+            ctx.draw(() -> "ColorSelector B", buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
 
-        //RenderSystem.disableBlend();
+        /*
+        RenderUtils.blend(false);
+        RenderUtils.depthMask(false);
+        RenderUtils.depthTest(false);
+         */
     }
 
     public static void renderGradientColorBar(int x, int y, float z, int width, int height, int colorStart, int colorEnd, BufferBuilder buffer)

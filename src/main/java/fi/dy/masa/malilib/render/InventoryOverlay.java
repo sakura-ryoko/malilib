@@ -125,7 +125,8 @@ public class InventoryOverlay
     {
         VertexConsumer buffer;
         Matrix4f posMatrix;
-        //RenderUtils.setupBlend(); // ShaderPipelines.POSITION_TEX_PANORAMA
+        //RenderUtils.blend(true);
+        // ShaderPipelines.POSITION_TEX_PANORAMA
         /*
         RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR, ShaderPipelines.GUI_TEXTURED);
         BufferBuilder buffer = ctx.getBuilder();
@@ -237,13 +238,13 @@ public class InventoryOverlay
             }
         }
 
-        //RenderSystem.enableDepthTest();
-        //RenderSystem.enableBlend();
-        
+        //RenderUtils.depthTest(true); X
+        //RenderUtils.blend(true);
+
         /*
         try
         {
-            ctx.draw(mc.getFramebuffer(), buffer.end());
+            ctx.draw(buffer.end());
             ctx.close();
         }
         catch (Exception ignored) { }

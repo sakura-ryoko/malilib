@@ -25,6 +25,8 @@ public abstract class MixinWorldRenderer
     //@Unique private int width;
     //@Unique private int height;
 
+    @Shadow @Final private BufferBuilderStorage bufferBuilders;
+
     @Inject(method = "render",
             at = @At(value = "INVOKE",
                      target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;FLnet/minecraft/client/render/Fog;)V",
@@ -36,7 +38,7 @@ public abstract class MixinWorldRenderer
                                                  @Local FrameGraphBuilder frameGraphBuilder)
                                                  //@Local(ordinal = 0) int i, @Local(ordinal = 1) int j, @Local PostEffectProcessor postEffectProcessor)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, profiler);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
 
         /*
         if (postEffectProcessor != null)
@@ -59,7 +61,7 @@ public abstract class MixinWorldRenderer
                                            @Local Frustum frustum,
                                            @Local Profiler profiler)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, profiler);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
 
         /*
         if (this.postEffects != null)

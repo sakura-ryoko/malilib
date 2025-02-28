@@ -62,7 +62,7 @@ public class WidgetLabel extends WidgetBase
     {
         if (this.visible)
         {
-            //RenderUtils.setupBlend();
+            RenderUtils.blend(true);
             this.drawLabelBackground();
 
             int fontHeight = this.fontHeight;

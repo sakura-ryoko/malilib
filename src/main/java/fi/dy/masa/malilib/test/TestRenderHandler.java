@@ -11,7 +11,9 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Fog;
 import net.minecraft.client.render.Frustum;
@@ -86,7 +88,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderWorldLastAdvanced(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler)
+    public void onRenderWorldLastAdvanced(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
     {
         MinecraftClient mc = MinecraftClient.getInstance();
 
@@ -132,7 +134,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler)
+    public void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -144,10 +146,10 @@ public class TestRenderHandler implements IRenderer
             {
                 if (TestWalls.needsUpdate(camera.getBlockPos()))
                 {
-                    TestWalls.update(camera, mc);
+                    TestWalls.updateAndDraw(camera, posMatrix, projMatrix, mc, profiler);
                 }
 
-                TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
+                //TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
             }
 
             profiler.pop();
@@ -206,13 +208,13 @@ public class TestRenderHandler implements IRenderer
             GuiBase.isCtrlDown())
         {
             BlockHitResult hitResult = (BlockHitResult) mc.crosshairTarget;
-            /*
-            RenderSystem.depthMask(false);
-            RenderSystem.disableCull();
-            RenderSystem.disableDepthTest();
 
-            RenderUtils.setupBlend();
+            /*
+            RenderUtils.depthMask(false);
+            RenderUtils.culling(false);
+            RenderUtils.depthTest(false);
              */
+            RenderUtils.blend(true);
 
             Color4f color = Color4f.fromColor(StringUtils.getColor("#C03030F0", 0));
 
@@ -221,15 +223,13 @@ public class TestRenderHandler implements IRenderer
                     hitResult.getBlockPos(),
                     hitResult.getSide(),
                     hitResult.getPos(),
-                    color,
-                    posMatrix,
-                    mc);
+                    color, posMatrix, mc);
 
+            RenderUtils.blend(false);
             /*
-            RenderSystem.enableDepthTest();
-            RenderSystem.disableBlend();
-            RenderSystem.enableCull();
-            RenderSystem.depthMask(true);
+            RenderUtils.depthTest(true);
+            RenderUtils.culling(true);
+            RenderUtils.depthMask(true);
              */
         }
     }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -193,6 +195,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.drawContext = drawContext;
         }
 
+        // Draw Background / Title
         this.drawScreenBackground(drawContext, mouseX, mouseY);
         this.drawTitle(drawContext, mouseX, mouseY, partialTicks);
 
@@ -200,9 +203,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.drawWidgets(mouseX, mouseY, drawContext);
         this.drawTextFields(mouseX, mouseY, drawContext);
         this.drawButtons(mouseX, mouseY, partialTicks, drawContext);
-
         this.drawContents(drawContext, mouseX, mouseY, partialTicks);
-
         this.drawHoveredWidget(mouseX, mouseY, drawContext);
         this.drawButtonHoverTexts(mouseX, mouseY, partialTicks, drawContext);
         this.drawGuiMessages(drawContext);
@@ -583,11 +584,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.textFields.clear();
     }
 
-    protected void drawScreenBackground(int mouseX, int mouseY)
-    {
-        this.drawScreenBackground(this.getDrawContext(), mouseX, mouseY);
-    }
-
     /**
      * Draw's an Screen Tooltip Background
      * @param drawContext ()
@@ -618,7 +614,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             super.applyBlur();
         }
 
-        RenderUtils.drawTexturedRect(GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, drawContext);
+        RenderUtils.drawTexturedRectAndDraw(GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, drawContext);
     }
 
     protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
@@ -710,12 +706,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public void drawString(DrawContext drawContext, String text, int x, int y, int color)
     {
-        drawContext.drawText(textRenderer, text, x, y, color, false);
+        drawContext.drawText(this.textRenderer, text, x, y, color, false);
     }
 
     public void drawStringWithShadow(DrawContext drawContext, String text, int x, int y, int color)
     {
-        drawContext.drawTextWithShadow(textRenderer, text, x, y, color);
+        drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
     }
 
     public int getMaxPrettyNameLength(List<? extends IConfigBase> configs)

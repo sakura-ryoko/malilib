@@ -83,10 +83,10 @@ public class WidgetKeybindSettings extends WidgetBase
         int y = this.y;
 
         int edgeColor = this.keybind.areSettingsModified() ? 0xFFFFBB33 : 0xFFFFFFFF;
-        //RenderSystem.enableDepthTest();
+        RenderUtils.depthTest(true);
         RenderUtils.drawRect(x    , y + 0, 20, 20, edgeColor);
         RenderUtils.drawRect(x + 1, y + 1, 18, 18, 0xFF000000);
-        //RenderSystem.disableDepthTest();
+        RenderUtils.depthTest(false);
 
         RenderUtils.forceDraw(drawContext);
 
@@ -96,13 +96,13 @@ public class WidgetKeybindSettings extends WidgetBase
 
         RenderUtils.color(1f, 1f, 1f, 1f);
 
-        //RenderSystem.enableDepthTest();
+        RenderUtils.depthTest(true);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  0,  v1, w, w, z, drawContext);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  18, v2, w, w, z, drawContext);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  36, v3, w, w, z, drawContext);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  54, v4, w, w, z, drawContext);
         RenderUtils.drawTexturedRectAndDraw(TEXTURE, x, y,  72, v5, w, w, z, drawContext);
-        //RenderSystem.disableDepthTest();
+        RenderUtils.depthTest(false);
     }
 
     @Override
