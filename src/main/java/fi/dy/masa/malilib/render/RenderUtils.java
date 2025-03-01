@@ -5,9 +5,10 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.class_10889;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.GlUsage;
+import net.minecraft.client.render.model.BlockModelPart;
+import net.minecraft.client.render.model.BlockStateModel;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.TextureManager;
 import org.joml.Matrix4f;
@@ -24,7 +25,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -1829,7 +1829,7 @@ public class RenderUtils
     }
 
     @SuppressWarnings("deprecation")
-    public static void renderModelInGui(int x, int y, BakedModel model, BlockState state, float zLevel, DrawContext context)
+    public static void renderModelInGui(int x, int y, BlockStateModel model, BlockState state, float zLevel, DrawContext context)
     {
         if (state.getBlock() == Blocks.AIR)
         {
@@ -1867,7 +1867,7 @@ public class RenderUtils
         matrix4fStack.scale((float) 16, (float) -16, (float) 16);
     }
 
-    public static void renderModel(BakedModel model, BlockState state)
+    public static void renderModel(BlockStateModel model, BlockState state)
     {
         Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
         matrix4fStack.pushMatrix();
@@ -1887,11 +1887,11 @@ public class RenderUtils
         {
             RAND.setSeed(0);
             //renderQuads(buffer, model.getQuads(state, face, RAND), state, color);
-            renderQuads(buffer, model.method_68512(RAND), face, state, color);
+            renderQuads(buffer, model.getParts(RAND), face, state, color);
         }
 
         RAND.setSeed(0);
-        renderQuads(buffer, model.method_68512(RAND), null, state, color);
+        renderQuads(buffer, model.getParts(RAND), null, state, color);
 
         try
         {
@@ -1903,11 +1903,11 @@ public class RenderUtils
         matrix4fStack.popMatrix();
     }
 
-    private static void renderQuads(BufferBuilder renderer, List<class_10889> quadlist, Direction face, BlockState state, int color)
+    private static void renderQuads(BufferBuilder renderer, List<BlockModelPart> quadlist, Direction face, BlockState state, int color)
     {
-        for (class_10889 entry : quadlist)
+        for (BlockModelPart entry : quadlist)
         {
-            List<BakedQuad> quads = entry.method_68509(face);
+            List<BakedQuad> quads = entry.getQuads(face);
             final int quadCount = quads.size();
 
             for (int i = 0; i < quadCount; ++i)
