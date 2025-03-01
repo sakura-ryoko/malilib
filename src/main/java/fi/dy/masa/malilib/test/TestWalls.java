@@ -77,8 +77,8 @@ public class TestWalls implements AutoCloseable
         Vec3d vec = camera.getPos();
         int radius = 5;
 
-        CONTEXT_1.start(() -> "TestWalls Quads", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, GlUsage.STATIC_WRITE);
-        CONTEXT_2.start(() -> "TestWalls Lines", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        CONTEXT_1.startNoShader(() -> "TestWalls Quads", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, GlUsage.STATIC_WRITE);
+        CONTEXT_2.startNoShader(() -> "TestWalls Lines", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
 
         BufferBuilder builder1 = CONTEXT_1.getBuilder();
         BufferBuilder builder2 = CONTEXT_2.getBuilder();
@@ -203,7 +203,7 @@ public class TestWalls implements AutoCloseable
             try
             {
                 ctx.setShader(shaderKey);
-                ctx.draw();
+                ctx.drawColor();
                 ctx.reset();
                 hasData = false;
             }

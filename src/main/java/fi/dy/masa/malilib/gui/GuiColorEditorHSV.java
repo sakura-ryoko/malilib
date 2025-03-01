@@ -524,13 +524,14 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
-            ctx.draw(() -> "ColorSelector A", buffer.endNullable());
+            ctx = ctx.setBuilder(buffer);
+            ctx.drawColor(() -> "ColorSelector A", buffer.endNullable());
             ctx.reset();
         }
         catch (Exception ignored) { }
 
         // MaLiLibPipelines.POSITION_COLOR_SIMPLE
-        buffer = ctx.start(() -> "ColorSelector B", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, GlUsage.STATIC_WRITE);
+        buffer = ctx.startNoShader(() -> "ColorSelector B", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, GlUsage.STATIC_WRITE);
         ctx = ctx.setShader(MaLiLibPipelines.POSITION_COLOR_SIMPLE);
 
         int r = (int) (this.relR * 255f);
@@ -618,7 +619,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
-            ctx.draw(() -> "ColorSelector B", buffer.endNullable());
+            ctx = ctx.setBuilder(buffer);
+            ctx.drawColor(() -> "ColorSelector B", buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }

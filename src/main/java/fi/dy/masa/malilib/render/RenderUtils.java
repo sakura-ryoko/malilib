@@ -153,8 +153,7 @@ public class RenderUtils
     @Deprecated
     public static void bindTexture(Identifier texture)
     {
-        TextureManager manager = mc().getTextureManager();
-        AbstractTexture tex = manager.getTexture(texture);
+        AbstractTexture tex = tex().getTexture(texture);
         RenderSystem.setShaderTexture(0, tex.getGlTexture());
     }
 
@@ -540,7 +539,8 @@ public class RenderUtils
 
         try
         {
-            ctx.draw(fb(), buffer.endNullable());
+            ctx = ctx.setBuilder(buffer);
+            ctx.drawColor(fb(), buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -1055,7 +1055,8 @@ public class RenderUtils
 
         try
         {
-            ctx.draw(fb(), buffer.end());
+            ctx = ctx.setBuilder(buffer);
+            ctx.drawColor(fb(), buffer.end());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -1176,7 +1177,8 @@ public class RenderUtils
 
         try
         {
-            ctx.draw(buffer.endNullable());
+            ctx = ctx.setBuilder(buffer);
+            ctx.drawColor(buffer.endNullable());
             ctx.reset();
         }
         catch (Exception err)
@@ -1188,7 +1190,7 @@ public class RenderUtils
         RenderSystem.lineWidth(1.6f);
 
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.start(() -> "TestTarget B", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        buffer = ctx.startNoShader(() -> "TestTarget B", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
         ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
         // Middle small rectangle
@@ -1200,7 +1202,8 @@ public class RenderUtils
 
         try
         {
-            ctx.draw(buffer.endNullable());
+            ctx = ctx.setBuilder(buffer);
+            ctx.drawColor(buffer.endNullable());
             ctx.reset();
         }
         catch (Exception err)
@@ -1209,7 +1212,7 @@ public class RenderUtils
         }
 
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.start(() -> "TestTarget C", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        buffer = ctx.startNoShader(() -> "TestTarget C", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
         ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
         // Bottom left
@@ -1230,7 +1233,8 @@ public class RenderUtils
 
         try
         {
-            ctx.draw(buffer.endNullable());
+            ctx = ctx.setBuilder(buffer);
+            ctx.drawColor(buffer.endNullable());
             ctx.close();
         }
         catch (Exception err)
@@ -1274,7 +1278,8 @@ public class RenderUtils
 
         try
         {
-            ctx.draw(buffer.endNullable());
+            ctx = ctx.setBuilder(buffer);
+            ctx.drawColor(buffer.endNullable());
             ctx.reset();
         }
         catch (Exception err)
@@ -1285,7 +1290,7 @@ public class RenderUtils
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        buffer = ctx.start(() -> "TestTarget B", VertexFormats.LINES, VertexFormat.DrawMode.LINE_STRIP, GlUsage.STATIC_WRITE);
+        buffer = ctx.startNoShader(() -> "TestTarget B", VertexFormats.LINES, VertexFormat.DrawMode.LINE_STRIP, GlUsage.STATIC_WRITE);
         ctx.setShader(ShaderPipelines.LINE_STRIP);
 
         // Middle rectangle
@@ -1296,7 +1301,8 @@ public class RenderUtils
 
         try
         {
-            ctx.draw(buffer.endNullable());
+            ctx = ctx.setBuilder(buffer);
+            ctx.drawColor(buffer.endNullable());
             ctx.close();
         }
         catch (Exception err)
@@ -1839,7 +1845,7 @@ public class RenderUtils
         Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
         matrix4fStack.pushMatrix();
         bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, context);
-        mc().getTextureManager().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
+        tex().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
 
         blend(true);
         color(1f, 1f, 1f, 1f);
@@ -1895,7 +1901,7 @@ public class RenderUtils
 
         try
         {
-            ctx.draw(buffer.endNullable());
+            ctx.drawColor(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -1956,6 +1962,11 @@ public class RenderUtils
     public static Framebuffer fb()
     {
         return mc().getFramebuffer();
+    }
+
+    public static TextureManager tex()
+    {
+        return mc().getTextureManager();
     }
 
     /*

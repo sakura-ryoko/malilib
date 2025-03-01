@@ -181,22 +181,22 @@ public class RenderEventHandler implements IRenderDispatcher
 
         if (this.worldPreWeatherRenderers.isEmpty() == false)
         {
-            RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_weather");
+            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_weather");
 
             if (fbSet.weatherFramebuffer != null)
             {
-                fbSet.weatherFramebuffer = renderPass.transfer(fbSet.weatherFramebuffer);
-                renderPass.dependsOn(fbSet.mainFramebuffer);
+                fbSet.weatherFramebuffer = pass.transfer(fbSet.weatherFramebuffer);
+                pass.dependsOn(fbSet.mainFramebuffer);
             }
             else
             {
-                fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
+                fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
             }
 
             Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
             Handle<Framebuffer> handleWeather = fbSet.weatherFramebuffer;
 
-            renderPass.setRenderer(() ->
+            pass.setRenderer(() ->
             {
                 Fog fog = RenderSystem.getShaderFog();
                 RenderSystem.setShaderFog(Fog.DUMMY);
@@ -227,7 +227,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
             if (!this.worldPreWeatherRenderers.isEmpty())
             {
-                renderPass.markToBeVisited();
+                pass.markToBeVisited();
             }
         }
 
@@ -244,22 +244,22 @@ public class RenderEventHandler implements IRenderDispatcher
 
         if (this.worldLastRenderers.isEmpty() == false)
         {
-            RenderPass renderPass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_world_last");
+            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_world_last");
 
             if (fbSet.entityOutlineFramebuffer != null)
             {
-                fbSet.entityOutlineFramebuffer = renderPass.transfer(fbSet.entityOutlineFramebuffer);
-                renderPass.dependsOn(fbSet.mainFramebuffer);
+                fbSet.entityOutlineFramebuffer = pass.transfer(fbSet.entityOutlineFramebuffer);
+                pass.dependsOn(fbSet.mainFramebuffer);
             }
             else
             {
-                fbSet.mainFramebuffer = renderPass.transfer(fbSet.mainFramebuffer);
+                fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
             }
 
             Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
             Handle<Framebuffer> handleOutlines = fbSet.entityOutlineFramebuffer;
 
-            renderPass.setRenderer(() ->
+            pass.setRenderer(() ->
             {
                 Fog fog = RenderSystem.getShaderFog();
                 RenderSystem.setShaderFog(Fog.DUMMY);
@@ -292,7 +292,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
             if (!this.worldLastRenderers.isEmpty())
             {
-                renderPass.markToBeVisited();
+                pass.markToBeVisited();
             }
         }
 
