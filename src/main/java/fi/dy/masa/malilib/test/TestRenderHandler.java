@@ -146,10 +146,10 @@ public class TestRenderHandler implements IRenderer
             {
                 if (TestWalls.needsUpdate(camera.getBlockPos()))
                 {
-                    TestWalls.updateAndDraw(camera, posMatrix, projMatrix, mc, profiler);
+                    TestWalls.update(camera, mc);
                 }
 
-                //TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
+                TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
             }
 
             profiler.pop();

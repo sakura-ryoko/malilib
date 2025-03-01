@@ -7,25 +7,33 @@ import net.minecraft.client.gl.*;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.DrawableTexture;
 import net.minecraft.client.util.BufferAllocator;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.TriState;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 
 import javax.annotation.Nullable;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
+import org.joml.Matrix4f;
 
 import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
 
 public class RenderContext implements AutoCloseable
 {
+    private Supplier<String> name;
     private GlUsage usage;
     private GpuBuffer buffer;
     private RenderSystem.ShapeIndexBuffer shapeIndex;
     private BufferAllocator alloc;
     private BufferBuilder builder;
     private ShaderPipeline shader;
+    private VertexFormat format;
+    private VertexFormat.DrawMode drawMode;
     private boolean started;
     private int bufferIndex;
 
@@ -36,9 +44,17 @@ public class RenderContext implements AutoCloseable
 
     public RenderContext(ShaderPipeline shader, GlUsage usage)
     {
-        this.alloc = new BufferAllocator(shader.getFormat().getVertexSizeByte());
+        this(() -> "RenderContext", shader, usage);
+    }
+
+    public RenderContext(Supplier<String> name, ShaderPipeline shader, GlUsage usage)
+    {
+        this.name = name;
+        this.alloc = new BufferAllocator(shader.getFormat().getVertexSizeByte() * 4);
         this.builder = new BufferBuilder(this.alloc, shader.getDrawMode(), shader.getFormat());
         this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getDrawMode());
+        this.format = shader.getFormat();
+        this.drawMode = shader.getDrawMode();
         this.shader = shader;
         this.usage = usage;
         this.buffer = null;
@@ -48,16 +64,43 @@ public class RenderContext implements AutoCloseable
 
     public BufferBuilder start(ShaderPipeline shader)
     {
-        return this.start(shader, GlUsage.STATIC_WRITE);
+        return this.start(() -> "RenderContext", shader, GlUsage.STATIC_WRITE);
     }
 
-    public BufferBuilder start(ShaderPipeline shader, GlUsage usage)
+    public BufferBuilder start(Supplier<String> name, ShaderPipeline shader, GlUsage usage)
     {
         this.reset();
-        this.alloc = new BufferAllocator(shader.getFormat().getVertexSizeByte());
+        this.name = name;
+        this.alloc = new BufferAllocator(shader.getFormat().getVertexSizeByte() * 4);
         this.builder = new BufferBuilder(this.alloc, shader.getDrawMode(), shader.getFormat());
         this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getDrawMode());
+        this.format = shader.getFormat();
+        this.drawMode = shader.getDrawMode();
         this.shader = shader;
+        this.usage = usage;
+        this.buffer = null;
+        this.bufferIndex = -1;
+
+        this.started = true;
+        return this.builder;
+    }
+
+    // Textured Quads Draw
+    public BufferBuilder start(VertexFormat format, VertexFormat.DrawMode drawMode)
+    {
+        return this.start(() -> "RenderContext", format, drawMode, GlUsage.STATIC_WRITE);
+    }
+
+    public BufferBuilder start(Supplier<String> name, VertexFormat format, VertexFormat.DrawMode drawMode, GlUsage usage)
+    {
+        this.reset();
+        this.name = name;
+        this.alloc = new BufferAllocator(format.getVertexSizeByte() * 4);
+        this.builder = new BufferBuilder(this.alloc, drawMode, format);
+        this.shapeIndex = RenderSystem.getSequentialBuffer(drawMode);
+        this.format = format;
+        this.drawMode = drawMode;
+        this.shader = null;     // Add shader for draw
         this.usage = usage;
         this.buffer = null;
         this.bufferIndex = -1;
@@ -78,12 +121,32 @@ public class RenderContext implements AutoCloseable
 
     public VertexFormat getFormat()
     {
-        return this.shader.getFormat();
+        return this.format;
     }
 
     public VertexFormat.DrawMode getDrawMode()
     {
-        return this.shader.getDrawMode();
+        return this.drawMode;
+    }
+
+    public VertexFormat getShaderFormat()
+    {
+        if (this.shader != null)
+        {
+            return this.shader.getFormat();
+        }
+
+        return this.format;
+    }
+
+    public VertexFormat.DrawMode getShaderDrawMode()
+    {
+        if (this.shader != null)
+        {
+            return this.shader.getDrawMode();
+        }
+
+        return this.drawMode;
     }
 
     /**
@@ -96,6 +159,17 @@ public class RenderContext implements AutoCloseable
     public RenderContext setBuilder(BufferBuilder builder)
     {
         this.builder = builder;
+        return this;
+    }
+
+    public RenderContext setShader(ShaderPipeline shader) throws RuntimeException
+    {
+        if (this.format != shader.getFormat() || this.drawMode != shader.getDrawMode())
+        {
+            throw new RuntimeException("Shader does not match Format/Draw mode!");
+        }
+
+        this.shader = shader;
         return this;
     }
 
@@ -235,9 +309,11 @@ public class RenderContext implements AutoCloseable
             texture2 = mainFb.getDepthAttachment();
         }
 
+        // Attach Frame buffers
         try (class_10883 device = RenderSystem.getDevice()
                                               .method_68389()
-                                              .method_68368(texture1, OptionalInt.empty(), texture2, OptionalDouble.empty()))
+                                              .method_68368(texture1, OptionalInt.empty(),
+                                                            texture2, OptionalDouble.empty()))
         {
             device.method_68412(this.shader);
             device.method_68411(this.shapeIndex.method_68274(this.bufferIndex), this.shapeIndex.getIndexType());
@@ -272,8 +348,10 @@ public class RenderContext implements AutoCloseable
                 GpuBuffer gpuBuffer = this.shader.getFormat().method_68460(meshData.getBuffer());
                 GpuBuffer sortedBuffer = meshData.getSortedBuffer() != null ? this.shader.getFormat().method_68461(meshData.getSortedBuffer()) : null;
 
-                try (class_10883 dev = RenderSystem.getDevice().method_68389()
-                        .method_68368(fb.getColorAttachment(), OptionalInt.empty(), fb.useDepthAttachment ? fb.getDepthAttachment() : null, OptionalDouble.empty()))
+                try (class_10883 dev = RenderSystem.getDevice()
+                                                   .method_68389()
+                                                   .method_68368(fb.getColorAttachment(), OptionalInt.empty(),
+                                                                 fb.useDepthAttachment ? fb.getDepthAttachment() : null, OptionalDouble.empty()))
                 {
                     // SetShader ?
                     dev.method_68412(this.shader);
@@ -365,6 +443,123 @@ public class RenderContext implements AutoCloseable
             {
                 throw new RuntimeException("Translucent Draw Failure!");
             }
+        }
+    }
+
+    public static AbstractTexture bindTexture(Identifier id)
+    {
+        RenderUtils.mc().getTextureManager().registerTexture(id);
+        return RenderUtils.mc().getTextureManager().getTexture(id);
+    }
+
+    public static void unbindTexture(Identifier id)
+    {
+        RenderUtils.mc().getTextureManager().destroyTexture(id);
+    }
+
+    public void upload() throws RuntimeException
+    {
+        this.ensureSafeNoShader();
+        this.upload(this.builder.endNullable());
+    }
+
+    public void upload(BuiltBuffer meshData) throws RuntimeException
+    {
+        this.ensureSafeNoShader();
+
+        if (RenderSystem.isOnRenderThread())
+        {
+            if (meshData != null)
+            {
+                int expectedSize = meshData.getBuffer().remaining();
+
+                if (this.buffer != null)
+                {
+                    this.buffer.close();
+                }
+
+                this.buffer = RenderSystem.getDevice().method_68386(name, GlBufferTarget.VERTICES, this.usage, expectedSize);
+
+                RenderSystem.getDevice()
+                            .method_68389()
+                            .method_68350(this.buffer, meshData.getBuffer(), 0);
+            }
+        }
+    }
+
+    public void drawTextured(@Nullable Framebuffer otherFb, Identifier texture, int color, float[] offset, ShaderPipeline shader)
+    {
+        this.shader = shader;
+        this.ensureSafe();
+
+        if (offset.length != 3)
+        {
+            throw new RuntimeException("Offset needs to be a size of 3.");
+        }
+
+        if (RenderSystem.isOnRenderThread())
+        {
+            float a = ColorHelper.getAlphaFloat(color);
+            float r = ColorHelper.getRedFloat(color);
+            float g = ColorHelper.getGreenFloat(color);
+            float b = ColorHelper.getBlueFloat(color);
+            float time = (float) (Util.getMeasuringTimeMs() % 3000L) / 3000.0F;
+
+            RenderUtils.color(r, g, b, a);
+            RenderSystem.setTextureMatrix(new Matrix4f().translation(time, time, 0.0f));
+            RenderSystem.setModelOffset(offset[0], offset[1], offset[2]);
+            AbstractTexture tex = RenderUtils.mc().getTextureManager().getTexture(texture);
+            tex.setFilter(TriState.FALSE, false);
+
+            Framebuffer mainFb = RenderUtils.fb();
+            DrawableTexture texture1;
+            DrawableTexture texture2;
+
+            if (otherFb != null)
+            {
+                texture1 = otherFb.getColorAttachment();
+                texture2 = otherFb.getDepthAttachment();
+            }
+            else
+            {
+                texture1 = mainFb.getColorAttachment();
+                texture2 = mainFb.getDepthAttachment();
+            }
+
+            try (class_10883 dev = RenderSystem.getDevice()
+                                               .method_68389()
+                                               .method_68368(texture1, OptionalInt.empty(),
+                                                             texture2, OptionalDouble.empty()))
+            {
+                dev.method_68412(this.shader);
+                dev.method_68411(this.shapeIndex.method_68274(4), this.shapeIndex.getIndexType());
+                dev.method_68414("Sampler0", tex.getGlTexture());
+                dev.method_68410(0, this.buffer);
+            }
+
+            RenderUtils.color(1f, 1f, 1f, 1f);
+            RenderSystem.resetTextureMatrix();
+            RenderSystem.resetModelOffset();
+
+            this.started = false;
+        }
+    }
+
+    private void ensureSafeNoShader() throws RuntimeException
+    {
+        if (!this.started)
+        {
+            throw new RuntimeException("Context not started!");
+        }
+
+        if (this.alloc == null)
+        {
+            throw new RuntimeException("Allocator not valid!");
+        }
+
+        if (this.builder == null)
+        {
+            throw new RuntimeException("Buffer Builder not valid!");
         }
     }
 

@@ -21,7 +21,6 @@ import net.minecraft.util.profiler.Profilers;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IRenderDispatcher;
 import fi.dy.masa.malilib.interfaces.IRenderer;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
 
 public class RenderEventHandler implements IRenderDispatcher
@@ -209,7 +208,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
                 Framebuffer fb = handleWeather != null ? handleWeather.get() : handleMain.get();
                 //handleMain.get().beginWrite(false);
-                RenderUtils.fbStartDrawing();
+                //RenderUtils.fbStartDrawing();
 
                 for (IRenderer renderer : this.worldPreWeatherRenderers)
                 {
@@ -272,7 +271,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
                 Framebuffer fb = handleOutlines != null ? handleOutlines.get() : handleMain.get();
                 //handleMain.get().beginWrite(false);
-                RenderUtils.fbStartDrawing();
+                //RenderUtils.fbStartDrawing();
 
                 for (IRenderer renderer : this.worldLastRenderers)
                 {

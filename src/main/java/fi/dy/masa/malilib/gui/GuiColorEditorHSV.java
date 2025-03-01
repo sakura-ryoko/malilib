@@ -7,6 +7,8 @@ import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.config.IConfigInteger;
@@ -505,7 +507,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF);                  // current color indicator
         RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_SIMPLE, GlUsage.STATIC_WRITE);
+        // MaLiLibPipelines.POSITION_SIMPLE
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_TEX_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         RenderUtils.blend(true);
@@ -526,7 +529,9 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
         catch (Exception ignored) { }
 
-        buffer = ctx.start(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        // MaLiLibPipelines.POSITION_COLOR_SIMPLE
+        buffer = ctx.start(() -> "ColorSelector B", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, GlUsage.STATIC_WRITE);
+        ctx = ctx.setShader(MaLiLibPipelines.POSITION_COLOR_SIMPLE);
 
         int r = (int) (this.relR * 255f);
         int g = (int) (this.relG * 255f);

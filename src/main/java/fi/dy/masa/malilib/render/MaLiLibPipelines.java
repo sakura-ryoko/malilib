@@ -7,6 +7,7 @@ public class MaLiLibPipelines
     // STAGES
     public static ShaderPipeline.Stage POSITION_STAGE;
     public static ShaderPipeline.Stage POSITION_TEX_STAGE;
+    public static ShaderPipeline.Stage LINES_STAGE;
 
     // POSITION
     public static ShaderPipeline POSITION_SIMPLE;
@@ -19,6 +20,9 @@ public class MaLiLibPipelines
 
     // POSITION_TEX_COLOR
     public static ShaderPipeline POSITION_TEX_COLOR_SIMPLE;
+
+    // LINES
+    public static ShaderPipeline LINES_SIMPLE;
 
     // DEBUG_LINES
     public static ShaderPipeline DEBUG_LINES_SIMPLE;

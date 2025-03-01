@@ -8,9 +8,12 @@ import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlUsage;
+import net.minecraft.client.gl.ShaderPipeline;
 import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
@@ -61,12 +64,6 @@ public class TestWalls implements AutoCloseable
         return false;
     }
 
-    public static void updateAndDraw(Camera camera, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc, Profiler profiler)
-    {
-        update(camera, mc);
-        draw(camera.getPos(), matrix4f, projMatrix, mc, profiler);
-    }
-
     public static void update(Camera camera, MinecraftClient mc)
     {
         Color4f color = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
@@ -80,8 +77,8 @@ public class TestWalls implements AutoCloseable
         Vec3d vec = camera.getPos();
         int radius = 5;
 
-        CONTEXT_1.start(ShaderPipelines.DEBUG_QUADS, GlUsage.STATIC_WRITE);
-        CONTEXT_2.start(ShaderPipelines.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        CONTEXT_1.start(() -> "TestWalls Quads", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, GlUsage.STATIC_WRITE);
+        CONTEXT_2.start(() -> "TestWalls Lines", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
 
         BufferBuilder builder1 = CONTEXT_1.getBuilder();
         BufferBuilder builder2 = CONTEXT_2.getBuilder();
@@ -92,11 +89,28 @@ public class TestWalls implements AutoCloseable
         Pair<BlockPos, BlockPos> corners = TestUtils.getSpawnChunkCorners(pos, radius, mc.world);
         TestUtils.renderWallsWithLines(corners.getLeft(), corners.getRight(), vec, 16, 16, true, color, builder1, builder2);
 
-        CONTEXT_1 = CONTEXT_1.setBuilder(builder1);
-        CONTEXT_2 = CONTEXT_2.setBuilder(builder2);
         hasData = true;
 
+        uploadData(CONTEXT_1, builder1);
+        uploadData(CONTEXT_2, builder2);
+
         setUpdatePosition(vec);
+    }
+
+    protected static void uploadData(RenderContext ctx, BufferBuilder builder)
+    {
+        if (hasData)
+        {
+            try
+            {
+                ctx = ctx.setBuilder(builder);
+                ctx.upload(builder.endNullable());
+            }
+            catch (Exception err)
+            {
+                MaLiLib.LOGGER.error("TestWalls#uploadData() - Render Context exception; {}", err.getMessage());
+            }
+        }
     }
 
     protected static void preRender()
@@ -169,13 +183,13 @@ public class TestWalls implements AutoCloseable
         if (hasData)
         {
             preRender();
-            drawInternal(matrix4f, projMatrix, CONTEXT_1);
-            drawInternal(matrix4f, projMatrix, CONTEXT_2);
+            drawInternal(matrix4f, projMatrix, ShaderPipelines.DEBUG_QUADS, CONTEXT_1);
+            drawInternal(matrix4f, projMatrix, ShaderPipelines.DEBUG_LINE_STRIP, CONTEXT_2);
             postRender();
         }
     }
 
-    private static void drawInternal(Matrix4f matrix4f, Matrix4f projMatrix, RenderContext ctx)
+    private static void drawInternal(Matrix4f matrix4f, Matrix4f projMatrix, ShaderPipeline shaderKey, RenderContext ctx)
     {
         if (hasData)
         {
@@ -188,8 +202,10 @@ public class TestWalls implements AutoCloseable
 
             try
             {
-                ctx.drawLayer();
+                ctx.setShader(shaderKey);
+                ctx.draw();
                 ctx.reset();
+                hasData = false;
             }
             catch (Exception err)
             {

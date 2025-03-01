@@ -1123,7 +1123,7 @@ public class RenderUtils
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
         // DEBUG_LINE_STRIP
-        RenderContext ctx = new RenderContext(ShaderPipelines.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int quadAlpha = (int) (0.18f * 255f);
@@ -1187,8 +1187,9 @@ public class RenderUtils
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        // DEBUG_LINE_STRIP
-        buffer = ctx.start(ShaderPipelines.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        // ShaderPipelines.DEBUG_LINE_STRIP
+        buffer = ctx.start(() -> "TestTarget B", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
         // Middle small rectangle
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
@@ -1199,7 +1200,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawLayer(fb(), buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.reset();
         }
         catch (Exception err)
@@ -1207,8 +1208,9 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockTargetingOverlay():2: Draw Exception; {}", err.getMessage());
         }
 
-        // DEBUG_LINE_STRIP
-        buffer = ctx.start(ShaderPipelines.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        // ShaderPipelines.DEBUG_LINE_STRIP
+        buffer = ctx.start(() -> "TestTarget C", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
         // Bottom left
         buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
@@ -1255,7 +1257,7 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
-        RenderContext ctx = new RenderContext(ShaderPipelines.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", ShaderPipelines.LINES, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int a = (int) (color.a * 255f);
@@ -1283,7 +1285,8 @@ public class RenderUtils
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        buffer = ctx.start(ShaderPipelines.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget B", VertexFormats.LINES, VertexFormat.DrawMode.LINE_STRIP, GlUsage.STATIC_WRITE);
+        ctx.setShader(ShaderPipelines.LINE_STRIP);
 
         // Middle rectangle
         buffer.vertex((float) (x - 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c);
