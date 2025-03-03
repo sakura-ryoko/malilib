@@ -1538,8 +1538,13 @@ public class RenderUtils
 
     public static void setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
     {
-        VillagerProfession profession = data != null ? data.getProfession() : null;
-        setVillagerBackgroundTintColor(profession, useBgColors);
+        if (useBgColors)
+        {
+            VillagerProfession profession = data != null ? data.getProfession() : null;
+            setVillagerBackgroundTintColor(profession, useBgColors);
+        }
+
+        return color(1f, 1f, 1f, 1f);
     }
 
     public static void setVillagerBackgroundTintColor(VillagerProfession profession, boolean useBgColors)
@@ -1561,6 +1566,8 @@ public class RenderUtils
 
     public static DyeColor getVillagerColor(VillagerProfession profession)
     {
+        if (profession == null) return null;
+
         if (profession.equals(VillagerProfession.NONE))
         {
             return DyeColor.BLUE;
