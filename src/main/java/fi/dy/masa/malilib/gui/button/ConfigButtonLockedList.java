@@ -7,7 +7,6 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiLockedListEdit;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -33,8 +32,8 @@ public class ConfigButtonLockedList extends ButtonGeneric
     {
         super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
 
-        RenderUtils.forceDraw(this.drawContext);
-        RenderUtils.depthTest(false);
+        //RenderUtils.forceDraw(this.drawContext);
+        //RenderUtils.depthTest(false);
 
         if (this.dialogHandler != null)
         {

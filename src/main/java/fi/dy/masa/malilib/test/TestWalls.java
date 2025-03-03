@@ -8,18 +8,16 @@ import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlUsage;
-import net.minecraft.client.gl.ShaderPipeline;
-import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.render.RenderContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
@@ -27,44 +25,70 @@ import fi.dy.masa.malilib.util.data.Color4f;
 @ApiStatus.Experimental
 public class TestWalls implements AutoCloseable
 {
-    protected static RenderContext CONTEXT_1 = new RenderContext(ShaderPipelines.DEBUG_QUADS, GlUsage.STATIC_WRITE);
-    protected static RenderContext CONTEXT_2 = new RenderContext(ShaderPipelines.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
-    protected static boolean renderThrough = false;
-    protected static boolean useCulling = false;
-    protected static float glLineWidth = 1f;
+    public static final TestWalls INSTANCE = new TestWalls();
 
-    protected static BlockPos lastPos = null;
-    private static Vec3d updateCameraPos = Vec3d.ZERO;
-    private static boolean hasData = false;
+    protected RenderContext CONTEXT_1;
+    protected RenderContext CONTEXT_2;
+    protected boolean renderThrough;
+    protected boolean useCulling;
+    protected float glLineWidth;
 
-    public static Vec3d getUpdatePosition()
+    protected BlockPos lastUpdatePos;
+    private Vec3d updateCameraPos;
+    private boolean hasData;
+    private final boolean needsUpdate;
+    private final int updateDistance = 48;
+
+    public TestWalls()
+    {
+        this.CONTEXT_1 = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        this.CONTEXT_2 = new RenderContext(MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        this.renderThrough = false;
+        this.useCulling = false;
+        this.glLineWidth = 3.0f;
+        this.lastUpdatePos = null;
+        this.updateCameraPos = Vec3d.ZERO;
+        this.hasData = false;
+        this.needsUpdate = true;
+    }
+
+    public Vec3d getUpdatePosition()
     {
         return updateCameraPos;
     }
 
-    public static void setUpdatePosition(Vec3d cameraPosition)
+    public void setUpdatePosition(Vec3d cameraPosition)
     {
-        updateCameraPos = cameraPosition;
+        this.updateCameraPos = cameraPosition;
     }
 
-    public static boolean needsUpdate(BlockPos pos)
+    public boolean needsUpdate(Entity cameraEntity, MinecraftClient mc)
     {
+        /*
         if (lastPos == null || lastPos.equals(BlockPos.ORIGIN))
         {
+            MaLiLib.LOGGER.error("TestWalls#needsUpdate(): now [{}] // last [{}] --> UPDATE 1", pos.toShortString(), lastPos != null ? lastPos.toShortString() : "<NULL>");
             lastPos = pos;
             return true;
         }
-        else if (!pos.equals(BlockPos.ORIGIN) &&
-                !pos.equals(lastPos))
+        else if (pos.compareTo(lastPos) != 0)
         {
+            MaLiLib.LOGGER.error("TestWalls#needsUpdate(): now [{}] // last [{}] --> UPDATE 2", pos.toShortString(), lastPos.toShortString());
             lastPos = pos;
             return true;
         }
 
+        MaLiLib.LOGGER.error("TestWalls#needsUpdate(): now [{}] // last [{}] --> FAIL", pos.toShortString(), lastPos.toShortString());
         return false;
+         */
+
+        return this.needsUpdate || this.lastUpdatePos == null ||
+                Math.abs(cameraEntity.getX() - this.lastUpdatePos.getX()) > this.updateDistance ||
+                Math.abs(cameraEntity.getZ() - this.lastUpdatePos.getZ()) > this.updateDistance ||
+                Math.abs(cameraEntity.getY() - this.lastUpdatePos.getY()) > this.updateDistance;
     }
 
-    public static void update(Camera camera, MinecraftClient mc)
+    public void update(Camera camera, Entity entity, MinecraftClient mc)
     {
         Color4f color = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
 
@@ -73,38 +97,36 @@ public class TestWalls implements AutoCloseable
             return;
         }
 
-        BlockPos pos = camera.getBlockPos();
+        BlockPos pos = entity.getBlockPos();
         Vec3d vec = camera.getPos();
-        int radius = 5;
+        int radius = MaLiLibConfigs.Test.TEST_CONFIG_INTEGER.getIntegerValue();
 
-        CONTEXT_1.startNoShader(() -> "TestWalls Quads", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, GlUsage.STATIC_WRITE);
-        CONTEXT_2.startNoShader(() -> "TestWalls Lines", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
+        BufferBuilder builder1 = CONTEXT_1.startShader(() -> "TestWalls Quads", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        BufferBuilder builder2 = CONTEXT_2.startShader(() -> "TestWalls Lines", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
 
-        BufferBuilder builder1 = CONTEXT_1.getBuilder();
-        BufferBuilder builder2 = CONTEXT_2.getBuilder();
+        BlockPos testPos = pos.add(2, 0, 2);
 
-        RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(pos, vec, color, 0.001, builder2);
-        TestUtils.drawBlockBoundingBoxSidesBatchedQuads(pos, vec, color, 0.001, builder1);
+        RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(testPos, vec, color, 0.001, builder2);
+        TestUtils.drawBlockBoundingBoxSidesBatchedQuads(testPos, vec, color, 0.001, builder1);
 
-        Pair<BlockPos, BlockPos> corners = TestUtils.getSpawnChunkCorners(pos, radius, mc.world);
+        Pair<BlockPos, BlockPos> corners = TestUtils.getSpawnChunkCorners(testPos, radius, mc.world);
         TestUtils.renderWallsWithLines(corners.getLeft(), corners.getRight(), vec, 16, 16, true, color, builder1, builder2);
 
-        hasData = true;
+        this.hasData = true;
 
-        uploadData(CONTEXT_1, builder1);
-        uploadData(CONTEXT_2, builder2);
+        uploadData(this.CONTEXT_1, builder1);
+        uploadData(this.CONTEXT_2, builder2);
 
         setUpdatePosition(vec);
     }
 
-    protected static void uploadData(RenderContext ctx, BufferBuilder builder)
+    protected void uploadData(RenderContext ctx, BufferBuilder builder)
     {
-        if (hasData)
+        if (this.hasData)
         {
             try
             {
-                ctx = ctx.setBuilder(builder);
-                ctx.upload(builder.endNullable());
+                ctx.upload(builder);
             }
             catch (Exception err)
             {
@@ -113,28 +135,21 @@ public class TestWalls implements AutoCloseable
         }
     }
 
-    protected static void preRender()
+    protected void preRender()
     {
-        RenderSystem.lineWidth(glLineWidth);
+        RenderSystem.lineWidth(this.glLineWidth);
 
-        if (renderThrough)
+        if (this.renderThrough)
         {
             RenderUtils.depthTest(false);
         }
 
-        if (useCulling)
-        {
-            RenderUtils.culling(true);
-        }
-        else
-        {
-            RenderUtils.culling(false);
-        }
+        RenderUtils.culling(this.useCulling);
     }
 
-    protected static void postRender()
+    protected void postRender()
     {
-        if (renderThrough)
+        if (this.renderThrough)
         {
             RenderUtils.depthTest(true);
         }
@@ -142,70 +157,62 @@ public class TestWalls implements AutoCloseable
         RenderUtils.culling(true);
     }
 
-    public static void draw(Vec3d cameraPos, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc, Profiler profiler)
+    public void draw(Vec3d cameraPos, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc, Profiler profiler)
     {
-        if (!hasData) return;
+        if (!this.hasData) return;
 
         profiler.push(() -> "TestWalls#draw()");
 
-        /*
-        RenderUtils.culling(false);
-        RenderUtils.depthTest(true);
-        RenderUtils.depthMask(false);
+//        RenderUtils.culling(false);
+//        RenderUtils.depthTest(true);
+//        RenderUtils.depthMask(false);
         RenderUtils.polygonOffset(-3f, -3f);
         RenderUtils.polygonOffset(true);
-         */
         RenderUtils.blend(true);
-        RenderUtils.color(1f, 1f, 1f, 1f);
+        int color = RenderUtils.color(1f, 1f, 1f, 1f);
 
+        //RenderSystem.backupProjectionMatrix();
+        //RenderSystem.setProjectionMatrix(projMatrix, ProjectionType.PERSPECTIVE);
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
-        Vec3d updatePos = getUpdatePosition();
+        Vec3d updatePos = this.getUpdatePosition();
 
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
-        drawData(matrix4f, projMatrix);
+        drawData(color);
+        //RenderSystem.restoreProjectionMatrix();
         matrix4fstack.popMatrix();
 
-        /*
         RenderUtils.polygonOffset(0f, 0f);
         RenderUtils.polygonOffset(false);
         RenderUtils.color(1f, 1f, 1f, 1f);
-        RenderUtils.depthTest(true);
-        RenderUtils.culling(true);
-        RenderUtils.depthMask(true);
-         */
+//        RenderUtils.depthTest(true);
+//        RenderUtils.culling(true);
+//        RenderUtils.depthMask(true);
         RenderUtils.blend(false);
+
         profiler.pop();
     }
 
-    private static void drawData(Matrix4f matrix4f, Matrix4f projMatrix)
+    private void drawData(int color)
     {
-        if (hasData)
+        if (this.hasData)
         {
             preRender();
-            drawInternal(matrix4f, projMatrix, ShaderPipelines.DEBUG_QUADS, CONTEXT_1);
-            drawInternal(matrix4f, projMatrix, ShaderPipelines.DEBUG_LINE_STRIP, CONTEXT_2);
+            drawInternal(CONTEXT_1, color);
+            drawInternal(CONTEXT_2, color);
             postRender();
         }
     }
 
-    private static void drawInternal(Matrix4f matrix4f, Matrix4f projMatrix, ShaderPipeline shaderKey, RenderContext ctx)
+    private void drawInternal(RenderContext ctx, int color)
     {
-        if (hasData)
+        if (this.hasData)
         {
-            //ShaderProgram shader = RenderSystem.setShader(shaderKey);
-            /*
-            vertexBuffer.bind();
-            vertexBuffer.draw(matrix4f, projMatrix, shaderKey.getProgram());
-            VertexBuffer.unbind();
-             */
-
             try
             {
-                ctx.setShader(shaderKey);
-                ctx.drawColor();
+                ctx.draw(color);
                 ctx.reset();
-                hasData = false;
+                this.hasData = false;
             }
             catch (Exception err)
             {
@@ -214,12 +221,12 @@ public class TestWalls implements AutoCloseable
         }
     }
 
-    public static void clear()
+    public void clear()
     {
-        lastPos = BlockPos.ORIGIN;
-        CONTEXT_1.reset();
-        CONTEXT_2.reset();
-        hasData = false;
+        this.lastUpdatePos = BlockPos.ORIGIN;
+        this.CONTEXT_1.reset();
+        this.CONTEXT_2.reset();
+        this.hasData = false;
     }
 
     @Override

@@ -29,6 +29,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
     private final List<IRenderer> overlayRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
+    private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
 
@@ -52,6 +53,15 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.tooltipLastRenderers.contains(renderer) == false)
         {
             this.tooltipLastRenderers.add(renderer);
+        }
+    }
+
+    @Override
+    public void registerWorldPreParticleRenderer(IRenderer renderer)
+    {
+        if (this.worldPreParticleRenderers.contains(renderer) == false)
+        {
+            this.worldPreParticleRenderers.add(renderer);
         }
     }
 
@@ -165,6 +175,69 @@ public class RenderEventHandler implements IRenderDispatcher
             {
                 profiler.swap(renderer.getProfilerSectionSupplier());
                 renderer.onRenderTooltipLast(drawContext ,stack, x, y);
+            }
+        }
+
+        profiler.pop();
+    }
+
+    @ApiStatus.Internal
+    public void runRenderWorldPreParticles(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
+                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
+                                           Frustum frustum, Camera camera, BufferBuilderStorage buffers,
+                                           Profiler profiler)
+    {
+        profiler.push(MaLiLibReference.MOD_ID+"_pre_particles");
+
+        if (this.worldPreParticleRenderers.isEmpty() == false)
+        {
+            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_particles");
+
+            if (fbSet.particlesFramebuffer != null)
+            {
+                fbSet.particlesFramebuffer = pass.transfer(fbSet.particlesFramebuffer);
+                pass.dependsOn(fbSet.mainFramebuffer);
+            }
+            else
+            {
+                fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
+            }
+
+            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
+            Handle<Framebuffer> handleParticles = fbSet.particlesFramebuffer;
+
+            pass.setRenderer(() ->
+            {
+                Fog fog = RenderSystem.getShaderFog();
+                RenderSystem.setShaderFog(Fog.DUMMY);
+
+                if (handleParticles != null)
+                {
+                    handleParticles.get().copyDepthFrom(handleMain.get());
+                }
+
+                Framebuffer fb = handleParticles != null ? handleParticles.get() : handleMain.get();
+                //handleMain.get().beginWrite(false);
+                // RenderUtils.fbStartDrawing();
+
+                for (IRenderer renderer : this.worldPreParticleRenderers)
+                {
+                    profiler.push(renderer.getProfilerSectionSupplier());
+                    renderer.onRenderWorldPreParticles(fb, posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
+                    profiler.pop();
+                }
+
+                if (!this.worldPreParticleRenderers.isEmpty())
+                {
+                    fb.draw();
+                }
+
+                RenderSystem.setShaderFog(fog);
+            });
+
+            if (!this.worldPreParticleRenderers.isEmpty())
+            {
+                pass.markToBeVisited();
             }
         }
 

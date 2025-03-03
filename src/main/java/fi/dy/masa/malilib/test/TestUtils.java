@@ -132,22 +132,22 @@ public class TestUtils
     }
 
     public static void renderWallWithLines(
-            float minX, float minY, float minZ,
-            float maxX, float maxY, float maxZ,
+            double minX, double minY, double minZ,
+            double maxX, double maxY, double maxZ,
             double lineIntervalH, double lineIntervalV,
             boolean alignLinesToModulo,
             Vec3d cameraPos,
             Color4f color,
             BufferBuilder bufferQuads, BufferBuilder bufferLines)
     {
-        float cx = (float) cameraPos.x;
-        float cy = (float) cameraPos.y;
-        float cz = (float) cameraPos.z;
+        double cx = cameraPos.x;
+        double cy = cameraPos.y;
+        double cz = cameraPos.z;
 
-        bufferQuads.vertex(minX - cx, maxY - cy, minZ - cz).color(color.r, color.g, color.b, color.a);
-        bufferQuads.vertex(minX - cx, minY - cy, minZ - cz).color(color.r, color.g, color.b, color.a);
-        bufferQuads.vertex(maxX - cx, minY - cy, maxZ - cz).color(color.r, color.g, color.b, color.a);
-        bufferQuads.vertex(maxX - cx, maxY - cy, maxZ - cz).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex((float) (minX - cx), (float) (maxY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex((float) (minX - cx), (float) (minY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex((float) (maxX - cx), (float) (minY - cy), (float) (maxZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex((float) (maxX - cx), (float) (maxY - cy), (float) (maxZ - cz)).color(color.r, color.g, color.b, color.a);
 
         if (lineIntervalV > 0.0)
         {
@@ -155,8 +155,8 @@ public class TestUtils
 
             while (lineY <= maxY)
             {
-                bufferLines.vertex(minX - cx, (float) (lineY - cy), minZ - cz).color(color.r, color.g, color.b, 1.0F);
-                bufferLines.vertex(maxX - cx, (float) (lineY - cy), maxZ - cz).color(color.r, color.g, color.b, 1.0F);
+                bufferLines.vertex((float) (minX - cx), (float) (lineY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, 1.0F);
+                bufferLines.vertex((float) (maxX - cx), (float) (lineY - cy), (float) (maxZ - cz)).color(color.r, color.g, color.b, 1.0F);
                 lineY += lineIntervalV;
             }
         }
@@ -169,8 +169,8 @@ public class TestUtils
 
                 while (lineZ <= maxZ)
                 {
-                    bufferLines.vertex(minX - cx, minY - cy, (float) (lineZ - cz)).color(color.r, color.g, color.b, 1.0F);
-                    bufferLines.vertex(minX - cx, maxY - cy, (float) (lineZ - cz)).color(color.r, color.g, color.b, 1.0F);
+                    bufferLines.vertex((float) (minX - cx), (float) (minY - cy), (float) (lineZ - cz)).color(color.r, color.g, color.b, 1.0F);
+                    bufferLines.vertex((float) (minX - cx), (float) (maxY - cy), (float) (lineZ - cz)).color(color.r, color.g, color.b, 1.0F);
                     lineZ += lineIntervalH;
                 }
             }
@@ -180,8 +180,8 @@ public class TestUtils
 
                 while (lineX <= maxX)
                 {
-                    bufferLines.vertex((float) (lineX - cx), minY - cy, minZ - cz).color(color.r, color.g, color.b, 1.0F);
-                    bufferLines.vertex((float) (lineX - cx), maxY - cy, minZ - cz).color(color.r, color.g, color.b, 1.0F);
+                    bufferLines.vertex((float) (lineX - cx), (float) (minY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, 1.0F);
+                    bufferLines.vertex((float) (lineX - cx), (float) (maxY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, 1.0F);
                     lineX += lineIntervalH;
                 }
             }

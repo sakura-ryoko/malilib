@@ -37,8 +37,8 @@ public class WidgetColorIndicator extends WidgetBase
     @Override
     protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
     {
-        RenderUtils.forceDraw(this.drawContext);
-        RenderUtils.depthTest(false);
+        //RenderUtils.forceDraw(this.drawContext);
+        //RenderUtils.depthTest(false);
         GuiColorEditorHSV gui = new GuiColorEditorHSV(this.config, null, GuiUtils.getCurrentScreen());
         GuiBase.openGui(gui);
         return true;

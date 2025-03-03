@@ -32,8 +32,8 @@ public class ConfigButtonStringList extends ButtonGeneric
     {
         super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
 
-        RenderUtils.forceDraw(this.drawContext);
-        RenderUtils.depthTest(false);
+        //RenderUtils.forceDraw(this.drawContext);
+        //RenderUtils.depthTest(false);
 
         if (this.dialogHandler != null)
         {

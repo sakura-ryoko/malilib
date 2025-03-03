@@ -1,10 +1,14 @@
 package fi.dy.masa.malilib.mixin.render;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import java.util.ArrayList;
 import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderPipeline;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.ObjectAllocator;
 import net.minecraft.util.profiler.Profiler;
 import org.spongepowered.asm.mixin.Final;
@@ -26,6 +30,30 @@ public abstract class MixinWorldRenderer
     //@Unique private int height;
 
     @Shadow @Final private BufferBuilderStorage bufferBuilders;
+
+    @Inject(method = "render",
+            at = @At(value = "INVOKE",
+                     target = "Lnet/minecraft/client/render/WorldRenderer;renderParticles(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/Fog;)V",
+                     shift = At.Shift.BEFORE))
+    private void malilib_onRenderWorldPreParticles(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
+                                                 Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+                                                 @Local Profiler profiler,
+                                                 @Local Frustum frustum,
+                                                 @Local FrameGraphBuilder frameGraphBuilder)
+    //@Local(ordinal = 0) int i, @Local(ordinal = 1) int j, @Local PostEffectProcessor postEffectProcessor)
+    {
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreParticles(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
+
+        /*
+        if (postEffectProcessor != null)
+        {
+            this.width = i;
+            this.height = j;
+            this.postEffects = postEffectProcessor;
+            this.postEffects.render(frameGraphBuilder, this.width, this.height, this.framebufferSet);
+        }
+         */
+    }
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
@@ -69,5 +97,17 @@ public abstract class MixinWorldRenderer
             this.postEffects.render(frameGraphBuilder, this.width, this.height, this.framebufferSet);
         }
          */
+    }
+
+    @Inject(method = "renderLayer",
+            at = @At(value = "INVOKE",
+                     target = "Lnet/minecraft/client/render/RenderPass;drawObjects(Ljava/util/Collection;)V"))
+    private void malilib_onRenderWorldLayer(RenderLayer renderLayer, double x, double y, double z,
+                                            Matrix4f viewMatrix, Matrix4f positionMatrix, CallbackInfo ci,
+                                            @Local RenderPass renderPass,
+                                            @Local ArrayList<RenderPass.BakedObject> arrayList,
+                                            @Local ObjectListIterator<ChunkBuilder.BuiltChunk> objectListIterator)
+    {
+        // TODO
     }
 }

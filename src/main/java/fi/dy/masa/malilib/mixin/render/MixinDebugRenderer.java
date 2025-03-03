@@ -1,0 +1,21 @@
+package fi.dy.masa.malilib.mixin.render;
+
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.debug.DebugRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+@Mixin(DebugRenderer.class)
+public class MixinDebugRenderer
+{
+    // This injection draws on the same layer as all of the debug rendering, during the Main Phase; at the proper rendering order.
+    @Inject(method = "render", at = @At("TAIL"))
+    private void malilib_onDebugRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo ci)
+    {
+        // TODO
+    }
+}

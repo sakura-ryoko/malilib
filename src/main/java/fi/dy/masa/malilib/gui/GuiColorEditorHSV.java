@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.gui;
 
-import java.awt.*;
 import javax.annotation.Nullable;
+import java.awt.*;
 
 import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gui.DrawContext;
@@ -174,7 +174,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
             }
         }
 
-        RenderUtils.forceDraw(drawContext);
+        //RenderUtils.forceDraw(drawContext);
         this.drawColorSelector();
     }
 
@@ -507,20 +507,37 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF);                  // current color indicator
         RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
+        // Full SV Square --
         // MaLiLibPipelines.POSITION_SIMPLE
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_TEX_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_TEX_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
+        int r = (int) (this.relR * 255f);
+        int g = (int) (this.relG * 255f);
+        int b = (int) (this.relB * 255f);
+        int a = 255;
+        int c = 255;
+
         RenderUtils.blend(true);
-        RenderUtils.color(1f, 1f, 1f, 1f);
+        int tempColor = RenderUtils.color(r, g, b, a);
 
-        //GlProgramManager.useProgram(SHADER_HUE.getProgram());
-        //GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
+        /*
+        GlProgramManager.useProgram(SHADER_HUE.getProgram());
+        GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
+         */
 
+        // FIXME --> Render this as a color gradient
+        /*
         buffer.vertex(x    , y    , z).texture(1, 0);
         buffer.vertex(x    , y + h, z).texture(0, 0);
         buffer.vertex(x + w, y + h, z).texture(0, 1);
         buffer.vertex(x + w, y    , z).texture(1, 1);
+         */
+
+        buffer.vertex(x    , y    , z).texture(1, 0).color(tempColor);
+        buffer.vertex(x    , y + h, z).texture(0, 0).color(tempColor);
+        buffer.vertex(x + w, y + h, z).texture(0, 1).color(tempColor);
+        buffer.vertex(x + w, y    , z).texture(1, 1).color(tempColor);
 
         try
         {
@@ -530,15 +547,18 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
         catch (Exception ignored) { }
 
+        // Element Selectors --
         // MaLiLibPipelines.POSITION_COLOR_SIMPLE
         buffer = ctx.startNoShader(() -> "ColorSelector B", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, GlUsage.STATIC_WRITE);
         ctx = ctx.setShader(MaLiLibPipelines.POSITION_COLOR_SIMPLE);
 
+        /*
         int r = (int) (this.relR * 255f);
         int g = (int) (this.relG * 255f);
         int b = (int) (this.relB * 255f);
         int a = 255;
         int c = 255;
+         */
 
         // Current color indicator
         buffer.vertex(cx     , cy     , z).color(r, g, b, a);

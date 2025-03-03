@@ -7,7 +7,9 @@ import com.mojang.blaze3d.platform.SourceFactor;
 import net.minecraft.client.gl.BlendPrograms;
 import net.minecraft.client.gl.ShaderPipeline;
 import net.minecraft.client.gl.ShaderPipelines;
+import net.minecraft.client.gl.UniformType;
 import net.minecraft.client.render.DepthTestState;
+import net.minecraft.client.render.PolygonMode;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
@@ -24,20 +26,33 @@ import fi.dy.masa.malilib.render.MaLiLibPipelines;
 @Mixin(ShaderPipelines.class)
 public abstract class MixinShaderPipelines
 {
-    @Shadow @Final private static Map<Identifier, ShaderPipeline> PIPELINES;
-    @Shadow @Final private static ShaderPipeline.Stage MATRICES;
-    @Shadow @Final private static ShaderPipeline.Stage MATRICES_COLOR;
-    @Shadow @Final private static ShaderPipeline.Stage FOG;
-    @Shadow @Final private static ShaderPipeline.Stage FOG_COLOR;
-    @Shadow @Final private static ShaderPipeline.Stage POSITION_COLOR;
-    @Shadow @Final private static ShaderPipeline.Stage POSITION_TEX_COLOR;
-    @Shadow @Final private static ShaderPipeline.Stage CORE_GUI;
+    @Shadow @Final public static Map<Identifier, ShaderPipeline> PIPELINES;
+    @Shadow @Final public static ShaderPipeline.Stage MATRICES;
+    @Shadow @Final public static ShaderPipeline.Stage FOG;
+    @Shadow @Final public static ShaderPipeline.Stage MATRICES_COLOR;
+    @Shadow @Final public static ShaderPipeline.Stage FOG_COLOR;
+    @Shadow @Final public static ShaderPipeline.Stage OFFSET_FOG_COLOR;
+    @Shadow @Final public static ShaderPipeline.Stage FOG_COLOR_UV;
+    @Shadow @Final public static ShaderPipeline.Stage TERRAIN;
+    @Shadow @Final public static ShaderPipeline.Stage ENTITY;
+    @Shadow @Final public static ShaderPipeline.Stage RENDERTYPE_BEACON_BEAM;
+    @Shadow @Final public static ShaderPipeline.Stage TEXT;
+    @Shadow @Final public static ShaderPipeline.Stage RENDERTYPE_END_PORTAL;
+    @Shadow @Final public static ShaderPipeline.Stage RENDERTYPE_CLOUDS;
+    @Shadow @Final public static ShaderPipeline.Stage RENDERTYPE_LINES;
+    @Shadow @Final public static ShaderPipeline.Stage POSITION_COLOR;
+    @Shadow @Final public static ShaderPipeline.Stage PARTICLE_TEX;
+    @Shadow @Final public static ShaderPipeline.Stage WEATHER;
+    @Shadow @Final public static ShaderPipeline.Stage CORE_GUI;
+    @Shadow @Final public static ShaderPipeline.Stage POSITION_TEX_COLOR;
+    @Shadow @Final public static ShaderPipeline.Stage RENDERTYPE_OUTLINE;
+    @Shadow @Final public static ShaderPipeline.Stage POST_PROCESSOR;
 
     @Unique
     private static final BlendPrograms BLENDER = new BlendPrograms(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
 
     @Shadow
-    private static ShaderPipeline register(ShaderPipeline pipeline)
+    public static ShaderPipeline register(ShaderPipeline pipeline)
     {
         PIPELINES.put(pipeline.getId(), pipeline);
         return pipeline;
@@ -67,7 +82,7 @@ public abstract class MixinShaderPipelines
         ShaderPipeline.builder(FOG_COLOR)
                       .vertices("core/rendertype_lines")
                       .pass("core/rendertype_lines")
-                      //.uniform("LineWidth", UniformType.FLOAT)
+                      .uniform("LineWidth", UniformType.FLOAT)
                       //.uniform("ScreenSize", UniformType.VEC2)
                       .blender(BlendPrograms.TRANSLUCENT)
                       .culling(false)
@@ -132,6 +147,7 @@ public abstract class MixinShaderPipelines
                                        .culling(false)
                                        .depth(false)
                                        .depthTest(DepthTestState.NO_DEPTH_TEST)
+                                       //.polygonMode(PolygonMode.WIREFRAME)
                                        .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
                                        .blender(BlendPrograms.TRANSLUCENT)
                                        .create()

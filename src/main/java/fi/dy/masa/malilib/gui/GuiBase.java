@@ -194,7 +194,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.drawContext = drawContext;
         }
 
-        RenderUtils.forceDraw(drawContext);
+        //RenderUtils.forceDraw(drawContext);
         // Draw Background / Title
         this.drawScreenBackground(drawContext, mouseX, mouseY);
         this.drawTitle(drawContext, mouseX, mouseY, partialTicks);
@@ -631,7 +631,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         for (ButtonBase button : this.buttons)
         {
-            RenderUtils.forceDraw(drawContext);
+            //RenderUtils.forceDraw(drawContext);
             button.render(mouseX, mouseY, button.isMouseOver(), drawContext);
         }
     }
@@ -640,7 +640,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         for (TextFieldWrapper<?> entry : this.textFields)
         {
-            RenderUtils.forceDraw(drawContext);
+            //RenderUtils.forceDraw(drawContext);
             entry.draw(mouseX, mouseY, drawContext);
         }
     }

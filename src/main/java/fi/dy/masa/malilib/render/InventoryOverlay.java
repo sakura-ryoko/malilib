@@ -1071,7 +1071,7 @@ public class InventoryOverlay
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         drawContext.drawStackOverlay(mc.textRenderer, stack.copyWithCount(stack.getCount()), 0, 0);
-        RenderUtils.forceDraw(drawContext);
+        //RenderUtils.forceDraw(drawContext);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
@@ -1105,7 +1105,7 @@ public class InventoryOverlay
         RenderUtils.color(1f, 1f, 1f, 1f);
 
         drawContext.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE_LOCKED_SLOT, 0, 0, 18, 18, color);
-        RenderUtils.forceDraw(drawContext);
+        //RenderUtils.forceDraw(drawContext);
 
         RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();
@@ -1134,7 +1134,7 @@ public class InventoryOverlay
         color = RenderUtils.color(1f, 1f, 1f, 1f);
 
         drawContext.drawGuiTexture(RenderLayer::getGuiTextured, texture, 0, 0, 18, 18, color);
-        RenderUtils.forceDraw(drawContext);
+        //RenderUtils.forceDraw(drawContext);
 
         color = RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.pop();

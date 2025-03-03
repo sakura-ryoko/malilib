@@ -23,18 +23,17 @@
         "render.IMixinBufferBuilder",
         "render.IMixinDrawContext",
         "render.IMixinHandledScreen",
+        "render.MixinDebugRenderer",
         "render.MixinDrawContext",
         "render.MixinHandledScreen",
         "render.MixinInGameHud",
         "render.MixinInventoryScreen",
+        "render.MixinShaderPipelines",
+        "render.MixinWorldBorderRendering",
         "render.MixinWorldRenderer",
         "test.MixinBundleItem"
     ],
     "injectors": {
         "defaultRequire": 1
-    },
-    "client": [
-        "render.MixinShaderPipelines",
-        "render.MixinWorldBorderRendering"
-  ]
+    }
 }

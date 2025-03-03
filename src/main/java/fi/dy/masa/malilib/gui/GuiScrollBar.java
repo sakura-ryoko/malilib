@@ -109,7 +109,7 @@ public class GuiScrollBar
                 RenderUtils.drawRect(xPosition + 1, barPosition, width - 2, barHeight, this.foregroundColor);
             }
 
-            RenderUtils.forceDraw(drawContext);
+            //RenderUtils.forceDraw(drawContext);
 
             this.mouseOver = mouseX > xPosition && mouseX < xPosition + width && mouseY > barPosition && mouseY < barPosition + barHeight;
             this.handleDrag(mouseY, barTravel);

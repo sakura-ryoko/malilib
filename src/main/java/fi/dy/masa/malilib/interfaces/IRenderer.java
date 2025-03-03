@@ -36,6 +36,11 @@ public interface IRenderer
     /**
      * Called before vanilla Weather rendering
      */
+    default void onRenderWorldPreParticles(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
+
+    /**
+     * Called before vanilla Weather rendering
+     */
     default void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
 
     /**

@@ -299,7 +299,8 @@ public class RenderUtils
         blend(true);
 
         // POSITION_COLOR_SIMPLE
-        RenderContext ctx = new RenderContext(ShaderPipelines.GUI_OVERLAY, GlUsage.STATIC_WRITE);
+        //RenderContext ctx = new RenderContext(ShaderPipelines.GUI_OVERLAY, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         buffer.vertex(x * scale,           y * scale,            zLevel).color(r, g, b, a);
@@ -309,7 +310,8 @@ public class RenderUtils
 
         try
         {
-            ctx.drawLayer(fb(), buffer.endNullable());
+            // fixme
+            ctx.drawColor(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored)
@@ -498,7 +500,7 @@ public class RenderUtils
             drawGradientRect(textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY - 3 + 1, zLevel, fillColor1, fillColor1);
             drawGradientRect(textStartX - 3, textStartY + textHeight + 2, textStartX + maxLineLength + 3, textStartY + textHeight + 3, zLevel, fillColor2, fillColor2);
 
-            forceDraw(drawContext);
+            //forceDraw(drawContext);
 
             for (int i = 0; i < textLines.size(); ++i)
             {
@@ -1123,6 +1125,7 @@ public class RenderUtils
         global4fStack.pushMatrix();
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
+        // Target "Side" -->
         // DEBUG_LINE_STRIP
         RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
@@ -1188,11 +1191,14 @@ public class RenderUtils
 
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
+        int wireColor = -1;
 
+        // Target "Center" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.startNoShader(() -> "TestTarget B", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
-        ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
+        buffer = ctx.startShader(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
+        // todo what the f-k are 'normal's?
         // Middle small rectangle
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
         buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
@@ -1203,7 +1209,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable());
+            ctx.drawColor(buffer.endNullable(), wireColor);
             ctx.reset();
         }
         catch (Exception err)
@@ -1211,9 +1217,10 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockTargetingOverlay():2: Draw Exception; {}", err.getMessage());
         }
 
+        // Target "Edges" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.startNoShader(() -> "TestTarget C", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP, GlUsage.STATIC_WRITE);
-        ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
+        buffer = ctx.startShader(() -> "TestTarget C", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
         // Bottom left
         buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
@@ -1234,7 +1241,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable());
+            ctx.drawColor(buffer.endNullable(), wireColor);
             ctx.close();
         }
         catch (Exception err)
@@ -1261,7 +1268,7 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
-        RenderContext ctx = new RenderContext(() -> "TestTarget A", ShaderPipelines.LINES, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int a = (int) (color.a * 255f);

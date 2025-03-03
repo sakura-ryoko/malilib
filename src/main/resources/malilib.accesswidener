@@ -1,5 +1,24 @@
 accessWidener v1 named
 accessible method net/minecraft/client/gl/ShaderPipelines register (Lnet/minecraft/client/gl/ShaderPipeline;)Lnet/minecraft/client/gl/ShaderPipeline;
 accessible field net/minecraft/client/gl/ShaderPipelines PIPELINES Ljava/util/Map;
-accessible field net/minecraft/client/gl/ShaderPipelines MATRICES_COLOR Lnet/minecraft/client/gl/ShaderPipeline$Stage;
 accessible field net/minecraft/client/gl/ShaderPipelines MATRICES Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines FOG_NO_COLOR Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines FOG Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines MATRICES_COLOR Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines FOG_COLOR Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines OFFSET_FOG_COLOR Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines FOG_COLOR_UV Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines TERRAIN Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines ENTITY Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines RENDERTYPE_BEACON_BEAM Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines TEXT Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines RENDERTYPE_END_PORTAL Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines RENDERTYPE_CLOUDS Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines RENDERTYPE_LINES Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines POSITION_COLOR Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines PARTICLE_TEX Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines WEATHER Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines CORE_GUI Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines POSITION_TEX_COLOR Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines RENDERTYPE_OUTLINE Lnet/minecraft/client/gl/ShaderPipeline$Stage;
+accessible field net/minecraft/client/gl/ShaderPipelines POST_PROCESSOR Lnet/minecraft/client/gl/ShaderPipeline$Stage;

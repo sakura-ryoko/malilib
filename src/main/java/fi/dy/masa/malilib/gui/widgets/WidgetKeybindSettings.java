@@ -44,8 +44,8 @@ public class WidgetKeybindSettings extends WidgetBase
     {
         if (mouseButton == 0)
         {
-            RenderUtils.forceDraw(this.drawContext);
-            RenderUtils.depthTest(false);
+            //RenderUtils.forceDraw(this.drawContext);
+            //RenderUtils.depthTest(false);
 
             if (this.dialogHandler != null)
             {
