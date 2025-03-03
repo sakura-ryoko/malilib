@@ -1684,7 +1684,7 @@ public class RenderUtils
             setVillagerBackgroundTintColor(profession, useBgColors);
         }
 
-        return color(1f, 1f, 1f, 1f);
+        color(1f, 1f, 1f, 1f);
     }
 
     public static void setVillagerBackgroundTintColor(VillagerProfession profession, boolean useBgColors)
