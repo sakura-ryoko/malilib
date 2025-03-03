@@ -1752,8 +1752,13 @@ public class RenderUtils
 
     public static int setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
     {
-        RegistryEntry<VillagerProfession> profession = data != null ? data.profession() : null;
-        return setVillagerBackgroundTintColor(profession, useBgColors);
+        if (useBgColors)
+        {
+            RegistryEntry<VillagerProfession> profession = data != null ? data.profession() : null;
+            return setVillagerBackgroundTintColor(profession, useBgColors);
+        }
+
+        return color(1f, 1f, 1f, 1f);
     }
 
     public static int setVillagerBackgroundTintColor(RegistryEntry<VillagerProfession> profession, boolean useBgColors)
@@ -1774,6 +1779,8 @@ public class RenderUtils
 
     public static DyeColor getVillagerColor(RegistryEntry<VillagerProfession> profession)
     {
+        if (profession == null) return null;
+
         if (profession.equals(VillagerProfession.NONE))
         {
             return DyeColor.BLUE;
