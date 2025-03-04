@@ -1193,10 +1193,15 @@ public class RenderUtils
         RenderSystem.lineWidth(1.6f);
         int wireColor = -1;
 
+        MatrixStack matrices = new MatrixStack();
+        matrices.push();
+
         // Target "Center" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
         buffer = ctx.startShader(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
+
+        //MatrixStack.Entry e = matrices.peek();
 
         // todo what the f-k are 'normal's?
         // Middle small rectangle
@@ -1205,6 +1210,12 @@ public class RenderUtils
         buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
         buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+
+//        buffer.vertex(e, (float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
+//        buffer.vertex(e, (float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
+//        buffer.vertex(e, (float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
+//        buffer.vertex(e, (float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
+//        buffer.vertex(e, (float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
         try
         {
@@ -1217,31 +1228,53 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockTargetingOverlay():2: Draw Exception; {}", err.getMessage());
         }
 
+        matrices.pop();
+
         // Target "Edges" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.startShader(() -> "TestTarget C", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        buffer = ctx.startShader(() -> "TestTarget C", MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
+//        // Bottom left
+//        buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
+//        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+//
+//        // Top left
+//        buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c);
+//        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+//
+//        // Bottom right
+//        buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
+//        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+//
+//        // Top right
+//        buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c);
+//        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+
+        matrices.push();
+        MatrixStack.Entry e = matrices.peek();
+        //e = matrices.peek();
+
         // Bottom left
-        buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex(e, (float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).normal(e, 1.0f, 1.0f, 0.0f);
+        buffer.vertex(e, (float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
         // Top left
-        buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c);
-        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex(e, (float) (x - 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).normal(e, 1.0f, -1.0f, 0.0f);
+        buffer.vertex(e, (float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
         // Bottom right
-        buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c);
-        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex(e, (float) (x + 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).normal(e, -1.0f, 1.0f, 0.0f);
+        buffer.vertex(e, (float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
         // Top right
-        buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c);
-        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex(e, (float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).normal(e, -1.0f, -1.0f, 0.0f);
+        buffer.vertex(e, (float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable(), wireColor);
+            ctx.drawColor(buffer.endNullable(), wireColor, new float[]{0f, 0f, 0f}, true);
             ctx.close();
         }
         catch (Exception err)
@@ -1249,6 +1282,7 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockTargetingOverlay():3: Draw Exception; {}", err.getMessage());
         }
 
+        matrices.pop();
         global4fStack.popMatrix();
         //RenderSystem.applyModelViewMatrix();
     }
@@ -1268,7 +1302,7 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
-        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int a = (int) (color.a * 255f);
@@ -1297,8 +1331,8 @@ public class RenderUtils
         // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        buffer = ctx.startNoShader(() -> "TestTarget B", VertexFormats.LINES, VertexFormat.DrawMode.LINE_STRIP, GlUsage.STATIC_WRITE);
-        ctx.setShader(ShaderPipelines.LINE_STRIP);
+        buffer = ctx.startShader(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        //ctx.setShader(ShaderPipelines.LINE_STRIP);
 
         // Middle rectangle
         buffer.vertex((float) (x - 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c);

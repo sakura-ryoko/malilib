@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderPipeline;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.ObjectAllocator;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -108,6 +108,6 @@ public abstract class MixinWorldRenderer
                                             @Local ArrayList<RenderPass.BakedObject> arrayList,
                                             @Local ObjectListIterator<ChunkBuilder.BuiltChunk> objectListIterator)
     {
-        // TODO
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLayerPass(renderLayer, viewMatrix, positionMatrix, new Vec3d(x, y, z), this.client, renderPass, objectListIterator, arrayList);
     }
 }

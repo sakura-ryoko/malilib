@@ -9,7 +9,6 @@ import net.minecraft.client.gl.ShaderPipeline;
 import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.gl.UniformType;
 import net.minecraft.client.render.DepthTestState;
-import net.minecraft.client.render.PolygonMode;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
@@ -83,7 +82,7 @@ public abstract class MixinShaderPipelines
                       .vertices("core/rendertype_lines")
                       .pass("core/rendertype_lines")
                       .uniform("LineWidth", UniformType.FLOAT)
-                      //.uniform("ScreenSize", UniformType.VEC2)
+                      .uniform("ScreenSize", UniformType.VEC2)
                       .blender(BlendPrograms.TRANSLUCENT)
                       .culling(false)
                       .format(VertexFormats.LINES, VertexFormat.DrawMode.LINES)
@@ -99,6 +98,15 @@ public abstract class MixinShaderPipelines
                                        .create()
                 );
 
+        MaLiLibPipelines.POSITION_DEPTH =
+                register(ShaderPipeline.builder(MaLiLibPipelines.POSITION_STAGE)
+                                       .id("pipeline/position_depth")
+                                       .culling(false)
+                                       .depth(true)
+                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
+                                       .create()
+                );
+
         // POSITION_COLOR
         MaLiLibPipelines.POSITION_COLOR_SIMPLE =
                 register(ShaderPipeline.builder(POSITION_COLOR)
@@ -109,12 +117,30 @@ public abstract class MixinShaderPipelines
                                  .create()
                 );
 
+        MaLiLibPipelines.POSITION_COLOR_DEPTH =
+                register(ShaderPipeline.builder(POSITION_COLOR)
+                                       .id("pipeline/position_color_depth")
+                                       .culling(false)
+                                       .depth(true)
+                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
+                                       .create()
+                );
+
         // POSITION_TEX
         MaLiLibPipelines.POSITION_TEX_SIMPLE =
                 register(ShaderPipeline.builder(MaLiLibPipelines.POSITION_TEX_STAGE)
                                        .id("pipeline/position_tex_simple")
                                        .culling(false)
                                        .depth(false)
+                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
+                                       .create()
+                );
+
+        MaLiLibPipelines.POSITION_TEX_DEPTH =
+                register(ShaderPipeline.builder(MaLiLibPipelines.POSITION_TEX_STAGE)
+                                       .id("pipeline/position_tex_depth")
+                                       .culling(false)
+                                       .depth(true)
                                        .depthTest(DepthTestState.NO_DEPTH_TEST)
                                        .create()
                 );
@@ -129,11 +155,30 @@ public abstract class MixinShaderPipelines
                                        .create()
                 );
 
+        MaLiLibPipelines.POSITION_TEX_COLOR_DEPTH =
+                register(ShaderPipeline.builder(POSITION_TEX_COLOR)
+                                       .id("pipeline/position_tex_color_depth")
+                                       .culling(false)
+                                       .depth(true)
+                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
+                                       .create()
+                );
+
         // LINES
         MaLiLibPipelines.LINES_SIMPLE =
                 register(ShaderPipeline.builder(MaLiLibPipelines.LINES_STAGE)
                                        .id("pipeline/lines_simple")
+                                       .culling(false)
                                        .depth(false)
+                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
+                                       .create()
+                );
+
+        MaLiLibPipelines.LINES_DEPTH =
+                register(ShaderPipeline.builder(MaLiLibPipelines.LINES_STAGE)
+                                       .id("pipeline/lines_depth")
+                                       .culling(false)
+                                       .depth(true)
                                        .depthTest(DepthTestState.NO_DEPTH_TEST)
                                        .create()
                 );
@@ -147,7 +192,19 @@ public abstract class MixinShaderPipelines
                                        .culling(false)
                                        .depth(false)
                                        .depthTest(DepthTestState.NO_DEPTH_TEST)
-                                       //.polygonMode(PolygonMode.WIREFRAME)
+                                       .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
+                                       .blender(BlendPrograms.TRANSLUCENT)
+                                       .create()
+                );
+
+        MaLiLibPipelines.DEBUG_LINES_DEPTH =
+                register(ShaderPipeline.builder(MATRICES_COLOR)
+                                       .id("pipeline/debug_lines_depth")
+                                       .vertices("core/position_color")
+                                       .pass("core/position_color")
+                                       .culling(false)
+                                       .depth(true)
+                                       .depthTest(DepthTestState.NO_DEPTH_TEST)
                                        .format(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
                                        .blender(BlendPrograms.TRANSLUCENT)
                                        .create()

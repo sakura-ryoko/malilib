@@ -11,19 +11,25 @@ public class MaLiLibPipelines
 
     // POSITION
     public static ShaderPipeline POSITION_SIMPLE;
+    public static ShaderPipeline POSITION_DEPTH;
 
     // POSITION_COLOR
     public static ShaderPipeline POSITION_COLOR_SIMPLE;
+    public static ShaderPipeline POSITION_COLOR_DEPTH;
 
     // POSITION_TEX
     public static ShaderPipeline POSITION_TEX_SIMPLE;
+    public static ShaderPipeline POSITION_TEX_DEPTH;
 
     // POSITION_TEX_COLOR
     public static ShaderPipeline POSITION_TEX_COLOR_SIMPLE;
+    public static ShaderPipeline POSITION_TEX_COLOR_DEPTH;
 
     // LINES
     public static ShaderPipeline LINES_SIMPLE;
+    public static ShaderPipeline LINES_DEPTH;
 
     // DEBUG_LINES
     public static ShaderPipeline DEBUG_LINES_SIMPLE;
+    public static ShaderPipeline DEBUG_LINES_DEPTH;
 }

@@ -308,7 +308,10 @@ public class RenderContext implements AutoCloseable
                 this.name = name;
 
                 // Create & upload buffer
-                this.upload(name, meshData, target);
+                if (this.bufferIndex < 1)
+                {
+                    this.upload(name, meshData, target);
+                }
             }
 
             // Draw
@@ -333,8 +336,8 @@ public class RenderContext implements AutoCloseable
         {
             if (useOffset)
             {
-                //RenderSystem.setModelOffset(-offset[0], offset[1], -offset[2]);
-                RenderSystem.setModelOffset(offset[0], offset[1], offset[2]);
+                RenderSystem.setModelOffset(-offset[0], offset[1], -offset[2]);
+                //RenderSystem.setModelOffset(offset[0], offset[1], offset[2]);
             }
             Framebuffer mainFb = RenderUtils.fb();
             DrawableTexture texture1;

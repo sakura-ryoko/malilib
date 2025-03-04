@@ -41,8 +41,8 @@ public class TestWalls implements AutoCloseable
 
     public TestWalls()
     {
-        this.CONTEXT_1 = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
-        this.CONTEXT_2 = new RenderContext(MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        this.CONTEXT_1 = new RenderContext(MaLiLibPipelines.POSITION_COLOR_DEPTH, GlUsage.STATIC_WRITE);
+        this.CONTEXT_2 = new RenderContext(MaLiLibPipelines.DEBUG_LINES_DEPTH, GlUsage.STATIC_WRITE);
         this.renderThrough = false;
         this.useCulling = false;
         this.glLineWidth = 3.0f;
@@ -90,8 +90,6 @@ public class TestWalls implements AutoCloseable
 
     public void update(Camera camera, Entity entity, MinecraftClient mc)
     {
-        Color4f color = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
-
         if (mc.world == null || mc.player == null)
         {
             return;
@@ -101,20 +99,22 @@ public class TestWalls implements AutoCloseable
         Vec3d vec = camera.getPos();
         int radius = MaLiLibConfigs.Test.TEST_CONFIG_INTEGER.getIntegerValue();
 
-        BufferBuilder builder1 = CONTEXT_1.startShader(() -> "TestWalls Quads", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
-        BufferBuilder builder2 = CONTEXT_2.startShader(() -> "TestWalls Lines", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        BufferBuilder builder1 = CONTEXT_1.startShader(() -> "TestWalls Quads", MaLiLibPipelines.POSITION_COLOR_DEPTH, GlUsage.STATIC_WRITE);
+        BufferBuilder builder2 = CONTEXT_2.startShader(() -> "TestWalls Lines", MaLiLibPipelines.DEBUG_LINES_DEPTH, GlUsage.STATIC_WRITE);
 
         BlockPos testPos = pos.add(2, 0, 2);
+        Color4f quadsColor = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
+        Color4f linesColor = Color4f.WHITE;
 
-        RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(testPos, vec, color, 0.001, builder2);
-        TestUtils.drawBlockBoundingBoxSidesBatchedQuads(testPos, vec, color, 0.001, builder1);
+        RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(testPos, vec, linesColor, 0.001, builder2);
+        TestUtils.drawBlockBoundingBoxSidesBatchedQuads(testPos, vec, quadsColor, 0.001, builder1);
 
         Pair<BlockPos, BlockPos> corners = TestUtils.getSpawnChunkCorners(testPos, radius, mc.world);
-        TestUtils.renderWallsWithLines(corners.getLeft(), corners.getRight(), vec, 16, 16, true, color, builder1, builder2);
+        TestUtils.renderWallsWithLines(corners.getLeft(), corners.getRight(), vec, 16, 16, true, quadsColor, builder1, linesColor, builder2);
 
         this.hasData = true;
 
-        uploadData(this.CONTEXT_1, builder1);
+        //uploadData(this.CONTEXT_1, builder1);
         uploadData(this.CONTEXT_2, builder2);
 
         setUpdatePosition(vec);
@@ -197,10 +197,10 @@ public class TestWalls implements AutoCloseable
     {
         if (this.hasData)
         {
-            preRender();
-            drawInternal(CONTEXT_1, color);
+            //preRender();
+            //drawInternal(CONTEXT_1, color);
             drawInternal(CONTEXT_2, color);
-            postRender();
+            //postRender();
         }
     }
 

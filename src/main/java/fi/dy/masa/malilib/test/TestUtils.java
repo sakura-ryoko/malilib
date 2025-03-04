@@ -72,8 +72,10 @@ public class TestUtils
             double lineIntervalH,
             double lineIntervalV,
             boolean alignLinesToModulo,
-            Color4f color,
-            BufferBuilder bufferQuads, BufferBuilder bufferLines)
+            Color4f quadsColor,
+            BufferBuilder bufferQuads,
+            Color4f linesColor,
+            BufferBuilder bufferLines)
     {
         Entity entity = EntityUtils.getCameraEntity();
         final int boxMinX = Math.min(posStart.getX(), posEnd.getX());
@@ -101,13 +103,13 @@ public class TestUtils
             if (rangeMinZ <= boxMinZ && rangeMaxZ >= boxMinZ)
             {
                 minZ = maxZ = boxMinZ;
-                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, color, bufferQuads, bufferLines);
+                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, quadsColor, bufferQuads, linesColor, bufferLines);
             }
 
             if (rangeMinZ <= boxMaxZ && rangeMaxZ >= boxMaxZ)
             {
                 minZ = maxZ = boxMaxZ + 1;
-                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, color, bufferQuads, bufferLines);
+                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, quadsColor, bufferQuads, linesColor, bufferLines);
             }
         }
 
@@ -120,13 +122,13 @@ public class TestUtils
             if (rangeMinX <= boxMinX && rangeMaxX >= boxMinX)
             {
                 minX = maxX = boxMinX;
-                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, color, bufferQuads, bufferLines);
+                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, quadsColor, bufferQuads, linesColor, bufferLines);
             }
 
             if (rangeMinX <= boxMaxX && rangeMaxX >= boxMaxX)
             {
                 minX = maxX = boxMaxX + 1;
-                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, color, bufferQuads, bufferLines);
+                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, quadsColor, bufferQuads, linesColor, bufferLines);
             }
         }
     }
@@ -137,17 +139,19 @@ public class TestUtils
             double lineIntervalH, double lineIntervalV,
             boolean alignLinesToModulo,
             Vec3d cameraPos,
-            Color4f color,
-            BufferBuilder bufferQuads, BufferBuilder bufferLines)
+            Color4f qColor,
+            BufferBuilder bufferQuads,
+            Color4f lColor,
+            BufferBuilder bufferLines)
     {
         double cx = cameraPos.x;
         double cy = cameraPos.y;
         double cz = cameraPos.z;
 
-        bufferQuads.vertex((float) (minX - cx), (float) (maxY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, color.a);
-        bufferQuads.vertex((float) (minX - cx), (float) (minY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, color.a);
-        bufferQuads.vertex((float) (maxX - cx), (float) (minY - cy), (float) (maxZ - cz)).color(color.r, color.g, color.b, color.a);
-        bufferQuads.vertex((float) (maxX - cx), (float) (maxY - cy), (float) (maxZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex((float) (minX - cx), (float) (maxY - cy), (float) (minZ - cz)).color(qColor.r, qColor.g, qColor.b, qColor.a);
+        bufferQuads.vertex((float) (minX - cx), (float) (minY - cy), (float) (minZ - cz)).color(qColor.r, qColor.g, qColor.b, qColor.a);
+        bufferQuads.vertex((float) (maxX - cx), (float) (minY - cy), (float) (maxZ - cz)).color(qColor.r, qColor.g, qColor.b, qColor.a);
+        bufferQuads.vertex((float) (maxX - cx), (float) (maxY - cy), (float) (maxZ - cz)).color(qColor.r, qColor.g, qColor.b, qColor.a);
 
         if (lineIntervalV > 0.0)
         {
@@ -155,8 +159,8 @@ public class TestUtils
 
             while (lineY <= maxY)
             {
-                bufferLines.vertex((float) (minX - cx), (float) (lineY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, 1.0F);
-                bufferLines.vertex((float) (maxX - cx), (float) (lineY - cy), (float) (maxZ - cz)).color(color.r, color.g, color.b, 1.0F);
+                bufferLines.vertex((float) (minX - cx), (float) (lineY - cy), (float) (minZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
+                bufferLines.vertex((float) (maxX - cx), (float) (lineY - cy), (float) (maxZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
                 lineY += lineIntervalV;
             }
         }
@@ -169,8 +173,8 @@ public class TestUtils
 
                 while (lineZ <= maxZ)
                 {
-                    bufferLines.vertex((float) (minX - cx), (float) (minY - cy), (float) (lineZ - cz)).color(color.r, color.g, color.b, 1.0F);
-                    bufferLines.vertex((float) (minX - cx), (float) (maxY - cy), (float) (lineZ - cz)).color(color.r, color.g, color.b, 1.0F);
+                    bufferLines.vertex((float) (minX - cx), (float) (minY - cy), (float) (lineZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
+                    bufferLines.vertex((float) (minX - cx), (float) (maxY - cy), (float) (lineZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
                     lineZ += lineIntervalH;
                 }
             }
@@ -180,8 +184,8 @@ public class TestUtils
 
                 while (lineX <= maxX)
                 {
-                    bufferLines.vertex((float) (lineX - cx), (float) (minY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, 1.0F);
-                    bufferLines.vertex((float) (lineX - cx), (float) (maxY - cy), (float) (minZ - cz)).color(color.r, color.g, color.b, 1.0F);
+                    bufferLines.vertex((float) (lineX - cx), (float) (minY - cy), (float) (minZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
+                    bufferLines.vertex((float) (lineX - cx), (float) (maxY - cy), (float) (minZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
                     lineX += lineIntervalH;
                 }
             }

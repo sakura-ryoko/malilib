@@ -1,9 +1,11 @@
 package fi.dy.masa.malilib.event;
 
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.ApiStatus;
@@ -205,11 +207,33 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
+    public void runRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, MinecraftClient mc,
+                                       RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
+                                       ArrayList<RenderPass.BakedObject> renderObjects)
+    {
+        Profiler profiler = Profilers.get();
+
+        profiler.push(MaLiLibReference.MOD_ID+"_render_layer");
+
+        if (this.worldLayerPassRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.worldLayerPassRenderers)
+            {
+                profiler.push(renderer.getProfilerSectionSupplier());
+                renderer.onRenderWorldLayerPass(layer, posMatrix, projMatrix, camera, profiler, renderPass, chunkIterator, renderObjects);
+                profiler.pop();
+            }
+        }
+
+        profiler.pop();
+    }
+
+    @ApiStatus.Internal
     public void runRenderWorldPostDebug(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera)
     {
         Profiler profiler = Profilers.get();
 
-        profiler.push(MaLiLibReference.MOD_ID+"_pre_particles");
+        profiler.push(MaLiLibReference.MOD_ID+"_post_debug");
 
         if (this.worldPreParticleRenderers.isEmpty() == false)
         {
