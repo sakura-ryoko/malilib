@@ -3,6 +3,9 @@ package fi.dy.masa.malilib.event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
@@ -29,6 +32,8 @@ public class RenderEventHandler implements IRenderDispatcher
 
     private final List<IRenderer> overlayRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
+    private final List<IRenderer> worldPostDebugRenderers = new ArrayList<>();
+    private final List<IRenderer> worldLayerPassRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
@@ -53,6 +58,24 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.tooltipLastRenderers.contains(renderer) == false)
         {
             this.tooltipLastRenderers.add(renderer);
+        }
+    }
+
+    @Override
+    public void registerWorldPostDebugRenderer(IRenderer renderer)
+    {
+        if (this.worldPostDebugRenderers.contains(renderer) == false)
+        {
+            this.worldPostDebugRenderers.add(renderer);
+        }
+    }
+
+    @Override
+    public void registerWorldLayerPassRenderer(IRenderer renderer)
+    {
+        if (this.worldLayerPassRenderers.contains(renderer) == false)
+        {
+            this.worldLayerPassRenderers.add(renderer);
         }
     }
 
@@ -175,6 +198,26 @@ public class RenderEventHandler implements IRenderDispatcher
             {
                 profiler.swap(renderer.getProfilerSectionSupplier());
                 renderer.onRenderTooltipLast(drawContext ,stack, x, y);
+            }
+        }
+
+        profiler.pop();
+    }
+
+    @ApiStatus.Internal
+    public void runRenderWorldPostDebug(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera)
+    {
+        Profiler profiler = Profilers.get();
+
+        profiler.push(MaLiLibReference.MOD_ID+"_pre_particles");
+
+        if (this.worldPreParticleRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.worldPreParticleRenderers)
+            {
+                profiler.push(renderer.getProfilerSectionSupplier());
+                renderer.onRenderWorldPostDebugRender(matrices, frustum, immediate, camera, profiler);
+                profiler.pop();
             }
         }
 

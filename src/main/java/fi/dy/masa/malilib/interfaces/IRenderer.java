@@ -1,16 +1,19 @@
 package fi.dy.masa.malilib.interfaces;
 
+import java.util.ArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import net.minecraft.client.render.*;
+import net.minecraft.client.render.chunk.ChunkBuilder;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.BufferBuilderStorage;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Fog;
-import net.minecraft.client.render.Frustum;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -32,6 +35,19 @@ public interface IRenderer
      * Called after the vanilla overlays have been rendered (Original)
      */
     default void onRenderGameOverlayPost(DrawContext drawContext) {}
+
+    /**
+     * Called during each and every RenderLayer Pass of the Main World Rendering.
+     * Append `renderObjects` with your additional blocks to render on this layer by passing along each 'Baked Object' per a Built Chunk (Using the chunkIterator)
+     */
+    default void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler,
+                                                                     RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
+                                                                     ArrayList<RenderPass.BakedObject> renderObjects) {}
+
+    /**
+     * Called after vanilla debug rendering (Chunk Borders, etc)
+     */
+    default void onRenderWorldPostDebugRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera, Profiler profiler) {}
 
     /**
      * Called before vanilla Weather rendering
