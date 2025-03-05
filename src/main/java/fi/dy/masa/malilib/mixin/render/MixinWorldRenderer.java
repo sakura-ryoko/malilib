@@ -33,6 +33,30 @@ public abstract class MixinWorldRenderer
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
+                     target = "Lnet/minecraft/client/render/WorldRenderer;renderMain(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Frustum;Lnet/minecraft/client/render/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/render/Fog;ZZLnet/minecraft/client/render/RenderTickCounter;Lnet/minecraft/util/profiler/Profiler;)V",
+                     shift = At.Shift.BEFORE))
+    private void malilib_onRenderWorldPreMain(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
+                                                   Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+                                                   @Local Profiler profiler,
+                                                   @Local Frustum frustum,
+                                                   @Local FrameGraphBuilder frameGraphBuilder)
+    //@Local(ordinal = 0) int i, @Local(ordinal = 1) int j, @Local PostEffectProcessor postEffectProcessor)
+    {
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreMain(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
+
+        /*
+        if (postEffectProcessor != null)
+        {
+            this.width = i;
+            this.height = j;
+            this.postEffects = postEffectProcessor;
+            this.postEffects.render(frameGraphBuilder, this.width, this.height, this.framebufferSet);
+        }
+         */
+    }
+
+    @Inject(method = "render",
+            at = @At(value = "INVOKE",
                      target = "Lnet/minecraft/client/render/WorldRenderer;renderParticles(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/Fog;)V",
                      shift = At.Shift.BEFORE))
     private void malilib_onRenderWorldPreParticles(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,

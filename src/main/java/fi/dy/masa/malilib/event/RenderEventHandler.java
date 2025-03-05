@@ -34,6 +34,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
     private final List<IRenderer> overlayRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
+    private final List<IRenderer> worldPreMainRenderers = new ArrayList<>();
     private final List<IRenderer> worldPostDebugRenderers = new ArrayList<>();
     private final List<IRenderer> worldLayerPassRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
@@ -60,6 +61,15 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.tooltipLastRenderers.contains(renderer) == false)
         {
             this.tooltipLastRenderers.add(renderer);
+        }
+    }
+
+    @Override
+    public void registerWorldPreMainRenderer(IRenderer renderer)
+    {
+        if (this.worldPreMainRenderers.contains(renderer) == false)
+        {
+            this.worldPreMainRenderers.add(renderer);
         }
     }
 
@@ -207,6 +217,53 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
+    public void runRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
+                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
+                                           Frustum frustum, Camera camera, BufferBuilderStorage buffers,
+                                           Profiler profiler)
+    {
+        profiler.push(MaLiLibReference.MOD_ID+"_pre_main");
+
+        if (this.worldPreMainRenderers.isEmpty() == false)
+        {
+            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_main");
+
+            fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
+            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
+
+            pass.setRenderer(() ->
+                             {
+                                 Fog fog = RenderSystem.getShaderFog();
+                                 RenderSystem.setShaderFog(Fog.DUMMY);
+
+                                 //handleMain.get().beginWrite(false);
+                                 // RenderUtils.fbStartDrawing();
+
+                                 for (IRenderer renderer : this.worldPreMainRenderers)
+                                 {
+                                     profiler.push(renderer.getProfilerSectionSupplier());
+                                     renderer.onRenderWorldPreMain(handleMain.get(), posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
+                                     profiler.pop();
+                                 }
+
+                                 if (!this.worldPreMainRenderers.isEmpty())
+                                 {
+                                     handleMain.get().draw();
+                                 }
+
+                                 RenderSystem.setShaderFog(fog);
+                             });
+
+            if (!this.worldPreMainRenderers.isEmpty())
+            {
+                pass.markToBeVisited();
+            }
+        }
+
+        profiler.pop();
+    }
+
+    @ApiStatus.Internal
     public void runRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, MinecraftClient mc,
                                        RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
                                        ArrayList<RenderPass.BakedObject> renderObjects)
@@ -235,9 +292,9 @@ public class RenderEventHandler implements IRenderDispatcher
 
         profiler.push(MaLiLibReference.MOD_ID+"_post_debug");
 
-        if (this.worldPreParticleRenderers.isEmpty() == false)
+        if (this.worldPostDebugRenderers.isEmpty() == false)
         {
-            for (IRenderer renderer : this.worldPreParticleRenderers)
+            for (IRenderer renderer : this.worldPostDebugRenderers)
             {
                 profiler.push(renderer.getProfilerSectionSupplier());
                 renderer.onRenderWorldPostDebugRender(matrices, frustum, immediate, camera, profiler);
@@ -323,30 +380,31 @@ public class RenderEventHandler implements IRenderDispatcher
         {
             FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_weather");
 
-            if (fbSet.weatherFramebuffer != null)
-            {
-                fbSet.weatherFramebuffer = pass.transfer(fbSet.weatherFramebuffer);
-                pass.dependsOn(fbSet.mainFramebuffer);
-            }
-            else
-            {
+//            if (fbSet.weatherFramebuffer != null)
+//            {
+//                fbSet.weatherFramebuffer = pass.transfer(fbSet.weatherFramebuffer);
+//                pass.dependsOn(fbSet.mainFramebuffer);
+//            }
+//            else
+//            {
                 fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
-            }
+//            }
 
             Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
-            Handle<Framebuffer> handleWeather = fbSet.weatherFramebuffer;
+//            Handle<Framebuffer> handleWeather = fbSet.weatherFramebuffer;
 
             pass.setRenderer(() ->
             {
                 Fog fog = RenderSystem.getShaderFog();
                 RenderSystem.setShaderFog(Fog.DUMMY);
 
-                if (handleWeather != null)
-                {
-                    handleWeather.get().copyDepthFrom(handleMain.get());
-                }
+//                if (handleWeather != null)
+//                {
+//                    handleWeather.get().copyDepthFrom(handleMain.get());
+//                }
 
-                Framebuffer fb = handleWeather != null ? handleWeather.get() : handleMain.get();
+//                Framebuffer fb = handleWeather != null ? handleWeather.get() : handleMain.get();
+                Framebuffer fb = handleMain.get();
                 //handleMain.get().beginWrite(false);
                 //RenderUtils.fbStartDrawing();
 
@@ -357,10 +415,10 @@ public class RenderEventHandler implements IRenderDispatcher
                     profiler.pop();
                 }
 
-                if (!this.worldPreWeatherRenderers.isEmpty())
-                {
-                    fb.draw();
-                }
+//                if (!this.worldPreWeatherRenderers.isEmpty())
+//                {
+//                    fb.draw();
+//                }
 
                 RenderSystem.setShaderFog(fog);
             });

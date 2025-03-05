@@ -26,6 +26,7 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
 {
     TEST_ENUM_CONFIG                ("testEnumConfig",              false,""),
     TEST_ENUM_SINGLE_PLAYER         ("testEnumSinglePlayer",        false,true, ""),
+    TEST_SELECTOR_HOTKEY            ("testSelectorHotkey",          false,""),
     TEST_WALLS_HOTKEY               ("testWallsHotkey",             false,""),
     ;
 

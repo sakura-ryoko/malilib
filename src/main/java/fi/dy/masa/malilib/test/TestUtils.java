@@ -1,32 +1,25 @@
 package fi.dy.masa.malilib.test;
 
-import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.EntityUtils;
-import fi.dy.masa.malilib.util.data.Color4f;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+
+import fi.dy.masa.malilib.util.EntityUtils;
+import fi.dy.masa.malilib.util.data.Color4f;
 
 @ApiStatus.Experimental
 public class TestUtils
 {
-    public static void drawBlockBoundingBoxSidesBatchedQuads(BlockPos pos, Vec3d cameraPos, Color4f color, double expand, BufferBuilder buffer)
-    {
-        float minX = (float) (pos.getX() - cameraPos.x - expand);
-        float minY = (float) (pos.getY() - cameraPos.y - expand);
-        float minZ = (float) (pos.getZ() - cameraPos.z - expand);
-        float maxX = (float) (pos.getX() - cameraPos.x + expand + 1);
-        float maxY = (float) (pos.getY() - cameraPos.y + expand + 1);
-        float maxZ = (float) (pos.getZ() - cameraPos.z + expand + 1);
-
-        RenderUtils.drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
-    }
-
     protected static Pair<BlockPos, BlockPos> getSpawnChunkCorners(BlockPos worldSpawn, int chunkRange, World world)
     {
         int cx = (worldSpawn.getX() >> 4);
@@ -65,17 +58,9 @@ public class TestUtils
         return minY;
     }
 
-    public static void renderWallsWithLines(
+    public static List<Box> calculateBoxes(
             BlockPos posStart,
-            BlockPos posEnd,
-            Vec3d cameraPos,
-            double lineIntervalH,
-            double lineIntervalV,
-            boolean alignLinesToModulo,
-            Color4f quadsColor,
-            BufferBuilder bufferQuads,
-            Color4f linesColor,
-            BufferBuilder bufferLines)
+            BlockPos posEnd)
     {
         Entity entity = EntityUtils.getCameraEntity();
         final int boxMinX = Math.min(posStart.getX(), posEnd.getX());
@@ -94,6 +79,8 @@ public class TestUtils
         final double maxY = Math.max(posStart.getY(), posEnd.getY()) + 1;
         double minX, minZ, maxX, maxZ;
 
+        List<Box> boxes = new ArrayList<>();
+
         // The sides of the box along the x-axis can be at least partially inside the range
         if (rangeMinX <= boxMaxX && rangeMaxX >= boxMinX)
         {
@@ -103,13 +90,17 @@ public class TestUtils
             if (rangeMinZ <= boxMinZ && rangeMaxZ >= boxMinZ)
             {
                 minZ = maxZ = boxMinZ;
-                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, quadsColor, bufferQuads, linesColor, bufferLines);
+//                renderWallOutlines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, linesColor, bufferQuads, matrices.peek());
+//                renderWallQuads((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, cameraPos, quadsColor, bufferQuads);
+                boxes.add(new Box(minX, minY, minZ, maxX, maxY, maxZ));
             }
 
             if (rangeMinZ <= boxMaxZ && rangeMaxZ >= boxMaxZ)
             {
                 minZ = maxZ = boxMaxZ + 1;
-                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, quadsColor, bufferQuads, linesColor, bufferLines);
+//                renderWallOutlines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, linesColor, bufferLines, matrices.peek());
+//                renderWallQuads((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, cameraPos, quadsColor, bufferQuads);
+                boxes.add(new Box(minX, minY, minZ, maxX, maxY, maxZ));
             }
         }
 
@@ -122,70 +113,81 @@ public class TestUtils
             if (rangeMinX <= boxMinX && rangeMaxX >= boxMinX)
             {
                 minX = maxX = boxMinX;
-                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, quadsColor, bufferQuads, linesColor, bufferLines);
+//                renderWallOutlines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, linesColor, bufferLines, matrices.peek());
+//                renderWallQuads((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, cameraPos, quadsColor, bufferQuads);
+                boxes.add(new Box(minX, minY, minZ, maxX, maxY, maxZ));
             }
 
             if (rangeMinX <= boxMaxX && rangeMaxX >= boxMaxX)
             {
                 minX = maxX = boxMaxX + 1;
-                renderWallWithLines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, quadsColor, bufferQuads, linesColor, bufferLines);
+//                renderWallOutlines((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, lineIntervalH, lineIntervalV, alignLinesToModulo, cameraPos, linesColor, bufferLines, matrices.peek());
+//                renderWallQuads((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, cameraPos, quadsColor, bufferQuads);
+                boxes.add(new Box(minX, minY, minZ, maxX, maxY, maxZ));
             }
         }
+
+        return boxes;
     }
 
-    public static void renderWallWithLines(
-            double minX, double minY, double minZ,
-            double maxX, double maxY, double maxZ,
-            double lineIntervalH, double lineIntervalV,
-            boolean alignLinesToModulo,
-            Vec3d cameraPos,
-            Color4f qColor,
-            BufferBuilder bufferQuads,
-            Color4f lColor,
-            BufferBuilder bufferLines)
+    public static void renderWallQuads(Box box, Vec3d cameraPos, Color4f color, BufferBuilder bufferQuads)
     {
         double cx = cameraPos.x;
         double cy = cameraPos.y;
         double cz = cameraPos.z;
 
-        bufferQuads.vertex((float) (minX - cx), (float) (maxY - cy), (float) (minZ - cz)).color(qColor.r, qColor.g, qColor.b, qColor.a);
-        bufferQuads.vertex((float) (minX - cx), (float) (minY - cy), (float) (minZ - cz)).color(qColor.r, qColor.g, qColor.b, qColor.a);
-        bufferQuads.vertex((float) (maxX - cx), (float) (minY - cy), (float) (maxZ - cz)).color(qColor.r, qColor.g, qColor.b, qColor.a);
-        bufferQuads.vertex((float) (maxX - cx), (float) (maxY - cy), (float) (maxZ - cz)).color(qColor.r, qColor.g, qColor.b, qColor.a);
+        bufferQuads.vertex((float) (box.minX - cx), (float) (box.maxY - cy), (float) (box.minZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex((float) (box.minX - cx), (float) (box.minY - cy), (float) (box.minZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex((float) (box.maxX - cx), (float) (box.minY - cy), (float) (box.maxZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex((float) (box.maxX - cx), (float) (box.maxY - cy), (float) (box.maxZ - cz)).color(color.r, color.g, color.b, color.a);
+    }
+
+    public static void renderWallOutlines(
+            Box box,
+            double lineIntervalH, double lineIntervalV,
+            boolean alignLinesToModulo,
+            Vec3d cameraPos,
+            Color4f color,
+            BufferBuilder bufferLines,
+            MatrixStack.Entry e)
+    {
+        double cx = cameraPos.x;
+        double cy = cameraPos.y;
+        double cz = cameraPos.z;
 
         if (lineIntervalV > 0.0)
         {
-            double lineY = alignLinesToModulo ? roundUp(minY, lineIntervalV) : minY;
+            double lineY = alignLinesToModulo ? roundUp(box.minY, lineIntervalV) : box.minY;
 
-            while (lineY <= maxY)
+            while (lineY <= box.maxY)
             {
-                bufferLines.vertex((float) (minX - cx), (float) (lineY - cy), (float) (minZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
-                bufferLines.vertex((float) (maxX - cx), (float) (lineY - cy), (float) (maxZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
+                bufferLines.vertex(e, (float) (box.minX - cx), (float) (lineY - cy), (float) (box.minZ - cz)).color(color.r, color.g, color.b, 1.0F).normal(e, 0.0f, 0.0f, 0.0f);
+                bufferLines.vertex(e, (float) (box.maxX - cx), (float) (lineY - cy), (float) (box.maxZ - cz)).color(color.r, color.g, color.b, 1.0F).normal(e, 0.0f, 0.0f, 0.0f);
                 lineY += lineIntervalV;
             }
         }
 
         if (lineIntervalH > 0.0)
         {
-            if (minX == maxX)
+            if (box.minX == box.maxX)
             {
-                double lineZ = alignLinesToModulo ? roundUp(minZ, lineIntervalH) : minZ;
+                double lineZ = alignLinesToModulo ? roundUp(box.minZ, lineIntervalH) : box.minZ;
 
-                while (lineZ <= maxZ)
+                while (lineZ <= box.maxZ)
                 {
-                    bufferLines.vertex((float) (minX - cx), (float) (minY - cy), (float) (lineZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
-                    bufferLines.vertex((float) (minX - cx), (float) (maxY - cy), (float) (lineZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
+                    bufferLines.vertex(e, (float) (box.minX - cx), (float) (box.minY - cy), (float) (lineZ - cz)).color(color.r, color.g, color.b, 1.0F).normal(e, 0.0f, 0.0f, 0.0f);
+                    bufferLines.vertex(e, (float) (box.minX - cx), (float) (box.maxY - cy), (float) (lineZ - cz)).color(color.r, color.g, color.b, 1.0F).normal(e, 0.0f, 0.0f, 0.0f);
                     lineZ += lineIntervalH;
                 }
             }
-            else if (minZ == maxZ)
+            else if (box.minZ == box.maxZ)
             {
-                double lineX = alignLinesToModulo ? roundUp(minX, lineIntervalH) : minX;
+                double lineX = alignLinesToModulo ? roundUp(box.minX, lineIntervalH) : box.minX;
 
-                while (lineX <= maxX)
+                while (lineX <= box.maxX)
                 {
-                    bufferLines.vertex((float) (lineX - cx), (float) (minY - cy), (float) (minZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
-                    bufferLines.vertex((float) (lineX - cx), (float) (maxY - cy), (float) (minZ - cz)).color(lColor.r, lColor.g, lColor.b, 1.0F);
+                    bufferLines.vertex(e, (float) (lineX - cx), (float) (box.minY - cy), (float) (box.minZ - cz)).color(color.r, color.g, color.b, 1.0F).normal(e, 0.0f, 0.0f, 0.0f);
+                    bufferLines.vertex(e, (float) (lineX - cx), (float) (box.maxY - cy), (float) (box.minZ - cz)).color(color.r, color.g, color.b, 1.0F).normal(e, 0.0f, 0.0f, 0.0f);
                     lineX += lineIntervalH;
                 }
             }

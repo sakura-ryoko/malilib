@@ -17,6 +17,13 @@ public interface IRenderDispatcher
     void registerTooltipLastRenderer(IRenderer renderer);
 
     /**
+     * Registers a renderer which will have its {@link IRenderer.onRenderWorldPreMain}
+     * method called before the vanilla Weather rendering is done
+     * @param renderer
+     */
+    void registerWorldPreMainRenderer(IRenderer renderer);
+
+    /**
      * Registers a renderer which will have its {@link IRenderer.onRenderWorldLayerPass}
      * method called after the vanilla Debug rendering is done
      * @param renderer

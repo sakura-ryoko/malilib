@@ -787,12 +787,24 @@ public class RenderUtils
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
     }
 
+    public static void drawBlockBoundingBoxSidesBatchedQuads(BlockPos pos, Vec3d cameraPos, Color4f color, double expand, BufferBuilder buffer)
+    {
+        float minX = (float) (pos.getX() - cameraPos.x - expand);
+        float minY = (float) (pos.getY() - cameraPos.y - expand);
+        float minZ = (float) (pos.getZ() - cameraPos.z - expand);
+        float maxX = (float) (pos.getX() - cameraPos.x + expand + 1);
+        float maxY = (float) (pos.getY() - cameraPos.y + expand + 1);
+        float maxZ = (float) (pos.getZ() - cameraPos.z + expand + 1);
+
+        RenderUtils.drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
+    }
+
     /**
      * Assumes a BufferBuilder in GL_LINES mode has been initialized
      */
-    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color, double expand, BufferBuilder buffer)
+    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color, double expand, BufferBuilder buffer, MatrixStack matrices)
     {
-        drawBlockBoundingBoxOutlinesBatchedLines(pos, Vec3d.ZERO, color, expand, buffer);
+        drawBlockBoundingBoxOutlinesBatchedLines(pos, Vec3d.ZERO, color, expand, buffer, matrices);
     }
 
     /**
@@ -805,7 +817,7 @@ public class RenderUtils
      * @param expand
      * @param buffer
      */
-    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Vec3d cameraPos, Color4f color, double expand, BufferBuilder buffer)
+    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Vec3d cameraPos, Color4f color, double expand, BufferBuilder buffer, MatrixStack matrices)
     {
         float minX = (float) (pos.getX() - expand - cameraPos.x);
         float minY = (float) (pos.getY() - expand - cameraPos.y);
@@ -814,7 +826,7 @@ public class RenderUtils
         float maxY = (float) (pos.getY() + expand - cameraPos.y + 1);
         float maxZ = (float) (pos.getZ() + expand - cameraPos.z + 1);
 
-        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
+        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, buffer, matrices.peek());
     }
 
     /**
@@ -839,9 +851,9 @@ public class RenderUtils
      * @param bufferQuads
      * @param bufferLines
      */
-    public static void drawBoxWithEdgesBatched(BlockPos posMin, BlockPos posMax, Color4f colorLines, Color4f colorSides, BufferBuilder bufferQuads, BufferBuilder bufferLines)
+    public static void drawBoxWithEdgesBatched(BlockPos posMin, BlockPos posMax, Color4f colorLines, Color4f colorSides, BufferBuilder bufferQuads, BufferBuilder bufferLines, MatrixStack matrices)
     {
-        drawBoxWithEdgesBatched(posMin, posMax, Vec3d.ZERO, colorLines, colorSides, bufferQuads, bufferLines);
+        drawBoxWithEdgesBatched(posMin, posMax, Vec3d.ZERO, colorLines, colorSides, bufferQuads, bufferLines, matrices);
     }
 
     /**
@@ -857,7 +869,7 @@ public class RenderUtils
      * @param bufferQuads
      * @param bufferLines
      */
-    public static void drawBoxWithEdgesBatched(BlockPos posMin, BlockPos posMax, Vec3d cameraPos, Color4f colorLines, Color4f colorSides, BufferBuilder bufferQuads, BufferBuilder bufferLines)
+    public static void drawBoxWithEdgesBatched(BlockPos posMin, BlockPos posMax, Vec3d cameraPos, Color4f colorLines, Color4f colorSides, BufferBuilder bufferQuads, BufferBuilder bufferLines, MatrixStack matrices)
     {
         final float x1 = (float) (posMin.getX() - cameraPos.x);
         final float y1 = (float) (posMin.getY() - cameraPos.y);
@@ -867,7 +879,7 @@ public class RenderUtils
         final float z2 = (float) (posMax.getZ() + 1 - cameraPos.z);
 
         drawBoxAllSidesBatchedQuads(x1, y1, z1, x2, y2, z2, colorSides, bufferQuads);
-        drawBoxAllEdgesBatchedLines(x1, y1, z1, x2, y2, z2, colorLines, bufferLines);
+        drawBoxAllEdgesBatchedLines(x1, y1, z1, x2, y2, z2, colorLines, bufferLines, matrices.peek());
     }
 
     /**
@@ -929,50 +941,50 @@ public class RenderUtils
      * Assumes a BufferBuilder in GL_LINES mode has been initialized
      */
     public static void drawBoxAllEdgesBatchedLines(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
-                                                   Color4f color, BufferBuilder buffer)
+                                                   Color4f color, BufferBuilder buffer, MatrixStack.Entry e)
     {
         // West side
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
         // East side
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
         // North side (don't repeat the vertical lines that are done by the east/west sides)
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
         // South side (don't repeat the vertical lines that are done by the east/west sides)
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
     }
 
-    public static void drawBox(IntBoundingBox bb, Vec3d cameraPos, Color4f color, BufferBuilder bufferQuads, BufferBuilder bufferLines)
+    public static void drawBox(IntBoundingBox bb, Vec3d cameraPos, Color4f color, BufferBuilder bufferQuads, BufferBuilder bufferLines, MatrixStack matrices)
     {
         float minX = (float) (bb.minX - cameraPos.x);
         float minY = (float) (bb.minY - cameraPos.y);
@@ -982,7 +994,7 @@ public class RenderUtils
         float maxZ = (float) (bb.maxZ + 1 - cameraPos.z);
 
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, bufferQuads);
-        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, bufferLines);
+        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, bufferLines, matrices.peek());
     }
 
     /**
@@ -1008,7 +1020,7 @@ public class RenderUtils
     public static void drawTextPlate(List<String> text, double x, double y, double z, float yaw, float pitch,
                                      float scale, int textColor, int bgColor, boolean disableDepth)
     {
-        Vec3d cameraPos = mc().gameRenderer.getCamera().getPos();
+        Vec3d cameraPos = camPos();
         double cx = cameraPos.x;
         double cy = cameraPos.y;
         double cz = cameraPos.z;
@@ -1111,11 +1123,11 @@ public class RenderUtils
     }
 
     public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3d hitVec,
-                                                   Color4f color, Matrix4f posMatrix, MinecraftClient mc)
+                                                   Color4f color, Matrix4f posMatrix)
     {
         Direction playerFacing = entity.getHorizontalFacing();
         PositionUtils.HitPart part = PositionUtils.getHitPart(side, playerFacing, pos, hitVec);
-        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        Vec3d cameraPos = camPos();
 
         double x = (pos.getX() + 0.5d - cameraPos.x);
         double y = (pos.getY() + 0.5d - cameraPos.y);
@@ -1203,7 +1215,6 @@ public class RenderUtils
 
         //MatrixStack.Entry e = matrices.peek();
 
-        // todo what the f-k are 'normal's?
         // Middle small rectangle
         buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
         buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
@@ -1256,19 +1267,19 @@ public class RenderUtils
         //e = matrices.peek();
 
         // Bottom left
-        buffer.vertex(e, (float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).normal(e, 1.0f, 1.0f, 0.0f);
+        buffer.vertex(e, (float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
         buffer.vertex(e, (float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
         // Top left
-        buffer.vertex(e, (float) (x - 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).normal(e, 1.0f, -1.0f, 0.0f);
+        buffer.vertex(e, (float) (x - 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
         buffer.vertex(e, (float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
         // Bottom right
-        buffer.vertex(e, (float) (x + 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).normal(e, -1.0f, 1.0f, 0.0f);
+        buffer.vertex(e, (float) (x + 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
         buffer.vertex(e, (float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
         // Top right
-        buffer.vertex(e, (float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).normal(e, -1.0f, -1.0f, 0.0f);
+        buffer.vertex(e, (float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
         buffer.vertex(e, (float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
         try
@@ -1288,10 +1299,10 @@ public class RenderUtils
     }
 
     public static void renderBlockTargetingOverlaySimple(Entity entity, BlockPos pos, Direction side,
-                                                         Color4f color, Matrix4f posMatrix, MinecraftClient mc)
+                                                         Color4f color, Matrix4f posMatrix)
     {
         Direction playerFacing = entity.getHorizontalFacing();
-        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        Vec3d cameraPos = camPos();
 
         double x = pos.getX() + 0.5d - cameraPos.x;
         double y = pos.getY() + 0.5d - cameraPos.y;
@@ -2012,6 +2023,11 @@ public class RenderUtils
         return mc().getFramebuffer();
     }
 
+    public static Vec3d camPos()
+    {
+        return mc().gameRenderer.getCamera().getPos();
+    }
+
     public static TextureManager tex()
     {
         return mc().getTextureManager();
@@ -2060,29 +2076,33 @@ public class RenderUtils
     public static float matrix4fRotateFix(float ang) {return (ang * 0.017453292F);}
 
     // todo - selection box rendering (Test Renderer)
-    public static void renderBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color, MinecraftClient mc)
+    public static void renderBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color)
     {
         RenderSystem.lineWidth(lineWidth);
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR); // DEBUG_LINE_STRIP
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
+        MatrixStack matrices = new MatrixStack();
 
-        drawBlockBoundingBoxOutlinesBatchedLines(pos, color, expand, buffer, mc);
+        matrices.push();
+        drawBlockBoundingBoxOutlinesBatchedLinesSimple(pos, color, expand, buffer, matrices);
 
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(mc.getFramebuffer(), buffer.endNullable());
+            ctx.drawColor(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
+
+        matrices.pop();
     }
 
-    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color,
-                                                                double expand, BufferBuilder buffer, MinecraftClient mc)
+    public static void drawBlockBoundingBoxOutlinesBatchedLinesSimple(BlockPos pos, Color4f color,
+                                                                       double expand, BufferBuilder buffer, MatrixStack matrices)
     {
-        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        Vec3d cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2094,13 +2114,13 @@ public class RenderUtils
         float maxY = (float) (pos.getY() - dy + expand + 1);
         float maxZ = (float) (pos.getZ() - dz + expand + 1);
 
-        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
+        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, buffer, matrices.peek());
     }
 
     public static void drawConnectingLineBatchedLines(BlockPos pos1, BlockPos pos2, boolean center,
-                                                      Color4f color, BufferBuilder buffer, MinecraftClient mc)
+                                                      Color4f color, BufferBuilder buffer, MatrixStack matrices)
     {
-        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        Vec3d cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2122,14 +2142,18 @@ public class RenderUtils
             z2 += 0.5F;
         }
 
-        buffer.vertex(x1, y1, z1).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(x2, y2, z2).color(color.r, color.g, color.b, color.a);
+        matrices.push();
+        MatrixStack.Entry e = matrices.peek();
+
+        buffer.vertex(e, x1, y1, z1).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, x2, y2, z2).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        matrices.pop();
     }
 
     public static void renderBlockOutlineOverlapping(BlockPos pos, float expand, float lineWidth,
-                                                     Color4f color1, Color4f color2, Color4f color3, Matrix4f matrix4f, MinecraftClient mc)
+                                                     Color4f color1, Color4f color2, Color4f color3, Matrix4f matrix4f)
     {
-        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        Vec3d cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2143,63 +2167,69 @@ public class RenderUtils
 
         RenderSystem.lineWidth(lineWidth);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
+        MatrixStack matrices = new MatrixStack();
+
+        matrices.push();
+        MatrixStack.Entry e = matrices.peek();
 
         // Min corner
-        buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a);
-        buffer.vertex(maxX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a);
+        buffer.vertex(e, minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a);
-        buffer.vertex(minX, maxY, minZ).color(color1.r, color1.g, color1.b, color1.a);
+        buffer.vertex(e, minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, maxY, minZ).color(color1.r, color1.g, color1.b, color1.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a);
-        buffer.vertex(minX, minY, maxZ).color(color1.r, color1.g, color1.b, color1.a);
+        buffer.vertex(e, minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, minY, maxZ).color(color1.r, color1.g, color1.b, color1.a).normal(e, 0.0f, 0.0f, 0.0f);
 
         // Max corner
-        buffer.vertex(minX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
+        buffer.vertex(e, minX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, minY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
+        buffer.vertex(e, maxX, minY, maxZ).color(color2.r, color2.g, color2.b, color2.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, maxY, minZ).color(color2.r, color2.g, color2.b, color2.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
+        buffer.vertex(e, maxX, maxY, minZ).color(color2.r, color2.g, color2.b, color2.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a).normal(e, 0.0f, 0.0f, 0.0f);
 
         // The rest of the edges
-        buffer.vertex(minX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a);
-        buffer.vertex(maxX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(e, minX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
-        buffer.vertex(maxX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(e, minX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, minY, minZ).color(color3.r, color3.g, color3.b, color3.a);
-        buffer.vertex(maxX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(e, maxX, minY, minZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
-        buffer.vertex(minX, maxY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(e, minX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, maxY, maxZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, minY, minZ).color(color3.r, color3.g, color3.b, color3.a);
-        buffer.vertex(maxX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(e, maxX, minY, minZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a);
-        buffer.vertex(minX, maxY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(e, minX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, maxY, maxZ).color(color3.r, color3.g, color3.b, color3.a).normal(e, 0.0f, 0.0f, 0.0f);
 
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(mc.getFramebuffer(), buffer.endNullable());
+            ctx.drawColor(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
+
+        matrices.pop();
     }
 
     public static void renderAreaOutline(BlockPos pos1, BlockPos pos2, float lineWidth,
-                                         Color4f colorX, Color4f colorY, Color4f colorZ, MinecraftClient mc)
+                                         Color4f colorX, Color4f colorY, Color4f colorZ, MatrixStack matrices)
     {
         RenderSystem.lineWidth(lineWidth);
 
-        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        Vec3d cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2214,14 +2244,19 @@ public class RenderUtils
         drawBoundingBoxEdges((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, colorX, colorY, colorZ);
     }
 
-    private static void drawBoundingBoxEdges(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, Color4f colorX, Color4f colorY, Color4f colorZ)
+    private static void drawBoundingBoxEdges(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+                                             Color4f colorX, Color4f colorY, Color4f colorZ)
     {
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
+        MatrixStack matrices = new MatrixStack();
 
-        drawBoundingBoxLinesX(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorX);
-        drawBoundingBoxLinesY(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorY);
-        drawBoundingBoxLinesZ(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorZ);
+        matrices.push();
+        MatrixStack.Entry e = matrices.peek();
+
+        drawBoundingBoxLinesX(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorX, e);
+        drawBoundingBoxLinesY(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorY, e);
+        drawBoundingBoxLinesZ(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorZ, e);
 
         try
         {
@@ -2230,68 +2265,73 @@ public class RenderUtils
             ctx.close();
         }
         catch (Exception ignored) { }
+
+        matrices.pop();
     }
 
-    private static void drawBoundingBoxLinesX(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, Color4f color)
+    private static void drawBoundingBoxLinesX(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+                                              Color4f color, MatrixStack.Entry e)
     {
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
     }
 
-    private static void drawBoundingBoxLinesY(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, Color4f color)
+    private static void drawBoundingBoxLinesY(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+                                              Color4f color, MatrixStack.Entry e)
     {
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
     }
 
-    private static void drawBoundingBoxLinesZ(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, Color4f color)
+    private static void drawBoundingBoxLinesZ(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+                                              Color4f color, MatrixStack.Entry e)
     {
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, minY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
 
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).normal(e, 0.0f, 0.0f, 0.0f);
     }
 
-    public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f, MinecraftClient mc)
+    public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f)
     {
         blend(true);
         culling(false);
 
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_DEPTH, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
-        renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer, mc);
+        renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
 
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(mc.getFramebuffer(), buffer.endNullable());
+            ctx.drawColor(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -2304,9 +2344,9 @@ public class RenderUtils
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
      */
     public static void renderAreaSidesBatched(BlockPos pos1, BlockPos pos2, Color4f color,
-                                              double expand, BufferBuilder buffer, MinecraftClient mc)
+                                              double expand, BufferBuilder buffer)
     {
-        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        Vec3d cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2321,7 +2361,7 @@ public class RenderUtils
     }
 
     public static void renderAreaOutlineNoCorners(BlockPos pos1, BlockPos pos2,
-                                                  float lineWidth, Color4f colorX, Color4f colorY, Color4f colorZ, MinecraftClient mc)
+                                                  float lineWidth, Color4f colorX, Color4f colorY, Color4f colorZ)
     {
         final int xMin = Math.min(pos1.getX(), pos2.getX());
         final int yMin = Math.min(pos1.getY(), pos2.getY());
@@ -2331,7 +2371,7 @@ public class RenderUtils
         final int zMax = Math.max(pos1.getZ(), pos2.getZ());
 
         final double expand = 0.001;
-        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        Vec3d cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2354,8 +2394,12 @@ public class RenderUtils
 
         RenderSystem.lineWidth(lineWidth);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
+        MatrixStack matrices = new MatrixStack();
+
+        matrices.push();
+        MatrixStack.Entry e = matrices.peek();
 
         // Edges along the X-axis
         start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMin) ? xMin + 1 : xMin;
@@ -2363,8 +2407,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
-            buffer.vertex(end   + dxMax, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex(e, start + dxMin, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, end   + dxMax, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMin) ? xMin + 1 : xMin;
@@ -2372,8 +2416,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
-            buffer.vertex(end   + dxMax, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex(e, start + dxMin, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, end   + dxMax, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMax) ? xMin + 1 : xMin;
@@ -2381,8 +2425,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
-            buffer.vertex(end   + dxMax, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex(e, start + dxMin, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, end   + dxMax, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMax) ? xMin + 1 : xMin;
@@ -2390,8 +2434,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
-            buffer.vertex(end   + dxMax, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex(e, start + dxMin, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, end   + dxMax, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         // Edges along the Y-axis
@@ -2400,8 +2444,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
-            buffer.vertex(minX, end   + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(e, minX, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, minX, end   + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMin) ? yMin + 1 : yMin;
@@ -2409,8 +2453,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
-            buffer.vertex(maxX + 1, end   + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(e, maxX + 1, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, maxX + 1, end   + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMax) ? yMin + 1 : yMin;
@@ -2418,8 +2462,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
-            buffer.vertex(minX, end   + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(e, minX, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, minX, end   + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMax) ? yMin + 1 : yMin;
@@ -2427,8 +2471,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
-            buffer.vertex(maxX + 1, end   + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(e, maxX + 1, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, maxX + 1, end   + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         // Edges along the Z-axis
@@ -2437,8 +2481,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
-            buffer.vertex(minX, minY, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(e, minX, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, minX, minY, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMin) ? zMin + 1 : zMin;
@@ -2446,8 +2490,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
-            buffer.vertex(maxX + 1, minY, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(e, maxX + 1, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, maxX + 1, minY, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMin) ? zMin + 1 : zMin;
@@ -2455,8 +2499,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
-            buffer.vertex(minX, maxY + 1, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(e, minX, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, minX, maxY + 1, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMax && pos2.getZ() == zMin) ? zMin + 1 : zMin;
@@ -2464,16 +2508,18 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
-            buffer.vertex(maxX + 1, maxY + 1, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(e, maxX + 1, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).normal(e, 0.0f, 0.0f, 0.0f);
+            buffer.vertex(e, maxX + 1, maxY + 1, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).normal(e, 0.0f, 0.0f, 0.0f);
         }
 
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(mc.getFramebuffer(), buffer.endNullable());
+            ctx.drawColor(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
+
+        matrices.pop();
     }
 }

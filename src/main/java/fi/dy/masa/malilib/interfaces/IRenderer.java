@@ -37,6 +37,11 @@ public interface IRenderer
     default void onRenderGameOverlayPost(DrawContext drawContext) {}
 
     /**
+     * Called before vanilla Main rendering (Only after the Sky is Drawn)
+     */
+    default void onRenderWorldPreMain(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
+
+    /**
      * Called during each and every RenderLayer Pass of the Main World Rendering.
      * Append `renderObjects` with your additional blocks to render on this layer by passing along each 'Baked Object' per a Built Chunk (Using the chunkIterator)
      */

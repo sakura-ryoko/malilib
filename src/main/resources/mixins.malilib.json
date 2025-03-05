@@ -31,7 +31,8 @@
         "render.MixinShaderPipelines",
         "render.MixinWorldBorderRendering",
         "render.MixinWorldRenderer",
-        "test.MixinBundleItem"
+        "test.MixinBundleItem",
+        "test.MixinClientPlayInteractionManager"
     ],
     "injectors": {
         "defaultRequire": 1
