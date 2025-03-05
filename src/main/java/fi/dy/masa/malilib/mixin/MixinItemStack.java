@@ -1,12 +1,6 @@
 package fi.dy.masa.malilib.mixin;
 
-import java.util.List;
-import java.util.function.Consumer;
-
-import javax.annotation.Nullable;
-
-import com.llamalad7.mixinextras.sugar.Local;
-
+import fi.dy.masa.malilib.event.RenderEventHandler;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -17,9 +11,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import fi.dy.masa.malilib.event.RenderEventHandler;
+import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 public abstract class MixinItemStack
@@ -48,7 +41,7 @@ public abstract class MixinItemStack
     @Inject(method = "appendTooltip(Lnet/minecraft/item/Item$TooltipContext;Lnet/minecraft/component/type/TooltipDisplayComponent;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/tooltip/TooltipType;Ljava/util/function/Consumer;)V",
             at = @At(value = "INVOKE",
                      target = "Lnet/minecraft/item/ItemStack;appendComponentTooltip(Lnet/minecraft/component/ComponentType;Lnet/minecraft/item/Item$TooltipContext;Lnet/minecraft/component/type/TooltipDisplayComponent;Ljava/util/function/Consumer;Lnet/minecraft/item/tooltip/TooltipType;)V",
-                     ordinal = 22,
+                     ordinal = 21,
                      shift = At.Shift.AFTER))
     private void onGetTooltipComponentsLast(Item.TooltipContext context, TooltipDisplayComponent displayComponent,
                                             PlayerEntity player, TooltipType type, Consumer<Text> textConsumer, CallbackInfo ci)
