@@ -2075,7 +2075,6 @@ public class RenderUtils
      */
     public static float matrix4fRotateFix(float ang) {return (ang * 0.017453292F);}
 
-    // todo - selection box rendering (Test Renderer)
     public static void renderBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color)
     {
         RenderSystem.lineWidth(lineWidth);

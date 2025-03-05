@@ -434,17 +434,17 @@ public class InventoryUtils
     {
         if (nbt.contains(NbtKeys.ITEMS))
         {
-            NbtList tagList = nbt.getOrCreateList(NbtKeys.ITEMS);
+            NbtList tagList = nbt.getListOrEmpty(NbtKeys.ITEMS);
             return !tagList.isEmpty();
         }
         else if (nbt.contains(NbtKeys.INVENTORY))
         {
-            NbtList tagList = nbt.getOrCreateList(NbtKeys.INVENTORY);
+            NbtList tagList = nbt.getListOrEmpty(NbtKeys.INVENTORY);
             return !tagList.isEmpty();
         }
         else if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
-            NbtList tagList = nbt.getOrCreateList(NbtKeys.ENDER_ITEMS);
+            NbtList tagList = nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS);
             return !tagList.isEmpty();
         }
         else if (nbt.contains(NbtKeys.ITEM))
@@ -498,7 +498,7 @@ public class InventoryUtils
         // Most Common Tag --> NbtElement.LIST_TYPE ???
         if (nbt.contains(NbtKeys.ITEMS))
         {
-            NbtList list = nbt.getOrCreateList(NbtKeys.ITEMS);
+            NbtList list = nbt.getListOrEmpty(NbtKeys.ITEMS);
             if (slotCount < 0)
             {
                 slotCount = list.size();
@@ -512,7 +512,7 @@ public class InventoryUtils
         // A few Entities use this
         else if (nbt.contains(NbtKeys.INVENTORY))
         {
-            NbtList list = nbt.getOrCreateList(NbtKeys.INVENTORY);
+            NbtList list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
             if (slotCount < 0)
             {
                 slotCount = list.size();
@@ -531,7 +531,7 @@ public class InventoryUtils
         // Ender Chest
         else if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
-            NbtList list = nbt.getOrCreateList(NbtKeys.ENDER_ITEMS);
+            NbtList list = nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS);
 
             if (slotCount < 0)
             {
@@ -632,7 +632,7 @@ public class InventoryUtils
             // -- Furnace, Brewing Stand, Shulker Box, Crafter, Barrel, Chest, Dispenser, Hopper, Bookshelf, Campfire
             if (slotCount < 0)
             {
-                NbtList list = nbt.getOrCreateList(NbtKeys.ITEMS);
+                NbtList list = nbt.getListOrEmpty(NbtKeys.ITEMS);
                 slotCount = list.size();
             }
 
@@ -657,12 +657,12 @@ public class InventoryUtils
             // Entities use this (Piglin, Villager, a few others)
             if (slotCount < 0)
             {
-                NbtList list = nbt.getOrCreateList(NbtKeys.INVENTORY);
+                NbtList list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
                 slotCount = list.size();
             }
 
             SimpleInventory inv = new SimpleInventory(slotCount);
-            inv.readNbtList(nbt.getOrCreateList(NbtKeys.INVENTORY), registry);
+            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.INVENTORY), registry);
 
             if (inv.isEmpty())
             {
@@ -676,12 +676,12 @@ public class InventoryUtils
             // Ender Chest
             if (slotCount < 0)
             {
-                NbtList list = nbt.getOrCreateList(NbtKeys.ENDER_ITEMS);
+                NbtList list = nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS);
                 slotCount = list.size();
             }
 
             SimpleInventory inv = new SimpleInventory(slotCount);
-            inv.readNbtList(nbt.getOrCreateList(NbtKeys.ENDER_ITEMS), registry);
+            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS), registry);
 
             if (inv.isEmpty())
             {
@@ -752,7 +752,7 @@ public class InventoryUtils
         {
             if (slotCount < 0)
             {
-                NbtList list = nbt.getOrCreateList(NbtKeys.ITEMS);
+                NbtList list = nbt.getListOrEmpty(NbtKeys.ITEMS);
                 slotCount = list.size();
             }
 
@@ -810,7 +810,7 @@ public class InventoryUtils
         if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
             EnderChestInventory inv = new EnderChestInventory();
-            inv.readNbtList(nbt.getOrCreateList(NbtKeys.ENDER_ITEMS), registry);
+            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS), registry);
 
             return inv;
         }

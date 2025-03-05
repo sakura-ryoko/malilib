@@ -103,7 +103,7 @@ public class NbtEntityUtils
         if (type != null && nbt.contains(NbtKeys.ATTRIB))
         {
             AttributeContainer container = new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
-            container.readNbt(nbt.getOrCreateList(NbtKeys.ATTRIB));
+            container.readNbt(nbt.getListOrEmpty(NbtKeys.ATTRIB));
             return container;
         }
 
@@ -1156,7 +1156,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.RECIPE_BOOK))
         {
             book = new ServerRecipeBook(manager::forEachRecipeDisplay);
-            book.readNbt(nbt.getOrCreateCompound(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
+            book.readNbt(nbt.getCompoundOrEmpty(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
         }
 
         return book;

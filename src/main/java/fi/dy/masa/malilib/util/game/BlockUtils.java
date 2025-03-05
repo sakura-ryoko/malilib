@@ -153,7 +153,7 @@ public class BlockUtils
             return name;
         }
 
-        NbtCompound propTag = stateTag.getOrCreateCompound("Properties");
+        NbtCompound propTag = stateTag.getCompoundOrEmpty("Properties");
         ArrayList<Pair<String, String>> props = new ArrayList<>();
 
         for (String key : propTag.getKeys())

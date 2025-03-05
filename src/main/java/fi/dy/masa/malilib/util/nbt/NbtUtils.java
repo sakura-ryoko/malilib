@@ -60,7 +60,7 @@ public class NbtUtils
 
 		if (tagIn.contains(tagName))
 		{
-			nbt = tagIn.getOrCreateCompound(tagName);
+			nbt = tagIn.getCompoundOrEmpty(tagName);
 		}
 		else
 		{
@@ -301,7 +301,7 @@ public class NbtUtils
 	{
 		if (tag.contains(tagName))
 		{
-			NbtList tagList = tag.getOrCreateList(tagName);
+			NbtList tagList = tag.getListOrEmpty(tagName);
 
 			if (tagList.size() == 3)
 			{
@@ -428,7 +428,7 @@ public class NbtUtils
 	{
 		if (tag != null && tag.contains(tagName))
 		{
-			NbtList tagList = tag.getOrCreateList(tagName);
+			NbtList tagList = tag.getListOrEmpty(tagName);
 
 			if (tagList.getType() == Constants.NBT.TAG_DOUBLE && tagList.size() == 3)
 			{

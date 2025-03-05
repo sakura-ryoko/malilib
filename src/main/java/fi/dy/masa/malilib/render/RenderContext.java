@@ -374,137 +374,138 @@ public class RenderContext implements AutoCloseable
         }
     }
 
-    public void drawLayer() throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.ensureBuilding(this.builder);
-        this.drawLayer(RenderUtils.fb(), this.builder.endNullable());
-    }
-
-    public void drawLayer(Framebuffer fb) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.ensureBuilding(this.builder);
-        this.drawLayer(fb, this.builder.endNullable());
-    }
-
-    public void drawLayer(Framebuffer fb, BuiltBuffer meshData) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-
-        if (RenderSystem.isOnRenderThread())
-        {
-            try
-            {
-                this.uploadShaderBuffer(this.name, meshData);
-
-                try (RenderPass pass = RenderSystem.getDevice()
-                                                   .getResourceManager()
-                                                   .newRenderPass(fb.getColorAttachment(), OptionalInt.empty(),
-                                                                 fb.useDepthAttachment ? fb.getDepthAttachment() : null, OptionalDouble.empty()))
-                {
-                    // BindShader
-                    pass.bindShader(this.shader);
-                    pass.setVertexBuffer(0, this.gpuBuffer);
-
-                    // Scissor
-                    if (RenderSystem.SCISSOR_STATE.isActive())
-                    {
-                        pass.applyScissor(RenderSystem.SCISSOR_STATE);
-                    }
-
-                    // Draw Textures
-                    for (int i = 0; i < 12; i++)
-                    {
-                        DrawableTexture texture = RenderSystem.getShaderTexture(i);
-
-                        if (texture != null)
-                        {
-                            pass.setSamplerUniform("Sampler" + i, texture);
-                        }
-                    }
-
-                    // Resorting
-                    if (this.sortBuffer != null)
-                    {
-                        pass.setIndexBuffer(this.sortBuffer, meshData.getDrawParameters().indexType());
-                    }
-                    else
-                    {
-                        RenderSystem.ShapeIndexBuffer shapeIndex = RenderSystem.getSequentialBuffer(meshData.getDrawParameters().mode());
-                        pass.setIndexBuffer(shapeIndex.method_68274(meshData.getDrawParameters().indexCount()), shapeIndex.getIndexType());
-                    }
-
-                    pass.drawObjects(0, meshData.getDrawParameters().indexCount());
-                }
-
-            }
-            catch (Exception err)
-            {
-                if (meshData != null)
-                {
-                    try
-                    {
-                        meshData.close();
-                    }
-                    catch (Exception ignored) {}
-                }
-
-                this.started = false;
-                throw new RuntimeException("Exception drawing; "+ err.getMessage());
-            }
-
-            meshData.close();
-            this.started = false;
-        }
-    }
-
-    public void drawTranslucentLayer() throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.drawTranslucentLayer(RenderUtils.fb(), this.builder);
-    }
-
-    public void drawTranslucentLayer(Framebuffer fb) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.drawTranslucentLayer(fb, this.builder);
-    }
-
-    public void drawTranslucentLayer(Framebuffer fb, BufferBuilder builder) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.ensureBuilding(builder);
-
-        if (RenderSystem.isOnRenderThread())
-        {
-            try
-            {
-                BuiltBuffer meshData = builder.endNullable();
-                this.saveSortState(meshData);
-                this.drawLayer(fb, meshData);
-            }
-            catch (Exception err)
-            {
-                throw new RuntimeException("Translucent Draw Failure!");
-            }
-        }
-    }
-
-    private void saveSortState(BuiltBuffer meshData) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-
-        // Resort Quads
-        if (meshData != null && this.getDrawMode() == VertexFormat.DrawMode.QUADS)
-        {
-            this.sortState = meshData.sortQuads(this.alloc, RenderSystem.getProjectionType().getVertexSorter());
-        }
-        else
-        {
-            throw new RuntimeException("Invalid MeshData for sorting!");
-        }
-    }
+    // fixme
+//    public void drawLayer() throws RuntimeException
+//    {
+//        this.ensureSafeNoBuffer();
+//        this.ensureBuilding(this.builder);
+//        this.drawLayer(RenderUtils.fb(), this.builder.endNullable());
+//    }
+//
+//    public void drawLayer(Framebuffer fb) throws RuntimeException
+//    {
+//        this.ensureSafeNoBuffer();
+//        this.ensureBuilding(this.builder);
+//        this.drawLayer(fb, this.builder.endNullable());
+//    }
+//
+//    public void drawLayer(Framebuffer fb, BuiltBuffer meshData) throws RuntimeException
+//    {
+//        this.ensureSafeNoBuffer();
+//
+//        if (RenderSystem.isOnRenderThread())
+//        {
+//            try
+//            {
+//                this.uploadShaderBuffer(this.name, meshData);
+//
+//                try (RenderPass pass = RenderSystem.getDevice()
+//                                                   .getResourceManager()
+//                                                   .newRenderPass(fb.getColorAttachment(), OptionalInt.empty(),
+//                                                                 fb.useDepthAttachment ? fb.getDepthAttachment() : null, OptionalDouble.empty()))
+//                {
+//                    // BindShader
+//                    pass.bindShader(this.shader);
+//                    pass.setVertexBuffer(0, this.gpuBuffer);
+//
+//                    // Scissor
+//                    if (RenderSystem.SCISSOR_STATE.isActive())
+//                    {
+//                        pass.applyScissor(RenderSystem.SCISSOR_STATE);
+//                    }
+//
+//                    // Draw Textures
+//                    for (int i = 0; i < 12; i++)
+//                    {
+//                        DrawableTexture texture = RenderSystem.getShaderTexture(i);
+//
+//                        if (texture != null)
+//                        {
+//                            pass.setSamplerUniform("Sampler" + i, texture);
+//                        }
+//                    }
+//
+//                    // Resorting
+//                    if (this.sortBuffer != null)
+//                    {
+//                        pass.setIndexBuffer(this.sortBuffer, meshData.getDrawParameters().indexType());
+//                    }
+//                    else
+//                    {
+//                        RenderSystem.ShapeIndexBuffer shapeIndex = RenderSystem.getSequentialBuffer(meshData.getDrawParameters().mode());
+//                        pass.setIndexBuffer(shapeIndex.method_68274(meshData.getDrawParameters().indexCount()), shapeIndex.getIndexType());
+//                    }
+//
+//                    pass.drawObjects(0, meshData.getDrawParameters().indexCount());
+//                }
+//
+//            }
+//            catch (Exception err)
+//            {
+//                if (meshData != null)
+//                {
+//                    try
+//                    {
+//                        meshData.close();
+//                    }
+//                    catch (Exception ignored) {}
+//                }
+//
+//                this.started = false;
+//                throw new RuntimeException("Exception drawing; "+ err.getMessage());
+//            }
+//
+//            meshData.close();
+//            this.started = false;
+//        }
+//    }
+//
+//    public void drawTranslucentLayer() throws RuntimeException
+//    {
+//        this.ensureSafeNoBuffer();
+//        this.drawTranslucentLayer(RenderUtils.fb(), this.builder);
+//    }
+//
+//    public void drawTranslucentLayer(Framebuffer fb) throws RuntimeException
+//    {
+//        this.ensureSafeNoBuffer();
+//        this.drawTranslucentLayer(fb, this.builder);
+//    }
+//
+//    public void drawTranslucentLayer(Framebuffer fb, BufferBuilder builder) throws RuntimeException
+//    {
+//        this.ensureSafeNoBuffer();
+//        this.ensureBuilding(builder);
+//
+//        if (RenderSystem.isOnRenderThread())
+//        {
+//            try
+//            {
+//                BuiltBuffer meshData = builder.endNullable();
+//                this.saveSortState(meshData);
+//                this.drawLayer(fb, meshData);
+//            }
+//            catch (Exception err)
+//            {
+//                throw new RuntimeException("Translucent Draw Failure!");
+//            }
+//        }
+//    }
+//
+//    private void saveSortState(BuiltBuffer meshData) throws RuntimeException
+//    {
+//        this.ensureSafeNoBuffer();
+//
+//        // Resort Quads
+//        if (meshData != null && this.getDrawMode() == VertexFormat.DrawMode.QUADS)
+//        {
+//            this.sortState = meshData.sortQuads(this.alloc, RenderSystem.getProjectionType().getVertexSorter());
+//        }
+//        else
+//        {
+//            throw new RuntimeException("Invalid MeshData for sorting!");
+//        }
+//    }
 
     public AbstractTexture bindTexture(Identifier id)
     {
@@ -583,82 +584,84 @@ public class RenderContext implements AutoCloseable
         }
     }
 
-    public void uploadShaderBuffer(BufferBuilder builder) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.ensureBuilding(builder);
-        this.builder = builder;
-        this.uploadShaderBuffer(this.name, this.builder.endNullable());
-    }
+    // fixme
+//    public void uploadShaderBuffer(BufferBuilder builder) throws RuntimeException
+//    {
+//        this.ensureSafeNoBuffer();
+//        this.ensureBuilding(builder);
+//        this.builder = builder;
+//        this.uploadShaderBuffer(this.name, this.builder.endNullable());
+//    }
+//
+//    public void uploadShaderBuffer(Supplier<String> name, BuiltBuffer meshData) throws RuntimeException
+//    {
+//        this.name = name;
+//        this.ensureSafeNoBuffer();
+//
+//        if (RenderSystem.isOnRenderThread())
+//        {
+//            // Create & upload buffer
+//            if (this.gpuBuffer != null && this.gpuBuffer.size >= meshData.getBuffer().remaining())
+//            {
+//                this.gpuBuffer = this.shader.getFormat().method_68460(meshData.getBuffer());
+//            }
+//            else
+//            {
+//                if (this.gpuBuffer != null)
+//                {
+//                    this.gpuBuffer.close();
+//                }
+//
+//                this.gpuBuffer = this.shader.getFormat().method_68460(meshData.getBuffer());
+//            }
+//
+//            this.bufferIndex = meshData.getDrawParameters().indexCount();
+//            this.sortBuffer = meshData.getSortedBuffer() != null ? this.shader.getFormat().method_68461(meshData.getSortedBuffer()) : null;
+//        }
+//    }
+//
+//    public void draw() throws RuntimeException
+//    {
+//        this.ensureSafeNoSorting();
+//        this.draw(null, -1, new float[]{0f, 0f, 0f}, false);
+//    }
+//
+//    public void draw(int color) throws RuntimeException
+//    {
+//        this.ensureSafeNoSorting();
+//        this.draw(null, color, new float[]{0f, 0f, 0f}, false);
+//    }
+//
+//    public void draw(@Nullable Framebuffer otherFb, int color) throws RuntimeException
+//    {
+//        this.ensureSafeNoSorting();
+//        this.draw(otherFb, color, new float[]{0f, 0f, 0f}, false);
+//    }
+//
+//    public void draw(@Nullable Framebuffer otherFb, int color, float[] offset, boolean useOffset) throws RuntimeException
+//    {
+//        this.ensureSafeNoSorting();
+//
+//        if (RenderSystem.isOnRenderThread())
+//        {
+//            if (this.bufferIndex > 0)
+//            {
+//                float[] rgba = {ColorHelper.getRedFloat(color), ColorHelper.getGreenFloat(color), ColorHelper.getBlueFloat(color), ColorHelper.getAlphaFloat(color)};
+//
+//                RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+//                this.drawColorInternal(otherFb, offset, useOffset);
+//                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//            }
+//            else
+//            {
+//                throw new RuntimeException("Buffer index is <= 0!");
+//            }
+//
+//            this.started = false;
+//        }
+//    }
 
-    public void uploadShaderBuffer(Supplier<String> name, BuiltBuffer meshData) throws RuntimeException
-    {
-        this.name = name;
-        this.ensureSafeNoBuffer();
-
-        if (RenderSystem.isOnRenderThread())
-        {
-            // Create & upload buffer
-            if (this.gpuBuffer != null && this.gpuBuffer.size >= meshData.getBuffer().remaining())
-            {
-                this.gpuBuffer = this.shader.getFormat().method_68460(meshData.getBuffer());
-            }
-            else
-            {
-                if (this.gpuBuffer != null)
-                {
-                    this.gpuBuffer.close();
-                }
-
-                this.gpuBuffer = this.shader.getFormat().method_68460(meshData.getBuffer());
-            }
-
-            this.bufferIndex = meshData.getDrawParameters().indexCount();
-            this.sortBuffer = meshData.getSortedBuffer() != null ? this.shader.getFormat().method_68461(meshData.getSortedBuffer()) : null;
-        }
-    }
-
-    public void draw() throws RuntimeException
-    {
-        this.ensureSafeNoSorting();
-        this.draw(null, -1, new float[]{0f, 0f, 0f}, false);
-    }
-
-    public void draw(int color) throws RuntimeException
-    {
-        this.ensureSafeNoSorting();
-        this.draw(null, color, new float[]{0f, 0f, 0f}, false);
-    }
-
-    public void draw(@Nullable Framebuffer otherFb, int color) throws RuntimeException
-    {
-        this.ensureSafeNoSorting();
-        this.draw(otherFb, color, new float[]{0f, 0f, 0f}, false);
-    }
-
-    public void draw(@Nullable Framebuffer otherFb, int color, float[] offset, boolean useOffset) throws RuntimeException
-    {
-        this.ensureSafeNoSorting();
-
-        if (RenderSystem.isOnRenderThread())
-        {
-            if (this.bufferIndex > 0)
-            {
-                float[] rgba = {ColorHelper.getRedFloat(color), ColorHelper.getGreenFloat(color), ColorHelper.getBlueFloat(color), ColorHelper.getAlphaFloat(color)};
-
-                RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-                this.drawColorInternal(otherFb, offset, useOffset);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            }
-            else
-            {
-                throw new RuntimeException("Buffer index is <= 0!");
-            }
-
-            this.started = false;
-        }
-    }
-
+    // todo
     public void drawSample(Supplier<String> name, @Nullable Framebuffer otherFb, Identifier texture, int color, float[] offset, ShaderPipeline shader) throws RuntimeException
     {
         if (offset.length != 3)
