@@ -361,7 +361,7 @@ public class RenderContext implements AutoCloseable
                                                               texture2, OptionalDouble.empty()))
             {
                 pass.bindShader(this.shader);
-                pass.setIndexBuffer(this.shapeIndex.method_68274(this.bufferIndex), this.shapeIndex.getIndexType());
+                pass.setIndexBuffer(this.shapeIndex.getIndexBuffer(this.bufferIndex), this.shapeIndex.getIndexType());
                 pass.setVertexBuffer(0, this.gpuBuffer);
                 pass.drawObjects(0, this.bufferIndex);
             }
@@ -708,7 +708,7 @@ public class RenderContext implements AutoCloseable
                                                              texture2, OptionalDouble.empty()))
             {
                 dev.bindShader(this.shader);
-                dev.setIndexBuffer(this.shapeIndex.method_68274(4), this.shapeIndex.getIndexType());
+                dev.setIndexBuffer(this.shapeIndex.getIndexBuffer(4), this.shapeIndex.getIndexType());
                 dev.setSamplerUniform("Sampler0", tex.getGlTexture());
                 dev.setVertexBuffer(0, this.gpuBuffer);
             }
