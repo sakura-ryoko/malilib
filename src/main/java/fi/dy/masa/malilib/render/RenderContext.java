@@ -662,9 +662,19 @@ public class RenderContext implements AutoCloseable
 //    }
 
     // todo
+    public void drawColorSample(Identifier texture, BuiltBuffer meshData) throws RuntimeException
+    {
+        this.drawColorSample(this.name, null, texture, GlBufferTarget.VERTICES, -1, meshData, new float[]{0f, 0f, 0f}, false, this.shader);
+    }
+
     public void drawColorSample(Identifier texture, BuiltBuffer meshData, ShaderPipeline shader) throws RuntimeException
     {
         this.drawColorSample(this.name, null, texture, GlBufferTarget.VERTICES, -1, meshData, new float[]{0f, 0f, 0f}, false, shader);
+    }
+
+    public void drawColorSample(Identifier texture, int color, BuiltBuffer meshData) throws RuntimeException
+    {
+        this.drawColorSample(this.name, null, texture, GlBufferTarget.VERTICES, color, meshData, new float[]{0f, 0f, 0f}, false, this.shader);
     }
 
     public void drawColorSample(Identifier texture, int color, BuiltBuffer meshData, ShaderPipeline shader) throws RuntimeException
@@ -695,8 +705,8 @@ public class RenderContext implements AutoCloseable
         }
 
         this.name = name;
+        this.ensureSafeNoBuffer();
         this.setShader(shader);
-        this.ensureSafeNoSorting();
 
         if (RenderSystem.isOnRenderThread())
         {
@@ -715,6 +725,8 @@ public class RenderContext implements AutoCloseable
                     this.upload(name, meshData, target);
                 }
             }
+
+            this.ensureSafeNoSorting();
 
             // Draw
             float a = ColorHelper.getAlphaFloat(color);
