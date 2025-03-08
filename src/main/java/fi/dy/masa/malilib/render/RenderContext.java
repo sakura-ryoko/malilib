@@ -738,7 +738,7 @@ public class RenderContext implements AutoCloseable
             RenderSystem.setShaderColor(r, g, b, a);
             RenderSystem.setTextureMatrix(new Matrix4f().translation(time, time, 0.0f));
             RenderSystem.setModelOffset(offset[0], offset[1], offset[2]);
-            AbstractTexture tex = RenderUtils.tex().getTexture(texture);
+            AbstractTexture tex = this.bindTexture(texture);
             tex.setFilter(TriState.FALSE, false);
 
             Framebuffer mainFb = RenderUtils.fb();
