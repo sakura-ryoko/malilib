@@ -523,7 +523,7 @@ public class InventoryUtils
             for (int i = 0; i < list.size(); i++)
             {
                 final int index = i;
-                ItemStack.fromNbt(registry, list.getOrCreateCompound(i)).ifPresent(itemStack -> items.set(index, itemStack));
+                ItemStack.fromNbt(registry, list.getCompoundOrEmpty(i)).ifPresent(itemStack -> items.set(index, itemStack));
             }
             
             return items;
@@ -542,7 +542,7 @@ public class InventoryUtils
 
             for (int i = 0; i < list.size(); i++)
             {
-                NbtCompound entry = list.getOrCreateCompound(i);
+                NbtCompound entry = list.getCompoundOrEmpty(i);
                 int slot = entry.getByte(NbtKeys.SLOT, (byte) 0) & 255;
 
                 if (slot < items.size())

@@ -662,7 +662,32 @@ public class RenderContext implements AutoCloseable
 //    }
 
     // todo
-    public void drawSample(Supplier<String> name, @Nullable Framebuffer otherFb, Identifier texture, int color, float[] offset, ShaderPipeline shader) throws RuntimeException
+    public void drawColorSample(Identifier texture, BuiltBuffer meshData, ShaderPipeline shader) throws RuntimeException
+    {
+        this.drawColorSample(this.name, null, texture, GlBufferTarget.VERTICES, -1, meshData, new float[]{0f, 0f, 0f}, false, shader);
+    }
+
+    public void drawColorSample(Identifier texture, int color, BuiltBuffer meshData, ShaderPipeline shader) throws RuntimeException
+    {
+        this.drawColorSample(this.name, null, texture, GlBufferTarget.VERTICES, color, meshData, new float[]{0f, 0f, 0f}, false, shader);
+    }
+
+    public void drawColorSample(Supplier<String> name, Identifier texture, int color, BuiltBuffer meshData, ShaderPipeline shader) throws RuntimeException
+    {
+        this.drawColorSample(name, null, texture, GlBufferTarget.VERTICES, color, meshData, new float[]{0f, 0f, 0f}, false, shader);
+    }
+
+    public void drawColorSample(Supplier<String> name, @Nullable Framebuffer otherFb, Identifier texture, int color, BuiltBuffer meshData, ShaderPipeline shader) throws RuntimeException
+    {
+        this.drawColorSample(name, otherFb, texture, GlBufferTarget.VERTICES, color, meshData, new float[]{0f, 0f, 0f}, false, shader);
+    }
+
+    public void drawColorSample(Supplier<String> name, @Nullable Framebuffer otherFb, Identifier texture, GlBufferTarget target, int color, BuiltBuffer meshData, ShaderPipeline shader) throws RuntimeException
+    {
+        this.drawColorSample(name, otherFb, texture, target, color, meshData, new float[]{0f, 0f, 0f}, false, shader);
+    }
+
+    public void drawColorSample(Supplier<String> name, @Nullable Framebuffer otherFb, Identifier texture, GlBufferTarget target, int color, BuiltBuffer meshData, float[] offset, boolean useOffset, ShaderPipeline shader) throws RuntimeException
     {
         if (offset.length != 3)
         {
@@ -675,6 +700,23 @@ public class RenderContext implements AutoCloseable
 
         if (RenderSystem.isOnRenderThread())
         {
+            // Upload
+            if (meshData == null)
+            {
+                this.bufferIndex = 0;
+            }
+            else
+            {
+                this.name = name;
+
+                // Create & upload buffer
+                if (this.bufferIndex < 1)
+                {
+                    this.upload(name, meshData, target);
+                }
+            }
+
+            // Draw
             float a = ColorHelper.getAlphaFloat(color);
             float r = ColorHelper.getRedFloat(color);
             float g = ColorHelper.getGreenFloat(color);
@@ -702,15 +744,16 @@ public class RenderContext implements AutoCloseable
                 texture2 = mainFb.getDepthAttachment();
             }
 
-            try (RenderPass dev = RenderSystem.getDevice()
+            try (RenderPass pass = RenderSystem.getDevice()
                                                .getResourceManager()
                                                .newRenderPass(texture1, OptionalInt.empty(),
                                                              texture2, OptionalDouble.empty()))
             {
-                dev.bindShader(this.shader);
-                dev.setIndexBuffer(this.shapeIndex.getIndexBuffer(4), this.shapeIndex.getIndexType());
-                dev.setSamplerUniform("Sampler0", tex.getGlTexture());
-                dev.setVertexBuffer(0, this.gpuBuffer);
+                pass.bindShader(this.shader);
+                pass.setIndexBuffer(this.shapeIndex.getIndexBuffer(4), this.shapeIndex.getIndexType());
+                pass.setSamplerUniform("Sampler0", tex.getGlTexture());
+                pass.setVertexBuffer(0, this.gpuBuffer);
+                pass.drawObjects(0, this.bufferIndex);
             }
 
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
