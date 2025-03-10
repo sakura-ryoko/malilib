@@ -1,14 +1,12 @@
 package fi.dy.masa.malilib.gui;
 
-import javax.annotation.Nullable;
 import java.awt.*;
+import javax.annotation.Nullable;
 
 import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.config.IConfigInteger;
@@ -509,7 +507,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         // Full SV Square --
         // MaLiLibPipelines.POSITION_SIMPLE
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_TEX_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_TEX_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int r = (int) (this.relR * 255f);
@@ -519,7 +517,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int c = 255;
 
         RenderUtils.blend(true);
-        int tempColor = RenderUtils.color(r, g, b, a);
+//        int tempColor = RenderUtils.color(r, g, b, a);
+        RenderUtils.color(1f, 1f, 1f, 1f);
 
         /*
         GlProgramManager.useProgram(SHADER_HUE.getProgram());
@@ -527,30 +526,27 @@ public class GuiColorEditorHSV extends GuiDialogBase
          */
 
         // FIXME --> Render this as a color gradient
-        /*
         buffer.vertex(x    , y    , z).texture(1, 0);
         buffer.vertex(x    , y + h, z).texture(0, 0);
         buffer.vertex(x + w, y + h, z).texture(0, 1);
         buffer.vertex(x + w, y    , z).texture(1, 1);
-         */
 
-        buffer.vertex(x    , y    , z).texture(1, 0).color(tempColor);
-        buffer.vertex(x    , y + h, z).texture(0, 0).color(tempColor);
-        buffer.vertex(x + w, y + h, z).texture(0, 1).color(tempColor);
-        buffer.vertex(x + w, y    , z).texture(1, 1).color(tempColor);
+//        buffer.vertex(x    , y    , z).texture(1, 0).color(tempColor);
+//        buffer.vertex(x    , y + h, z).texture(0, 0).color(tempColor);
+//        buffer.vertex(x + w, y + h, z).texture(0, 1).color(tempColor);
+//        buffer.vertex(x + w, y    , z).texture(1, 1).color(tempColor);
 
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(() -> "ColorSelector A", buffer.endNullable());
+            ctx.draw(() -> "ColorSelector A", buffer.endNullable());
             ctx.reset();
         }
         catch (Exception ignored) { }
 
         // Element Selectors --
         // MaLiLibPipelines.POSITION_COLOR_SIMPLE
-        buffer = ctx.startNoShader(() -> "ColorSelector B", VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.QUADS, GlUsage.STATIC_WRITE);
-        ctx = ctx.setShader(MaLiLibPipelines.POSITION_COLOR_SIMPLE);
+        buffer = ctx.startShader(() -> "ColorSelector B", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
 
         /*
         int r = (int) (this.relR * 255f);
@@ -640,10 +636,36 @@ public class GuiColorEditorHSV extends GuiDialogBase
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(() -> "ColorSelector B", buffer.endNullable());
+            ctx.draw(() -> "ColorSelector B", buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
+    }
+
+    // todo
+    private int[] getColorPairForSelector()
+    {
+        int[] result;
+        float h = this.relH;
+        float a = this.relA;
+        float sTop = 0f;
+        float sBot = 100f;
+        float vLeft = 0f;
+        float vRight = 100f;
+        int r1 = 0;
+        int g1 = 0;
+        int b1 = 0;
+        int r2 = 0;
+        int g2 = 0;
+        int b2 = 0;
+        int r3 = 0;
+        int g3 = 255;
+        int b3 = 255;
+        int r4 = 255;
+        int g4 = 255;
+        int b4 = 255;
+
+        return new int[]{};
     }
 
     public static void renderGradientColorBar(int x, int y, float z, int width, int height, int colorStart, int colorEnd, BufferBuilder buffer)

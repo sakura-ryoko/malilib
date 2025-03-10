@@ -311,7 +311,7 @@ public class RenderUtils
         try
         {
             // fixme
-            ctx.drawColor(buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored)
@@ -542,7 +542,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(fb(), buffer.endNullable());
+            ctx.draw(fb(), buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -997,6 +997,18 @@ public class RenderUtils
         drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, bufferLines, matrices.peek());
     }
 
+    public static void drawBoxNoOutlines(IntBoundingBox bb, Vec3d cameraPos, Color4f color, BufferBuilder bufferQuads, MatrixStack.Entry e)
+    {
+        float minX = (float) (bb.minX - cameraPos.x);
+        float minY = (float) (bb.minY - cameraPos.y);
+        float minZ = (float) (bb.minZ - cameraPos.z);
+        float maxX = (float) (bb.maxX + 1 - cameraPos.x);
+        float maxY = (float) (bb.maxY + 1 - cameraPos.y);
+        float maxZ = (float) (bb.maxZ + 1 - cameraPos.z);
+
+        drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, bufferQuads);
+    }
+
     /**
      * Renders a text plate/billboard, similar to the player name plate.<br>
      * The plate will always face towards the viewer.
@@ -1070,7 +1082,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(fb(), buffer.end());
+            ctx.draw(fb(), buffer.end());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -1193,7 +1205,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.reset();
         }
         catch (Exception err)
@@ -1231,7 +1243,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable(), wireColor);
+            ctx.draw(buffer.endNullable(), wireColor);
             ctx.reset();
         }
         catch (Exception err)
@@ -1285,7 +1297,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable(), wireColor, new float[]{0f, 0f, 0f}, true);
+            ctx.draw(buffer.endNullable(), wireColor, new float[]{0f, 0f, 0f}, true);
             ctx.close();
         }
         catch (Exception err)
@@ -1331,7 +1343,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.reset();
         }
         catch (Exception err)
@@ -1354,7 +1366,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception err)
@@ -1960,7 +1972,7 @@ public class RenderUtils
 
         try
         {
-            ctx.drawColor(buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -2090,7 +2102,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -2215,7 +2227,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -2260,7 +2272,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(MinecraftClient.getInstance().getFramebuffer(), buffer.endNullable());
+            ctx.draw(MinecraftClient.getInstance().getFramebuffer(), buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -2322,7 +2334,7 @@ public class RenderUtils
         culling(false);
 
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_DEPTH, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_GREATER_DEPTH, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
@@ -2330,7 +2342,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -2514,7 +2526,7 @@ public class RenderUtils
         try
         {
             ctx = ctx.setBuilder(buffer);
-            ctx.drawColor(buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }

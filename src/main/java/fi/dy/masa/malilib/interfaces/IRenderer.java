@@ -5,6 +5,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+
+import net.minecraft.client.gl.RenderPass;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.math.MatrixStack;
@@ -46,8 +48,8 @@ public interface IRenderer
      * Append `renderObjects` with your additional blocks to render on this layer by passing along each 'Baked Object' per a Built Chunk (Using the chunkIterator)
      */
     default void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler,
-                                                                     RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
-                                                                     ArrayList<RenderPass.BakedObject> renderObjects) {}
+                                        RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
+                                        ArrayList<RenderPass.BakedObject> renderObjects) {}
 
     /**
      * Called after vanilla debug rendering (Chunk Borders, etc)

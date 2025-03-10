@@ -130,7 +130,7 @@ public class TestWalls implements AutoCloseable
         Vec3d cameraPos = camera.getPos();
 
         // MaLiLibPipelines.POSITION_COLOR_SIMPLE
-        RenderContext ctx = new RenderContext(() -> "TestWalls Quads", MaLiLibPipelines.POSITION_COLOR_DEPTH, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestWalls Quads", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder builder = ctx.getBuilder();
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
         Vec3d updatePos = this.getUpdatePosition();
@@ -147,7 +147,7 @@ public class TestWalls implements AutoCloseable
 
         try
         {
-            ctx.drawColor(builder.endNullable());
+            ctx.draw(builder.endNullable());
             ctx.close();
         }
         catch (Exception err)
@@ -193,7 +193,7 @@ public class TestWalls implements AutoCloseable
 
         try
         {
-            ctx.drawColor(builder.endNullable());
+            ctx.draw(builder.endNullable());
             ctx.close();
         }
         catch (Exception err)

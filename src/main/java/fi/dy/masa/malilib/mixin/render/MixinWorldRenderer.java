@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPass;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.ObjectAllocator;
@@ -125,7 +126,7 @@ public abstract class MixinWorldRenderer
 
     @Inject(method = "renderLayer",
             at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/client/render/RenderPass;drawObjects(Ljava/util/Collection;)V"))
+                     target = "Lnet/minecraft/client/gl/RenderPass;drawObjects(Ljava/util/Collection;)V"))
     private void malilib_onRenderWorldLayer(RenderLayer renderLayer, double x, double y, double z,
                                             Matrix4f viewMatrix, Matrix4f positionMatrix, CallbackInfo ci,
                                             @Local RenderPass renderPass,

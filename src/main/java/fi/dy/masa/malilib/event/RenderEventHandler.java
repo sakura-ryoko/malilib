@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import net.minecraft.client.gl.RenderPass;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
@@ -248,7 +249,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
                                  if (!this.worldPreMainRenderers.isEmpty())
                                  {
-                                     handleMain.get().draw();
+                                     handleMain.get().blitToScreen();
                                  }
 
                                  RenderSystem.setShaderFog(fog);
@@ -265,8 +266,8 @@ public class RenderEventHandler implements IRenderDispatcher
 
     @ApiStatus.Internal
     public void runRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, MinecraftClient mc,
-                                       RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
-                                       ArrayList<RenderPass.BakedObject> renderObjects)
+                                        RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
+                                        ArrayList<RenderPass.BakedObject> renderObjects)
     {
         Profiler profiler = Profilers.get();
 
@@ -353,7 +354,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
                 if (!this.worldPreParticleRenderers.isEmpty())
                 {
-                    fb.draw();
+                    fb.blitToScreen();
                 }
 
                 RenderSystem.setShaderFog(fog);
@@ -482,7 +483,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
                 if (!this.worldLastRenderers.isEmpty())
                 {
-                    fb.draw();
+                    fb.blitToScreen();
                 }
 
                 RenderSystem.setShaderFog(fog);
