@@ -643,7 +643,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         catch (Exception ignored) { }
     }
 
-    // todo
     private int[] getColorPairForSelector()
     {
         int color1 = Color.HSBtoRGB(this.relH, 0f, 0f);
@@ -651,34 +650,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int color3 = Color.HSBtoRGB(this.relH, 0f, 1f);
         int color4 = Color.HSBtoRGB(this.relH, 1f, 1f);
 
-//        int r1 = ((color1 >>> 16) & 0xFF);
-//        int g1 = ((color1 >>>  8) & 0xFF);
-//        int b1 = ( color1         & 0xFF);
-//
-//        int r2 = ((color2 >>> 16) & 0xFF);
-//        int g2 = ((color2 >>>  8) & 0xFF);
-//        int b2 = ( color2         & 0xFF);
-//
-//        int r3 = ((color3 >>> 16) & 0xFF);
-//        int g3 = ((color3 >>>  8) & 0xFF);
-//        int b3 = ( color3         & 0xFF);
-//
-//        int r4 = ((color4 >>> 16) & 0xFF);
-//        int g4 = ((color4 >>>  8) & 0xFF);
-//        int b4 = ( color4         & 0xFF);
-//
-//        int topLeft  = ColorHelper.getArgb(a, r1, g1, b1);
-//        int botLeft  = ColorHelper.getArgb(a, r2, g2, b2);
-//        int topRight = ColorHelper.getArgb(a, r3, g3, b3);
-//        int botRight = ColorHelper.getArgb(a, r4, g4, b4);
-
-        return new int[]
-                {
-                        color1,
-                        color2,
-                        color3,
-                        color4,
-                };
+        return new int[]{ color1, color2, color3, color4 };
     }
 
     public static void renderGradientColorBar(int x, int y, float z, int width, int height, int colorStart, int colorEnd, BufferBuilder buffer)
