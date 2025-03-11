@@ -507,7 +507,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         // Full SV Square --
         // MaLiLibPipelines.POSITION_SIMPLE
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_TEX_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int r = (int) (this.relR * 255f);
@@ -518,23 +518,24 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         RenderUtils.blend(true);
 //        int tempColor = RenderUtils.color(r, g, b, a);
-        RenderUtils.color(1f, 1f, 1f, 1f);
+//        RenderUtils.color(1f, 1f, 1f, 1f);
 
         /*
         GlProgramManager.useProgram(SHADER_HUE.getProgram());
         GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
          */
 
-        // FIXME --> Render this as a color gradient
-        buffer.vertex(x    , y    , z).texture(1, 0);
-        buffer.vertex(x    , y + h, z).texture(0, 0);
-        buffer.vertex(x + w, y + h, z).texture(0, 1);
-        buffer.vertex(x + w, y    , z).texture(1, 1);
+        final int[] colorPair = this.getColorPairForSelector();
 
-//        buffer.vertex(x    , y    , z).texture(1, 0).color(tempColor);
-//        buffer.vertex(x    , y + h, z).texture(0, 0).color(tempColor);
-//        buffer.vertex(x + w, y + h, z).texture(0, 1).color(tempColor);
-//        buffer.vertex(x + w, y    , z).texture(1, 1).color(tempColor);
+//        buffer.vertex(x    , y    , z).texture(1, 0);
+//        buffer.vertex(x    , y + h, z).texture(0, 0);
+//        buffer.vertex(x + w, y + h, z).texture(0, 1);
+//        buffer.vertex(x + w, y    , z).texture(1, 1);
+
+        buffer.vertex(x    , y    , z).color(colorPair[0]);
+        buffer.vertex(x    , y + h, z).color(colorPair[1]);
+        buffer.vertex(x + w, y + h, z).color(colorPair[2]);
+        buffer.vertex(x + w, y    , z).color(colorPair[3]);
 
         try
         {
@@ -645,27 +646,39 @@ public class GuiColorEditorHSV extends GuiDialogBase
     // todo
     private int[] getColorPairForSelector()
     {
-        int[] result;
-        float h = this.relH;
-        float a = this.relA;
-        float sTop = 0f;
-        float sBot = 100f;
-        float vLeft = 0f;
-        float vRight = 100f;
-        int r1 = 0;
-        int g1 = 0;
-        int b1 = 0;
-        int r2 = 0;
-        int g2 = 0;
-        int b2 = 0;
-        int r3 = 0;
-        int g3 = 255;
-        int b3 = 255;
-        int r4 = 255;
-        int g4 = 255;
-        int b4 = 255;
+        int color1 = Color.HSBtoRGB(this.relH, 0f, 0f);
+        int color2 = Color.HSBtoRGB(this.relH, 1f, 0f);
+        int color3 = Color.HSBtoRGB(this.relH, 0f, 1f);
+        int color4 = Color.HSBtoRGB(this.relH, 1f, 1f);
 
-        return new int[]{};
+//        int r1 = ((color1 >>> 16) & 0xFF);
+//        int g1 = ((color1 >>>  8) & 0xFF);
+//        int b1 = ( color1         & 0xFF);
+//
+//        int r2 = ((color2 >>> 16) & 0xFF);
+//        int g2 = ((color2 >>>  8) & 0xFF);
+//        int b2 = ( color2         & 0xFF);
+//
+//        int r3 = ((color3 >>> 16) & 0xFF);
+//        int g3 = ((color3 >>>  8) & 0xFF);
+//        int b3 = ( color3         & 0xFF);
+//
+//        int r4 = ((color4 >>> 16) & 0xFF);
+//        int g4 = ((color4 >>>  8) & 0xFF);
+//        int b4 = ( color4         & 0xFF);
+//
+//        int topLeft  = ColorHelper.getArgb(a, r1, g1, b1);
+//        int botLeft  = ColorHelper.getArgb(a, r2, g2, b2);
+//        int topRight = ColorHelper.getArgb(a, r3, g3, b3);
+//        int botRight = ColorHelper.getArgb(a, r4, g4, b4);
+
+        return new int[]
+                {
+                        color1,
+                        color2,
+                        color3,
+                        color4,
+                };
     }
 
     public static void renderGradientColorBar(int x, int y, float z, int width, int height, int colorStart, int colorEnd, BufferBuilder buffer)

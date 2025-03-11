@@ -3,8 +3,7 @@ package fi.dy.masa.malilib.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.render.*;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.DrawableTexture;
+import net.minecraft.client.texture.*;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TriState;
@@ -15,6 +14,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
 
 public class RenderContext implements AutoCloseable
@@ -28,7 +28,7 @@ public class RenderContext implements AutoCloseable
     private ShaderPipeline shader;
     private VertexFormat format;
     private VertexFormat.DrawMode drawMode;
-    private AbstractTexture texture;
+    private ResourceTexture texture;
     private boolean started;
     private int bufferIndex;
 
@@ -259,8 +259,25 @@ public class RenderContext implements AutoCloseable
     public void bindTexture(Identifier id)
     {
         this.ensureSafeNoBuffer();
-        RenderUtils.tex().registerTexture(id);
-        this.texture = RenderUtils.tex().getTexture(id);
+//        RenderUtils.tex().registerTexture(id);
+//        this.texture = RenderUtils.tex().getTexture(id);
+//        this.texture.setFilter(TriState.FALSE, false);
+//        RenderSystem.setShaderTexture(0, this.texture.getGlTexture());
+
+        this.texture = new ResourceTexture(id);
+        RenderUtils.tex().registerTexture(id, this.texture);
+
+        try (TextureContents contents = this.texture.loadContents(RenderUtils.mc().getResourceManager()))
+        {
+            NativeImage image = contents.image();
+            MaLiLib.LOGGER.warn("NativeImage Id [{}] //  Width [{}], Height [{}] // Format: [{}]", image.imageId(), image.getWidth(), image.getHeight(), image.getFormat().name());
+        }
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("bindTexture exception; {}", err.getMessage());
+            throw new RuntimeException(err);
+        }
+
         this.texture.setFilter(TriState.FALSE, false);
         RenderSystem.setShaderTexture(0, this.texture.getGlTexture());
     }
@@ -464,13 +481,13 @@ public class RenderContext implements AutoCloseable
             {
                 pass.bindShader(this.shader);
 
-                if (this.texture != null)
+                for (int i = 0; i < 12; i++)
                 {
-                    DrawableTexture drawableTexture = RenderSystem.getShaderTexture(0);
+                    DrawableTexture drawableTexture = RenderSystem.getShaderTexture(i);
 
                     if (drawableTexture != null)
                     {
-                        pass.setUniform("Sampler0", drawableTexture);
+                        pass.setUniform("Sampler"+i, drawableTexture);
                     }
                 }
 
