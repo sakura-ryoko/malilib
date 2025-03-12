@@ -154,7 +154,7 @@ public class RenderUtils
     public static void bindTexture(Identifier texture)
     {
         AbstractTexture tex = tex().getTexture(texture);
-        RenderSystem.setShaderTexture(0, tex.method_68004());
+        RenderSystem.setShaderTexture(0, tex.getGlTexture());
     }
 
     /**
@@ -299,7 +299,7 @@ public class RenderUtils
         blend(true);
 
         // POSITION_COLOR_SIMPLE
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         buffer.vertex(x * scale,           y * scale,            zLevel).color(r, g, b, a);
@@ -530,7 +530,7 @@ public class RenderUtils
         int eb = (endColor & 0xFF);
 
         blend(true);
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         buffer.vertex(right, top, zLevel).color(sr, sg, sb, sa);
@@ -1053,9 +1053,11 @@ public class RenderUtils
         culling(false);
         blend(true);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         int maxLineLen = 0;
+
+//        MaLiLibPipelines.getPositionColor(MaLiLibPipelines.Type.TRANSLUCENT, MaLiLibPipelines.Depth.NO_DEPTH, false);
 
         for (String line : text)
         {
@@ -1151,7 +1153,7 @@ public class RenderUtils
 
         // Target "Side" -->
         // DEBUG_LINE_STRIP
-        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int quadAlpha = (int) (0.18f * 255f);
@@ -1220,7 +1222,7 @@ public class RenderUtils
 
         // Target "Center" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_SIMPLE, BufferUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
         //MatrixStack.Entry e = matrices.peek();
@@ -1252,7 +1254,7 @@ public class RenderUtils
 
         // Target "Edges" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.start(() -> "TestTarget C", MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget C", MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
 //        // Bottom left
@@ -1321,7 +1323,7 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
-        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int a = (int) (color.a * 255f);
@@ -1348,7 +1350,7 @@ public class RenderUtils
 
         RenderSystem.lineWidth(1.6f);
 
-        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_SIMPLE, BufferUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         //ctx.setShader(ShaderPipelines.LINE_STRIP);
 
         // Middle rectangle
@@ -1951,7 +1953,7 @@ public class RenderUtils
         //{
         //RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
 
-        RenderContext ctx = new RenderContext(ShaderPipelines.field_56891, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(ShaderPipelines.SOLID, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         for (Direction face : Direction.values())
@@ -2086,7 +2088,7 @@ public class RenderUtils
         RenderSystem.lineWidth(lineWidth);
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR); // DEBUG_LINE_STRIP
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2171,7 +2173,7 @@ public class RenderUtils
 
         RenderSystem.lineWidth(lineWidth);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2250,7 +2252,7 @@ public class RenderUtils
     private static void drawBoundingBoxEdges(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
                                              Color4f colorX, Color4f colorY, Color4f colorZ)
     {
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2325,7 +2327,7 @@ public class RenderUtils
         culling(false);
 
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_GREATER_DEPTH, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_GREATER_DEPTH, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
@@ -2395,7 +2397,7 @@ public class RenderUtils
 
         RenderSystem.lineWidth(lineWidth);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 

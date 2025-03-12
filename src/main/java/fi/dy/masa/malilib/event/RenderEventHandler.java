@@ -266,8 +266,8 @@ public class RenderEventHandler implements IRenderDispatcher
 
     @ApiStatus.Internal
     public void runRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, MinecraftClient mc,
-                                        RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
-                                        ArrayList<RenderPass.class_10884> renderObjects)
+                                        ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
+                                        ArrayList<RenderPass.RenderObject> renderObjects)
     {
         Profiler profiler = Profilers.get();
 
@@ -278,7 +278,7 @@ public class RenderEventHandler implements IRenderDispatcher
             for (IRenderer renderer : this.worldLayerPassRenderers)
             {
                 profiler.push(renderer.getProfilerSectionSupplier());
-                renderer.onRenderWorldLayerPass(layer, posMatrix, projMatrix, camera, profiler, renderPass, chunkIterator, renderObjects);
+                renderer.onRenderWorldLayerPass(layer, posMatrix, projMatrix, camera, profiler, chunkIterator, renderObjects);
                 profiler.pop();
             }
         }

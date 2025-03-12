@@ -4,15 +4,18 @@ import com.mojang.blaze3d.buffers.BufferType;
 import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.gl.*;
-import net.minecraft.client.render.*;
-import net.minecraft.client.texture.*;
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BuiltBuffer;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.ResourceTexture;
+import net.minecraft.client.texture.TextureContents;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TriState;
@@ -22,9 +25,6 @@ import javax.annotation.Nullable;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
-
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
 
 public class RenderContext implements AutoCloseable
 {
@@ -36,7 +36,7 @@ public class RenderContext implements AutoCloseable
     private BufferBuilder builder;
     private RenderPipeline shader;
     private VertexFormat format;
-    private VertexFormat.class_5596 drawMode;
+    private VertexFormat.DrawMode drawMode;
     private ResourceTexture texture;
     private float[] offset;
     private float lineWidth;
@@ -119,7 +119,7 @@ public class RenderContext implements AutoCloseable
         return this.format;
     }
 
-    public VertexFormat.class_5596 getVertexFormatMode()
+    public VertexFormat.DrawMode getVertexFormatMode()
     {
         return this.drawMode;
     }
@@ -134,7 +134,7 @@ public class RenderContext implements AutoCloseable
         return this.format;
     }
 
-    public VertexFormat.class_5596 getShaderDrawMode()
+    public VertexFormat.DrawMode getShaderDrawMode()
     {
         if (this.shader != null)
         {
@@ -275,7 +275,7 @@ public class RenderContext implements AutoCloseable
         }
 
         this.texture.setFilter(TriState.FALSE, false);
-        RenderSystem.setShaderTexture(0, this.texture.method_68004());
+        RenderSystem.setShaderTexture(0, this.texture.getGlTexture());
 
         return this;
     }
@@ -409,17 +409,17 @@ public class RenderContext implements AutoCloseable
 
             if (otherFb != null)
             {
-                texture1 = otherFb.method_30277();
-                texture2 = otherFb.useDepthAttachment ? otherFb.method_30278() : null;
+                texture1 = otherFb.getColorAttachment();
+                texture2 = otherFb.useDepthAttachment ? otherFb.getDepthAttachment() : null;
             }
             else
             {
-                texture1 = mainFb.method_30277();
-                texture2 = mainFb.useDepthAttachment ? mainFb.method_30278() : null;
+                texture1 = mainFb.getColorAttachment();
+                texture2 = mainFb.useDepthAttachment ? mainFb.getDepthAttachment() : null;
             }
 
 //            MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());
-            GpuBuffer indexBuffer = this.shapeIndex.method_68274(this.bufferIndex);
+            GpuBuffer indexBuffer = this.shapeIndex.getIndexBuffer(this.bufferIndex);
 
             // Attach Frame buffers
             try (RenderPass pass = RenderSystem.getDevice()
@@ -444,7 +444,7 @@ public class RenderContext implements AutoCloseable
                 if (this.texture != null)
                 {
 //                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler() [0]", this.name.get());
-                    pass.bindSampler("Sampler0", this.texture.method_68004());
+                    pass.bindSampler("Sampler0", this.texture.getGlTexture());
                 }
 
                 if (setLineWidth)
@@ -457,7 +457,7 @@ public class RenderContext implements AutoCloseable
 //                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setVertexBuffer() [0]", this.name.get());
                 pass.setVertexBuffer(0, this.gpuBuffer);
 //                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setIndexBuffer() [{}]", this.name.get(), this.bufferIndex);
-                pass.setIndexBuffer(indexBuffer, this.shapeIndex.method_31924());
+                pass.setIndexBuffer(indexBuffer, this.shapeIndex.getIndexType());
 //                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> drawIndexed() [0, {}]", this.name.get(), this.bufferIndex);
                 pass.drawIndexed(0, this.bufferIndex);
             }

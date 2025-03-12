@@ -507,7 +507,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         // Full SV Square --
         // MaLiLibPipelines.POSITION_SIMPLE
-        RenderContext ctx = new RenderContext(() -> "ColorSelector A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "ColorSelector A", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int r = (int) (this.relR * 255f);
@@ -547,7 +547,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         // Element Selectors --
         // MaLiLibPipelines.POSITION_COLOR_SIMPLE
-        buffer = ctx.start(() -> "ColorSelector B", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "ColorSelector B", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
 
         /*
         int r = (int) (this.relR * 255f);

@@ -114,7 +114,7 @@ public class TestRenderHandler implements IRenderer
 //    }
 
     @Override
-    public void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler, RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator, ArrayList<RenderPass.class_10884> renderObjects)
+    public void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator, ArrayList<RenderPass.RenderObject> renderObjects)
     {
         // NO-OP
     }

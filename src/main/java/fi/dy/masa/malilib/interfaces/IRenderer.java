@@ -48,8 +48,8 @@ public interface IRenderer
      * Append `renderObjects` with your additional blocks to render on this layer by passing along each 'Baked Object' per a Built Chunk (Using the chunkIterator)
      */
     default void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler,
-                                        RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
-                                        ArrayList<RenderPass.class_10884> renderObjects) {}
+                                        ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
+                                        ArrayList<RenderPass.RenderObject> renderObjects) {}
 
     /**
      * Called after vanilla debug rendering (Chunk Borders, etc)

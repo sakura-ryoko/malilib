@@ -10,7 +10,6 @@ import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
@@ -129,8 +128,8 @@ public class TestWalls implements AutoCloseable
         Color4f quadsColor = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
         Vec3d cameraPos = camera.getPos();
 
-        // MaLiLibPipelines.POSITION_COLOR_SIMPLE
-        RenderContext ctx = new RenderContext(() -> "TestWalls Quads", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
+        // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL
+        RenderContext ctx = new RenderContext(() -> "TestWalls Quads", MaLiLibPipelines.getPositionColorSimple(), BufferUsage.STATIC_WRITE);
         BufferBuilder builder = ctx.getBuilder();
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
         Vec3d updatePos = this.getUpdatePosition();
@@ -174,7 +173,7 @@ public class TestWalls implements AutoCloseable
 
         // MaLiLibPipelines.LINES_SIMPLE
         // ShaderPipelines.field_56833
-        RenderContext ctx = new RenderContext(() -> "TestWalls Lines", MaLiLibPipelines.LINES_NO_DEPTH, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestWalls Lines", MaLiLibPipelines.getLinesSimple(), BufferUsage.STATIC_WRITE);
         BufferBuilder builder = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();

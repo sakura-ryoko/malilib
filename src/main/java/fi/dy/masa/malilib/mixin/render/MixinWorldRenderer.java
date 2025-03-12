@@ -124,15 +124,20 @@ public abstract class MixinWorldRenderer
          */
     }
 
+    /**
+     * This injection should allow you to see the renderObjects from vanilla before drawing the Layer,
+     * so you can then inject your own using the same pipeline; or inject new drawing elements using
+     * the same BuiltChunk data as vanilla.
+     */
     @Inject(method = "renderLayer",
             at = @At(value = "INVOKE",
-                     target = "Lcom/mojang/blaze3d/systems/RenderPass;drawMultipleIndexed(Ljava/util/Collection;Lcom/mojang/blaze3d/buffers/GpuBuffer;Lcom/mojang/blaze3d/vertex/VertexFormat$class_5595;)V"))
+                     target = "Lcom/mojang/blaze3d/systems/RenderSystem$ShapeIndexBuffer;getIndexBuffer(I)Lcom/mojang/blaze3d/buffers/GpuBuffer;",
+                     shift = At.Shift.BEFORE))
     private void malilib_onRenderWorldLayer(RenderLayer renderLayer, double x, double y, double z,
                                             Matrix4f viewMatrix, Matrix4f positionMatrix, CallbackInfo ci,
-                                            @Local RenderPass renderPass,
-                                            @Local ArrayList<RenderPass.class_10884> arrayList,
+                                            @Local ArrayList<RenderPass.RenderObject> arrayList,
                                             @Local ObjectListIterator<ChunkBuilder.BuiltChunk> objectListIterator)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLayerPass(renderLayer, viewMatrix, positionMatrix, new Vec3d(x, y, z), this.client, renderPass, objectListIterator, arrayList);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLayerPass(renderLayer, viewMatrix, positionMatrix, new Vec3d(x, y, z), this.client, objectListIterator, arrayList);
     }
 }
