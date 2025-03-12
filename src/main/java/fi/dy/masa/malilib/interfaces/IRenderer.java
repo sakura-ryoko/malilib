@@ -6,13 +6,13 @@ import java.util.function.Supplier;
 
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 
-import net.minecraft.client.gl.RenderPass;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 
+import com.mojang.blaze3d.systems.RenderPass;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
@@ -41,7 +41,7 @@ public interface IRenderer
     /**
      * Called before vanilla Main rendering (Only after the Sky is Drawn)
      */
-    default void onRenderWorldPreMain(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
+//    default void onRenderWorldPreMain(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
 
     /**
      * Called during each and every RenderLayer Pass of the Main World Rendering.
@@ -49,7 +49,7 @@ public interface IRenderer
      */
     default void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler,
                                         RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
-                                        ArrayList<RenderPass.BakedObject> renderObjects) {}
+                                        ArrayList<RenderPass.class_10884> renderObjects) {}
 
     /**
      * Called after vanilla debug rendering (Chunk Borders, etc)
@@ -59,7 +59,7 @@ public interface IRenderer
     /**
      * Called before vanilla Weather rendering
      */
-    default void onRenderWorldPreParticles(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
+//    default void onRenderWorldPreParticles(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
 
     /**
      * Called before vanilla Weather rendering

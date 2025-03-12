@@ -9,12 +9,12 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
+import com.mojang.blaze3d.systems.RenderPass;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.RenderPass;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.chunk.ChunkBuilder;
@@ -90,9 +90,9 @@ public class TestRenderHandler implements IRenderer
         }
     }
 
-    @Override
-    public void onRenderWorldPreMain(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
-    {
+//    @Override
+//    public void onRenderWorldPreMain(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
+//    {
 //        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
 //        {
 //            MinecraftClient mc = MinecraftClient.getInstance();
@@ -106,15 +106,15 @@ public class TestRenderHandler implements IRenderer
 //                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
 //                }
 //
-//                TestWalls.INSTANCE.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
+//                TestWalls.INSTANCE.draw(camera, posMatrix, projMatrix, mc, profiler);
 //            }
 //
 //            profiler.pop();
 //        }
-    }
+//    }
 
     @Override
-    public void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler, RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator, ArrayList<RenderPass.BakedObject> renderObjects)
+    public void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler, RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator, ArrayList<RenderPass.class_10884> renderObjects)
     {
         // NO-OP
     }
@@ -135,15 +135,38 @@ public class TestRenderHandler implements IRenderer
 //                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
 //                }
 //
-//                TestWalls.INSTANCE.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
+//                TestWalls.INSTANCE.draw(camera, posMatrix, projMatrix, mc, profiler);
 //            }
 //
 //            profiler.pop();
 //        }
     }
 
+//    @Override
+//    public void onRenderWorldPreParticles(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
+//    {
+//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+//        {
+//            MinecraftClient mc = MinecraftClient.getInstance();
+//
+//            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
+//
+//            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+//            {
+//                if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
+//                {
+//                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+//                }
+//
+//                TestWalls.INSTANCE.draw(camera, posMatrix, projMatrix, mc, profiler);
+//            }
+//
+//            profiler.pop();
+//        }
+//    }
+
     @Override
-    public void onRenderWorldPreParticles(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
+    public void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
     {
 //        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
 //        {
@@ -158,34 +181,11 @@ public class TestRenderHandler implements IRenderer
 //                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
 //                }
 //
-//                TestWalls.INSTANCE.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
+//                TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
 //            }
 //
 //            profiler.pop();
 //        }
-    }
-
-    @Override
-    public void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
-    {
-        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-        {
-            MinecraftClient mc = MinecraftClient.getInstance();
-
-            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
-
-            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-            {
-                if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-                {
-                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
-                }
-
-                TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
-            }
-
-            profiler.pop();
-        }
     }
 
     @Override
@@ -207,17 +207,17 @@ public class TestRenderHandler implements IRenderer
                 profiler.swap(MaLiLibReference.MOD_ID + "_targeting_overlay");
                 this.renderTargetingOverlay(posMatrix, mc);
 
-//                profiler.swap(MaLiLibReference.MOD_ID + "_test_walls");
-//
-//                if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-//                {
-//                    if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-//                    {
-//                        TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
-//                    }
-//
-//                    TestWalls.INSTANCE.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
-//                }
+                profiler.swap(MaLiLibReference.MOD_ID + "_test_walls");
+
+                if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+                {
+                    if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
+                    {
+                        TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+                    }
+
+                    TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+                }
 
                 profiler.pop();
             }

@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import net.minecraft.client.gl.RenderPass;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
+import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -35,10 +35,10 @@ public class RenderEventHandler implements IRenderDispatcher
 
     private final List<IRenderer> overlayRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
-    private final List<IRenderer> worldPreMainRenderers = new ArrayList<>();
+//    private final List<IRenderer> worldPreMainRenderers = new ArrayList<>();
     private final List<IRenderer> worldPostDebugRenderers = new ArrayList<>();
     private final List<IRenderer> worldLayerPassRenderers = new ArrayList<>();
-    private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
+//    private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
 
@@ -65,14 +65,14 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
-    @Override
-    public void registerWorldPreMainRenderer(IRenderer renderer)
-    {
-        if (this.worldPreMainRenderers.contains(renderer) == false)
-        {
-            this.worldPreMainRenderers.add(renderer);
-        }
-    }
+//    @Override
+//    public void registerWorldPreMainRenderer(IRenderer renderer)
+//    {
+//        if (this.worldPreMainRenderers.contains(renderer) == false)
+//        {
+//            this.worldPreMainRenderers.add(renderer);
+//        }
+//    }
 
     @Override
     public void registerWorldPostDebugRenderer(IRenderer renderer)
@@ -92,14 +92,14 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
-    @Override
-    public void registerWorldPreParticleRenderer(IRenderer renderer)
-    {
-        if (this.worldPreParticleRenderers.contains(renderer) == false)
-        {
-            this.worldPreParticleRenderers.add(renderer);
-        }
-    }
+//    @Override
+//    public void registerWorldPreParticleRenderer(IRenderer renderer)
+//    {
+//        if (this.worldPreParticleRenderers.contains(renderer) == false)
+//        {
+//            this.worldPreParticleRenderers.add(renderer);
+//        }
+//    }
 
     @Override
     public void registerWorldPreWeatherRenderer(IRenderer renderer)
@@ -217,57 +217,57 @@ public class RenderEventHandler implements IRenderDispatcher
         profiler.pop();
     }
 
-    @ApiStatus.Internal
-    public void runRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
-                                           Frustum frustum, Camera camera, BufferBuilderStorage buffers,
-                                           Profiler profiler)
-    {
-        profiler.push(MaLiLibReference.MOD_ID+"_pre_main");
-
-        if (this.worldPreMainRenderers.isEmpty() == false)
-        {
-            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_main");
-
-            fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
-            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
-
-            pass.setRenderer(() ->
-                             {
-                                 Fog fog = RenderSystem.getShaderFog();
-                                 RenderSystem.setShaderFog(Fog.DUMMY);
-
-                                 //handleMain.get().beginWrite(false);
-                                 // RenderUtils.fbStartDrawing();
-
-                                 for (IRenderer renderer : this.worldPreMainRenderers)
-                                 {
-                                     profiler.push(renderer.getProfilerSectionSupplier());
-                                     renderer.onRenderWorldPreMain(handleMain.get(), posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
-                                     profiler.pop();
-                                 }
-
-                                 if (!this.worldPreMainRenderers.isEmpty())
-                                 {
-                                     handleMain.get().blitToScreen();
-                                 }
-
-                                 RenderSystem.setShaderFog(fog);
-                             });
-
-            if (!this.worldPreMainRenderers.isEmpty())
-            {
-                pass.markToBeVisited();
-            }
-        }
-
-        profiler.pop();
-    }
+//    @ApiStatus.Internal
+//    public void runRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
+//                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
+//                                           Frustum frustum, Camera camera, BufferBuilderStorage buffers,
+//                                           Profiler profiler)
+//    {
+//        profiler.push(MaLiLibReference.MOD_ID+"_pre_main");
+//
+//        if (this.worldPreMainRenderers.isEmpty() == false)
+//        {
+//            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_main");
+//
+//            fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
+//            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
+//
+//            pass.setRenderer(() ->
+//                             {
+//                                 Fog fog = RenderSystem.getShaderFog();
+//                                 RenderSystem.setShaderFog(Fog.DUMMY);
+//
+//                                 //handleMain.get().beginWrite(false);
+//                                 // RenderUtils.fbStartDrawing();
+//
+//                                 for (IRenderer renderer : this.worldPreMainRenderers)
+//                                 {
+//                                     profiler.push(renderer.getProfilerSectionSupplier());
+//                                     renderer.onRenderWorldPreMain(handleMain.get(), posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
+//                                     profiler.pop();
+//                                 }
+//
+//                                 if (!this.worldPreMainRenderers.isEmpty())
+//                                 {
+//                                     handleMain.get().blitToScreen();
+//                                 }
+//
+//                                 RenderSystem.setShaderFog(fog);
+//                             });
+//
+//            if (!this.worldPreMainRenderers.isEmpty())
+//            {
+//                pass.markToBeVisited();
+//            }
+//        }
+//
+//        profiler.pop();
+//    }
 
     @ApiStatus.Internal
     public void runRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, MinecraftClient mc,
                                         RenderPass renderPass, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
-                                        ArrayList<RenderPass.BakedObject> renderObjects)
+                                        ArrayList<RenderPass.class_10884> renderObjects)
     {
         Profiler profiler = Profilers.get();
 
@@ -306,68 +306,68 @@ public class RenderEventHandler implements IRenderDispatcher
         profiler.pop();
     }
 
-    @ApiStatus.Internal
-    public void runRenderWorldPreParticles(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
-                                           Frustum frustum, Camera camera, BufferBuilderStorage buffers,
-                                           Profiler profiler)
-    {
-        profiler.push(MaLiLibReference.MOD_ID+"_pre_particles");
-
-        if (this.worldPreParticleRenderers.isEmpty() == false)
-        {
-            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_particles");
-
-            if (fbSet.particlesFramebuffer != null)
-            {
-                fbSet.particlesFramebuffer = pass.transfer(fbSet.particlesFramebuffer);
-                pass.dependsOn(fbSet.mainFramebuffer);
-            }
-            else
-            {
-                fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
-            }
-
-            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
-            Handle<Framebuffer> handleParticles = fbSet.particlesFramebuffer;
-
-            pass.setRenderer(() ->
-            {
-                Fog fog = RenderSystem.getShaderFog();
-                RenderSystem.setShaderFog(Fog.DUMMY);
-
-                if (handleParticles != null)
-                {
-                    handleParticles.get().copyDepthFrom(handleMain.get());
-                }
-
-                Framebuffer fb = handleParticles != null ? handleParticles.get() : handleMain.get();
-                //handleMain.get().beginWrite(false);
-                // RenderUtils.fbStartDrawing();
-
-                for (IRenderer renderer : this.worldPreParticleRenderers)
-                {
-                    profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreParticles(fb, posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
-                    profiler.pop();
-                }
-
-                if (!this.worldPreParticleRenderers.isEmpty())
-                {
-                    fb.blitToScreen();
-                }
-
-                RenderSystem.setShaderFog(fog);
-            });
-
-            if (!this.worldPreParticleRenderers.isEmpty())
-            {
-                pass.markToBeVisited();
-            }
-        }
-
-        profiler.pop();
-    }
+//    @ApiStatus.Internal
+//    public void runRenderWorldPreParticles(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
+//                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
+//                                           Frustum frustum, Camera camera, BufferBuilderStorage buffers,
+//                                           Profiler profiler)
+//    {
+//        profiler.push(MaLiLibReference.MOD_ID+"_pre_particles");
+//
+//        if (this.worldPreParticleRenderers.isEmpty() == false)
+//        {
+//            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_particles");
+//
+//            if (fbSet.particlesFramebuffer != null)
+//            {
+//                fbSet.particlesFramebuffer = pass.transfer(fbSet.particlesFramebuffer);
+//                pass.dependsOn(fbSet.mainFramebuffer);
+//            }
+//            else
+//            {
+//                fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
+//            }
+//
+//            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
+//            Handle<Framebuffer> handleParticles = fbSet.particlesFramebuffer;
+//
+//            pass.setRenderer(() ->
+//            {
+//                Fog fog = RenderSystem.getShaderFog();
+//                RenderSystem.setShaderFog(Fog.DUMMY);
+//
+//                if (handleParticles != null)
+//                {
+//                    handleParticles.get().copyDepthFrom(handleMain.get());
+//                }
+//
+//                Framebuffer fb = handleParticles != null ? handleParticles.get() : handleMain.get();
+//                //handleMain.get().beginWrite(false);
+//                // RenderUtils.fbStartDrawing();
+//
+//                for (IRenderer renderer : this.worldPreParticleRenderers)
+//                {
+//                    profiler.push(renderer.getProfilerSectionSupplier());
+//                    renderer.onRenderWorldPreParticles(fb, posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
+//                    profiler.pop();
+//                }
+//
+//                if (!this.worldPreParticleRenderers.isEmpty())
+//                {
+//                    fb.blitToScreen();
+//                }
+//
+//                RenderSystem.setShaderFog(fog);
+//            });
+//
+//            if (!this.worldPreParticleRenderers.isEmpty())
+//            {
+//                pass.markToBeVisited();
+//            }
+//        }
+//
+//        profiler.pop();
+//    }
 
     @ApiStatus.Internal
     public void runRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,

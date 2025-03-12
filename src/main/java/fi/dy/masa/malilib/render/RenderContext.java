@@ -1,6 +1,15 @@
 package fi.dy.masa.malilib.render;
 
+import com.mojang.blaze3d.buffers.BufferType;
+import com.mojang.blaze3d.buffers.BufferUsage;
+import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gl.*;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.*;
@@ -20,113 +29,77 @@ import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
 public class RenderContext implements AutoCloseable
 {
     private Supplier<String> name;
-    private GlUsage usage;
+    private BufferUsage usage;
     private GpuBuffer gpuBuffer;
     private RenderSystem.ShapeIndexBuffer shapeIndex;
     private BufferAllocator alloc;
     private BufferBuilder builder;
-    private ShaderPipeline shader;
+    private RenderPipeline shader;
     private VertexFormat format;
-    private VertexFormat.DrawMode drawMode;
+    private VertexFormat.class_5596 drawMode;
     private ResourceTexture texture;
+    private float[] offset;
+    private float lineWidth;
+    private int color;
     private boolean started;
     private int bufferIndex;
 
-    public RenderContext(ShaderPipeline shader)
+    public RenderContext(RenderPipeline shader)
     {
-        this(shader, GlUsage.DYNAMIC_WRITE);
+        this(shader, BufferUsage.DYNAMIC_WRITE);
     }
 
-    public RenderContext(ShaderPipeline shader, GlUsage usage)
+    public RenderContext(RenderPipeline shader, BufferUsage usage)
     {
         this(() -> "RenderContext", shader, usage);
     }
 
-    public RenderContext(Supplier<String> name, ShaderPipeline shader, GlUsage usage)
+    public RenderContext(Supplier<String> name, RenderPipeline shader, BufferUsage usage)
     {
         this.name = name;
-        this.alloc = new BufferAllocator(shader.getFormat().getVertexSizeByte() * 4);
-        this.builder = new BufferBuilder(this.alloc, shader.getDrawMode(), shader.getFormat());
-        this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getDrawMode());
-        this.format = shader.getFormat();
-        this.drawMode = shader.getDrawMode();
+        this.alloc = new BufferAllocator(shader.getVertexFormat().getVertexSize() * 4);
+        this.builder = new BufferBuilder(this.alloc, shader.getVertexFormatMode(), shader.getVertexFormat());
+        this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getVertexFormatMode());
+        this.format = shader.getVertexFormat();
+        this.drawMode = shader.getVertexFormatMode();
         this.shader = shader;
         this.usage = usage;
         this.gpuBuffer = null;
         this.bufferIndex = -1;
         this.texture = null;
+        this.offset = new float[]{0f, 0f, 0f};
+        this.color = -1;
+        this.lineWidth = 1.0f;
         this.started = true;
     }
 
-    public RenderContext(VertexFormat format, VertexFormat.DrawMode drawMode)
+    public BufferBuilder start(RenderPipeline shader)
     {
-        this(() -> "RenderContext", format, drawMode, GlUsage.STATIC_WRITE);
+        return this.start(shader, BufferUsage.STATIC_WRITE);
     }
 
-    public RenderContext(VertexFormat format, VertexFormat.DrawMode drawMode, GlUsage usage)
+    public BufferBuilder start(RenderPipeline shader, BufferUsage usage)
     {
-        this(() -> "RenderContext", format, drawMode, usage);
+        return this.start(() -> "RenderContext", shader, usage);
     }
 
-    public RenderContext(Supplier<String> name, VertexFormat format, VertexFormat.DrawMode drawMode, GlUsage usage)
-    {
-        this.name = name;
-        this.alloc = new BufferAllocator(format.getVertexSizeByte() * 4);
-        this.builder = new BufferBuilder(this.alloc, drawMode, format);
-        this.shapeIndex = RenderSystem.getSequentialBuffer(drawMode);
-        this.format = format;
-        this.drawMode = drawMode;
-        this.shader = null;
-        this.usage = usage;
-        this.gpuBuffer = null;
-        this.bufferIndex = -1;
-        this.texture = null;
-        this.started = true;
-    }
-
-    public BufferBuilder startShader(ShaderPipeline shader)
-    {
-        return this.startShader(() -> "RenderContext", shader, GlUsage.STATIC_WRITE);
-    }
-
-    public BufferBuilder startShader(Supplier<String> name, ShaderPipeline shader, GlUsage usage)
+    public BufferBuilder start(Supplier<String> name, RenderPipeline shader, BufferUsage usage)
     {
         this.reset();
         this.name = name;
-        this.alloc = new BufferAllocator(shader.getFormat().getVertexSizeByte() * 4);
-        this.builder = new BufferBuilder(this.alloc, shader.getDrawMode(), shader.getFormat());
-        this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getDrawMode());
-        this.format = shader.getFormat();
-        this.drawMode = shader.getDrawMode();
+        this.alloc = new BufferAllocator(shader.getVertexFormat().getVertexSize() * 4);
+        this.builder = new BufferBuilder(this.alloc, shader.getVertexFormatMode(), shader.getVertexFormat());
+        this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getVertexFormatMode());
+        this.format = shader.getVertexFormat();
+        this.drawMode = shader.getVertexFormatMode();
         this.shader = shader;
         this.usage = usage;
         this.gpuBuffer = null;
         this.bufferIndex = -1;
         this.texture = null;
-        this.started = true;
-        return this.builder;
-    }
-
-    // Textured Quads Draw
-    public BufferBuilder startNoShader(VertexFormat format, VertexFormat.DrawMode drawMode)
-    {
-        return this.startNoShader(() -> "RenderContext", format, drawMode, GlUsage.STATIC_WRITE);
-    }
-
-    public BufferBuilder startNoShader(Supplier<String> name, VertexFormat format, VertexFormat.DrawMode drawMode, GlUsage usage)
-    {
-        this.reset();
-        this.name = name;
-        this.alloc = new BufferAllocator(format.getVertexSizeByte() * 4);
-        this.builder = new BufferBuilder(this.alloc, drawMode, format);
-        this.shapeIndex = RenderSystem.getSequentialBuffer(drawMode);
-        this.format = format;
-        this.drawMode = drawMode;
-        this.shader = null;
-        this.usage = usage;
-        this.gpuBuffer = null;
-        this.bufferIndex = -1;
-        this.texture = null;
+        this.offset = new float[]{0f, 0f, 0f};
+        this.color = -1;
+        this.lineWidth = 1.0f;
         this.started = true;
         return this.builder;
     }
@@ -136,17 +109,17 @@ public class RenderContext implements AutoCloseable
         return this.builder;
     }
 
-    public GlUsage getUsage()
+    public BufferUsage getUsage()
     {
         return this.usage;
     }
 
-    public VertexFormat getFormat()
+    public VertexFormat getVertexFormat()
     {
         return this.format;
     }
 
-    public VertexFormat.DrawMode getDrawMode()
+    public VertexFormat.class_5596 getVertexFormatMode()
     {
         return this.drawMode;
     }
@@ -155,17 +128,17 @@ public class RenderContext implements AutoCloseable
     {
         if (this.shader != null)
         {
-            return this.shader.getFormat();
+            return this.shader.getVertexFormat();
         }
 
         return this.format;
     }
 
-    public VertexFormat.DrawMode getShaderDrawMode()
+    public VertexFormat.class_5596 getShaderDrawMode()
     {
         if (this.shader != null)
         {
-            return this.shader.getDrawMode();
+            return this.shader.getVertexFormatMode();
         }
 
         return this.drawMode;
@@ -185,14 +158,40 @@ public class RenderContext implements AutoCloseable
         return this;
     }
 
-    public RenderContext setShader(ShaderPipeline shader) throws RuntimeException
+//    public RenderContext setShader(RenderPipeline shader) throws RuntimeException
+//    {
+//        if (this.format != shader.getVertexFormat() || this.drawMode != shader.getVertexFormatMode())
+//        {
+//            throw new RuntimeException("Shader does not match Format/Draw mode!");
+//        }
+//
+//        this.shader = shader;
+//        return this;
+//    }
+
+    public RenderContext lineWidth(float width)
     {
-        if (this.format != shader.getFormat() || this.drawMode != shader.getDrawMode())
+        this.lineWidth = Math.clamp(width, 0.0f, 25.0f);
+        return this;
+    }
+
+    public RenderContext offset(float[] value)
+    {
+        if (value.length != 3)
         {
-            throw new RuntimeException("Shader does not match Format/Draw mode!");
+            value = new float[]{0f, 0f, 0f};
         }
 
-        this.shader = shader;
+        this.offset[0] = value[0];
+        this.offset[1] = value[1];
+        this.offset[2] = value[2];
+
+        return this;
+    }
+
+    public RenderContext color(int color)
+    {
+        this.color = color;
         return this;
     }
 
@@ -204,7 +203,7 @@ public class RenderContext implements AutoCloseable
     public void upload() throws RuntimeException
     {
         this.ensureSafeNoShader();
-        this.upload(this.name, this.builder.endNullable(), GlBufferTarget.VERTICES);
+        this.upload(this.name, this.builder.endNullable(), BufferType.VERTICES);
     }
 
     public void upload(BufferBuilder builder) throws RuntimeException
@@ -212,22 +211,22 @@ public class RenderContext implements AutoCloseable
         this.ensureSafeNoShader();
         this.ensureBuilding(builder);
         this.builder = builder;
-        this.upload(this.name, this.builder.endNullable(), GlBufferTarget.VERTICES);
+        this.upload(this.name, this.builder.endNullable(), BufferType.VERTICES);
     }
 
     public void upload(BuiltBuffer meshData) throws RuntimeException
     {
         this.ensureSafeNoShader();
-        this.upload(this.name, meshData, GlBufferTarget.VERTICES);
+        this.upload(this.name, meshData, BufferType.VERTICES);
     }
 
-    public void upload(BuiltBuffer meshData, GlBufferTarget target) throws RuntimeException
+    public void upload(BuiltBuffer meshData, BufferType target) throws RuntimeException
     {
         this.ensureSafeNoShader();
         this.upload(this.name, meshData, target);
     }
 
-    public void upload(Supplier<String> name, BuiltBuffer meshData, GlBufferTarget target) throws RuntimeException
+    public void upload(Supplier<String> name, BuiltBuffer meshData, BufferType target) throws RuntimeException
     {
         this.name = name;
         this.ensureSafeNoShader();
@@ -242,12 +241,9 @@ public class RenderContext implements AutoCloseable
             }
 
             this.gpuBuffer = RenderSystem.getDevice().createBuffer(this.name, target, this.usage, expectedSize);
-
-            RenderSystem.getDevice()
-                        .getResourceManager()
-                        .copyDataInto(this.gpuBuffer, meshData.getBuffer(), 0);
-
+            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(this.gpuBuffer, meshData.getBuffer(), 0);
             this.bufferIndex = meshData.getDrawParameters().indexCount();
+            meshData.close();
         }
     }
 
@@ -256,7 +252,7 @@ public class RenderContext implements AutoCloseable
      * -
      * Performs the Texture Binding/Unbind for the "Shader Texture" layer
      */
-    public void bindTexture(Identifier id)
+    public RenderContext bindTexture(Identifier id)
     {
         this.ensureSafeNoBuffer();
 //        RenderUtils.tex().registerTexture(id);
@@ -270,7 +266,7 @@ public class RenderContext implements AutoCloseable
         try (TextureContents contents = this.texture.loadContents(RenderUtils.mc().getResourceManager()))
         {
             NativeImage image = contents.image();
-            MaLiLib.LOGGER.warn("NativeImage Id [{}] //  Width [{}], Height [{}] // Format: [{}]", image.imageId(), image.getWidth(), image.getHeight(), image.getFormat().name());
+            MaLiLib.debugLog("NativeImage Id [{}] //  Width [{}], Height [{}] // Format: [{}]", image.imageId(), image.getWidth(), image.getHeight(), image.getFormat().name());
         }
         catch (Exception err)
         {
@@ -279,7 +275,9 @@ public class RenderContext implements AutoCloseable
         }
 
         this.texture.setFilter(TriState.FALSE, false);
-        RenderSystem.setShaderTexture(0, this.texture.getGlTexture());
+        RenderSystem.setShaderTexture(0, this.texture.method_68004());
+
+        return this;
     }
 
     public void unbindTexture(@Nullable Identifier id)
@@ -290,7 +288,6 @@ public class RenderContext implements AutoCloseable
         }
 
         RenderSystem.setShaderTexture(0, null);
-        this.texture = null;
     }
 
     /**
@@ -308,79 +305,29 @@ public class RenderContext implements AutoCloseable
     public void draw(BuiltBuffer meshData) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-        this.draw(meshData, new float[]{0f, 0f, 0f}, false);
+        this.draw(null, BufferType.VERTICES, meshData, false, false);
     }
 
-    public void draw(BuiltBuffer meshData, int color) throws RuntimeException
+    public void draw(BuiltBuffer meshData, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-        this.draw(this.name, null, GlBufferTarget.VERTICES, color, meshData, new float[]{0f, 0f, 0f}, false, 0.0f, false);
-    }
-
-    public void draw(Supplier<String> name, BuiltBuffer meshData) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.draw(name, null, GlBufferTarget.VERTICES, -1, meshData, new float[]{0f, 0f, 0f}, false, 0.0f, false);
-    }
-
-    public void draw(Supplier<String> name, BuiltBuffer meshData, int color) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.draw(name, null, GlBufferTarget.VERTICES, color, meshData, new float[]{0f, 0f, 0f}, false, 0.0f, false);
-    }
-
-    public void draw(Supplier<String> name, BuiltBuffer meshData, GlBufferTarget target, int color) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.draw(name, null, target, color, meshData, new float[]{0f, 0f, 0f}, false, 0.0f, false);
-    }
-
-    public void draw(BuiltBuffer meshData, float[] offset, boolean useOffset) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.draw(this.name, null, GlBufferTarget.VERTICES, -1, meshData, offset, useOffset, 0.0f, false);
-    }
-
-    public void draw(BuiltBuffer meshData, int color, float[] offset, boolean useOffset) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.draw(this.name, null, GlBufferTarget.VERTICES, color, meshData, offset, useOffset, 0.0f, false);
-    }
-
-    public void draw(BuiltBuffer meshData, GlBufferTarget target, int color, float[] offset, boolean useOffset) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.draw(this.name, null, target, color, meshData, offset, useOffset, 0.0f, false);
-    }
-
-    public void draw(Supplier<String> name, BuiltBuffer meshData, GlBufferTarget target, int color, float[] offset, boolean useOffset) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.draw(name, null, target, color, meshData, offset, useOffset, 0.0f, false);
+        this.draw(null, BufferType.VERTICES, meshData, false, setLineWidth);
     }
 
     public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-        this.draw(this.name, otherFb, GlBufferTarget.VERTICES, -1, meshData, new float[]{0f, 0f, 0f}, false, 0.0f, false);
+        this.draw(otherFb, BufferType.VERTICES, meshData, false, false);
     }
 
-    public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, float[] offset, boolean useOffset) throws RuntimeException
+    public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-        this.draw(this.name, otherFb, GlBufferTarget.VERTICES, -1, meshData, offset, useOffset, 0.0f, false);
+        this.draw(otherFb, BufferType.VERTICES, meshData, false, setLineWidth);
     }
 
-    public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, int color, float[] offset, boolean useOffset) throws RuntimeException
-    {
-        this.ensureSafeNoBuffer();
-        this.draw(this.name, otherFb, GlBufferTarget.VERTICES, color, meshData, offset, useOffset, 0.0f, false);
-    }
-
-    public void draw(Supplier<String> name, @Nullable Framebuffer otherFb, GlBufferTarget target,
-                     int color, BuiltBuffer meshData,
-                     float[] offset, boolean useOffset,
-                     float lineWidth, boolean setLineWidth) throws RuntimeException
+    public void draw(@Nullable Framebuffer otherFb, BufferType target,
+                     BuiltBuffer meshData, boolean useOffset, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
 
@@ -392,11 +339,10 @@ public class RenderContext implements AutoCloseable
             }
             else
             {
-                this.name = name;
-
                 // Create & upload buffer
                 if (this.bufferIndex < 1)
                 {
+//                    MaLiLib.LOGGER.warn("RenderContext#draw() [{}] --> upload()", this.name.get());
                     this.upload(name, meshData, target);
                 }
             }
@@ -404,10 +350,11 @@ public class RenderContext implements AutoCloseable
             // Draw
             if (this.bufferIndex > 0)
             {
-                float[] rgba = {ColorHelper.getRedFloat(color), ColorHelper.getGreenFloat(color), ColorHelper.getBlueFloat(color), ColorHelper.getAlphaFloat(color)};
+                float[] rgba = {ColorHelper.getRedFloat(this.color), ColorHelper.getGreenFloat(this.color), ColorHelper.getBlueFloat(this.color), ColorHelper.getAlphaFloat(this.color)};
 
+//                MaLiLib.LOGGER.warn("RenderContext#draw() [{}] --> drawInternal()", this.name.get());
                 RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-                this.drawInternal(otherFb, offset, useOffset, lineWidth, setLineWidth);
+                this.drawInternal(otherFb, useOffset, setLineWidth);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             }
         }
@@ -415,39 +362,37 @@ public class RenderContext implements AutoCloseable
 
     public void drawPost() throws RuntimeException
     {
-        this.drawPost(null, -1, new float[]{0f, 0f, 0f}, false, 0.0f, false);
+        this.ensureSafeNoTexture();
+        this.drawPost(null, false, false);
     }
 
-    public void drawPost(int color) throws RuntimeException
+    public void drawPost(boolean setLineWidth) throws RuntimeException
     {
-        this.drawPost(null, color, new float[]{0f, 0f, 0f}, false, 0.0f, false);
+        this.ensureSafeNoTexture();
+        this.drawPost(null, false, setLineWidth);
     }
 
-    public void drawPost(@Nullable Framebuffer otherFb, int color) throws RuntimeException
+    public void drawPost(@Nullable Framebuffer otherFb, boolean setLineWidth) throws RuntimeException
     {
-        this.drawPost(otherFb, color, new float[]{0f, 0f, 0f}, false, 0.0f, false);
+        this.ensureSafeNoTexture();
+        this.drawPost(otherFb, false, setLineWidth);
     }
 
-    public void drawPost(@Nullable Framebuffer otherFb, int color, float[] offset, boolean useOffset) throws RuntimeException
+    public void drawPost(@Nullable Framebuffer otherFb, boolean useOffset, boolean setLineWidth) throws RuntimeException
     {
-        this.drawPost(otherFb, color, offset, useOffset, 0.0f, false);
-    }
+        this.ensureSafeNoTexture();
 
-    public void drawPost(@Nullable Framebuffer otherFb, int color, float[] offset, boolean useOffset, float lineWidth, boolean setLineWidth) throws RuntimeException
-    {
         if (this.bufferIndex > 0)
         {
-            float[] rgba = new float[]{ColorHelper.getRedFloat(color), ColorHelper.getGreenFloat(color), ColorHelper.getBlueFloat(color), ColorHelper.getAlphaFloat(color)};
+            float[] rgba = new float[]{ColorHelper.getRedFloat(this.color), ColorHelper.getGreenFloat(this.color), ColorHelper.getBlueFloat(this.color), ColorHelper.getAlphaFloat(this.color)};
 
             RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-            this.drawInternal(otherFb, offset, useOffset, lineWidth, setLineWidth);
+            this.drawInternal(otherFb, useOffset, setLineWidth);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
-    private void drawInternal(@Nullable Framebuffer otherFb,
-                              float[] offset, boolean useOffset,
-                              float lineWidth, boolean setLineWidth) throws RuntimeException
+    private void drawInternal(@Nullable Framebuffer otherFb, boolean useOffset, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoTexture();
 
@@ -455,52 +400,69 @@ public class RenderContext implements AutoCloseable
         {
             if (useOffset)
             {
-                RenderSystem.setModelOffset(-offset[0], offset[1], -offset[2]);
+                RenderSystem.setModelOffset(-this.offset[0], this.offset[1], -this.offset[2]);
                 //RenderSystem.setModelOffset(offset[0], offset[1], offset[2]);
             }
             Framebuffer mainFb = RenderUtils.fb();
-            DrawableTexture texture1;
-            DrawableTexture texture2;
+            GpuTexture texture1;
+            GpuTexture texture2;
 
             if (otherFb != null)
             {
-                texture1 = otherFb.getColorAttachment();
-                texture2 = otherFb.useDepthAttachment ? otherFb.getDepthAttachment() : null;
+                texture1 = otherFb.method_30277();
+                texture2 = otherFb.useDepthAttachment ? otherFb.method_30278() : null;
             }
             else
             {
-                texture1 = mainFb.getColorAttachment();
-                texture2 = mainFb.useDepthAttachment ? mainFb.getDepthAttachment() : null;
+                texture1 = mainFb.method_30277();
+                texture2 = mainFb.useDepthAttachment ? mainFb.method_30278() : null;
             }
+
+//            MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());
+            GpuBuffer indexBuffer = this.shapeIndex.method_68274(this.bufferIndex);
 
             // Attach Frame buffers
             try (RenderPass pass = RenderSystem.getDevice()
-                                               .getResourceManager()
+                                               .createCommandEncoder()
                                                .createRenderPass(texture1, OptionalInt.empty(),
                                                                  texture2, OptionalDouble.empty()))
             {
-                pass.bindShader(this.shader);
+//                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline()", this.name.get());
+                pass.setPipeline(this.shader);
 
-                for (int i = 0; i < 12; i++)
+//                for (int i = 0; i < 12; i++)
+//                {
+//                    GpuTexture drawableTexture = RenderSystem.getShaderTexture(i);
+//
+//                    if (drawableTexture != null)
+//                    {
+//                        MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler() [{}]", this.name.get(), i);
+//                        pass.bindSampler("Sampler"+i, drawableTexture);
+//                    }
+//                }
+
+                if (this.texture != null)
                 {
-                    DrawableTexture drawableTexture = RenderSystem.getShaderTexture(i);
-
-                    if (drawableTexture != null)
-                    {
-                        pass.setUniform("Sampler"+i, drawableTexture);
-                    }
+//                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler() [0]", this.name.get());
+                    pass.bindSampler("Sampler0", this.texture.method_68004());
                 }
 
                 if (setLineWidth)
                 {
-                    float width = lineWidth > 0.0f ? lineWidth : RenderSystem.getShaderLineWidth();
+                    float width = this.lineWidth > 0.0f ? this.lineWidth : RenderSystem.getShaderLineWidth();
+//                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setUniform() // lineWidth [{}]", this.name.get(), width);
                     pass.setUniform("LineWidth", width);
                 }
 
-                pass.setIndexBuffer(this.shapeIndex.getIndexBuffer(this.bufferIndex), this.shapeIndex.getIndexType());
+//                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setVertexBuffer() [0]", this.name.get());
                 pass.setVertexBuffer(0, this.gpuBuffer);
-                pass.drawObjects(0, this.bufferIndex);
+//                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setIndexBuffer() [{}]", this.name.get(), this.bufferIndex);
+                pass.setIndexBuffer(indexBuffer, this.shapeIndex.method_31924());
+//                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> drawIndexed() [0, {}]", this.name.get(), this.bufferIndex);
+                pass.drawIndexed(0, this.bufferIndex);
             }
+
+//            MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> END", this.name.get());
 
             if (useOffset)
             {
@@ -583,6 +545,13 @@ public class RenderContext implements AutoCloseable
 
     public void reset()
     {
+        if (this.texture != null)
+        {
+            this.unbindTexture(null);
+            this.texture.close();
+            this.texture = null;
+        }
+
         if (this.gpuBuffer != null)
         {
             this.gpuBuffer.close();
@@ -616,6 +585,9 @@ public class RenderContext implements AutoCloseable
         }
 
         this.bufferIndex = -1;
+        this.offset = new float[]{0f, 0f, 0f};
+        this.color = -1;
+        this.lineWidth = 1.0f;
         this.started = false;
     }
 

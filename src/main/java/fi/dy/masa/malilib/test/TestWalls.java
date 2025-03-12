@@ -7,9 +7,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
+import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
@@ -108,8 +108,8 @@ public class TestWalls implements AutoCloseable
         profiler.push("render_test_walls");
         if (this.hasData && !this.boxes.isEmpty() && this.center != null)
         {
-            this.renderQuads(camera, matrix4f, projMatrix, mc, profiler);
-            this.renderOutlines(camera, matrix4f, projMatrix, mc, profiler);
+            this.renderQuads(camera,mc, profiler);
+            this.renderOutlines(camera, mc, profiler);
             this.boxes.clear();
             this.center = null;
             this.hasData = false;
@@ -117,7 +117,7 @@ public class TestWalls implements AutoCloseable
         profiler.pop();
     }
 
-    private void renderQuads(Camera camera, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc, Profiler profiler)
+    private void renderQuads(Camera camera, MinecraftClient mc, Profiler profiler)
     {
         if (mc.world == null || mc.player == null ||
             !this.hasData || this.boxes.isEmpty())
@@ -130,7 +130,7 @@ public class TestWalls implements AutoCloseable
         Vec3d cameraPos = camera.getPos();
 
         // MaLiLibPipelines.POSITION_COLOR_SIMPLE
-        RenderContext ctx = new RenderContext(() -> "TestWalls Quads", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestWalls Quads", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder builder = ctx.getBuilder();
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
         Vec3d updatePos = this.getUpdatePosition();
@@ -138,6 +138,7 @@ public class TestWalls implements AutoCloseable
         this.preRender();
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
+
         RenderUtils.drawBlockBoundingBoxSidesBatchedQuads(this.center, cameraPos, quadsColor, 0.001, builder);
 
         for (Box entry : this.boxes)
@@ -147,7 +148,7 @@ public class TestWalls implements AutoCloseable
 
         try
         {
-            ctx.draw(builder.endNullable());
+            ctx.color(quadsColor.getIntValue()).draw(builder.endNullable());
             ctx.close();
         }
         catch (Exception err)
@@ -160,7 +161,7 @@ public class TestWalls implements AutoCloseable
         profiler.pop();
     }
 
-    private void renderOutlines(Camera camera, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc, Profiler profiler)
+    private void renderOutlines(Camera camera, MinecraftClient mc, Profiler profiler)
     {
         if (mc.world == null || mc.player == null)
         {
@@ -172,28 +173,34 @@ public class TestWalls implements AutoCloseable
         Vec3d cameraPos = camera.getPos();
 
         // MaLiLibPipelines.LINES_SIMPLE
-        RenderContext ctx = new RenderContext(() -> "TestWalls Lines", ShaderPipelines.LINES, GlUsage.STATIC_WRITE);
+        // ShaderPipelines.field_56833
+        RenderContext ctx = new RenderContext(() -> "TestWalls Lines", MaLiLibPipelines.LINES_NO_DEPTH, BufferUsage.STATIC_WRITE);
         BufferBuilder builder = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
         Vec3d updatePos = this.getUpdatePosition();
 
         this.preRender();
-        matrices.push();
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
-        RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(this.center, cameraPos, linesColor, 0.001, builder, matrices);
+        matrices.push();
 
         MatrixStack.Entry e = matrices.peek();
+        RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(this.center, cameraPos, linesColor, 0.001, builder, e);
 
         for (Box entry : this.boxes)
         {
             TestUtils.renderWallOutlines(entry, 16, 16, true, cameraPos, linesColor, builder, e);
         }
 
+        matrices.pop();
+        matrix4fstack.popMatrix();
+
+//        MaLiLib.LOGGER.warn("TestWalls#renderOutlines(): PRE-DRAW");
+
         try
         {
-            ctx.draw(builder.endNullable());
+            ctx.color(linesColor.getIntValue()).lineWidth(this.glLineWidth).draw(builder.endNullable(), true);
             ctx.close();
         }
         catch (Exception err)
@@ -202,8 +209,6 @@ public class TestWalls implements AutoCloseable
         }
 
         this.postRender();
-        matrices.pop();
-        matrix4fstack.popMatrix();
         profiler.pop();
     }
 

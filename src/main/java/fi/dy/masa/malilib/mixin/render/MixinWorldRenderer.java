@@ -5,8 +5,8 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.ArrayList;
 import org.joml.Matrix4f;
 
+import com.mojang.blaze3d.systems.RenderPass;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPass;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.client.util.ObjectAllocator;
@@ -32,53 +32,53 @@ public abstract class MixinWorldRenderer
 
     @Shadow @Final private BufferBuilderStorage bufferBuilders;
 
-    @Inject(method = "render",
-            at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/client/render/WorldRenderer;renderMain(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Frustum;Lnet/minecraft/client/render/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/render/Fog;ZZLnet/minecraft/client/render/RenderTickCounter;Lnet/minecraft/util/profiler/Profiler;)V",
-                     shift = At.Shift.BEFORE))
-    private void malilib_onRenderWorldPreMain(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
-                                                   Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
-                                                   @Local Profiler profiler,
-                                                   @Local Frustum frustum,
-                                                   @Local FrameGraphBuilder frameGraphBuilder)
-    //@Local(ordinal = 0) int i, @Local(ordinal = 1) int j, @Local PostEffectProcessor postEffectProcessor)
-    {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreMain(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
-
-        /*
-        if (postEffectProcessor != null)
-        {
-            this.width = i;
-            this.height = j;
-            this.postEffects = postEffectProcessor;
-            this.postEffects.render(frameGraphBuilder, this.width, this.height, this.framebufferSet);
-        }
-         */
-    }
-
-    @Inject(method = "render",
-            at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/client/render/WorldRenderer;renderParticles(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/Fog;)V",
-                     shift = At.Shift.BEFORE))
-    private void malilib_onRenderWorldPreParticles(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
-                                                 Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
-                                                 @Local Profiler profiler,
-                                                 @Local Frustum frustum,
-                                                 @Local FrameGraphBuilder frameGraphBuilder)
-    //@Local(ordinal = 0) int i, @Local(ordinal = 1) int j, @Local PostEffectProcessor postEffectProcessor)
-    {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreParticles(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
-
-        /*
-        if (postEffectProcessor != null)
-        {
-            this.width = i;
-            this.height = j;
-            this.postEffects = postEffectProcessor;
-            this.postEffects.render(frameGraphBuilder, this.width, this.height, this.framebufferSet);
-        }
-         */
-    }
+//    @Inject(method = "render",
+//            at = @At(value = "INVOKE",
+//                     target = "Lnet/minecraft/client/render/WorldRenderer;renderMain(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Frustum;Lnet/minecraft/client/render/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lnet/minecraft/client/render/Fog;ZZLnet/minecraft/client/render/RenderTickCounter;Lnet/minecraft/util/profiler/Profiler;)V",
+//                     shift = At.Shift.BEFORE))
+//    private void malilib_onRenderWorldPreMain(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
+//                                                   Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+//                                                   @Local Profiler profiler,
+//                                                   @Local Frustum frustum,
+//                                                   @Local FrameGraphBuilder frameGraphBuilder)
+//    //@Local(ordinal = 0) int i, @Local(ordinal = 1) int j, @Local PostEffectProcessor postEffectProcessor)
+//    {
+//        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreMain(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
+//
+//        /*
+//        if (postEffectProcessor != null)
+//        {
+//            this.width = i;
+//            this.height = j;
+//            this.postEffects = postEffectProcessor;
+//            this.postEffects.render(frameGraphBuilder, this.width, this.height, this.framebufferSet);
+//        }
+//         */
+//    }
+//
+//    @Inject(method = "render",
+//            at = @At(value = "INVOKE",
+//                     target = "Lnet/minecraft/client/render/WorldRenderer;renderParticles(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/client/render/Camera;FLnet/minecraft/client/render/Fog;)V",
+//                     shift = At.Shift.BEFORE))
+//    private void malilib_onRenderWorldPreParticles(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
+//                                                 Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
+//                                                 @Local Profiler profiler,
+//                                                 @Local Frustum frustum,
+//                                                 @Local FrameGraphBuilder frameGraphBuilder)
+//    //@Local(ordinal = 0) int i, @Local(ordinal = 1) int j, @Local PostEffectProcessor postEffectProcessor)
+//    {
+//        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreParticles(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
+//
+//        /*
+//        if (postEffectProcessor != null)
+//        {
+//            this.width = i;
+//            this.height = j;
+//            this.postEffects = postEffectProcessor;
+//            this.postEffects.render(frameGraphBuilder, this.width, this.height, this.framebufferSet);
+//        }
+//         */
+//    }
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
@@ -126,11 +126,11 @@ public abstract class MixinWorldRenderer
 
     @Inject(method = "renderLayer",
             at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/client/gl/RenderPass;drawObjects(Ljava/util/Collection;)V"))
+                     target = "Lcom/mojang/blaze3d/systems/RenderPass;drawMultipleIndexed(Ljava/util/Collection;Lcom/mojang/blaze3d/buffers/GpuBuffer;Lcom/mojang/blaze3d/vertex/VertexFormat$class_5595;)V"))
     private void malilib_onRenderWorldLayer(RenderLayer renderLayer, double x, double y, double z,
                                             Matrix4f viewMatrix, Matrix4f positionMatrix, CallbackInfo ci,
                                             @Local RenderPass renderPass,
-                                            @Local ArrayList<RenderPass.BakedObject> arrayList,
+                                            @Local ArrayList<RenderPass.class_10884> arrayList,
                                             @Local ObjectListIterator<ChunkBuilder.BuiltChunk> objectListIterator)
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLayerPass(renderLayer, viewMatrix, positionMatrix, new Vec3d(x, y, z), this.client, renderPass, objectListIterator, arrayList);

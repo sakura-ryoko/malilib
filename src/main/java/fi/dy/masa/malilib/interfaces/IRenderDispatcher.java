@@ -21,7 +21,7 @@ public interface IRenderDispatcher
      * method called before the vanilla Weather rendering is done
      * @param renderer
      */
-    void registerWorldPreMainRenderer(IRenderer renderer);
+//    void registerWorldPreMainRenderer(IRenderer renderer);
 
     /**
      * Registers a renderer which will have its {@link IRenderer.onRenderWorldLayerPass}
@@ -42,7 +42,7 @@ public interface IRenderDispatcher
      * method called before the vanilla Weather rendering is done
      * @param renderer
      */
-    void registerWorldPreParticleRenderer(IRenderer renderer);
+//    void registerWorldPreParticleRenderer(IRenderer renderer);
 
     /**
      * Registers a renderer which will have its {@link IRenderer.onRenderWorldPreWeather}

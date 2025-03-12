@@ -6,7 +6,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.GlUsage;
 import net.minecraft.client.render.model.BlockModelPart;
 import net.minecraft.client.render.model.BlockStateModel;
 import net.minecraft.client.texture.AbstractTexture;
@@ -14,8 +13,9 @@ import net.minecraft.client.texture.TextureManager;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
-import com.mojang.blaze3d.platform.GlConst;
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.buffers.BufferUsage;
+import com.mojang.blaze3d.opengl.GlConst;
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -154,7 +154,7 @@ public class RenderUtils
     public static void bindTexture(Identifier texture)
     {
         AbstractTexture tex = tex().getTexture(texture);
-        RenderSystem.setShaderTexture(0, tex.getGlTexture());
+        RenderSystem.setShaderTexture(0, tex.method_68004());
     }
 
     /**
@@ -299,8 +299,7 @@ public class RenderUtils
         blend(true);
 
         // POSITION_COLOR_SIMPLE
-        //RenderContext ctx = new RenderContext(ShaderPipelines.GUI_OVERLAY, GlUsage.STATIC_WRITE);
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         buffer.vertex(x * scale,           y * scale,            zLevel).color(r, g, b, a);
@@ -531,7 +530,7 @@ public class RenderUtils
         int eb = (endColor & 0xFF);
 
         blend(true);
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         buffer.vertex(right, top, zLevel).color(sr, sg, sb, sa);
@@ -541,7 +540,6 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
             ctx.draw(fb(), buffer.endNullable());
             ctx.close();
         }
@@ -802,9 +800,9 @@ public class RenderUtils
     /**
      * Assumes a BufferBuilder in GL_LINES mode has been initialized
      */
-    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color, double expand, BufferBuilder buffer, MatrixStack matrices)
+    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color, double expand, BufferBuilder buffer, MatrixStack.Entry e)
     {
-        drawBlockBoundingBoxOutlinesBatchedLines(pos, Vec3d.ZERO, color, expand, buffer, matrices);
+        drawBlockBoundingBoxOutlinesBatchedLines(pos, Vec3d.ZERO, color, expand, buffer, e);
     }
 
     /**
@@ -817,7 +815,7 @@ public class RenderUtils
      * @param expand
      * @param buffer
      */
-    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Vec3d cameraPos, Color4f color, double expand, BufferBuilder buffer, MatrixStack matrices)
+    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Vec3d cameraPos, Color4f color, double expand, BufferBuilder buffer, MatrixStack.Entry e)
     {
         float minX = (float) (pos.getX() - expand - cameraPos.x);
         float minY = (float) (pos.getY() - expand - cameraPos.y);
@@ -826,7 +824,7 @@ public class RenderUtils
         float maxY = (float) (pos.getY() + expand - cameraPos.y + 1);
         float maxZ = (float) (pos.getZ() + expand - cameraPos.z + 1);
 
-        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, buffer, matrices.peek());
+        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, buffer, e);
     }
 
     /**
@@ -878,8 +876,10 @@ public class RenderUtils
         final float y2 = (float) (posMax.getY() + 1 - cameraPos.y);
         final float z2 = (float) (posMax.getZ() + 1 - cameraPos.z);
 
+        MatrixStack.Entry e = matrices.peek();
+
         drawBoxAllSidesBatchedQuads(x1, y1, z1, x2, y2, z2, colorSides, bufferQuads);
-        drawBoxAllEdgesBatchedLines(x1, y1, z1, x2, y2, z2, colorLines, bufferLines, matrices.peek());
+        drawBoxAllEdgesBatchedLines(x1, y1, z1, x2, y2, z2, colorLines, bufferLines, e);
     }
 
     /**
@@ -993,11 +993,12 @@ public class RenderUtils
         float maxY = (float) (bb.maxY + 1 - cameraPos.y);
         float maxZ = (float) (bb.maxZ + 1 - cameraPos.z);
 
+        MatrixStack.Entry e = matrices.peek();
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, bufferQuads);
-        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, bufferLines, matrices.peek());
+        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, bufferLines, e);
     }
 
-    public static void drawBoxNoOutlines(IntBoundingBox bb, Vec3d cameraPos, Color4f color, BufferBuilder bufferQuads, MatrixStack.Entry e)
+    public static void drawBoxNoOutlines(IntBoundingBox bb, Vec3d cameraPos, Color4f color, BufferBuilder bufferQuads)
     {
         float minX = (float) (bb.minX - cameraPos.x);
         float minY = (float) (bb.minY - cameraPos.y);
@@ -1052,7 +1053,7 @@ public class RenderUtils
         culling(false);
         blend(true);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         int maxLineLen = 0;
 
@@ -1081,8 +1082,7 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
-            ctx.draw(fb(), buffer.end());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -1151,7 +1151,7 @@ public class RenderUtils
 
         // Target "Side" -->
         // DEBUG_LINE_STRIP
-        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int quadAlpha = (int) (0.18f * 255f);
@@ -1204,7 +1204,6 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
             ctx.draw(buffer.endNullable());
             ctx.reset();
         }
@@ -1213,7 +1212,6 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockTargetingOverlay():1: Draw Exception; {}", err.getMessage());
         }
 
-        // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
         int wireColor = -1;
 
@@ -1222,7 +1220,7 @@ public class RenderUtils
 
         // Target "Center" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.startShader(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_SIMPLE, BufferUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
         //MatrixStack.Entry e = matrices.peek();
@@ -1242,8 +1240,7 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
-            ctx.draw(buffer.endNullable(), wireColor);
+            ctx.color(wireColor).lineWidth(1.6f).draw(buffer.endNullable(), true);
             ctx.reset();
         }
         catch (Exception err)
@@ -1255,7 +1252,7 @@ public class RenderUtils
 
         // Target "Edges" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.startShader(() -> "TestTarget C", MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget C", MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
 //        // Bottom left
@@ -1296,8 +1293,7 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
-            ctx.draw(buffer.endNullable(), wireColor, new float[]{0f, 0f, 0f}, true);
+            ctx.color(wireColor).draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception err)
@@ -1325,7 +1321,7 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
-        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int a = (int) (color.a * 255f);
@@ -1342,7 +1338,6 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
             ctx.draw(buffer.endNullable());
             ctx.reset();
         }
@@ -1351,10 +1346,9 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockTargetingOverlaySimple():1: Draw Exception; {}", err.getMessage());
         }
 
-        // FIXME: line width doesn't work currently
         RenderSystem.lineWidth(1.6f);
 
-        buffer = ctx.startShader(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_SIMPLE, BufferUsage.STATIC_WRITE);
         //ctx.setShader(ShaderPipelines.LINE_STRIP);
 
         // Middle rectangle
@@ -1365,8 +1359,7 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
-            ctx.draw(buffer.endNullable());
+            ctx.lineWidth(1.6f).draw(buffer.endNullable(), true);
             ctx.close();
         }
         catch (Exception err)
@@ -1944,6 +1937,7 @@ public class RenderUtils
         matrix4fStack.scale((float) 16, (float) -16, (float) 16);
     }
 
+    // FIXME, is this even used?
     public static void renderModel(BlockStateModel model, BlockState state)
     {
         Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
@@ -1957,7 +1951,7 @@ public class RenderUtils
         //{
         //RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
 
-        RenderContext ctx = new RenderContext(ShaderPipelines.SOLID, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(ShaderPipelines.field_56891, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         for (Direction face : Direction.values())
@@ -2092,7 +2086,7 @@ public class RenderUtils
         RenderSystem.lineWidth(lineWidth);
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR); // DEBUG_LINE_STRIP
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2101,7 +2095,6 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
@@ -2178,7 +2171,7 @@ public class RenderUtils
 
         RenderSystem.lineWidth(lineWidth);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2226,7 +2219,6 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
@@ -2258,7 +2250,7 @@ public class RenderUtils
     private static void drawBoundingBoxEdges(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
                                              Color4f colorX, Color4f colorY, Color4f colorZ)
     {
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2271,8 +2263,7 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
-            ctx.draw(MinecraftClient.getInstance().getFramebuffer(), buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
@@ -2334,14 +2325,13 @@ public class RenderUtils
         culling(false);
 
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_GREATER_DEPTH, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_GREATER_DEPTH, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
@@ -2405,7 +2395,7 @@ public class RenderUtils
 
         RenderSystem.lineWidth(lineWidth);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2525,7 +2515,6 @@ public class RenderUtils
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
             ctx.draw(buffer.endNullable());
             ctx.close();
         }

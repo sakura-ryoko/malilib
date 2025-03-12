@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.gui;
 import java.awt.*;
 import javax.annotation.Nullable;
 
-import net.minecraft.client.gl.GlUsage;
+import com.mojang.blaze3d.buffers.BufferUsage;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
@@ -507,7 +507,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         // Full SV Square --
         // MaLiLibPipelines.POSITION_SIMPLE
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "ColorSelector A", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int r = (int) (this.relR * 255f);
@@ -539,15 +539,15 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
-            ctx.draw(() -> "ColorSelector A", buffer.endNullable());
+//            ctx = ctx.setBuilder(buffer);
+            ctx.draw(buffer.endNullable());
             ctx.reset();
         }
         catch (Exception ignored) { }
 
         // Element Selectors --
         // MaLiLibPipelines.POSITION_COLOR_SIMPLE
-        buffer = ctx.startShader(() -> "ColorSelector B", MaLiLibPipelines.POSITION_COLOR_SIMPLE, GlUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "ColorSelector B", MaLiLibPipelines.POSITION_COLOR_SIMPLE, BufferUsage.STATIC_WRITE);
 
         /*
         int r = (int) (this.relR * 255f);
@@ -636,8 +636,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         try
         {
-            ctx = ctx.setBuilder(buffer);
-            ctx.draw(() -> "ColorSelector B", buffer.endNullable());
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
         catch (Exception ignored) { }
