@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
@@ -141,6 +140,18 @@ public class TestUtils
         bufferQuads.vertex((float) (box.minX - cx), (float) (box.minY - cy), (float) (box.minZ - cz)).color(color.r, color.g, color.b, color.a);
         bufferQuads.vertex((float) (box.maxX - cx), (float) (box.minY - cy), (float) (box.maxZ - cz)).color(color.r, color.g, color.b, color.a);
         bufferQuads.vertex((float) (box.maxX - cx), (float) (box.maxY - cy), (float) (box.maxZ - cz)).color(color.r, color.g, color.b, color.a);
+    }
+
+    public static void renderWallQuads(Box box, Vec3d cameraPos, Color4f color, BufferBuilder bufferQuads, MatrixStack.Entry e)
+    {
+        double cx = cameraPos.x;
+        double cy = cameraPos.y;
+        double cz = cameraPos.z;
+
+        bufferQuads.vertex(e, (float) (box.minX - cx), (float) (box.maxY - cy), (float) (box.minZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex(e, (float) (box.minX - cx), (float) (box.minY - cy), (float) (box.minZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex(e, (float) (box.maxX - cx), (float) (box.minY - cy), (float) (box.maxZ - cz)).color(color.r, color.g, color.b, color.a);
+        bufferQuads.vertex(e, (float) (box.maxX - cx), (float) (box.maxY - cy), (float) (box.maxZ - cz)).color(color.r, color.g, color.b, color.a);
     }
 
     public static void renderWallOutlines(

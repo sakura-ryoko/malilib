@@ -168,24 +168,24 @@ public class TestRenderHandler implements IRenderer
     @Override
     public void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
     {
-        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-        {
-            MinecraftClient mc = MinecraftClient.getInstance();
-
-            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
-
-            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-            {
-                if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-                {
-                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
-                }
-
-                TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
-            }
-
-            profiler.pop();
-        }
+//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+//        {
+//            MinecraftClient mc = MinecraftClient.getInstance();
+//
+//            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
+//
+//            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+//            {
+//                if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
+//                {
+//                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+//                }
+//
+//                TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+//            }
+//
+//            profiler.pop();
+//        }
     }
 
     @Override
@@ -207,19 +207,19 @@ public class TestRenderHandler implements IRenderer
                 profiler.swap(MaLiLibReference.MOD_ID + "_targeting_overlay");
                 this.renderTargetingOverlay(posMatrix, mc);
 
-//                profiler.swap(MaLiLibReference.MOD_ID + "_test_walls");
-//
-//                if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-//                {
-//                    if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-//                    {
-//                        TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
-//                    }
-//
-//                    TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
-//                }
-//
-//                profiler.pop();
+                profiler.swap(MaLiLibReference.MOD_ID + "_test_walls");
+
+                if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+                {
+                    if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
+                    {
+                        TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+                    }
+
+                    TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+                }
+
+                profiler.pop();
             }
         }
     }

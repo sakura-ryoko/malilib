@@ -342,7 +342,7 @@ public class RenderContext implements AutoCloseable
                 // Create & upload buffer
                 if (this.bufferIndex < 1)
                 {
-                    MaLiLib.LOGGER.warn("RenderContext#draw() [{}] --> upload()", this.name.get());
+                    //MaLiLib.LOGGER.warn("RenderContext#draw() [{}] --> upload()", this.name.get());
                     this.upload(name, meshData, target);
                 }
             }
@@ -352,7 +352,7 @@ public class RenderContext implements AutoCloseable
             {
                 float[] rgba = {ColorHelper.getRedFloat(this.color), ColorHelper.getGreenFloat(this.color), ColorHelper.getBlueFloat(this.color), ColorHelper.getAlphaFloat(this.color)};
 
-                MaLiLib.LOGGER.warn("RenderContext#draw() [{}] --> drawInternal()", this.name.get());
+                //MaLiLib.LOGGER.warn("RenderContext#draw() [{}] --> drawInternal()", this.name.get());
                 RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
                 this.drawInternal(otherFb, useOffset, setLineWidth);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -418,7 +418,7 @@ public class RenderContext implements AutoCloseable
                 texture2 = mainFb.useDepthAttachment ? mainFb.getDepthAttachment() : null;
             }
 
-            MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());
+            //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());
             GpuBuffer indexBuffer = this.shapeIndex.getIndexBuffer(this.bufferIndex);
 
             // Attach Frame buffers
@@ -427,7 +427,7 @@ public class RenderContext implements AutoCloseable
                                                .createRenderPass(texture1, OptionalInt.empty(),
                                                                  texture2, OptionalDouble.empty()))
             {
-                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}]", this.name.get(), this.shader.getLocation().toString());
+                //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}]", this.name.get(), this.shader.getLocation().toString());
                 pass.setPipeline(this.shader);
 
 //                for (int i = 0; i < 12; i++)
@@ -436,33 +436,33 @@ public class RenderContext implements AutoCloseable
 //
 //                    if (drawableTexture != null)
 //                    {
-//                        MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler() [{}]", this.name.get(), i);
+//                        //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler() [{}]", this.name.get(), i);
 //                        pass.bindSampler("Sampler"+i, drawableTexture);
 //                    }
 //                }
 
                 if (this.texture != null)
                 {
-                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler() [0]", this.name.get());
+                    //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler() [0]", this.name.get());
                     pass.bindSampler("Sampler0", this.texture.getGlTexture());
                 }
 
                 if (setLineWidth)
                 {
                     float width = this.lineWidth > 0.0f ? this.lineWidth : RenderSystem.getShaderLineWidth();
-                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setUniform() // lineWidth [{}]", this.name.get(), width);
+                    //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setUniform() // lineWidth [{}]", this.name.get(), width);
                     pass.setUniform("LineWidth", width);
                 }
 
-                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setVertexBuffer() [0]", this.name.get());
+                //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setVertexBuffer() [0]", this.name.get());
                 pass.setVertexBuffer(0, this.gpuBuffer);
-                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setIndexBuffer() [{}]", this.name.get(), this.bufferIndex);
+                //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setIndexBuffer() [{}]", this.name.get(), this.bufferIndex);
                 pass.setIndexBuffer(indexBuffer, this.shapeIndex.getIndexType());
-                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> drawIndexed() [0, {}]", this.name.get(), this.bufferIndex);
+                //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> drawIndexed() [0, {}]", this.name.get(), this.bufferIndex);
                 pass.drawIndexed(0, this.bufferIndex);
             }
 
-            MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> END", this.name.get());
+            //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> END", this.name.get());
 
             if (useOffset)
             {

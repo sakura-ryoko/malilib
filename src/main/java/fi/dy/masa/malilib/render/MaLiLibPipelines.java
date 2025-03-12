@@ -278,7 +278,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getPositionColorSimple()
     {
-        return POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL;
+        return POSITION_COLOR_MASA_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getPositionColor(Depth depth)

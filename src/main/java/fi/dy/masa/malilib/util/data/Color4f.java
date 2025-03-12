@@ -13,6 +13,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.math.ColorHelper;
 
 import fi.dy.masa.malilib.util.MathUtils;
 
@@ -138,6 +139,11 @@ public class Color4f
     public String toHexString()
     {
         return String.format("#%08X", this.intValue);
+    }
+
+    public int toVanillaArgb()
+    {
+        return ColorHelper.fromFloats(this.a, this.r, this.g, this.b);
     }
 
     @Override

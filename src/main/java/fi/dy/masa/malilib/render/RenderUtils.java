@@ -1290,7 +1290,7 @@ public class RenderUtils
 
         // Target "Center" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.start(() -> "TestTarget B", ShaderPipelines.LINES, BufferUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_MASA_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
         MatrixStack matrices = new MatrixStack();
@@ -1299,23 +1299,17 @@ public class RenderUtils
         MatrixStack.Entry e = matrices.peek();
 
         // Middle small rectangle
-//        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
-//        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
-//        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
-//        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
-//        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
 
 //        buffer.vertex(e, (float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 //        buffer.vertex(e, (float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 //        buffer.vertex(e, (float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 //        buffer.vertex(e, (float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 //        buffer.vertex(e, (float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
-
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
-        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
-        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
-        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
 
         try
         {
@@ -2418,7 +2412,7 @@ public class RenderUtils
         culling(false);
 
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_GREATER_DEPTH, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
