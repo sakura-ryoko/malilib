@@ -133,15 +133,15 @@ public abstract class MixinShaderPipelines
                         .withVertexFormat(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS)
                         .buildSnippet();
 
-        MaLiLibPipelines.LINES_TRANSLUCENT_STAGE =
+        MaLiLibPipelines.LINES_STAGE =
                 RenderPipeline.builder(MATRICES_COLOR_FOG_SNIPPET)
                         .withVertexShader("core/rendertype_lines")
                         .withFragmentShader("core/rendertype_lines")
                         .withUniform("LineWidth", UniformType.FLOAT)
                         .withUniform("ScreenSize", UniformType.VEC2)
-                        .withBlend(BlendFunction.TRANSLUCENT)
+//                        .withBlend(BlendFunction.TRANSLUCENT)
                         .withVertexFormat(VertexFormats.LINE_COLOR_NORMAL, VertexFormat.DrawMode.LINES)
-                        .buildSnippet();
+                        .buildSnippet();        // LINES?
 
         MaLiLibPipelines.LINES_MASA_STAGE =
                 RenderPipeline.builder(MATRICES_COLOR_FOG_SNIPPET)
@@ -157,6 +157,8 @@ public abstract class MixinShaderPipelines
                 RenderPipeline.builder(MATRICES_COLOR_SNIPPET)
                         .withVertexShader("core/position_color")
                         .withFragmentShader("core/position_color")
+                        .withUniform("LineWidth", UniformType.FLOAT)
+                        .withUniform("ScreenSize", UniformType.VEC2)
                         .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
                         .withBlend(BlendFunction.TRANSLUCENT)
                         .buildSnippet();
@@ -165,6 +167,8 @@ public abstract class MixinShaderPipelines
                 RenderPipeline.builder(MATRICES_COLOR_SNIPPET)
                         .withVertexShader("core/position_color")
                         .withFragmentShader("core/position_color")
+                        .withUniform("LineWidth", UniformType.FLOAT)
+                        .withUniform("ScreenSize", UniformType.VEC2)
                         .withVertexFormat(VertexFormats.POSITION_COLOR, VertexFormat.DrawMode.DEBUG_LINE_STRIP)
                         .withBlend(MASA_BLEND)
                         .buildSnippet();
@@ -497,27 +501,27 @@ public abstract class MixinShaderPipelines
                         .build()
                 );
 
-        // LINES_TRANSLUCENT
-        MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL =
-                register(RenderPipeline.builder(MaLiLibPipelines.LINES_TRANSLUCENT_STAGE)
-                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/lines/translucent/no_depth/no_cull")
+        // LINES
+        MaLiLibPipelines.LINES_NO_DEPTH_NO_CULL =
+                register(RenderPipeline.builder(MaLiLibPipelines.LINES_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/lines/no_depth/no_cull")
                                        .withCull(false)
                                        .withDepthWrite(false)
                                        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                                        .build()
                 );
 
-        MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH =
-                register(RenderPipeline.builder(MaLiLibPipelines.LINES_TRANSLUCENT_STAGE)
-                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/lines/translucent/no_depth")
+        MaLiLibPipelines.LINES_NO_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.LINES_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/lines/no_depth")
                                        .withDepthWrite(false)
                                        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                                        .build()
                 );
 
-        MaLiLibPipelines.LINES_TRANSLUCENT_NO_CULL =
-                register(RenderPipeline.builder(MaLiLibPipelines.LINES_TRANSLUCENT_STAGE)
-                                           .withLocation(MaLiLibReference.MOD_ID+"/pipeline/lines/translucent/no_cull")
+        MaLiLibPipelines.LINES_NO_CULL =
+                register(RenderPipeline.builder(MaLiLibPipelines.LINES_STAGE)
+                                           .withLocation(MaLiLibReference.MOD_ID+"/pipeline/lines/no_cull")
                                            .withCull(false)
                                            .build()
                 );

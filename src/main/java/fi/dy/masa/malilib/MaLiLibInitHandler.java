@@ -33,7 +33,7 @@ public class MaLiLibInitHandler implements IInitializationHandler
 //            RenderEventHandler.getInstance().registerWorldPreMainRenderer(renderer);
 //            RenderEventHandler.getInstance().registerWorldPostDebugRenderer(renderer);
 //            RenderEventHandler.getInstance().registerWorldPreParticleRenderer(renderer);
-//            RenderEventHandler.getInstance().registerWorldPreWeatherRenderer(renderer);
+            RenderEventHandler.getInstance().registerWorldPreWeatherRenderer(renderer);
             RenderEventHandler.getInstance().registerWorldLastRenderer(renderer);
 
             TickHandler.getInstance().registerClientTickHandler(TestSelector.INSTANCE);

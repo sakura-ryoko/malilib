@@ -19,7 +19,7 @@ public class MaLiLibPipelines
     public static RenderPipeline.Snippet POSITION_TEX_COLOR_MASA_STAGE;
 
     // LINES STAGES
-    public static RenderPipeline.Snippet LINES_TRANSLUCENT_STAGE;
+    public static RenderPipeline.Snippet LINES_STAGE;
     public static RenderPipeline.Snippet LINES_MASA_STAGE;
     public static RenderPipeline.Snippet DEBUG_LINES_TRANSLUCENT_STAGE;
     public static RenderPipeline.Snippet DEBUG_LINES_MASA_STAGE;
@@ -78,10 +78,10 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_TEX_COLOR_MASA_LESSER_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_GREATER_DEPTH;
 
-    // LINES_TRANSLUCENT
-    public static RenderPipeline LINES_TRANSLUCENT_NO_DEPTH_NO_CULL;
-    public static RenderPipeline LINES_TRANSLUCENT_NO_DEPTH;
-    public static RenderPipeline LINES_TRANSLUCENT_NO_CULL;
+    // LINES
+    public static RenderPipeline LINES_NO_DEPTH_NO_CULL;
+    public static RenderPipeline LINES_NO_DEPTH;
+    public static RenderPipeline LINES_NO_CULL;
 
     // LINES_MASA
     public static RenderPipeline LINES_MASA_NO_DEPTH_NO_CULL;
@@ -112,7 +112,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getPositionSimple()
     {
-        return POSITION_COLOR_MASA_NO_DEPTH_NO_CULL;
+        return POSITION_TRANSLUCENT_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getPosition(Depth depth)
@@ -195,7 +195,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getPositionTexSimple()
     {
-        return POSITION_TEX_MASA_NO_DEPTH_NO_CULL;
+        return POSITION_TEX_TRANSLUCENT_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getPositionTex(Depth depth)
@@ -278,7 +278,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getPositionColorSimple()
     {
-        return POSITION_COLOR_MASA_NO_DEPTH_NO_CULL;
+        return POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getPositionColor(Depth depth)
@@ -361,7 +361,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getPositionTexColorSimple()
     {
-        return POSITION_TEX_COLOR_MASA_NO_DEPTH_NO_CULL;
+        return POSITION_TEX_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getPositionTexColor(Depth depth)
@@ -470,25 +470,7 @@ public class MaLiLibPipelines
     {
         switch (type)
         {
-            case TRANSLUCENT ->
-            {
-                switch (depth)
-                {
-                    case NO_DEPTH ->
-                    {
-                        return culling ? LINES_TRANSLUCENT_NO_DEPTH : LINES_TRANSLUCENT_NO_DEPTH_NO_CULL;
-                    }
-                    case LESSER, GREATER ->
-                    {
-                        return LINES_TRANSLUCENT_NO_CULL;
-                    }
-                    default ->
-                    {
-                        return ShaderPipelines.LINES;
-                    }
-                }
-            }
-            case MASA ->
+            case MASA, TRANSLUCENT ->
             {
                 switch (depth)
                 {
@@ -508,14 +490,28 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.LINES;
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? LINES_NO_DEPTH : LINES_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER, GREATER ->
+                    {
+                        return LINES_NO_CULL;
+                    }
+                    default ->
+                    {
+                        return ShaderPipelines.LINES;
+                    }
+                }
             }
         }
     }
 
     public static RenderPipeline getDebugLinesSimple()
     {
-        return DEBUG_LINES_MASA_NO_DEPTH_NO_CULL;
+        return DEBUG_LINES_TRANSLUCENT_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getDebugLines(Depth depth)

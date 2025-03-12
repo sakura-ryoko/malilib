@@ -309,14 +309,13 @@ public class RenderUtils
 
         try
         {
-            // fixme
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
-        catch (Exception ignored)
+        catch (Exception err)
         {
+            MaLiLib.LOGGER.error("drawRect(): Draw Exception; {}", err.getMessage());
         }
-
         blend(false);
     }
 
@@ -540,11 +539,14 @@ public class RenderUtils
 
         try
         {
-            ctx.draw(fb(), buffer.endNullable());
+            // fb()
+            ctx.draw(buffer.endNullable());
             ctx.close();
         }
-        catch (Exception ignored) { }
-
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("drawGradientRect(): Draw Exception; {}", err.getMessage());
+        }
         blend(false);
     }
 
@@ -797,6 +799,18 @@ public class RenderUtils
         RenderUtils.drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
     }
 
+    public static void drawBlockBoundingBoxSidesBatchedQuads(BlockPos pos, Vec3d cameraPos, Color4f color, double expand, BufferBuilder buffer, MatrixStack.Entry e)
+    {
+        float minX = (float) (pos.getX() - cameraPos.x - expand);
+        float minY = (float) (pos.getY() - cameraPos.y - expand);
+        float minZ = (float) (pos.getZ() - cameraPos.z - expand);
+        float maxX = (float) (pos.getX() - cameraPos.x + expand + 1);
+        float maxY = (float) (pos.getY() - cameraPos.y + expand + 1);
+        float maxZ = (float) (pos.getZ() - cameraPos.z + expand + 1);
+
+        RenderUtils.drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer, e);
+    }
+
     /**
      * Assumes a BufferBuilder in GL_LINES mode has been initialized
      */
@@ -836,6 +850,14 @@ public class RenderUtils
         drawBoxHorizontalSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
         drawBoxTopBatchedQuads(minX, minZ, maxX, maxY, maxZ, color, buffer);
         drawBoxBottomBatchedQuads(minX, minY, minZ, maxX, maxZ, color, buffer);
+    }
+
+    public static void drawBoxAllSidesBatchedQuads(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+                                                   Color4f color, BufferBuilder buffer, MatrixStack.Entry e)
+    {
+        drawBoxHorizontalSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer, e);
+        drawBoxTopBatchedQuads(minX, minZ, maxX, maxY, maxZ, color, buffer, e);
+        drawBoxBottomBatchedQuads(minX, minY, minZ, maxX, maxZ, color, buffer, e);
     }
 
     /**
@@ -913,6 +935,34 @@ public class RenderUtils
         buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
     }
 
+    public static void drawBoxHorizontalSidesBatchedQuads(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
+                                                          Color4f color, BufferBuilder buffer, MatrixStack.Entry e)
+    {
+        // West side
+        buffer.vertex(e, minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+
+        // East side
+        buffer.vertex(e, maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+
+        // North side
+        buffer.vertex(e, maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+
+        // South side
+        buffer.vertex(e, minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+    }
+
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
      */
@@ -925,6 +975,15 @@ public class RenderUtils
         buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
     }
 
+    public static void drawBoxTopBatchedQuads(float minX, float minZ, float maxX, float maxY, float maxZ, Color4f color, BufferBuilder buffer, MatrixStack.Entry e)
+    {
+        // Top side
+        buffer.vertex(e, minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+    }
+
     /**
      * Assumes a BufferBuilder in GL_QUADS mode has been initialized
      */
@@ -935,6 +994,15 @@ public class RenderUtils
         buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
         buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
         buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+    }
+
+    public static void drawBoxBottomBatchedQuads(float minX, float minY, float minZ, float maxX, float maxZ, Color4f color, BufferBuilder buffer, MatrixStack.Entry e)
+    {
+        // Bottom side
+        buffer.vertex(e, maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(e, maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
     }
 
     /**
@@ -1087,7 +1155,10 @@ public class RenderUtils
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
-        catch (Exception ignored) { }
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("drawTextPlate(): Draw Exception; {}", err.getMessage());
+        }
 
         int textY = 0;
 
@@ -1153,7 +1224,7 @@ public class RenderUtils
 
         // Target "Side" -->
         // DEBUG_LINE_STRIP
-        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int quadAlpha = (int) (0.18f * 255f);
@@ -1217,22 +1288,22 @@ public class RenderUtils
         RenderSystem.lineWidth(1.6f);
         int wireColor = -1;
 
-        MatrixStack matrices = new MatrixStack();
-        matrices.push();
-
         // Target "Center" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget B", ShaderPipelines.LINES, BufferUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
-        //MatrixStack.Entry e = matrices.peek();
+        MatrixStack matrices = new MatrixStack();
+
+//        matrices.push();
+        MatrixStack.Entry e = matrices.peek();
 
         // Middle small rectangle
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
-        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
-        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
-        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+//        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+//        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
+//        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+//        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
+//        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c);
 
 //        buffer.vertex(e, (float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 //        buffer.vertex(e, (float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
@@ -1240,9 +1311,17 @@ public class RenderUtils
 //        buffer.vertex(e, (float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 //        buffer.vertex(e, (float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
 
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
+        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
+        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
+        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).normal(0.0f, 0.0f, 0.0f);
+
         try
         {
-            ctx.color(wireColor).lineWidth(1.6f).draw(buffer.endNullable(), true);
+            ctx.color(wireColor);
+            ctx.lineWidth(1.6f);
+            ctx.draw(buffer.endNullable(), true);
             ctx.reset();
         }
         catch (Exception err)
@@ -1250,11 +1329,12 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockTargetingOverlay():2: Draw Exception; {}", err.getMessage());
         }
 
-        matrices.pop();
+//        matrices.pop();
 
         // Target "Edges" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
-        buffer = ctx.start(() -> "TestTarget C", MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
+        // MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL
+        buffer = ctx.start(() -> "TestTarget C", ShaderPipelines.LINES, BufferUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
 //        // Bottom left
@@ -1273,9 +1353,9 @@ public class RenderUtils
 //        buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c);
 //        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c);
 
-        matrices.push();
-        MatrixStack.Entry e = matrices.peek();
-        //e = matrices.peek();
+//        matrices.push();
+//        MatrixStack.Entry e = matrices.peek();
+        e = matrices.peek();
 
         // Bottom left
         buffer.vertex(e, (float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).normal(e, 0.0f, 0.0f, 0.0f);
@@ -1295,7 +1375,9 @@ public class RenderUtils
 
         try
         {
-            ctx.color(wireColor).draw(buffer.endNullable());
+            ctx.color(wireColor);
+            ctx.lineWidth(1.6f);
+            ctx.draw(buffer.endNullable(), true);
             ctx.close();
         }
         catch (Exception err)
@@ -1303,7 +1385,7 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockTargetingOverlay():3: Draw Exception; {}", err.getMessage());
         }
 
-        matrices.pop();
+//        matrices.pop();
         global4fStack.popMatrix();
         //RenderSystem.applyModelViewMatrix();
     }
@@ -1323,7 +1405,7 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
-        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestTarget A", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         int a = (int) (color.a * 255f);
@@ -1350,7 +1432,7 @@ public class RenderUtils
 
         RenderSystem.lineWidth(1.6f);
 
-        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget B", MaLiLibPipelines.DEBUG_LINES_MASA_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         //ctx.setShader(ShaderPipelines.LINE_STRIP);
 
         // Middle rectangle
@@ -1361,7 +1443,8 @@ public class RenderUtils
 
         try
         {
-            ctx.lineWidth(1.6f).draw(buffer.endNullable(), true);
+            ctx.lineWidth(1.6f);
+            ctx.draw(buffer.endNullable(), true);
             ctx.close();
         }
         catch (Exception err)
@@ -1923,7 +2006,7 @@ public class RenderUtils
         matrix4fStack.rotateY(matrix4fRotateFix(225));
         matrix4fStack.scale(0.625f, 0.625f, 0.625f);
 
-        renderModel(model, state);
+        renderBlockModel(model, state);
         //blend(false);
         matrix4fStack.popMatrix();
     }
@@ -1940,7 +2023,7 @@ public class RenderUtils
     }
 
     // FIXME, is this even used?
-    public static void renderModel(BlockStateModel model, BlockState state)
+    public static void renderBlockModel(BlockStateModel model, BlockState state)
     {
         Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
         matrix4fStack.pushMatrix();
@@ -1971,8 +2054,10 @@ public class RenderUtils
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
-        catch (Exception ignored) { }
-
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("renderBlockModel(): Draw Exception; {}", err.getMessage());
+        }
         matrix4fStack.popMatrix();
     }
 
@@ -2088,7 +2173,7 @@ public class RenderUtils
         RenderSystem.lineWidth(lineWidth);
         //RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR); // DEBUG_LINE_STRIP
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2100,8 +2185,10 @@ public class RenderUtils
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
-        catch (Exception ignored) { }
-
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("renderBlockOutline(): Draw Exception; {}", err.getMessage());
+        }
         matrices.pop();
     }
 
@@ -2173,7 +2260,7 @@ public class RenderUtils
 
         RenderSystem.lineWidth(lineWidth);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2224,8 +2311,10 @@ public class RenderUtils
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
-        catch (Exception ignored) { }
-
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("renderBlockOutlineOverlapping(): Draw Exception; {}", err.getMessage());
+        }
         matrices.pop();
     }
 
@@ -2252,7 +2341,7 @@ public class RenderUtils
     private static void drawBoundingBoxEdges(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
                                              Color4f colorX, Color4f colorY, Color4f colorZ)
     {
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2268,8 +2357,10 @@ public class RenderUtils
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
-        catch (Exception ignored) { }
-
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("drawBoundingBoxEdges(): Draw Exception; {}", err.getMessage());
+        }
         matrices.pop();
     }
 
@@ -2337,8 +2428,10 @@ public class RenderUtils
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
-        catch (Exception ignored) { }
-
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("renderAreaSides(): Draw Exception; {}", err.getMessage());
+        }
         culling(true);
         blend(false);
     }
@@ -2397,7 +2490,7 @@ public class RenderUtils
 
         RenderSystem.lineWidth(lineWidth);
 
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2520,8 +2613,10 @@ public class RenderUtils
             ctx.draw(buffer.endNullable());
             ctx.close();
         }
-        catch (Exception ignored) { }
-
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("drawAreaOutlineNoCorners(): Draw Exception; {}", err.getMessage());
+        }
         matrices.pop();
     }
 }
