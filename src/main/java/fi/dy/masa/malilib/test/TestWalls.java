@@ -111,10 +111,8 @@ public class TestWalls implements AutoCloseable
         if (this.hasData && !this.boxes.isEmpty() && this.center != null)
         {
             MatrixStack matrices = new MatrixStack();
-            matrices.push();
             this.renderQuads(matrices, camera, mc, profiler);
             this.renderOutlines(matrices, camera, mc, profiler);
-            matrices.pop();
             this.boxes.clear();
             this.center = null;
             this.hasData = false;
@@ -145,12 +143,15 @@ public class TestWalls implements AutoCloseable
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
 
+        matrices.push();
         RenderUtils.drawBlockBoundingBoxSidesBatchedQuads(this.center, cameraPos, quadsColor, 0.001, builder, matrices.peek());
 
 //        for (Box entry : this.boxes)
 //        {
 //            TestUtils.renderWallQuads(entry, cameraPos, quadsColor, builder);
 //        }
+
+        matrices.pop();
 
         try
         {
@@ -189,7 +190,7 @@ public class TestWalls implements AutoCloseable
 //        this.preRender();
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
-//        matrices.push();
+        matrices.push();
 
         RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(this.center, cameraPos, linesColor, 0.001, builder, matrices.peek());
 
@@ -198,7 +199,7 @@ public class TestWalls implements AutoCloseable
 //            TestUtils.renderWallOutlines(entry, 16, 16, true, cameraPos, linesColor, builder, e);
 //        }
 
-//        matrices.pop();
+        matrices.pop();
         matrix4fstack.popMatrix();
 
 //        MaLiLib.LOGGER.warn("TestWalls#renderOutlines(): PRE-DRAW");
