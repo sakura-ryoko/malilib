@@ -119,7 +119,7 @@ public class RenderContext implements AutoCloseable
         return this.format;
     }
 
-    public VertexFormat.DrawMode getVertexFormatMode()
+    public VertexFormat.DrawMode getDrawMode()
     {
         return this.drawMode;
     }
@@ -203,6 +203,7 @@ public class RenderContext implements AutoCloseable
     public void upload() throws RuntimeException
     {
         this.ensureSafeNoShader();
+        this.ensureBuilding(this.builder);
         this.upload(this.name, this.builder.endNullable(), BufferType.VERTICES);
     }
 
@@ -241,7 +242,11 @@ public class RenderContext implements AutoCloseable
             }
 
             this.gpuBuffer = RenderSystem.getDevice().createBuffer(this.name, target, this.usage, expectedSize);
-            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(this.gpuBuffer, meshData.getBuffer(), 0);
+
+            RenderSystem.getDevice()
+                        .createCommandEncoder()
+                        .writeToBuffer(this.gpuBuffer, meshData.getBuffer(), 0);
+
             this.bufferIndex = meshData.getDrawParameters().indexCount();
             meshData.close();
         }
@@ -352,7 +357,7 @@ public class RenderContext implements AutoCloseable
             {
                 float[] rgba = {ColorHelper.getRedFloat(this.color), ColorHelper.getGreenFloat(this.color), ColorHelper.getBlueFloat(this.color), ColorHelper.getAlphaFloat(this.color)};
 
-                //MaLiLib.LOGGER.warn("RenderContext#draw() [{}] --> drawInternal()", this.name.get());
+                //MaLiLib.LOGGER.warn("RenderContext#drawPost() [{}] --> drawInternal()", this.name.get());
                 RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
                 this.drawInternal(otherFb, useOffset, setLineWidth);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
