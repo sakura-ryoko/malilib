@@ -13,15 +13,12 @@ import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.ResourceTexture;
-import net.minecraft.client.texture.TextureContents;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TriState;
 import net.minecraft.util.math.ColorHelper;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
@@ -37,7 +34,8 @@ public class RenderContext implements AutoCloseable
     private RenderPipeline shader;
     private VertexFormat format;
     private VertexFormat.DrawMode drawMode;
-    private ResourceTexture texture;
+    private GpuTexture texture;
+    private int textureId;
     private float[] offset;
     private float lineWidth;
     private int color;
@@ -67,6 +65,7 @@ public class RenderContext implements AutoCloseable
         this.gpuBuffer = null;
         this.bufferIndex = -1;
         this.texture = null;
+        this.textureId = -1;
         this.offset = new float[]{0f, 0f, 0f};
         this.color = -1;
         this.lineWidth = 1.0f;
@@ -97,6 +96,7 @@ public class RenderContext implements AutoCloseable
         this.gpuBuffer = null;
         this.bufferIndex = -1;
         this.texture = null;
+        this.textureId = -1;
         this.offset = new float[]{0f, 0f, 0f};
         this.color = -1;
         this.lineWidth = 1.0f;
@@ -257,33 +257,105 @@ public class RenderContext implements AutoCloseable
      * -
      * Performs the Texture Binding/Unbind for the "Shader Texture" layer
      */
-    public RenderContext bindTexture(Identifier id)
+    public void bindTexture(Identifier id, int textureId) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-//        RenderUtils.tex().registerTexture(id);
-//        this.texture = RenderUtils.tex().getTexture(id);
-//        this.texture.setFilter(TriState.FALSE, false);
-//        RenderSystem.setShaderTexture(0, this.texture.getGlTexture());
 
-        this.texture = new ResourceTexture(id);
-        RenderUtils.tex().registerTexture(id, this.texture);
-
-        try (TextureContents contents = this.texture.loadContents(RenderUtils.mc().getResourceManager()))
+        if (textureId < 0 || textureId > 12)
         {
-            NativeImage image = contents.image();
-            MaLiLib.debugLog("NativeImage Id [{}] //  Width [{}], Height [{}] // Format: [{}]", image.imageId(), image.getWidth(), image.getHeight(), image.getFormat().name());
+            throw new RuntimeException("Invalid textureId of: "+textureId+" for texture: "+id.toString());
+        }
+
+        if (TexturePreloadManager.INSTANCE.hasTexture(id))
+        {
+            this.texture = TexturePreloadManager.INSTANCE.getTexture(id).orElse(null);
+            this.textureId = TexturePreloadManager.INSTANCE.getTextureId(id).orElse(-1);
+
+            if (this.texture != null && this.textureId > -1)
+            {
+                RenderSystem.setShaderTexture(this.textureId, this.texture);
+            }
+            else
+            {
+                TexturePreloadManager.INSTANCE.reloadTexture(id);
+                throw new RuntimeException("bindTexture: Preload texture for ["+id.toString()+"] is empty!");
+            }
+
+            return;
+        }
+
+        try
+        {
+            if (TexturePreloadManager.INSTANCE.registerTexture(id, textureId))
+            {
+                Optional<GpuTexture> opt = TexturePreloadManager.INSTANCE.getTexture(id);
+
+                if (opt.isPresent())
+                {
+//                    MaLiLib.LOGGER.warn("bindTexture() -> OK");
+                    this.texture = opt.get();
+                    this.textureId = textureId;
+                    RenderSystem.setShaderTexture(textureId, opt.get());
+                }
+                else
+                {
+                    throw new RuntimeException("bindTexture: Failed to get Texture ["+id.toString()+"]");
+                }
+            }
         }
         catch (Exception err)
         {
-            MaLiLib.LOGGER.error("bindTexture exception; {}", err.getMessage());
+            MaLiLib.LOGGER.error("bindTexture: Failed to register texture [{}], Exception; {}", id.toString(), err.getMessage());
             throw new RuntimeException(err);
         }
 
-        this.texture.setFilter(TriState.FALSE, false);
-        RenderSystem.setShaderTexture(0, this.texture.getGlTexture());
-
-        return this;
+//        NativeImageBackedTexture newTexture = this.loadFile(id);
+//
+//        if (newTexture != null)
+//        {
+//            RenderUtils.tex().registerTexture(id, newTexture);
+//            newTexture.upload();
+//            this.texture = newTexture.getGlTexture();
+//            this.textureId = textureId;
+//            RenderSystem.setShaderTexture(this.textureId, this.texture);
+////            MaLiLib.LOGGER.warn("bindTexture() -> OK");
+//        }
+//        else
+//        {
+//            MaLiLib.LOGGER.error("Error uploading texture [{}]", id.toString());
+//
+//            if (this.texture != null)
+//            {
+//                this.texture.close();
+//            }
+//
+//            this.texture = null;
+//            this.textureId = -1;
+//        }
     }
+
+//    private @Nullable NativeImageBackedTexture loadFile(Identifier texture)
+//    {
+//        try
+//        {
+//            InputStream inputStream = RenderUtils.mc().getResourceManager().open(texture);
+//
+//            try (NativeImage image = NativeImage.read(inputStream))
+//            {
+//                return new NativeImageBackedTexture(texture::toString, image.getWidth(), image.getHeight(), false);
+//            }
+//            catch (Exception err)
+//            {
+//                MaLiLib.LOGGER.error("RenderContext: Failed to read texture: '{}'; Exception: {}", texture.toString(), err.getMessage());
+//            }
+//        }
+//        catch (Exception err)
+//        {
+//            MaLiLib.LOGGER.error("RenderContext: Error opening input stream for texture: '{}'; Exception: {}", texture.toString(), err.getMessage());
+//        }
+//
+//        return null;
+//    }
 
     public void unbindTexture(@Nullable Identifier id)
     {
@@ -446,10 +518,10 @@ public class RenderContext implements AutoCloseable
 //                    }
 //                }
 
-                if (this.texture != null)
+                if (this.textureId > -1 && this.textureId < 12 && this.texture != null)
                 {
-                    //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler() [0]", this.name.get());
-                    pass.bindSampler("Sampler0", this.texture.getGlTexture());
+                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler({}) [{}]", this.name.get(), this.textureId, this.texture.getLabel());
+                    pass.bindSampler("Sampler"+this.textureId, this.texture);
                 }
 
                 if (setLineWidth)

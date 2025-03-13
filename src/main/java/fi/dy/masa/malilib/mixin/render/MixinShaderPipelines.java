@@ -102,6 +102,7 @@ public abstract class MixinShaderPipelines
                         .withVertexShader("core/position_tex")
                         .withFragmentShader("core/position_tex")
                         .withSampler("Sampler0")
+                        .withSampler("Sampler10")
                         .withBlend(BlendFunction.TRANSLUCENT)
                         .withVertexFormat(VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS)
                         .buildSnippet();
@@ -111,6 +112,7 @@ public abstract class MixinShaderPipelines
                         .withVertexShader("core/position_tex")
                         .withFragmentShader("core/position_tex")
                         .withSampler("Sampler0")
+                        .withSampler("Sampler10")
                         .withBlend(MASA_BLEND)
                         .withVertexFormat(VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS)
                         .buildSnippet();
@@ -120,6 +122,7 @@ public abstract class MixinShaderPipelines
                         .withVertexShader("core/position_tex_color")
                         .withFragmentShader("core/position_tex_color")
                         .withSampler("Sampler0")
+                        .withSampler("Sampler10")
                         .withBlend(BlendFunction.TRANSLUCENT)
                         .withVertexFormat(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS)
                         .buildSnippet();
@@ -129,6 +132,7 @@ public abstract class MixinShaderPipelines
                         .withVertexShader("core/position_tex_color")
                         .withFragmentShader("core/position_tex_color")
                         .withSampler("Sampler0")
+                        .withSampler("Sampler10")
                         .withBlend(MASA_BLEND)
                         .withVertexFormat(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS)
                         .buildSnippet();
@@ -140,8 +144,8 @@ public abstract class MixinShaderPipelines
                         .withUniform("LineWidth", UniformType.FLOAT)
                         .withUniform("ScreenSize", UniformType.VEC2)
 //                        .withBlend(BlendFunction.TRANSLUCENT)
-                        .withVertexFormat(VertexFormats.LINE_COLOR_NORMAL, VertexFormat.DrawMode.LINES)
-                        .buildSnippet();        // LINES?
+                        .withVertexFormat(VertexFormats.POSITION_COLOR_NORMAL, VertexFormat.DrawMode.LINES)
+                        .buildSnippet();
 
         MaLiLibPipelines.LINES_MASA_STAGE =
                 RenderPipeline.builder(MATRICES_COLOR_FOG_SNIPPET)
@@ -150,7 +154,7 @@ public abstract class MixinShaderPipelines
                         .withUniform("LineWidth", UniformType.FLOAT)
                         .withUniform("ScreenSize", UniformType.VEC2)
                         .withBlend(MASA_BLEND)
-                        .withVertexFormat(VertexFormats.LINE_COLOR_NORMAL, VertexFormat.DrawMode.LINES)
+                        .withVertexFormat(VertexFormats.POSITION_COLOR_NORMAL, VertexFormat.DrawMode.LINES)
                         .buildSnippet();
 
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE =
