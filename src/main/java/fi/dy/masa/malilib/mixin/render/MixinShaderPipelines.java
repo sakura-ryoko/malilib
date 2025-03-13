@@ -102,7 +102,6 @@ public abstract class MixinShaderPipelines
                         .withVertexShader("core/position_tex")
                         .withFragmentShader("core/position_tex")
                         .withSampler("Sampler0")
-                        .withSampler("Sampler10")
                         .withBlend(BlendFunction.TRANSLUCENT)
                         .withVertexFormat(VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS)
                         .buildSnippet();
@@ -112,7 +111,6 @@ public abstract class MixinShaderPipelines
                         .withVertexShader("core/position_tex")
                         .withFragmentShader("core/position_tex")
                         .withSampler("Sampler0")
-                        .withSampler("Sampler10")
                         .withBlend(MASA_BLEND)
                         .withVertexFormat(VertexFormats.POSITION_TEXTURE, VertexFormat.DrawMode.QUADS)
                         .buildSnippet();
@@ -122,7 +120,6 @@ public abstract class MixinShaderPipelines
                         .withVertexShader("core/position_tex_color")
                         .withFragmentShader("core/position_tex_color")
                         .withSampler("Sampler0")
-                        .withSampler("Sampler10")
                         .withBlend(BlendFunction.TRANSLUCENT)
                         .withVertexFormat(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS)
                         .buildSnippet();
@@ -132,7 +129,6 @@ public abstract class MixinShaderPipelines
                         .withVertexShader("core/position_tex_color")
                         .withFragmentShader("core/position_tex_color")
                         .withSampler("Sampler0")
-                        .withSampler("Sampler10")
                         .withBlend(MASA_BLEND)
                         .withVertexFormat(VertexFormats.POSITION_TEXTURE_COLOR, VertexFormat.DrawMode.QUADS)
                         .buildSnippet();
