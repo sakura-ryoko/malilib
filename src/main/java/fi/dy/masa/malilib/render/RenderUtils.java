@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.model.BlockModelPart;
 import net.minecraft.client.render.model.BlockStateModel;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.texture.*;
+
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
@@ -26,8 +26,6 @@ import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
@@ -44,6 +42,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TriState;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.LocalRandom;
@@ -150,11 +149,18 @@ public class RenderUtils
         GlStateManager._polygonOffset(factor, units);
     }
 
-    @Deprecated
-    public static void bindTexture(Identifier texture)
+    public static ResourceTexture bindTexture(Identifier texture, int textureId)
     {
-        AbstractTexture tex = tex().getTexture(texture);
-        RenderSystem.setShaderTexture(0, tex.getGlTexture());
+        if (textureId < 0 || textureId > 12)
+        {
+            throw new RuntimeException("Invalid textureId of: "+textureId+" for texture: "+texture.toString());
+        }
+
+        ResourceTexture tex = (ResourceTexture) tex().getTexture(texture);
+        tex.setFilter(TriState.DEFAULT, false);
+        RenderSystem.setShaderTexture(textureId, tex.getGlTexture());
+
+        return tex;
     }
 
     /**

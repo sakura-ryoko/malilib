@@ -1,8 +1,5 @@
 package fi.dy.masa.malilib.render;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
@@ -20,16 +17,16 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.ResourceTexture;
+import net.minecraft.client.texture.TextureContents;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TriState;
 import net.minecraft.util.math.ColorHelper;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
-import fi.dy.masa.malilib.util.FileUtils;
 
 public class RenderContext implements AutoCloseable
 {
@@ -42,7 +39,7 @@ public class RenderContext implements AutoCloseable
     private RenderPipeline shader;
     private VertexFormat format;
     private VertexFormat.DrawMode drawMode;
-    private NativeImageBackedTexture texture;
+    private ResourceTexture texture;
     private int textureId;
     private float[] offset;
     private float lineWidth;
@@ -72,6 +69,7 @@ public class RenderContext implements AutoCloseable
         this.usage = usage;
         this.gpuBuffer = null;
         this.bufferIndex = -1;
+        // We don't need to reset this, in case we need to re-use the texture
 //        this.texture = null;
         this.textureId = -1;
         this.offset = new float[]{0f, 0f, 0f};
@@ -103,6 +101,7 @@ public class RenderContext implements AutoCloseable
         this.usage = usage;
         this.gpuBuffer = null;
         this.bufferIndex = -1;
+        // We don't need to reset this, in case we need to re-use the texture
 //        this.texture = null;
         this.textureId = -1;
         this.offset = new float[]{0f, 0f, 0f};
@@ -110,6 +109,11 @@ public class RenderContext implements AutoCloseable
         this.lineWidth = 1.0f;
         this.started = true;
         return this.builder;
+    }
+
+    public String getName()
+    {
+        return this.name.get();
     }
 
     public BufferBuilder getBuilder()
@@ -165,17 +169,6 @@ public class RenderContext implements AutoCloseable
         this.builder = builder;
         return this;
     }
-
-//    public RenderContext setShader(RenderPipeline shader) throws RuntimeException
-//    {
-//        if (this.format != shader.getVertexFormat() || this.drawMode != shader.getVertexFormatMode())
-//        {
-//            throw new RuntimeException("Shader does not match Format/Draw mode!");
-//        }
-//
-//        this.shader = shader;
-//        return this;
-//    }
 
     public RenderContext lineWidth(float width)
     {
@@ -265,7 +258,7 @@ public class RenderContext implements AutoCloseable
      * -
      * Performs the Texture Binding/Unbind for the "Shader Texture" layer
      */
-    public void bindTexture(Identifier id, int textureId) throws RuntimeException
+    public void bindTexture(Identifier id, int textureId, int width, int height) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
 
@@ -274,38 +267,36 @@ public class RenderContext implements AutoCloseable
             throw new RuntimeException("Invalid textureId of: "+textureId+" for texture: "+id.toString());
         }
 
-        if (!this.isTextureValid())
+        try
         {
-            this.texture = this.loadFile(id);
-
-            if (this.texture != null)
+            // Verify that we potentially have the correct texture by checking various values
+            while (!this.isTextureValid(width, height))
             {
-                this.texture.upload();
-                RenderUtils.tex().registerTexture(id, this.texture);
+                this.texture = (ResourceTexture) RenderUtils.tex().getTexture(id);
+
+                if (this.isTextureValid(width, height))
+                {
+                    if (this.texture != null)
+                    {
+                        this.texture.setFilter(TriState.DEFAULT, false);
+                        RenderSystem.setShaderTexture(textureId, this.texture.getGlTexture());
+                    }
+
+                    break;
+                }
             }
         }
+        catch (Exception err)
+        {
+            throw new RuntimeException("Exception reading Texture ["+id.toString()+"]: "+err.getMessage());
+        }
 
+        // General failure & cleanup
         if (this.texture != null)
         {
-            Path dir = FileUtils.getConfigDirectoryAsPath().resolve(MaLiLibReference.MOD_ID).resolve("textures");
-
-            try
-            {
-                if (!Files.isDirectory(dir))
-                {
-                    Files.createDirectory(dir);
-                }
-
-                this.texture.save(id, dir);
-            }
-            catch (Exception err)
-            {
-                MaLiLib.LOGGER.error("bindTexture: Error saving debug texture for [{}]", id.toString());
-            }
-
+            // Simple texture rebind since we already have a valid texture
             this.textureId = textureId;
             RenderSystem.setShaderTexture(this.textureId, this.texture.getGlTexture());
-//            MaLiLib.LOGGER.warn("bindTexture() -> OK");
             return;
         }
 
@@ -320,15 +311,33 @@ public class RenderContext implements AutoCloseable
         this.textureId = -1;
     }
 
-    private boolean isTextureValid()
+    private boolean isTextureValid(int width, int height)
     {
         if (this.texture == null)
         {
             return false;
         }
 
+        try (TextureContents content = this.texture.loadContents(RenderUtils.mc().getResourceManager()))
+        {
+            NativeImage image = content.image();
+
+            if (image == null || image.getWidth() != width || image.getHeight() != height)
+            {
+                this.texture.close();
+                this.texture = null;
+                return false;
+            }
+        }
+        catch (Exception e)
+        {
+            this.texture.close();
+            this.texture = null;
+            return false;
+        }
+
         if (((IMixinAbstractTexture) this.texture).malilib_getGlTexture() == null ||
-            this.texture.getGlTexture().isClosed())
+                this.texture.getGlTexture().isClosed())
         {
             this.texture.close();
             this.texture = null;
@@ -338,28 +347,63 @@ public class RenderContext implements AutoCloseable
         return true;
     }
 
-    private @Nullable NativeImageBackedTexture loadFile(Identifier texture)
-    {
-        try
-        {
-            InputStream inputStream = RenderUtils.mc().getResourceManager().open(texture);
+//    private @Nullable NativeImageBackedTexture loadFile(Identifier texture)
+//    {
+//        try
+//        {
+//            InputStream inputStream = RenderUtils.mc().getResourceManager().open(texture);
+//
+//            try (NativeImage image = NativeImage.read(inputStream))
+//            {
+//                return new NativeImageBackedTexture(texture::toString, image.getWidth(), image.getHeight(), false);
+//            }
+//            catch (Exception err)
+//            {
+//                MaLiLib.LOGGER.error("RenderContext: Failed to read texture: '{}'; Exception: {}", texture.toString(), err.getMessage());
+//            }
+//        }
+//        catch (Exception err)
+//        {
+//            MaLiLib.LOGGER.error("RenderContext: Error opening input stream for texture: '{}'; Exception: {}", texture.toString(), err.getMessage());
+//        }
+//
+//        return null;
+//    }
 
-            try (NativeImage image = NativeImage.read(inputStream))
-            {
-                return new NativeImageBackedTexture(texture::toString, image.getWidth(), image.getHeight(), false);
-            }
-            catch (Exception err)
-            {
-                MaLiLib.LOGGER.error("RenderContext: Failed to read texture: '{}'; Exception: {}", texture.toString(), err.getMessage());
-            }
-        }
-        catch (Exception err)
-        {
-            MaLiLib.LOGGER.error("RenderContext: Error opening input stream for texture: '{}'; Exception: {}", texture.toString(), err.getMessage());
-        }
+//    private void dumpTexture(Identifier id)
+//    {
+//        Path dir = FileUtils.getConfigDirectoryAsPath().resolve(Reference.MOD_ID).resolve("textures");
+//
+//        try (TextureContents content = this.texture.loadContents(RenderUtils.mc().getResourceManager()))
+//        {
+//            if (!Files.isDirectory(dir))
+//            {
+//                Files.createDirectory(dir);
+//            }
+//
+//            content.image().writeTo(dir.resolve(FileNameUtils.generateSimpleSafeFileName(id.toString())));
+//        }
+//        catch (Exception err)
+//        {
+//            MaLiLib.LOGGER.error("bindTexture: Error saving debug texture for [{}]", id.toString());
+//        }
+//    }
 
-        return null;
-    }
+//    private void dumpTextureManager()
+//    {
+//        Path dir = FileUtils.getConfigDirectoryAsPath().resolve(Reference.MOD_ID).resolve("textures/manager_dump");
+//
+//        try
+//        {
+//            if (!Files.isDirectory(dir))
+//            {
+//                Files.createDirectory(dir);
+//            }
+//
+//            RenderUtils.tex().dumpDynamicTextures(dir);
+//        }
+//        catch (Exception ignored) {}
+//    }
 
     public void unbindTexture(@Nullable Identifier id)
     {
@@ -522,7 +566,7 @@ public class RenderContext implements AutoCloseable
 //                    }
 //                }
 
-                if (this.textureId > -1 && this.textureId < 12 && this.isTextureValid())
+                if (this.textureId > -1 && this.textureId < 12 && this.texture != null)
                 {
                     MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler({}) [{}]", this.name.get(), this.textureId, this.texture.getGlTexture().getLabel());
                     pass.bindSampler("Sampler"+this.textureId, this.texture.getGlTexture());
@@ -626,13 +670,6 @@ public class RenderContext implements AutoCloseable
 
     public void reset()
     {
-//        if (this.texture != null)
-//        {
-//            this.unbindTexture(null);
-//            this.texture.close();
-//            this.texture = null;
-//        }
-
         if (this.gpuBuffer != null)
         {
             this.gpuBuffer.close();
@@ -675,6 +712,12 @@ public class RenderContext implements AutoCloseable
     @Override
     public void close() throws Exception
     {
+        if (this.texture != null)
+        {
+            this.unbindTexture(this.texture.getId());
+            this.texture.close();
+        }
+
         this.reset();
     }
 }
