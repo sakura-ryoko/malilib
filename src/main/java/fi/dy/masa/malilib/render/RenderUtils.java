@@ -2319,7 +2319,7 @@ public class RenderUtils
     }
 
     public static void renderAreaOutline(BlockPos pos1, BlockPos pos2, float lineWidth,
-                                         Color4f colorX, Color4f colorY, Color4f colorZ, MatrixStack matrices)
+                                         Color4f colorX, Color4f colorY, Color4f colorZ)
     {
         RenderSystem.lineWidth(lineWidth);
 
