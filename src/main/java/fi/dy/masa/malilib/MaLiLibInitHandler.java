@@ -10,7 +10,6 @@ import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import fi.dy.masa.malilib.interfaces.IRenderer;
-import fi.dy.masa.malilib.render.TexturePreloadManager;
 import fi.dy.masa.malilib.test.TestInputHandler;
 import fi.dy.masa.malilib.test.TestRenderHandler;
 import fi.dy.masa.malilib.test.TestSelector;
@@ -24,8 +23,6 @@ public class MaLiLibInitHandler implements IInitializationHandler
 
         InputEventHandler.getKeybindManager().registerKeybindProvider(MaLiLibInputHandler.getInstance());
         MaLiLibConfigs.Generic.OPEN_GUI_CONFIGS.getKeybind().setCallback(new CallbackOpenConfigGui());
-
-        TickHandler.getInstance().registerClientTickHandler(TexturePreloadManager.INSTANCE);
 
         if (MaLiLibReference.DEBUG_MODE)
         {

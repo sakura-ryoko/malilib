@@ -4,8 +4,6 @@
     "compatibilityLevel": "JAVA_21",
     "minVersion": "0.8",
     "mixins": [
-        "network.MixinClientConfigurationNetworkHandler",
-        "network.MixinClientPlayNetworkHandler",
         "MixinIntegratedServer",
         "MixinItemStack",
         "MixinKeyboard",
@@ -20,6 +18,9 @@
         "entity.MixinAbstractHorseEntity",
         "entity.MixinPiglinEntity",
         "entity.MixinSimpleInventory",
+        "network.MixinClientConfigurationNetworkHandler",
+        "network.MixinClientPlayNetworkHandler",
+        "render.IMixinAbstractTexture",
         "render.IMixinBufferBuilder",
         "render.IMixinDrawContext",
         "render.IMixinHandledScreen",
