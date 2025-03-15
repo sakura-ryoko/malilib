@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.render;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import net.minecraft.client.gl.ShaderPipelines;
+import net.minecraft.client.gl.RenderPipelines;
 
 /**
  * This is meant as a central place to manage all custom Render Pipelines
@@ -133,7 +133,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.POSITION_SKY;
+                return RenderPipelines.POSITION_SKY;
             }
         }
     }
@@ -160,7 +160,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.POSITION_SKY;
+                        return RenderPipelines.POSITION_SKY;
                     }
                 }
             }
@@ -182,13 +182,13 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.POSITION_SKY;
+                        return RenderPipelines.POSITION_SKY;
                     }
                 }
             }
             default ->
             {
-                return ShaderPipelines.POSITION_SKY;
+                return RenderPipelines.POSITION_SKY;
             }
         }
     }
@@ -216,7 +216,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.POSITION_TEX_PANORAMA;
+                return RenderPipelines.POSITION_TEX_PANORAMA;
             }
         }
     }
@@ -243,7 +243,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.POSITION_TEX_PANORAMA;
+                        return RenderPipelines.POSITION_TEX_PANORAMA;
                     }
                 }
             }
@@ -265,13 +265,13 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.POSITION_TEX_PANORAMA;
+                        return RenderPipelines.POSITION_TEX_PANORAMA;
                     }
                 }
             }
             default ->
             {
-                return ShaderPipelines.POSITION_TEX_PANORAMA;
+                return RenderPipelines.POSITION_TEX_PANORAMA;
             }
         }
     }
@@ -299,7 +299,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
+                return RenderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
             }
         }
     }
@@ -326,7 +326,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
+                        return RenderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
                     }
                 }
             }
@@ -348,13 +348,13 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
+                        return RenderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
                     }
                 }
             }
             default ->
             {
-                return ShaderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
+                return RenderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
             }
         }
     }
@@ -382,7 +382,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.POSITION_TEX_COLOR_END_SKY;
+                return RenderPipelines.POSITION_TEX_COLOR_END_SKY;
             }
         }
     }
@@ -409,7 +409,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.POSITION_TEX_COLOR_END_SKY;
+                        return RenderPipelines.POSITION_TEX_COLOR_END_SKY;
                     }
                 }
             }
@@ -431,13 +431,13 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.POSITION_TEX_COLOR_END_SKY;
+                        return RenderPipelines.POSITION_TEX_COLOR_END_SKY;
                     }
                 }
             }
             default ->
             {
-                return ShaderPipelines.POSITION_TEX_COLOR_CELESTIAL;
+                return RenderPipelines.POSITION_TEX_COLOR_CELESTIAL;
             }
         }
     }
@@ -461,7 +461,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.LINES;
+                return RenderPipelines.LINES;
             }
         }
     }
@@ -484,7 +484,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.LINES;
+                        return RenderPipelines.LINES;
                     }
                 }
             }
@@ -502,7 +502,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.LINES;
+                        return RenderPipelines.LINES;
                     }
                 }
             }
@@ -528,7 +528,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.DEBUG_LINE_STRIP;
+                return RenderPipelines.DEBUG_LINE_STRIP;
             }
         }
     }
@@ -551,7 +551,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.DEBUG_LINE_STRIP;
+                        return RenderPipelines.DEBUG_LINE_STRIP;
                     }
                 }
             }
@@ -569,13 +569,13 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return ShaderPipelines.DEBUG_LINE_STRIP;
+                        return RenderPipelines.DEBUG_LINE_STRIP;
                     }
                 }
             }
             default ->
             {
-                return ShaderPipelines.DEBUG_LINE_STRIP;
+                return RenderPipelines.DEBUG_LINE_STRIP;
             }
         }
     }
@@ -594,7 +594,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.SOLID;
+                return RenderPipelines.SOLID;
             }
         }
     }
@@ -613,7 +613,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.WIREFRAME;
+                return RenderPipelines.WIREFRAME;
             }
         }
     }
@@ -632,7 +632,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.CUTOUT;
+                return RenderPipelines.CUTOUT;
             }
         }
     }
@@ -651,7 +651,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return ShaderPipelines.CUTOUT_MIPPED;
+                return RenderPipelines.CUTOUT_MIPPED;
             }
         }
     }

@@ -9,7 +9,7 @@ import com.mojang.blaze3d.platform.DestFactor;
 import com.mojang.blaze3d.platform.PolygonMode;
 import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.gl.ShaderPipelines;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gl.UniformType;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
@@ -24,8 +24,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 
-@Mixin(ShaderPipelines.class)
-public abstract class MixinShaderPipelines
+@Mixin(RenderPipelines.class)
+public abstract class MixinRenderPipelines
 {
     @Shadow @Final public static Map<Identifier, RenderPipeline> PIPELINES;
     @Shadow @Final public static RenderPipeline.Snippet MATRICES_SNIPPET;                       // MATRICES

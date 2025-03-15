@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.model.BlockModelPart;
 import net.minecraft.client.render.model.BlockStateModel;
 import net.minecraft.client.texture.*;
@@ -22,7 +23,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.ShaderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedQuad;
@@ -1334,7 +1334,7 @@ public class RenderUtils
         // Target "Edges" -->
         // ShaderPipelines.DEBUG_LINE_STRIP
         // MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL
-        buffer = ctx.start(() -> "TestTarget C", ShaderPipelines.LINES, BufferUsage.STATIC_WRITE);
+        buffer = ctx.start(() -> "TestTarget C", RenderPipelines.LINES, BufferUsage.STATIC_WRITE);
         //ctx.setShader(MaLiLibPipelines.DEBUG_LINES_SIMPLE);
 
 //        // Bottom left
@@ -2036,7 +2036,7 @@ public class RenderUtils
         //{
         //RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
 
-        RenderContext ctx = new RenderContext(ShaderPipelines.SOLID, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(RenderPipelines.SOLID, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         for (Direction face : Direction.values())

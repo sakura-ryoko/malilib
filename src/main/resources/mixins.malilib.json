@@ -29,7 +29,7 @@
         "render.MixinHandledScreen",
         "render.MixinInGameHud",
         "render.MixinInventoryScreen",
-        "render.MixinShaderPipelines",
+        "render.MixinRenderPipelines",
         "render.MixinWorldBorderRendering",
         "render.MixinWorldRenderer",
         "test.MixinBundleItem",
