@@ -260,7 +260,15 @@ public abstract class BaseNumberEditWidget extends ContainerWidget
         return this;
     }
 
-    protected abstract void setValueFromTextField(String str);
+    protected void setValueFromTextField(String str)
+    {
+        this.parseClampAndSetValue(str);
+        this.updateConsumer();
+    }
+
+    protected abstract void updateConsumer();
+
+    protected abstract void parseClampAndSetValue(String newValueStr);
 
     protected abstract HorizontalSliderWidget createSliderWidget();
 

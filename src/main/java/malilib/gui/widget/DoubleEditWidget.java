@@ -3,6 +3,8 @@ package malilib.gui.widget;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
+import javax.annotation.Nullable;
 
 import net.minecraft.util.math.MathHelper;
 
@@ -13,7 +15,8 @@ import malilib.util.data.RangedDoubleStorage;
 
 public class DoubleEditWidget extends BaseNumberEditWidget implements RangedDoubleStorage
 {
-    protected final DoubleConsumer consumer;
+    protected DoubleConsumer consumer;
+    @Nullable protected DoubleSupplier supplier;
     protected double minValue;
     protected double maxValue;
     protected double value;
@@ -56,6 +59,16 @@ public class DoubleEditWidget extends BaseNumberEditWidget implements RangedDoub
         return true;
     }
 
+    public void setConsumer(DoubleConsumer consumer)
+    {
+        this.consumer = consumer;
+    }
+
+    public void setSupplier(@Nullable DoubleSupplier supplier)
+    {
+        this.supplier = supplier;
+    }
+
     protected void updateTextField()
     {
         this.textFieldWidget.setText(String.valueOf(this.value));
@@ -84,11 +97,11 @@ public class DoubleEditWidget extends BaseNumberEditWidget implements RangedDoub
     }
 
     @Override
-    protected void setValueFromTextField(String str)
+    protected void parseClampAndSetValue(String newValueStr)
     {
         try
         {
-            this.clampAndSetValue(Double.parseDouble(str));
+            this.clampAndSetValue(Double.parseDouble(newValueStr));
         }
         catch (NumberFormatException ignore) {}
     }
@@ -96,8 +109,22 @@ public class DoubleEditWidget extends BaseNumberEditWidget implements RangedDoub
     protected void clampAndSetValue(double newValue)
     {
         this.value = MathHelper.clamp(newValue, this.minValue, this.maxValue);
-        this.consumer.accept(this.value);
         this.sliderWidget.updateWidgetState();
+    }
+
+    public void setValueFromSupplier()
+    {
+        if (this.supplier != null)
+        {
+            this.clampAndSetValue(this.supplier.getAsDouble());
+            this.updateTextField();
+        }
+    }
+
+    @Override
+    protected void updateConsumer()
+    {
+        this.consumer.accept(this.value);
     }
 
     @Override
@@ -105,6 +132,7 @@ public class DoubleEditWidget extends BaseNumberEditWidget implements RangedDoub
     {
         this.clampAndSetValue(newValue);
         this.updateTextField();
+        this.updateConsumer();
         return true;
     }
 
