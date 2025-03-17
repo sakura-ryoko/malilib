@@ -33,7 +33,8 @@
         "render.MixinWorldBorderRendering",
         "render.MixinWorldRenderer",
         "test.MixinBundleItem",
-        "test.MixinClientPlayInteractionManager"
+        "test.MixinClientPlayInteractionManager",
+        "test.MixinSharedConstants"
     ],
     "injectors": {
         "defaultRequire": 1

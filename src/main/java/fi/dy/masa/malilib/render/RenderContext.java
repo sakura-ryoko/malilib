@@ -32,7 +32,8 @@ public class RenderContext implements AutoCloseable
 {
     private Supplier<String> name;
     private BufferUsage usage;
-    private GpuBuffer gpuBuffer;
+    private GpuBuffer vertexBuffer;
+    @Nullable private GpuBuffer indexBuffer;
     private RenderSystem.ShapeIndexBuffer shapeIndex;
     private BufferAllocator alloc;
     private BufferBuilder builder;
@@ -49,7 +50,7 @@ public class RenderContext implements AutoCloseable
 
     public RenderContext(RenderPipeline shader)
     {
-        this(shader, BufferUsage.DYNAMIC_WRITE);
+        this(shader, BufferUsage.STATIC_WRITE);
     }
 
     public RenderContext(RenderPipeline shader, BufferUsage usage)
@@ -67,7 +68,8 @@ public class RenderContext implements AutoCloseable
         this.drawMode = shader.getVertexFormatMode();
         this.shader = shader;
         this.usage = usage;
-        this.gpuBuffer = null;
+        this.vertexBuffer = null;
+        this.indexBuffer = null;
         this.bufferIndex = -1;
         // We don't need to reset this, in case we need to re-use the texture
 //        this.texture = null;
@@ -99,7 +101,8 @@ public class RenderContext implements AutoCloseable
         this.drawMode = shader.getVertexFormatMode();
         this.shader = shader;
         this.usage = usage;
-        this.gpuBuffer = null;
+        this.vertexBuffer = null;
+        this.indexBuffer = null;
         this.bufferIndex = -1;
         // We don't need to reset this, in case we need to re-use the texture
 //        this.texture = null;
@@ -237,20 +240,36 @@ public class RenderContext implements AutoCloseable
         {
             int expectedSize = meshData.getBuffer().remaining();
 
-            if (this.gpuBuffer != null)
+            if (this.vertexBuffer != null)
             {
-                this.gpuBuffer.close();
+                this.vertexBuffer.close();
             }
 
-            this.gpuBuffer = RenderSystem.getDevice().createBuffer(this.name, target, this.usage, expectedSize);
+            this.vertexBuffer = RenderSystem.getDevice().createBuffer(this.name, target, this.usage, expectedSize);
 
             RenderSystem.getDevice()
                         .createCommandEncoder()
-                        .writeToBuffer(this.gpuBuffer, meshData.getBuffer(), 0);
+                        .writeToBuffer(this.vertexBuffer, meshData.getBuffer(), 0);
 
             this.bufferIndex = meshData.getDrawParameters().indexCount();
+
+            if (meshData.getSortedBuffer() != null)
+            {
+                // todo Index Buffer
+            }
+
             meshData.close();
         }
+    }
+
+    /**
+     * INDEX RESORTING PHASE --
+     * -
+     * Performs the Index Buffer Resorting
+     */
+    private void resortIndex()
+    {
+        // TODO
     }
 
     /**
@@ -552,7 +571,7 @@ public class RenderContext implements AutoCloseable
                                                .createRenderPass(texture1, OptionalInt.empty(),
                                                                  texture2, OptionalDouble.empty()))
             {
-                //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}]", this.name.get(), this.shader.getLocation().toString());
+//                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}] // isDevelopment [{}]", this.name.get(), this.shader.getLocation().toString(), RenderPassImpl.IS_DEVELOPMENT);
                 pass.setPipeline(this.shader);
 
 //                for (int i = 0; i < 12; i++)
@@ -580,7 +599,7 @@ public class RenderContext implements AutoCloseable
                 }
 
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setVertexBuffer() [0]", this.name.get());
-                pass.setVertexBuffer(0, this.gpuBuffer);
+                pass.setVertexBuffer(0, this.vertexBuffer);
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setIndexBuffer() [{}]", this.name.get(), this.bufferIndex);
                 pass.setIndexBuffer(indexBuffer, this.shapeIndex.getIndexType());
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> drawIndexed() [0, {}]", this.name.get(), this.bufferIndex);
@@ -652,7 +671,7 @@ public class RenderContext implements AutoCloseable
     {
         this.ensureSafeNoBuffer();
 
-        if (this.gpuBuffer == null)
+        if (this.vertexBuffer == null)
         {
             throw new RuntimeException("GpuBuffer not uploaded!");
         }
@@ -670,10 +689,16 @@ public class RenderContext implements AutoCloseable
 
     public void reset()
     {
-        if (this.gpuBuffer != null)
+        if (this.vertexBuffer != null)
         {
-            this.gpuBuffer.close();
-            this.gpuBuffer = null;
+            this.vertexBuffer.close();
+            this.vertexBuffer = null;
+        }
+
+        if (this.indexBuffer != null)
+        {
+            this.indexBuffer.close();
+            this.indexBuffer = null;
         }
 
         if (this.builder != null)
