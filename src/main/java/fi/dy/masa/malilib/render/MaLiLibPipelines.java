@@ -103,12 +103,16 @@ public class MaLiLibPipelines
     public static RenderPipeline WIREFRAME_TRANSLUCENT;
     public static RenderPipeline CUTOUT_MIPPED_TRANSLUCENT;
     public static RenderPipeline CUTOUT_TRANSLUCENT;
+    public static RenderPipeline TRANSLUCENT_TRANSLUCENT;
+    public static RenderPipeline TRIPWIRE_TRANSLUCENT;
 
     // TERRAIN_MASA
     public static RenderPipeline SOLID_MASA;
     public static RenderPipeline WIREFRAME_MASA;
     public static RenderPipeline CUTOUT_MIPPED_MASA;
     public static RenderPipeline CUTOUT_MASA;
+    public static RenderPipeline TRANSLUCENT_MASA;
+    public static RenderPipeline TRIPWIRE_MASA;
 
     public static RenderPipeline getPositionSimple()
     {
@@ -652,6 +656,44 @@ public class MaLiLibPipelines
             default ->
             {
                 return RenderPipelines.CUTOUT_MIPPED;
+            }
+        }
+    }
+
+    public static RenderPipeline getTranslucent(Type type)
+    {
+        switch (type)
+        {
+            case TRANSLUCENT ->
+            {
+                return TRANSLUCENT_TRANSLUCENT;
+            }
+            case MASA ->
+            {
+                return TRANSLUCENT_MASA;
+            }
+            default ->
+            {
+                return RenderPipelines.TRANSLUCENT;
+            }
+        }
+    }
+
+    public static RenderPipeline getTripwire(Type type)
+    {
+        switch (type)
+        {
+            case TRANSLUCENT ->
+            {
+                return TRIPWIRE_TRANSLUCENT;
+            }
+            case MASA ->
+            {
+                return TRIPWIRE_MASA;
+            }
+            default ->
+            {
+                return RenderPipelines.TRIPWIRE;
             }
         }
     }

@@ -631,6 +631,19 @@ public abstract class MixinRenderPipelines
                         .build()
                 );
 
+        MaLiLibPipelines.TRANSLUCENT_TRANSLUCENT =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/translucent/translucent")
+                                       .build()
+                );
+
+        MaLiLibPipelines.TRIPWIRE_TRANSLUCENT =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/tripwire/translucent")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .build()
+                );
+
         // TERRAIN_MASA
         MaLiLibPipelines.SOLID_MASA =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
@@ -659,5 +672,17 @@ public abstract class MixinRenderPipelines
                         .build()
                 );
 
+        MaLiLibPipelines.TRANSLUCENT_MASA =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/translucent/masa")
+                                       .build()
+                );
+
+        MaLiLibPipelines.TRIPWIRE_MASA =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/tripwire/masa")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .build()
+                );
     }
 }
