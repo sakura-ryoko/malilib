@@ -10,6 +10,7 @@ import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.util.math.MatrixStack;
@@ -131,13 +132,13 @@ public class TestWalls implements AutoCloseable
         Vec3d cameraPos = camera.getPos();
 
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL
-        RenderContext ctx = new RenderContext(() -> "TestWalls Quads", MaLiLibPipelines.getPositionColorSimple(), BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(() -> "TestWalls Quads", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LESSER_DEPTH, BufferUsage.STATIC_WRITE);
         BufferBuilder builder = ctx.getBuilder();
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
 //        MatrixStack matrices = new MatrixStack();
         Vec3d updatePos = this.getUpdatePosition();
 
-//        this.preRender();
+        this.preRender();
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
 
@@ -155,7 +156,8 @@ public class TestWalls implements AutoCloseable
 
         try
         {
-            ctx.draw(builder.endNullable());
+            ctx.offset(new float[]{-3f, 0f, -3f});
+            ctx.draw(null, builder.endNullable(), true, false);
             ctx.close();
         }
         catch (Exception err)
@@ -163,7 +165,7 @@ public class TestWalls implements AutoCloseable
             MaLiLib.LOGGER.error("TestWalls#renderQuads(): Exception; {}", err.getMessage());
         }
 
-//        this.postRender();
+        this.postRender();
         matrix4fstack.popMatrix();
         profiler.pop();
     }
@@ -179,15 +181,14 @@ public class TestWalls implements AutoCloseable
         Color4f linesColor = Color4f.WHITE;
         Vec3d cameraPos = camera.getPos();
 
-        // MaLiLibPipelines.LINES_SIMPLE
-        // ShaderPipelines.field_56833
-        RenderContext ctx = new RenderContext(() -> "TestWalls Lines", MaLiLibPipelines.getLines(MaLiLibPipelines.Type.MASA, MaLiLibPipelines.Depth.DEFAULT, true), BufferUsage.STATIC_WRITE);
+        // RenderPipelines.LINES
+        RenderContext ctx = new RenderContext(() -> "TestWalls Lines", RenderPipelines.LINES, BufferUsage.STATIC_WRITE);
         BufferBuilder builder = ctx.getBuilder();
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
         MatrixStack matrices = new MatrixStack();
         Vec3d updatePos = this.getUpdatePosition();
 
-//        this.preRender();
+        this.preRender();
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
         matrices.push();
@@ -203,8 +204,6 @@ public class TestWalls implements AutoCloseable
         matrices.pop();
         matrix4fstack.popMatrix();
 
-//        MaLiLib.LOGGER.warn("TestWalls#renderOutlines(): PRE-DRAW");
-
         try
         {
             ctx.lineWidth(this.glLineWidth);
@@ -216,7 +215,7 @@ public class TestWalls implements AutoCloseable
             MaLiLib.LOGGER.error("TestWalls#renderOutlines(): Exception; {}", err.getMessage());
         }
 
-//        this.postRender();
+        this.postRender();
         profiler.pop();
     }
 
@@ -224,31 +223,37 @@ public class TestWalls implements AutoCloseable
     {
         RenderUtils.polygonOffset(-3f, -3f);
         RenderUtils.polygonOffset(true);
-        RenderUtils.blend(true);
-        RenderSystem.lineWidth(this.glLineWidth);
+//        RenderUtils.blend(true);
+//        RenderSystem.lineWidth(this.glLineWidth);
 
-        if (this.renderThrough)
-        {
-            RenderUtils.depthTest(false);
-//        RenderUtils.depthMask(false);
-        }
+//        if (this.renderThrough)
+//        {
+//            RenderUtils.depthTest(false);
+//        }
+//        else
+//        {
+//            RenderUtils.depthMask(true);
+//        }
 
         RenderUtils.culling(this.useCulling);
     }
 
     protected void postRender()
     {
-        if (this.renderThrough)
-        {
-            RenderUtils.depthTest(true);
-//        RenderUtils.depthMask(true);
-        }
+//        if (this.renderThrough)
+//        {
+//            RenderUtils.depthTest(true);
+//        }
+//        else
+//        {
+//            RenderUtils.depthMask(false);
+//        }
 
-        RenderUtils.culling(true);
+        RenderUtils.culling(!this.useCulling);
         RenderUtils.polygonOffset(0f, 0f);
         RenderUtils.polygonOffset(false);
 //        RenderUtils.color(1f, 1f, 1f, 1f);
-        RenderUtils.blend(false);
+//        RenderUtils.blend(false);
     }
 
     public void clear()

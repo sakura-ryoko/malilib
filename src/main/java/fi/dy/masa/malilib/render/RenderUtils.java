@@ -647,7 +647,7 @@ public class RenderUtils
         //Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
         boolean scaled = scale != 1.0;
 
-        depthTest(true);
+//        depthTest(true);
         blend(true);
 
         if (scaled)
@@ -711,7 +711,7 @@ public class RenderUtils
             //RenderSystem.applyModelViewMatrix();
         }
 
-        depthTest(false);
+//        depthTest(false);
         blend(false);
 
         return contentHeight + bgMargin * 2;

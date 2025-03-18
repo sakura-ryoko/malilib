@@ -36,15 +36,17 @@ public class MaLiLibPipelines
     public static RenderPipeline.Snippet DEBUG_LINES_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet DEBUG_LINES_MASA_STAGE;
 
-    // TERRAIN/ENTITY STAGES
+    // TERRAIN STAGES
     public static RenderPipeline.Snippet TERRAIN_TRANSLUCENT_STAGE;
     public static RenderPipeline.Snippet TERRAIN_OVERLAY_STAGE;
     public static RenderPipeline.Snippet TERRAIN_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet TERRAIN_MASA_STAGE;
-    public static RenderPipeline.Snippet ENTITY_TRANSLUCENT_STAGE;
-    public static RenderPipeline.Snippet ENTITY_OVERLAY_STAGE;
-    public static RenderPipeline.Snippet ENTITY_MASA_SIMPLE_STAGE;
-    public static RenderPipeline.Snippet ENTITY_MASA_STAGE;
+
+    // ENTITY STAGES    // todo later
+//    public static RenderPipeline.Snippet ENTITY_TRANSLUCENT_STAGE;
+//    public static RenderPipeline.Snippet ENTITY_OVERLAY_STAGE;
+//    public static RenderPipeline.Snippet ENTITY_MASA_SIMPLE_STAGE;
+//    public static RenderPipeline.Snippet ENTITY_MASA_STAGE;
 
     // POSITION_TRANSLUCENT
     public static RenderPipeline POSITION_TRANSLUCENT_NO_DEPTH_NO_CULL;

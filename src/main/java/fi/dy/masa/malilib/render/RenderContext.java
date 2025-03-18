@@ -470,6 +470,12 @@ public class RenderContext implements AutoCloseable
         this.draw(otherFb, BufferType.VERTICES, meshData, false, setLineWidth);
     }
 
+    public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, boolean useOffset, boolean setLineWidth) throws RuntimeException
+    {
+        this.ensureSafeNoBuffer();
+        this.draw(otherFb, BufferType.VERTICES, meshData, useOffset, setLineWidth);
+    }
+
     public void draw(@Nullable Framebuffer otherFb, BufferType target,
                      BuiltBuffer meshData, boolean useOffset, boolean setLineWidth) throws RuntimeException
     {
@@ -544,9 +550,9 @@ public class RenderContext implements AutoCloseable
         {
             if (useOffset)
             {
-                RenderSystem.setModelOffset(-this.offset[0], this.offset[1], -this.offset[2]);
-                //RenderSystem.setModelOffset(offset[0], offset[1], offset[2]);
+                RenderSystem.setModelOffset(this.offset[0], this.offset[1], this.offset[2]);
             }
+
             Framebuffer mainFb = RenderUtils.fb();
             GpuTexture texture1;
             GpuTexture texture2;
@@ -574,6 +580,12 @@ public class RenderContext implements AutoCloseable
 //                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}] // isDevelopment [{}]", this.name.get(), this.shader.getLocation().toString(), RenderPassImpl.IS_DEVELOPMENT);
                 pass.setPipeline(this.shader);
 
+                if (this.textureId > -1 && this.textureId < 12 && this.texture != null)
+                {
+                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler({}) [{}]", this.name.get(), this.textureId, this.texture.getGlTexture().getLabel());
+                    pass.bindSampler("Sampler"+this.textureId, this.texture.getGlTexture());
+                }
+
 //                for (int i = 0; i < 12; i++)
 //                {
 //                    GpuTexture drawableTexture = RenderSystem.getShaderTexture(i);
@@ -584,12 +596,6 @@ public class RenderContext implements AutoCloseable
 //                        pass.bindSampler("Sampler"+i, drawableTexture);
 //                    }
 //                }
-
-                if (this.textureId > -1 && this.textureId < 12 && this.texture != null)
-                {
-                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler({}) [{}]", this.name.get(), this.textureId, this.texture.getGlTexture().getLabel());
-                    pass.bindSampler("Sampler"+this.textureId, this.texture.getGlTexture());
-                }
 
                 if (setLineWidth)
                 {
