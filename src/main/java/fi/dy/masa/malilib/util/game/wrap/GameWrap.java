@@ -232,7 +232,7 @@ public class GameWrap
     public static boolean isCreativeMode()
     {
         PlayerEntity player = getClientPlayer();
-        return player != null && player.isCreative();
+        return player != null && player.isInCreativeMode();
     }
 
     public static int getRenderDistanceChunks()

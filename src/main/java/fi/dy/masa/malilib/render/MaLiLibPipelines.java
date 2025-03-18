@@ -10,24 +10,40 @@ public class MaLiLibPipelines
 {
     // POSITION STAGES
     public static RenderPipeline.Snippet POSITION_TRANSLUCENT_STAGE;
+    public static RenderPipeline.Snippet POSITION_OVERLAY_STAGE;
+    public static RenderPipeline.Snippet POSITION_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet POSITION_MASA_STAGE;
     public static RenderPipeline.Snippet POSITION_COLOR_TRANSLUCENT_STAGE;
+    public static RenderPipeline.Snippet POSITION_COLOR_OVERLAY_STAGE;
+    public static RenderPipeline.Snippet POSITION_COLOR_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet POSITION_COLOR_MASA_STAGE;
     public static RenderPipeline.Snippet POSITION_TEX_TRANSLUCENT_STAGE;
+    public static RenderPipeline.Snippet POSITION_TEX_OVERLAY_STAGE;
+    public static RenderPipeline.Snippet POSITION_TEX_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet POSITION_TEX_MASA_STAGE;
     public static RenderPipeline.Snippet POSITION_TEX_COLOR_TRANSLUCENT_STAGE;
+    public static RenderPipeline.Snippet POSITION_TEX_COLOR_OVERLAY_STAGE;
+    public static RenderPipeline.Snippet POSITION_TEX_COLOR_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet POSITION_TEX_COLOR_MASA_STAGE;
 
     // LINES STAGES
-    public static RenderPipeline.Snippet LINES_STAGE;
+    public static RenderPipeline.Snippet LINES_TRANSLUCENT_STAGE;
+    public static RenderPipeline.Snippet LINES_OVERLAY_STAGE;
+    public static RenderPipeline.Snippet LINES_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet LINES_MASA_STAGE;
     public static RenderPipeline.Snippet DEBUG_LINES_TRANSLUCENT_STAGE;
+    public static RenderPipeline.Snippet DEBUG_LINES_OVERLAY_STAGE;
+    public static RenderPipeline.Snippet DEBUG_LINES_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet DEBUG_LINES_MASA_STAGE;
 
     // TERRAIN/ENTITY STAGES
     public static RenderPipeline.Snippet TERRAIN_TRANSLUCENT_STAGE;
+    public static RenderPipeline.Snippet TERRAIN_OVERLAY_STAGE;
+    public static RenderPipeline.Snippet TERRAIN_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet TERRAIN_MASA_STAGE;
     public static RenderPipeline.Snippet ENTITY_TRANSLUCENT_STAGE;
+    public static RenderPipeline.Snippet ENTITY_OVERLAY_STAGE;
+    public static RenderPipeline.Snippet ENTITY_MASA_SIMPLE_STAGE;
     public static RenderPipeline.Snippet ENTITY_MASA_STAGE;
 
     // POSITION_TRANSLUCENT
@@ -36,6 +52,20 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_TRANSLUCENT_LESSER_DEPTH;
     public static RenderPipeline POSITION_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline POSITION_TRANSLUCENT;
+
+    // POSITION_OVERLAY
+    public static RenderPipeline POSITION_OVERLAY_NO_DEPTH_NO_CULL;
+    public static RenderPipeline POSITION_OVERLAY_NO_DEPTH;
+    public static RenderPipeline POSITION_OVERLAY_LESSER_DEPTH;
+    public static RenderPipeline POSITION_OVERLAY_GREATER_DEPTH;
+    public static RenderPipeline POSITION_OVERLAY;
+
+    // POSITION_MASA_SIMPLE
+    public static RenderPipeline POSITION_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+    public static RenderPipeline POSITION_MASA_SIMPLE_NO_DEPTH;
+    public static RenderPipeline POSITION_MASA_SIMPLE_LESSER_DEPTH;
+    public static RenderPipeline POSITION_MASA_SIMPLE_GREATER_DEPTH;
+    public static RenderPipeline POSITION_MASA_SIMPLE;
 
     // POSITION_MASA
     public static RenderPipeline POSITION_MASA_NO_DEPTH_NO_CULL;
@@ -51,6 +81,20 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT;
 
+    // POSITION_COLOR_OVERLAY
+    public static RenderPipeline POSITION_COLOR_OVERLAY_NO_DEPTH_NO_CULL;
+    public static RenderPipeline POSITION_COLOR_OVERLAY_NO_DEPTH;
+    public static RenderPipeline POSITION_COLOR_OVERLAY_LESSER_DEPTH;
+    public static RenderPipeline POSITION_COLOR_OVERLAY_GREATER_DEPTH;
+    public static RenderPipeline POSITION_COLOR_OVERLAY;
+
+    // POSITION_COLOR_MASA_SIMPLE
+    public static RenderPipeline POSITION_COLOR_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+    public static RenderPipeline POSITION_COLOR_MASA_SIMPLE_NO_DEPTH;
+    public static RenderPipeline POSITION_COLOR_MASA_SIMPLE_LESSER_DEPTH;
+    public static RenderPipeline POSITION_COLOR_MASA_SIMPLE_GREATER_DEPTH;
+    public static RenderPipeline POSITION_COLOR_MASA_SIMPLE;
+
     // POSITION_COLOR_MASA
     public static RenderPipeline POSITION_COLOR_MASA_NO_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_COLOR_MASA_NO_DEPTH;
@@ -64,6 +108,20 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_TEX_TRANSLUCENT_LESSER_DEPTH;
     public static RenderPipeline POSITION_TEX_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline POSITION_TEX_TRANSLUCENT;
+
+    // POSITION_TEX_OVERLAY
+    public static RenderPipeline POSITION_TEX_OVERLAY_NO_DEPTH_NO_CULL;
+    public static RenderPipeline POSITION_TEX_OVERLAY_NO_DEPTH;
+    public static RenderPipeline POSITION_TEX_OVERLAY_LESSER_DEPTH;
+    public static RenderPipeline POSITION_TEX_OVERLAY_GREATER_DEPTH;
+    public static RenderPipeline POSITION_TEX_OVERLAY;
+
+    // POSITION_TEX_MASA_SIMPLE
+    public static RenderPipeline POSITION_TEX_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+    public static RenderPipeline POSITION_TEX_MASA_SIMPLE_NO_DEPTH;
+    public static RenderPipeline POSITION_TEX_MASA_SIMPLE_LESSER_DEPTH;
+    public static RenderPipeline POSITION_TEX_MASA_SIMPLE_GREATER_DEPTH;
+    public static RenderPipeline POSITION_TEX_MASA_SIMPLE;
 
     // POSITION_TEX_MASA
     public static RenderPipeline POSITION_TEX_MASA_NO_DEPTH_NO_CULL;
@@ -79,6 +137,20 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT;
 
+    // POSITION_TEX_COLOR_OVERLAY
+    public static RenderPipeline POSITION_TEX_COLOR_OVERLAY_NO_DEPTH_NO_CULL;
+    public static RenderPipeline POSITION_TEX_COLOR_OVERLAY_NO_DEPTH;
+    public static RenderPipeline POSITION_TEX_COLOR_OVERLAY_LESSER_DEPTH;
+    public static RenderPipeline POSITION_TEX_COLOR_OVERLAY_GREATER_DEPTH;
+    public static RenderPipeline POSITION_TEX_COLOR_OVERLAY;
+
+    // POSITION_TEX_COLOR_MASA_SIMPLE
+    public static RenderPipeline POSITION_TEX_COLOR_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+    public static RenderPipeline POSITION_TEX_COLOR_MASA_SIMPLE_NO_DEPTH;
+    public static RenderPipeline POSITION_TEX_COLOR_MASA_SIMPLE_LESSER_DEPTH;
+    public static RenderPipeline POSITION_TEX_COLOR_MASA_SIMPLE_GREATER_DEPTH;
+    public static RenderPipeline POSITION_TEX_COLOR_MASA_SIMPLE;
+
     // POSITION_TEX_COLOR_MASA
     public static RenderPipeline POSITION_TEX_COLOR_MASA_NO_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_NO_DEPTH;
@@ -86,11 +158,23 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_TEX_COLOR_MASA_GREATER_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_MASA;
 
-    // LINES
-    public static RenderPipeline LINES_NO_DEPTH_NO_CULL;
-    public static RenderPipeline LINES_NO_DEPTH;
-    public static RenderPipeline LINES_NO_CULL;
-    public static RenderPipeline LINES;
+    // LINES_TRANSLUCENT
+    public static RenderPipeline LINES_TRANSLUCENT_NO_DEPTH_NO_CULL;
+    public static RenderPipeline LINES_TRANSLUCENT_NO_DEPTH;
+    public static RenderPipeline LINES_TRANSLUCENT_NO_CULL;
+    public static RenderPipeline LINES_TRANSLUCENT;
+
+    // LINES_OVERLAY
+    public static RenderPipeline LINES_OVERLAY_NO_DEPTH_NO_CULL;
+    public static RenderPipeline LINES_OVERLAY_NO_DEPTH;
+    public static RenderPipeline LINES_OVERLAY_NO_CULL;
+    public static RenderPipeline LINES_OVERLAY;
+
+    // LINES_MASA_SIMPLE
+    public static RenderPipeline LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+    public static RenderPipeline LINES_MASA_SIMPLE_NO_DEPTH;
+    public static RenderPipeline LINES_MASA_SIMPLE_NO_CULL;
+    public static RenderPipeline LINES_MASA_SIMPLE;
 
     // LINES_MASA
     public static RenderPipeline LINES_MASA_NO_DEPTH_NO_CULL;
@@ -103,6 +187,18 @@ public class MaLiLibPipelines
     public static RenderPipeline DEBUG_LINES_TRANSLUCENT_NO_DEPTH;
     public static RenderPipeline DEBUG_LINES_TRANSLUCENT_NO_CULL;
     public static RenderPipeline DEBUG_LINES_TRANSLUCENT;
+
+    // DEBUG_LINES_OVERLAY
+    public static RenderPipeline DEBUG_LINES_OVERLAY_NO_DEPTH_NO_CULL;
+    public static RenderPipeline DEBUG_LINES_OVERLAY_NO_DEPTH;
+    public static RenderPipeline DEBUG_LINES_OVERLAY_NO_CULL;
+    public static RenderPipeline DEBUG_LINES_OVERLAY;
+
+    // DEBUG_LINES_MASA_SIMPLE
+    public static RenderPipeline DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+    public static RenderPipeline DEBUG_LINES_MASA_SIMPLE_NO_DEPTH;
+    public static RenderPipeline DEBUG_LINES_MASA_SIMPLE_NO_CULL;
+    public static RenderPipeline DEBUG_LINES_MASA_SIMPLE;
 
     // DEBUG_LINES_MASA
     public static RenderPipeline DEBUG_LINES_MASA_NO_DEPTH_NO_CULL;
@@ -118,6 +214,22 @@ public class MaLiLibPipelines
     public static RenderPipeline TRANSLUCENT_TRANSLUCENT;
     public static RenderPipeline TRIPWIRE_TRANSLUCENT;
 
+    // TERRAIN_OVERLAY
+    public static RenderPipeline SOLID_OVERLAY;
+    public static RenderPipeline WIREFRAME_OVERLAY;
+    public static RenderPipeline CUTOUT_MIPPED_OVERLAY;
+    public static RenderPipeline CUTOUT_OVERLAY;
+    public static RenderPipeline TRANSLUCENT_OVERLAY;
+    public static RenderPipeline TRIPWIRE_OVERLAY;
+
+    // TERRAIN_MASA_SIMPLE
+    public static RenderPipeline SOLID_MASA_SIMPLE;
+    public static RenderPipeline WIREFRAME_MASA_SIMPLE;
+    public static RenderPipeline CUTOUT_MIPPED_MASA_SIMPLE;
+    public static RenderPipeline CUTOUT_MASA_SIMPLE;
+    public static RenderPipeline TRANSLUCENT_MASA_SIMPLE;
+    public static RenderPipeline TRIPWIRE_MASA_SIMPLE;
+
     // TERRAIN_MASA
     public static RenderPipeline SOLID_MASA;
     public static RenderPipeline WIREFRAME_MASA;
@@ -128,7 +240,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getPositionSimple()
     {
-        return POSITION_TRANSLUCENT_NO_DEPTH_NO_CULL;
+        return POSITION_MASA_SIMPLE_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getPosition(Depth depth)
@@ -137,19 +249,19 @@ public class MaLiLibPipelines
         {
             case NO_DEPTH ->
             {
-                return POSITION_MASA_NO_DEPTH_NO_CULL;
+                return POSITION_MASA_SIMPLE_NO_DEPTH_NO_CULL;
             }
             case LESSER ->
             {
-                return POSITION_MASA_LESSER_DEPTH;
+                return POSITION_MASA_SIMPLE_LESSER_DEPTH;
             }
             case GREATER ->
             {
-                return POSITION_MASA_GREATER_DEPTH;
+                return POSITION_MASA_SIMPLE_GREATER_DEPTH;
             }
             default ->
             {
-                return POSITION_MASA;
+                return POSITION_MASA_SIMPLE;
             }
         }
     }
@@ -177,6 +289,50 @@ public class MaLiLibPipelines
                     default ->
                     {
                         return POSITION_TRANSLUCENT;
+                    }
+                }
+            }
+            case OVERLAY ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? POSITION_OVERLAY_NO_DEPTH : POSITION_OVERLAY_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER ->
+                    {
+                        return POSITION_OVERLAY_LESSER_DEPTH;
+                    }
+                    case GREATER ->
+                    {
+                        return POSITION_OVERLAY_GREATER_DEPTH;
+                    }
+                    default ->
+                    {
+                        return POSITION_OVERLAY;
+                    }
+                }
+            }
+            case MASA_SIMPLE ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? POSITION_MASA_SIMPLE_NO_DEPTH : POSITION_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER ->
+                    {
+                        return POSITION_MASA_SIMPLE_LESSER_DEPTH;
+                    }
+                    case GREATER ->
+                    {
+                        return POSITION_MASA_SIMPLE_GREATER_DEPTH;
+                    }
+                    default ->
+                    {
+                        return POSITION_MASA_SIMPLE;
                     }
                 }
             }
@@ -211,7 +367,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getPositionTexSimple()
     {
-        return POSITION_TEX_TRANSLUCENT_NO_DEPTH_NO_CULL;
+        return POSITION_TEX_MASA_SIMPLE_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getPositionTex(Depth depth)
@@ -220,19 +376,19 @@ public class MaLiLibPipelines
         {
             case NO_DEPTH ->
             {
-                return POSITION_TEX_MASA_NO_DEPTH_NO_CULL;
+                return POSITION_TEX_MASA_SIMPLE_NO_DEPTH_NO_CULL;
             }
             case LESSER ->
             {
-                return POSITION_TEX_MASA_LESSER_DEPTH;
+                return POSITION_TEX_MASA_SIMPLE_LESSER_DEPTH;
             }
             case GREATER ->
             {
-                return POSITION_TEX_MASA_GREATER_DEPTH;
+                return POSITION_TEX_MASA_SIMPLE_GREATER_DEPTH;
             }
             default ->
             {
-                return POSITION_TEX_MASA;
+                return POSITION_TEX_MASA_SIMPLE;
             }
         }
     }
@@ -260,6 +416,50 @@ public class MaLiLibPipelines
                     default ->
                     {
                         return POSITION_TEX_TRANSLUCENT;
+                    }
+                }
+            }
+            case OVERLAY ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? POSITION_TEX_OVERLAY_NO_DEPTH : POSITION_TEX_OVERLAY_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER ->
+                    {
+                        return POSITION_TEX_OVERLAY_LESSER_DEPTH;
+                    }
+                    case GREATER ->
+                    {
+                        return POSITION_TEX_OVERLAY_GREATER_DEPTH;
+                    }
+                    default ->
+                    {
+                        return POSITION_TEX_OVERLAY;
+                    }
+                }
+            }
+            case MASA_SIMPLE ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? POSITION_TEX_MASA_SIMPLE_NO_DEPTH : POSITION_TEX_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER ->
+                    {
+                        return POSITION_TEX_MASA_SIMPLE_LESSER_DEPTH;
+                    }
+                    case GREATER ->
+                    {
+                        return POSITION_TEX_MASA_SIMPLE_GREATER_DEPTH;
+                    }
+                    default ->
+                    {
+                        return POSITION_TEX_MASA_SIMPLE;
                     }
                 }
             }
@@ -294,7 +494,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getPositionColorSimple()
     {
-        return POSITION_COLOR_MASA_NO_DEPTH_NO_CULL;
+        return POSITION_COLOR_MASA_SIMPLE_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getPositionColor(Depth depth)
@@ -303,19 +503,19 @@ public class MaLiLibPipelines
         {
             case NO_DEPTH ->
             {
-                return POSITION_COLOR_MASA_NO_DEPTH_NO_CULL;
+                return POSITION_COLOR_MASA_SIMPLE_NO_DEPTH_NO_CULL;
             }
             case LESSER ->
             {
-                return POSITION_COLOR_MASA_LESSER_DEPTH;
+                return POSITION_COLOR_MASA_SIMPLE_LESSER_DEPTH;
             }
             case GREATER ->
             {
-                return POSITION_COLOR_MASA_GREATER_DEPTH;
+                return POSITION_COLOR_MASA_SIMPLE_GREATER_DEPTH;
             }
             default ->
             {
-                return POSITION_COLOR_MASA;
+                return POSITION_COLOR_MASA_SIMPLE;
             }
         }
     }
@@ -343,6 +543,50 @@ public class MaLiLibPipelines
                     default ->
                     {
                         return POSITION_COLOR_TRANSLUCENT;
+                    }
+                }
+            }
+            case OVERLAY ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? POSITION_COLOR_OVERLAY_NO_DEPTH : POSITION_COLOR_OVERLAY_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER ->
+                    {
+                        return POSITION_COLOR_OVERLAY_LESSER_DEPTH;
+                    }
+                    case GREATER ->
+                    {
+                        return POSITION_COLOR_OVERLAY_GREATER_DEPTH;
+                    }
+                    default ->
+                    {
+                        return POSITION_COLOR_OVERLAY;
+                    }
+                }
+            }
+            case MASA_SIMPLE ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? POSITION_COLOR_MASA_SIMPLE_NO_DEPTH : POSITION_COLOR_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER ->
+                    {
+                        return POSITION_COLOR_MASA_SIMPLE_LESSER_DEPTH;
+                    }
+                    case GREATER ->
+                    {
+                        return POSITION_COLOR_MASA_SIMPLE_GREATER_DEPTH;
+                    }
+                    default ->
+                    {
+                        return POSITION_COLOR_MASA_SIMPLE;
                     }
                 }
             }
@@ -377,7 +621,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getPositionTexColorSimple()
     {
-        return POSITION_TEX_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL;
+        return POSITION_TEX_COLOR_MASA_SIMPLE_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getPositionTexColor(Depth depth)
@@ -386,19 +630,19 @@ public class MaLiLibPipelines
         {
             case NO_DEPTH ->
             {
-                return POSITION_TEX_COLOR_MASA_NO_DEPTH_NO_CULL;
+                return POSITION_TEX_COLOR_MASA_SIMPLE_NO_DEPTH_NO_CULL;
             }
             case LESSER ->
             {
-                return POSITION_TEX_COLOR_MASA_LESSER_DEPTH;
+                return POSITION_TEX_COLOR_MASA_SIMPLE_LESSER_DEPTH;
             }
             case GREATER ->
             {
-                return POSITION_TEX_COLOR_MASA_GREATER_DEPTH;
+                return POSITION_TEX_COLOR_MASA_SIMPLE_GREATER_DEPTH;
             }
             default ->
             {
-                return POSITION_TEX_COLOR_MASA;
+                return POSITION_TEX_COLOR_MASA_SIMPLE;
             }
         }
     }
@@ -426,6 +670,50 @@ public class MaLiLibPipelines
                     default ->
                     {
                         return POSITION_TEX_COLOR_TRANSLUCENT;
+                    }
+                }
+            }
+            case OVERLAY ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? POSITION_TEX_COLOR_OVERLAY_NO_DEPTH : POSITION_TEX_COLOR_OVERLAY_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER ->
+                    {
+                        return POSITION_TEX_COLOR_OVERLAY_LESSER_DEPTH;
+                    }
+                    case GREATER ->
+                    {
+                        return POSITION_TEX_COLOR_OVERLAY_GREATER_DEPTH;
+                    }
+                    default ->
+                    {
+                        return POSITION_TEX_COLOR_OVERLAY;
+                    }
+                }
+            }
+            case MASA_SIMPLE ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? POSITION_TEX_COLOR_MASA_SIMPLE_NO_DEPTH : POSITION_TEX_COLOR_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER ->
+                    {
+                        return POSITION_TEX_COLOR_MASA_SIMPLE_LESSER_DEPTH;
+                    }
+                    case GREATER ->
+                    {
+                        return POSITION_TEX_COLOR_MASA_SIMPLE_GREATER_DEPTH;
+                    }
+                    default ->
+                    {
+                        return POSITION_TEX_COLOR_MASA_SIMPLE;
                     }
                 }
             }
@@ -460,7 +748,7 @@ public class MaLiLibPipelines
 
     public static RenderPipeline getLinesSimple()
     {
-        return LINES_MASA_NO_DEPTH_NO_CULL;
+        return LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getLines(Depth depth)
@@ -469,15 +757,15 @@ public class MaLiLibPipelines
         {
             case NO_DEPTH ->
             {
-                return LINES_MASA_NO_DEPTH_NO_CULL;
+                return LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL;
             }
             case LESSER, GREATER ->
             {
-                return LINES_MASA_NO_CULL;
+                return LINES_MASA_SIMPLE_NO_CULL;
             }
             default ->
             {
-                return LINES_MASA;
+                return LINES_MASA_SIMPLE;
             }
         }
     }
@@ -486,7 +774,61 @@ public class MaLiLibPipelines
     {
         switch (type)
         {
-            case MASA, TRANSLUCENT ->
+            case TRANSLUCENT ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? LINES_TRANSLUCENT_NO_DEPTH : LINES_TRANSLUCENT_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER, GREATER ->
+                    {
+                        return LINES_TRANSLUCENT_NO_CULL;
+                    }
+                    default ->
+                    {
+                        return LINES_TRANSLUCENT;
+                    }
+                }
+            }
+            case OVERLAY ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? LINES_OVERLAY_NO_DEPTH : LINES_OVERLAY_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER, GREATER ->
+                    {
+                        return LINES_OVERLAY_NO_CULL;
+                    }
+                    default ->
+                    {
+                        return LINES_OVERLAY;
+                    }
+                }
+            }
+            case MASA_SIMPLE ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? LINES_MASA_SIMPLE_NO_DEPTH : LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER, GREATER ->
+                    {
+                        return LINES_MASA_SIMPLE_NO_CULL;
+                    }
+                    default ->
+                    {
+                        return LINES_MASA_SIMPLE;
+                    }
+                }
+            }
+            case MASA ->
             {
                 switch (depth)
                 {
@@ -506,28 +848,14 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                switch (depth)
-                {
-                    case NO_DEPTH ->
-                    {
-                        return culling ? LINES_NO_DEPTH : LINES_NO_DEPTH_NO_CULL;
-                    }
-                    case LESSER, GREATER ->
-                    {
-                        return LINES_NO_CULL;
-                    }
-                    default ->
-                    {
-                        return LINES;
-                    }
-                }
+                return RenderPipelines.LINES;
             }
         }
     }
 
     public static RenderPipeline getDebugLinesSimple()
     {
-        return DEBUG_LINES_TRANSLUCENT_NO_DEPTH_NO_CULL;
+        return DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL;
     }
 
     public static RenderPipeline getDebugLines(Depth depth)
@@ -536,15 +864,15 @@ public class MaLiLibPipelines
         {
             case NO_DEPTH ->
             {
-                return DEBUG_LINES_MASA_NO_DEPTH_NO_CULL;
+                return DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL;
             }
             case LESSER, GREATER ->
             {
-                return DEBUG_LINES_MASA_NO_CULL;
+                return DEBUG_LINES_MASA_SIMPLE_NO_CULL;
             }
             default ->
             {
-                return DEBUG_LINES_MASA;
+                return DEBUG_LINES_MASA_SIMPLE;
             }
         }
     }
@@ -568,6 +896,42 @@ public class MaLiLibPipelines
                     default ->
                     {
                         return DEBUG_LINES_TRANSLUCENT;
+                    }
+                }
+            }
+            case OVERLAY ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? DEBUG_LINES_OVERLAY_NO_DEPTH : DEBUG_LINES_OVERLAY_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER, GREATER ->
+                    {
+                        return DEBUG_LINES_OVERLAY_NO_CULL;
+                    }
+                    default ->
+                    {
+                        return DEBUG_LINES_OVERLAY;
+                    }
+                }
+            }
+            case MASA_SIMPLE ->
+            {
+                switch (depth)
+                {
+                    case NO_DEPTH ->
+                    {
+                        return culling ? DEBUG_LINES_MASA_SIMPLE_NO_DEPTH : DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL;
+                    }
+                    case LESSER, GREATER ->
+                    {
+                        return DEBUG_LINES_MASA_SIMPLE_NO_CULL;
+                    }
+                    default ->
+                    {
+                        return DEBUG_LINES_MASA_SIMPLE;
                     }
                 }
             }
@@ -604,6 +968,14 @@ public class MaLiLibPipelines
             {
                 return SOLID_TRANSLUCENT;
             }
+            case OVERLAY ->
+            {
+                return SOLID_OVERLAY;
+            }
+            case MASA_SIMPLE ->
+            {
+                return SOLID_MASA_SIMPLE;
+            }
             case MASA ->
             {
                 return SOLID_MASA;
@@ -622,6 +994,14 @@ public class MaLiLibPipelines
             case TRANSLUCENT ->
             {
                 return WIREFRAME_TRANSLUCENT;
+            }
+            case OVERLAY ->
+            {
+                return WIREFRAME_OVERLAY;
+            }
+            case MASA_SIMPLE ->
+            {
+                return WIREFRAME_MASA_SIMPLE;
             }
             case MASA ->
             {
@@ -642,6 +1022,14 @@ public class MaLiLibPipelines
             {
                 return CUTOUT_TRANSLUCENT;
             }
+            case OVERLAY ->
+            {
+                return CUTOUT_OVERLAY;
+            }
+            case MASA_SIMPLE ->
+            {
+                return CUTOUT_MASA_SIMPLE;
+            }
             case MASA ->
             {
                 return CUTOUT_MASA;
@@ -660,6 +1048,14 @@ public class MaLiLibPipelines
             case TRANSLUCENT ->
             {
                 return CUTOUT_MIPPED_TRANSLUCENT;
+            }
+            case OVERLAY ->
+            {
+                return CUTOUT_MIPPED_OVERLAY;
+            }
+            case MASA_SIMPLE ->
+            {
+                return CUTOUT_MIPPED_MASA_SIMPLE;
             }
             case MASA ->
             {
@@ -680,6 +1076,14 @@ public class MaLiLibPipelines
             {
                 return TRANSLUCENT_TRANSLUCENT;
             }
+            case OVERLAY ->
+            {
+                return TRANSLUCENT_OVERLAY;
+            }
+            case MASA_SIMPLE ->
+            {
+                return TRANSLUCENT_MASA_SIMPLE;
+            }
             case MASA ->
             {
                 return TRANSLUCENT_MASA;
@@ -699,6 +1103,14 @@ public class MaLiLibPipelines
             {
                 return TRIPWIRE_TRANSLUCENT;
             }
+            case OVERLAY ->
+            {
+                return TRIPWIRE_OVERLAY;
+            }
+            case MASA_SIMPLE ->
+            {
+                return TRIPWIRE_MASA_SIMPLE;
+            }
             case MASA ->
             {
                 return TRIPWIRE_MASA;
@@ -714,6 +1126,8 @@ public class MaLiLibPipelines
     {
         DEFAULT,
         TRANSLUCENT,
+        OVERLAY,
+        MASA_SIMPLE,
         MASA
     }
 

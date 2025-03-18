@@ -158,7 +158,12 @@ public abstract class WidgetBase
 
     public VertexConsumer bindTexture(Identifier texture, DrawContext context)
     {
-        return RenderUtils.bindTexture(texture, context);
+        return RenderUtils.bindGuiTexture(texture, context);
+    }
+
+    public VertexConsumer bindOverlayTexture(Identifier texture, DrawContext context)
+    {
+        return RenderUtils.bindGuiOverlayTexture(texture, context);
     }
 
     public int getStringWidth(String text)

@@ -134,7 +134,7 @@ public class InventoryOverlay
         
         if (type == InventoryRenderType.FURNACE)
         {
-            buffer = RenderUtils.bindTexture(TEXTURE_FURNACE, context);
+            buffer = RenderUtils.bindGuiTexture(TEXTURE_FURNACE, context);
             posMatrix = context.getMatrices().peek().getPositionMatrix();
             
             RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0,   4,  64, buffer); // left (top)
@@ -145,7 +145,7 @@ public class InventoryOverlay
         }
         else if (type == InventoryRenderType.BREWING_STAND)
         {
-            buffer = RenderUtils.bindTexture(TEXTURE_BREWING_STAND, context);
+            buffer = RenderUtils.bindGuiTexture(TEXTURE_BREWING_STAND, context);
             posMatrix = context.getMatrices().peek().getPositionMatrix();
             
             RenderUtils.drawTexturedRectBatched(posMatrix, x      , y     ,   0,   0,   4,  68, buffer); // left (top)
@@ -157,7 +157,7 @@ public class InventoryOverlay
         else if (type == InventoryRenderType.CRAFTER)
         {
             // We just hack in the Dispenser Texture, so it displays right.  Easy.
-            buffer = RenderUtils.bindTexture(TEXTURE_DISPENSER, context);
+            buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, context);
             posMatrix = context.getMatrices().peek().getPositionMatrix();
 
             RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0,   7,  61, buffer); // left (top)
@@ -168,7 +168,7 @@ public class InventoryOverlay
         }
         else if (type == InventoryRenderType.DISPENSER)
         {
-            buffer = RenderUtils.bindTexture(TEXTURE_DISPENSER, context);
+            buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, context);
             posMatrix = context.getMatrices().peek().getPositionMatrix();
 
             RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0,   7,  61, buffer); // left (top)
@@ -179,7 +179,7 @@ public class InventoryOverlay
         }
         else if (type == InventoryRenderType.HOPPER)
         {
-            buffer = RenderUtils.bindTexture(TEXTURE_HOPPER, context);
+            buffer = RenderUtils.bindGuiTexture(TEXTURE_HOPPER, context);
             posMatrix = context.getMatrices().peek().getPositionMatrix();
 
             RenderUtils.drawTexturedRectBatched(posMatrix, x      , y     ,   0,   0,   7,  25, buffer); // left (top)
@@ -191,7 +191,7 @@ public class InventoryOverlay
         // Most likely a Villager, or possibly a Llama
         else if (type == InventoryRenderType.VILLAGER)
         {
-            buffer = RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST, context);
+            buffer = RenderUtils.bindGuiTexture(TEXTURE_DOUBLE_CHEST, context);
             posMatrix = context.getMatrices().peek().getPositionMatrix();
 
             RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0,   7,  79, color, buffer); // left (top)
@@ -210,7 +210,7 @@ public class InventoryOverlay
         }
         else
         {
-            buffer = RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST, context);
+            buffer = RenderUtils.bindGuiTexture(TEXTURE_DOUBLE_CHEST, context);
             posMatrix = context.getMatrices().peek().getPositionMatrix();
 
             // Draw the slot backgrounds according to how many slots there actually are
@@ -253,7 +253,7 @@ public class InventoryOverlay
 
     public static void renderInventoryBackground27(int x, int y, int color, MinecraftClient mc, DrawContext context)
     {
-        VertexConsumer buffer = RenderUtils.bindTexture(TEXTURE_SINGLE_CHEST, context);
+        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_SINGLE_CHEST, context);
         Matrix4f posMatrix = context.getMatrices().peek().getPositionMatrix();
 
         RenderUtils.drawTexturedRectBatched(posMatrix, x      , y     ,   0,   0,   7,  61, color, buffer); // left (top)
@@ -265,7 +265,7 @@ public class InventoryOverlay
 
     public static void renderInventoryBackground54(int x, int y, int color, MinecraftClient mc, DrawContext context)
     {
-        VertexConsumer buffer = RenderUtils.bindTexture(TEXTURE_DOUBLE_CHEST, context);
+        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_DOUBLE_CHEST, context);
         Matrix4f posMatrix = context.getMatrices().peek().getPositionMatrix();
 
         RenderUtils.drawTexturedRectBatched(posMatrix, x      , y      ,   0,   0,   7, 115, color, buffer); // left (top)
@@ -372,7 +372,7 @@ public class InventoryOverlay
         BufferBuilder buffer = ctx.getBuilder();
          */
 
-        VertexConsumer buffer = RenderUtils.bindTexture(TEXTURE_DISPENSER, drawContext);
+        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, drawContext);
         Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
 
         RenderUtils.drawTexturedRectBatched(posMatrix, x     , y     ,   0,   0, 50, 83, buffer); // top-left (main part)

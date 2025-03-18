@@ -275,8 +275,8 @@ public class WidgetDropDownList<T> extends WidgetBase
         List<T> list = this.filteredEntries;
         int visibleEntries = Math.min(this.maxVisibleEntries, list.size());
 
-        RenderUtils.depthMask(true);
-        RenderUtils.depthTest(true);
+//        RenderUtils.depthMask(true);
+//        RenderUtils.depthTest(true);
         RenderUtils.drawOutlinedBox(this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
 
         String str = this.getDisplayString(this.getSelectedEntry());
@@ -294,8 +294,8 @@ public class WidgetDropDownList<T> extends WidgetBase
                 this.searchBar.draw(mouseX, mouseY, drawContext);
             }
 
-            RenderUtils.depthMask(true);
-            RenderUtils.depthTest(true);
+//            RenderUtils.depthMask(true);
+//            RenderUtils.depthTest(true);
             RenderUtils.drawOutline(this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
 
             int y = this.y + this.height + 1;
@@ -312,8 +312,8 @@ public class WidgetDropDownList<T> extends WidgetBase
                     bg = 0x60FFFFFF;
                 }
 
-                RenderUtils.depthMask(true);
-                RenderUtils.depthTest(true);
+//                RenderUtils.depthMask(true);
+//                RenderUtils.depthTest(true);
                 RenderUtils.drawRect(this.x, y, this.width - scrollWidth, this.height, bg);
                 str = this.getDisplayString(list.get(i));
                 this.drawString(txtX, txtY, 0xFFE0E0E0, str, drawContext);
@@ -326,8 +326,8 @@ public class WidgetDropDownList<T> extends WidgetBase
             int h = visibleEntries * this.height;
             int totalHeight = Math.max(h, list.size() * this.height);
 
-            RenderUtils.depthMask(true);
-            RenderUtils.depthTest(true);
+//            RenderUtils.depthMask(true);
+//            RenderUtils.depthTest(true);
             this.scrollBar.render(mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight, drawContext);
 
             VertexConsumer buffer = this.bindTexture(MaLiLibIcons.TEXTURE, drawContext);
@@ -343,8 +343,8 @@ public class WidgetDropDownList<T> extends WidgetBase
             RenderUtils.drawTexturedRect(posMatrix, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight(), buffer);
         }
 
-        RenderUtils.depthMask(false);
-        RenderUtils.depthTest(false);
+//        RenderUtils.depthMask(false);
+//        RenderUtils.depthTest(false);
         matrixStack.popMatrix();
         matrixStackIn.pop();
     }

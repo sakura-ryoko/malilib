@@ -507,7 +507,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public VertexConsumer bindTexture(Identifier texture, DrawContext context)
     {
-        return RenderUtils.bindTexture(texture, context);
+        return RenderUtils.bindGuiTexture(texture, context);
+    }
+
+    public VertexConsumer bindOverlayTexture(Identifier texture, DrawContext context)
+    {
+        return RenderUtils.bindGuiOverlayTexture(texture, context);
     }
 
     public <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)

@@ -94,7 +94,7 @@ public class GuiScrollBar
             if (this.barTexture != null && barHeight >= 4)
             {
                 RenderUtils.color(1f, 1f, 1f, 1f);
-                VertexConsumer buffer = RenderUtils.bindTexture(this.barTexture.getTexture(), drawContext);
+                VertexConsumer buffer = RenderUtils.bindGuiOverlayTexture(this.barTexture.getTexture(), drawContext);
                 Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
                 int u = this.barTexture.getU();
                 int v = this.barTexture.getV();

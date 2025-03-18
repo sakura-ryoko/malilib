@@ -293,7 +293,7 @@ public class InventoryUtils
     public static boolean swapItemToMainHand(ItemStack stackReference, MinecraftClient mc)
     {
         PlayerEntity player = mc.player;
-        boolean isCreative = player.isCreative();
+        boolean isCreative = player.isInCreativeMode();
 
         // Already holding the requested item
         if (areStacksEqualIgnoreNbt(stackReference, player.getMainHandStack()))
