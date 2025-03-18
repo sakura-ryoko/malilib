@@ -249,6 +249,12 @@ public abstract class MixinRenderPipelines
                                        .build()
                 );
 
+        MaLiLibPipelines.POSITION_TRANSLUCENT =
+                register(RenderPipeline.builder(MaLiLibPipelines.POSITION_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/position/translucent")
+                                       .build()
+                );
+
         // POSITION_MASA
         MaLiLibPipelines.POSITION_MASA_NO_DEPTH_NO_CULL =
                 register(RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
@@ -285,6 +291,12 @@ public abstract class MixinRenderPipelines
                         .build()
                 );
 
+        MaLiLibPipelines.POSITION_MASA =
+                register(RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/position/masa")
+                                       .build()
+                );
+
         // POSITION_COLOR_TRANSLUCENT
         MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL =
                 register(RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
@@ -318,6 +330,12 @@ public abstract class MixinRenderPipelines
                                        .withCull(false)
                                        .withDepthWrite(true)
                                        .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
+        MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT =
+                register(RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/position_color/translucent")
                                        .build()
                 );
 
@@ -357,6 +375,12 @@ public abstract class MixinRenderPipelines
                         .build()
                 );
 
+        MaLiLibPipelines.POSITION_COLOR_MASA =
+                register(RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/position_color/masa")
+                                       .build()
+                );
+
         // POSITION_TEX_TRANSLUCENT
         MaLiLibPipelines.POSITION_TEX_TRANSLUCENT_NO_DEPTH_NO_CULL =
                 register(RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_TRANSLUCENT_STAGE)
@@ -390,6 +414,12 @@ public abstract class MixinRenderPipelines
                                        .withCull(false)
                                        .withDepthWrite(true)
                                        .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
+        MaLiLibPipelines.POSITION_TEX_TRANSLUCENT =
+                register(RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/position_tex/translucent")
                                        .build()
                 );
 
@@ -429,6 +459,12 @@ public abstract class MixinRenderPipelines
                         .build()
                 );
 
+        MaLiLibPipelines.POSITION_TEX_MASA =
+                register(RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/position_tex/masa")
+                                       .build()
+                );
+
         // POSITION_TEX_COLOR_TRANSLUCENT
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL =
                 register(RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
@@ -462,6 +498,12 @@ public abstract class MixinRenderPipelines
                                        .withCull(false)
                                        .withDepthWrite(true)
                                        .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
+        MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT =
+                register(RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/position_tex_color/translucent")
                                        .build()
                 );
 
@@ -501,6 +543,12 @@ public abstract class MixinRenderPipelines
                         .build()
                 );
 
+        MaLiLibPipelines.POSITION_TEX_COLOR_MASA =
+                register(RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/position_tex_color/masa")
+                                       .build()
+                );
+
         // LINES
         MaLiLibPipelines.LINES_NO_DEPTH_NO_CULL =
                 register(RenderPipeline.builder(MaLiLibPipelines.LINES_STAGE)
@@ -524,6 +572,12 @@ public abstract class MixinRenderPipelines
                                            .withLocation(MaLiLibReference.MOD_ID+"/pipeline/lines/no_cull")
                                            .withCull(false)
                                            .build()
+                );
+
+        MaLiLibPipelines.LINES =
+                register(RenderPipeline.builder(MaLiLibPipelines.LINES_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/lines")
+                                       .build()
                 );
 
         // LINES_MASA
@@ -551,6 +605,12 @@ public abstract class MixinRenderPipelines
                         .build()
                 );
 
+        MaLiLibPipelines.LINES_MASA =
+                register(RenderPipeline.builder(MaLiLibPipelines.LINES_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/lines/masa")
+                                       .build()
+                );
+
         // DEBUG_LINES_TRANSLUCENT
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_NO_DEPTH_NO_CULL =
                 register(RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
@@ -571,10 +631,15 @@ public abstract class MixinRenderPipelines
 
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_NO_CULL =
                 register(RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
-                        .withLocation(MaLiLibReference.MOD_ID+"/pipeline/debug_lines/translucent/no_cull")
-                        .withDepthWrite(false)
-                        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                        .build()
+                                        .withLocation(MaLiLibReference.MOD_ID+"/pipeline/debug_lines/translucent/no_cull")
+                                        .withCull(false)
+                                        .build()
+                );
+
+        MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT =
+                register(RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/debug_lines/translucent")
+                                       .build()
                 );
 
         // DEBUG_LINES_MASA
@@ -597,10 +662,15 @@ public abstract class MixinRenderPipelines
 
         MaLiLibPipelines.DEBUG_LINES_MASA_NO_CULL =
                 register(RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_STAGE)
-                        .withLocation(MaLiLibReference.MOD_ID+"/pipeline/debug_lines/masa/no_cull")
-                        .withDepthWrite(false)
-                        .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                        .build()
+                                        .withLocation(MaLiLibReference.MOD_ID+"/pipeline/debug_lines/masa/no_cull")
+                                        .withCull(false)
+                                        .build()
+                );
+
+        MaLiLibPipelines.DEBUG_LINES_MASA =
+                register(RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID+"/pipeline/debug_lines/masa")
+                                       .build()
                 );
 
         // TERRAIN_TRANSLUCENT

@@ -35,68 +35,80 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_TRANSLUCENT_NO_DEPTH;
     public static RenderPipeline POSITION_TRANSLUCENT_LESSER_DEPTH;
     public static RenderPipeline POSITION_TRANSLUCENT_GREATER_DEPTH;
+    public static RenderPipeline POSITION_TRANSLUCENT;
 
     // POSITION_MASA
     public static RenderPipeline POSITION_MASA_NO_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_MASA_NO_DEPTH;
     public static RenderPipeline POSITION_MASA_LESSER_DEPTH;
     public static RenderPipeline POSITION_MASA_GREATER_DEPTH;
+    public static RenderPipeline POSITION_MASA;
 
     // POSITION_COLOR_TRANSLUCENT
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_NO_DEPTH;
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_LESSER_DEPTH;
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_GREATER_DEPTH;
+    public static RenderPipeline POSITION_COLOR_TRANSLUCENT;
 
     // POSITION_COLOR_MASA
     public static RenderPipeline POSITION_COLOR_MASA_NO_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_COLOR_MASA_NO_DEPTH;
     public static RenderPipeline POSITION_COLOR_MASA_LESSER_DEPTH;
     public static RenderPipeline POSITION_COLOR_MASA_GREATER_DEPTH;
+    public static RenderPipeline POSITION_COLOR_MASA;
 
     // POSITION_TEX_TRANSLUCENT
     public static RenderPipeline POSITION_TEX_TRANSLUCENT_NO_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_TEX_TRANSLUCENT_NO_DEPTH;
     public static RenderPipeline POSITION_TEX_TRANSLUCENT_LESSER_DEPTH;
     public static RenderPipeline POSITION_TEX_TRANSLUCENT_GREATER_DEPTH;
+    public static RenderPipeline POSITION_TEX_TRANSLUCENT;
 
     // POSITION_TEX_MASA
     public static RenderPipeline POSITION_TEX_MASA_NO_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_TEX_MASA_NO_DEPTH;
     public static RenderPipeline POSITION_TEX_MASA_LESSER_DEPTH;
     public static RenderPipeline POSITION_TEX_MASA_GREATER_DEPTH;
+    public static RenderPipeline POSITION_TEX_MASA;
 
     // POSITION_TEX_COLOR_TRANSLUCENT
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_NO_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_LESSER_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_GREATER_DEPTH;
+    public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT;
 
     // POSITION_TEX_COLOR_MASA
     public static RenderPipeline POSITION_TEX_COLOR_MASA_NO_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_NO_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_LESSER_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_GREATER_DEPTH;
+    public static RenderPipeline POSITION_TEX_COLOR_MASA;
 
     // LINES
     public static RenderPipeline LINES_NO_DEPTH_NO_CULL;
     public static RenderPipeline LINES_NO_DEPTH;
     public static RenderPipeline LINES_NO_CULL;
+    public static RenderPipeline LINES;
 
     // LINES_MASA
     public static RenderPipeline LINES_MASA_NO_DEPTH_NO_CULL;
     public static RenderPipeline LINES_MASA_NO_DEPTH;
     public static RenderPipeline LINES_MASA_NO_CULL;
+    public static RenderPipeline LINES_MASA;
 
     // DEBUG_LINES_TRANSLUCENT
     public static RenderPipeline DEBUG_LINES_TRANSLUCENT_NO_DEPTH_NO_CULL;
     public static RenderPipeline DEBUG_LINES_TRANSLUCENT_NO_DEPTH;
     public static RenderPipeline DEBUG_LINES_TRANSLUCENT_NO_CULL;
+    public static RenderPipeline DEBUG_LINES_TRANSLUCENT;
 
     // DEBUG_LINES_MASA
     public static RenderPipeline DEBUG_LINES_MASA_NO_DEPTH_NO_CULL;
     public static RenderPipeline DEBUG_LINES_MASA_NO_DEPTH;
     public static RenderPipeline DEBUG_LINES_MASA_NO_CULL;
+    public static RenderPipeline DEBUG_LINES_MASA;
 
     // TERRAIN_TRANSLUCENT
     public static RenderPipeline SOLID_TRANSLUCENT;
@@ -137,7 +149,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return RenderPipelines.POSITION_SKY;
+                return POSITION_MASA;
             }
         }
     }
@@ -164,7 +176,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.POSITION_SKY;
+                        return POSITION_TRANSLUCENT;
                     }
                 }
             }
@@ -186,7 +198,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.POSITION_SKY;
+                        return POSITION_MASA;
                     }
                 }
             }
@@ -220,7 +232,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return RenderPipelines.POSITION_TEX_PANORAMA;
+                return POSITION_TEX_MASA;
             }
         }
     }
@@ -247,7 +259,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.POSITION_TEX_PANORAMA;
+                        return POSITION_TEX_TRANSLUCENT;
                     }
                 }
             }
@@ -269,7 +281,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.POSITION_TEX_PANORAMA;
+                        return POSITION_TEX_MASA;
                     }
                 }
             }
@@ -303,7 +315,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return RenderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
+                return POSITION_COLOR_MASA;
             }
         }
     }
@@ -330,7 +342,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
+                        return POSITION_COLOR_TRANSLUCENT;
                     }
                 }
             }
@@ -352,7 +364,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.POSITION_COLOR_SUNRISE_SUNSET;
+                        return POSITION_COLOR_MASA;
                     }
                 }
             }
@@ -386,7 +398,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return RenderPipelines.POSITION_TEX_COLOR_END_SKY;
+                return POSITION_TEX_COLOR_MASA;
             }
         }
     }
@@ -413,7 +425,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.POSITION_TEX_COLOR_END_SKY;
+                        return POSITION_TEX_COLOR_TRANSLUCENT;
                     }
                 }
             }
@@ -435,7 +447,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.POSITION_TEX_COLOR_END_SKY;
+                        return POSITION_TEX_COLOR_MASA;
                     }
                 }
             }
@@ -465,7 +477,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return RenderPipelines.LINES;
+                return LINES_MASA;
             }
         }
     }
@@ -488,7 +500,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.LINES;
+                        return LINES_MASA;
                     }
                 }
             }
@@ -506,7 +518,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.LINES;
+                        return LINES;
                     }
                 }
             }
@@ -532,7 +544,7 @@ public class MaLiLibPipelines
             }
             default ->
             {
-                return RenderPipelines.DEBUG_LINE_STRIP;
+                return DEBUG_LINES_MASA;
             }
         }
     }
@@ -555,7 +567,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.DEBUG_LINE_STRIP;
+                        return DEBUG_LINES_TRANSLUCENT;
                     }
                 }
             }
@@ -573,7 +585,7 @@ public class MaLiLibPipelines
                     }
                     default ->
                     {
-                        return RenderPipelines.DEBUG_LINE_STRIP;
+                        return DEBUG_LINES_MASA;
                     }
                 }
             }
