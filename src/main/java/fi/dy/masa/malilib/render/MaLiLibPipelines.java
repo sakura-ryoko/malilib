@@ -209,35 +209,59 @@ public class MaLiLibPipelines
     public static RenderPipeline DEBUG_LINES_MASA;
 
     // TERRAIN_TRANSLUCENT
+    public static RenderPipeline SOLID_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline SOLID_TRANSLUCENT;
+    public static RenderPipeline WIREFRAME_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline WIREFRAME_TRANSLUCENT;
+    public static RenderPipeline CUTOUT_MIPPED_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline CUTOUT_MIPPED_TRANSLUCENT;
+    public static RenderPipeline CUTOUT_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline CUTOUT_TRANSLUCENT;
+    public static RenderPipeline TRANSLUCENT_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline TRANSLUCENT_TRANSLUCENT;
+    public static RenderPipeline TRIPWIRE_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline TRIPWIRE_TRANSLUCENT;
 
     // TERRAIN_OVERLAY
+    public static RenderPipeline SOLID_OVERLAY_GREATER_DEPTH;
     public static RenderPipeline SOLID_OVERLAY;
+    public static RenderPipeline WIREFRAME_OVERLAY_GREATER_DEPTH;
     public static RenderPipeline WIREFRAME_OVERLAY;
+    public static RenderPipeline CUTOUT_MIPPED_OVERLAY_GREATER_DEPTH;
     public static RenderPipeline CUTOUT_MIPPED_OVERLAY;
+    public static RenderPipeline CUTOUT_OVERLAY_GREATER_DEPTH;
     public static RenderPipeline CUTOUT_OVERLAY;
+    public static RenderPipeline TRANSLUCENT_OVERLAY_GREATER_DEPTH;
     public static RenderPipeline TRANSLUCENT_OVERLAY;
+    public static RenderPipeline TRIPWIRE_OVERLAY_GREATER_DEPTH;
     public static RenderPipeline TRIPWIRE_OVERLAY;
 
     // TERRAIN_MASA_SIMPLE
+    public static RenderPipeline SOLID_MASA_SIMPLE_GREATER_DEPTH;
     public static RenderPipeline SOLID_MASA_SIMPLE;
+    public static RenderPipeline WIREFRAME_MASA_SIMPLE_GREATER_DEPTH;
     public static RenderPipeline WIREFRAME_MASA_SIMPLE;
+    public static RenderPipeline CUTOUT_MIPPED_MASA_SIMPLE_GREATER_DEPTH;
     public static RenderPipeline CUTOUT_MIPPED_MASA_SIMPLE;
+    public static RenderPipeline CUTOUT_MASA_SIMPLE_GREATER_DEPTH;
     public static RenderPipeline CUTOUT_MASA_SIMPLE;
+    public static RenderPipeline TRANSLUCENT_MASA_SIMPLE_GREATER_DEPTH;
     public static RenderPipeline TRANSLUCENT_MASA_SIMPLE;
+    public static RenderPipeline TRIPWIRE_MASA_SIMPLE_GREATER_DEPTH;
     public static RenderPipeline TRIPWIRE_MASA_SIMPLE;
 
     // TERRAIN_MASA
+    public static RenderPipeline SOLID_MASA_GREATER_DEPTH;
     public static RenderPipeline SOLID_MASA;
+    public static RenderPipeline WIREFRAME_MASA_GREATER_DEPTH;
     public static RenderPipeline WIREFRAME_MASA;
+    public static RenderPipeline CUTOUT_MIPPED_MASA_GREATER_DEPTH;
     public static RenderPipeline CUTOUT_MIPPED_MASA;
+    public static RenderPipeline CUTOUT_MASA_GREATER_DEPTH;
     public static RenderPipeline CUTOUT_MASA;
+    public static RenderPipeline TRANSLUCENT_MASA_GREATER_DEPTH;
     public static RenderPipeline TRANSLUCENT_MASA;
+    public static RenderPipeline TRIPWIRE_MASA_GREATER_DEPTH;
     public static RenderPipeline TRIPWIRE_MASA;
 
     public static RenderPipeline getPositionSimple()

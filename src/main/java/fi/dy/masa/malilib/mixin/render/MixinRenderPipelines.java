@@ -1346,9 +1346,26 @@ public abstract class MixinRenderPipelines
                 );
 
         // TERRAIN_TRANSLUCENT
+        MaLiLibPipelines.SOLID_TRANSLUCENT_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/solid/translucent/greater_depth")
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.SOLID_TRANSLUCENT =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/solid/translucent")
+                                       .build()
+                );
+
+        MaLiLibPipelines.WIREFRAME_TRANSLUCENT_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/wireframe/translucent/greater_depth")
+                                       .withPolygonMode(PolygonMode.WIREFRAME)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1359,10 +1376,28 @@ public abstract class MixinRenderPipelines
                                        .build()
                 );
 
+        MaLiLibPipelines.CUTOUT_MIPPED_TRANSLUCENT_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout_mipped/translucent/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.CUTOUT_MIPPED_TRANSLUCENT =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout_mipped/translucent")
                                        .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+                                       .build()
+                );
+
+        MaLiLibPipelines.CUTOUT_TRANSLUCENT_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout/translucent/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1373,9 +1408,26 @@ public abstract class MixinRenderPipelines
                                        .build()
                 );
 
+        MaLiLibPipelines.TRANSLUCENT_TRANSLUCENT_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/translucent/translucent/greater_depth")
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.TRANSLUCENT_TRANSLUCENT =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/translucent/translucent")
+                                       .build()
+                );
+
+        MaLiLibPipelines.TRIPWIRE_TRANSLUCENT_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/tripwire/translucent/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1387,9 +1439,26 @@ public abstract class MixinRenderPipelines
                 );
 
         // TERRAIN_OVERLAY
+        MaLiLibPipelines.SOLID_OVERLAY_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_OVERLAY_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/solid/overlay/greater_depth")
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.SOLID_OVERLAY =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_OVERLAY_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/solid/overlay")
+                                       .build()
+                );
+
+        MaLiLibPipelines.WIREFRAME_OVERLAY_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_OVERLAY_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/wireframe/overlay/greater_depth")
+                                       .withPolygonMode(PolygonMode.WIREFRAME)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1400,10 +1469,28 @@ public abstract class MixinRenderPipelines
                                        .build()
                 );
 
+        MaLiLibPipelines.CUTOUT_MIPPED_OVERLAY_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_OVERLAY_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout_mipped/overlay/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.CUTOUT_MIPPED_OVERLAY =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_OVERLAY_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout_mipped/overlay")
                                        .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+                                       .build()
+                );
+
+        MaLiLibPipelines.CUTOUT_OVERLAY_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_OVERLAY_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout/overlay/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1414,9 +1501,26 @@ public abstract class MixinRenderPipelines
                                        .build()
                 );
 
+        MaLiLibPipelines.TRANSLUCENT_OVERLAY_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_OVERLAY_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/translucent/overlay/greater_depth")
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.TRANSLUCENT_OVERLAY =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_OVERLAY_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/translucent/overlay")
+                                       .build()
+                );
+
+        MaLiLibPipelines.TRIPWIRE_OVERLAY_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_OVERLAY_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/tripwire/overlay/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1428,9 +1532,26 @@ public abstract class MixinRenderPipelines
                 );
 
         // TERRAIN_MASA_SIMPLE
+        MaLiLibPipelines.SOLID_MASA_SIMPLE_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_SIMPLE_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/solid/masa_simple/greater_depth")
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.SOLID_MASA_SIMPLE =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_SIMPLE_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/solid/masa_simple")
+                                       .build()
+                );
+
+        MaLiLibPipelines.WIREFRAME_MASA_SIMPLE_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_SIMPLE_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/wireframe/masa_simple/greater_depth")
+                                       .withPolygonMode(PolygonMode.WIREFRAME)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1441,10 +1562,28 @@ public abstract class MixinRenderPipelines
                                        .build()
                 );
 
+        MaLiLibPipelines.CUTOUT_MIPPED_MASA_SIMPLE_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_SIMPLE_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout_mipped/masa_simple/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.CUTOUT_MIPPED_MASA_SIMPLE =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_SIMPLE_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout_mipped/masa_simple")
                                        .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+                                       .build()
+                );
+
+        MaLiLibPipelines.CUTOUT_MASA_SIMPLE_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_SIMPLE_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout/masa_simple/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1455,9 +1594,26 @@ public abstract class MixinRenderPipelines
                                        .build()
                 );
 
+        MaLiLibPipelines.TRANSLUCENT_MASA_SIMPLE_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_SIMPLE_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/translucent/masa_simple/greater_depth")
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.TRANSLUCENT_MASA_SIMPLE =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_SIMPLE_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/translucent/masa_simple")
+                                       .build()
+                );
+
+        MaLiLibPipelines.TRIPWIRE_MASA_SIMPLE_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_SIMPLE_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/tripwire/masa_simple/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1469,9 +1625,26 @@ public abstract class MixinRenderPipelines
                 );
 
         // TERRAIN_MASA
+        MaLiLibPipelines.SOLID_MASA_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/solid/masa/greater_depth")
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.SOLID_MASA =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/solid/masa")
+                                       .build()
+                );
+
+        MaLiLibPipelines.WIREFRAME_MASA_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/wireframe/masa/greater_depth")
+                                       .withPolygonMode(PolygonMode.WIREFRAME)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1482,10 +1655,28 @@ public abstract class MixinRenderPipelines
                                        .build()
                 );
 
+        MaLiLibPipelines.CUTOUT_MIPPED_MASA_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout_mipped/masa/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.CUTOUT_MIPPED_MASA =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout_mipped/masa")
                                        .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+                                       .build()
+                );
+
+        MaLiLibPipelines.CUTOUT_MASA_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/cutout/masa/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1496,9 +1687,26 @@ public abstract class MixinRenderPipelines
                                        .build()
                 );
 
+        MaLiLibPipelines.TRANSLUCENT_MASA_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/translucent/masa/greater_depth")
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+                                       .build()
+                );
+
         MaLiLibPipelines.TRANSLUCENT_MASA =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
                                        .withLocation(MaLiLibReference.MOD_ID + "/pipeline/translucent/masa")
+                                       .build()
+                );
+
+        MaLiLibPipelines.TRIPWIRE_MASA_GREATER_DEPTH =
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                                       .withLocation(MaLiLibReference.MOD_ID + "/pipeline/tripwire/masa/greater_depth")
+                                       .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+                                       .withDepthWrite(true)
+                                       .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                                        .build()
                 );
 
@@ -1508,6 +1716,5 @@ public abstract class MixinRenderPipelines
                                        .withShaderDefine("ALPHA_CUTOUT", 0.1F)
                                        .build()
                 );
-
     }
 }
