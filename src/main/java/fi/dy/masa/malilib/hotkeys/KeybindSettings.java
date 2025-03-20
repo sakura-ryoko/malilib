@@ -1,25 +1,18 @@
 package fi.dy.masa.malilib.hotkeys;
 
-import java.util.function.IntFunction;
-import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.netty.buffer.ByteBuf;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
-
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
+import net.minecraft.util.StringIdentifiable;
+
+import javax.annotation.Nullable;
 
 public class KeybindSettings
 {

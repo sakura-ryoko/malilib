@@ -68,7 +68,7 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
         }
     }
 
-    public abstract Codec<T> codec();
+    public Codec<T> codec() { return null; }
 
     public ConfigType getType()
     {

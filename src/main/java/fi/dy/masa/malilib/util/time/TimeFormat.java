@@ -1,47 +1,40 @@
 package fi.dy.masa.malilib.util.time;
 
-import java.util.function.IntFunction;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
-import io.netty.buffer.ByteBuf;
-
 import com.mojang.serialization.Codec;
+import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.time.formatter.TimeFmt;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
 
-import fi.dy.masa.malilib.config.IConfigOptionListEntry;
-import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
-import fi.dy.masa.malilib.util.time.formatter.TimeFmt;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Ported from CoreLib by Sakura Ryoko
  */
-public enum TimeFormat implements IConfigOptionListEntry, IEnumCodecProvider
+public enum TimeFormat implements IConfigOptionListEntry, StringIdentifiable
 {
-    REGULAR     (0, "regular",    TimeFmtType.REGULAR,     "malilib.gui.label.time_format.regular"),
-    ISO_LOCAL   (1, "iso_local",  TimeFmtType.ISO_LOCAL,   "malilib.gui.label.time_format.iso_local"),
-    ISO_OFFSET  (2, "iso_offset", TimeFmtType.ISO_OFFSET,  "malilib.gui.label.time_format.iso_offset"),
-    FORMATTED   (3, "formatted",  TimeFmtType.FORMATTED,   "malilib.gui.label.time_format.formatted"),
-    RFC1123     (4, "rfc1123",    TimeFmtType.RFC1123,     "malilib.gui.label.time_format.rfc1123"),
+    REGULAR     ("regular",    TimeFmtType.REGULAR,     "malilib.gui.label.time_format.regular"),
+    ISO_LOCAL   ("iso_local",  TimeFmtType.ISO_LOCAL,   "malilib.gui.label.time_format.iso_local"),
+    ISO_OFFSET  ("iso_offset", TimeFmtType.ISO_OFFSET,  "malilib.gui.label.time_format.iso_offset"),
+    FORMATTED   ("formatted",  TimeFmtType.FORMATTED,   "malilib.gui.label.time_format.formatted"),
+    RFC1123     ("rfc1123",    TimeFmtType.RFC1123,     "malilib.gui.label.time_format.rfc1123"),
     ;
 
     public static final StringIdentifiable.EnumCodec<TimeFormat> CODEC = StringIdentifiable.createCodec(TimeFormat::values);
-    public static final IntFunction<TimeFormat> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(TimeFormat::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
-    public static final PacketCodec<ByteBuf, TimeFormat> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, TimeFormat::getIndex);
+    public static final PacketCodec<ByteBuf, TimeFormat> PACKET_CODEC = PacketCodecs.STRING.xmap(TimeFormat::fromStringStatic, TimeFormat::asString);
     public static final ImmutableList<TimeFormat> VALUES = ImmutableList.copyOf(values());
 
-    private final int index;
     private final String configString;
     private final TimeFmtType<?> type;
     private final String translationKey;
 
-    TimeFormat(int index, String name, TimeFmtType<?> type, String translationKey)
+    TimeFormat(String name, TimeFmtType<?> type, String translationKey)
     {
-        this.index = index;
         this.configString = name;
         this.type = type;
         this.translationKey = translationKey;
@@ -51,18 +44,6 @@ public enum TimeFormat implements IConfigOptionListEntry, IEnumCodecProvider
     public Codec<TimeFormat> codec()
     {
         return CODEC;
-    }
-
-    @Override
-    public int getIndex()
-    {
-        return this.index;
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.configString;
     }
 
     @Override

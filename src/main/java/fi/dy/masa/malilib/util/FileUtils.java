@@ -25,7 +25,7 @@ public class FileUtils
     public static final Predicate<Path> JSON_FILEFILTER = (f) -> Files.isRegularFile(f) && f.getFileName().toString().endsWith(".json");
 
     /**
-     * Please stop using the File object
+     * Please stop using the File object, use {@link #getConfigDirectoryAsPath()}
      * @return ()
      */
     @Deprecated(forRemoval = true)
@@ -35,7 +35,7 @@ public class FileUtils
     }
 
     /**
-     * Please stop using the File object
+     * Please stop using the File object, use {@link #getMinecraftDirectoryAsPath()}
      * @return ()
      */
     @Deprecated(forRemoval = true)

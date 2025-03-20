@@ -500,6 +500,9 @@ public class NbtUtils
 		return tag;
 	}
 
+	/**
+	 * See {@link #readNbtFromFileAsPath}
+	 */
 	@Deprecated(forRemoval = true)
 	@Nullable
 	public static NbtCompound readNbtFromFile(@Nonnull File file)
@@ -513,6 +516,9 @@ public class NbtUtils
 		return readNbtFromFileAsPath(file, NbtSizeTracker.ofUnlimitedBytes());
 	}
 
+	/**
+	 * See {@link #readNbtFromFileAsPath}
+	 */
 	@Deprecated(forRemoval = true)
 	@Nullable
 	public static NbtCompound readNbtFromFile(@Nonnull File file, NbtSizeTracker tracker)

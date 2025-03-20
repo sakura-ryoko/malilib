@@ -1,19 +1,17 @@
 package fi.dy.masa.malilib.util;
 
-import java.util.function.IntFunction;
 import com.google.common.collect.ImmutableList;
-import io.netty.buffer.ByteBuf;
-
 import com.mojang.serialization.Codec;
+import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
 
-import fi.dy.masa.malilib.config.IConfigOptionListEntry;
-import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
+import java.util.function.IntFunction;
 
-public enum LayerMode implements IConfigOptionListEntry, IEnumCodecProvider
+public enum LayerMode implements IConfigOptionListEntry, StringIdentifiable
 {
     ALL             (0, "all",             "malilib.gui.label.layer_mode.all"),
     SINGLE_LAYER    (1, "single_layer",    "malilib.gui.label.layer_mode.single_layer"),
@@ -46,12 +44,6 @@ public enum LayerMode implements IConfigOptionListEntry, IEnumCodecProvider
     public int getIndex()
     {
         return this.index;
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.configString;
     }
 
     @Override
