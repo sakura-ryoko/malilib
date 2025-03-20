@@ -2183,7 +2183,7 @@ public class RenderUtils
 //        RenderSystem.lineWidth(lineWidth);
 
         // MaLiLibPipelines.LINES_NO_DEPTH_NO_CULL
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_MASA_SIMPLE_NO_DEPTH, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2273,7 +2273,7 @@ public class RenderUtils
 
         // RenderPipelines.LINES
         // MaLiLibPipelines.LINES_NO_DEPTH_NO_CULL
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_MASA_SIMPLE_NO_DEPTH, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.LINES_MASA_SIMPLE_OFFSET_2, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
         MatrixStack matrices = new MatrixStack();
 
@@ -2434,7 +2434,7 @@ public class RenderUtils
         culling(false);
 
         // MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL
-        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LESSER_DEPTH, BufferUsage.STATIC_WRITE);
+        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LESSER_DEPTH_OFFSET_2, BufferUsage.STATIC_WRITE);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
