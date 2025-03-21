@@ -1,15 +1,15 @@
 package fi.dy.masa.malilib.util;
 
+import java.util.function.IntFunction;
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
-import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import io.netty.buffer.ByteBuf;
+
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.ValueLists;
 
-import java.util.function.IntFunction;
+import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
 public enum LayerMode implements IConfigOptionListEntry, StringIdentifiable
 {
@@ -33,12 +33,6 @@ public enum LayerMode implements IConfigOptionListEntry, StringIdentifiable
         this.index = index;
         this.configString = configString;
         this.translationKey = translationKey;
-    }
-
-    @Override
-    public Codec<LayerMode> codec()
-    {
-        return CODEC;
     }
 
     public int getIndex()

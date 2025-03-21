@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin.render;
+package fi.dy.masa.malilib.mixin.screen;
 
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.screen.slot.Slot;

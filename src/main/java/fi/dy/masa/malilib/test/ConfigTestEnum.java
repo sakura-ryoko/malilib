@@ -6,13 +6,14 @@ import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.serialization.Codec;
-
 import net.minecraft.util.StringIdentifiable;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.config.ConfigType;
+import fi.dy.masa.malilib.config.IConfigBoolean;
+import fi.dy.masa.malilib.config.IConfigNotifiable;
+import fi.dy.masa.malilib.config.IHotkeyTogglable;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyCallbackToggleBooleanConfigWithMessage;
@@ -101,12 +102,6 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     private static String buildTranslateName(String name, String type)
     {
         return TEST_ENUM_KEY + "." + type + "." + name;
-    }
-
-    @Override
-    public Codec<ConfigTestEnum> codec()
-    {
-        return CODEC;
     }
 
     @Override

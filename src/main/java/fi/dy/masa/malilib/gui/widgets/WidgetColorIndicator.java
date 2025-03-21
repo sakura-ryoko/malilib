@@ -5,8 +5,8 @@ import com.google.common.collect.ImmutableList;
 
 import net.minecraft.client.gui.DrawContext;
 
-import fi.dy.masa.malilib.config.IConfigInteger;
-import fi.dy.masa.malilib.config.options.ConfigInteger;
+import fi.dy.masa.malilib.config.IConfigColor;
+import fi.dy.masa.malilib.config.options.ConfigColor;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiColorEditorHSV;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -16,17 +16,17 @@ import fi.dy.masa.malilib.util.data.Color4f;
 
 public class WidgetColorIndicator extends WidgetBase
 {
-    protected final IConfigInteger config;
+    protected final IConfigColor config;
     protected final ImmutableList<String> hoverText;
 
     public WidgetColorIndicator(int x, int y, int width, int height, Color4f color, IntConsumer consumer)
     {
-        this(x, y, width, height, new ConfigInteger("", color.intValue, ""));
+        this(x, y, width, height, new ConfigColor("color_indicator_widget", color));
 
-        ((ConfigInteger) this.config).setValueChangeCallback((cfg) -> consumer.accept(cfg.getIntegerValue()) );
+        ((ConfigColor) this.config).setValueChangeCallback((cfg) -> consumer.accept(cfg.getIntegerValue()) );
     }
 
-    public WidgetColorIndicator(int x, int y, int width, int height, IConfigInteger config)
+    public WidgetColorIndicator(int x, int y, int width, int height, IConfigColor config)
     {
         super(x, y, width, height);
 

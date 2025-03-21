@@ -1,13 +1,9 @@
 package fi.dy.masa.malilib.config;
 
-import org.jetbrains.annotations.ApiStatus;
-
-import com.mojang.serialization.Codec;
-
 public interface IConfigOptionListEntry
 {
-    @ApiStatus.Experimental
-    default Codec<? extends IConfigOptionListEntry> codec() { return null; }
+//    @ApiStatus.Experimental
+//    Codec<? extends IConfigOptionListEntry> codec();
 
     String getStringValue();
 
@@ -16,4 +12,6 @@ public interface IConfigOptionListEntry
     IConfigOptionListEntry cycle(boolean forward);
 
     IConfigOptionListEntry fromString(String value);
+
+    static IConfigOptionListEntry empty() { return null; }
 }

@@ -11,13 +11,13 @@ import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.Direction;
 
 import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
 
 /**
  * Post-ReWrite code
  */
-public enum BlockMirror implements IEnumCodecProvider
+public enum BlockMirror implements IConfigOptionListEntry, StringIdentifiable
 {
     NONE (0, "none", null, net.minecraft.util.BlockMirror.NONE),
     X    (1, "x", Direction.Axis.X, net.minecraft.util.BlockMirror.FRONT_BACK),
@@ -44,14 +44,13 @@ public enum BlockMirror implements IEnumCodecProvider
         this.axis = axis;
     }
 
-    @Override
     public int getIndex()
     {
         return this.index;
     }
 
     @Override
-    public String getName()
+    public String getStringValue()
     {
         return this.name;
     }
@@ -97,6 +96,12 @@ public enum BlockMirror implements IEnumCodecProvider
     {
         int index = (this.index + (reverse ? -1 : 1)) & 3;
         return VALUES[index];
+    }
+
+    @Override
+    public IConfigOptionListEntry fromString(String value)
+    {
+        return byName(value);
     }
 
     public net.minecraft.util.BlockMirror getVanillaMirror()

@@ -6,25 +6,41 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.Color4f;
 
-public class ConfigColor extends ConfigInteger
+public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
 {
     public static final Codec<ConfigColor> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
-                    PrimitiveCodec.STRING.fieldOf("defaultValue").forGetter(ConfigColor::getDefaultStringValue),
+                    Color4f.CODEC.fieldOf("defaultValue").forGetter(get -> get.defaultValue),
                     Color4f.CODEC.fieldOf("value").forGetter(get -> get.color),
                     PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
                     PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
                     PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)
             ).apply(inst, ConfigColor::new)
     );
+
+    private Color4f defaultValue;
+    protected final int minValue;
+    protected final int maxValue;
     private Color4f color;
+
+    public ConfigColor(String name, Color4f defaultValue)
+    {
+        super(ConfigType.COLOR, name, name+" Comment?", StringUtils.splitCamelCase(name), name);
+
+        this.minValue = Integer.MIN_VALUE;
+        this.maxValue = Integer.MAX_VALUE;
+        this.defaultValue = defaultValue;
+        this.color = this.defaultValue;
+    }
 
     public ConfigColor(String name, String defaultValue)
     {
@@ -43,21 +59,20 @@ public class ConfigColor extends ConfigInteger
 
     public ConfigColor(String name, String defaultValue, String comment, String prettyName, String translatedName)
     {
-        super(name, StringUtils.getColor(defaultValue, 0), comment, prettyName, translatedName);
+        super(ConfigType.COLOR, name, comment, prettyName, translatedName);
 
-        this.color = Color4f.fromColor(this.getIntegerValue());
+        int value = StringUtils.getColor(defaultValue, 0);
+        this.minValue = Integer.MIN_VALUE;
+        this.maxValue = Integer.MAX_VALUE;
+        this.defaultValue = Color4f.fromColor(value);
+        this.color = this.defaultValue;
     }
 
-    private ConfigColor(String name, String defaultValue, Color4f color, String comment, String prettyName, String translatedName)
+    private ConfigColor(String name, Color4f defaultValue, Color4f color, String comment, String prettyName, String translatedName)
     {
-        this(name, defaultValue, comment, prettyName, translatedName);
+        this(name, defaultValue.toString(), comment, prettyName, translatedName);
+        this.defaultValue = defaultValue;
         this.color = color;
-    }
-
-    //@Override
-    public Codec<ConfigColor> colorCodec()
-    {
-        return CODEC;
     }
 
     @Override
@@ -66,6 +81,7 @@ public class ConfigColor extends ConfigInteger
         return ConfigType.COLOR;
     }
 
+    @Override
     public Color4f getColor()
     {
         return this.color;
@@ -74,39 +90,92 @@ public class ConfigColor extends ConfigInteger
     @Override
     public ConfigColor translatedName(String translatedName)
     {
-        return (ConfigColor) super.translatedName(translatedName);
+        return super.translatedName(translatedName);
     }
 
     @Override
     public ConfigColor apply(String translationPrefix)
     {
-        return (ConfigColor) super.apply(translationPrefix);
+        return super.apply(translationPrefix);
+    }
+
+    @Override
+    public int getIntegerValue()
+    {
+        return this.color.getIntValue();
+    }
+
+    @Override
+    public int getDefaultIntegerValue()
+    {
+        return this.defaultValue.getIntValue();
     }
 
     @Override
     public String getStringValue()
     {
-        return String.format("#%08X", this.getIntegerValue());
+//        return String.format("#%08X", this.getIntegerValue());
+        return this.color.toString();
     }
 
     @Override
     public String getDefaultStringValue()
     {
-        return String.format("#%08X", this.getDefaultIntegerValue());
+//        return String.format("#%08X", this.getDefaultIntegerValue());
+        return this.defaultValue.toString();
     }
 
     @Override
     public void setValueFromString(String value)
     {
-        this.setIntegerValue(StringUtils.getColor(value, 0));
+        this.color = Color4f.fromString(value);
+//        this.setIntegerValue(Integer.parseInt(value));
     }
 
     @Override
     public void setIntegerValue(int value)
     {
-        this.color = Color4f.fromColor(value);
+        int clamp = this.getClampedValue(value);
+        int oldValue = this.color.getIntValue();
 
-        super.setIntegerValue(value); // This also calls the callback, if set
+        this.color = Color4f.fromColor(clamp);
+
+        if (oldValue != clamp)
+        {
+            this.onValueChanged();
+        }
+    }
+
+    @Override
+    public int getMinIntegerValue()
+    {
+        return this.minValue;
+    }
+
+    @Override
+    public int getMaxIntegerValue()
+    {
+        return this.maxValue;
+    }
+
+    protected int getClampedValue(int value)
+    {
+        return MathHelper.clamp(value, this.minValue, this.maxValue);
+    }
+
+    @Override
+    public boolean isModified()
+    {
+        return this.color.getIntValue() != this.defaultValue.getIntValue();
+    }
+
+    @Override
+    public void resetToDefault()
+    {
+        this.color = this.defaultValue;
+
+//        this.setIntegerValue(this.defaultValue);
+//        this.color = Color4f.fromColor(this.getIntegerValue());
     }
 
     @Override
@@ -130,8 +199,10 @@ public class ConfigColor extends ConfigInteger
         {
             if (element.isJsonPrimitive())
             {
-                this.value = this.getClampedValue(StringUtils.getColor(element.getAsString(), 0));
-                this.color = Color4f.fromColor(this.value);
+//                this.value = this.getClampedValue(StringUtils.getColor(element.getAsString(), 0));
+//                this.color = Color4f.fromColor(this.value);
+
+                this.setValueFromString(element.getAsString());
             }
             else
             {

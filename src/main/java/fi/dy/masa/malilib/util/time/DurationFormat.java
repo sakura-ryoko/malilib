@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.util.time;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
@@ -33,12 +32,6 @@ public enum DurationFormat implements IConfigOptionListEntry, StringIdentifiable
         this.configString = name;
         this.type = type;
         this.translationKey = translationKey;
-    }
-
-    @Override
-    public Codec<DurationFormat> codec()
-    {
-        return CODEC;
     }
 
     @Override

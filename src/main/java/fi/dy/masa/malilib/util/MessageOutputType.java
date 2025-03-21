@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.util;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
@@ -27,12 +26,6 @@ public enum MessageOutputType implements IConfigOptionListEntry, StringIdentifia
     {
         this.configString = configString;
         this.translationKey = translationKey;
-    }
-
-    @Override
-    public Codec<MessageOutputType> codec()
-    {
-        return CODEC;
     }
 
     @Override

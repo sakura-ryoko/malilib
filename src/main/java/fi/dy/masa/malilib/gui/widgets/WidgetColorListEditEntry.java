@@ -29,8 +29,8 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         this.listIndex = listIndex;
         this.isOdd = isOdd;
         this.defaultValue = defaultValue;
-        this.lastAppliedValue = initialValue.toHexString();
-        this.initialStringValue = initialValue.toHexString();
+        this.lastAppliedValue = initialValue.toString();
+        this.initialStringValue = initialValue.toString();
         this.parent = parent;
 
         int textFieldX = x + 20;
@@ -43,7 +43,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         if (!this.isDummy())
         {
             this.addLabel(x + 2, y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", listIndex + 1));
-            bx = this.addTextField(textFieldX, y + 1, resetX, textFieldWidth, 20, initialValue.toHexString());
+            bx = this.addTextField(textFieldX, y + 1, resetX, textFieldWidth, 20, initialValue.toString());
 
             this.addWidget(new WidgetColorIndicator(textFieldX + textFieldWidth + 2, y + 1, 19, 19, initialValue, this::applyNewValueToConfig));
 
@@ -260,7 +260,8 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         {
             this.parent.textField.getTextField().setText(this.parent.defaultValue.toString());
             this.parent.parent.applyPendingModifications();
-            this.buttonReset.setEnabled(!this.parent.textField.getTextField().getText().equals(this.parent.defaultValue));
+            this.buttonReset.setEnabled(!this.parent.textField.getTextField().getText().equals(this.parent.defaultValue.toString()));
+            this.parent.parent.refreshEntries();
         }
     }
 

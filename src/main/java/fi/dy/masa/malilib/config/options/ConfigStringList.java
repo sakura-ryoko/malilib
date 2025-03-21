@@ -62,12 +62,6 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
     }
 
     @Override
-    public Codec<ConfigStringList> codec()
-    {
-        return CODEC;
-    }
-
-    @Override
     public List<String> getStrings()
     {
         return this.strings;

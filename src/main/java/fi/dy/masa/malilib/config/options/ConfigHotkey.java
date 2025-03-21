@@ -72,12 +72,6 @@ public class ConfigHotkey extends ConfigBase<ConfigHotkey> implements IHotkey
     }
 
     @Override
-    public Codec<ConfigHotkey> codec()
-    {
-        return CODEC;
-    }
-
-    @Override
     public IKeybind getKeybind()
     {
         return this.keybind;

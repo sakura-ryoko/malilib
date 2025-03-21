@@ -1,12 +1,9 @@
 package fi.dy.masa.malilib.config.options;
 
-import javax.annotation.Nullable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -86,17 +83,6 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
     }
 
     @Override
-    public Codec<ConfigBoolean> codec()
-    {
-        return null;
-    }
-
-    public Codec<ConfigBooleanHotkeyed> codecFixed()
-    {
-        return CODEC;
-    }
-
-    @Override
     public IKeybind getKeybind()
     {
         return this.keybind;
@@ -126,6 +112,12 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
         // with multi-type configs like the FeatureToggle in Tweakeroo!
         // Thus we need to get the IKeybind and call it for that specifically.
         return super.isModified() || this.getKeybind().isModified();
+    }
+
+    @Override
+    public void toggleBooleanValue()
+    {
+        super.toggleBooleanValue();
     }
 
     @Override
@@ -174,38 +166,5 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
         obj.add("enabled", super.getAsJsonElement());
         obj.add("hotkey", this.getKeybind().getAsJsonElement());
         return obj;
-    }
-
-
-    @ApiStatus.Experimental
-    public @Nullable ConfigBooleanHotkeyed fromJsonCodec(JsonElement json)
-    {
-        if (this.codecFixed() == null) return null;
-
-        try
-        {
-            return this.codecFixed().decode(JsonOps.INSTANCE, json).resultOrPartial().orElseThrow().getFirst();
-        }
-        catch (Exception err)
-        {
-            MaLiLib.LOGGER.warn("ConfigBase#fromJsonCodec(): Error: {}", err.getMessage());
-            return null;
-        }
-    }
-
-    @ApiStatus.Experimental
-    public JsonElement toJsonCodec(@Nullable ConfigBooleanHotkeyed input)
-    {
-        if (this.codecFixed() == null) return new JsonObject();
-
-        try
-        {
-            return this.codecFixed().encodeStart(JsonOps.INSTANCE, input != null ? input : this).resultOrPartial().orElse(new JsonObject());
-        }
-        catch (Exception err)
-        {
-            MaLiLib.LOGGER.warn("ConfigBase#toJsonCodec(): Error: {}", err.getMessage());
-            return new JsonObject();
-        }
     }
 }

@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin.render;
+package fi.dy.masa.malilib.mixin.hud;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;

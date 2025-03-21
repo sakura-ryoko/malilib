@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import com.google.common.collect.ImmutableList;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.util.StringIdentifiable;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
@@ -80,12 +79,6 @@ public abstract class UsageRestriction<TYPE>
         {
             this.configString = configString;
             this.translationKey = translationKey;
-        }
-
-        @Override
-        public Codec<ListType> codec()
-        {
-            return CODEC;
         }
 
         @Override

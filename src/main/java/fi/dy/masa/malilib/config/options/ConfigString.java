@@ -60,12 +60,6 @@ public class ConfigString extends ConfigBase<ConfigString> implements IConfigVal
     }
 
     @Override
-    public Codec<ConfigString> codec()
-    {
-        return CODEC;
-    }
-
-    @Override
     public String getStringValue()
     {
         return this.value;

@@ -1,17 +1,17 @@
 package fi.dy.masa.malilib.util.time;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
-import fi.dy.masa.malilib.config.IConfigOptionListEntry;
-import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.time.formatter.TimeFmt;
 import io.netty.buffer.ByteBuf;
+
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.time.formatter.TimeFmt;
 
 /**
  * Ported from CoreLib by Sakura Ryoko
@@ -38,12 +38,6 @@ public enum TimeFormat implements IConfigOptionListEntry, StringIdentifiable
         this.configString = name;
         this.type = type;
         this.translationKey = translationKey;
-    }
-
-    @Override
-    public Codec<TimeFormat> codec()
-    {
-        return CODEC;
     }
 
     @Override

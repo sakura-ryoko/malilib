@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin;
+package fi.dy.masa.malilib.mixin.item;
 
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import net.minecraft.component.type.TooltipDisplayComponent;

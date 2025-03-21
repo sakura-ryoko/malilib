@@ -1,57 +1,32 @@
 package fi.dy.masa.malilib.hotkeys;
 
-import java.util.function.IntFunction;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
 
-public enum KeyAction implements IConfigOptionListEntry, IEnumCodecProvider
+public enum KeyAction implements IConfigOptionListEntry, StringIdentifiable
 {
-    PRESS   (0, "press",   "malilib.label.key_action.press"),
-    RELEASE (1, "release", "malilib.label.key_action.release"),
-    BOTH    (2, "both",    "malilib.label.key_action.both");
+    PRESS   ("press",   "malilib.label.key_action.press"),
+    RELEASE ("release", "malilib.label.key_action.release"),
+    BOTH    ("both",    "malilib.label.key_action.both");
 
     public static final StringIdentifiable.EnumCodec<KeyAction> CODEC = StringIdentifiable.createCodec(KeyAction::values);
-    public static final IntFunction<KeyAction> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(KeyAction::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
-    public static final PacketCodec<ByteBuf, KeyAction> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, KeyAction::getIndex);
+    public static final PacketCodec<ByteBuf, KeyAction> PACKET_CODEC = PacketCodecs.STRING.xmap(KeyAction::fromStringStatic, KeyAction::asString);
     public static final ImmutableList<KeyAction> VALUES = ImmutableList.copyOf(values());
 
-    private final int index;
     private final String configString;
     private final String translationKey;
 
-    KeyAction(int index, String configString, String translationKey)
+    KeyAction(String configString, String translationKey)
     {
-        this.index = index;
         this.configString = configString;
         this.translationKey = translationKey;
-    }
-
-    @Override
-    public Codec<KeyAction> codec()
-    {
-        return CODEC;
-    }
-
-    @Override
-    public int getIndex()
-    {
-        return this.index;
-    }
-
-    @Override
-    public String getName()
-    {
-        return this.configString;
     }
 
     @Override

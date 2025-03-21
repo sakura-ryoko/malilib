@@ -2,16 +2,10 @@ package fi.dy.masa.malilib.config.options;
 
 import javax.annotation.Nullable;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import org.jetbrains.annotations.ApiStatus;
-
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
@@ -53,17 +47,6 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
         super(name, defaultValue, comment, prettyName, translatedName);
         this.booleanConfig = this;
         this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
-    }
-
-    @Override
-    public Codec<ConfigBoolean> codec()
-    {
-        return null;
-    }
-
-    public Codec<BooleanHotkeyGuiWrapper> codecFixed()
-    {
-        return CODEC;
     }
 
     @Override
@@ -121,37 +104,5 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
     public IKeybind getKeybind()
     {
         return this.keybind;
-    }
-
-    @ApiStatus.Experimental
-    public @Nullable BooleanHotkeyGuiWrapper fromJsonCodec(JsonElement json)
-    {
-        if (this.codecFixed() == null) return null;
-
-        try
-        {
-            return this.codecFixed().decode(JsonOps.INSTANCE, json).resultOrPartial().orElseThrow().getFirst();
-        }
-        catch (Exception err)
-        {
-            MaLiLib.LOGGER.warn("ConfigBase#fromJsonCodec(): Error: {}", err.getMessage());
-            return null;
-        }
-    }
-
-    @ApiStatus.Experimental
-    public JsonElement toJsonCodec(@Nullable BooleanHotkeyGuiWrapper input)
-    {
-        if (this.codecFixed() == null) return new JsonObject();
-
-        try
-        {
-            return this.codecFixed().encodeStart(JsonOps.INSTANCE, input != null ? input : this).resultOrPartial().orElse(new JsonObject());
-        }
-        catch (Exception err)
-        {
-            MaLiLib.LOGGER.warn("ConfigBase#toJsonCodec(): Error: {}", err.getMessage());
-            return new JsonObject();
-        }
     }
 }

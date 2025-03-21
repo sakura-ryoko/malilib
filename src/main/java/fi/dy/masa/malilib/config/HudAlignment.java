@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.config;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
@@ -29,12 +28,6 @@ public enum HudAlignment implements IConfigOptionListEntry, StringIdentifiable
     {
         this.configString = configString;
         this.unlocName = unlocName;
-    }
-
-    @Override
-    public Codec<HudAlignment> codec()
-    {
-        return CODEC;
     }
 
     @Override

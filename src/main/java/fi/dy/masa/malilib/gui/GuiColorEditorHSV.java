@@ -9,7 +9,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.util.math.MathHelper;
 
-import fi.dy.masa.malilib.config.IConfigInteger;
+import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
@@ -20,7 +20,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class GuiColorEditorHSV extends GuiDialogBase
 {
-    protected final IConfigInteger config;
+    protected final IConfigColor config;
     @Nullable protected final IDialogHandler dialogHandler;
     @Nullable protected Element clickedElement;
     @Nullable protected Element currentTextInputElement;
@@ -52,7 +52,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     protected float relB;
     protected float relA;
 
-    public GuiColorEditorHSV(IConfigInteger config, @Nullable IDialogHandler dialogHandler, Screen parent)
+    public GuiColorEditorHSV(IConfigColor config, @Nullable IDialogHandler dialogHandler, Screen parent)
     {
         this.config = config;
         this.dialogHandler = dialogHandler;

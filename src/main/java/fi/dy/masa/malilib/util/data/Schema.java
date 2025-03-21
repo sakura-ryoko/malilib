@@ -21,6 +21,7 @@ public enum Schema implements IEnumCodecProvider
 {
     // TODO --> Add Schema Versions to this as versions get released
     // Minecraft Data Versions
+    SCHEMA_1_21_05 (4323, "1.21.5"),
     SCHEMA_25W10A  (4319, "25w10a"),
     SCHEMA_25W03A  (4304, "25w03a"), // Entity Data Components ( https://www.minecraft.net/en-us/article/minecraft-snapshot-25w03a )
     SCHEMA_25W02A  (4298, "25w02a"),
@@ -216,7 +217,7 @@ public enum Schema implements IEnumCodecProvider
     }
 
     @Override
-    public String getName()
+    public String getStringValue()
     {
         return this.str;
     }

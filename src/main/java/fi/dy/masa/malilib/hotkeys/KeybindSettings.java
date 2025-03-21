@@ -236,12 +236,6 @@ public class KeybindSettings
         }
 
         @Override
-        public Codec<Context> codec()
-        {
-            return CODEC;
-        }
-
-        @Override
         public String asString()
         {
             return this.configString;

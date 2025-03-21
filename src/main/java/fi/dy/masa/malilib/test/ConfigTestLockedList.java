@@ -37,12 +37,6 @@ public class ConfigTestLockedList implements IConfigLockedListType
     }
 
     @Override
-    public Codec<ConfigTestLockedList> codec()
-    {
-        return CODEC;
-    }
-
-    @Override
     public ImmutableList<IConfigLockedListEntry> getDefaultEntries()
     {
         ImmutableList.Builder<IConfigLockedListEntry> list = ImmutableList.builder();
@@ -78,12 +72,12 @@ public class ConfigTestLockedList implements IConfigLockedListType
             this.translationKey = MaLiLibReference.MOD_ID+".gui.label.locked_test."+translationKey;
         }
 
-        @Override
-        public Codec<Entry> codec()
-        {
-            return CODEC;
-        }
-
+//        @Override
+//        public Codec<Entry> codec()
+//        {
+//            return CODEC;
+//        }
+//
         @Override
         public String getStringValue()
         {

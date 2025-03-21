@@ -103,12 +103,6 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
     }
 
     @Override
-    public Codec<ConfigFloat> codec()
-    {
-        return CODEC;
-    }
-
-    @Override
     public boolean shouldUseSlider()
     {
         return this.useSlider;

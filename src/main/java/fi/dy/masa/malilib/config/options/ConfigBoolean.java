@@ -58,12 +58,6 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
     }
 
     @Override
-    public Codec<ConfigBoolean> codec()
-    {
-        return CODEC;
-    }
-
-    @Override
     public boolean getBooleanValue()
     {
         return this.value;

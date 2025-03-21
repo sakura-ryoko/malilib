@@ -3,8 +3,6 @@ package fi.dy.masa.malilib.test;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.ApiStatus;
 
-import com.mojang.serialization.Codec;
-
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
 @ApiStatus.Experimental
@@ -20,12 +18,6 @@ public enum ConfigTestOptList implements IConfigOptionListEntry
     ConfigTestOptList(String name)
     {
         this.name = name;
-    }
-
-    @Override
-    public Codec<ConfigTestOptList> codec()
-    {
-        return null;
     }
 
     @Override

@@ -62,12 +62,6 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
     }
 
     @Override
-    public Codec<ConfigColorList> codec()
-    {
-        return CODEC;
-    }
-
-    @Override
     public List<Color4f> getColors()
     {
         return this.colors;

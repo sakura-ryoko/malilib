@@ -2,10 +2,12 @@ package fi.dy.masa.malilib.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.math.MathHelper;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigDouble;
@@ -103,12 +105,6 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
     {
         this(name, defaultValue, minValue, maxValue, useSlider, comment, prettyName, translatedName);
         this.value = value;
-    }
-
-    @Override
-    public Codec<ConfigDouble> codec()
-    {
-        return CODEC;
     }
 
     @Override
