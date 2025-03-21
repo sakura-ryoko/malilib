@@ -27,6 +27,7 @@ public class MaLiLibTag
         public static final TagKey<Block> GLASS_BLOCKS = createBlockTag("glass_blocks");            // BlockTags.IMPERMEABLE (?)
         public static final TagKey<Block> GLASS_PANES = createBlockTag("glass_panes");
         public static final TagKey<Block> GLAZED_TERRACOTTA_BLOCKS = createBlockTag("glazed_terracotta_blocks");
+        public static final TagKey<Block> SCULK_BLOCKS = createBlockTag("sculk_blocks");
 
         public static final TagKey<Block> GRAVITY_BLOCKS = createBlockTag("gravity_blocks");
         public static final TagKey<Block> IMMOVABLE_BLOCKS = createBlockTag("immovable_blocks");
