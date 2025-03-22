@@ -287,5 +287,6 @@
     "tag.block.malilib.leaves_fix": "잎",
     "tag.block.malilib.needs_shears": "가위 필요",
     "tag.block.malilib.needs_silk_touch": "섬세한 손길 필요",
+    "tag.block.malilib.sculk_blocks": "스컬크 블록",
     "tag.block.malilib.wool_blocks_fix": "양털 블록"
 }
