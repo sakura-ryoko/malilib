@@ -287,6 +287,6 @@
     "tag.block.malilib.leaves_fix": "Листя",
     "tag.block.malilib.needs_shears": "Треба ножиці",
     "tag.block.malilib.needs_silk_touch": "Треба шовковий дотик",
-    "tag.block.malilib.sculk_blocks": "Sculk Blocks",
-    "tag.block.malilib.wool_blocks_fix": "Вовни"
+    "tag.block.malilib.sculk_blocks": "Блоки скалку",
+    "tag.block.malilib.wool_blocks_fix": "Вовна"
 }
