@@ -17,7 +17,7 @@ public class IntegerEditWidget extends BaseNumberEditWidget implements RangedInt
 {
     protected IntConsumer consumer;
     protected IntFunction<String> toStringFunction = String::valueOf;
-    @Nullable IntSupplier supplier;
+    @Nullable protected IntSupplier supplier;
     protected int minValue;
     protected int maxValue;
     protected int value;
@@ -103,11 +103,11 @@ public class IntegerEditWidget extends BaseNumberEditWidget implements RangedInt
     }
 
     @Override
-    protected void setValueFromTextField(String str)
+    protected void parseClampAndSetValue(String newValueStr)
     {
         try
         {
-            this.clampAndSetValue(Integer.parseInt(str));
+            this.clampAndSetValue(Integer.parseInt(newValueStr));
         }
         catch (NumberFormatException ignore) {}
     }
@@ -127,6 +127,7 @@ public class IntegerEditWidget extends BaseNumberEditWidget implements RangedInt
         }
     }
 
+    @Override
     protected void updateConsumer()
     {
         this.consumer.accept(this.value);

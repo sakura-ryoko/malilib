@@ -92,6 +92,13 @@ public abstract class BaseTripleNumberEditWidget<T, W extends BaseNumberEditWidg
         this.zCoordinateWidget.setLabelText(zTranslationKey);
     }
 
+    public void setUpdateImmediateFromTextInput(boolean updateImmediately)
+    {
+        this.xCoordinateWidget.getTextField().setUpdateListenerAlways(updateImmediately);
+        this.yCoordinateWidget.getTextField().setUpdateListenerAlways(updateImmediately);
+        this.zCoordinateWidget.getTextField().setUpdateListenerAlways(updateImmediately);
+    }
+
     protected void moveToPlayer()
     {
         this.setPos(this.getPositionFromPlayer());

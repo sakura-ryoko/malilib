@@ -2,17 +2,20 @@ package malilib.gui.widget;
 
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
 import malilib.gui.BaseScreen;
 import malilib.gui.callback.FloatSliderCallback;
 import malilib.util.MathUtils;
 import malilib.util.StringUtils;
 import malilib.util.data.FloatConsumer;
+import malilib.util.data.FloatSupplier;
 import malilib.util.data.RangedFloatStorage;
 
 public class FloatEditWidget extends BaseNumberEditWidget implements RangedFloatStorage
 {
-    protected final FloatConsumer consumer;
+    protected FloatConsumer consumer;
+    @Nullable protected FloatSupplier supplier;
     protected float minValue;
     protected float maxValue;
     protected float value;
@@ -46,6 +49,16 @@ public class FloatEditWidget extends BaseNumberEditWidget implements RangedFloat
         return true;
     }
 
+    public void setConsumer(FloatConsumer consumer)
+    {
+        this.consumer = consumer;
+    }
+
+    public void setSupplier(@Nullable FloatSupplier supplier)
+    {
+        this.supplier = supplier;
+    }
+
     protected void updateTextField()
     {
         this.textFieldWidget.setText(String.valueOf(this.value));
@@ -59,11 +72,11 @@ public class FloatEditWidget extends BaseNumberEditWidget implements RangedFloat
     }
 
     @Override
-    protected void setValueFromTextField(String str)
+    protected void parseClampAndSetValue(String newValueStr)
     {
         try
         {
-            this.clampAndSetValue(Float.parseFloat(str));
+            this.clampAndSetValue(Float.parseFloat(newValueStr));
         }
         catch (NumberFormatException ignore) {}
     }
@@ -71,8 +84,22 @@ public class FloatEditWidget extends BaseNumberEditWidget implements RangedFloat
     protected void clampAndSetValue(float newValue)
     {
         this.value = MathUtils.clamp(newValue, this.minValue, this.maxValue);
-        this.consumer.accept(this.value);
         this.sliderWidget.updateWidgetState();
+    }
+
+    public void setValueFromSupplier()
+    {
+        if (this.supplier != null)
+        {
+            this.clampAndSetValue(this.supplier.getAsFloat());
+            this.updateTextField();
+        }
+    }
+
+    @Override
+    protected void updateConsumer()
+    {
+        this.consumer.accept(this.value);
     }
 
     @Override
@@ -80,6 +107,7 @@ public class FloatEditWidget extends BaseNumberEditWidget implements RangedFloat
     {
         this.clampAndSetValue(newValue);
         this.updateTextField();
+        this.updateConsumer();
         return true;
     }
 
