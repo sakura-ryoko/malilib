@@ -19,7 +19,7 @@ public abstract class MixinMinecraftServer
         ((ServerHandler) ServerHandler.getInstance()).onServerStarting((MinecraftServer) (Object) this);
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;createMetadata()Lnet/minecraft/server/ServerMetadata;", ordinal = 0), method = "runServer")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;method_70561(Lnet/minecraft/server/GameInstance;)V", ordinal = 0), method = "runServer")
     private void onServerStarted(CallbackInfo ci)
     {
         ((ServerHandler) ServerHandler.getInstance()).onServerStarted((MinecraftServer) (Object) this);

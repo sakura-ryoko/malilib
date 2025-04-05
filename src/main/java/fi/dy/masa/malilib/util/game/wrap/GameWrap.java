@@ -49,7 +49,7 @@ public class GameWrap
     {
         Entity player = getClientPlayer();
         MinecraftServer server = getIntegratedServer();
-        return player != null && server != null ? server.getWorld(player.getWorld().getRegistryKey()) : null;
+        return player != null && server != null && server.getGameInstance() != null ? server.getGameInstance().getWorld(player.getWorld().getRegistryKey()) : null;
     }
 
     @Nullable
@@ -141,9 +141,9 @@ public class GameWrap
     {
         if (getClient().isIntegratedServerRunning())
         {
-            if (getClient().getServer() != null)
+            if (getClient().getServer() != null && getClient().getServer().getGameInstance() != null)
             {
-                return getClient().getServer().getGameRules();
+                return getClient().getServer().getGameInstance().getGameRules();
             }
         }
         else

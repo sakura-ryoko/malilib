@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.compat.iris.IrisCompat;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 
 @Mixin(RenderPipelines.class)
@@ -1388,8 +1387,5 @@ public abstract class MixinRenderPipelines
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
                               .build();
-
-        // Try registering with Iris.
-        IrisCompat.registerPipelines();
     }
 }

@@ -33,7 +33,6 @@ dependencies {
 	modImplementation(modApi(fabricApi.module("fabric-data-generation-api-v1", project.fabric_api_version)))
 
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
-	modCompileOnly "maven.modrinth:iris:${project.iris_version}+${project.minecraft_version}-fabric"
 //	modCompileOnly "net.irisshaders:iris-fabric-1.8.12-snapshot+mc1.21.5-local"
 //	modRuntimeOnly 'me.fallenbreath:mixin-auditor:0.1.0'
 }

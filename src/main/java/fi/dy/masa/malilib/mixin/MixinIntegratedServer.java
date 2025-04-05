@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.mixin;
 
+import net.minecraft.server.GameInstance;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,7 +27,7 @@ public class MixinIntegratedServer
     }
 
     @Inject(method = "openToLan", at = @At("RETURN"))
-    private void checkOpenToLan(GameMode gameMode, boolean cheatsAllowed, int port, CallbackInfoReturnable<Boolean> cir)
+    private void checkOpenToLan(GameInstance gameInstance, GameMode gameMode, boolean bl, int i, CallbackInfoReturnable<Boolean> cir)
     {
         if (cir.getReturnValue())
         {

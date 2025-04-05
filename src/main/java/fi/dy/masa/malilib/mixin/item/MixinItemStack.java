@@ -40,7 +40,7 @@ public abstract class MixinItemStack
     // This Goes before the Item durability, item id, and component count.
     @Inject(method = "appendTooltip(Lnet/minecraft/item/Item$TooltipContext;Lnet/minecraft/component/type/TooltipDisplayComponent;Lnet/minecraft/entity/player/PlayerEntity;Lnet/minecraft/item/tooltip/TooltipType;Ljava/util/function/Consumer;)V",
             at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/item/ItemStack;appendComponentTooltip(Lnet/minecraft/component/ComponentType;Lnet/minecraft/item/Item$TooltipContext;Lnet/minecraft/component/type/TooltipDisplayComponent;Ljava/util/function/Consumer;Lnet/minecraft/item/tooltip/TooltipType;)V",
+                     target = "Lnet/minecraft/item/ItemStack;appendComponentTooltip(Lnet/minecraft/component/ComponentType;Lnet/minecraft/item/Item$TooltipContext;Lnet/minecraft/component/type/TooltipDisplayComponent;Lnet/minecraft/entity/player/PlayerEntity;Ljava/util/function/Consumer;Lnet/minecraft/item/tooltip/TooltipType;)V",
                      ordinal = 21,
                      shift = At.Shift.AFTER))
     private void onGetTooltipComponentsLast(Item.TooltipContext context, TooltipDisplayComponent displayComponent,
