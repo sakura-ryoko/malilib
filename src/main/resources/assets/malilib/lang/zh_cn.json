@@ -2,7 +2,7 @@
     "malilib.config.comment.keybind_settings.activate_on": "按下组合键时功能被触发的时机，决定你的组合键是被“按下”时激活还是“松开”时激活",
     "malilib.config.comment.keybind_settings.allow_empty_keybind": "无快捷键是否视作一直被触发\n无快捷键就是没有设置快捷键，可以在设置快捷键的时候按一下 Esc 就设置为空了\n\t开启：无快捷键时，类似于有快捷键，并且一直被按下触发着的状态\n\t关闭：无快捷键时，就是没有快捷键呗，正常的表现\n这个的作用是，如果你需要某个功能一直被按下，你希望一直潜行(Shift)，\n你可以把潜行的快捷键Shift改为无快捷键，并且打开这个功能，然后你就无需按任何快捷键保持潜行了",
     "malilib.config.comment.keybind_settings.allow_extra_keys": "是否允许额外按键保持按住时仍触发快捷键\n例如：某快捷键为 A+B\n\t开启：Shift + W + A + B (其实就是潜行前进时按 A+B )也可以触发\n\t关闭：不能按别的快捷键，只按 A+B 才能触发",
-    "malilib.config.comment.keybind_settings.cancel_further": "当快捷键激活时，取消对后续按下按键的后续处理，只响应第一个被触发的功能。\n例如：第一个快捷键为A+B，第二个快捷键为A+B+C，若按下 A+B+C，有：\n\t启用：只响应第一个，第二个因为第一个被满足了而被取消了\n\t关闭：两个都响应",
+    "malilib.config.comment.keybind_settings.cancel_further": "启用后，按下快捷键的时候，取消原版对快捷键的处理。\n\n例如，如果你把某个功能绑定到了左右键，或者WASD移动方向键上：\n\t开启：你按左右键和WASD方向键，原版的操作没有反应\n\t关闭：不仅此功能有反应，原版的WASD也能有反应",
     "malilib.config.comment.keybind_settings.context": "快捷键是否可在游戏内，或图形界面(打开容器等，或聊天打字界面)中激活",
     "malilib.config.comment.keybind_settings.exclusive": "若启用，在该快捷键激活前其他快捷键不能触发\n此检查会在所有按键松开时才会重置",
     "malilib.config.comment.keybind_settings.order_sensitive": "是否要求按键必须按定义顺序触发\n例如：快捷键为 A+B\n\t开启：A+B才可以，B+A是不可以的\n\t不开启：A+B 和 B+A 均可以",
