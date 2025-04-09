@@ -4,7 +4,7 @@
     "malilib.config.comment.keybind_settings.allow_extra_keys": "Чи можна утримувати додаткові клавіші для активації прив'язки клавіш",
     "malilib.config.comment.keybind_settings.cancel_further": "Скасувати подальшу (ванілльну) обробку\nостанньої натиснутої клавіші, коли прив'язка клавіш активується",
     "malilib.config.comment.keybind_settings.context": "Чи можна активувати прив'язку клавіш у грі чи в інтерфейсі",
-    "malilib.config.comment.keybind_settings.exclusive": "Якщо «true», жодні інші прив’язі клавіш\nне можуть бути активовані до відповідної прив’язі клавіш\nЦя перевірка скидається, коли всі клавіші відпущено",
+    "malilib.config.comment.keybind_settings.exclusive": "Якщо істина, то жодні інші комбінації клавіш не можуть мати\nбуло активовано до відповідної прив’язки клавіш.\nЦя перевірка скидається, коли відпускаються всі клавіші.",
     "malilib.config.comment.keybind_settings.order_sensitive": "Чи слід натискати сполучення клавіш\nу певному порядку, у якому вони були визначені",
     "malilib.config.debug.comment.configElementDebug": "Якщо увімкнено, окремі виклики налагоджуваного\nелемента друкуються в ігровій консолі/журналі",
     "malilib.config.debug.comment.debugMessages": "Якщо увімкнено, події рівня налагодження\nдрукуються в ігрову консоль/журнал",
