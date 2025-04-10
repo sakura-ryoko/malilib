@@ -21,7 +21,7 @@
     "malilib.config.debug.name.mouseScrollDebug": "mouseScrollDebug",
     "malilib.config.debug.name.printTranslationKeys": "printTranslationKeys",
     "malilib.config.debug.prettyName.configElementDebug": "Налагодження елемента налаштувань",
-    "malilib.config.debug.prettyName.debugMessages": "Повідомлення про налагодження",2
+    "malilib.config.debug.prettyName.debugMessages": "Повідомлення про налагодження",
     "malilib.config.debug.prettyName.inputCancellationDebugging": "Налагодження скасування введення",
     "malilib.config.debug.prettyName.keybindDebugging": "Налагодження прив'язки клавіш",
     "malilib.config.debug.prettyName.keybindDebuggingIngame": "Налагодження прив'язки клавіш у грі",
