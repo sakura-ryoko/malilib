@@ -35,8 +35,8 @@
 	],
 	"accessWidener": "malilib.accesswidener",
 	"depends": {
-		"minecraft": "1.21.5",
-		"fabric-networking-api-v1": ">=4.4.0",
+		"minecraft": "1.21.6-alpha.25.14.craftmine",
+		"fabric-networking-api-v1": ">=4.4.2",
 		"fabric-resource-loader-v0": "*"
 	},
 	"breaks": {

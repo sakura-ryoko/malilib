@@ -21,7 +21,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.server.GameInstance;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -31,6 +31,7 @@ import net.minecraft.world.World;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.LeftRight;
+import fi.dy.masa.malilib.util.game.wrap.GameWrap;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 
 /**
@@ -589,13 +590,13 @@ public class StringUtils
 
         if (mc.isIntegratedServerRunning())
         {
-            IntegratedServer server = mc.getServer();
+            GameInstance instance = GameWrap.getIntegratedGameInstance();
 
-            if (server != null)
+            if (instance != null)
             {
                 // This used to be just MinecraftServer::getLevelName().
                 // Getting the name would now require an @Accessor for MinecraftServer.field_23784
-                String name = server.getSaveProperties().getLevelName();
+                String name = instance.getSaveProperties().getLevelName();
                 // this was breaking non-US Locale file names
                 //return FileUtils.generateSimpleSafeFileName(name);
                 return FileNameUtils.generateSafeFileName(name);

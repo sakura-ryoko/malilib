@@ -37,9 +37,9 @@ public class WorldUtils
     {
         IntegratedServer server = mc.getServer();
 
-        if (mc.world != null && server != null)
+        if (mc.world != null && server != null && server.getGameInstance() != null)
         {
-            return server.getWorld(mc.world.getRegistryKey());
+            return server.getGameInstance().getWorld(mc.world.getRegistryKey());
         }
         else
         {
@@ -61,9 +61,9 @@ public class WorldUtils
         IntegratedServer server = mc.getServer();
         WorldChunk chunk = null;
 
-        if (mc.world != null && server != null)
+        if (mc.world != null && server != null && server.getGameInstance() != null)
         {
-            ServerWorld world = server.getWorld(mc.world.getRegistryKey());
+            ServerWorld world = server.getGameInstance().getWorld(mc.world.getRegistryKey());
 
             if (world != null)
             {

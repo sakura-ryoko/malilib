@@ -17,6 +17,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.server.GameInstance;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -49,7 +50,14 @@ public class GameWrap
     {
         Entity player = getClientPlayer();
         MinecraftServer server = getIntegratedServer();
-        return player != null && server != null ? server.getWorld(player.getWorld().getRegistryKey()) : null;
+        GameInstance instance = getIntegratedGameInstance();
+        return player != null && server != null && instance != null ? getIntegratedGameInstance().getWorld(player.getWorld().getRegistryKey()) : null;
+    }
+
+    @Nullable
+    public static GameInstance getIntegratedGameInstance()
+    {
+        return getIntegratedServer() != null ? getIntegratedServer().getGameInstance() : null;
     }
 
     @Nullable
@@ -141,9 +149,9 @@ public class GameWrap
     {
         if (getClient().isIntegratedServerRunning())
         {
-            if (getClient().getServer() != null)
+            if (getClient().getServer() != null && getIntegratedGameInstance() != null)
             {
-                return getClient().getServer().getGameRules();
+                return getIntegratedGameInstance().getGameRules();
             }
         }
         else
