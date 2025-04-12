@@ -48,8 +48,8 @@ public class LayerRange
             PacketCodecs.INTEGER.encode(buf, value.layerBelow);
             PacketCodecs.INTEGER.encode(buf, value.layerRangeMin);
             PacketCodecs.INTEGER.encode(buf, value.layerRangeMax);
-            PacketCodecs.BOOLEAN.encode(buf, value.hotkeyRangeMin);
-            PacketCodecs.BOOLEAN.encode(buf, value.hotkeyRangeMax);
+            PacketCodecs.BOOL.encode(buf, value.hotkeyRangeMin);
+            PacketCodecs.BOOL.encode(buf, value.hotkeyRangeMax);
         }
 
         @Override
@@ -63,8 +63,8 @@ public class LayerRange
                     PacketCodecs.INTEGER.decode(buf),
                     PacketCodecs.INTEGER.decode(buf),
                     PacketCodecs.INTEGER.decode(buf),
-                    PacketCodecs.BOOLEAN.decode(buf),
-                    PacketCodecs.BOOLEAN.decode(buf)
+                    PacketCodecs.BOOL.decode(buf),
+                    PacketCodecs.BOOL.decode(buf)
             );
         }
     };
