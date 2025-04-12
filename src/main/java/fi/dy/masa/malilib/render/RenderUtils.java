@@ -544,7 +544,7 @@ public class RenderUtils
                                  List<String> lines, DrawContext drawContext)
     {
         return renderText(xOff, yOff, scale, textColor, bgColor, alignment,
-                          useBackground, useShadow, MaLiLibConfigs.Generic.ENABLE_STATUS_EFFECTS_SHIFT.getBooleanValue(),
+                          useBackground, useShadow, true,
                           lines, drawContext);
     }
 

@@ -1,10 +1,80 @@
 package fi.dy.masa.malilib.command;
 
-public class ClientCommandHandler// extends CommandHandler
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.jetbrains.annotations.ApiStatus;
+
+import net.minecraft.client.MinecraftClient;
+
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.interfaces.IClientCommandListener;
+import fi.dy.masa.malilib.interfaces.ICommandDispatcher;
+
+public class ClientCommandHandler implements ICommandDispatcher
+// extends CommandHandler
 {
     public static final ClientCommandHandler INSTANCE = new ClientCommandHandler();
+    private final List<IClientCommandListener> commands = new ArrayList<>();
 
-    public String[] latestAutoComplete = null;
+    @Override
+    public void registerCommand(IClientCommandListener command)
+    {
+        if (!this.commands.contains(command))
+        {
+            if (this.checkIfAvailable(command.getCommand()))
+            {
+                this.commands.add(command);
+            }
+            else
+            {
+                MaLiLib.LOGGER.error("ClientCommandHandler: Tried to register a duplicate command '{}'.",
+                                     command.getCommand());
+            }
+        }
+    }
+
+    private boolean checkIfAvailable(String command)
+    {
+        AtomicBoolean valid = new AtomicBoolean(true);
+
+        this.commands.forEach(
+                (handler) ->
+                {
+                    if (handler.getCommand().equalsIgnoreCase(command))
+                    {
+                        valid.set(false);
+                    }
+                });
+
+        return valid.get();
+    }
+
+    @ApiStatus.Internal
+    public boolean onSendClientMessage(String message, MinecraftClient mc)
+    {
+        if (!this.commands.isEmpty())
+        {
+            for (IClientCommandListener command : this.commands)
+            {
+                if (message.startsWith(command.getCommand()))
+                {
+                    List<String> args = Arrays.stream(message.split("\\s+")).toList();
+
+                    // Double verify we have a full word match
+                    if (args.getFirst().equalsIgnoreCase(command.getCommand()))
+                    {
+                        return command.execute(args, mc);
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+//    public String[] latestAutoComplete = null;
 
     /**
      * Attempt to execute a command. This method should return the number of times that the command was executed. If the

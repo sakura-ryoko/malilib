@@ -1,14 +1,43 @@
 package fi.dy.masa.malilib.util.position;
 
-import org.jetbrains.annotations.ApiStatus;
+import io.netty.buffer.ByteBuf;
 import org.joml.Vector2i;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class Vec2i
 {
+    public static final Codec<Vec2i> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.INT.fieldOf("x").forGetter(get -> get.x),
+                    PrimitiveCodec.INT.fieldOf("y").forGetter(get -> get.y)
+            ).apply(inst, Vec2i::new)
+    );
+    public static final PacketCodec<ByteBuf, Vec2i> PACKET_CODEC = new PacketCodec<>()
+    {
+        @Override
+        public void encode(ByteBuf buf, Vec2i value)
+        {
+            PacketCodecs.INTEGER.encode(buf, value.x);
+            PacketCodecs.INTEGER.encode(buf, value.y);
+        }
+
+        @Override
+        public Vec2i decode(ByteBuf buf)
+        {
+            return new Vec2i(
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf)
+            );
+        }
+    };
     public static final Vec2i ZERO = new Vec2i(0, 0);
 
     public final int x;

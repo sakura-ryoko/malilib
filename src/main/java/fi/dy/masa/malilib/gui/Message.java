@@ -11,11 +11,11 @@ public class Message
 {
     private final MessageType type;
     private final long created;
-    private final int displayTime;
+    private final long displayTime;
     private final int maxLineLength;
     private final List<String> messageLines = new ArrayList<>();
 
-    public Message(MessageType type, int displayTimeMs, int maxLineLength, String message, Object... args)
+    public Message(MessageType type, long displayTimeMs, int maxLineLength, String message, Object... args)
     {
         this.type = type;
         this.created = System.currentTimeMillis();

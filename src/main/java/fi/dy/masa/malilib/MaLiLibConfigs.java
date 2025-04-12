@@ -35,24 +35,28 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
         public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_ACTIONBAR_MESSAGES   = new ConfigBooleanHotkeyed   ("enableActionbarMessages", true, "").apply(GENERIC_KEY);
+        public static final ConfigInteger           ACTIONBAR_HUD_TICKS         = new ConfigInteger           ("actionbarHudTicks",       60, 1, 240).apply(GENERIC_KEY);
+        public static final ConfigFloat             IN_GAME_MESSAGE_TIMEOUT     = new ConfigFloat             ("inGameMessageTimeout",    5.0f, 0.5f, 15.0f).apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
-        public static final ConfigBooleanHotkeyed   ENABLE_STATUS_EFFECTS_SHIFT = new ConfigBooleanHotkeyed   ("enableStatusEffectsShift",true, "").apply(GENERIC_KEY);
+//        public static final ConfigBooleanHotkeyed   ENABLE_STATUS_EFFECTS_SHIFT = new ConfigBooleanHotkeyed   ("enableStatusEffectsShift",true, "").apply(GENERIC_KEY);
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
                 IGNORED_KEYS,
                 OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
+                ACTIONBAR_HUD_TICKS,
+                IN_GAME_MESSAGE_TIMEOUT,
                 ENABLE_CONFIG_SWITCHER,
-                ENABLE_STATUS_EFFECTS_SHIFT,
+//                ENABLE_STATUS_EFFECTS_SHIFT,
                 REALMS_COMMON_CONFIG
         );
 
         // Can't add OPEN_GUI_CONFIGS here, because things will break
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
                 ENABLE_ACTIONBAR_MESSAGES,
-                ENABLE_CONFIG_SWITCHER,
-                ENABLE_STATUS_EFFECTS_SHIFT
+                ENABLE_CONFIG_SWITCHER
+//                ENABLE_STATUS_EFFECTS_SHIFT
         );
     }
 

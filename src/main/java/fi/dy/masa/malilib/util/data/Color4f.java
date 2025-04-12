@@ -1,24 +1,73 @@
 package fi.dy.masa.malilib.util.data;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jetbrains.annotations.ApiStatus;
+import io.netty.buffer.ByteBuf;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.math.ColorHelper;
 
 import fi.dy.masa.malilib.util.MathUtils;
 
 /**
  * Post-ReWrite code
  */
-@ApiStatus.Experimental
 public class Color4f
 {
+    public static final Codec<Color4f> RGBA_CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    PrimitiveCodec.FLOAT.fieldOf("red").forGetter(get -> get.r),
+                    PrimitiveCodec.FLOAT.fieldOf("green").forGetter(get -> get.g),
+                    PrimitiveCodec.FLOAT.fieldOf("blue").forGetter(get -> get.b),
+                    PrimitiveCodec.FLOAT.fieldOf("alpha").forGetter(get -> get.a)
+            ).apply(instance, Color4f::new)
+    );
+    public static final Codec<Color4f> RGB_CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    PrimitiveCodec.FLOAT.fieldOf("red").forGetter(get -> get.r),
+                    PrimitiveCodec.FLOAT.fieldOf("green").forGetter(get -> get.g),
+                    PrimitiveCodec.FLOAT.fieldOf("blue").forGetter(get -> get.b)
+            ).apply(instance, Color4f::new)
+    );
+    public static final Codec<Color4f> CODEC = RGBA_CODEC;
+    public static final Codec<List<Color4f>> LIST_CODEC = CODEC.listOf();
+    public static final PacketCodec<ByteBuf, Color4f> PACKET_CODEC = new PacketCodec<>()
+    {
+        @Override
+        public void encode(ByteBuf buf, Color4f value)
+        {
+            PacketCodecs.FLOAT.encode(buf, value.r);
+            PacketCodecs.FLOAT.encode(buf, value.g);
+            PacketCodecs.FLOAT.encode(buf, value.b);
+            PacketCodecs.FLOAT.encode(buf, value.a);
+        }
+
+        @Override
+        public Color4f decode(ByteBuf buf)
+        {
+            return new Color4f(
+                    PacketCodecs.FLOAT.decode(buf),
+                    PacketCodecs.FLOAT.decode(buf),
+                    PacketCodecs.FLOAT.decode(buf),
+                    PacketCodecs.FLOAT.decode(buf)
+            );
+        }
+    };
     public static final Pattern HEX_8 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{8})");
     public static final Pattern HEX_6 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{6})");
     public static final Pattern HEX_4 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{4})");
     public static final Pattern HEX_3 = Pattern.compile("(?:0x|#)([a-fA-F0-9]{3})");
 
     public static final Color4f WHITE = new Color4f(1.0F, 1.0F, 1.0F, 1.0F);
+    public static final Color4f ZERO = new Color4f(0F, 0F, 0F, 0F);
     public final float r;
     public final float g;
     public final float b;
@@ -87,11 +136,21 @@ public class Color4f
                              getHexColorString(this.intValue), this.a, this.r, this.g, this.b, this.intValue);
     }
 
+    public String toHexString()
+    {
+        return String.format("#%08X", this.intValue);
+    }
+
+    public int toVanillaArgb()
+    {
+        return ColorHelper.fromFloats(this.a, this.r, this.g, this.b);
+    }
+
     @Override
     public boolean equals(Object o)
     {
-        if (this == o) {return true;}
-        if (o == null || this.getClass() != o.getClass()) {return false;}
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
         Color4f color4f = (Color4f) o;
         return this.intValue == color4f.intValue;
     }
@@ -99,7 +158,7 @@ public class Color4f
     @Override
     public int hashCode()
     {
-        return this.intValue;
+        return Objects.hash(this.intValue);
     }
 
     /**
