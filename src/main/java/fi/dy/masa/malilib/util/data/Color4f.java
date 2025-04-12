@@ -143,7 +143,7 @@ public class Color4f
 
     public int toVanillaArgb()
     {
-        return ColorHelper.fromFloats(this.a, this.r, this.g, this.b);
+        return ColorHelper.Argb.fromFloats(this.a, this.r, this.g, this.b);
     }
 
     @Override
