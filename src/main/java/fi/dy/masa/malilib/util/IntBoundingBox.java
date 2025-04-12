@@ -2,7 +2,14 @@ package fi.dy.masa.malilib.util;
 
 import javax.annotation.Nullable;
 
+import io.netty.buffer.ByteBuf;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.NbtIntArray;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -11,6 +18,42 @@ import net.minecraft.world.World;
 
 public class IntBoundingBox
 {
+    public static final Codec<IntBoundingBox> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    PrimitiveCodec.INT.fieldOf("minX").forGetter(get -> get.minX),
+                    PrimitiveCodec.INT.fieldOf("minY").forGetter(get -> get.minY),
+                    PrimitiveCodec.INT.fieldOf("minZ").forGetter(get -> get.minZ),
+                    PrimitiveCodec.INT.fieldOf("maxX").forGetter(get -> get.maxX),
+                    PrimitiveCodec.INT.fieldOf("maxY").forGetter(get -> get.maxY),
+                    PrimitiveCodec.INT.fieldOf("maxZ").forGetter(get -> get.maxZ)
+            ).apply(inst, IntBoundingBox::new)
+    );
+    public static final PacketCodec<ByteBuf, IntBoundingBox> PACKET_CODEC = new PacketCodec<>()
+    {
+        @Override
+        public void encode(ByteBuf buf, IntBoundingBox value)
+        {
+            PacketCodecs.INTEGER.encode(buf, value.minX);
+            PacketCodecs.INTEGER.encode(buf, value.minY);
+            PacketCodecs.INTEGER.encode(buf, value.minZ);
+            PacketCodecs.INTEGER.encode(buf, value.maxX);
+            PacketCodecs.INTEGER.encode(buf, value.maxY);
+            PacketCodecs.INTEGER.encode(buf, value.maxZ);
+        }
+
+        @Override
+        public IntBoundingBox decode(ByteBuf buf)
+        {
+            return new IntBoundingBox(
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf)
+            );
+        }
+    };
     public final int minX;
     public final int minY;
     public final int minZ;

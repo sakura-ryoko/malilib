@@ -1,10 +1,17 @@
 package fi.dy.masa.malilib.util;
 
+import java.util.Optional;
 import javax.annotation.Nullable;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.netty.buffer.ByteBuf;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.PrimitiveCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
@@ -16,9 +23,54 @@ import fi.dy.masa.malilib.interfaces.IRangeChangeListener;
 
 public class LayerRange
 {
-    protected final IRangeChangeListener refresher;
+    public static final Codec<LayerRange> CODEC = RecordCodecBuilder.create(
+            inst -> inst.group(
+                    LayerMode.CODEC.fieldOf("mode").forGetter(get -> get.layerMode),
+                    Axis.CODEC.fieldOf("axis").forGetter(get -> get.axis),
+                    PrimitiveCodec.INT.fieldOf("layer_single").forGetter(get -> get.layerSingle),
+                    PrimitiveCodec.INT.fieldOf("layer_above").forGetter(get -> get.layerAbove),
+                    PrimitiveCodec.INT.fieldOf("layer_below").forGetter(get -> get.layerBelow),
+                    PrimitiveCodec.INT.fieldOf("layer_range_min").forGetter(get -> get.layerRangeMin),
+                    PrimitiveCodec.INT.fieldOf("layer_range_max").forGetter(get -> get.layerRangeMax),
+                    PrimitiveCodec.BOOL.fieldOf("hotkey_range_min").forGetter(get -> get.hotkeyRangeMin),
+                    PrimitiveCodec.BOOL.fieldOf("hotkey_range_max").forGetter(get -> get.hotkeyRangeMax)
+            ).apply(inst, LayerRange::new)
+    );
+    public static final PacketCodec<ByteBuf, LayerRange> PACKET_CODEC = new PacketCodec<ByteBuf, LayerRange>()
+    {
+        @Override
+        public void encode(ByteBuf buf, LayerRange value)
+        {
+            LayerMode.PACKET_CODEC.encode(buf, value.layerMode);
+            PacketCodecs.STRING.encode(buf, value.axis.asString());
+            PacketCodecs.INTEGER.encode(buf, value.layerSingle);
+            PacketCodecs.INTEGER.encode(buf, value.layerAbove);
+            PacketCodecs.INTEGER.encode(buf, value.layerBelow);
+            PacketCodecs.INTEGER.encode(buf, value.layerRangeMin);
+            PacketCodecs.INTEGER.encode(buf, value.layerRangeMax);
+            PacketCodecs.BOOLEAN.encode(buf, value.hotkeyRangeMin);
+            PacketCodecs.BOOLEAN.encode(buf, value.hotkeyRangeMax);
+        }
+
+        @Override
+        public LayerRange decode(ByteBuf buf)
+        {
+            return new LayerRange(
+                    LayerMode.PACKET_CODEC.decode(buf),
+                    Axis.fromName(PacketCodecs.STRING.decode(buf)),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.BOOLEAN.decode(buf),
+                    PacketCodecs.BOOLEAN.decode(buf)
+            );
+        }
+    };
+    protected IRangeChangeListener refresher;
     protected LayerMode layerMode = LayerMode.ALL;
-    protected Direction.Axis axis = Direction.Axis.Y;
+    protected Axis axis = Axis.Y;
     protected int layerSingle = 0;
     protected int layerAbove = 0;
     protected int layerBelow = 0;
@@ -27,9 +79,29 @@ public class LayerRange
     protected boolean hotkeyRangeMin;
     protected boolean hotkeyRangeMax;
 
+    private LayerRange(LayerMode mode, Axis axis, int single, int above, int below, int min, int max, boolean minRange, boolean maxRange)
+    {
+        this.refresher = null;
+        this.layerMode = mode;
+        this.axis = axis;
+        this.layerSingle = single;
+        this.layerAbove = above;
+        this.layerBelow = below;
+        this.layerRangeMin = min;
+        this.layerRangeMax = max;
+        this.hotkeyRangeMin = minRange;
+        this.hotkeyRangeMax = maxRange;
+    }
+
     public LayerRange(IRangeChangeListener refresher)
     {
         this.refresher = refresher;
+    }
+
+    public LayerRange setRefresher(IRangeChangeListener refresher)
+    {
+        this.refresher = refresher;
+        return this;
     }
 
     public LayerMode getLayerMode()
@@ -37,7 +109,7 @@ public class LayerRange
         return this.layerMode;
     }
 
-    public Direction.Axis getAxis()
+    public Axis getAxis()
     {
         return this.axis;
     }
@@ -145,12 +217,12 @@ public class LayerRange
         }
     }
 
-    public void setAxis(Direction.Axis axis)
+    public void setAxis(Axis axis)
     {
         this.axis = axis;
 
         this.refresher.updateAll();
-        String val = GuiBase.TXT_GREEN + axis.getName();
+        String val = GuiBase.TXT_GREEN + axis.name();
         InfoUtils.printActionbarMessage("malilib.message.set_layer_axis_to", val);
     }
 
@@ -350,7 +422,7 @@ public class LayerRange
 
     public boolean moveLayer(int amount)
     {
-        String axisName = this.axis.getName().toLowerCase();
+        String axisName = this.axis.name().toLowerCase();
         String strTo = GuiBase.TXT_GREEN + axisName + " = ";
 
         switch (this.layerMode)
@@ -416,7 +488,7 @@ public class LayerRange
 
         if (moved)
         {
-            String axisName = this.axis.getName().toLowerCase();
+            String axisName = this.axis.name().toLowerCase();
 
             if (moveMin && moveMax)
             {
@@ -605,7 +677,7 @@ public class LayerRange
         return false;
     }
 
-    public int getClampedValue(int value, Direction.Axis axis)
+    public int getClampedValue(int value, Axis axis)
     {
         if (this.axis == axis)
         {
@@ -732,7 +804,7 @@ public class LayerRange
         JsonObject obj = new JsonObject();
 
         obj.add("mode", new JsonPrimitive(this.layerMode.name()));
-        obj.add("axis", new JsonPrimitive(this.axis.getName()));
+        obj.add("axis", new JsonPrimitive(this.axis.name()));
         obj.add("layer_single", new JsonPrimitive(this.layerSingle));
         obj.add("layer_above", new JsonPrimitive(this.layerAbove));
         obj.add("layer_below", new JsonPrimitive(this.layerBelow));
@@ -754,8 +826,8 @@ public class LayerRange
     public void fromJson(JsonObject obj)
     {
         this.layerMode = LayerMode.fromStringStatic(JsonUtils.getString(obj, "mode"));
-        this.axis = Direction.Axis.fromName(JsonUtils.getString(obj, "axis"));
-        if (this.axis == null) { this.axis = Direction.Axis.Y; }
+        this.axis = Axis.fromName(JsonUtils.getString(obj, "axis"));
+        if (this.axis == null) { this.axis = Axis.Y; }
 
         this.layerSingle = JsonUtils.getInteger(obj, "layer_single");
         this.layerAbove = JsonUtils.getInteger(obj, "layer_above");

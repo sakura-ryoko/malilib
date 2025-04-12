@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin;
+package fi.dy.masa.malilib.mixin.hud;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -14,12 +14,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.event.RenderEventHandler;
+import fi.dy.masa.malilib.util.game.IGameHud;
 
 @Mixin(InGameHud.class)
-public abstract class MixinInGameHud
+public abstract class MixinInGameHud implements IGameHud
 {
     @Shadow @Final private MinecraftClient client;
     @Shadow @Final private LayeredDrawer layeredDrawer;
+    @Shadow private int overlayRemaining;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void onInit(CallbackInfo info)
@@ -37,5 +39,11 @@ public abstract class MixinInGameHud
     private void malilib_renderGameOverlayLastDrawer(DrawContext context, RenderTickCounter tickCounter)
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayLastDrawer(context, this.client, tickCounter.getTickDelta(false));
+    }
+
+    @Override
+    public void malilib$setOverlayRemaining(int ticks)
+    {
+        this.overlayRemaining = ticks;
     }
 }

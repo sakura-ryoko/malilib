@@ -1,12 +1,23 @@
 package fi.dy.masa.malilib.util;
 
+import com.google.common.collect.ImmutableList;
+import io.netty.buffer.ByteBuf;
+
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.StringIdentifiable;
+
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
-public enum BlockSnap implements IConfigOptionListEntry
+public enum BlockSnap implements IConfigOptionListEntry, StringIdentifiable
 {
     NONE        ("none",    "malilib.gui.label.block_snap.none"),
     CENTER      ("center",  "malilib.gui.label.block_snap.center"),
     CORNER      ("corner",  "malilib.gui.label.block_snap.corner");
+
+    public static final EnumCodec<BlockSnap> CODEC = StringIdentifiable.createCodec(BlockSnap::values);
+    public static final PacketCodec<ByteBuf, BlockSnap> PACKET_CODEC = PacketCodecs.STRING.xmap(BlockSnap::fromStringStatic, BlockSnap::asString);
+    public static final ImmutableList<BlockSnap> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
     private final String translationKey;
@@ -27,6 +38,12 @@ public enum BlockSnap implements IConfigOptionListEntry
     public String getDisplayName()
     {
         return StringUtils.translate(this.translationKey);
+    }
+
+    @Override
+    public String asString()
+    {
+        return this.configString;
     }
 
     @Override

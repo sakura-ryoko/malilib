@@ -1,17 +1,28 @@
 package fi.dy.masa.malilib.util;
 
+import com.google.common.collect.ImmutableList;
+import io.netty.buffer.ByteBuf;
+
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.StringIdentifiable;
+
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
-public enum ActiveMode implements IConfigOptionListEntry
+public enum ActiveMode implements IConfigOptionListEntry, StringIdentifiable
 {
     NEVER       ("never",       "malilib.label.active_mode.never"),
     WITH_KEY    ("with_key",    "malilib.label.active_mode.with_key"),
     ALWAYS      ("always",      "malilib.label.active_mode.always");
 
+    public static final EnumCodec<ActiveMode> CODEC = StringIdentifiable.createCodec(ActiveMode::values);
+    public static final PacketCodec<ByteBuf, ActiveMode> PACKET_CODEC = PacketCodecs.STRING.xmap(ActiveMode::fromStringStatic, ActiveMode::asString);
+    public static final ImmutableList<ActiveMode> VALUES = ImmutableList.copyOf(values());
+
     private final String configString;
     private final String translationKey;
 
-    private ActiveMode(String configString, String translationKey)
+    ActiveMode(String configString, String translationKey)
     {
         this.configString = configString;
         this.translationKey = translationKey;
@@ -27,6 +38,12 @@ public enum ActiveMode implements IConfigOptionListEntry
     public String getDisplayName()
     {
         return StringUtils.translate(this.translationKey);
+    }
+
+    @Override
+    public String asString()
+    {
+        return this.configString;
     }
 
     @Override

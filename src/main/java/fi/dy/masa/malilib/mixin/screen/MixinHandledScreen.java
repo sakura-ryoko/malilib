@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin;
+package fi.dy.masa.malilib.mixin.screen;
 
 import org.jetbrains.annotations.Nullable;
 
