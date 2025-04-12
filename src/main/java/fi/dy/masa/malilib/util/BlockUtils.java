@@ -24,7 +24,10 @@ import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 
 /**
  * Consider Migrating to util/game/BlockUtils or util/nbt/NbtBlockUtils
+ * {@link fi.dy.masa.malilib.util.game.BlockUtils}
+ * {@link fi.dy.masa.malilib.util.nbt.NbtBlockUtils}
  */
+@Deprecated
 public class BlockUtils extends NbtBlockUtils
 {
     /**

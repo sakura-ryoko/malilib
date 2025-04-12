@@ -1,6 +1,17 @@
 package fi.dy.masa.malilib.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.annotation.Nullable;
+import com.google.common.collect.ImmutableList;
+import io.netty.buffer.ByteBuf;
+
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.StringIdentifiable;
+
+import fi.dy.masa.malilib.util.data.IEnumCodecProvider;
 
 /**
  * A Utility Table of Minecraft Data Versions and their respective Version strings.
@@ -8,10 +19,13 @@ import javax.annotation.Nullable;
  * NOTE:  Not all Snapshots are listed here, but this serves as a guidepost to return
  * the "closest" version String based on a given DataVersion within reasonable accuracy.
  */
-public enum Schema
+public enum Schema implements IEnumCodecProvider
 {
     // TODO --> Add Schema Versions to this as versions get released
     // Minecraft Data Versions
+    SCHEMA_FUTURE  (9999, "FUTURE"),
+    SCHEMA_1_21_05 (4325, "1.21.5"),
+    SCHEMA_25W10A  (4319, "25w10a"),
     SCHEMA_25W03A  (4304, "25w03a"), // Entity Data Components ( https://www.minecraft.net/en-us/article/minecraft-snapshot-25w03a )
     SCHEMA_25W02A  (4298, "25w02a"),
     SCHEMA_1_21_04 (4189, "1.21.4"),
@@ -115,6 +129,23 @@ public enum Schema
     SCHEMA_1_09_00 (169,  "1.9"),
     SCHEMA_15W32A  (100,  "15w32a");
 
+    public static final EnumCodec<Schema> CODEC = StringIdentifiable.createCodec(Schema::sorted);
+    public static final PacketCodec<ByteBuf, Schema> PACKET_CODEC = new PacketCodec<>()
+    {
+        @Override
+        public void encode(ByteBuf buf, Schema value)
+        {
+            PacketCodecs.INTEGER.encode(buf, value.schemaId);
+        }
+
+        @Override
+        public Schema decode(ByteBuf buf)
+        {
+            return Schema.getSchemaByDataVersion(PacketCodecs.INTEGER.decode(buf));
+        }
+    };
+    public static final ImmutableList<Schema> VALUES = ImmutableList.copyOf(values());
+
     private final int schemaId;
     private final String str;
 
@@ -141,7 +172,7 @@ public enum Schema
      */
     public static @Nullable Schema getSchemaByDataVersion(int dataVersion)
     {
-        for (Schema schema : Schema.values())
+        for (Schema schema : VALUES)
         {
             if (schema.getDataVersion() <= dataVersion)
             {
@@ -159,7 +190,7 @@ public enum Schema
      */
     public static @Nullable Schema getSchemaByString(String str)
     {
-        for (Schema schema : Schema.values())
+        for (Schema schema : VALUES)
         {
             if (schema.getString().equals(str))
             {
@@ -174,5 +205,36 @@ public enum Schema
     public String toString()
     {
         return "MC: "+this.getString()+" [Schema: "+this.getDataVersion()+"]";
+    }
+
+    @Override
+    public String asString()
+    {
+        return this.str;
+    }
+
+    @Override
+    public int getIndex()
+    {
+        return this.schemaId;
+    }
+
+    @Override
+    public String getStringValue()
+    {
+        return this.str;
+    }
+
+    private static Schema[] sorted()
+    {
+        List<Schema> copy = new ArrayList<>(Arrays.stream(values()).toList());
+        Schema[] result = new Schema[values().length];
+
+        for (int i = 0; i < values().length; i++)
+        {
+            result[i] = copy.removeLast();
+        }
+
+        return result;
     }
 }
