@@ -243,7 +243,7 @@
     "malilib.message.directory_created": "Створено каталог «%s»",
     "malilib.message.error.failed_to_copy_file": "Не вдалося скопіювати файл\n §e«%s»§r\nу\n §e«%s»§r.",
     "malilib.message.error.failed_to_copy_file.destination_exists": "Не буде скопійовано файл §e«%s»§r\nу §e«%s»§r,\nфайл призначення вже існує.",
-    "malilib.message.error.failed_to_copy_file_with_message": "Не вдалося скопіювати файл\n  §e«%s»§r\neу\n  §e«%s»§r\n%s.",
+    "malilib.message.error.failed_to_copy_file_with_message": "Не вдалося скопіювати файл\n  §e«%s»§r\nу\n  §e«%s»§r\n%s.",
     "malilib.message.error.failed_to_create_directory": "Не вдалося створити каталог\n §e«%s»§r.",
     "malilib.message.error.failed_to_create_file": "Не вдалося створити файл\n  §e«%s»§r.",
     "malilib.message.error.failed_to_delete_file": "Не вдалося видалити\n §e«%s»§r.",
