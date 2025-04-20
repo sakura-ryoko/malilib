@@ -118,32 +118,29 @@ public class GuiUtils
 
     public static String getCoordinateValueString(CoordinateType type, BlockPos pos)
     {
-        switch (type)
+        return switch (type)
         {
-            case X:
-                return String.valueOf(pos.getX());
-            case Y:
-                return String.valueOf(pos.getY());
-            case Z:
-                return String.valueOf(pos.getZ());
-        }
+            case X -> String.valueOf(pos.getX());
+            case Y -> String.valueOf(pos.getY());
+            case Z -> String.valueOf(pos.getZ());
+        };
 
-        return "";
     }
 
     public static String getCoordinateValueString(CoordinateType type, Vec3d pos)
     {
-        switch (type)
-        {
-            case X:
-                return String.valueOf(pos.x);
-            case Y:
-                return String.valueOf(pos.y);
-            case Z:
-                return String.valueOf(pos.z);
-        }
+//                return String.valueOf(pos.x);
+//                return String.valueOf(pos.y);
+//                return String.valueOf(pos.z);
 
-        return "";
+        // Truncate to 2 decimal places
+        return switch (type)
+        {
+            case X -> String.format("%.2f", pos.x);
+            case Y -> String.format("%.2f", pos.y);
+            case Z -> String.format("%.2f", pos.z);
+        };
+
     }
 
     protected static int addLabel(int x, int y, CoordinateType type, GuiBase gui)

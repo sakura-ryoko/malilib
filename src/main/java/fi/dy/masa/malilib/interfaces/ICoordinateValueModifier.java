@@ -6,17 +6,17 @@ public interface ICoordinateValueModifier
 {
     /**
      * Modifies the existing value by the given amount
-     * @param type
-     * @param amount
-     * @return
+     * @param type ()
+     * @param amount ()
+     * @return (True|False)
      */
     boolean modifyValue(CoordinateType type, int amount);
 
     /**
      * Sets the coordinate indicated by <b>type</b> to the value parsed from the string <b>newValue</b>
-     * @param type
-     * @param newValue
-     * @return
+     * @param type ()
+     * @param newValue ()
+     * @return (True|False)
      */
     boolean setValueFromString(CoordinateType type, String newValue);
 }
