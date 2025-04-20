@@ -174,6 +174,8 @@
     "malilib.gui.label.time_format.iso_offset": "ISO偏移格式",
     "malilib.gui.label.time_format.regular": "常规格式",
     "malilib.gui.label.time_format.rfc1123": "RFC1123格式",
+    "malilib.gui.label.time_format.time_only": "Time Only",
+    "malilib.gui.label.time_format.date_only": "Date Only",
     "malilib.gui.label.yes": "是",
     "malilib.gui.label_colored.off": "§c关闭§r",
     "malilib.gui.label_colored.on": "§a开启§r",
