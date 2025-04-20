@@ -16,6 +16,8 @@ public class TimeFmtType<T extends TimeFmt>
     public static final TimeFmtType<TimeFmtISOOffset> ISO_OFFSET;
     public static final TimeFmtType<TimeFmtFormatted> FORMATTED;
     public static final TimeFmtType<TimeFmtRFC1123> RFC1123;
+    public static final TimeFmtType<TimeFmtTimeOnly> TIME_ONLY;
+    public static final TimeFmtType<TimeFmtDateOnly> DATE_ONLY;
 
     private final TimeFactory<? extends T> factory;
     private final TimeFormat timeFmt;
@@ -49,6 +51,8 @@ public class TimeFmtType<T extends TimeFmt>
         ISO_OFFSET = create(TimeFmtISOOffset::new, TimeFormat.ISO_OFFSET);
         FORMATTED = create(TimeFmtFormatted::new, TimeFormat.FORMATTED);
         RFC1123 = create(TimeFmtRFC1123::new, TimeFormat.RFC1123);
+        TIME_ONLY = create(TimeFmtTimeOnly::new, TimeFormat.TIME_ONLY);
+        DATE_ONLY = create(TimeFmtDateOnly::new, TimeFormat.DATE_ONLY);
     }
 
     @FunctionalInterface
