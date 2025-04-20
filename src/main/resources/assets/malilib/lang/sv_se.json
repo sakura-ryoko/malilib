@@ -174,6 +174,8 @@
     "malilib.gui.label.time_format.iso_offset": "ISO Offset",
     "malilib.gui.label.time_format.regular": "Regular",
     "malilib.gui.label.time_format.rfc1123": "RFC1123",
+    "malilib.gui.label.time_format.time_only": "Time Only",
+    "malilib.gui.label.time_format.date_only": "Date Only",
     "malilib.gui.label.yes": "ja",
     "malilib.gui.label_colored.off": "§cOFF§r",
     "malilib.gui.label_colored.on": "§aON§r",
