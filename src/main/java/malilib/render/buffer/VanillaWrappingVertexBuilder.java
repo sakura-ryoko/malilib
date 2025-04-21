@@ -27,7 +27,6 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
     protected int glDrawMode;
     protected int vertexCount;
     protected int vertexSize;
-    protected int[] quadDataWorkBuffer;
 
     public VanillaWrappingVertexBuilder(ByteBuffer buffer, int glDrawMode, malilib.render.buffer.VertexFormat vertexFormat)
     {
@@ -41,7 +40,6 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
         this.vertexFormat = vertexFormat;
         this.vertexSize = vertexFormat.getSize();
         this.hasTexture = this.vertexFormat.hasTexture();
-        this.quadDataWorkBuffer = new int[this.vertexSize]; // vertexSize / 4 for bytes to ints, but 4 vertices per quad => just vertexSize
     }
 
     @Override
@@ -112,54 +110,20 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
     public VertexBuilder putBakedQuad(BakedQuad quad, int colorARGB)
     {
         this.addQuadVertexData(quad.getVertexData());
+        //this.onVertexAdded();
         net.minecraft.util.math.Vec3i normal = quad.getFace().getDirectionVec();
         this.putNormalForQuad(normal.getX(), normal.getY(), normal.getZ());
-        this.putColorForLastQuad(colorARGB);
+        this.putColorForQuad(colorARGB);
         return this;
     }
 
     @Override
-    public VertexBuilder putBlockQuad(double x, double y, double z,
-                                      BakedQuad quad, float cma, float cmr, float cmg, float cmb,
-                                      int lightMapVertex0, int lightMapVertex1, int lightMapVertex2, int lightMapVertex3)
+    public VertexBuilder putBlockQuad(double x, double y, double z, BakedQuad quad, int colorARGB)
     {
-        System.arraycopy(quad.getVertexData(), 0, this.quadDataWorkBuffer, 0, this.quadDataWorkBuffer.length);
-
-        int offset = this.vertexSize >> 2; // vertex size in int buffer entries
-        int index = this.vertexFormat.getColorOffset() >> 2;
-        this.quadDataWorkBuffer[index             ] = this.getMultipliedPackedColor(this.quadDataWorkBuffer[index             ], cma, cmr, cmg, cmb);
-        this.quadDataWorkBuffer[index + offset    ] = this.getMultipliedPackedColor(this.quadDataWorkBuffer[index + offset    ], cma, cmr, cmg, cmb);
-        this.quadDataWorkBuffer[index + offset * 2] = this.getMultipliedPackedColor(this.quadDataWorkBuffer[index + offset * 2], cma, cmr, cmg, cmb);
-        this.quadDataWorkBuffer[index + offset * 3] = this.getMultipliedPackedColor(this.quadDataWorkBuffer[index + offset * 3], cma, cmr, cmg, cmb);
-
-        index = this.vertexFormat.getLightMapOffset() >> 2;
-        this.quadDataWorkBuffer[index             ] = lightMapVertex0;
-        this.quadDataWorkBuffer[index + offset    ] = lightMapVertex1;
-        this.quadDataWorkBuffer[index + offset * 2] = lightMapVertex2;
-        this.quadDataWorkBuffer[index + offset * 3] = lightMapVertex3;
-
-        /*
-        net.minecraft.util.math.Vec3i normal = quad.getFace().getDirectionVec();
-        int packedNormal = this.getPackedNormal(normal.getX(), normal.getY(), normal.getZ());
-        index = this.vertexFormat.getNormalOffset() >> 2;
-        this.quadDataWorkBuffer[index             ] = packedNormal;
-        this.quadDataWorkBuffer[index + offset    ] = packedNormal;
-        this.quadDataWorkBuffer[index + offset * 2] = packedNormal;
-        this.quadDataWorkBuffer[index + offset * 3] = packedNormal;
-        */
-
-        index = this.vertexFormat.getPositionOffset() >> 2;
-
-        for (int vertexIndex = 0; vertexIndex < 4; ++vertexIndex)
-        {
-            int baseOffset = index + vertexIndex * offset;
-            this.quadDataWorkBuffer[baseOffset    ] = Float.floatToRawIntBits((float) x + Float.intBitsToFloat(this.quadDataWorkBuffer[baseOffset    ]));
-            this.quadDataWorkBuffer[baseOffset + 1] = Float.floatToRawIntBits((float) y + Float.intBitsToFloat(this.quadDataWorkBuffer[baseOffset + 1]));
-            this.quadDataWorkBuffer[baseOffset + 2] = Float.floatToRawIntBits((float) z + Float.intBitsToFloat(this.quadDataWorkBuffer[baseOffset + 2]));
-        }
-
-        this.addQuadVertexData(this.quadDataWorkBuffer);
-
+        this.addQuadVertexData(quad.getVertexData());
+        //this.onVertexAdded();
+        this.addToQuadPosition(x, y, z);
+        this.putColorForQuad(colorARGB);
         return this;
     }
 
@@ -186,12 +150,6 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
             this.vertexSize = format.getSize();
             this.hasTexture = format.hasTexture();
             this.byteBuffer.limit(this.byteBuffer.capacity());
-
-            if (this.quadDataWorkBuffer.length < this.vertexSize)
-            {
-                this.quadDataWorkBuffer = new int[this.vertexSize]; // vertexSize / 4 for bytes to ints, but 4 vertices per quad => just vertexSize
-            }
-
             this.reset();
         }
 
@@ -401,57 +359,28 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
         this.rawIntBuffer.put(startIndex + offset * 3, value);
     }
 
-    protected int getPackedNormal(int x, int y, int z)
+    protected void putNormalForQuad(int x, int y, int z)
     {
         x = (x * 127) & 0xFF;
         y = (y * 127) & 0xFF;
         z = (z * 127) & 0xFF;
 
-        return (z << 16) | (y << 8) | x;
-    }
+        int packedValue = (z << 16) | (y << 8) | x;
 
-    protected void putNormalForQuad(int x, int y, int z)
-    {
-        int packedValue = this.getPackedNormal(x, y, z);
         this.putIntValueForLastQuad(packedValue, this.vertexFormat.getNormalOffset());
     }
 
-    protected int getMultipliedPackedColor(int nativeColor, float ma, float mr, float mg, float mb)
-    {
-        int a;
-        int r;
-        int g;
-        int b;
-
-        if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
-        {
-            a = ((int) ((nativeColor >> 24) * ma)) & 0xFF;
-            b = ((int) ((nativeColor >> 16) * mr)) & 0xFF;
-            g = ((int) ((nativeColor >>  8) * mg)) & 0xFF;
-            r = ((int) ((nativeColor      ) * mb)) & 0xFF;
-        }
-        else
-        {
-            r = ((int) ((nativeColor >> 24) * ma)) & 0xFF;
-            g = ((int) ((nativeColor >> 16) * mr)) & 0xFF;
-            b = ((int) ((nativeColor >>  8) * mg)) & 0xFF;
-            a = ((int) ((nativeColor      ) * mb)) & 0xFF;
-        }
-
-        return this.getPackedColor(a, r, g, b);
-    }
-
-    protected int getPackedColor(int argb)
+    protected void putColorForQuad(int argb)
     {
         int a = (argb >> 24) & 0xFF;
         int r = (argb >> 16) & 0xFF;
         int g = (argb >>  8) & 0xFF;
         int b = (argb      ) & 0xFF;
 
-        return this.getPackedColor(a, r, g, b);
+        this.putColorForQuad(a, r, g, b);
     }
 
-    protected int getPackedColor(int a, int r, int g, int b)
+    protected void putColorForQuad(int a, int r, int g, int b)
     {
         int packedValue;
 
@@ -464,31 +393,7 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
             packedValue = (r << 24) | (g << 16) | (b << 8) | a;
         }
 
-        return packedValue;
-    }
-
-    protected void putColorForLastQuad(int argb)
-    {
-        int packedValue = this.getPackedColor(argb);
         this.putIntValueForLastQuad(packedValue, this.vertexFormat.getColorOffset());
-    }
-
-    protected void putColorForLastQuad(int a, int r, int g, int b)
-    {
-        int packedValue = this.getPackedColor(a, r, g, b);
-        this.putIntValueForLastQuad(packedValue, this.vertexFormat.getColorOffset());
-    }
-
-    protected void putLightMapForLastQuad(int v0, int v1, int v2, int v3)
-    {
-        // Get the data index of the first vertex of the last 4 vertices, as an int buffer offset
-        int startIndex = ((this.vertexCount - 4) * this.vertexSize + this.vertexFormat.getLightMapOffset()) >> 2;
-        int offset = this.vertexSize >> 2; // vertex size in int buffer entries
-
-        this.rawIntBuffer.put(startIndex             , v0);
-        this.rawIntBuffer.put(startIndex + offset    , v1);
-        this.rawIntBuffer.put(startIndex + offset * 2, v2);
-        this.rawIntBuffer.put(startIndex + offset * 3, v3);
     }
 
     protected void addToQuadPosition(double x, double y, double z)
@@ -504,28 +409,6 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
             this.rawIntBuffer.put(baseOffset + 1, Float.floatToRawIntBits((float) y + Float.intBitsToFloat(this.rawIntBuffer.get(baseOffset + 1))));
             this.rawIntBuffer.put(baseOffset + 2, Float.floatToRawIntBits((float) z + Float.intBitsToFloat(this.rawIntBuffer.get(baseOffset + 2))));
         }
-    }
-
-    protected void putValueForQuad(int value, int offsetInVertexAsBytes, int[] buffer)
-    {
-        int startIndex = offsetInVertexAsBytes >> 2;
-        int offset = this.vertexSize >> 2; // vertex size in int buffer entries
-
-        buffer[startIndex             ] = value;
-        buffer[startIndex + offset    ] = value;
-        buffer[startIndex + offset * 2] = value;
-        buffer[startIndex + offset * 3] = value;
-    }
-
-    protected void putValuesForQuad(int v0, int v1, int v2, int v3, int offsetInVertexAsBytes, int[] buffer)
-    {
-        int startIndex = offsetInVertexAsBytes >> 2;
-        int offset = this.vertexSize >> 2; // vertex size in int buffer entries
-
-        buffer[startIndex             ] = v0;
-        buffer[startIndex + offset    ] = v1;
-        buffer[startIndex + offset * 2] = v2;
-        buffer[startIndex + offset * 3] = v3;
     }
 
     protected void onVertexAdded()
