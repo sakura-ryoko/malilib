@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
@@ -33,7 +34,7 @@ public class RenderEventHandler implements IRenderDispatcher
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
 //    private final List<IRenderer> worldPreMainRenderers = new ArrayList<>();
     private final List<IRenderer> worldPostDebugRenderers = new ArrayList<>();
-    private final List<IRenderer> worldLayerPassRenderers = new ArrayList<>();
+//    private final List<IRenderer> worldLayerPassRenderers = new ArrayList<>();
 //    private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
@@ -115,25 +116,25 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
-    @ApiStatus.Internal
-    public void onRenderGameOverlayLastDrawer(DrawContext drawContext, MinecraftClient mc, float partialTicks)
-    {
-        Profiler profiler = Profilers.get();
-
-        profiler.push(MaLiLibReference.MOD_ID+"_overlay_last_drawer");
-
-        if (this.overlayRenderers.isEmpty() == false)
-        {
-            for (IRenderer renderer : this.overlayRenderers)
-            {
-                profiler.push(renderer.getProfilerSectionSupplier());
-                renderer.onRenderGameOverlayLastDrawer(drawContext, partialTicks, profiler, mc);
-                profiler.pop();
-            }
-        }
-
-        profiler.pop();
-    }
+//    @ApiStatus.Internal
+//    public void onRenderGameOverlayLastDrawer(DrawContext drawContext, MinecraftClient mc, float partialTicks)
+//    {
+//        Profiler profiler = Profilers.get();
+//
+//        profiler.push(MaLiLibReference.MOD_ID+"_overlay_last_drawer");
+//
+//        if (this.overlayRenderers.isEmpty() == false)
+//        {
+//            for (IRenderer renderer : this.overlayRenderers)
+//            {
+//                profiler.push(renderer.getProfilerSectionSupplier());
+//                renderer.onRenderGameOverlayLastDrawer(drawContext, partialTicks, profiler, mc);
+//                profiler.pop();
+//            }
+//        }
+//
+//        profiler.pop();
+//    }
 
     @ApiStatus.Internal
     public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)
@@ -392,8 +393,8 @@ public class RenderEventHandler implements IRenderDispatcher
 
             pass.setRenderer(() ->
             {
-                Fog fog = RenderSystem.getShaderFog();
-                RenderSystem.setShaderFog(Fog.DUMMY);
+                GpuBufferSlice fog = RenderSystem.getShaderFog();
+//                RenderSystem.setShaderFog(Fog.DUMMY);
 
 //                if (handleWeather != null)
 //                {
@@ -408,7 +409,7 @@ public class RenderEventHandler implements IRenderDispatcher
                 for (IRenderer renderer : this.worldPreWeatherRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreWeather(fb, posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
+                    renderer.onRenderWorldPreWeather(fb, posMatrix, projMatrix, frustum, camera, buffers, profiler);
                     profiler.pop();
                 }
 
@@ -456,8 +457,8 @@ public class RenderEventHandler implements IRenderDispatcher
 
             pass.setRenderer(() ->
             {
-                Fog fog = RenderSystem.getShaderFog();
-                RenderSystem.setShaderFog(Fog.DUMMY);
+                GpuBufferSlice fog = RenderSystem.getShaderFog();
+//                RenderSystem.setShaderFog(Fog.DUMMY);
 
 //                if (handleOutlines != null)
 //                {
@@ -472,7 +473,7 @@ public class RenderEventHandler implements IRenderDispatcher
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
                     // This really should be used either or, and never both in the same mod.
-                    renderer.onRenderWorldLastAdvanced(handleMain.get(), posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
+                    renderer.onRenderWorldLastAdvanced(handleMain.get(), posMatrix, projMatrix, frustum, camera, buffers, profiler);
                     renderer.onRenderWorldLast(posMatrix, projMatrix);
                     profiler.pop();
                 }

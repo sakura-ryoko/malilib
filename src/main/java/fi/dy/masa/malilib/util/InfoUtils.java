@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.util;
 import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
@@ -188,12 +189,12 @@ public class InfoUtils
     }
 
     @ApiStatus.Internal
-    public static void renderInGameMessages(net.minecraft.client.gui.DrawContext drawContext)
+    public static void renderInGameMessages(DrawContext drawContext)
     {
         int x = GuiUtils.getScaledWindowWidth() / 2;
         int y = GuiUtils.getScaledWindowHeight() - 76;
 
-        IN_GAME_MESSAGES.drawMessages(x, y, drawContext);
+        IN_GAME_MESSAGES.drawMessages(drawContext, x, y);
     }
 
     public static void sendVanillaMessage(MutableText message)

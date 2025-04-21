@@ -187,8 +187,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
-        // Use a custom DrawContext that doesn't always disable depth test when drawing...
-        //drawContext = new MalilibDrawContext(this.client, drawContext.getVertexConsumers());
         if (this.drawContext == null || this.drawContext.equals(drawContext) == false)
         {
             this.drawContext = drawContext;
@@ -205,7 +203,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.drawButtons(mouseX, mouseY, partialTicks, drawContext);
         this.drawContents(drawContext, mouseX, mouseY, partialTicks);
         this.drawHoveredWidget(mouseX, mouseY, drawContext);
-        this.drawButtonHoverTexts(mouseX, mouseY, partialTicks, drawContext);
+        this.drawButtonHoverTexts(drawContext, mouseX, mouseY, partialTicks);
         this.drawGuiMessages(drawContext);
     }
 
@@ -502,17 +500,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     protected void drawGuiMessages(DrawContext drawContext)
     {
-        this.messageRenderer.drawMessages(this.width / 2, this.height / 2, drawContext);
-    }
-
-    public VertexConsumer bindTexture(Identifier texture, DrawContext context)
-    {
-        return RenderUtils.bindGuiTexture(texture, context);
-    }
-
-    public VertexConsumer bindOverlayTexture(Identifier texture, DrawContext context)
-    {
-        return RenderUtils.bindGuiOverlayTexture(texture, context);
+        this.messageRenderer.drawMessages(drawContext, this.width / 2, this.height / 2);
     }
 
     public <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)
@@ -598,8 +586,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
     {
         // Draw the dark background
-        RenderUtils.forceDraw(drawContext);
-        RenderUtils.drawRect(0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
+//        RenderUtils.forceDraw(drawContext);
+        RenderUtils.drawBasicRect(drawContext, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
     }
 
     /**
@@ -620,7 +608,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             super.applyBlur();
         }
 
-        RenderUtils.drawTexturedRectAndDraw(GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, drawContext);
+        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height);
     }
 
     protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
@@ -658,7 +646,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
-                RenderUtils.forceDraw(drawContext);
+//                RenderUtils.forceDraw(drawContext);
                 widget.render(mouseX, mouseY, false, drawContext);
 
                 if (widget.isMouseOver(mouseX, mouseY))
@@ -669,7 +657,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
     }
 
-    protected void drawButtonHoverTexts(int mouseX, int mouseY, float partialTicks, DrawContext drawContext)
+    protected void drawButtonHoverTexts(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.shouldRenderHoverStuff() == false)
         {
@@ -680,8 +668,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             if (button.hasHoverText() && button.isMouseOver())
             {
-                RenderUtils.forceDraw(drawContext);
-                RenderUtils.drawHoverText(mouseX, mouseY, button.getHoverStrings(), drawContext);
+//                RenderUtils.forceDraw(drawContext);
+                RenderUtils.drawHoverText(drawContext, mouseX, mouseY, button.getHoverStrings());
             }
         }
     }
@@ -700,7 +688,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (this.hoveredWidget != null)
         {
-            RenderUtils.forceDraw(drawContext);
+//            RenderUtils.forceDraw(drawContext);
             this.hoveredWidget.postRenderHovered(mouseX, mouseY, false, drawContext);
         }
     }

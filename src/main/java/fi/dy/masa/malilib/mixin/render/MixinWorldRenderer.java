@@ -21,11 +21,11 @@ public abstract class MixinWorldRenderer
 {
     @Shadow @Final private MinecraftClient client;
     @Shadow @Final private DefaultFramebufferSet framebufferSet;
+    @Shadow @Final private BufferBuilderStorage bufferBuilders;
+
     //@Unique private PostEffectProcessor postEffects = null;
     //@Unique private int width;
     //@Unique private int height;
-
-    @Shadow @Final private BufferBuilderStorage bufferBuilders;
 
 //    @Inject(method = "render",
 //            at = @At(value = "INVOKE",
@@ -77,7 +77,7 @@ public abstract class MixinWorldRenderer
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;FLnet/minecraft/client/render/Fog;)V",
+                     target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;FLcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
                      shift = At.Shift.BEFORE))
     private void malilib_onRenderWorldPreWeather(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
                                                  Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,
@@ -101,7 +101,7 @@ public abstract class MixinWorldRenderer
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/WorldRenderer;renderLateDebug(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/client/render/Fog;)V",
+                    target = "Lnet/minecraft/client/render/WorldRenderer;renderLateDebug(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
                     shift = At.Shift.BEFORE))
     private void malilib_onRenderWorldLast(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
                                            Camera camera, GameRenderer gameRenderer, Matrix4f positionMatrix, Matrix4f projectionMatrix, CallbackInfo ci,

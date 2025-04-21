@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.gui;
 import java.awt.*;
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.buffers.BufferUsage;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.BufferBuilder;

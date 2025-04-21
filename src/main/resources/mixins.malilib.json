@@ -28,6 +28,8 @@
         "render.IMixinAbstractTexture",
         "render.IMixinBufferBuilder",
         "render.IMixinDrawContext",
+        "render.IMixinGameRenderer",
+        "render.IMixinWorldRenderer",
         "render.MixinDebugRenderer",
         "render.MixinDrawContext",
         "render.MixinGlBackend",

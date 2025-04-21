@@ -20,7 +20,7 @@ public interface IRenderer
     /**
      * Called after the vanilla "drawer" overlays have been rendered
      */
-    default void onRenderGameOverlayLastDrawer(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc) {}
+//    default void onRenderGameOverlayLastDrawer(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc) {}
 
     /**
      * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, drawer, profiler
@@ -58,12 +58,12 @@ public interface IRenderer
     /**
      * Called before vanilla Weather rendering
      */
-    default void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
+    default void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, BufferBuilderStorage buffers, Profiler profiler) {}
 
     /**
      * Called after vanilla world rendering, with advanced Parameters, such as Frustum, Camera, and Fog
      */
-    default void onRenderWorldLastAdvanced(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
+    default void onRenderWorldLastAdvanced(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, BufferBuilderStorage buffers, Profiler profiler) {}
 
     /**
      * Called after vanilla world rendering (Original)

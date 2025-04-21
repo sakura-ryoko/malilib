@@ -6,8 +6,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.mojang.blaze3d.buffers.BufferType;
-import com.mojang.blaze3d.buffers.BufferUsage;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.CommandEncoder;
@@ -38,7 +36,6 @@ public class RenderContext implements AutoCloseable
 {
     private Supplier<String> name;
     private RenderPipeline shader;
-    private BufferUsage usage;
     private GpuBuffer vertexBuffer;
     @Nullable private GpuBuffer indexBuffer;
     private RenderSystem.ShapeIndexBuffer shapeIndex;
@@ -58,15 +55,10 @@ public class RenderContext implements AutoCloseable
 
     public RenderContext(RenderPipeline shader)
     {
-        this(shader, BufferUsage.STATIC_WRITE);
+        this(() -> "RenderContext", shader);
     }
 
-    public RenderContext(RenderPipeline shader, BufferUsage usage)
-    {
-        this(() -> "RenderContext", shader, usage);
-    }
-
-    public RenderContext(Supplier<String> name, RenderPipeline shader, BufferUsage usage)
+    public RenderContext(Supplier<String> name, RenderPipeline shader)
     {
         this.name = name;
         this.alloc = new BufferAllocator(shader.getVertexFormat().getVertexSize() * 4);
@@ -76,7 +68,6 @@ public class RenderContext implements AutoCloseable
         this.format = shader.getVertexFormat();
         this.drawMode = shader.getVertexFormatMode();
         this.shader = shader;
-        this.usage = usage;
         this.vertexBuffer = null;
         this.indexBuffer = null;
         this.sortState = null;
@@ -92,15 +83,10 @@ public class RenderContext implements AutoCloseable
 
     public BufferBuilder start(RenderPipeline shader)
     {
-        return this.start(shader, BufferUsage.STATIC_WRITE);
+        return this.start(() -> "RenderContext", shader);
     }
 
-    public BufferBuilder start(RenderPipeline shader, BufferUsage usage)
-    {
-        return this.start(() -> "RenderContext", shader, usage);
-    }
-
-    public BufferBuilder start(Supplier<String> name, RenderPipeline shader, BufferUsage usage)
+    public BufferBuilder start(Supplier<String> name, RenderPipeline shader)
     {
         this.reset();
         this.name = name;
@@ -111,7 +97,6 @@ public class RenderContext implements AutoCloseable
         this.format = shader.getVertexFormat();
         this.drawMode = shader.getVertexFormatMode();
         this.shader = shader;
-        this.usage = usage;
         this.vertexBuffer = null;
         this.indexBuffer = null;
         this.sortState = null;
@@ -134,11 +119,6 @@ public class RenderContext implements AutoCloseable
     public BufferBuilder getBuilder()
     {
         return this.builder;
-    }
-
-    public BufferUsage getUsage()
-    {
-        return this.usage;
     }
 
     public VertexFormat getVertexFormat()
@@ -284,12 +264,13 @@ public class RenderContext implements AutoCloseable
 
             if (this.vertexBuffer == null)
             {
-                this.vertexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" VertexBuffer", BufferType.VERTICES, this.usage, expectedSize);
+                // BufferType.VERTICES - 40
+                this.vertexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" VertexBuffer", 40, expectedSize);
             }
             else if (this.vertexBuffer.size() < expectedSize)
             {
                 this.vertexBuffer.close();
-                this.vertexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" VertexBuffer", BufferType.VERTICES, this.usage, expectedSize);
+                this.vertexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" VertexBuffer", 40, expectedSize);
             }
 
             CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
@@ -320,7 +301,8 @@ public class RenderContext implements AutoCloseable
                         this.indexBuffer.close();
                     }
 
-                    this.indexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" IndexBuffer", BufferType.INDICES, this.usage, meshData.getSortedBuffer());
+                    // BufferType.INDICES --> 72
+                    this.indexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" IndexBuffer", 72, meshData.getSortedBuffer());
                 }
             }
             else if (this.indexBuffer != null)
@@ -414,7 +396,7 @@ public class RenderContext implements AutoCloseable
         {
             if (this.indexBuffer == null)
             {
-                this.indexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" IndexBuffer", BufferType.INDICES, BufferUsage.STATIC_WRITE, buffer.getBuffer());
+                this.indexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" IndexBuffer", 72, buffer.getBuffer());
             }
             else
             {
@@ -455,7 +437,8 @@ public class RenderContext implements AutoCloseable
                 {
                     if (this.texture != null)
                     {
-                        this.texture.setFilter(TriState.DEFAULT, false);
+                        // TriState.DEFAULT
+                        this.texture.setFilter(false, false);
                         RenderSystem.setShaderTexture(textureId, this.texture.getGlTexture());
                     }
 

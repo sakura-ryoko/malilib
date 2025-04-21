@@ -114,9 +114,9 @@ public class MessageRenderer
         return height;
     }
 
-    public void drawMessages(int x, int y, DrawContext drawContext)
+    public void drawMessages(DrawContext drawContext, int x, int y)
     {
-        if (this.messages.isEmpty() == false)
+        if (!this.messages.isEmpty())
         {
             int boxWidth = this.messageBoxWidth;
             int boxHeight = this.getMessagesHeight() + 20;
@@ -137,14 +137,16 @@ public class MessageRenderer
 
             if (this.useBackground)
             {
+                // this.zLevel
                 int bw = this.useBorder ? 1 : 0;
-                RenderUtils.drawTexturedRect(BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw, drawContext);
-                RenderUtils.drawRect(x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor, this.zLevel);
+                RenderUtils.drawTexturedRect(drawContext, BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw);
+                RenderUtils.drawBasicRect(drawContext, x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor);
             }
 
             if (this.useBorder)
             {
-                RenderUtils.drawOutline(x, y, boxWidth, boxHeight, this.borderColor, this.zLevel, false);
+                // this.zLevel
+                RenderUtils.drawOutline(drawContext, x, y, boxWidth, boxHeight, this.borderColor);
             }
 
             x += 10;
