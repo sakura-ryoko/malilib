@@ -31,8 +31,6 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
     public VanillaWrappingVertexBuilder(ByteBuffer buffer, int glDrawMode, malilib.render.buffer.VertexFormat vertexFormat)
     {
         this.byteBuffer = buffer;
-        buffer.rewind(); // The derived FooBuffer for some reason gets a capacity from the position to limit
-        buffer.limit(buffer.capacity());
         this.rawIntBuffer = buffer.asIntBuffer();
         this.rawShortBuffer = buffer.asShortBuffer();
         this.rawFloatBuffer = buffer.asFloatBuffer().asReadOnlyBuffer();
@@ -195,7 +193,7 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
         {
             this.finishDrawing();
 
-            if (this.vertexCount > 0)
+            if (this.getVertexCount() > 0)
             {
                 this.vertexFormat.setupDraw(this.byteBuffer);
                 RenderWrap.glDrawArrays(this.glDrawMode, 0, this.vertexCount);
@@ -342,7 +340,7 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
     {
         // TODO verify the array length?
         this.growBuffer(vertexData.length * 4);
-        this.rawIntBuffer.position(this.vertexCount * (this.vertexSize >> 2));
+        this.rawIntBuffer.position((this.vertexCount * this.vertexSize) >> 2);
         this.rawIntBuffer.put(vertexData);
         this.vertexCount += vertexData.length / (this.vertexSize >> 2);
     }
