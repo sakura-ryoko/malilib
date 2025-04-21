@@ -4,11 +4,11 @@ import java.nio.file.Path;
 import javax.annotation.Nullable;
 import com.google.gson.JsonObject;
 
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.renderer.vertex.VertexFormat;
 import net.minecraft.entity.Entity;
 
 import malilib.listener.EventListener;
-import malilib.render.buffer.VertexFormat;
-import malilib.render.buffer.VertexFormats;
 import malilib.util.data.ModInfo;
 import malilib.util.data.json.JsonUtils;
 import malilib.util.game.wrap.RenderWrap;
@@ -141,7 +141,7 @@ public abstract class BaseOverlayRenderer
      */
     protected BaseRenderObject allocateBuffer(int glMode)
     {
-        return this.allocateBuffer(glMode, VertexFormats.POSITION_COLOR, VboRenderObject::setupArrayPointersPosColor);
+        return this.allocateBuffer(glMode, DefaultVertexFormats.POSITION_COLOR, VboRenderObject::setupArrayPointersPosColor);
     }
 
     /**

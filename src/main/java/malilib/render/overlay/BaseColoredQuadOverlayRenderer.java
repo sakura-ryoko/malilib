@@ -3,15 +3,16 @@ package malilib.render.overlay;
 import javax.annotation.Nullable;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+
 import malilib.render.buffer.VanillaWrappingVertexBuilder;
 import malilib.render.buffer.VertexBuilder;
-import malilib.render.buffer.VertexFormats;
 
 public abstract class BaseColoredQuadOverlayRenderer extends BaseOverlayRenderer
 {
-    protected static final VertexBuilder COLORED_QUADS_BUILDER = VanillaWrappingVertexBuilder.create(2097152, GL11.GL_QUADS, VertexFormats.POSITION_COLOR);
-    protected static final VertexBuilder COLORED_LINES_BUILDER = VanillaWrappingVertexBuilder.create(2097152, GL11.GL_LINES, VertexFormats.POSITION_COLOR);
-    protected static final VertexBuilder COLORED_TEXTURED_QUADS_BUILDER = VanillaWrappingVertexBuilder.create(2097152, GL11.GL_QUADS, VertexFormats.POSITION_TEX_COLOR);
+    protected static final VertexBuilder COLORED_QUADS_BUILDER = VanillaWrappingVertexBuilder.create(2097152, GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+    protected static final VertexBuilder COLORED_LINES_BUILDER = VanillaWrappingVertexBuilder.create(2097152, GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+    protected static final VertexBuilder COLORED_TEXTURED_QUADS_BUILDER = VanillaWrappingVertexBuilder.create(2097152, GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 
     protected final VertexBuilder quadBuilder;
     protected final VertexBuilder lineBuilder;

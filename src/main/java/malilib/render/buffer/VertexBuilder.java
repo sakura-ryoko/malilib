@@ -2,14 +2,12 @@ package malilib.render.buffer;
 
 import java.nio.ByteBuffer;
 
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.BufferBuilder;
 
 import malilib.util.data.Color4f;
 
 public interface VertexBuilder
 {
-    VertexBuilder pos(double x, double y, double z);
-
     VertexBuilder posColor(double x, double y, double z, int r, int g, int b, int a);
 
     default VertexBuilder posColor(double x, double y, double z, Color4f color)
@@ -36,15 +34,6 @@ public interface VertexBuilder
         return this.posUvColor(x, y, z, u, v, r, g, b, a);
     }
 
-    VertexBuilder putBakedQuad(BakedQuad quad, int colorARGB);
-
-    VertexBuilder putBakedQuad(BakedQuad quad, int colorARGB, int colorMultiplier);
-
-    VertexBuilder putBakedQuad(double x, double y, double z, BakedQuad quad, int colorARGB);
-
-    VertexBuilder putBlockQuad(double x, double y, double z, BakedQuad quad, int colorARGB);
-
-    /*
     void addVertexData(int[] data);
 
     void putPosition(double x, double y, double z);
@@ -60,33 +49,20 @@ public interface VertexBuilder
     void putBrightness(int vertex0, int vertex1, int vertex2, int vertex3);
 
     void sortVertexData(float cameraX, float cameraY, float cameraZ);
-    */
-
-    VertexBuilder start();
-
-    VertexBuilder start(int glMode, VertexFormat format);
-
-    void finishDrawing();
-
-    void draw();
-
-    void drawNoModeChanges();
-
-    void uploadVertexData();
-
-    void reset();
 
     boolean isStarted();
 
-    int getVertexCount();
+    VertexBuilder start();
 
-    int getGlDrawMode();
+    void draw();
 
-    VertexFormat getVertexFormat();
+    void finishDrawing();
+
+    void reset();
 
     ByteBuffer getByteBuffer();
 
-    //BufferBuilder.State getVertexData();
+    BufferBuilder.State getVertexData();
 
-    //void setVertexData(BufferBuilder.State state);
+    void setVertexData(BufferBuilder.State state);
 }

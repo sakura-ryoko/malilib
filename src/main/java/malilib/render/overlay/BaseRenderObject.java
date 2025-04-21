@@ -1,7 +1,9 @@
 package malilib.render.overlay;
 
+import net.minecraft.client.renderer.vertex.VertexFormat;
+import net.minecraft.client.renderer.vertex.VertexFormatElement;
+
 import malilib.render.buffer.VertexBuilder;
-import malilib.render.buffer.VertexFormat;
 
 public abstract class BaseRenderObject
 {
@@ -13,7 +15,7 @@ public abstract class BaseRenderObject
     {
         this.glMode = glMode;
         this.vertexFormat = vertexFormat;
-        this.hasTexture = this.vertexFormat.hasTexture();
+        this.hasTexture = this.vertexFormat.getElements().stream().anyMatch((el) -> el.getUsage() == VertexFormatElement.EnumUsage.UV);
     }
 
     public BaseRenderObject(int glMode, VertexFormat vertexFormat, boolean usesTexture)

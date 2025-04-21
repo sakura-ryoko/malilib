@@ -2,10 +2,11 @@ package malilib.render.overlay;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.renderer.vertex.VertexBuffer;
+import net.minecraft.client.renderer.vertex.VertexFormat;
+
 import malilib.listener.EventListener;
-import malilib.render.buffer.VertexBuffer;
 import malilib.render.buffer.VertexBuilder;
-import malilib.render.buffer.VertexFormat;
 import malilib.util.game.wrap.RenderWrap;
 
 public class VboRenderObject extends BaseRenderObject
