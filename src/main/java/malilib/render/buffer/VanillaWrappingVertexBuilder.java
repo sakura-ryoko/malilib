@@ -457,16 +457,16 @@ public class VanillaWrappingVertexBuilder implements VertexBuilder
         if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
         {
             a = ((int) ((nativeColor >> 24) * ma)) & 0xFF;
-            b = ((int) ((nativeColor >> 16) * mb)) & 0xFF;
+            b = ((int) ((nativeColor >> 16) * mr)) & 0xFF;
             g = ((int) ((nativeColor >>  8) * mg)) & 0xFF;
-            r = ((int) ((nativeColor      ) * mr)) & 0xFF;
+            r = ((int) ((nativeColor      ) * mb)) & 0xFF;
         }
         else
         {
-            r = ((int) ((nativeColor >> 24) * mr)) & 0xFF;
-            g = ((int) ((nativeColor >> 16) * mg)) & 0xFF;
-            b = ((int) ((nativeColor >>  8) * mb)) & 0xFF;
-            a = ((int) ((nativeColor      ) * ma)) & 0xFF;
+            r = ((int) ((nativeColor >> 24) * ma)) & 0xFF;
+            g = ((int) ((nativeColor >> 16) * mr)) & 0xFF;
+            b = ((int) ((nativeColor >>  8) * mg)) & 0xFF;
+            a = ((int) ((nativeColor      ) * mb)) & 0xFF;
         }
 
         return this.getPackedColor(a, r, g, b);
