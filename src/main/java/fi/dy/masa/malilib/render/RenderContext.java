@@ -780,8 +780,9 @@ public class RenderContext implements AutoCloseable
             // Attach Frame buffers
             try (RenderPass pass = RenderSystem.getDevice()
                                                .createCommandEncoder()
-                                               .createRenderPass(texture1, OptionalInt.empty(),
-                                                                 texture2, OptionalDouble.empty()))
+                                               .createRenderPass(this.name,
+                                                       texture1, OptionalInt.empty(),
+                                                       texture2, OptionalDouble.empty()))
             {
 //                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}] // isDevelopment [{}]", this.name.get(), this.shader.getLocation().toString(), RenderPassImpl.IS_DEVELOPMENT);
                 pass.setPipeline(this.shader);
@@ -819,7 +820,7 @@ public class RenderContext implements AutoCloseable
 //                }
 
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> drawIndexed() [0, {}]", this.name.get(), this.bufferIndex);
-                pass.drawIndexed(0, this.indexCount);
+                pass.drawIndexed(0, 0, this.indexCount, 1);
             }
 
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> END", this.name.get());

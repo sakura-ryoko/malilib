@@ -605,7 +605,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         if (blur)
         {
-            super.applyBlur();
+            super.applyBlur(drawContext);
         }
 
 //        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, true);
