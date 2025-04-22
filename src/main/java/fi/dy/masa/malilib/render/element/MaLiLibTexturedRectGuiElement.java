@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.render.states;
+package fi.dy.masa.malilib.render.element;
 
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;

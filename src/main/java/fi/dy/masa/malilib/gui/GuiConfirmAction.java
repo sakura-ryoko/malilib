@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import org.joml.Matrix3x2fStack;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
@@ -91,11 +93,11 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
             this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
         }
 
-        MatrixStack matrixStack = drawContext.getMatrices();
-        matrixStack.push();
-        matrixStack.translate(0, 0, 1.f);
+        Matrix3x2fStack matrixStack = drawContext.getMatrices();
+        matrixStack.pushMatrix();
+        matrixStack.translate(0, 0);
 
-        RenderUtils.drawOutlinedBox(this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xF0000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xF0000000, COLOR_HORIZONTAL_BAR);
 
         // Draw the title
         this.drawStringWithShadow(drawContext, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
@@ -107,8 +109,8 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
             y += this.fontHeight + 1;
         }
 
-        this.drawButtons(mouseX, mouseY, partialTicks, drawContext);
-        matrixStack.pop();
+        this.drawButtons(drawContext, mouseX, mouseY, partialTicks);
+        matrixStack.popMatrix();
     }
 
     protected ButtonListener createActionListener(ButtonType type)

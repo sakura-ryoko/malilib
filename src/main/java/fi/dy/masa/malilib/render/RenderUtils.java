@@ -59,7 +59,7 @@ import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
-import fi.dy.masa.malilib.render.states.*;
+import fi.dy.masa.malilib.render.element.*;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
@@ -332,24 +332,39 @@ public class RenderUtils
 
     public static void drawOutlinedBox(DrawContext drawContext, int x, int y, int width, int height, int colorBg, int colorBorder)
     {
+        drawOutlinedBox(drawContext, x, y, width, height, colorBg, colorBorder, false);
+    }
+
+    public static void drawOutlinedBox(DrawContext drawContext, int x, int y, int width, int height, int colorBg, int colorBorder, boolean background)
+    {
         // Draw the background
-        drawBasicRect(drawContext, x, y, width, height, colorBg);
+        drawBasicRect(drawContext, x, y, width, height, colorBg, background);
 
         // Draw the border
-        drawOutline(drawContext, x - 1, y - 1, width + 2, height + 2, colorBorder);
+        drawOutline(drawContext, x - 1, y - 1, width + 2, height + 2, colorBorder, background);
     }
 
     public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int colorBorder)
     {
-        drawOutline(drawContext, x, y, width, height, 1, colorBorder);
+        drawOutline(drawContext, x, y, width, height, 1, colorBorder, false);
+    }
+
+    public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int colorBorder, boolean background)
+    {
+        drawOutline(drawContext, x, y, width, height, 1, colorBorder, background);
     }
 
     public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int colorBorder)
     {
-        drawBasicRect(drawContext, x, y, borderWidth, height, colorBorder); // left edge
-        drawBasicRect(drawContext, x + width - borderWidth, y, borderWidth, height, colorBorder); // right edge
-        drawBasicRect(drawContext, x + borderWidth, y, width - 2 * borderWidth, borderWidth, colorBorder); // top edge
-        drawBasicRect(drawContext, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder); // bottom edge
+        drawOutline(drawContext, x, y, width, height, borderWidth, colorBorder, false);
+    }
+
+    public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int colorBorder, boolean background)
+    {
+        drawBasicRect(drawContext, x, y, borderWidth, height, colorBorder, background); // left edge
+        drawBasicRect(drawContext, x + width - borderWidth, y, borderWidth, height, colorBorder, background); // right edge
+        drawBasicRect(drawContext, x + borderWidth, y, width - 2 * borderWidth, borderWidth, colorBorder, background); // top edge
+        drawBasicRect(drawContext, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, background); // bottom edge
     }
 
 //    public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
@@ -422,16 +437,30 @@ public class RenderUtils
 //    }
     public static void drawBasicRect(DrawContext drawContext, int x, int y, int width, int height, int color)
     {
-        drawBasicRect(drawContext, x, y, width, height, color, 1.0f);
+        drawBasicRect(drawContext, x, y, width, height, color, 1.0f, false);
     }
 
-    public static void drawBasicRect(DrawContext drawContext, int x, int y, int width, int height, int color, float scale)
+    public static void drawBasicRect(DrawContext drawContext, int x, int y, int width, int height, int color, boolean background)
     {
+        drawBasicRect(drawContext, x, y, width, height, color, 1.0f, background);
+    }
+
+    public static void drawBasicRect(DrawContext drawContext, int x, int y, int width, int height, int color, float scale, boolean background)
+    {
+        if (background)
+        {
+            drawContext.goDownLayer();
+        }
+        else
+        {
+            drawContext.goUpLayer();
+        }
         addSimpleElement(drawContext, new MaLiLibBasicRectGuiElement(
                 RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                 x, y, width, height,
                 scale, color, null)
         );
+        drawContext.popLayer();
     }
 
     /**
@@ -460,6 +489,7 @@ public class RenderUtils
     /**
      * New DrawContext-based Textured Rect method.  Use this when the original method fails.
      *
+     * @param drawContext
      * @param texture
      * @param x
      * @param y
@@ -467,11 +497,15 @@ public class RenderUtils
      * @param v
      * @param width
      * @param height
-     * @param drawContext
      */
     public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height)
     {
-        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, 0F, -1);
+        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, 0F, -1, false);
+    }
+
+    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, boolean background)
+    {
+        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, 0F, -1, background);
     }
 
 //    public static void drawTexturedRectAndDraw(Identifier texture, int x, int y, int u, int v, int width, int height, DrawContext drawContext)
@@ -495,7 +529,12 @@ public class RenderUtils
      */
     public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel)
     {
-        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, zLevel, -1);
+        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, zLevel, -1, false);
+    }
+
+    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, boolean background)
+    {
+        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, zLevel, -1, background);
     }
 
 //    public static void drawTexturedRectAndDraw(Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, DrawContext drawContext)
@@ -507,6 +546,7 @@ public class RenderUtils
     /**
      * New DrawContext-based Textured Rect method.  Use this when the original method fails.
      *
+     * @param drawContext
      * @param texture
      * @param x
      * @param y
@@ -516,9 +556,13 @@ public class RenderUtils
      * @param height
      * @param zLevel
      * @param argb
-     * @param drawContext
      */
     public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
+    {
+        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, zLevel, argb, false);
+    }
+
+    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, int argb, boolean background)
     {
         float pixelWidth = 0.00390625F;
 
@@ -540,7 +584,14 @@ public class RenderUtils
             return;
         }
 
-        drawContext.goUpLayer();
+        if (background)
+        {
+            drawContext.goDownLayer();
+        }
+        else
+        {
+            drawContext.goUpLayer();
+        }
         addSimpleElement(drawContext,
                          new MaLiLibTexturedGuiElement(
                                  RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTexture),
@@ -641,19 +692,19 @@ public class RenderUtils
 
             float zLevel = (float) 300;
             int borderColor = 0xF0100010;
-            drawContext.goUpLayer();
-            drawGradientRect(drawContext, textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
-            drawGradientRect(drawContext, textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
-            drawGradientRect(drawContext, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY + textHeight + 3, borderColor, borderColor);
-            drawGradientRect(drawContext, textStartX - 4, textStartY - 3, textStartX - 3, textStartY + textHeight + 3, borderColor, borderColor);
-            drawGradientRect(drawContext, textStartX + maxLineLength + 3, textStartY - 3, textStartX + maxLineLength + 4, textStartY + textHeight + 3, borderColor, borderColor);
+            drawContext.goTopLayer();
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY + textHeight + 3, borderColor, borderColor);
+            drawGradientRectBatched(drawContext, textStartX - 4, textStartY - 3, textStartX - 3, textStartY + textHeight + 3, borderColor, borderColor);
+            drawGradientRectBatched(drawContext, textStartX + maxLineLength + 3, textStartY - 3, textStartX + maxLineLength + 4, textStartY + textHeight + 3, borderColor, borderColor);
 
             int fillColor1 = 0x505000FF;
             int fillColor2 = 0x5028007F;
-            drawGradientRect(drawContext, textStartX - 3, textStartY - 3 + 1, textStartX - 3 + 1, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
-            drawGradientRect(drawContext, textStartX + maxLineLength + 2, textStartY - 3 + 1, textStartX + maxLineLength + 3, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
-            drawGradientRect(drawContext, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY - 3 + 1, fillColor1, fillColor1);
-            drawGradientRect(drawContext, textStartX - 3, textStartY + textHeight + 2, textStartX + maxLineLength + 3, textStartY + textHeight + 3, fillColor2, fillColor2);
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 3 + 1, textStartX - 3 + 1, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
+            drawGradientRectBatched(drawContext, textStartX + maxLineLength + 2, textStartY - 3 + 1, textStartX + maxLineLength + 3, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY - 3 + 1, fillColor1, fillColor1);
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY + textHeight + 2, textStartX + maxLineLength + 3, textStartY + textHeight + 3, fillColor2, fillColor2);
 
             //forceDraw(drawContext);
             drawContext.popLayer();
@@ -674,7 +725,7 @@ public class RenderUtils
         }
     }
 
-    public static void drawGradientRect(DrawContext drawContext, float left, float top, float right, float bottom, int startColor, int endColor)
+    public static void drawGradientRectBatched(DrawContext drawContext, float left, float top, float right, float bottom, int startColor, int endColor)
     {
         addSimpleElement(drawContext, new MaLiLibGradientRectGuiElement(
                 RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
@@ -732,12 +783,21 @@ public class RenderUtils
 
     public static void drawHorizontalLine(DrawContext drawContext, int x, int y, int width, int color)
     {
-        drawBasicRect(drawContext, x, y, width, 1, color);
+        drawBasicRect(drawContext, x, y, width, 1, color, false);
+    }
+
+    public static void drawHorizontalLine(DrawContext drawContext, int x, int y, int width, int color, boolean background)
+    {
+        drawBasicRect(drawContext, x, y, width, 1, color, background);
     }
 
     public static void drawVerticalLine(DrawContext drawContext, int x, int y, int height, int color)
     {
-        drawBasicRect(drawContext, x, y, 1, height, color);
+        drawBasicRect(drawContext, x, y, 1, height, color, false);
+    }
+    public static void drawVerticalLine(DrawContext drawContext, int x, int y, int height, int color, boolean background)
+    {
+        drawBasicRect(drawContext, x, y, 1, height, color, background);
     }
 
     public static void renderSprite(DrawContext drawContext, Identifier atlas, Identifier texture, int x, int y, int width, int height)
@@ -857,9 +917,7 @@ public class RenderUtils
 
             if (useBackground)
             {
-                drawContext.goUpLayer();
-                drawBasicRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) scale);
-                drawContext.popLayer();
+                drawBasicRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) scale, true);
             }
 
             drawContext.drawText(fontRenderer, line, x, y, textColor, useShadow);
@@ -1693,12 +1751,12 @@ public class RenderUtils
         matrix4fStack.translate((float) (-x), (float) (-y), (float) ((-z) + 0.510));
     }
 
-    public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions, DrawContext drawContext)
+    public static void renderMapPreview(DrawContext drawContext, ItemStack stack, int x, int y, int dimensions)
     {
-        renderMapPreview(stack, x, y, dimensions, true, drawContext);
+        renderMapPreview(drawContext, stack, x, y, dimensions, true);
     }
 
-    public static void renderMapPreview(ItemStack stack, int x, int y, int dimensions, boolean requireShift, DrawContext drawContext)
+    public static void renderMapPreview(DrawContext drawContext, ItemStack stack, int x, int y, int dimensions, boolean requireShift)
     {
         if (stack.getItem() instanceof FilledMapItem && (!requireShift || GuiBase.isShiftDown()))
         {
@@ -1771,7 +1829,7 @@ public class RenderUtils
         }
     }
 
-    public static void renderShulkerBoxPreview(ItemStack stack, int baseX, int baseY, boolean useBgColors, DrawContext drawContext)
+    public static void renderShulkerBoxPreview(DrawContext drawContext, ItemStack stack, int baseX, int baseY, boolean useBgColors)
     {
         DefaultedList<ItemStack> items;
 
@@ -1822,7 +1880,7 @@ public class RenderUtils
             //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
 
-            InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, props.totalSlots, color, mc(), drawContext);
+            InventoryOverlay.renderInventoryBackground(drawContext, type, x, y, props.slotsPerRow, props.totalSlots, color, mc());
 //            color = color(1f, 1f, 1f, 1f);
             color = Colors.WHITE;
 
@@ -1830,17 +1888,17 @@ public class RenderUtils
 
             if (type == InventoryOverlay.InventoryRenderType.BREWING_STAND)
             {
-                InventoryOverlay.renderBrewerBackgroundSlots(inv, x, y, drawContext);
+                InventoryOverlay.renderBrewerBackgroundSlots(drawContext, inv, x, y);
             }
 
             if (type == InventoryOverlay.InventoryRenderType.CRAFTER && !nbt.isEmpty())
             {
                 lockedSlots = NbtBlockUtils.getDisabledSlotsFromNbt(nbt);
-                InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, lockedSlots, mc(), drawContext);
+                InventoryOverlay.renderInventoryStacks(drawContext, type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, lockedSlots, mc());
             }
             else
             {
-                InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc(), drawContext);
+                InventoryOverlay.renderInventoryStacks(drawContext, type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc());
             }
 
             matrix4fStack.popMatrix();
@@ -1851,13 +1909,13 @@ public class RenderUtils
         }
     }
 
-    public static void renderBundlePreview(ItemStack stack, int baseX, int baseY, boolean useBgColors, DrawContext drawContext)
+    public static void renderBundlePreview(DrawContext drawContext, ItemStack stack, int baseX, int baseY, boolean useBgColors)
     {
         // Default is 9 to make the default display the same as Shulker Boxes
-        renderBundlePreview(stack, baseX, baseY, 9, useBgColors, drawContext);
+        renderBundlePreview(drawContext, stack, baseX, baseY, 9, useBgColors);
     }
 
-    public static void renderBundlePreview(ItemStack stack, int baseX, int baseY, int slotsPerRow, boolean useBgColors, DrawContext drawContext)
+    public static void renderBundlePreview(DrawContext drawContext, ItemStack stack, int baseX, int baseY, int slotsPerRow, boolean useBgColors)
     {
         DefaultedList<ItemStack> items;
 
@@ -1896,12 +1954,12 @@ public class RenderUtils
             //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
 
-            InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, props.totalSlots, color, mc(), drawContext);
+            InventoryOverlay.renderInventoryBackground(drawContext, type, x, y, props.slotsPerRow, props.totalSlots, color, mc());
 
 //            color(1f, 1f, 1f, 1f);
 //            enableDiffuseLightingGui3D();
 
-            InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, count, mc(), drawContext);
+            InventoryOverlay.renderInventoryStacks(drawContext, type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, count, mc());
 
             matrix4fStack.popMatrix();
             //depthTest(false);
@@ -1925,7 +1983,7 @@ public class RenderUtils
      * @param useBgColors
      * @param drawContext
      */
-    public static void renderNbtItemsPreview(ItemStack stackIn, @Nonnull NbtCompound itemsTag, int baseX, int baseY, boolean useBgColors, DrawContext drawContext)
+    public static void renderNbtItemsPreview(DrawContext drawContext, ItemStack stackIn, @Nonnull NbtCompound itemsTag, int baseX, int baseY, boolean useBgColors)
     {
         if (InventoryUtils.hasNbtItems(itemsTag))
         {
@@ -1965,12 +2023,12 @@ public class RenderUtils
             //drawContext.getMatrices().translate(0, 0, 500);
             //RenderSystem.applyModelViewMatrix();
 
-            InventoryOverlay.renderInventoryBackground(type, x, y, props.slotsPerRow, items.size(), color, mc(), drawContext);
+            InventoryOverlay.renderInventoryBackground(drawContext, type, x, y, props.slotsPerRow, items.size(), color, mc());
 
 //            enableDiffuseLightingGui3D();
 
             Inventory inv = InventoryUtils.getAsInventory(items);
-            InventoryOverlay.renderInventoryStacks(type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc(), drawContext);
+            InventoryOverlay.renderInventoryStacks(drawContext, type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc());
 
             matrix4fStack.popMatrix();
             //depthTest(false);

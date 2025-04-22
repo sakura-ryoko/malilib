@@ -121,11 +121,11 @@ public class WidgetSearchBar extends WidgetBase
     }
 
     @Override
-    public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(mouseX, mouseY, selected, drawContext);
-        RenderUtils.color(1f, 1f, 1f, 1f);
-        this.iconSearch.render(false, this.iconSearch.isMouseOver(mouseX, mouseY), drawContext);
+        super.render(drawContext, mouseX, mouseY, selected);
+//        RenderUtils.color(1f, 1f, 1f, 1f);
+        this.iconSearch.render(drawContext, false, this.iconSearch.isMouseOver(mouseX, mouseY));
 
         if (this.searchOpen)
         {

@@ -49,23 +49,23 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     }
 
     @Override
-    public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(mouseX, mouseY, selected, drawContext);
+        super.render(drawContext, mouseX, mouseY, selected);
 
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY))
         {
-            RenderUtils.drawRect(this.x, this.y, this.width, this.height, 0x70FFFFFF);
+            RenderUtils.drawBasicRect(drawContext, this.x, this.y, this.width, this.height, 0x70FFFFFF);
         }
         else if (this.isOdd)
         {
-            RenderUtils.drawRect(this.x, this.y, this.width, this.height, 0x20FFFFFF);
+            RenderUtils.drawBasicRect(drawContext, this.x, this.y, this.width, this.height, 0x20FFFFFF);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawRect(this.x, this.y, this.width, this.height, 0x38FFFFFF);
+            RenderUtils.drawBasicRect(drawContext, this.x, this.y, this.width, this.height, 0x38FFFFFF);
         }
 
         IGuiIcon icon = null;
@@ -85,21 +85,21 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
 
         if (icon != null)
         {
-            RenderUtils.color(1f, 1f, 1f, 1f);
-            this.bindTexture(icon.getTexture(), drawContext);
-            icon.renderAt(this.x, this.y + (this.height - icon.getHeight()) / 2, this.zLevel + 10, false, false, drawContext);
+//            RenderUtils.color(1f, 1f, 1f, 1f);
+//            this.bindTexture(icon.getTexture(), drawContext);
+            icon.renderAt(drawContext, this.x, this.y + (this.height - icon.getHeight()) / 2, this.zLevel + 10, false, false);
         }
 
         // Draw an outline if this is the currently selected entry
         if (selected)
         {
-            RenderUtils.drawOutline(this.x, this.y, this.width, this.height, 0xEEEEEEEE);
+            RenderUtils.drawOutline(drawContext, this.x, this.y, this.width, this.height, 0xEEEEEEEE);
         }
 
         int yOffset = (this.height - this.fontHeight) / 2 + 1;
-        this.drawString(this.x + xOffset + 2, this.y + yOffset, 0xFFFFFFFF, this.getDisplayName(), drawContext);
+        this.drawString(drawContext, this.x + xOffset + 2, this.y + yOffset, 0xFFFFFFFF, this.getDisplayName());
 
-        super.render(mouseX, mouseY, selected, drawContext);
+        super.render(drawContext, mouseX, mouseY, selected);
     }
 
     protected String getDisplayName()

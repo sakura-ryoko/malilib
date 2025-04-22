@@ -79,21 +79,21 @@ public interface IInventoryOverlayHandler
      * @param shulkerBGColors (Display the Shulker Box Background Colors)
      * @param villagerBGColors (Display the Villager Profession Background Colors)
      */
-    default void renderInventoryOverlay(InventoryOverlay.Context context, DrawContext drawContext, MinecraftClient mc, boolean shulkerBGColors, boolean villagerBGColors)
+    default void renderInventoryOverlay(DrawContext drawContext, InventoryOverlay.Context context, MinecraftClient mc, boolean shulkerBGColors, boolean villagerBGColors)
     {
         Screen screen = new InventoryOverlayScreen(this.getModId(), context, shulkerBGColors, villagerBGColors);
         screen.init(mc, 0, 0);
         screen.render(drawContext, 0, 0, 0);
     }
 
-    default void renderInventoryOverlay(InventoryOverlay.Context context, DrawContext drawContext, MinecraftClient mc, boolean shulkerBGColors)
+    default void renderInventoryOverlay(DrawContext drawContext, InventoryOverlay.Context context, MinecraftClient mc, boolean shulkerBGColors)
     {
-        this.renderInventoryOverlay(context, drawContext, mc, shulkerBGColors, false);
+        this.renderInventoryOverlay(drawContext, context, mc, shulkerBGColors, false);
     }
 
-    default void renderInventoryOverlay(InventoryOverlay.Context context, DrawContext drawContext, MinecraftClient mc)
+    default void renderInventoryOverlay(DrawContext drawContext, InventoryOverlay.Context context, MinecraftClient mc)
     {
-        this.renderInventoryOverlay(context, drawContext, mc, false, false);
+        this.renderInventoryOverlay(drawContext, context, mc, false, false);
     }
 
     /**

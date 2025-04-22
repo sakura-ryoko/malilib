@@ -3,9 +3,11 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.VertexConsumer;
@@ -259,17 +261,18 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(mouseX, mouseY, selected, drawContext);
-        RenderUtils.color(1f, 1f, 1f, 1f);
+        super.render(drawContext, mouseX, mouseY, selected);
+//        RenderUtils.color(1f, 1f, 1f, 1f);
 
         Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.pushMatrix();
         matrixStack.translate(0, 0, 10);
-        MatrixStack matrixStackIn = drawContext.getMatrices();
-        matrixStackIn.push();
-        matrixStackIn.translate(0, 0, 10);
+        Matrix3x2fStack matrixStackIn = drawContext.getMatrices();
+        matrixStackIn.pushMatrix();
+        // 10
+        matrixStackIn.translate(0, 0);
         //RenderSystem.applyModelViewMatrix();
 
         List<T> list = this.filteredEntries;
@@ -277,13 +280,14 @@ public class WidgetDropDownList<T> extends WidgetBase
 
 //        RenderUtils.depthMask(true);
 //        RenderUtils.depthTest(true);
-        RenderUtils.drawOutlinedBox(this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0, true);
+        RenderUtils.drawOutlinedBox(drawContext, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
 
         String str = this.getDisplayString(this.getSelectedEntry());
         int txtX = this.x + 4;
         int txtY = this.y + this.height / 2 - this.fontHeight / 2;
-        matrixStackIn.translate(0, 0, 100);
-        this.drawString(txtX, txtY, 0xFFE0E0E0, str, drawContext);
+        // 100
+        matrixStackIn.translate(0, 0);
+        this.drawString(drawContext, txtX, txtY, 0xFFE0E0E0, str);
         txtY += this.height + 1;
         int scrollWidth = 10;
 
@@ -291,12 +295,12 @@ public class WidgetDropDownList<T> extends WidgetBase
         {
             if (this.searchBar.getTextField().getText().isEmpty() == false)
             {
-                this.searchBar.draw(mouseX, mouseY, drawContext);
+                this.searchBar.draw(drawContext, mouseX, mouseY);
             }
 
 //            RenderUtils.depthMask(true);
 //            RenderUtils.depthTest(true);
-            RenderUtils.drawOutline(this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0, true);
+            RenderUtils.drawOutline(drawContext, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
 
             int y = this.y + this.height + 1;
             int startIndex = Math.max(0, this.scrollBar.getValue());
@@ -314,9 +318,9 @@ public class WidgetDropDownList<T> extends WidgetBase
 
 //                RenderUtils.depthMask(true);
 //                RenderUtils.depthTest(true);
-                RenderUtils.drawRect(this.x, y, this.width - scrollWidth, this.height, bg, true);
+                RenderUtils.drawBasicRect(drawContext, this.x, y, this.width - scrollWidth, this.height, bg);
                 str = this.getDisplayString(list.get(i));
-                this.drawString(txtX, txtY, 0xFFE0E0E0, str, drawContext);
+                this.drawString(drawContext, txtX, txtY, 0xFFE0E0E0, str);
                 y += this.height;
                 txtY += this.height;
             }
@@ -328,36 +332,38 @@ public class WidgetDropDownList<T> extends WidgetBase
 
 //            RenderUtils.depthMask(true);
 //            RenderUtils.depthTest(true);
-            this.scrollBar.render(mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight, drawContext, true);
+            this.scrollBar.render(drawContext, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
 
-            VertexConsumer buffer = this.bindTexture(MaLiLibIcons.TEXTURE, drawContext);
-            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
+//            VertexConsumer buffer = this.bindTexture(MaLiLibIcons.TEXTURE, drawContext);
+//            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
+
             MaLiLibIcons i = MaLiLibIcons.ARROW_UP;
-            RenderUtils.drawTexturedRect(posMatrix, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight(), buffer);
+            RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
         else
         {
-            VertexConsumer buffer = this.bindTexture(MaLiLibIcons.TEXTURE, drawContext);
-            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
+//            VertexConsumer buffer = this.bindTexture(MaLiLibIcons.TEXTURE, drawContext);
+//            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
+
             MaLiLibIcons i = MaLiLibIcons.ARROW_DOWN;
-            RenderUtils.drawTexturedRect(posMatrix, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight(), buffer);
+            RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
 
 //        RenderUtils.depthMask(false);
 //        RenderUtils.depthTest(false);
         matrixStack.popMatrix();
-        matrixStackIn.pop();
+        matrixStackIn.popMatrix();
     }
 
     @Override
-    public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.postRenderHovered(mouseX, mouseY, selected, drawContext);
+        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
 
         // Draw it again to cover up other elements, when open
         if (this.isOpen)
         {
-            this.render(mouseX, mouseY, selected, drawContext);
+            this.render(drawContext, mouseX, mouseY, selected);
             //RenderUtils.forceDraw(drawContext);
         }
     }

@@ -81,7 +81,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
         // Draw an outline around the entire file browser
-        RenderUtils.drawOutlinedBox(this.posX, this.posY, this.browserWidth, this.browserHeight, 0xB0000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(drawContext, this.posX, this.posY, this.browserWidth, this.browserHeight, 0xB0000000, COLOR_HORIZONTAL_BAR);
 
         super.drawContents(drawContext, mouseX, mouseY, partialTicks);
 

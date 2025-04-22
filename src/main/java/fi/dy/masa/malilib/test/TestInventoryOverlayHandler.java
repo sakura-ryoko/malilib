@@ -127,12 +127,12 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY_OG.getBooleanValue())
             {
                 // Tweakeroo style
-                TestRenderHandler.renderInventoryOverlayOG(this.getRenderContextNullable(), drawContext, mc);
+                TestRenderHandler.renderInventoryOverlayOG(drawContext, this.getRenderContextNullable(), mc);
             }
             else
             {
                 // MiniHUD Style
-                this.renderInventoryOverlay(this.getRenderContextNullable(), drawContext, mc,
+                this.renderInventoryOverlay(drawContext, this.getRenderContextNullable(), mc,
                                             true,
                                             true);
             }

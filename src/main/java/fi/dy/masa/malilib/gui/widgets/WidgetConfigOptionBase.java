@@ -129,7 +129,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
         return false;
     }
 
-    protected void drawTextFields(int mouseX, int mouseY, DrawContext drawContext)
+    protected void drawTextFields(DrawContext drawContext, int mouseX, int mouseY)
     {
         if (this.textField != null)
         {

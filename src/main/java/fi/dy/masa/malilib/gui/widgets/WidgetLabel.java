@@ -58,14 +58,14 @@ public class WidgetLabel extends WidgetBase
     }
 
     @Override
-    public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(mouseX, mouseY, selected, drawContext);
+        super.render(drawContext, mouseX, mouseY, selected);
 
         if (this.visible)
         {
 //            RenderUtils.blend(true);
-            this.drawLabelBackground();
+            this.drawLabelBackground(drawContext);
 
             int fontHeight = this.fontHeight;
             int yCenter = this.y + this.height / 2 + this.borderSize / 2;
@@ -77,17 +77,17 @@ public class WidgetLabel extends WidgetBase
 
                 if (this.centered)
                 {
-                    this.drawCenteredStringWithShadow(this.x + this.width / 2, yTextStart + i * fontHeight, this.textColor, text, drawContext);
+                    this.drawCenteredStringWithShadow(drawContext, this.x + this.width / 2, yTextStart + i * fontHeight, this.textColor, text);
                 }
                 else
                 {
-                    this.drawStringWithShadow(this.x, yTextStart + i * fontHeight, this.textColor, text, drawContext);
+                    this.drawStringWithShadow(drawContext, this.x, yTextStart + i * fontHeight, this.textColor, text);
                 }
             }
         }
     }
 
-    protected void drawLabelBackground()
+    protected void drawLabelBackground(DrawContext drawContext)
     {
         if (this.backgroundEnabled)
         {
@@ -96,12 +96,12 @@ public class WidgetLabel extends WidgetBase
             int xStart = this.x - this.borderSize;
             int yStart = this.y - this.borderSize;
 
-            RenderUtils.drawRect(xStart, yStart, bgWidth, bgHeight, this.backgroundColor);
+            RenderUtils.drawBasicRect(drawContext, xStart, yStart, bgWidth, bgHeight, this.backgroundColor, true);
 
-            RenderUtils.drawHorizontalLine(xStart, yStart           , bgWidth, this.borderULColor);
-            RenderUtils.drawHorizontalLine(xStart, yStart + bgHeight, bgWidth, this.borderBRColor);
-            RenderUtils.drawVerticalLine(xStart          , yStart, bgHeight, this.borderULColor);
-            RenderUtils.drawVerticalLine(xStart + bgWidth, yStart, bgHeight, this.borderBRColor);
+            RenderUtils.drawHorizontalLine(drawContext, xStart, yStart           , bgWidth, this.borderULColor, true);
+            RenderUtils.drawHorizontalLine(drawContext, xStart, yStart + bgHeight, bgWidth, this.borderBRColor, true);
+            RenderUtils.drawVerticalLine(drawContext, xStart          , yStart, bgHeight, this.borderULColor, true);
+            RenderUtils.drawVerticalLine(drawContext, xStart + bgWidth, yStart, bgHeight, this.borderBRColor, true);
         }
     }
 }

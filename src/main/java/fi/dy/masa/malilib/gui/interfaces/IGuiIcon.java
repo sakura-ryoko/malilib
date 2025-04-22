@@ -13,7 +13,7 @@ public interface IGuiIcon
 
     int getV();
 
-    void renderAt(int x, int y, float zLevel, boolean enabled, boolean selected, DrawContext drawContext);
+    void renderAt(DrawContext drawContext, int x, int y, float zLevel, boolean enabled, boolean selected);
 
     Identifier getTexture();
 }

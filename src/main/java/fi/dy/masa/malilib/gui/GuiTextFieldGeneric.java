@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.gui;
 
+import org.joml.Matrix3x2fStack;
+
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -91,13 +93,14 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     {
         if (this.zLevel != 0)
         {
-            MatrixStack matrixStack = context.getMatrices();
-            matrixStack.push();
-            matrixStack.translate(0, 0, this.zLevel);
+            Matrix3x2fStack matrixStack = context.getMatrices();
+            matrixStack.pushMatrix();
+            // this.zLevel
+            matrixStack.translate(0, 0);
 
             super.renderWidget(context, mouseX, mouseY, delta);
 
-            matrixStack.pop();
+            matrixStack.popMatrix();
         }
         else
         {

@@ -87,30 +87,30 @@ public class WidgetCheckBox extends WidgetBase
     }
 
     @Override
-    public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(mouseX, mouseY, selected, drawContext);
+        super.render(drawContext, mouseX, mouseY, selected);
         IGuiIcon icon = this.checked ? this.widgetChecked : this.widgetUnchecked;
 
-        RenderUtils.color(1f, 1f, 1f, 1f);
-        this.bindTexture(icon.getTexture(), drawContext);
-        icon.renderAt(this.x, this.y, this.zLevel, false, false, drawContext);
+//        RenderUtils.color(1f, 1f, 1f, 1f);
+//        this.bindTexture(icon.getTexture(), drawContext);
+        icon.renderAt(drawContext, this.x, this.y, this.zLevel, false, false);
 
         int iw = icon.getWidth();
         int y = this.y + 1 + (this.height - this.fontHeight) / 2;
         int textColor = this.checked ? 0xFFFFFFFF : 0xB0B0B0B0;
 
-        this.drawStringWithShadow(this.x + iw + 3, y, textColor, this.displayText, drawContext);
+        this.drawStringWithShadow(drawContext, this.x + iw + 3, y, textColor, this.displayText);
     }
 
     @Override
-    public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.postRenderHovered(mouseX, mouseY, selected, drawContext);
+        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
 
         if (this.hoverInfo.isEmpty() == false)
         {
-            RenderUtils.drawHoverText(mouseX, mouseY, this.hoverInfo, drawContext);
+            RenderUtils.drawHoverText(drawContext, mouseX, mouseY, this.hoverInfo);
         }
     }
 }

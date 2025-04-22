@@ -47,17 +47,17 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
         return -1;
     }
 
-    protected void renderColumnHeader(int mouseX, int mouseY, IGuiIcon iconNatural, IGuiIcon iconReverse, DrawContext drawContext)
+    protected void renderColumnHeader(DrawContext drawContext, int mouseX, int mouseY, IGuiIcon iconNatural, IGuiIcon iconReverse)
     {
         int mouseOverColumn = this.getMouseOverColumn(mouseX, mouseY);
         int sortColumn = this.getCurrentSortColumn();
         boolean reverse = this.getSortInReverse();
         int iconX = this.getColumnPosX(sortColumn + 1) - 21; // align to the right edge
 
-        RenderUtils.color(1f, 1f, 1f, 1f);
+//        RenderUtils.color(1f, 1f, 1f, 1f);
         IGuiIcon icon = reverse ? iconReverse : iconNatural;
-        this.bindTexture(icon.getTexture(), drawContext);
-        icon.renderAt(iconX, this.y + 3, this.zLevel, true, sortColumn == mouseOverColumn, drawContext);
+//        this.bindTexture(icon.getTexture(), drawContext);
+        icon.renderAt(drawContext, iconX, this.y + 3, this.zLevel, true, sortColumn == mouseOverColumn);
 
         for (int i = 0; i < this.getColumnCount(); ++i)
         {
@@ -65,7 +65,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
             int xStart = this.getColumnPosX(i);
             int xEnd = this.getColumnPosX(i + 1);
 
-            RenderUtils.drawOutline(xStart - 3, this.y + 1, xEnd - xStart - 2, this.height - 2, outlineColor);
+            RenderUtils.drawOutline(drawContext, xStart - 3, this.y + 1, xEnd - xStart - 2, this.height - 2, outlineColor);
         }
     }
 }

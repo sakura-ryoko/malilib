@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.gui.button;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.StringUtils;
 
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 
@@ -90,19 +91,19 @@ public class ButtonGeneric extends ButtonBase
     }
 
     @Override
-    public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(mouseX, mouseY, selected, drawContext);
+        super.render(drawContext, mouseX, mouseY, selected);
 
         if (this.visible)
         {
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
-            RenderUtils.color(1f, 1f, 1f, 1f);
+//            RenderUtils.color(1f, 1f, 1f, 1f);
 
             if (this.renderDefaultBackground)
             {
-                drawContext.drawGuiTexture(RenderLayer::getGuiTextured, this.getTexture(this.hovered), this.x, this.y, this.width, this.height);
+                drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, this.getTexture(this.hovered), this.x, this.y, this.width, this.height);
             }
 
             if (this.icon != null)
@@ -113,7 +114,7 @@ public class ButtonGeneric extends ButtonBase
                 int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
                 //RenderUtils.depthTest(true);
-                RenderUtils.drawTexturedRectAndDraw(this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight(), drawContext);
+                RenderUtils.drawTexturedRect(drawContext, this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
                 //RenderUtils.depthTest(false);
             }
 
@@ -133,7 +134,7 @@ public class ButtonGeneric extends ButtonBase
 
                 if (this.textCentered)
                 {
-                    this.drawCenteredStringWithShadow(this.x + this.width / 2, y, color, this.displayString, drawContext);
+                    this.drawCenteredStringWithShadow(drawContext, this.x + this.width / 2, y, color, this.displayString);
                 }
                 else
                 {
@@ -144,7 +145,7 @@ public class ButtonGeneric extends ButtonBase
                         x += this.icon.getWidth() + 2;
                     }
 
-                    this.drawStringWithShadow(x, y, color, this.displayString, drawContext);
+                    this.drawStringWithShadow(drawContext, x, y, color, this.displayString);
                 }
             }
         }

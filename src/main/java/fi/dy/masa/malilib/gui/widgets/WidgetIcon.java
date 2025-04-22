@@ -16,15 +16,15 @@ public class WidgetIcon extends WidgetBase
         this.icon = icon;
     }
 
-    public void render(boolean enabled, boolean selected, DrawContext drawContext)
+    public void render(DrawContext drawContext, boolean enabled, boolean selected)
     {
-        RenderUtils.color(1f, 1f, 1f, 1f);
-        this.bindTexture(this.icon.getTexture(), drawContext);
-        this.icon.renderAt(this.x, this.y, this.zLevel, enabled, selected, drawContext);
+//        RenderUtils.color(1f, 1f, 1f, 1f);
+//        this.bindTexture(this.icon.getTexture(), drawContext);
+        this.icon.renderAt(drawContext, this.x, this.y, this.zLevel, enabled, selected);
 
         if (selected)
         {
-            RenderUtils.drawOutlinedBox(this.x, this.y, this.width, this.height, 0x20C0C0C0, 0xE0FFFFFF);
+            RenderUtils.drawOutlinedBox(drawContext, this.x, this.y, this.width, this.height, 0x20C0C0C0, 0xE0FFFFFF);
         }
     }
 }

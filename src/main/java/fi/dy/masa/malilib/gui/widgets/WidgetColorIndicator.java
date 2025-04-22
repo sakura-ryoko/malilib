@@ -45,16 +45,16 @@ public class WidgetColorIndicator extends WidgetBase
     }
 
     @Override
-    public void postRenderHovered(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.postRenderHovered(mouseX, mouseY, selected, drawContext);
-        RenderUtils.drawHoverText(mouseX, mouseY, this.hoverText, drawContext);
+        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
+        RenderUtils.drawHoverText(drawContext, mouseX, mouseY, this.hoverText);
     }
 
     @Override
-    public void render(int mouseX, int mouseY, boolean selected, DrawContext drawContext)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(mouseX, mouseY, selected, drawContext);
+        super.render(drawContext, mouseX, mouseY, selected);
         int x = this.getX();
         int y = this.getY();
         int z = this.zLevel;
@@ -62,9 +62,9 @@ public class WidgetColorIndicator extends WidgetBase
         int height = this.getHeight();
 
         //RenderUtils.depthTest(true);
-        RenderUtils.drawRect(x    , y    , width    , height    , 0xFFFFFFFF, z);
-        RenderUtils.drawRect(x + 1, y + 1, width - 2, height - 2, 0xFF000000, z);
-        RenderUtils.drawRect(x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue(), z);
+        RenderUtils.drawBasicRect(drawContext, x    , y    , width    , height    , 0xFFFFFFFF, z);
+        RenderUtils.drawBasicRect(drawContext, x + 1, y + 1, width - 2, height - 2, 0xFF000000, z);
+        RenderUtils.drawBasicRect(drawContext, x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue(), z);
         //RenderUtils.depthTest(false);
     }
 }
