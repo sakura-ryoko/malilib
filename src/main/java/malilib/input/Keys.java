@@ -17,8 +17,8 @@ public class Keys
 {
     private static final Pattern PATTERN_CHAR_CODE = Pattern.compile("^CHAR_(?<code>[0-9]+)$");
 
-    private static final Object2IntOpenHashMap<String> NAMES_TO_IDS = new Object2IntOpenHashMap<>();
-    private static final Int2ObjectOpenHashMap<String> IDS_TO_NAMES = new Int2ObjectOpenHashMap<>();
+    private static final Object2IntOpenHashMap<String> NAMES_TO_KEYCODES = new Object2IntOpenHashMap<>();
+    private static final Int2ObjectOpenHashMap<String> KEYCODES_TO_NAMES = new Int2ObjectOpenHashMap<>();
 
     public static final int KEY_NONE            = Keyboard.KEY_NONE;
     public static final int KEY_0               = Keyboard.KEY_0;
@@ -157,7 +157,7 @@ public class Keys
      */
     public static int getKeyCodeForStorageString(String keyName)
     {
-        int keyCode = NAMES_TO_IDS.getInt(keyName);
+        int keyCode = NAMES_TO_KEYCODES.getInt(keyName);
 
         if (keyCode == Keys.KEY_NONE)
         {
@@ -204,7 +204,7 @@ public class Keys
     @Nullable
     public static String getStorageStringForKeyCode(int keyCode, Function<Integer, String> charEncoder)
     {
-        String name = IDS_TO_NAMES.get(keyCode);
+        String name = KEYCODES_TO_NAMES.get(keyCode);
 
         if (name != null)
         {
@@ -303,7 +303,7 @@ public class Keys
 
     public static void initKeys()
     {
-        NAMES_TO_IDS.defaultReturnValue(Keys.KEY_NONE);
+        NAMES_TO_KEYCODES.defaultReturnValue(Keys.KEY_NONE);
 
         addNameOverride(Keys.KEY_LEFT_ALT, "L_ALT");
         addNameOverride(Keys.KEY_RIGHT_ALT, "R_ALT");
@@ -340,13 +340,13 @@ public class Keys
     {
         for (String name : names)
         {
-            if (NAMES_TO_IDS.containsKey(name))
+            if (NAMES_TO_KEYCODES.containsKey(name))
             {
                 MaLiLib.LOGGER.warn("Duplicate key fallback name '{}' => {}", name, keyCode);
                 continue;
             }
 
-            NAMES_TO_IDS.put(name, keyCode);
+            NAMES_TO_KEYCODES.put(name, keyCode);
         }
     }
 
@@ -357,12 +357,12 @@ public class Keys
      */
     public static void addNameOverride(int keyCode, String name)
     {
-        if (IDS_TO_NAMES.containsKey(keyCode))
+        if (KEYCODES_TO_NAMES.containsKey(keyCode))
         {
             MaLiLib.LOGGER.warn("Duplicate key override name {} => '{}'", keyCode, name);
         }
 
-        IDS_TO_NAMES.put(keyCode, name);
-        NAMES_TO_IDS.put(name, keyCode);
+        KEYCODES_TO_NAMES.put(keyCode, name);
+        NAMES_TO_KEYCODES.put(name, keyCode);
     }
 }
