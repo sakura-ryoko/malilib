@@ -82,7 +82,7 @@ public class GameWrap
     {
         PlayerControllerMP controller = getInteractionManager();
 
-        if (controller != null)
+        if (controller != null && getClientPlayer() != null)
         {
             controller.windowClick(syncId, slotId, mouseButton, clickType, getClientPlayer());
         }
@@ -90,7 +90,13 @@ public class GameWrap
 
     public static double getPlayerReachDistance()
     {
-        return getInteractionManager().getBlockReachDistance();
+        PlayerControllerMP controller = getInteractionManager();
+        return controller != null ? controller.getBlockReachDistance() : 0.0;
+    }
+
+    public static float getRenderPartialTicks()
+    {
+        return getClient().getRenderPartialTicks();
     }
 
     @Nullable
@@ -173,7 +179,7 @@ public class GameWrap
 
     public static boolean isCreativeMode()
     {
-        EntityPlayerSP player = getClientPlayer();
+        EntityPlayer player = getClientPlayer();
         return player != null && player.capabilities.isCreativeMode;
     }
 
