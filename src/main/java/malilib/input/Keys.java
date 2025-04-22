@@ -313,9 +313,9 @@ public class Keys
         addNameOverride(Keys.KEY_RIGHT_CONTROL, "R_CTRL");
         addNameOverride(Keys.KEY_PAGE_UP, "PAGE_UP");
         addNameOverride(Keys.KEY_PAGE_DOWN, "PAGE_DOWN");
-        addNameOverride(-100, "LEFT_MOUSE");
-        addNameOverride(-99, "RIGHT_MOUSE");
-        addNameOverride(-98, "MIDDLE_MOUSE");
+        addNameOverride(-100, "MOUSE_LEFT");
+        addNameOverride( -99, "MOUSE_RIGHT");
+        addNameOverride( -98, "MOUSE_MIDDLE");
         addNameOverride(-199, "SCROLL_UP");
         addNameOverride(-201, "SCROLL_DOWN");
 
@@ -325,9 +325,9 @@ public class Keys
         addLoadableNames(Keys.KEY_RIGHT_SHIFT, "RSHIFT", "RIGHT_SHIFT");
         addLoadableNames(Keys.KEY_LEFT_CONTROL, "LCTRL", "LEFT_CTRL", "LCONTROL", "L_CONTROL", "LEFT_CONTROL");
         addLoadableNames(Keys.KEY_RIGHT_CONTROL, "RCTRL", "RIGHT_CTRL", "RCONTROL", "R_CONTROL", "RIGHT_CONTROL");
-        addLoadableNames(-100, "BUTTON0", "MOUSE0", "LMB", "MOUSE_LEFT");
-        addLoadableNames(-99, "BUTTON1", "MOUSE1", "RMB", "MOUSE_RIGHT");
-        addLoadableNames(-98, "BUTTON2", "MOUSE2", "MMB", "MOUSE_MIDDLE");
+        addLoadableNames(-100, "BUTTON0", "MOUSE0", "LMB", "LEFT_MOUSE");
+        addLoadableNames( -99, "BUTTON1", "MOUSE1", "RMB", "RIGHT_MOUSE");
+        addLoadableNames( -98, "BUTTON2", "MOUSE2", "MMB", "MIDDLE_MOUSE");
     }
 
     /**
