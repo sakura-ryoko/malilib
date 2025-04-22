@@ -203,4 +203,8 @@ public class MaLiLibPipelines
     public static RenderPipeline MINIHUD_SHAPE_OFFSET;
     public static RenderPipeline MINIHUD_SHAPE_DEPTH_MASK;
     public static RenderPipeline MINIHUD_SHAPE;
+
+    // GUI
+    public static RenderPipeline GUI_OVERLAY;
+    public static RenderPipeline GUI_TEXTURED_OVERLAY;
 }

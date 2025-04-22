@@ -48,7 +48,9 @@ public class WidgetColorIndicator extends WidgetBase
     public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(drawContext, mouseX, mouseY, selected);
+        drawContext.pushCheckpoint();
         RenderUtils.drawHoverText(drawContext, mouseX, mouseY, this.hoverText);
+        drawContext.popCheckpoint();
     }
 
     @Override

@@ -180,8 +180,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
     @Override
     protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
     {
-        //super.drawTexturedBG(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, true);
-        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
+//        super.drawTexturedBG(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, true);
+        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR, true);
     }
 
     @Override
@@ -533,7 +533,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                      new MaLiLibHSV4ColorGradientGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, x + w, y, y + h,
-                                             colorPair, null)
+                                             colorPair, RenderUtils.peekLastScissor(drawContext))
                                      );
         drawContext.popLayer();
 
@@ -586,7 +586,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              cx, cx + cw,
                                              cy, cy + ch,
-                                             r, g, b, a, null)
+                                             r, g, b, a, RenderUtils.peekLastScissor(drawContext))
         );
         drawContext.popLayer();
 
@@ -604,7 +604,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x - 1, x + w + 1,
                                              yt, yt + 1,
-                                             c, c, c, a, null)
+                                             c, c, c, a, RenderUtils.peekLastScissor(drawContext))
         );
         drawContext.popLayer();
 
@@ -622,7 +622,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              xt, xt + 1,
                                              y - 1, y + h + 1,
-                                             c, c, c, a, null)
+                                             c, c, c, a, RenderUtils.peekLastScissor(drawContext))
         );
         drawContext.popLayer();
 
@@ -730,7 +730,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, x + width,
                                              y, y + height,
-                                             colorStart, colorEnd, null)
+                                             colorStart, colorEnd, RenderUtils.peekLastScissor(drawContext))
         );
         drawContext.popLayer();
     }
@@ -806,7 +806,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              x, y,
                                              width, height,
                                              segmentWidth, segmentHeight,
-                                             color1, color2, null)
+                                             color1, color2, RenderUtils.peekLastScissor(drawContext))
         );
         drawContext.popLayer();
     }
@@ -838,7 +838,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              xStart, yStart,
                                              width, height,
-                                             hue, null)
+                                             hue, RenderUtils.peekLastScissor(drawContext))
         );
         drawContext.popLayer();
     }
@@ -867,7 +867,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, y,
                                              barWidth, barHeight,
-                                             value, null)
+                                             value, RenderUtils.peekLastScissor(drawContext))
         );
         drawContext.popLayer();
     }
@@ -896,7 +896,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, y,
                                              barWidth, barHeight,
-                                             value, null)
+                                             value, RenderUtils.peekLastScissor(drawContext))
         );
         drawContext.popLayer();
     }

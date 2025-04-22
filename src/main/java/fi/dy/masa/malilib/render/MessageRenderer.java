@@ -139,7 +139,7 @@ public class MessageRenderer
             {
                 // this.zLevel
                 int bw = this.useBorder ? 1 : 0;
-                RenderUtils.drawTexturedRect(drawContext, BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw);
+                RenderUtils.drawTexturedRect(drawContext, BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw, true);
                 RenderUtils.drawBasicRect(drawContext, x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor, true);
             }
 

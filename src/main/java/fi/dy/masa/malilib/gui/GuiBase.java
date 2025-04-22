@@ -199,9 +199,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         // Draw base widgets
         this.drawWidgets(drawContext, mouseX, mouseY);
-        this.drawTextFields(drawContext, mouseX, mouseY);
         this.drawButtons(drawContext, mouseX, mouseY, partialTicks);
         this.drawContents(drawContext, mouseX, mouseY, partialTicks);
+        this.drawTextFields(drawContext, mouseX, mouseY);
         this.drawHoveredWidget(drawContext, mouseX, mouseY);
         this.drawButtonHoverTexts(drawContext, mouseX, mouseY, partialTicks);
         this.drawGuiMessages(drawContext);
@@ -608,12 +608,17 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             super.applyBlur();
         }
 
-        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height);
+//        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, true);
+        drawContext.goUpLayer();
+        super.renderDarkening(drawContext, topX, topY, width, height);
+        drawContext.popLayer();
     }
 
     protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
+        drawContext.goUpLayer();
         this.drawString(drawContext, this.getTitleString(), LEFT, TOP, COLOR_WHITE);
+        drawContext.popLayer();
     }
 
     protected void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
@@ -634,7 +639,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         for (TextFieldWrapper<?> entry : this.textFields)
         {
             //RenderUtils.forceDraw(drawContext);
+            drawContext.goUpLayer();
             entry.draw(drawContext, mouseX, mouseY);
+            drawContext.popLayer();
         }
     }
 
@@ -669,7 +676,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             if (button.hasHoverText() && button.isMouseOver())
             {
 //                RenderUtils.forceDraw(drawContext);
+                drawContext.goUpLayer();
                 RenderUtils.drawHoverText(drawContext, mouseX, mouseY, button.getHoverStrings());
+                drawContext.popLayer();
             }
         }
     }
@@ -689,7 +698,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         if (this.hoveredWidget != null)
         {
 //            RenderUtils.forceDraw(drawContext);
+            drawContext.goUpLayer();
             this.hoveredWidget.postRenderHovered(drawContext, mouseX, mouseY, false);
+            drawContext.popLayer();
         }
     }
 
@@ -705,12 +716,16 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public void drawString(DrawContext drawContext, String text, int x, int y, int color)
     {
+        drawContext.goUpLayer();
         drawContext.drawText(this.textRenderer, text, x, y, color, false);
+        drawContext.popLayer();
     }
 
     public void drawStringWithShadow(DrawContext drawContext, String text, int x, int y, int color)
     {
+        drawContext.goUpLayer();
         drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
+        drawContext.popLayer();
     }
 
     public int getMaxPrettyNameLength(List<? extends IConfigBase> configs)

@@ -5,7 +5,6 @@ import org.joml.Matrix3x2fStack;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 
 public class GuiTextFieldGeneric extends TextFieldWidget
@@ -98,13 +97,17 @@ public class GuiTextFieldGeneric extends TextFieldWidget
             // this.zLevel
             matrixStack.translate(0, 0);
 
+            context.goUpLayer();
             super.renderWidget(context, mouseX, mouseY, delta);
+            context.popLayer();
 
             matrixStack.popMatrix();
         }
         else
         {
+            context.goUpLayer();
             super.renderWidget(context, mouseX, mouseY, delta);
+            context.popLayer();
         }
     }
 

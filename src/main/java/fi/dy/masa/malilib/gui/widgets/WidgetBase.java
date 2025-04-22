@@ -3,8 +3,6 @@ package fi.dy.masa.malilib.gui.widgets;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.util.Identifier;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -173,31 +171,39 @@ public abstract class WidgetBase
 
     public void drawString(DrawContext drawContext, int x, int y, int color, String text)
     {
+        drawContext.goUpLayer();
         drawContext.drawText(this.textRenderer, text, x, y, color, false);
+        drawContext.popLayer();
 //        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawCenteredString(DrawContext drawContext, int x, int y, int color, String text)
     {
+        drawContext.goUpLayer();
         drawContext.drawText(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
+        drawContext.popLayer();
 //        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawStringWithShadow(DrawContext drawContext, int x, int y, int color, String text)
     {
+        drawContext.goUpLayer();
         drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
+        drawContext.popLayer();
 //        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawCenteredStringWithShadow(DrawContext drawContext, int x, int y, int color, String text)
     {
+        drawContext.goUpLayer();
         drawContext.drawCenteredTextWithShadow(this.textRenderer, text, x, y, color);
+        drawContext.popLayer();
 //        RenderUtils.forceDraw(drawContext);
     }
 
     public void drawBackgroundMask(DrawContext drawContext)
     {
-        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2);
+        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2, true);
     }
 
     public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)

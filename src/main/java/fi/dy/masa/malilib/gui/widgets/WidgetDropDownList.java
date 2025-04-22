@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import org.joml.Matrix3x2fStack;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
+
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
 
 import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -280,7 +277,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
 //        RenderUtils.depthMask(true);
 //        RenderUtils.depthTest(true);
-        RenderUtils.drawOutlinedBox(drawContext, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
+        RenderUtils.drawOutlinedBox(drawContext, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0, true);
 
         String str = this.getDisplayString(this.getSelectedEntry());
         int txtX = this.x + 4;
@@ -318,7 +315,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
 //                RenderUtils.depthMask(true);
 //                RenderUtils.depthTest(true);
-                RenderUtils.drawBasicRect(drawContext, this.x, y, this.width - scrollWidth, this.height, bg);
+                RenderUtils.drawBasicRect(drawContext, this.x, y, this.width - scrollWidth, this.height, bg, true);
                 str = this.getDisplayString(list.get(i));
                 this.drawString(drawContext, txtX, txtY, 0xFFE0E0E0, str);
                 y += this.height;

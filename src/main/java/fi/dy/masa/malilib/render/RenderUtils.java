@@ -4,6 +4,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
@@ -19,6 +20,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.render.state.ItemGuiElementRenderState;
 import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.gui.render.state.TextGuiElementRenderState;
@@ -245,6 +247,26 @@ public class RenderUtils
         ((IMixinDrawContext) drawContext).malilib_getRenderState().addText(textElement);
     }
 
+    public static void pushScissor(DrawContext drawContext, @Nonnull ScreenRect rect)
+    {
+        ((IMixinDrawContext) drawContext).malilib_getScissorStack().push(rect);
+    }
+
+    public static boolean containsScissor(DrawContext drawContext, int x, int y)
+    {
+        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().contains(x, y);
+    }
+
+    public static ScreenRect peekLastScissor(DrawContext drawContext)
+    {
+        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().peekLast();
+    }
+
+    public static ScreenRect popScissor(DrawContext drawContext)
+    {
+        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().pop();
+    }
+
 //    /**
 //     * Bind a Gui Overlay Texture using DrawContext.
 //     *
@@ -435,6 +457,7 @@ public class RenderUtils
 
     /// /        blend(false);
 //    }
+
     public static void drawBasicRect(DrawContext drawContext, int x, int y, int width, int height, int color)
     {
         drawBasicRect(drawContext, x, y, width, height, color, 1.0f, false);
@@ -449,17 +472,28 @@ public class RenderUtils
     {
         if (background)
         {
+//            drawContext.enableScissor(x, y, x + width, y + height);
             drawContext.goDownLayer();
         }
         else
         {
             drawContext.goUpLayer();
         }
+
         addSimpleElement(drawContext, new MaLiLibBasicRectGuiElement(
-                RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
+//                background ? MaLiLibPipelines.GUI_OVERLAY : RenderPipelines.GUI,
+                RenderPipelines.GUI,
+                TextureSetup.empty(),
+                new Matrix3x2f(drawContext.getMatrices()),
                 x, y, width, height,
-                scale, color, null)
+                scale, color, peekLastScissor(drawContext))
         );
+
+//        if (background)
+//        {
+//            drawContext.disableScissor();
+//        }
+
         drawContext.popLayer();
     }
 
@@ -586,22 +620,30 @@ public class RenderUtils
 
         if (background)
         {
+//            drawContext.enableScissor(x, y, x + width, y + height);
             drawContext.goDownLayer();
         }
         else
         {
             drawContext.goUpLayer();
         }
-        addSimpleElement(drawContext,
-                         new MaLiLibTexturedGuiElement(
-                                 RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTexture),
-                                 new Matrix3x2f(drawContext.getMatrices()),
-                                 x, y, x + width, y + height,
-                                 u * pixelWidth, (u + width) * pixelWidth,
-                                 v * pixelWidth, (v + height) * pixelWidth,
-                                 argb, null)
+
+        addSimpleElement(drawContext, new MaLiLibTexturedGuiElement(
+                background ? RenderPipelines.GUI_OPAQUE_TEX_BG : RenderPipelines.GUI_TEXTURED,
+                TextureSetup.withoutGlTexture(gpuTexture),
+                new Matrix3x2f(drawContext.getMatrices()),
+                x, y, x + width, y + height,
+                u * pixelWidth, (u + width) * pixelWidth,
+                v * pixelWidth, (v + height) * pixelWidth,
+                argb, peekLastScissor(drawContext))
         );
+
         drawContext.popLayer();
+
+//        if (background)
+//        {
+//            drawContext.disableScissor();
+//        }
     }
 
 //    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
@@ -642,7 +684,7 @@ public class RenderUtils
                                  new Matrix3x2f(drawContext.getMatrices()),
                                  x, y, x, v,
                                  width, height, zLevel,
-                                 argb, null)
+                                 argb, peekLastScissor(drawContext))
         );
     }
 
@@ -687,12 +729,13 @@ public class RenderUtils
 
             //drawTexturedRect(GuiBase.BG_TEXTURE, x, y, 0, 0, maxLineLength, maxWidth, drawContext);
 
+            drawContext.pushCheckpoint();
             drawContext.getMatrices().pushMatrix();
             drawContext.getMatrices().translate(0, 0);
 
             float zLevel = (float) 300;
             int borderColor = 0xF0100010;
-            drawContext.goTopLayer();
+            drawContext.goUpLayer();
             drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
             drawGradientRectBatched(drawContext, textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
             drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY + textHeight + 3, borderColor, borderColor);
@@ -709,16 +752,18 @@ public class RenderUtils
             //forceDraw(drawContext);
             drawContext.popLayer();
 
+            drawContext.goTopLayer();
             for (int i = 0; i < textLines.size(); ++i)
             {
                 String str = textLines.get(i);
-
                 drawContext.drawText(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
                 textStartY += lineHeight;
             }
+            drawContext.popLayer();
 
             //forceDraw(drawContext);
             drawContext.getMatrices().popMatrix();
+            drawContext.popCheckpoint();
 
             //RenderSystem.disableDepthTest();
             //enableDiffuseLightingGui3D();
@@ -730,7 +775,7 @@ public class RenderUtils
         addSimpleElement(drawContext, new MaLiLibGradientRectGuiElement(
                 RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                 left, top, right, bottom,
-                startColor, endColor, null)
+                startColor, endColor, peekLastScissor(drawContext))
         );
     }
 
@@ -1789,7 +1834,7 @@ public class RenderUtils
                                                                 new Matrix3x2f(drawContext.getMatrices()),
                                                                 x1, y1, x2, y2,
                                                                 0.0f, 1.0f, 0.0f, 1.0f,
-                                                                -1, uv, null)
+                                                                -1, uv, peekLastScissor(drawContext))
             );
 
 //            VertexConsumer vertex = bindGuiTexture(bgTexture, drawContext);
@@ -1809,22 +1854,26 @@ public class RenderUtils
                 x1 += 8;
                 y1 += 8;
                 z = 310;
-                BufferAllocator allocator = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
-                VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(allocator);
+
+                drawContext.enableScissor(x1, y1, x1 + z, y1 + z);
+//                BufferAllocator allocator = new BufferAllocator(RenderLayer.DEFAULT_BUFFER_SIZE);
+//                VertexConsumerProvider.Immediate consumer = VertexConsumerProvider.immediate(allocator);
                 double scale = (double) (dimensions - 16) / 128.0D;
 
-                MatrixStack matrixStack = new MatrixStack();
-                matrixStack.push();
-                matrixStack.translate(x1, y1, z);
-                matrixStack.scale((float) scale, (float) scale, 0);
+                Matrix3x2fStack matrixStack = drawContext.getMatrices();
+                matrixStack.pushMatrix();
+                matrixStack.translate(x1, y1);
+                matrixStack.scale((float) scale, (float) scale);
 
                 MapRenderState mapRenderState = new MapRenderState();
                 mc().getMapRenderer().update(mapId, mapState, mapRenderState);
-                mc().getMapRenderer().draw(mapRenderState, matrixStack, consumer, false, uv);
-                consumer.draw();
-                matrixStack.pop();
-                allocator.close();
+                drawContext.drawMap(mapRenderState);
+//                mc().getMapRenderer().draw(mapRenderState, matrixStack, consumer, false, uv);
+//                consumer.draw();
+                matrixStack.popMatrix();
+//                allocator.close();
                 drawContext.popLayer();
+                drawContext.disableScissor();
             }
         }
     }

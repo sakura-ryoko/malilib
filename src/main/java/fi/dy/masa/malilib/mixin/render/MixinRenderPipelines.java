@@ -10,7 +10,6 @@ import com.mojang.blaze3d.platform.PolygonMode;
 import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gl.UniformType;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
@@ -1323,6 +1322,23 @@ public abstract class MixinRenderPipelines
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+                              .build();
+
+        // GUI
+        MaLiLibPipelines.GUI_OVERLAY =
+                RenderPipeline.builder(GUI_SNIPPET)
+                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/gui_overlay"))
+                              .withDepthWrite(false)
+                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                              .withBlend(BlendFunction.OVERLAY)
+                              .build();
+
+        MaLiLibPipelines.GUI_TEXTURED_OVERLAY =
+                RenderPipeline.builder(POSITION_TEX_COLOR_SNIPPET)
+                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/gui_textured_overlay"))
+                              .withDepthWrite(false)
+                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+                              .withBlend(BlendFunction.OVERLAY)
                               .build();
 
         // Try registering with Iris.
