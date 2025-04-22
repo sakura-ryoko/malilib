@@ -282,7 +282,7 @@
     "malilib.message.value.on": "ON",
     "malilib.name.file_write_type.normal_write": "Normal Write",
     "malilib.name.file_write_type.temp_and_rename": "Temp and Rename",
-    "modmenu.descriptionTranslation.malilib": "A library required by client mods from masa",
+    "modmenu.descriptionTranslation.malilib": "A library mod required by masa's client-side mods",
     "tag.block.malilib.all_banners_fix": "All Banners",
     "tag.block.malilib.all_signs_fix": "All Signs",
     "tag.block.malilib.concrete_blocks": "Concrete Blocks",
