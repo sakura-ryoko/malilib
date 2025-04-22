@@ -634,11 +634,11 @@ public class KeyBindImpl implements KeyBind
 
     public static void printKeyBindDebugMessage(int keyCode, int scanCode, int modifiers, char charIn, boolean keyState)
     {
-        String action = keyState ? "PRESS  " : "RELEASE";
+        String action = keyState ? "PRE" : "REL";
         String keyName = Keys.getStorageStringForKeyCode(keyCode, Keys::charAsStorageString);
         String held = getActiveKeysString();
-        String msg = String.format("%s '%s' (k: %d, s: %d, m: %d, c: '%c' = %d), held keys: %s",
-                                   action, keyName, keyCode, scanCode, modifiers, charIn, (int) charIn, held);
+        String msg = String.format("%s '%s' (k: 0x%02X (%d), s: 0x%02X (%d), m: %d, c: '%c' = %d), held: %s",
+                                   action, keyName, keyCode, keyCode, scanCode, scanCode, modifiers, charIn, (int) charIn, held);
 
         MaLiLib.LOGGER.info(msg);
 
