@@ -62,9 +62,9 @@ public class WidgetColorIndicator extends WidgetBase
         int height = this.getHeight();
 
         //RenderUtils.depthTest(true);
-        RenderUtils.drawBasicRect(drawContext, x    , y    , width    , height    , 0xFFFFFFFF, z);
-        RenderUtils.drawBasicRect(drawContext, x + 1, y + 1, width - 2, height - 2, 0xFF000000, z);
-        RenderUtils.drawBasicRect(drawContext, x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue(), z);
+        RenderUtils.drawBasicRect(drawContext, x    , y    , width    , height    , 0xFFFFFFFF);
+        RenderUtils.drawBasicRect(drawContext, x + 1, y + 1, width - 2, height - 2, 0xFF000000);
+        RenderUtils.drawBasicRect(drawContext, x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue());
         //RenderUtils.depthTest(false);
     }
 }

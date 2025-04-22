@@ -5,8 +5,12 @@ import java.util.OptionalInt;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderPass;
@@ -23,7 +27,6 @@ import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.client.texture.TextureContents;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TriState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Vec3d;
@@ -277,7 +280,7 @@ public class RenderContext implements AutoCloseable
 
             if (!this.vertexBuffer.isClosed())
             {
-                encoder.writeToBuffer(this.vertexBuffer, meshData.getBuffer(), 0);
+                encoder.writeToBuffer(this.vertexBuffer.slice(), meshData.getBuffer());
             }
             else
             {
@@ -291,7 +294,7 @@ public class RenderContext implements AutoCloseable
                 {
                     if (!this.indexBuffer.isClosed())
                     {
-                        encoder.writeToBuffer(this.indexBuffer, meshData.getSortedBuffer(), 0);
+                        encoder.writeToBuffer(this.indexBuffer.slice(), meshData.getSortedBuffer());
                     }
                 }
                 else
@@ -402,7 +405,7 @@ public class RenderContext implements AutoCloseable
             {
                 if (!this.indexBuffer.isClosed())
                 {
-                    RenderSystem.getDevice().createCommandEncoder().writeToBuffer(this.indexBuffer, buffer.getBuffer(), 0);
+                    RenderSystem.getDevice().createCommandEncoder().writeToBuffer(this.indexBuffer.slice(), buffer.getBuffer());
                 }
                 else
                 {
@@ -601,35 +604,47 @@ public class RenderContext implements AutoCloseable
     public void draw(BuiltBuffer meshData) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-        this.draw(null, meshData, false, false, false);
+        this.draw(null, meshData, false, false, false, false);
     }
 
     public void draw(BuiltBuffer meshData, boolean shouldResort) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-        this.draw(null, meshData, shouldResort, false, false);
+        this.draw(null, meshData, shouldResort, false, false, false);
     }
 
     public void draw(BuiltBuffer meshData, boolean shouldResort, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-        this.draw(null, meshData, shouldResort, false, setLineWidth);
+        this.draw(null, meshData, shouldResort, false, setLineWidth, false);
+    }
+
+    public void draw(BuiltBuffer meshData, boolean shouldResort, boolean setColor, boolean setLineWidth) throws RuntimeException
+    {
+        this.ensureSafeNoBuffer();
+        this.draw(null, meshData, shouldResort, setColor, setLineWidth, false);
+    }
+
+    public void draw(BuiltBuffer meshData, boolean shouldResort, boolean setColor, boolean setLineWidth, boolean useOffset) throws RuntimeException
+    {
+        this.ensureSafeNoBuffer();
+        this.draw(null, meshData, shouldResort, setColor, setLineWidth, useOffset);
     }
 
     public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, boolean shouldResort) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-        this.draw(otherFb, meshData, shouldResort, false, false);
+        this.draw(otherFb, meshData, shouldResort, false, false, false);
     }
 
     public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, boolean shouldResort, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
-        this.draw(otherFb, meshData, shouldResort, false, setLineWidth);
+        this.draw(otherFb, meshData, shouldResort, false, setLineWidth, false);
     }
 
     public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, boolean shouldResort,
-                     boolean useOffset, boolean setLineWidth) throws RuntimeException
+                     boolean setColor, boolean setLineWidth, boolean useOffset) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
 
@@ -655,9 +670,9 @@ public class RenderContext implements AutoCloseable
                 float[] rgba = {ColorHelper.getRedFloat(this.color), ColorHelper.getGreenFloat(this.color), ColorHelper.getBlueFloat(this.color), ColorHelper.getAlphaFloat(this.color)};
 
                 //MaLiLib.LOGGER.warn("RenderContext#drawPost() [{}] --> drawInternal()", this.name.get());
-                RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-                this.drawInternal(otherFb, useOffset, setLineWidth);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//                RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+                this.drawInternal(otherFb, rgba, setColor, setLineWidth, useOffset);
+//                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             }
         }
     }
@@ -665,22 +680,34 @@ public class RenderContext implements AutoCloseable
     public void drawPost() throws RuntimeException
     {
         this.ensureSafeNoTexture();
-        this.drawPost(null, false, false);
+        this.drawPost(null, false, false, false);
     }
 
     public void drawPost(boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoTexture();
-        this.drawPost(null, false, setLineWidth);
+        this.drawPost(null, false, setLineWidth, false);
+    }
+
+    public void drawPost(boolean setColor, boolean setLineWidth) throws RuntimeException
+    {
+        this.ensureSafeNoTexture();
+        this.drawPost(null, setColor, setLineWidth, false);
     }
 
     public void drawPost(@Nullable Framebuffer otherFb, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoTexture();
-        this.drawPost(otherFb, false, setLineWidth);
+        this.drawPost(otherFb, false, setLineWidth, false);
     }
 
-    public void drawPost(@Nullable Framebuffer otherFb, boolean useOffset, boolean setLineWidth) throws RuntimeException
+    public void drawPost(@Nullable Framebuffer otherFb, boolean setColor, boolean setLineWidth) throws RuntimeException
+    {
+        this.ensureSafeNoTexture();
+        this.drawPost(otherFb, setColor, setLineWidth, false);
+    }
+
+    public void drawPost(@Nullable Framebuffer otherFb, boolean setColor, boolean setLineWidth, boolean useOffset) throws RuntimeException
     {
         this.ensureSafeNoTexture();
 
@@ -688,21 +715,37 @@ public class RenderContext implements AutoCloseable
         {
             float[] rgba = new float[]{ColorHelper.getRedFloat(this.color), ColorHelper.getGreenFloat(this.color), ColorHelper.getBlueFloat(this.color), ColorHelper.getAlphaFloat(this.color)};
 
-            RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
-            this.drawInternal(otherFb, useOffset, setLineWidth);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//            RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
+            this.drawInternal(otherFb, rgba, setColor, useOffset, setLineWidth);
+//            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
     }
 
-    private void drawInternal(@Nullable Framebuffer otherFb, boolean useOffset, boolean setLineWidth) throws RuntimeException
+    private void drawInternal(@Nullable Framebuffer otherFb, float[] rgba, boolean setColor, boolean setLineWidth, boolean useOffset) throws RuntimeException
     {
         this.ensureSafeNoTexture();
 
         if (RenderSystem.isOnRenderThread())
         {
+            Vector4f colorMod = new Vector4f(1f, 1f, 1f, 1f);
+            Vector3f modelOffset = new Vector3f();
+            Matrix4f texMatrix = new Matrix4f();
+            float line = 0.0f;
+
+            if (setColor)
+            {
+                colorMod.set(rgba);
+            }
+
+            if (setLineWidth)
+            {
+                line = this.lineWidth > 0.0f ? this.lineWidth : RenderSystem.getShaderLineWidth();
+            }
+
             if (useOffset)
             {
                 RenderSystem.setModelOffset(this.offset[0], this.offset[1], this.offset[2]);
+                modelOffset.set(this.offset);
             }
 
             Framebuffer mainFb = RenderUtils.fb();
@@ -723,6 +766,17 @@ public class RenderContext implements AutoCloseable
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());
             GpuBuffer indexBuffer = this.shapeIndex.getIndexBuffer(this.indexCount);
 
+            //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setUniform() // lineWidth [{}]", this.name.get(), width);
+//                pass.setUniform("LineWidth", width);
+
+            GpuBufferSlice gpuSlice = RenderSystem.getDynamicUniforms()
+                                                        .write(
+                                                                RenderSystem.getModelViewMatrix(),
+                                                                colorMod,
+                                                                modelOffset,
+                                                                texMatrix,
+                                                                line);
+
             // Attach Frame buffers
             try (RenderPass pass = RenderSystem.getDevice()
                                                .createCommandEncoder()
@@ -731,6 +785,21 @@ public class RenderContext implements AutoCloseable
             {
 //                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}] // isDevelopment [{}]", this.name.get(), this.shader.getLocation().toString(), RenderPassImpl.IS_DEVELOPMENT);
                 pass.setPipeline(this.shader);
+                RenderSystem.bindDefaultUniforms(pass);
+                pass.setUniform("DynamicTransforms", gpuSlice);
+
+                //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setIndexBuffer() [{}]", this.name.get(), this.bufferIndex);
+                if (this.indexBuffer == null)
+                {
+                    pass.setIndexBuffer(indexBuffer, this.shapeIndex.getIndexType());
+                }
+                else
+                {
+                    pass.setIndexBuffer(this.indexBuffer, this.indexType);
+                }
+
+                //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setVertexBuffer() [0]", this.name.get());
+                pass.setVertexBuffer(0, this.vertexBuffer);
 
                 if (this.textureId > -1 && this.textureId < 12 && this.texture != null)
                 {
@@ -748,26 +817,6 @@ public class RenderContext implements AutoCloseable
 //                        pass.bindSampler("Sampler"+i, drawableTexture);
 //                    }
 //                }
-
-                if (setLineWidth)
-                {
-                    float width = this.lineWidth > 0.0f ? this.lineWidth : RenderSystem.getShaderLineWidth();
-                    //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setUniform() // lineWidth [{}]", this.name.get(), width);
-                    pass.setUniform("LineWidth", width);
-                }
-
-                //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setVertexBuffer() [0]", this.name.get());
-                pass.setVertexBuffer(0, this.vertexBuffer);
-
-                //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setIndexBuffer() [{}]", this.name.get(), this.bufferIndex);
-                if (this.indexBuffer == null)
-                {
-                    pass.setIndexBuffer(indexBuffer, this.shapeIndex.getIndexType());
-                }
-                else
-                {
-                    pass.setIndexBuffer(this.indexBuffer, this.indexType);
-                }
 
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> drawIndexed() [0, {}]", this.name.get(), this.bufferIndex);
                 pass.drawIndexed(0, this.indexCount);
