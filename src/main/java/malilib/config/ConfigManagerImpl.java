@@ -3,15 +3,14 @@ package malilib.config;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-
 import malilib.MaLiLib;
 import malilib.util.data.ModInfo;
 
 public class ConfigManagerImpl implements ConfigManager
 {
+    // This is a linked map to keep the malilib configs as the first entry. Kinda janky, but works for now?
     protected final Map<ModInfo, ModConfig> configHandlers = new LinkedHashMap<>();
 
     @Override
@@ -51,14 +50,14 @@ public class ConfigManagerImpl implements ConfigManager
         return false;
     }
 
-    public List<ModConfig> getAllModConfigs()
+    public ArrayList<ModConfig> getAllModConfigs()
     {
         return new ArrayList<>(this.configHandlers.values());
     }
 
-    public List<ModConfig> getAllModConfigsSorted()
+    public ArrayList<ModConfig> getAllModConfigsSorted()
     {
-        ArrayList<ModConfig> list = new ArrayList<>(this.configHandlers.values());
+        ArrayList<ModConfig> list = this.getAllModConfigs();
         list.sort(Comparator.comparing(v -> v.getModInfo().getModName()));
         return list;
     }
@@ -68,7 +67,7 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public void loadAllConfigs()
     {
-        for (ModConfig handler : this.configHandlers.values())
+        for (ModConfig handler : this.getAllModConfigs())
         {
             MaLiLib.debugLog("Loading configs for mod {}", handler.getModInfo().getModId());
             handler.loadFromFile();
@@ -80,7 +79,7 @@ public class ConfigManagerImpl implements ConfigManager
      */
     public void saveAllConfigs()
     {
-        for (ModConfig handler : this.configHandlers.values())
+        for (ModConfig handler : this.getAllModConfigs())
         {
             handler.saveToFile();
         }
@@ -93,7 +92,7 @@ public class ConfigManagerImpl implements ConfigManager
     {
         boolean savedSomething = false;
 
-        for (ModConfig handler : this.configHandlers.values())
+        for (ModConfig handler : this.getAllModConfigs())
         {
             savedSomething |= handler.saveIfDirty();
         }
