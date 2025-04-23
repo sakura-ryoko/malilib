@@ -17,6 +17,7 @@ import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntry;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -81,7 +82,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
         // Draw an outline around the entire file browser
-        RenderUtils.drawOutlinedBox(drawContext, this.posX, this.posY, this.browserWidth, this.browserHeight, 0xB0000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(drawContext, GuiLayer.NONE, this.posX, this.posY, this.browserWidth, this.browserHeight, 0xB0000000, COLOR_HORIZONTAL_BAR);
 
         super.drawContents(drawContext, mouseX, mouseY, partialTicks);
 

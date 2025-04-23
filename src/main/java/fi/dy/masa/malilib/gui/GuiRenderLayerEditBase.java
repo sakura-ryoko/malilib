@@ -8,6 +8,7 @@ import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetCheckBox;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.LayerMode;
 import fi.dy.masa.malilib.util.LayerRange;
@@ -70,8 +71,8 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
             int w1 = this.getStringWidth(labelMin);
             int w2 = this.getStringWidth(labelMax);
 
-            this.addLabel(x, y     , w1, 20, 0xFFFFFF, labelMax);
-            this.addLabel(x, y + 23, w2, 20, 0xFFFFFF, labelMin);
+            this.addLabel(GuiLayer.TOP, x, y     , w1, 20, 0xFFFFFF, labelMax);
+            this.addLabel(GuiLayer.TOP, x, y + 23, w2, 20, 0xFFFFFF, labelMin);
 
             x += Math.max(w1, w2) + 10;
         }
@@ -79,7 +80,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         {
             String label = StringUtils.translate("malilib.gui.label.render_layers.layer") + ":";
             int w = this.getStringWidth(label);
-            this.addLabel(x, y, w, 20, 0xFFFFFF, label);
+            this.addLabel(GuiLayer.TOP, x, y, w, 20, 0xFFFFFF, label);
 
             x += w + 10;
         }
@@ -88,7 +89,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 
         if (layerMode == LayerMode.LAYER_RANGE)
         {
-            this.textField2 = new GuiTextFieldInteger(x, y, width, 20, this.textRenderer);
+            this.textField2 = new GuiTextFieldInteger(x, y, width, 20, this.textRenderer, GuiLayer.UP);
             this.addTextField(this.textField2, new TextFieldListener(layerMode, layerRange, true));
 
             this.createHotkeyCheckBoxes(x + width + 24, y, layerRange);
@@ -101,7 +102,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
             this.textField2 = null;
         }
 
-        this.textField1 = new GuiTextFieldInteger(x, y, width, 20, this.textRenderer);
+        this.textField1 = new GuiTextFieldInteger(x, y, width, 20, this.textRenderer, GuiLayer.UP);
         this.addTextField(this.textField1, new TextFieldListener(layerMode, layerRange, false));
         this.createValueAdjustButton(x + width + 3, y, false, layerRange, valueAdjustIcon);
         y += 23;

@@ -15,6 +15,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetHoverInfo;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -95,7 +96,7 @@ public class GuiKeybindSettings extends GuiDialogBase
 
     protected void addConfig(int x, int y, int labelWidth, int configWidth, ConfigBase<?> config)
     {
-        this.addLabel(x, y + 4, labelWidth, 10, 0xFFFFFFFF, StringUtils.translate(config.getConfigGuiDisplayName()));
+        this.addLabel(GuiLayer.TOP, x, y + 4, labelWidth, 10, 0xFFFFFFFF, StringUtils.translate(config.getConfigGuiDisplayName()));
         this.addWidget(new WidgetHoverInfo(x, y + 2, labelWidth, 12, config.getComment()));
         x += labelWidth + 10;
 
@@ -134,20 +135,23 @@ public class GuiKeybindSettings extends GuiDialogBase
             this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
         }
 
+//        drawContext.goTopLayer();
         super.render(drawContext, mouseX, mouseY, partialTicks);
+//        drawContext.popLayer();
     }
 
     @Override
     protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
     {
 //        super.drawTexturedBG(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, true);
-        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR, true);
+//        RenderUtils.applyLayer(drawContext, GuiLayer.BLUR);
+        RenderUtils.drawOutlinedBox(drawContext, GuiLayer.UP, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
     }
 
     @Override
     protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
-        this.drawStringWithShadow(drawContext, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
+        this.drawStringWithShadow(drawContext, GuiLayer.TOP, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
     }
 
     @Override

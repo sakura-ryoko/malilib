@@ -8,6 +8,7 @@ import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.render.GuiLayer;
 
 public abstract class WidgetContainer extends WidgetBase
 {
@@ -34,7 +35,7 @@ public abstract class WidgetContainer extends WidgetBase
         return button;
     }
 
-    protected void addLabel(int x, int y, int width, int height, int textColor, String... lines)
+    protected void addLabel(GuiLayer type, int x, int y, int width, int height, int textColor, String... lines)
     {
         if (lines != null && lines.length >= 1)
         {
@@ -46,7 +47,7 @@ public abstract class WidgetContainer extends WidgetBase
                 }
             }
 
-            WidgetLabel label = new WidgetLabel(x, y, width, height, textColor, lines);
+            WidgetLabel label = new WidgetLabel(type, x, y, width, height, textColor, lines);
             this.addWidget(label);
         }
     }

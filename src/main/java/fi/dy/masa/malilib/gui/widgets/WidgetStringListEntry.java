@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import net.minecraft.client.gui.DrawContext;
 
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public class WidgetStringListEntry extends WidgetListEntryBase<String>
@@ -24,25 +25,25 @@ public class WidgetStringListEntry extends WidgetListEntryBase<String>
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY))
         {
-            RenderUtils.drawBasicRect(drawContext, this.x, this.y, this.width, this.height, 0xA0707070);
+            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0xA0707070);
         }
         else if (this.isOdd)
         {
-            RenderUtils.drawBasicRect(drawContext, this.x, this.y, this.width, this.height, 0xA0101010);
+            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0xA0101010);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawBasicRect(drawContext, this.x, this.y, this.width, this.height, 0xA0303030);
+            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0xA0303030);
         }
 
         if (selected)
         {
-            RenderUtils.drawOutline(drawContext, this.x, this.y, this.width, this.height, 0xFF90D0F0);
+            RenderUtils.drawOutline(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0xFF90D0F0);
         }
 
         int yOffset = (this.height - this.fontHeight) / 2 + 1;
-        this.drawStringWithShadow(drawContext, this.x + 2, this.y + yOffset, 0xFFFFFFFF, this.entry);
+        this.drawStringWithShadow(drawContext, GuiLayer.NONE, this.x + 2, this.y + yOffset, 0xFFFFFFFF, this.entry);
 
         super.render(drawContext, mouseX, mouseY, selected);
     }

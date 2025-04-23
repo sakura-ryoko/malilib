@@ -50,6 +50,20 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
         this.textField.render(drawContext, mouseX, mouseY, 0f);
     }
 
+//    private void renderWidgetFix(DrawContext drawContext, int mouseX, int mouseY, float deltaTicks)
+//    {
+//        if (this.textField.visible)
+//        {
+////            this.textField.renderWidget(drawContext, mouseX, mouseY, deltaTicks);
+//
+//            int i = this.textField.getX() + this.textField.getWidth() - this.textField.textureWidth - 2;
+//            int j = this.textField.getY() + this.textField.getHeight() / 2 - this.textField.textureHeight / 2;
+////        context.goUpLayer();
+//            drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, this.textField.texture, i, j, this.textField.textureWidth, this.textField.textureHeight);
+////        context.popLayer();
+//        }
+//    }
+
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton)
     {
         if (this.textField.mouseClicked(mouseX, mouseY, mouseButton))

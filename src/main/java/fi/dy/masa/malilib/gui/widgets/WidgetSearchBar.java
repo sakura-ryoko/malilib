@@ -6,9 +6,9 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
-import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.data.Constants;
 
 public class WidgetSearchBar extends WidgetBase
 {
@@ -27,7 +27,7 @@ public class WidgetSearchBar extends WidgetBase
         int tx = iconAlignment == LeftRight.RIGHT ? x - searchBarOffsetX + 1 : x + iw + 6 + searchBarOffsetX;
         this.iconSearch = new WidgetIcon(ix, y + 1, iconSearch);
         this.iconAlignment = iconAlignment;
-        this.searchBox = new GuiTextFieldGeneric(tx, y, width - iw - 7 - Math.abs(searchBarOffsetX), height, this.textRenderer);
+        this.searchBox = new GuiTextFieldGeneric(tx, y, width - iw - 7 - Math.abs(searchBarOffsetX), height, this.textRenderer, GuiLayer.UP);
         this.searchBox.setZLevel(this.zLevel);
     }
 
@@ -125,7 +125,7 @@ public class WidgetSearchBar extends WidgetBase
     {
         super.render(drawContext, mouseX, mouseY, selected);
 //        RenderUtils.color(1f, 1f, 1f, 1f);
-        this.iconSearch.render(drawContext, false, this.iconSearch.isMouseOver(mouseX, mouseY));
+        this.iconSearch.render(drawContext, GuiLayer.NONE, false, this.iconSearch.isMouseOver(mouseX, mouseY));
 
         if (this.searchOpen)
         {

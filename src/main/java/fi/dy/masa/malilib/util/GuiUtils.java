@@ -15,6 +15,7 @@ import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.interfaces.ICoordinateValueModifier;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.util.position.PositionUtils.CoordinateType;
 
 public class GuiUtils
@@ -65,39 +66,39 @@ public class GuiUtils
         return getScaledWindowWidth();
     }
 
-    public static void createBlockPosInputsVertical(int x, int y, int textFieldWidth, BlockPos pos,
+    public static void createBlockPosInputsVertical(GuiLayer layer, int x, int y, int textFieldWidth, BlockPos pos,
             ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
-        createBlockPosInput(x, y     , textFieldWidth, CoordinateType.X, pos, modifier, addButton, gui);
-        createBlockPosInput(x, y + 17, textFieldWidth, CoordinateType.Y, pos, modifier, addButton, gui);
-        createBlockPosInput(x, y + 34, textFieldWidth, CoordinateType.Z, pos, modifier, addButton, gui);
+        createBlockPosInput(layer, x, y     , textFieldWidth, CoordinateType.X, pos, modifier, addButton, gui);
+        createBlockPosInput(layer, x, y + 17, textFieldWidth, CoordinateType.Y, pos, modifier, addButton, gui);
+        createBlockPosInput(layer, x, y + 34, textFieldWidth, CoordinateType.Z, pos, modifier, addButton, gui);
     }
 
-    public static void createVec3dInputsVertical(int x, int y, int textFieldWidth, Vec3d pos,
+    public static void createVec3dInputsVertical(GuiLayer layer, int x, int y, int textFieldWidth, Vec3d pos,
             ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
-        createVec3dInput(x, y     , textFieldWidth, CoordinateType.X, pos, modifier, addButton, gui);
-        createVec3dInput(x, y + 17, textFieldWidth, CoordinateType.Y, pos, modifier, addButton, gui);
-        createVec3dInput(x, y + 34, textFieldWidth, CoordinateType.Z, pos, modifier, addButton, gui);
+        createVec3dInput(layer, x, y     , textFieldWidth, CoordinateType.X, pos, modifier, addButton, gui);
+        createVec3dInput(layer, x, y + 17, textFieldWidth, CoordinateType.Y, pos, modifier, addButton, gui);
+        createVec3dInput(layer, x, y + 34, textFieldWidth, CoordinateType.Z, pos, modifier, addButton, gui);
     }
 
-    public static void createBlockPosInput(int x, int y, int textFieldWidth, CoordinateType type, BlockPos pos,
+    public static void createBlockPosInput(GuiLayer layer, int x, int y, int textFieldWidth, CoordinateType type, BlockPos pos,
             ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
-        x = addLabel(x, y, type, gui);
+        x = addLabel(layer, x, y, type, gui);
 
-        GuiTextFieldInteger textField = new GuiTextFieldInteger(x, y + 1, textFieldWidth, 14, MinecraftClient.getInstance().textRenderer);
+        GuiTextFieldInteger textField = new GuiTextFieldInteger(x, y + 1, textFieldWidth, 14, MinecraftClient.getInstance().textRenderer, layer);
         textField.setText(getCoordinateValueString(type, pos));
 
         addTextFieldAndButton(x + textFieldWidth + 4, y, type, modifier, textField, addButton, gui);
     }
 
-    public static void createVec3dInput(int x, int y, int textFieldWidth, CoordinateType type, Vec3d pos,
+    public static void createVec3dInput(GuiLayer layer, int x, int y, int textFieldWidth, CoordinateType type, Vec3d pos,
             ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
-        x = addLabel(x, y, type, gui);
+        x = addLabel(layer, x, y, type, gui);
 
-        GuiTextFieldDouble textField = new GuiTextFieldDouble(x, y + 1, textFieldWidth, 14, MinecraftClient.getInstance().textRenderer);
+        GuiTextFieldDouble textField = new GuiTextFieldDouble(x, y + 1, textFieldWidth, 14, MinecraftClient.getInstance().textRenderer, layer);
         textField.setText(getCoordinateValueString(type, pos));
 
         addTextFieldAndButton(x + textFieldWidth + 4, y, type, modifier, textField, addButton, gui);
@@ -143,7 +144,7 @@ public class GuiUtils
 
     }
 
-    protected static int addLabel(int x, int y, CoordinateType type, GuiBase gui)
+    protected static int addLabel(GuiLayer layer, int x, int y, CoordinateType type, GuiBase gui)
     {
         String label = type.name() + ":";
         int labelWidth = 0;
@@ -153,7 +154,7 @@ public class GuiUtils
             labelWidth = Math.max(labelWidth, StringUtils.getStringWidth(t.name() + ":") + 4);
         }
 
-        gui.addLabel(x, y, labelWidth, 20, 0xFFFFFFFF, label);
+        gui.addLabel(layer, x, y, labelWidth, 20, 0xFFFFFFFF, label);
         x += labelWidth;
 
         return x;

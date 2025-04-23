@@ -1,15 +1,15 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-
 import org.joml.Matrix3x2fStack;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -30,7 +30,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
         this.centerOnScreen();
 
         int width = Math.min(maxTextLength * 10, 240);
-        this.textField = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 40, width, 20, this.textRenderer);
+        this.textField = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 40, width, 20, this.textRenderer, GuiLayer.UP);
         this.textField.setMaxLength(maxTextLength);
         this.textField.setFocused(true);
         this.textField.setText(this.originalText);
@@ -73,10 +73,10 @@ public abstract class GuiTextInputBase extends GuiDialogBase
         // 1.f
         matrixStack.translate(0, 0);
 
-        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xE0000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(drawContext, GuiLayer.NONE, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xE0000000, COLOR_HORIZONTAL_BAR);
 
         // Draw the title
-        this.drawStringWithShadow(drawContext, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
+        this.drawStringWithShadow(drawContext, GuiLayer.NONE, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
 
         //super.drawScreen(mouseX, mouseY, partialTicks);
         this.textField.render(drawContext, mouseX, mouseY, partialTicks);

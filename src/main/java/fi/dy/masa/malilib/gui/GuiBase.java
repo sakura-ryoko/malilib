@@ -9,7 +9,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -25,6 +24,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetLabel;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.MessageRenderer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -192,6 +192,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.drawContext = drawContext;
         }
 
+        RenderUtils.popAllCheckpoints(drawContext);
+        RenderUtils.popAllLayers(drawContext);
+        drawContext.createNewRootLayer();
         //RenderUtils.forceDraw(drawContext);
         // Draw Background / Title
         this.drawScreenBackground(drawContext, mouseX, mouseY);
@@ -523,12 +526,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return widget;
     }
 
-    public WidgetLabel addLabel(int x, int y, int width, int height, int textColor, String... lines)
+    public WidgetLabel addLabel(GuiLayer type, int x, int y, int width, int height, int textColor, String... lines)
     {
-        return this.addLabel(x, y, width, height, textColor, Arrays.asList(lines));
+        return this.addLabel(type, x, y, width, height, textColor, Arrays.asList(lines));
     }
 
-    public WidgetLabel addLabel(int x, int y, int width, int height, int textColor, List<String> lines)
+    public WidgetLabel addLabel(GuiLayer type, int x, int y, int width, int height, int textColor, List<String> lines)
     {
         if (lines.size() > 0)
         {
@@ -541,7 +544,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             }
         }
 
-        return this.addWidget(new WidgetLabel(x, y, width, height, textColor, lines));
+        return this.addWidget(new WidgetLabel(type, x, y, width, height, textColor, lines));
     }
 
     protected boolean removeWidget(WidgetBase widget)
@@ -587,7 +590,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         // Draw the dark background
 //        RenderUtils.forceDraw(drawContext);
-        RenderUtils.drawBasicRect(drawContext, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND, true);
+        RenderUtils.drawRect(drawContext, GuiLayer.DOWN, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
     }
 
     /**
@@ -601,7 +604,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
      * @param height ()
      * @param blur ()
      */
-    protected void drawTexturedBG(DrawContext drawContext, int topX, int topY, int width, int height, boolean blur)
+    protected void drawTexturedBG(DrawContext drawContext, GuiLayer type, int topX, int topY, int width, int height, boolean blur)
     {
         if (blur)
         {
@@ -609,16 +612,18 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
 
 //        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, true);
-        drawContext.goUpLayer();
+        RenderUtils.applyLayer(drawContext, type);
         super.renderDarkening(drawContext, topX, topY, width, height);
-        drawContext.popLayer();
+
+        if (type != GuiLayer.NONE)
+        {
+            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
+        }
     }
 
     protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
-        drawContext.goUpLayer();
-        this.drawString(drawContext, this.getTitleString(), LEFT, TOP, COLOR_WHITE);
-        drawContext.popLayer();
+        this.drawString(drawContext, GuiLayer.NONE, this.getTitleString(), LEFT, TOP, COLOR_WHITE);
     }
 
     protected void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
@@ -627,22 +632,26 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     protected void drawButtons(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
+        drawContext.pushCheckpoint();
         for (ButtonBase button : this.buttons)
         {
             //RenderUtils.forceDraw(drawContext);
             button.render(drawContext, mouseX, mouseY, button.isMouseOver());
         }
+        drawContext.popCheckpoint();
     }
 
     protected void drawTextFields(DrawContext drawContext, int mouseX, int mouseY)
     {
+        drawContext.pushCheckpoint();
+//        RenderUtils.applyLayer(drawContext, GuiLayer.NONE);
         for (TextFieldWrapper<?> entry : this.textFields)
         {
             //RenderUtils.forceDraw(drawContext);
-            drawContext.goUpLayer();
             entry.draw(drawContext, mouseX, mouseY);
-            drawContext.popLayer();
         }
+//        RenderUtils.applyLayer(drawContext, GuiLayer.NONE);
+        drawContext.popCheckpoint();
     }
 
     protected void drawWidgets(DrawContext drawContext, int mouseX, int mouseY)
@@ -651,6 +660,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (this.widgets.isEmpty() == false)
         {
+            drawContext.pushCheckpoint();
+
             for (WidgetBase widget : this.widgets)
             {
 //                RenderUtils.forceDraw(drawContext);
@@ -661,6 +672,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
                     this.hoveredWidget = widget;
                 }
             }
+
+            drawContext.popCheckpoint();
         }
     }
 
@@ -676,9 +689,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             if (button.hasHoverText() && button.isMouseOver())
             {
 //                RenderUtils.forceDraw(drawContext);
-                drawContext.goUpLayer();
                 RenderUtils.drawHoverText(drawContext, mouseX, mouseY, button.getHoverStrings());
-                drawContext.popLayer();
             }
         }
     }
@@ -698,9 +709,13 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         if (this.hoveredWidget != null)
         {
 //            RenderUtils.forceDraw(drawContext);
-            drawContext.goUpLayer();
+//            RenderUtils.applyLayer(drawContext, type);
             this.hoveredWidget.postRenderHovered(drawContext, mouseX, mouseY, false);
-            drawContext.popLayer();
+
+//            if (type != GuiLayer.NONE)
+//            {
+//                RenderUtils.applyLayer(drawContext, GuiLayer.POP);
+//            }
         }
     }
 
@@ -714,18 +729,26 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return this.textRenderer.getWidth(text);
     }
 
-    public void drawString(DrawContext drawContext, String text, int x, int y, int color)
+    public void drawString(DrawContext drawContext, GuiLayer type, String text, int x, int y, int color)
     {
-        drawContext.goUpLayer();
+        RenderUtils.applyLayer(drawContext, type);
         drawContext.drawText(this.textRenderer, text, x, y, color, false);
-        drawContext.popLayer();
+
+        if (type != GuiLayer.NONE)
+        {
+            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
+        }
     }
 
-    public void drawStringWithShadow(DrawContext drawContext, String text, int x, int y, int color)
+    public void drawStringWithShadow(DrawContext drawContext, GuiLayer type, String text, int x, int y, int color)
     {
-        drawContext.goUpLayer();
+        RenderUtils.applyLayer(drawContext, type);
         drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
-        drawContext.popLayer();
+
+        if (type != GuiLayer.NONE)
+        {
+            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
+        }
     }
 
     public int getMaxPrettyNameLength(List<? extends IConfigBase> configs)

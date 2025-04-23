@@ -34,7 +34,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.texture.TextureSetup;
 import net.minecraft.client.util.BufferAllocator;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
@@ -267,6 +266,72 @@ public class RenderUtils
         return ((IMixinDrawContext) drawContext).malilib_getScissorStack().pop();
     }
 
+    /**
+     * Control the DrawContext Layers in a unified manner.
+     *
+     * @param drawContext
+     * @param type
+     */
+    public static void applyLayer(DrawContext drawContext, GuiLayer type)
+    {
+        switch (type)
+        {
+            case UP -> drawContext.goUpLayer();
+            case DOWN -> drawContext.goDownLayer();
+            case TOP -> drawContext.goTopLayer();
+            case POP -> drawContext.popLayer();
+            case BLUR -> drawContext.method_71278();
+            case NONE -> { return; }
+            default -> { return; }
+        }
+    }
+
+    /**
+     * Force Popping all DrawContext Layers
+     *
+     * @param drawContext
+     */
+    public static void popAllLayers(DrawContext drawContext)
+    {
+        boolean loop = true;
+
+        while (loop)
+        {
+            try
+            {
+                drawContext.popLayer();
+            }
+            catch (Exception ignored)
+            {
+                loop = false;
+                break;
+            }
+        }
+    }
+
+    /**
+     * Force Popping all DrawContext Checkpoints
+     *
+     * @param drawContext
+     */
+    public static void popAllCheckpoints(DrawContext drawContext)
+    {
+        boolean loop = true;
+
+        while (loop)
+        {
+            try
+            {
+                drawContext.popCheckpoint();
+            }
+            catch (Exception ignored)
+            {
+                loop = false;
+                break;
+            }
+        }
+    }
+
 //    /**
 //     * Bind a Gui Overlay Texture using DrawContext.
 //     *
@@ -352,41 +417,26 @@ public class RenderUtils
 //        DiffuseLighting.enableGuiDepthLighting();
 //    }
 
-    public static void drawOutlinedBox(DrawContext drawContext, int x, int y, int width, int height, int colorBg, int colorBorder)
-    {
-        drawOutlinedBox(drawContext, x, y, width, height, colorBg, colorBorder, false);
-    }
-
-    public static void drawOutlinedBox(DrawContext drawContext, int x, int y, int width, int height, int colorBg, int colorBorder, boolean background)
+    public static void drawOutlinedBox(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int colorBg, int colorBorder)
     {
         // Draw the background
-        drawBasicRect(drawContext, x, y, width, height, colorBg, background);
+        drawRect(drawContext, type, x, y, width, height, colorBg);
 
         // Draw the border
-        drawOutline(drawContext, x - 1, y - 1, width + 2, height + 2, colorBorder, background);
+        drawOutline(drawContext, type, x - 1, y - 1, width + 2, height + 2, colorBorder);
     }
 
-    public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int colorBorder)
+    public static void drawOutline(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int colorBorder)
     {
-        drawOutline(drawContext, x, y, width, height, 1, colorBorder, false);
+        drawOutline(drawContext, type, x, y, width, height, 1, colorBorder);
     }
 
-    public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int colorBorder, boolean background)
+    public static void drawOutline(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int borderWidth, int colorBorder)
     {
-        drawOutline(drawContext, x, y, width, height, 1, colorBorder, background);
-    }
-
-    public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int colorBorder)
-    {
-        drawOutline(drawContext, x, y, width, height, borderWidth, colorBorder, false);
-    }
-
-    public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int colorBorder, boolean background)
-    {
-        drawBasicRect(drawContext, x, y, borderWidth, height, colorBorder, background); // left edge
-        drawBasicRect(drawContext, x + width - borderWidth, y, borderWidth, height, colorBorder, background); // right edge
-        drawBasicRect(drawContext, x + borderWidth, y, width - 2 * borderWidth, borderWidth, colorBorder, background); // top edge
-        drawBasicRect(drawContext, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, background); // bottom edge
+        drawRect(drawContext, type, x, y, borderWidth, height, colorBorder); // left edge
+        drawRect(drawContext, type, x + width - borderWidth, y, borderWidth, height, colorBorder); // right edge
+        drawRect(drawContext, type, x + borderWidth, y, width - 2 * borderWidth, borderWidth, colorBorder); // top edge
+        drawRect(drawContext, type, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder); // bottom edge
     }
 
 //    public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
@@ -458,30 +508,17 @@ public class RenderUtils
     /// /        blend(false);
 //    }
 
-    public static void drawBasicRect(DrawContext drawContext, int x, int y, int width, int height, int color)
+    public static void drawRect(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int color)
     {
-        drawBasicRect(drawContext, x, y, width, height, color, 1.0f, false);
+        drawRect(drawContext, type, x, y, width, height, color, 1.0f);
     }
 
-    public static void drawBasicRect(DrawContext drawContext, int x, int y, int width, int height, int color, boolean background)
+    public static void drawRect(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int color, float scale)
     {
-        drawBasicRect(drawContext, x, y, width, height, color, 1.0f, background);
-    }
-
-    public static void drawBasicRect(DrawContext drawContext, int x, int y, int width, int height, int color, float scale, boolean background)
-    {
-        if (background)
-        {
-//            drawContext.enableScissor(x, y, x + width, y + height);
-            drawContext.goDownLayer();
-        }
-        else
-        {
-            drawContext.goUpLayer();
-        }
+//        drawContext.enableScissor(x, y, x + width, y + height);
+        applyLayer(drawContext, type);
 
         addSimpleElement(drawContext, new MaLiLibBasicRectGuiElement(
-//                background ? MaLiLibPipelines.GUI_OVERLAY : RenderPipelines.GUI,
                 RenderPipelines.GUI,
                 TextureSetup.empty(),
                 new Matrix3x2f(drawContext.getMatrices()),
@@ -489,12 +526,12 @@ public class RenderUtils
                 scale, color, peekLastScissor(drawContext))
         );
 
-//        if (background)
-//        {
-//            drawContext.disableScissor();
-//        }
+        if (type != GuiLayer.NONE)
+        {
+            applyLayer(drawContext, GuiLayer.POP);
+        }
 
-        drawContext.popLayer();
+//        drawContext.disableScissor();
     }
 
     /**
@@ -532,14 +569,9 @@ public class RenderUtils
      * @param width
      * @param height
      */
-    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height)
+    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, GuiLayer type, int x, int y, int u, int v, int width, int height)
     {
-        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, 0F, -1, false);
-    }
-
-    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, boolean background)
-    {
-        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, 0F, -1, background);
+        drawTexturedRect(drawContext, texture, type, x, y, u, v, width, height, 0F, -1);
     }
 
 //    public static void drawTexturedRectAndDraw(Identifier texture, int x, int y, int u, int v, int width, int height, DrawContext drawContext)
@@ -561,14 +593,9 @@ public class RenderUtils
      * @param height
      * @param zLevel
      */
-    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel)
+    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, GuiLayer type, int x, int y, int u, int v, int width, int height, float zLevel)
     {
-        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, zLevel, -1, false);
-    }
-
-    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, boolean background)
-    {
-        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, zLevel, -1, background);
+        drawTexturedRect(drawContext, texture, type, x, y, u, v, width, height, zLevel, -1);
     }
 
 //    public static void drawTexturedRectAndDraw(Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, DrawContext drawContext)
@@ -591,12 +618,7 @@ public class RenderUtils
      * @param zLevel
      * @param argb
      */
-    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
-    {
-        drawTexturedRect(drawContext, texture, x, y, u, v, width, height, zLevel, argb, false);
-    }
-
-    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, int argb, boolean background)
+    public static void drawTexturedRect(DrawContext drawContext, Identifier texture, GuiLayer type, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
     {
         float pixelWidth = 0.00390625F;
 
@@ -618,18 +640,11 @@ public class RenderUtils
             return;
         }
 
-        if (background)
-        {
-//            drawContext.enableScissor(x, y, x + width, y + height);
-            drawContext.goDownLayer();
-        }
-        else
-        {
-            drawContext.goUpLayer();
-        }
+//        drawContext.enableScissor(x, y, x + width, y + height);
+        applyLayer(drawContext, type);
 
         addSimpleElement(drawContext, new MaLiLibTexturedGuiElement(
-                background ? RenderPipelines.GUI_OPAQUE_TEX_BG : RenderPipelines.GUI_TEXTURED,
+                RenderPipelines.GUI_TEXTURED,
                 TextureSetup.withoutGlTexture(gpuTexture),
                 new Matrix3x2f(drawContext.getMatrices()),
                 x, y, x + width, y + height,
@@ -638,33 +653,33 @@ public class RenderUtils
                 argb, peekLastScissor(drawContext))
         );
 
-        drawContext.popLayer();
+        if (type != GuiLayer.NONE)
+        {
+            applyLayer(drawContext, GuiLayer.POP);
+        }
 
-//        if (background)
-//        {
-//            drawContext.disableScissor();
-//        }
+//        drawContext.disableScissor();
     }
 
-//    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
-//    {
-//        drawTexturedRectBatched(posMatrix, x, y, u, v, width, height, 0, -1, buffer);
-//    }
-//
-//    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, int argb, VertexConsumer buffer)
-//    {
-//        drawTexturedRectBatched(posMatrix, x, y, u, v, width, height, 0, argb, buffer);
-//    }
-//
-//    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, float zLevel, int argb, VertexConsumer buffer)
-//    {
-//        float pixelWidth = 0.00390625F;
-//
-//        buffer.vertex(posMatrix, x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth).color(argb);
-//        buffer.vertex(posMatrix, x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
-//        buffer.vertex(posMatrix, x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(argb);
-//        buffer.vertex(posMatrix, x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
-//    }
+    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
+    {
+        drawTexturedRectBatched(posMatrix, x, y, u, v, width, height, 0, -1, buffer);
+    }
+
+    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, int argb, VertexConsumer buffer)
+    {
+        drawTexturedRectBatched(posMatrix, x, y, u, v, width, height, 0, argb, buffer);
+    }
+
+    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, float zLevel, int argb, VertexConsumer buffer)
+    {
+        float pixelWidth = 0.00390625F;
+
+        buffer.vertex(posMatrix, x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth).color(argb);
+        buffer.vertex(posMatrix, x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
+        buffer.vertex(posMatrix, x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(argb);
+        buffer.vertex(posMatrix, x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
+    }
 
     public static void drawTexturedRectBatched(DrawContext drawContext, @Nonnull GpuTexture gpuTexture, int x, int y, int u, int v, int width, int height)
     {
@@ -735,7 +750,7 @@ public class RenderUtils
 
             float zLevel = (float) 300;
             int borderColor = 0xF0100010;
-            drawContext.goUpLayer();
+            applyLayer(drawContext, GuiLayer.UP);
             drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
             drawGradientRectBatched(drawContext, textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
             drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY + textHeight + 3, borderColor, borderColor);
@@ -750,16 +765,17 @@ public class RenderUtils
             drawGradientRectBatched(drawContext, textStartX - 3, textStartY + textHeight + 2, textStartX + maxLineLength + 3, textStartY + textHeight + 3, fillColor2, fillColor2);
 
             //forceDraw(drawContext);
-            drawContext.popLayer();
+            applyLayer(drawContext, GuiLayer.POP);
+            applyLayer(drawContext, GuiLayer.TOP);
 
-            drawContext.goTopLayer();
             for (int i = 0; i < textLines.size(); ++i)
             {
                 String str = textLines.get(i);
                 drawContext.drawText(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
                 textStartY += lineHeight;
             }
-            drawContext.popLayer();
+
+            applyLayer(drawContext, GuiLayer.POP);
 
             //forceDraw(drawContext);
             drawContext.getMatrices().popMatrix();
@@ -820,32 +836,30 @@ public class RenderUtils
 
     /// /        blend(false);
 //    }
-    public static void drawCenteredString(DrawContext drawContext, int x, int y, int color, String text)
+    public static void drawCenteredString(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
     {
         TextRenderer textRenderer = mc().textRenderer;
+
+        applyLayer(drawContext, type);
         drawContext.drawCenteredTextWithShadow(textRenderer, text, x, y, color);
+
+        if (type != GuiLayer.NONE)
+        {
+            applyLayer(drawContext, GuiLayer.POP);
+        }
     }
 
-    public static void drawHorizontalLine(DrawContext drawContext, int x, int y, int width, int color)
+    public static void drawHorizontalLine(DrawContext drawContext, GuiLayer type, int x, int y, int width, int color)
     {
-        drawBasicRect(drawContext, x, y, width, 1, color, false);
+        drawRect(drawContext, type, x, y, width, 1, color);
     }
 
-    public static void drawHorizontalLine(DrawContext drawContext, int x, int y, int width, int color, boolean background)
+    public static void drawVerticalLine(DrawContext drawContext, GuiLayer type, int x, int y, int height, int color)
     {
-        drawBasicRect(drawContext, x, y, width, 1, color, background);
+        drawRect(drawContext, type, x, y, 1, height, color);
     }
 
-    public static void drawVerticalLine(DrawContext drawContext, int x, int y, int height, int color)
-    {
-        drawBasicRect(drawContext, x, y, 1, height, color, false);
-    }
-    public static void drawVerticalLine(DrawContext drawContext, int x, int y, int height, int color, boolean background)
-    {
-        drawBasicRect(drawContext, x, y, 1, height, color, background);
-    }
-
-    public static void renderSprite(DrawContext drawContext, Identifier atlas, Identifier texture, int x, int y, int width, int height)
+    public static void renderSprite(DrawContext drawContext, Identifier atlas, Identifier texture, GuiLayer type, int x, int y, int width, int height)
     {
         if (texture != null)
         {
@@ -853,49 +867,72 @@ public class RenderUtils
 
             if (sprite != null)
             {
+                applyLayer(drawContext, type);
                 drawContext.drawSpriteStretched(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height, -1);
+
+                if (type != GuiLayer.NONE)
+                {
+                    applyLayer(drawContext, GuiLayer.POP);
+                }
             }
         }
     }
 
-    public static void renderText(int x, int y, int color, String text, DrawContext drawContext)
+    public static void renderText(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
     {
         String[] parts = text.split("\\\\n");
         TextRenderer textRenderer = mc().textRenderer;
+
+        applyLayer(drawContext, type);
 
         for (String line : parts)
         {
             drawContext.drawText(textRenderer, line, x, y, color, true);
             y += textRenderer.fontHeight + 1;
         }
+
+        if (type != GuiLayer.NONE)
+        {
+            applyLayer(drawContext, GuiLayer.POP);
+        }
     }
 
-    public static void renderText(int x, int y, int color, List<String> lines, DrawContext drawContext)
+    public static void renderText(DrawContext drawContext, GuiLayer type, int x, int y, int color, List<String> lines)
     {
         if (lines.isEmpty() == false)
         {
             TextRenderer textRenderer = mc().textRenderer;
+
+            applyLayer(drawContext, type);
 
             for (String line : lines)
             {
                 drawContext.drawText(textRenderer, line, x, y, color, false);
                 y += textRenderer.fontHeight + 2;
             }
+
+            if (type != GuiLayer.NONE)
+            {
+                applyLayer(drawContext, GuiLayer.POP);
+            }
         }
     }
 
-    public static int renderText(int xOff, int yOff, double scale, int textColor, int bgColor, HudAlignment alignment,
+    public static int renderText(DrawContext drawContext, GuiLayer type, int xOff, int yOff, double scale,
+                                 int textColor, int bgColor, HudAlignment alignment,
                                  boolean useBackground, boolean useShadow,
-                                 List<String> lines, DrawContext drawContext)
+                                 List<String> lines)
     {
-        return renderText(xOff, yOff, scale, textColor, bgColor, alignment,
+        return renderText(drawContext, type, xOff, yOff, scale,
+                          textColor, bgColor, alignment,
                           useBackground, useShadow, true,
-                          lines, drawContext);
+                          lines);
     }
 
-    public static int renderText(int xOff, int yOff, double scale, int textColor, int bgColor, HudAlignment alignment,
+    public static int renderText(DrawContext drawContext, GuiLayer type, int xOff, int yOff, double scale,
+                                 int textColor, int bgColor, HudAlignment alignment,
                                  boolean useBackground, boolean useShadow, boolean useStatusShift,
-                                 List<String> lines, DrawContext drawContext)
+                                 List<String> lines)
     {
         TextRenderer fontRenderer = mc().textRenderer;
         final int scaledWidth = GuiUtils.getScaledWindowWidth();
@@ -940,6 +977,8 @@ public class RenderUtils
             posY += getHudOffsetForPotions(alignment, scale, mc().player);
         }
 
+        applyLayer(drawContext, type);
+
         for (String line : lines)
         {
             final int width = fontRenderer.getWidth(line);
@@ -962,11 +1001,16 @@ public class RenderUtils
 
             if (useBackground)
             {
-                drawBasicRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) scale, true);
+                drawRect(drawContext, type.getIndex() > (-1) ? type.goDown() : type, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) scale);
             }
 
             drawContext.drawText(fontRenderer, line, x, y, textColor, useShadow);
             //forceDraw(drawContext);
+        }
+
+        if (type != GuiLayer.NONE)
+        {
+            applyLayer(drawContext, GuiLayer.POP);
         }
 
         if (scaled)
@@ -1828,7 +1872,7 @@ public class RenderUtils
                 return;
             }
 
-            drawContext.goUpLayer();
+            applyLayer(drawContext, GuiLayer.UP);
             addSimpleElement(drawContext,
                              new MaLiLibLightTexturedGuiElement(RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTexture),
                                                                 new Matrix3x2f(drawContext.getMatrices()),
@@ -1836,6 +1880,7 @@ public class RenderUtils
                                                                 0.0f, 1.0f, 0.0f, 1.0f,
                                                                 -1, uv, peekLastScissor(drawContext))
             );
+            applyLayer(drawContext, GuiLayer.POP);
 
 //            VertexConsumer vertex = bindGuiTexture(bgTexture, drawContext);
 //            Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
@@ -1846,11 +1891,9 @@ public class RenderUtils
 //            vertex.vertex(matrix4f, x1, y1, z).color(-1).texture(0.0f, 0.0f).light(uv);
 
 //            forceDraw(drawContext);
-            drawContext.popLayer();
 
             if (mapState != null)
             {
-                drawContext.goUpLayer();
                 x1 += 8;
                 y1 += 8;
                 z = 310;
@@ -1867,12 +1910,13 @@ public class RenderUtils
 
                 MapRenderState mapRenderState = new MapRenderState();
                 mc().getMapRenderer().update(mapId, mapState, mapRenderState);
+                applyLayer(drawContext, GuiLayer.TOP);
                 drawContext.drawMap(mapRenderState);
 //                mc().getMapRenderer().draw(mapRenderState, matrixStack, consumer, false, uv);
 //                consumer.draw();
                 matrixStack.popMatrix();
 //                allocator.close();
-                drawContext.popLayer();
+                applyLayer(drawContext, GuiLayer.POP);
                 drawContext.disableScissor();
             }
         }

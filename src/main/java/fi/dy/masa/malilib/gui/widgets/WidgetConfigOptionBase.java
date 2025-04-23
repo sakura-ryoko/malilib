@@ -9,6 +9,7 @@ import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -46,9 +47,9 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
 
     public abstract void applyNewValueToConfig();
 
-    protected GuiTextFieldGeneric createTextField(int x, int y, int width, int height)
+    protected GuiTextFieldGeneric createTextField(GuiLayer type, int x, int y, int width, int height)
     {
-        return new GuiTextFieldGeneric(x + 2, y, width, height, this.textRenderer);
+        return new GuiTextFieldGeneric(x + 2, y, width, height, this.textRenderer, type);
     }
 
     protected void addTextField(GuiTextFieldGeneric field, ConfigOptionChangeListenerTextField listener)

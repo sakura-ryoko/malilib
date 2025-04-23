@@ -5,6 +5,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public abstract class WidgetBase
@@ -169,41 +170,57 @@ public abstract class WidgetBase
         return this.textRenderer.getWidth(text);
     }
 
-    public void drawString(DrawContext drawContext, int x, int y, int color, String text)
+    public void drawString(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
     {
-        drawContext.goUpLayer();
+        RenderUtils.applyLayer(drawContext, type);
         drawContext.drawText(this.textRenderer, text, x, y, color, false);
-        drawContext.popLayer();
+
+        if (type != GuiLayer.NONE)
+        {
+            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
+        }
 //        RenderUtils.forceDraw(drawContext);
     }
 
-    public void drawCenteredString(DrawContext drawContext, int x, int y, int color, String text)
+    public void drawCenteredString(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
     {
-        drawContext.goUpLayer();
+        RenderUtils.applyLayer(drawContext, type);
         drawContext.drawText(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
-        drawContext.popLayer();
+
+        if (type != GuiLayer.NONE)
+        {
+            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
+        }
 //        RenderUtils.forceDraw(drawContext);
     }
 
-    public void drawStringWithShadow(DrawContext drawContext, int x, int y, int color, String text)
+    public void drawStringWithShadow(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
     {
-        drawContext.goUpLayer();
+        RenderUtils.applyLayer(drawContext, type);
         drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
-        drawContext.popLayer();
+
+        if (type != GuiLayer.NONE)
+        {
+            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
+        }
 //        RenderUtils.forceDraw(drawContext);
     }
 
-    public void drawCenteredStringWithShadow(DrawContext drawContext, int x, int y, int color, String text)
+    public void drawCenteredStringWithShadow(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
     {
-        drawContext.goUpLayer();
+        RenderUtils.applyLayer(drawContext, type);
         drawContext.drawCenteredTextWithShadow(this.textRenderer, text, x, y, color);
-        drawContext.popLayer();
+
+        if (type != GuiLayer.NONE)
+        {
+            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
+        }
 //        RenderUtils.forceDraw(drawContext);
     }
 
-    public void drawBackgroundMask(DrawContext drawContext)
+    public void drawBackgroundMask(DrawContext drawContext, GuiLayer type)
     {
-        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2, true);
+        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, type, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2);
     }
 
     public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)

@@ -8,6 +8,7 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
@@ -42,7 +43,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 
         if (!this.isDummy())
         {
-            this.addLabel(x + 2, y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", listIndex + 1));
+            this.addLabel(GuiLayer.TOP, x + 2, y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", listIndex + 1));
             bx = this.addTextField(textFieldX, y + 1, resetX, textFieldWidth, 20, initialValue.toString());
 
             this.addWidget(new WidgetColorIndicator(textFieldX + textFieldWidth + 2, y + 1, 19, 19, initialValue, this::applyNewValueToConfig));
@@ -85,7 +86,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 
     protected int addTextField(int x, int y, int resetX, int configWidth, int configHeight, String initialValue)
     {
-        GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
+        GuiTextFieldGeneric field = this.createTextField(GuiLayer.UP, x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
         field.setText(initialValue);
 
@@ -212,12 +213,12 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 
         if (this.isOdd)
         {
-            RenderUtils.drawBasicRect(drawContext, this.x, this.y, this.width, this.height, 0x20FFFFFF);
+            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0x20FFFFFF);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawBasicRect(drawContext, this.x, this.y, this.width, this.height, 0x30FFFFFF);
+            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0x30FFFFFF);
         }
 
         this.drawSubWidgets(drawContext, mouseX, mouseY);

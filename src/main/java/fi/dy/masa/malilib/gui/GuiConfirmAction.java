@@ -3,12 +3,11 @@ package fi.dy.masa.malilib.gui;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-
 import org.joml.Matrix3x2fStack;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
+
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -16,6 +15,7 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.ICompletionListener;
 import fi.dy.masa.malilib.interfaces.IConfirmationListener;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -97,15 +97,15 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
         matrixStack.pushMatrix();
         matrixStack.translate(0, 0);
 
-        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xF0000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(drawContext, GuiLayer.NONE, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xF0000000, COLOR_HORIZONTAL_BAR);
 
         // Draw the title
-        this.drawStringWithShadow(drawContext, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
+        this.drawStringWithShadow(drawContext, GuiLayer.NONE, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
         int y = this.dialogTop + 20;
 
         for (String text : this.messageLines)
         {
-            this.drawString(drawContext, text, this.dialogLeft + 10, y, this.textColor);
+            this.drawString(drawContext, GuiLayer.NONE, text, this.dialogLeft + 10, y, this.textColor);
             y += this.fontHeight + 1;
         }
 

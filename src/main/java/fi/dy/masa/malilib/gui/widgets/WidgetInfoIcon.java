@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.gui.widgets;
 import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
-import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.render.GuiLayer;
 
 public class WidgetInfoIcon extends WidgetHoverInfo
 {
@@ -22,6 +22,6 @@ public class WidgetInfoIcon extends WidgetHoverInfo
         super.render(drawContext, mouseX, mouseY, selected);
 //        RenderUtils.color(1f, 1f, 1f, 1f);
 //        this.bindTexture(this.icon.getTexture(), drawContext);
-        this.icon.renderAt(drawContext, this.x, this.y, this.zLevel, false, selected);
+        this.icon.renderAt(drawContext, GuiLayer.NONE, this.x, this.y, this.zLevel, false, selected);
     }
 }

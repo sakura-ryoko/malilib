@@ -8,6 +8,7 @@ import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public class ButtonGeneric extends ButtonBase
@@ -102,9 +103,9 @@ public class ButtonGeneric extends ButtonBase
 
             if (this.renderDefaultBackground)
             {
-                drawContext.goDownLayer();
+                RenderUtils.applyLayer(drawContext, GuiLayer.DOWN);
                 drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, this.getTexture(this.hovered), this.x, this.y, this.width, this.height);
-                drawContext.popLayer();
+                RenderUtils.applyLayer(drawContext, GuiLayer.POP);
             }
 
             if (this.icon != null)
@@ -115,7 +116,7 @@ public class ButtonGeneric extends ButtonBase
                 int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
                 //RenderUtils.depthTest(true);
-                RenderUtils.drawTexturedRect(drawContext, this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
+                RenderUtils.drawTexturedRect(drawContext, this.icon.getTexture(), GuiLayer.DOWN, x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
                 //RenderUtils.depthTest(false);
             }
 
@@ -135,7 +136,7 @@ public class ButtonGeneric extends ButtonBase
 
                 if (this.textCentered)
                 {
-                    this.drawCenteredStringWithShadow(drawContext, this.x + this.width / 2, y, color, this.displayString);
+                    this.drawCenteredStringWithShadow(drawContext, GuiLayer.NONE, this.x + this.width / 2, y, color, this.displayString);
                 }
                 else
                 {
@@ -146,7 +147,7 @@ public class ButtonGeneric extends ButtonBase
                         x += this.icon.getWidth() + 2;
                     }
 
-                    this.drawStringWithShadow(drawContext, x, y, color, this.displayString);
+                    this.drawStringWithShadow(drawContext, GuiLayer.NONE, x, y, color, this.displayString);
                 }
             }
         }

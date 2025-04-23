@@ -1,13 +1,13 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.math.MathHelper;
+
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public class GuiScrollBar
@@ -80,7 +80,7 @@ public class GuiScrollBar
     {
         if (this.renderScrollbarBackground)
         {
-            RenderUtils.drawBasicRect(drawContext, xPosition, yPosition, width, height, this.backgroundColor);
+            RenderUtils.drawRect(drawContext, GuiLayer.NONE, xPosition, yPosition, width, height, this.backgroundColor);
         }
 
         if (totalHeight > 0)
@@ -101,12 +101,12 @@ public class GuiScrollBar
                 int w = this.barTexture.getWidth();
                 int h = this.barTexture.getHeight();
 
-                RenderUtils.drawTexturedRect(drawContext, this.barTexture.getTexture(), xPosition + 1, barPosition                , u, v        , w, barHeight - 2);
-                RenderUtils.drawTexturedRect(drawContext, this.barTexture.getTexture(), xPosition + 1, barPosition + barHeight - 2, u, v + h - 2, w, 2);
+                RenderUtils.drawTexturedRect(drawContext, this.barTexture.getTexture(), GuiLayer.NONE, xPosition + 1, barPosition                , u, v        , w, barHeight - 2);
+                RenderUtils.drawTexturedRect(drawContext, this.barTexture.getTexture(), GuiLayer.NONE, xPosition + 1, barPosition + barHeight - 2, u, v + h - 2, w, 2);
             }
             else
             {
-                RenderUtils.drawBasicRect(drawContext, xPosition + 1, barPosition, width - 2, barHeight, this.foregroundColor);
+                RenderUtils.drawRect(drawContext, GuiLayer.NONE, xPosition + 1, barPosition, width - 2, barHeight, this.foregroundColor);
             }
 
             //RenderUtils.forceDraw(drawContext);
