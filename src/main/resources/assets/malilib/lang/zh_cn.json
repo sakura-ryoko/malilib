@@ -282,7 +282,7 @@
     "malilib.message.value.on": "开启",
     "malilib.name.file_write_type.normal_write": "直接写入",
     "malilib.name.file_write_type.temp_and_rename": "临时写入",
-    "modmenu.descriptionTranslation.malilib": "masa系列客户端模组必备支持库",
+    "modmenu.descriptionTranslation.malilib": "masa系列客户端mod所需要的依赖库mod",
     "tag.block.malilib.all_banners_fix": "所有旗帜",
     "tag.block.malilib.all_signs_fix": "所有告示牌",
     "tag.block.malilib.concrete_blocks": "混凝土",
