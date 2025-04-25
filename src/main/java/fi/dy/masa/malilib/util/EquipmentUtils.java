@@ -15,6 +15,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 
@@ -50,9 +51,20 @@ public class EquipmentUtils
 			return false;
 		}
 
-		// TODO 25w02a+
-		//return stack.contains(DataComponentTypes.WEAPON) || stack.isIn(ItemTags.WEAPON_ENCHANTABLE);
-		return stack.isIn(ItemTags.WEAPON_ENCHANTABLE);
+		return (stack.isIn(ItemTags.WEAPON_ENCHANTABLE) ||
+			   isSword(stack) || isAxe(stack));
+	}
+
+	public static boolean isSword(ItemStack stack)
+	{
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
+        return itemType.contains("_sword");
+    }
+
+	public static boolean isAxe(ItemStack stack)
+	{
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
+		return itemType.contains("_axe");
 	}
 
 	public static boolean isRangedWeapon(ItemStack stack)
@@ -88,7 +100,28 @@ public class EquipmentUtils
 			return false;
 		}
 
-		return stack.contains(DataComponentTypes.TOOL) || stack.isIn(ItemTags.MINING_ENCHANTABLE);
+		return (stack.isIn(ItemTags.MINING_ENCHANTABLE) ||
+			   isPickAxe(stack) || isAxe(stack) ||
+			   isHoe(stack) || isShovel(stack)) &&
+			   stack.contains(DataComponentTypes.TOOL);
+	}
+
+	public static boolean isPickAxe(ItemStack stack)
+	{
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
+		return itemType.contains("_pickaxe");
+	}
+
+	public static boolean isShovel(ItemStack stack)
+	{
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
+		return itemType.contains("_shovel");
+	}
+
+	public static boolean isHoe(ItemStack stack)
+	{
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
+		return itemType.contains("_hoe");
 	}
 
 	public static boolean isMiscTool(ItemStack stack)
