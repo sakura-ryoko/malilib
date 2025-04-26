@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin.entity;
+package fi.dy.masa.malilib.mixin.network;
 
 import net.minecraft.client.network.DataQueryHandler;
 import org.spongepowered.asm.mixin.Mixin;
