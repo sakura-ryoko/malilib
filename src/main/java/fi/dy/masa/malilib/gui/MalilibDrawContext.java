@@ -4,7 +4,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 
-import fi.dy.masa.malilib.mixin.IMixinDrawContext;
+import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
 
 /**
  * No longer required past 1.21
