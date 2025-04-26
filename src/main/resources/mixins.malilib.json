@@ -18,7 +18,6 @@
     ],
     "client": [
         "MixinMinecraftClient",
-        "entity.IMixinDataQueryHandler",
         "hud.MixinInGameHud",
         "input.MixinKeyboard",
         "input.MixinMouse",
