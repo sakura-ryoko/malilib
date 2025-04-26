@@ -23,7 +23,7 @@ public abstract class MixinInGameHud implements IGameHud
     @Shadow private int overlayRemaining;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void onInit(CallbackInfo info)
+    private void malilib_onInit(CallbackInfo info)
     {
         this.layeredDrawer.addLayer(this::malilib_renderGameOverlayLastDrawer);
     }

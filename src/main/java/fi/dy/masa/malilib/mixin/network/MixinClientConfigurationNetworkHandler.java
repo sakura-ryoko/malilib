@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin;
+package fi.dy.masa.malilib.mixin.network;
 
 import com.llamalad7.mixinextras.sugar.Local;
 

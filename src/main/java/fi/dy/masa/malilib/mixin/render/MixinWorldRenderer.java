@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin;
+package fi.dy.masa.malilib.mixin.render;
 
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
