@@ -12,7 +12,7 @@ package fi.dy.masa.malilib.render;
  */
 public enum GuiLayer
 {
-    BLUR        (0),        // Apply's the "BLUR" effect, can be used only once.
+//    BLUR        (0),        // Apply's the "BLUR" effect, can be used only once.
     POP         (1),        // Pop's the current Layer
     DOWN        (2),        // Sets the layer as `DOWN`
     NONE        (3),        // Does not apply a Layer

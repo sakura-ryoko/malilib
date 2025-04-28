@@ -203,11 +203,18 @@ public class RenderUtils
      * Don't forget to manage the Layers / Checkpoints.
      *
      * @param drawContext
+     * @param type
      * @param simpleElement
      */
-    public static void addSimpleElement(DrawContext drawContext, SimpleGuiElementRenderState simpleElement)
+    public static void addSimpleElement(DrawContext drawContext, GuiLayer type, SimpleGuiElementRenderState simpleElement)
     {
+        applyLayer(drawContext, type);
         ((IMixinDrawContext) drawContext).malilib_getRenderState().addSimpleElement(simpleElement);
+
+        if (type != GuiLayer.NONE)
+        {
+            applyLayer(drawContext, GuiLayer.POP);
+        }
     }
 
     /**
@@ -217,9 +224,15 @@ public class RenderUtils
      * @param drawContext
      * @param specialElement
      */
-    public static void addSpecialElement(DrawContext drawContext, SpecialGuiElementRenderState specialElement)
+    public static void addSpecialElement(DrawContext drawContext, GuiLayer type, SpecialGuiElementRenderState specialElement)
     {
+        applyLayer(drawContext, type);
         ((IMixinDrawContext) drawContext).malilib_getRenderState().addSpecialElement(specialElement);
+
+        if (type != GuiLayer.NONE)
+        {
+            applyLayer(drawContext, GuiLayer.POP);
+        }
     }
 
     /**
@@ -229,9 +242,15 @@ public class RenderUtils
      * @param drawContext
      * @param itemElement
      */
-    public static void addItemElement(DrawContext drawContext, ItemGuiElementRenderState itemElement)
+    public static void addItemElement(DrawContext drawContext, GuiLayer type, ItemGuiElementRenderState itemElement)
     {
+        applyLayer(drawContext, type);
         ((IMixinDrawContext) drawContext).malilib_getRenderState().addItem(itemElement);
+
+        if (type != GuiLayer.NONE)
+        {
+            applyLayer(drawContext, GuiLayer.POP);
+        }
     }
 
     /**
@@ -241,9 +260,15 @@ public class RenderUtils
      * @param drawContext
      * @param textElement
      */
-    public static void addTextElement(DrawContext drawContext, TextGuiElementRenderState textElement)
+    public static void addTextElement(DrawContext drawContext, GuiLayer type, TextGuiElementRenderState textElement)
     {
+        applyLayer(drawContext, type);
         ((IMixinDrawContext) drawContext).malilib_getRenderState().addText(textElement);
+
+        if (type != GuiLayer.NONE)
+        {
+            applyLayer(drawContext, GuiLayer.POP);
+        }
     }
 
     public static void pushScissor(DrawContext drawContext, @Nonnull ScreenRect rect)
@@ -280,7 +305,7 @@ public class RenderUtils
             case DOWN -> drawContext.goDownLayer();
             case TOP -> drawContext.goTopLayer();
             case POP -> drawContext.popLayer();
-            case BLUR -> drawContext.method_71278();
+//            case BLUR -> drawContext.method_71278();
             case NONE -> { return; }
             default -> { return; }
         }
@@ -516,20 +541,13 @@ public class RenderUtils
     public static void drawRect(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int color, float scale)
     {
 //        drawContext.enableScissor(x, y, x + width, y + height);
-        applyLayer(drawContext, type);
-
-        addSimpleElement(drawContext, new MaLiLibBasicRectGuiElement(
+        addSimpleElement(drawContext, type, new MaLiLibBasicRectGuiElement(
                 RenderPipelines.GUI,
                 TextureSetup.empty(),
                 new Matrix3x2f(drawContext.getMatrices()),
                 x, y, width, height,
                 scale, color, peekLastScissor(drawContext))
         );
-
-        if (type != GuiLayer.NONE)
-        {
-            applyLayer(drawContext, GuiLayer.POP);
-        }
 
 //        drawContext.disableScissor();
     }
@@ -641,9 +659,7 @@ public class RenderUtils
         }
 
 //        drawContext.enableScissor(x, y, x + width, y + height);
-        applyLayer(drawContext, type);
-
-        addSimpleElement(drawContext, new MaLiLibTexturedGuiElement(
+        addSimpleElement(drawContext, type, new MaLiLibTexturedGuiElement(
                 RenderPipelines.GUI_TEXTURED,
                 TextureSetup.withoutGlTexture(gpuTexture),
                 new Matrix3x2f(drawContext.getMatrices()),
@@ -652,11 +668,6 @@ public class RenderUtils
                 v * pixelWidth, (v + height) * pixelWidth,
                 argb, peekLastScissor(drawContext))
         );
-
-        if (type != GuiLayer.NONE)
-        {
-            applyLayer(drawContext, GuiLayer.POP);
-        }
 
 //        drawContext.disableScissor();
     }
@@ -693,7 +704,7 @@ public class RenderUtils
 
     public static void drawTexturedRectBatched(DrawContext drawContext, @Nonnull GpuTexture gpuTexture, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
     {
-        addSimpleElement(drawContext,
+        addSimpleElement(drawContext, GuiLayer.NONE,
                          new MaLiLibTexturedRectGuiElement(
                                  RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTexture),
                                  new Matrix3x2f(drawContext.getMatrices()),
@@ -788,7 +799,7 @@ public class RenderUtils
 
     public static void drawGradientRectBatched(DrawContext drawContext, float left, float top, float right, float bottom, int startColor, int endColor)
     {
-        addSimpleElement(drawContext, new MaLiLibGradientRectGuiElement(
+        addSimpleElement(drawContext, GuiLayer.NONE, new MaLiLibGradientRectGuiElement(
                 RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                 left, top, right, bottom,
                 startColor, endColor, peekLastScissor(drawContext))
@@ -1872,15 +1883,13 @@ public class RenderUtils
                 return;
             }
 
-            applyLayer(drawContext, GuiLayer.UP);
-            addSimpleElement(drawContext,
+            addSimpleElement(drawContext, GuiLayer.UP,
                              new MaLiLibLightTexturedGuiElement(RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTexture),
                                                                 new Matrix3x2f(drawContext.getMatrices()),
                                                                 x1, y1, x2, y2,
                                                                 0.0f, 1.0f, 0.0f, 1.0f,
                                                                 -1, uv, peekLastScissor(drawContext))
             );
-            applyLayer(drawContext, GuiLayer.POP);
 
 //            VertexConsumer vertex = bindGuiTexture(bgTexture, drawContext);
 //            Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();

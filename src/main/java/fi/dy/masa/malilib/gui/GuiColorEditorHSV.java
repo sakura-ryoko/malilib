@@ -535,14 +535,12 @@ public class GuiColorEditorHSV extends GuiDialogBase
         final int[] colorPair = this.getColorPairForSelector();
 
         drawContext.pushCheckpoint();
-        RenderUtils.applyLayer(drawContext, GuiLayer.TOP);
-        RenderUtils.addSimpleElement(drawContext,
+        RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSV4ColorGradientGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, x + w, y, y + h,
                                              colorPair, RenderUtils.peekLastScissor(drawContext))
                                      );
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
 
 //        buffer.vertex(x    , y    , z).texture(1, 0);
 //        buffer.vertex(x    , y + h, z).texture(0, 0);
@@ -587,15 +585,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        buffer.vertex(cx + cw, cy     , z).color(r, g, b, a);
 
         // Current color indicator
-        RenderUtils.applyLayer(drawContext, GuiLayer.TOP);
-        RenderUtils.addSimpleElement(drawContext,
+        RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSV1ColorIndicatorGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              cx, cx + cw,
                                              cy, cy + ch,
                                              r, g, b, a, RenderUtils.peekLastScissor(drawContext))
         );
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
 
         // SV selection marker for saturation, horizontal marker, vertical range
         int yt = y + (int) ((1 - this.relS) * h);
@@ -605,15 +601,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        buffer.vertex(x + w + 1, yt    , z).color(c, c, c, a);
 
         // SV selection marker for saturation, horizontal marker, vertical range
-        RenderUtils.applyLayer(drawContext, GuiLayer.TOP);
-        RenderUtils.addSimpleElement(drawContext,
+        RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSV1ColorIndicatorGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x - 1, x + w + 1,
                                              yt, yt + 1,
                                              c, c, c, a, RenderUtils.peekLastScissor(drawContext))
         );
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
 
         // SV selection marker for value, vertical marker, horizontal range
         int xt = x + (int) (this.relV * w);
@@ -623,15 +617,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        buffer.vertex(xt + 1, y - 1    , z).color(c, c, c, a);
 
         // SV selection marker for value, vertical marker, horizontal range
-        RenderUtils.applyLayer(drawContext, GuiLayer.TOP);
-        RenderUtils.addSimpleElement(drawContext,
+        RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSV1ColorIndicatorGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              xt, xt + 1,
                                              y - 1, y + h + 1,
                                              c, c, c, a, RenderUtils.peekLastScissor(drawContext))
         );
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
         drawContext.popCheckpoint();
 
         x = this.xH;
@@ -736,15 +728,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        buffer.vertex(x + width, y + height, z).color(r2, g2, b2, a2);
 //        buffer.vertex(x + width, y         , z).color(r2, g2, b2, a2);
 
-        RenderUtils.applyLayer(drawContext, GuiLayer.TOP);
-        RenderUtils.addSimpleElement(drawContext,
+        RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSV2ColorGradientGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, x + width,
                                              y, y + height,
                                              colorStart, colorEnd, RenderUtils.peekLastScissor(drawContext))
         );
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
     }
 
     public static void renderHueBarHorizontal(DrawContext drawContext, int x, int y, float z, int width, int height, float saturation, float value)
@@ -813,8 +803,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        buffer.vertex(x + width + segmentWidth, y + height                , z).color(r2, g2, b2, a);
 //        buffer.vertex(x + segmentWidth        , y                         , z).color(r2, g2, b2, a);
 
-        RenderUtils.applyLayer(drawContext, GuiLayer.TOP);
-        RenderUtils.addSimpleElement(drawContext,
+        RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSV2ColorSegmentedHueGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, y,
@@ -822,7 +811,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              segmentWidth, segmentHeight,
                                              color1, color2, RenderUtils.peekLastScissor(drawContext))
         );
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
     }
 
     public static void renderHSSelector(DrawContext drawContext, int xStart, int yStart, float z, int width, int height, float hue)
@@ -846,15 +834,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //            buffer.vertex(x2    , y, z).color(r2, g2, b2, a);
 //        }
 
-        RenderUtils.applyLayer(drawContext, GuiLayer.TOP);
-        RenderUtils.addSimpleElement(drawContext,
+        RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSVColorSelectorGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              xStart, yStart,
                                              width, height,
                                              hue, RenderUtils.peekLastScissor(drawContext))
         );
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
     }
 
     public static void renderBarMarkerHorizontalBar(DrawContext drawContext, int x, int y, float z, int barWidth, int barHeight, float value)
@@ -875,15 +861,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        buffer.vertex(x    , y - s, z).color(c, c, c, c);
 //        buffer.vertex(x    , y - s, z).color(c, c, c, c);
 
-        RenderUtils.applyLayer(drawContext, GuiLayer.TOP);
-        RenderUtils.addSimpleElement(drawContext,
+        RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSVColorHorizontalBarGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, y,
                                              barWidth, barHeight,
                                              value, RenderUtils.peekLastScissor(drawContext))
         );
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
     }
 
     public static void renderBarMarkerVerticalBar(DrawContext drawContext, int x, int y, float z, int barWidth, int barHeight, float value)
@@ -904,15 +888,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        buffer.vertex(x - s, y    , z).color(c, c, c, c);
 //        buffer.vertex(x + s, y + s, z).color(c, c, c, c);
 
-        RenderUtils.applyLayer(drawContext, GuiLayer.TOP);
-        RenderUtils.addSimpleElement(drawContext,
+        RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSVColorVerticalBarGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, y,
                                              barWidth, barHeight,
                                              value, RenderUtils.peekLastScissor(drawContext))
         );
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
     }
 
     @Nullable
