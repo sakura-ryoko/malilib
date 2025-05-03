@@ -168,7 +168,6 @@
     "malilib.gui.label.render_layers.layer": "当前层",
     "malilib.gui.label.render_layers.layer_max": "最高层",
     "malilib.gui.label.render_layers.layer_min": "最低层",
-    "malilib.gui.label.time_format.date_only": "仅日期",
     "malilib.gui.label.time_format.error.invalid_format": "无效日期/时间格式 // [%s]",
     "malilib.gui.label.time_format.formatted": "自定义格式",
     "malilib.gui.label.time_format.iso_local": "ISO本地格式",
@@ -176,6 +175,7 @@
     "malilib.gui.label.time_format.regular": "常规格式",
     "malilib.gui.label.time_format.rfc1123": "RFC1123格式",
     "malilib.gui.label.time_format.time_only": "仅时间",
+    "malilib.gui.label.time_format.date_only": "仅日期",
     "malilib.gui.label.yes": "是",
     "malilib.gui.label_colored.off": "§c关闭§r",
     "malilib.gui.label_colored.on": "§a开启§r",
@@ -296,6 +296,7 @@
     "tag.block.malilib.leaves_fix": "树叶",
     "tag.block.malilib.needs_shears": "需要剪刀",
     "tag.block.malilib.needs_silk_touch": "需要精准采集",
+    "tag.block.malilib.ore_blocks": "Ore Blocks",
     "tag.block.malilib.sculk_blocks": "幽匿类方块",
     "tag.block.malilib.wool_blocks_fix": "羊毛方块"
 }
