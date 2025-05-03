@@ -168,7 +168,6 @@
     "malilib.gui.label.render_layers.layer": "레이어",
     "malilib.gui.label.render_layers.layer_max": "최대 레이어",
     "malilib.gui.label.render_layers.layer_min": "최소 레이어",
-    "malilib.gui.label.time_format.date_only": "날짜만",
     "malilib.gui.label.time_format.error.invalid_format": "잘못된 날짜/시간 형식 // [%s]",
     "malilib.gui.label.time_format.formatted": "지정 형식",
     "malilib.gui.label.time_format.iso_local": "ISO 로컬",
@@ -176,6 +175,7 @@
     "malilib.gui.label.time_format.regular": "레귤러",
     "malilib.gui.label.time_format.rfc1123": "RFC1123",
     "malilib.gui.label.time_format.time_only": "시간만",
+    "malilib.gui.label.time_format.date_only": "날짜만",
     "malilib.gui.label.yes": "예",
     "malilib.gui.label_colored.off": "§cOFF§r",
     "malilib.gui.label_colored.on": "§aON§r",
@@ -296,6 +296,7 @@
     "tag.block.malilib.leaves_fix": "잎",
     "tag.block.malilib.needs_shears": "가위 필요",
     "tag.block.malilib.needs_silk_touch": "섬세한 손길 필요",
+    "tag.block.malilib.ore_blocks": "Ore Blocks",
     "tag.block.malilib.sculk_blocks": "스컬크 블록",
     "tag.block.malilib.wool_blocks_fix": "양털 블록"
 }

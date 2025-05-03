@@ -296,6 +296,7 @@
     "tag.block.malilib.leaves_fix": "Leaves",
     "tag.block.malilib.needs_shears": "Needs Shears",
     "tag.block.malilib.needs_silk_touch": "Needs Silk Touch",
+    "tag.block.malilib.ore_blocks": "Ore Blocks",
     "tag.block.malilib.sculk_blocks": "Sculk Blocks",
     "tag.block.malilib.wool_blocks_fix": "Wool Blocks"
 }
