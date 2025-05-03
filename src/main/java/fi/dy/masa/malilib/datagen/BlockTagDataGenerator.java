@@ -267,9 +267,20 @@ public class BlockTagDataGenerator extends FabricTagProvider.BlockTagProvider
                 .addTag(MaLiLibTag.Blocks.GLASS_PANES)
                 .addTag(MaLiLibTag.Blocks.CORAL_FANS_FIX)
                 .addTag(MaLiLibTag.Blocks.LEAVES_FIX)
-                .add(Blocks.ENDER_CHEST)
+                .addTag(MaLiLibTag.Blocks.SCULK_BLOCKS)
+                .add(Blocks.BEEHIVE)
+                .add(Blocks.BEE_NEST)
+                .add(Blocks.BOOKSHELF)
+                .add(Blocks.BLUE_ICE)
                 // todo 1.21.5+
                 //.add(Blocks.BUSH)
+                .add(Blocks.CAMPFIRE)
+                .add(Blocks.CHISELED_BOOKSHELF)
+                .add(Blocks.ENDER_CHEST)
+                .add(Blocks.ICE)
+                .add(Blocks.PACKED_ICE)
+                .add(Blocks.SOUL_CAMPFIRE)
+                .add(Blocks.TURTLE_EGG)
         ;
 
         getOrCreateTagBuilder(MaLiLibTag.Blocks.NEEDS_SHEARS)
@@ -369,6 +380,35 @@ public class BlockTagDataGenerator extends FabricTagProvider.BlockTagProvider
                 .add(Blocks.TRAPPED_CHEST)
                 .add(Blocks.TRIAL_SPAWNER)
                 .add(Blocks.VAULT)
+        ;
+
+        getOrCreateTagBuilder(MaLiLibTag.Blocks.ORE_BLOCKS)
+                .add(Blocks.COAL_ORE)
+                .add(Blocks.COPPER_ORE)
+                .add(Blocks.DEEPSLATE_COAL_ORE)
+                .add(Blocks.DEEPSLATE_COPPER_ORE)
+                .add(Blocks.DEEPSLATE_DIAMOND_ORE)
+                .add(Blocks.DEEPSLATE_EMERALD_ORE)
+                .add(Blocks.DEEPSLATE_GOLD_ORE)
+                .add(Blocks.DEEPSLATE_IRON_ORE)
+                .add(Blocks.DEEPSLATE_LAPIS_ORE)
+                .add(Blocks.DEEPSLATE_REDSTONE_ORE)
+                .add(Blocks.DIAMOND_ORE)
+                .add(Blocks.EMERALD_ORE)
+                .add(Blocks.GOLD_ORE)
+                .add(Blocks.IRON_ORE)
+                .add(Blocks.LAPIS_ORE)
+                .add(Blocks.NETHER_GOLD_ORE)
+                .add(Blocks.NETHER_QUARTZ_ORE)
+                .add(Blocks.REDSTONE_ORE)
+        ;
+        getOrCreateTagBuilder(MaLiLibTag.Blocks.SCULK_BLOCKS)
+                .add(Blocks.CALIBRATED_SCULK_SENSOR)
+                .add(Blocks.SCULK)
+                .add(Blocks.SCULK_CATALYST)
+                .add(Blocks.SCULK_SENSOR)
+                .add(Blocks.SCULK_SHRIEKER)
+                .add(Blocks.SCULK_VEIN)
         ;
     }
 }
