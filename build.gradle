@@ -1,5 +1,6 @@
 plugins {
 	id 'fabric-loom' version '1.10-SNAPSHOT'
+	id 'me.modmuss50.mod-publish-plugin' version '0.8.4'
 	id 'maven-publish'
 }
 
@@ -106,6 +107,37 @@ java {
 jar {
 	from("LICENSE") {
 		rename { "${it}_${base.archivesName}"}
+	}
+}
+
+tasks.register("tryPublishMods") {
+	// Skip the version ending in -sakura.x
+	if (mod_version.matches(".+-sakura\\.\\d+")) {
+		println "Skip publishMods"
+	} else {
+		finalizedBy("publishMods")
+	}
+}
+
+publishMods {
+	final boolean debug = providers.environmentVariable("MODRINTH_API_KEY").orNull == null
+
+	dryRun = debug
+	file = tasks.remapJar.archiveFile
+	displayName = "${mod_name} ${minecraft_version}-${mod_version}"
+	version = "${mod_version}"
+	changelog = debug ? "# Test" : providers.environmentVariable("CHANGELOG").toString()
+	modLoaders.add("fabric")
+	type = release_type == "alpha" ? ALPHA : release_type == "beta" ? BETA : STABLE
+
+	modrinth {
+		accessToken = providers.environmentVariable("MODRINTH_API_KEY")
+		projectId = "GcWjdA9I"
+		minecraftVersionRange {
+			final List<String> range = List.of(minecraft_version_range.toString().split("-"))
+			start = range.getFirst()
+			end = range.getLast()
+		}
 	}
 }
 

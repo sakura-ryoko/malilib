@@ -4,35 +4,35 @@
 # against bad commits.
 
 name: build
-on: [ pull_request, push ]
+on: [pull_request, push]
 
 jobs:
   build:
-    strategy:
-      matrix:
-        # Use these Java versions
-        java: [ 21 ]
-        distro: [ temurin ]
-        # and run on both Linux and Windows
-        os: [ ubuntu-latest ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
       - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v3
-      - name: setup jdk ${{ matrix.java }}
+        uses: gradle/actions/wrapper-validation@v4
+      - name: setup jdk
         uses: actions/setup-java@v4
         with:
-          distribution: ${{ matrix.distro }}
-          java-version: ${{ matrix.java }}
+          java-version: '21'
+          distribution: 'temurin'
+      - name: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: make gradle wrapper executable
-        if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
       - name: build
         run: ./gradlew build
       - name: capture build artifacts
-        if: ${{ runner.os == 'Linux' }}
         uses: actions/upload-artifact@v4
         with:
           name: Artifacts
