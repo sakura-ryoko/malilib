@@ -55,6 +55,7 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
+import fi.dy.masa.malilib.util.nbt.NbtInventory;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.data.Constants;
 
@@ -416,7 +417,7 @@ public class InventoryUtils
     {
         if (stack.isEmpty() == false)
         {
-            NbtCompound nbt = (NbtCompound) stack.toNbt(registry);
+            NbtCompound nbt = (NbtCompound) ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).getOrThrow();
 
             if (hasNbtItems(nbt))
             {
@@ -507,10 +508,12 @@ public class InventoryUtils
                 slotCount = list.size();
             }
 
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-            Inventories.readNbt(nbt, items, registry);
+//            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+//            Inventories.readData(nbt, items, registry);
 
-            return items;
+            NbtInventory nbtInv = NbtInventory.fromNbtList(list);
+
+            return nbtInv.toVanillaList();
         }
         // A few Entities use this
         else if (nbt.contains(NbtKeys.INVENTORY))
@@ -526,7 +529,13 @@ public class InventoryUtils
             for (int i = 0; i < list.size(); i++)
             {
                 final int index = i;
-                ItemStack.fromNbt(registry, list.getCompoundOrEmpty(i)).ifPresent(itemStack -> items.set(index, itemStack));
+//                ItemStack.fromNbt(registry, list.getCompoundOrEmpty(i)).ifPresent(itemStack -> items.set(index, itemStack));
+                NbtCompound entry =  list.getCompoundOrEmpty(i);
+
+                if (!entry.isEmpty())
+                {
+                    items.set(index, ItemStack.CODEC.parse(NbtOps.INSTANCE, entry).getPartialOrThrow());
+                }
             }
             
             return items;
@@ -550,7 +559,7 @@ public class InventoryUtils
 
                 if (slot < items.size())
                 {
-                    items.set(slot, ItemStack.fromNbt(registry, entry).orElse(ItemStack.EMPTY));
+                    items.set(slot, ItemStack.CODEC.parse(NbtOps.INSTANCE, entry).getPartialOrThrow());
                 }
             }
             
@@ -639,21 +648,28 @@ public class InventoryUtils
                 slotCount = list.size();
             }
 
-            SimpleInventory inv = new SimpleInventory(slotCount);
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-            Inventories.readNbt(nbt, items, registry);
+//            SimpleInventory inv = new SimpleInventory(slotCount);
+//            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+//            Inventories.readNbt(nbt, items, registry);
 
-            if (items.isEmpty())
+//            if (items.isEmpty())
+//            {
+//                return null;
+//            }
+//
+//            for (int i = 0; i < slotCount; i++)
+//            {
+//                inv.setStack(i, items.get(i).copy());
+//            }
+
+            NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.ITEMS);
+
+            if (nbtInv == null || nbtInv.isEmpty())
             {
                 return null;
             }
 
-            for (int i = 0; i < slotCount; i++)
-            {
-                inv.setStack(i, items.get(i).copy());
-            }
-
-            return inv;
+            return nbtInv.toInventory();
         }
         else if (nbt.contains(NbtKeys.INVENTORY))
         {
@@ -664,15 +680,22 @@ public class InventoryUtils
                 slotCount = list.size();
             }
 
-            SimpleInventory inv = new SimpleInventory(slotCount);
-            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.INVENTORY), registry);
+//            SimpleInventory inv = new SimpleInventory(slotCount);
+//            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.INVENTORY), registry);
+//
+//            if (inv.isEmpty())
+//            {
+//                return null;
+//            }
 
-            if (inv.isEmpty())
+            NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.INVENTORY);
+
+            if (nbtInv == null || nbtInv.isEmpty())
             {
                 return null;
             }
 
-            return inv;
+            return nbtInv.toInventory();
         }
         else if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
@@ -683,15 +706,22 @@ public class InventoryUtils
                 slotCount = list.size();
             }
 
-            SimpleInventory inv = new SimpleInventory(slotCount);
-            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS), registry);
+//            SimpleInventory inv = new SimpleInventory(slotCount);
+//            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS), registry);
+//
+//            if (inv.isEmpty())
+//            {
+//                return null;
+//            }
 
-            if (inv.isEmpty())
+            NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.ENDER_ITEMS);
+
+            if (nbtInv == null || nbtInv.isEmpty())
             {
                 return null;
             }
 
-            return inv;
+            return nbtInv.toInventory();
         }
         else if (nbt.contains(NbtKeys.ITEM))
         {
@@ -760,13 +790,17 @@ public class InventoryUtils
             }
 
             SimpleInventory inv = new SimpleInventory(slotCount + 1);
-            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-            Inventories.readNbt(nbt, items, registry);
+//            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
+//            Inventories.readNbt(nbt, items, registry);
             inv.setStack(0, horseEquipment.getLast());
 
+            NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.ITEMS);
+
             // Chested Horse
-            if (!items.isEmpty())
+            if (nbtInv != null && !nbtInv.isEmpty())
             {
+                DefaultedList<ItemStack> items = nbtInv.toVanillaList();
+
                 for (int i = 0; i < slotCount; i++)
                 {
                     inv.setStack(i + 1, items.get(i));
@@ -812,10 +846,13 @@ public class InventoryUtils
     {
         if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
-            EnderChestInventory inv = new EnderChestInventory();
-            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS), registry);
+//            EnderChestInventory inv = new EnderChestInventory();
+//            inv.readDataList(nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS), registry);
 
-            return inv;
+            NbtInventory nbtInv = NbtInventory.fromNbtList(nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS));
+            if (nbtInv == null) return null;
+
+            return (EnderChestInventory) nbtInv.toInventory();
         }
 
         return null;

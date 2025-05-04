@@ -25,6 +25,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.village.TradeOfferList;
@@ -292,7 +293,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
             }
             else
             {
-                System.out.printf("[%d] Item Nbt: [%s]\n", i, entry.toNbt(registry));
+                System.out.printf("[%d] Item Nbt: [%s]\n", i, ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, entry).getOrThrow().toString());
             }
 
             i++;

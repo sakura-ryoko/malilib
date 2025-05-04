@@ -44,7 +44,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
 
         if (this.isDummy() == false)
         {
-            this.addLabel(GuiLayer.TOP, x + 2, y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", listIndex + 1));
+            this.addLabel(GuiLayer.UP, x + 2, y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", listIndex + 1));
             bx = this.addTextField(textFieldX, y + 1, resetX, textFieldWidth, 20, initialValue);
 
             this.addListActionButton(bx, by, ButtonType.ADD);

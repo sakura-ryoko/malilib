@@ -299,63 +299,65 @@ public class RenderUtils
      */
     public static void applyLayer(DrawContext drawContext, GuiLayer type)
     {
+        // todo Why Mojang ?
         switch (type)
         {
-            case UP -> drawContext.goUpLayer();
-            case DOWN -> drawContext.goDownLayer();
-            case TOP -> drawContext.goTopLayer();
-            case POP -> drawContext.popLayer();
+            case UP -> ((IMixinDrawContext) drawContext).malilib_getRenderState().goUpLayer();
+            case DOWN -> ((IMixinDrawContext) drawContext).malilib_getRenderState().goDownLayer();
+//            case TOP -> drawContext.goTopLayer();
+//            case POP -> drawContext.popLayer();
 //            case BLUR -> drawContext.method_71278();
             case NONE -> { return; }
             default -> { return; }
         }
     }
 
-    /**
-     * Force Popping all DrawContext Layers
-     *
-     * @param drawContext
-     */
-    public static void popAllLayers(DrawContext drawContext)
-    {
-        boolean loop = true;
+    // todo Why Mojang ?
+//    /**
+//     * Force Popping all DrawContext Layers
+//     *
+//     * @param drawContext
+//     */
+//    public static void popAllLayers(DrawContext drawContext)
+//    {
+//        boolean loop = true;
+//
+//        while (loop)
+//        {
+//            try
+//            {
+//                drawContext.popLayer();
+//            }
+//            catch (Exception ignored)
+//            {
+//                loop = false;
+//                break;
+//            }
+//        }
+//    }
 
-        while (loop)
-        {
-            try
-            {
-                drawContext.popLayer();
-            }
-            catch (Exception ignored)
-            {
-                loop = false;
-                break;
-            }
-        }
-    }
-
-    /**
-     * Force Popping all DrawContext Checkpoints
-     *
-     * @param drawContext
-     */
-    public static void popAllCheckpoints(DrawContext drawContext)
-    {
-        boolean loop = true;
-
-        while (loop)
-        {
-            try
-            {
-                drawContext.popCheckpoint();
-            }
-            catch (Exception ignored)
-            {
-                loop = false;
-                break;
-            }
-        }
-    }
+//    /**
+//     * Force Popping all DrawContext Checkpoints
+//     *
+//     * @param drawContext
+//     */
+//    public static void popAllCheckpoints(DrawContext drawContext)
+//    {
+//        boolean loop = true;
+//
+//        while (loop)
+//        {
+//            try
+//            {
+//                drawContext.popCheckpoint();
+//            }
+//            catch (Exception ignored)
+//            {
+//                loop = false;
+//                break;
+//            }
+//        }
+//    }
 
 //    /**
 //     * Bind a Gui Overlay Texture using DrawContext.
@@ -706,7 +708,7 @@ public class RenderUtils
     {
         addSimpleElement(drawContext, GuiLayer.NONE,
                          new MaLiLibTexturedRectGuiElement(
-                                 RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTexture),
+                                 RenderPipelines.GUI_OPAQUE_TEX_BG, TextureSetup.withoutGlTexture(gpuTexture),
                                  new Matrix3x2f(drawContext.getMatrices()),
                                  x, y, x, v,
                                  width, height, zLevel,
@@ -755,7 +757,7 @@ public class RenderUtils
 
             //drawTexturedRect(GuiBase.BG_TEXTURE, x, y, 0, 0, maxLineLength, maxWidth, drawContext);
 
-            drawContext.pushCheckpoint();
+//            drawContext.pushCheckpoint();
             drawContext.getMatrices().pushMatrix();
             drawContext.getMatrices().translate(0, 0);
 
@@ -790,7 +792,7 @@ public class RenderUtils
 
             //forceDraw(drawContext);
             drawContext.getMatrices().popMatrix();
-            drawContext.popCheckpoint();
+//            drawContext.popCheckpoint();
 
             //RenderSystem.disableDepthTest();
             //enableDiffuseLightingGui3D();

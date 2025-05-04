@@ -45,7 +45,8 @@ public class NbtBlockUtils
 
     public static @Nullable Text getCustomNameFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry, String key)
     {
-        return BlockEntity.tryParseCustomName(nbt.get(key), registry);
+        NbtView view = NbtView.getReader(nbt, registry);
+        return BlockEntity.tryParseCustomName(Objects.requireNonNull(view.getReader()), key);
     }
 
     /**

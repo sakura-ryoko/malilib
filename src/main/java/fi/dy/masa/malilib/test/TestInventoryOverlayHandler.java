@@ -45,6 +45,7 @@ import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
+import fi.dy.masa.malilib.util.nbt.NbtView;
 
 @ApiStatus.Experimental
 public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
@@ -233,9 +234,11 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
             if (world instanceof ServerWorld)
             {
-                if (entity.saveSelfNbt(nbt))
+                NbtView view = NbtView.getWriter(world.getRegistryManager());
+
+                if (entity.saveSelfData(view.getWriter()))
                 {
-                    return this.getTargetInventoryFromEntity(world.getEntityById(entity.getId()), nbt);
+                    return this.getTargetInventoryFromEntity(world.getEntityById(entity.getId()), view.getNbt());
                 }
             }
             else

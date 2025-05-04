@@ -485,7 +485,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int cw = this.sizeHS;
         int ch = 16;
 
-        drawContext.pushCheckpoint();
         RenderUtils.drawOutline(drawContext, GuiLayer.TOP, x, y, w, h, 0xC0FFFFFF); // H
         y += yd;
         RenderUtils.drawOutline(drawContext, GuiLayer.TOP, x, y, w, h, 0xC0FFFFFF); // S
@@ -499,18 +498,15 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(drawContext, GuiLayer.TOP, x, y, w, h, 0xC0FFFFFF); // B
         y += yd;
         RenderUtils.drawOutline(drawContext, GuiLayer.TOP, x, y, w, h, 0xC0FFFFFF); // A
-        drawContext.popCheckpoint();
 
         x = this.xHS;
         y = this.yHS;
         w = this.sizeHS;
         h = this.sizeHS;
 
-        drawContext.pushCheckpoint();
         RenderUtils.drawOutline(drawContext, GuiLayer.TOP, x - 1, y - 1, w + 2, h + 2, 0xC0FFFFFF);                      // main color selector
         RenderUtils.drawOutline(drawContext, GuiLayer.TOP, cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF);                  // current color indicator
         RenderUtils.drawOutline(drawContext, GuiLayer.TOP, this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
-        drawContext.popCheckpoint();
 
         // Full SV Square --
         // MaLiLibPipelines.POSITION_SIMPLE
@@ -534,7 +530,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         final int[] colorPair = this.getColorPairForSelector();
 
-        drawContext.pushCheckpoint();
         RenderUtils.addSimpleElement(drawContext, GuiLayer.TOP,
                                      new MaLiLibHSV4ColorGradientGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
@@ -624,14 +619,11 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              y - 1, y + h + 1,
                                              c, c, c, a, RenderUtils.peekLastScissor(drawContext))
         );
-        drawContext.popCheckpoint();
 
         x = this.xH;
         w = this.widthSlider;
         h = this.heightSlider;
         yd = this.heightSlider + this.gapSlider;
-
-        drawContext.pushCheckpoint();
 
         // Full value Saturation & Value, Hue slider
         renderHueBarVertical(drawContext, this.xHFullSV + 1, this.yHS, z, this.widthHFullSV - 2, this.sizeHS, 1f, 1f);
@@ -684,8 +676,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         renderGradientColorBar(drawContext, x, y, z, w, h, color1, color2);
         renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, (float) a / 255f);
         y += yd;
-
-        drawContext.popCheckpoint();
 
 //        try
 //        {
@@ -750,7 +740,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
     public static void renderHueBar(DrawContext drawContext, int x, int y, float z, int width, int height, int segmentWidth, int segmentHeight, float saturation, float value)
     {
-        drawContext.pushCheckpoint();
         int color1 = Color.HSBtoRGB(0f   , saturation, value);
         int color2 = Color.HSBtoRGB(1f/6f, saturation, value);
         renderHueBarSegment(drawContext, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
@@ -784,7 +773,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         color1 = Color.HSBtoRGB(5f/6f, saturation, value);
         color2 = Color.HSBtoRGB(6f/6f, saturation, value);
         renderHueBarSegment(drawContext, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
-        drawContext.popCheckpoint();
     }
 
     public static void renderHueBarSegment(DrawContext drawContext, int x, int y, float z, int width, int height,

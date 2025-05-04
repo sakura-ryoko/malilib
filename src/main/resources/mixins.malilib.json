@@ -12,6 +12,8 @@
         "entity.MixinPiglinEntity",
         "entity.MixinSimpleInventory",
         "item.MixinItemStack",
+        "nbt.IMixinNbtReadView",
+        "nbt.IMixinNbtWriteView",
         "server.MixinMinecraftServer",
         "test.MixinBundleItem",
         "test.MixinSharedConstants"

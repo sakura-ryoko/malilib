@@ -90,7 +90,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             this.lastAppliedValue = null;
             this.initialKeybindSettings = null;
 
-            this.addLabel(GuiLayer.NONE, x, y + 7, labelWidth, 8, 0xFFFFFFFF, wrapper.getLabel());
+            this.addLabel(GuiLayer.UP, x, y + 7, labelWidth, 8, 0xFFFFFFFF, wrapper.getLabel());
         }
     }
 
@@ -134,7 +134,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         MaLiLib.logger.error("addConfigOption(): configName [{}] (width: {}), labelWidth [{}]", configName, configName.length(), labelWidth);
          */
 
-        this.addLabel(GuiLayer.NONE, x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+        this.addLabel(GuiLayer.UP, x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
 
         String comment;
         IConfigInfoProvider infoProvider = this.host.getHoverInfoProvider();

@@ -19,9 +19,15 @@ public record MaLiLibHSVColorSelectorGuiElement(
         int w,
         int h,
         float hue,
-        @Nullable ScreenRect scissorArea
+        @Nullable ScreenRect scissorArea,
+        @Nullable ScreenRect bounds
 ) implements SimpleGuiElementRenderState
 {
+    public MaLiLibHSVColorSelectorGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int xs, int ys, int w, int h, float hue, @Nullable ScreenRect scissorArea)
+    {
+        this(pipeline, textureSetup, pose, xs, ys, w, h, hue, scissorArea, createBounds(xs, ys, xs + w, ys + h, pose, scissorArea));
+    }
+
     @Override
     public void setupVertices(VertexConsumer vertices, float depth)
     {
@@ -43,5 +49,12 @@ public record MaLiLibHSVColorSelectorGuiElement(
             vertices.vertex(this.pose(), this.xs(), y, depth).color(r1, g1, b1, a);
             vertices.vertex(this.pose(), x2, y, depth).color(r2, g2, b2, a);
         }
+    }
+
+    @Nullable
+    private static ScreenRect createBounds(int x0, int y0, int x1, int y1, Matrix3x2f pose, @Nullable ScreenRect scissorArea)
+    {
+        ScreenRect screenRect = new ScreenRect(x0, y0, x1 - x0, y1 - y0).transformEachVertex(pose);
+        return scissorArea != null ? scissorArea.intersection(screenRect) : screenRect;
     }
 }

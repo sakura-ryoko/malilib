@@ -100,14 +100,12 @@ public class WidgetLabel extends WidgetBase
             int yStart = this.y - this.borderSize;
             GuiLayer type = this.layer != GuiLayer.NONE ? this.layer.goDown() : GuiLayer.NONE;
 
-            drawContext.pushCheckpoint();
             RenderUtils.drawRect(drawContext, type, xStart, yStart, bgWidth, bgHeight, this.backgroundColor);
 
             RenderUtils.drawHorizontalLine(drawContext, type, xStart, yStart           , bgWidth, this.borderULColor);
             RenderUtils.drawHorizontalLine(drawContext, type, xStart, yStart + bgHeight, bgWidth, this.borderBRColor);
             RenderUtils.drawVerticalLine(drawContext, type, xStart          , yStart, bgHeight, this.borderULColor);
             RenderUtils.drawVerticalLine(drawContext, type, xStart + bgWidth, yStart, bgHeight, this.borderBRColor);
-            drawContext.popCheckpoint();
         }
     }
 }

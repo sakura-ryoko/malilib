@@ -192,8 +192,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.drawContext = drawContext;
         }
 
-        RenderUtils.popAllCheckpoints(drawContext);
-        RenderUtils.popAllLayers(drawContext);
+//        RenderUtils.popAllCheckpoints(drawContext);
+//        RenderUtils.popAllLayers(drawContext);
         drawContext.createNewRootLayer();
         //RenderUtils.forceDraw(drawContext);
         // Draw Background / Title
@@ -632,18 +632,15 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     protected void drawButtons(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
-        drawContext.pushCheckpoint();
         for (ButtonBase button : this.buttons)
         {
             //RenderUtils.forceDraw(drawContext);
             button.render(drawContext, mouseX, mouseY, button.isMouseOver());
         }
-        drawContext.popCheckpoint();
     }
 
     protected void drawTextFields(DrawContext drawContext, int mouseX, int mouseY)
     {
-        drawContext.pushCheckpoint();
 //        RenderUtils.applyLayer(drawContext, GuiLayer.NONE);
         for (TextFieldWrapper<?> entry : this.textFields)
         {
@@ -651,7 +648,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             entry.draw(drawContext, mouseX, mouseY);
         }
 //        RenderUtils.applyLayer(drawContext, GuiLayer.NONE);
-        drawContext.popCheckpoint();
     }
 
     protected void drawWidgets(DrawContext drawContext, int mouseX, int mouseY)
@@ -660,8 +656,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (this.widgets.isEmpty() == false)
         {
-            drawContext.pushCheckpoint();
-
             for (WidgetBase widget : this.widgets)
             {
 //                RenderUtils.forceDraw(drawContext);
@@ -672,8 +666,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
                     this.hoveredWidget = widget;
                 }
             }
-
-            drawContext.popCheckpoint();
         }
     }
 

@@ -136,7 +136,7 @@ public class ButtonGeneric extends ButtonBase
 
                 if (this.textCentered)
                 {
-                    this.drawCenteredStringWithShadow(drawContext, GuiLayer.NONE, this.x + this.width / 2, y, color, this.displayString);
+                    this.drawCenteredStringWithShadow(drawContext, GuiLayer.UP, this.x + this.width / 2, y, color, this.displayString);
                 }
                 else
                 {
@@ -147,7 +147,7 @@ public class ButtonGeneric extends ButtonBase
                         x += this.icon.getWidth() + 2;
                     }
 
-                    this.drawStringWithShadow(drawContext, GuiLayer.NONE, x, y, color, this.displayString);
+                    this.drawStringWithShadow(drawContext, GuiLayer.UP, x, y, color, this.displayString);
                 }
             }
         }

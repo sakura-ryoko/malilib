@@ -11,10 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.AttributeContainer;
-import net.minecraft.entity.attribute.DefaultAttributeRegistry;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -103,7 +100,8 @@ public class NbtEntityUtils
         if (type != null && nbt.contains(NbtKeys.ATTRIB))
         {
             AttributeContainer container = new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
-            container.readNbt(nbt.getListOrEmpty(NbtKeys.ATTRIB));
+//            container.readNbt(nbt.getListOrEmpty(NbtKeys.ATTRIB));
+            container.unpack(EntityAttributeInstance.Packed.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.getListOrEmpty(NbtKeys.ATTRIB)).getPartialOrThrow());
             return container;
         }
 
@@ -719,12 +717,11 @@ public class NbtEntityUtils
         }
         if (nbt.contains(NbtKeys.VARIANT))
         {
-            /*
             variant = PaintingVariant.ENTRY_CODEC.fieldOf(NbtKeys.VARIANT).codec()
                                      .parse(registry.getOps(NbtOps.INSTANCE), nbt)
                                      .resultOrPartial().orElse(null);
-             */
-            variant = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.PAINTING_VARIANT).orElse(null);
+
+//            variant = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.PAINTING_VARIANT).orElse(null);
         }
 
         return Pair.of(facing, variant != null ? variant.value() : null);
@@ -762,7 +759,14 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.VARIANT))
         {
-            variantKey = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.CAT_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
+            Optional<RegistryEntry<CatVariant>> variant = CatVariant.ENTRY_CODEC
+                    .fieldOf(NbtKeys.VARIANT).codec()
+                    .parse(registry.getOps(NbtOps.INSTANCE), nbt)
+                    .resultOrPartial();
+
+            variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
+
+//            variantKey = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.CAT_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
         }
         if (nbt.contains(NbtKeys.COLLAR))
         {
@@ -783,7 +787,14 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT))
         {
-            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.CHICKEN_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(ChickenVariants.DEFAULT);
+            Optional<RegistryEntry<ChickenVariant>> variant = ChickenVariant.ENTRY_CODEC
+                    .fieldOf(NbtKeys.VARIANT).codec()
+                    .parse(registry.getOps(NbtOps.INSTANCE), nbt)
+                    .resultOrPartial();
+
+            return variant.map(entry -> entry.getKey().orElseThrow()).orElse(ChickenVariants.DEFAULT);
+
+//            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.CHICKEN_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(ChickenVariants.DEFAULT);
         }
 
         return null;
@@ -800,7 +811,14 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT))
         {
-            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.COW_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(CowVariants.DEFAULT);
+            Optional<RegistryEntry<CowVariant>> variant = CowVariant.ENTRY_CODEC
+                    .fieldOf(NbtKeys.VARIANT).codec()
+                    .parse(registry.getOps(NbtOps.INSTANCE), nbt)
+                    .resultOrPartial();
+
+            return variant.map(entry -> entry.getKey().orElseThrow()).orElse(CowVariants.DEFAULT);
+
+            //            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.COW_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(CowVariants.DEFAULT);
         }
 
         return null;
@@ -833,7 +851,14 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT))
         {
-            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.FROG_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
+            Optional<RegistryEntry<FrogVariant>> variant = FrogVariant.ENTRY_CODEC
+                    .fieldOf(NbtKeys.VARIANT).codec()
+                    .parse(registry.getOps(NbtOps.INSTANCE), nbt)
+                    .resultOrPartial();
+
+            return variant.map(entry -> entry.getKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
+
+//            return Variants.readVariantFromNbt(nbt, registry, RegistryKeys.FROG_VARIANT).map(entry -> entry.getKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
         }
 
         return null;
@@ -910,13 +935,19 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.VARIANT))
         {
-            //variantKey = RegistryKey.of(RegistryKeys.WOLF_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
-            Optional<RegistryEntry<WolfVariant>> entry = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.WOLF_VARIANT);
+//            Optional<RegistryEntry<WolfVariant>> entry = Variants.readVariantFromNbt(nbt, registry, RegistryKeys.WOLF_VARIANT);
+//
+//            if (entry.isPresent())
+//            {
+//                variantKey = entry.get().getKey().orElse(WolfVariants.DEFAULT);
+//            }
 
-            if (entry.isPresent())
-            {
-                variantKey = entry.get().getKey().orElse(WolfVariants.DEFAULT);
-            }
+            Optional<RegistryEntry<WolfVariant>> variant = WolfVariant.ENTRY_CODEC
+                    .fieldOf(NbtKeys.VARIANT).codec()
+                    .parse(registry.getOps(NbtOps.INSTANCE), nbt)
+                    .resultOrPartial();
+
+            variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(WolfVariants.DEFAULT);
         }
         if (nbt.contains(NbtKeys.COLLAR))
         {
@@ -1130,14 +1161,16 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    public static @Nullable HungerManager getPlayerHungerFromNbt(@Nonnull NbtCompound nbt)
+    public static @Nullable HungerManager getPlayerHungerFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         HungerManager hunger = null;
 
         if (nbt.contains(NbtKeys.FOOD_LEVEL))
         {
             hunger = new HungerManager();
-            hunger.readNbt(nbt);
+            NbtView view = NbtView.getReader(nbt, registry);
+//            hunger.readNbt(nbt);
+            hunger.readData(view.getReader());
         }
 
         return hunger;
@@ -1156,7 +1189,12 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.RECIPE_BOOK))
         {
             book = new ServerRecipeBook(manager::forEachRecipeDisplay);
-            book.readNbt(nbt.getCompoundOrEmpty(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
+            book.unpack(ServerRecipeBook.Packed.CODEC
+                                .parse(NbtOps.INSTANCE, nbt.getCompoundOrEmpty(NbtKeys.RECIPE_BOOK)).getOrThrow(),
+                        (key) -> manager.get(key).isPresent()
+            );
+
+//            book.readNbt(nbt.getCompoundOrEmpty(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
         }
 
         return book;

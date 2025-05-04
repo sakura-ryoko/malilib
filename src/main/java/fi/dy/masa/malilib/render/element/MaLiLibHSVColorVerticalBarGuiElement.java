@@ -18,9 +18,15 @@ public record MaLiLibHSVColorVerticalBarGuiElement(
         int bw,
         int bh,
         float val,
-        @Nullable ScreenRect scissorArea
+        @Nullable ScreenRect scissorArea,
+        @Nullable ScreenRect bounds
 ) implements SimpleGuiElementRenderState
 {
+    public MaLiLibHSVColorVerticalBarGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int x, int y, int bw, int bh, float val, @Nullable ScreenRect scissorArea)
+    {
+        this(pipeline, textureSetup, pose, x, y, bw, bh, val, scissorArea, createBounds(x, y, x + bw, y + bh, pose, scissorArea));
+    }
+
     @Override
     public void setupVertices(VertexConsumer vertices, float depth)
     {
@@ -42,5 +48,12 @@ public record MaLiLibHSVColorVerticalBarGuiElement(
         vertices.vertex(this.pose(), xAdj - s, yAdj, depth).color(c, c, c, c);
         vertices.vertex(this.pose(), xAdj - s, yAdj, depth).color(c, c, c, c);
         vertices.vertex(this.pose(), xAdj + s, yAdj + s, depth).color(c, c, c, c);
+    }
+
+    @Nullable
+    private static ScreenRect createBounds(int x0, int y0, int x1, int y1, Matrix3x2f pose, @Nullable ScreenRect scissorArea)
+    {
+        ScreenRect screenRect = new ScreenRect(x0, y0, x1 - x0, y1 - y0).transformEachVertex(pose);
+        return scissorArea != null ? scissorArea.intersection(screenRect) : screenRect;
     }
 }
