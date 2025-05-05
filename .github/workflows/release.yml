@@ -52,7 +52,7 @@ jobs:
         run: ./gradlew build tryPublishMods
         env:
           CHANGELOG: ${{ steps.getByTag.outputs.body }}
-#          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
+          MODRINTH_API_KEY: ${{ secrets.MODRINTH_API_KEY }}
 #          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
       - name: publish to github
         uses: Kir-Antipov/mc-publish@v3.3

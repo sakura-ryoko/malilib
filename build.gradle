@@ -119,6 +119,7 @@ tasks.register("tryPublishMods") {
 	}
 }
 
+// https://modmuss50.github.io/mod-publish-plugin/
 publishMods {
 	final boolean debug = providers.environmentVariable("MODRINTH_API_KEY").orNull == null
 
@@ -134,9 +135,9 @@ publishMods {
 		accessToken = providers.environmentVariable("MODRINTH_API_KEY")
 		projectId = "GcWjdA9I"
 		minecraftVersionRange {
-			final List<String> range = List.of(minecraft_version_range.toString().split("-"))
-			start = range.getFirst()
-			end = range.getLast()
+			final String[] range = minecraft_version_range.toString().split("-")
+			start = range.first()
+			end = range.last()
 		}
 	}
 }
