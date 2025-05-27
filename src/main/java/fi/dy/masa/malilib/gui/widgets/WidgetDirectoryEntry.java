@@ -98,7 +98,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         }
 
         int yOffset = (this.height - this.fontHeight) / 2 + 1;
-        this.drawString(drawContext, GuiLayer.NONE, this.x + xOffset + 2, this.y + yOffset, 0xFFFFFFFF, this.getDisplayName());
+        this.drawString(drawContext, GuiLayer.NONE, this.x + xOffset + 2, this.y + yOffset, this.width - xOffset, this.height - yOffset, 0xFFFFFFFF, this.getDisplayName());
 
         super.render(drawContext, mouseX, mouseY, selected);
     }

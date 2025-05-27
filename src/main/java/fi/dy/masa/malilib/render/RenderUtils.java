@@ -12,6 +12,7 @@ import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.GpuTextureView;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -175,7 +176,7 @@ public class RenderUtils
 
         ResourceTexture tex = (ResourceTexture) tex().getTexture(texture);
         tex.setFilter(false, false);
-        RenderSystem.setShaderTexture(textureId, tex.getGlTexture());
+        RenderSystem.setShaderTexture(textureId, tex.getGlTextureView());
 
         return tex;
     }
@@ -193,6 +194,24 @@ public class RenderUtils
         if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTexture() != null)
         {
             return tex.getGlTexture();
+        }
+
+        return null;
+    }
+
+    /**
+     * Attempt a simple binding of a GpuTextureView, returns null if failed to loadContents.
+     *
+     * @param texture
+     * @return
+     */
+    public static @Nullable GpuTextureView bindGpuTextureView(Identifier texture)
+    {
+        ResourceTexture tex = (ResourceTexture) tex().getTexture(texture);
+
+        if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTextureView() != null)
+        {
+            return tex.getGlTextureView();
         }
 
         return null;
@@ -652,9 +671,9 @@ public class RenderUtils
 //        vertexConsumer.vertex(matrix4f, x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(argb);
 //        vertexConsumer.vertex(matrix4f, x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
 
-        GpuTexture gpuTexture = bindGpuTexture(texture);
+        GpuTextureView gpuTextureView = bindGpuTextureView(texture);
 
-        if (gpuTexture == null)
+        if (gpuTextureView == null)
         {
             MaLiLib.LOGGER.error("drawTexturedRect(): GpuTexture for '{}' is null!", texture.toString());
             return;
@@ -663,7 +682,7 @@ public class RenderUtils
 //        drawContext.enableScissor(x, y, x + width, y + height);
         addSimpleElement(drawContext, type, new MaLiLibTexturedGuiElement(
                 RenderPipelines.GUI_TEXTURED,
-                TextureSetup.withoutGlTexture(gpuTexture),
+                TextureSetup.withoutGlTexture(gpuTextureView),
                 new Matrix3x2f(drawContext.getMatrices()),
                 x, y, x + width, y + height,
                 u * pixelWidth, (u + width) * pixelWidth,
@@ -694,21 +713,21 @@ public class RenderUtils
         buffer.vertex(posMatrix, x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
     }
 
-    public static void drawTexturedRectBatched(DrawContext drawContext, @Nonnull GpuTexture gpuTexture, int x, int y, int u, int v, int width, int height)
+    public static void drawTexturedRectBatched(DrawContext drawContext, @Nonnull GpuTextureView gpuTextureView, int x, int y, int u, int v, int width, int height)
     {
-        drawTexturedRectBatched(drawContext, gpuTexture, x, y, u, v, width, height, 0, -1);
+        drawTexturedRectBatched(drawContext, gpuTextureView, x, y, u, v, width, height, 0, -1);
     }
 
-    public static void drawTexturedRectBatched(DrawContext drawContext, @Nonnull GpuTexture gpuTexture, int x, int y, int u, int v, int width, int height, int argb)
+    public static void drawTexturedRectBatched(DrawContext drawContext, @Nonnull GpuTextureView gpuTextureView, int x, int y, int u, int v, int width, int height, int argb)
     {
-        drawTexturedRectBatched(drawContext, gpuTexture, x, y, u, v, width, height, 0, argb);
+        drawTexturedRectBatched(drawContext, gpuTextureView, x, y, u, v, width, height, 0, argb);
     }
 
-    public static void drawTexturedRectBatched(DrawContext drawContext, @Nonnull GpuTexture gpuTexture, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
+    public static void drawTexturedRectBatched(DrawContext drawContext, @Nonnull GpuTextureView gpuTextureView, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
     {
         addSimpleElement(drawContext, GuiLayer.NONE,
                          new MaLiLibTexturedRectGuiElement(
-                                 RenderPipelines.GUI_OPAQUE_TEX_BG, TextureSetup.withoutGlTexture(gpuTexture),
+                                 RenderPipelines.GUI_OPAQUE_TEX_BG, TextureSetup.withoutGlTexture(gpuTextureView),
                                  new Matrix3x2f(drawContext.getMatrices()),
                                  x, y, x, v,
                                  width, height, zLevel,
@@ -1877,16 +1896,16 @@ public class RenderUtils
             MapIdComponent mapId = data.get(DataComponentTypes.MAP_ID);
 
             Identifier bgTexture = mapState == null ? TEXTURE_MAP_BACKGROUND : TEXTURE_MAP_BACKGROUND_CHECKERBOARD;
-            GpuTexture gpuTexture = bindGpuTexture(bgTexture);
+            GpuTextureView gpuTextureView = bindGpuTextureView(bgTexture);
 
-            if (gpuTexture == null)
+            if (gpuTextureView == null)
             {
                 MaLiLib.LOGGER.error("renderMapPreview(): Failed to bind GpuTexture!");
                 return;
             }
 
             addSimpleElement(drawContext, GuiLayer.UP,
-                             new MaLiLibLightTexturedGuiElement(RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTexture),
+                             new MaLiLibLightTexturedGuiElement(RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTextureView),
                                                                 new Matrix3x2f(drawContext.getMatrices()),
                                                                 x1, y1, x2, y2,
                                                                 0.0f, 1.0f, 0.0f, 1.0f,

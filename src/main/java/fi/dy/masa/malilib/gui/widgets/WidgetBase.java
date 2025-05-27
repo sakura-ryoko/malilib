@@ -170,10 +170,12 @@ public abstract class WidgetBase
         return this.textRenderer.getWidth(text);
     }
 
-    public void drawString(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
+    public void drawString(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int color, String text)
     {
-        RenderUtils.applyLayer(drawContext, type);
+        RenderUtils.applyLayer(drawContext, type.goUp());
+        drawContext.enableScissor(x, y, x + width, y + height);
         drawContext.drawText(this.textRenderer, text, x, y, color, false);
+        drawContext.disableScissor();
 
         if (type != GuiLayer.NONE)
         {
@@ -182,10 +184,12 @@ public abstract class WidgetBase
 //        RenderUtils.forceDraw(drawContext);
     }
 
-    public void drawCenteredString(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
+    public void drawCenteredString(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int color, String text)
     {
-        RenderUtils.applyLayer(drawContext, type);
+        RenderUtils.applyLayer(drawContext, type.goUp());
+        drawContext.enableScissor(x, y, x + width, y + height);
         drawContext.drawText(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
+        drawContext.disableScissor();
 
         if (type != GuiLayer.NONE)
         {
@@ -194,10 +198,12 @@ public abstract class WidgetBase
 //        RenderUtils.forceDraw(drawContext);
     }
 
-    public void drawStringWithShadow(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
+    public void drawStringWithShadow(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int color, String text)
     {
-        RenderUtils.applyLayer(drawContext, type);
+        RenderUtils.applyLayer(drawContext, type.goUp());
+        drawContext.enableScissor(x, y, x + width, y + height);
         drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
+        drawContext.disableScissor();
 
         if (type != GuiLayer.NONE)
         {
@@ -206,10 +212,12 @@ public abstract class WidgetBase
 //        RenderUtils.forceDraw(drawContext);
     }
 
-    public void drawCenteredStringWithShadow(DrawContext drawContext, GuiLayer type, int x, int y, int color, String text)
+    public void drawCenteredStringWithShadow(DrawContext drawContext, GuiLayer type, int x, int y, int width, int height, int color, String text)
     {
-        RenderUtils.applyLayer(drawContext, type);
+        RenderUtils.applyLayer(drawContext, type.goUp());
+        drawContext.enableScissor(x, y, x + width, y + height);
         drawContext.drawCenteredTextWithShadow(this.textRenderer, text, x, y, color);
+        drawContext.disableScissor();
 
         if (type != GuiLayer.NONE)
         {

@@ -16,7 +16,7 @@ import com.mojang.blaze3d.systems.CommandEncoder;
 import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
-import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilder;
@@ -442,7 +442,7 @@ public class RenderContext implements AutoCloseable
                     {
                         // TriState.DEFAULT
                         this.texture.setFilter(false, false);
-                        RenderSystem.setShaderTexture(textureId, this.texture.getGlTexture());
+                        RenderSystem.setShaderTexture(textureId, this.texture.getGlTextureView());
                     }
 
                     break;
@@ -459,7 +459,7 @@ public class RenderContext implements AutoCloseable
         {
             // Simple texture rebind since we already have a valid texture
             this.textureId = textureId;
-            RenderSystem.setShaderTexture(this.textureId, this.texture.getGlTexture());
+            RenderSystem.setShaderTexture(this.textureId, this.texture.getGlTextureView());
             return;
         }
 
@@ -499,8 +499,8 @@ public class RenderContext implements AutoCloseable
             return false;
         }
 
-        if (((IMixinAbstractTexture) this.texture).malilib_getGlTexture() == null ||
-                this.texture.getGlTexture().isClosed())
+        if (((IMixinAbstractTexture) this.texture).malilib_getGlTextureView() == null ||
+            this.texture.getGlTextureView().isClosed())
         {
             this.texture.close();
             this.texture = null;
@@ -749,18 +749,18 @@ public class RenderContext implements AutoCloseable
             }
 
             Framebuffer mainFb = RenderUtils.fb();
-            GpuTexture texture1;
-            GpuTexture texture2;
+            GpuTextureView texture1;
+            GpuTextureView texture2;
 
             if (otherFb != null)
             {
-                texture1 = otherFb.getColorAttachment();
-                texture2 = otherFb.useDepthAttachment ? otherFb.getDepthAttachment() : null;
+                texture1 = otherFb.getColorAttachmentView();
+                texture2 = otherFb.useDepthAttachment ? otherFb.getColorAttachmentView() : null;
             }
             else
             {
-                texture1 = mainFb.getColorAttachment();
-                texture2 = mainFb.useDepthAttachment ? mainFb.getDepthAttachment() : null;
+                texture1 = mainFb.getColorAttachmentView();
+                texture2 = mainFb.useDepthAttachment ? mainFb.getColorAttachmentView() : null;
             }
 
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());
@@ -805,7 +805,7 @@ public class RenderContext implements AutoCloseable
                 if (this.textureId > -1 && this.textureId < 12 && this.texture != null)
                 {
                     MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler({}) [{}]", this.name.get(), this.textureId, this.texture.getGlTexture().getLabel());
-                    pass.bindSampler("Sampler"+this.textureId, this.texture.getGlTexture());
+                    pass.bindSampler("Sampler"+this.textureId, this.texture.getGlTextureView());
                 }
 
 //                for (int i = 0; i < 12; i++)

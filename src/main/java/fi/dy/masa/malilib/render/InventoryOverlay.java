@@ -9,6 +9,7 @@ import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.textures.GpuTextureView;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
@@ -143,30 +144,30 @@ public class InventoryOverlay
         {
 //            buffer = RenderUtils.bindGuiTexture(TEXTURE_FURNACE, context);
 //            posMatrix = context.getMatrices().peek().getPositionMatrix();
-            GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_FURNACE);
-            if (gpuTexture == null) return;
+            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_FURNACE);
+            if (gpuTextureView == null) return;
             
             RenderUtils.applyLayer(context, GuiLayer.UP);
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y     ,   0,   0,   4,  64, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +  4, y     ,  84,   0,  92,   4, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y + 64,   0, 162,  92,   4, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 92, y +  4, 172, 102,   4,  64, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +  4, y +  4,  52,  13,  88,  60, color); // middle
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   4,  64, color); // left (top)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  4, y     ,  84,   0,  92,   4, color); // top (right)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 64,   0, 162,  92,   4, color); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 92, y +  4, 172, 102,   4,  64, color); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  4, y +  4,  52,  13,  88,  60, color); // middle
             RenderUtils.applyLayer(context, GuiLayer.POP);
         }
         else if (type == InventoryRenderType.BREWING_STAND)
         {
 //            buffer = RenderUtils.bindGuiTexture(TEXTURE_BREWING_STAND, context);
 //            posMatrix = context.getMatrices().peek().getPositionMatrix();
-            GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_BREWING_STAND);
-            if (gpuTexture == null) return;
+            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_BREWING_STAND);
+            if (gpuTextureView == null) return;
 
             RenderUtils.applyLayer(context, GuiLayer.UP);
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y     ,   0,   0,   4,  68, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +   4, y     ,  63,   0, 113,   4, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y + 68,   0, 162, 113,   4, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 113, y +  4, 172,  98,   4,  68, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +   4, y +  4,  13,  13, 109,  64, color); // middle
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   4,  68, color); // left (top)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   4, y     ,  63,   0, 113,   4, color); // top (right)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 68,   0, 162, 113,   4, color); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 113, y +  4, 172,  98,   4,  68, color); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   4, y +  4,  13,  13, 109,  64, color); // middle
             RenderUtils.applyLayer(context, GuiLayer.POP);
         }
         else if (type == InventoryRenderType.CRAFTER)
@@ -174,45 +175,45 @@ public class InventoryOverlay
             // We just hack in the Dispenser Texture, so it displays right.  Easy.
 //            buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, context);
 //            posMatrix = context.getMatrices().peek().getPositionMatrix();
-            GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_DISPENSER);
-            if (gpuTexture == null) return;
+            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
+            if (gpuTextureView == null) return;
 
             RenderUtils.applyLayer(context, GuiLayer.UP);
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y     ,   0,   0,   7,  61, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +  7, y     , 115,   0,  61,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +  7, y +  7,  61,  16,  54,  54, color); // middle
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  61, color); // left (top)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 115,   0,  61,   7, color); // top (right)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,  61,  16,  54,  54, color); // middle
             RenderUtils.applyLayer(context, GuiLayer.POP);
         }
         else if (type == InventoryRenderType.DISPENSER)
         {
 //            buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, context);
 //            posMatrix = context.getMatrices().peek().getPositionMatrix();
-            GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_DISPENSER);
-            if (gpuTexture == null) return;
+            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
+            if (gpuTextureView == null) return;
 
             RenderUtils.applyLayer(context, GuiLayer.UP);
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y     ,   0,   0,   7,  61, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +  7, y     , 115,   0,  61,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +  7, y +  7,  61,  16,  54,  54, color); // middle
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  61, color); // left (top)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 115,   0,  61,   7, color); // top (right)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,  61,  16,  54,  54, color); // middle
             RenderUtils.applyLayer(context, GuiLayer.POP);
         }
         else if (type == InventoryRenderType.HOPPER)
         {
 //            buffer = RenderUtils.bindGuiTexture(TEXTURE_HOPPER, context);
 //            posMatrix = context.getMatrices().peek().getPositionMatrix();
-            GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_HOPPER);
-            if (gpuTexture == null) return;
+            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_HOPPER);
+            if (gpuTextureView == null) return;
 
             RenderUtils.applyLayer(context, GuiLayer.UP);
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y     ,   0,   0,   7,  25, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +   7, y     ,  79,   0,  97,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y + 25,   0, 126,  97,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +  97, y +  7, 169, 108,   7,  25, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +   7, y +  7,  43,  19,  90,  18, color); // middle
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   7,  25, color); // left (top)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y     ,  79,   0,  97,   7, color); // top (right)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 25,   0, 126,  97,   7, color); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  97, y +  7, 169, 108,   7,  25, color); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y +  7,  43,  19,  90,  18, color); // middle
             RenderUtils.applyLayer(context, GuiLayer.POP);
         }
         // Most likely a Villager, or possibly a Llama
@@ -220,15 +221,15 @@ public class InventoryOverlay
         {
 //            buffer = RenderUtils.bindGuiTexture(TEXTURE_DOUBLE_CHEST, context);
 //            posMatrix = context.getMatrices().peek().getPositionMatrix();
-            GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_DOUBLE_CHEST);
-            if (gpuTexture == null) return;
+            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
+            if (gpuTextureView == null) return;
 
             RenderUtils.applyLayer(context, GuiLayer.UP);
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y     ,   0,   0,   7,  79, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +  7, y     , 133,   0,  43,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y + 79,   0, 215,  43,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 43, y +  7, 169, 143,   7,  79, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +  7, y +  7,   7,  17,  36,  72, color); // 2x4 slots
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  79, color); // left (top)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 133,   0,  43,   7, color); // top (right)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 79,   0, 215,  43,   7, color); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 43, y +  7, 169, 143,   7,  79, color); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,   7,  17,  36,  72, color); // 2x4 slots
             RenderUtils.applyLayer(context, GuiLayer.POP);
         }
         else if (type == InventoryRenderType.FIXED_27)
@@ -243,8 +244,8 @@ public class InventoryOverlay
         {
 //            buffer = RenderUtils.bindGuiTexture(TEXTURE_DOUBLE_CHEST, context);
 //            posMatrix = context.getMatrices().peek().getPositionMatrix();
-            GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_DOUBLE_CHEST);
-            if (gpuTexture == null) return;
+            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
+            if (gpuTextureView == null) return;
 
             // Draw the slot backgrounds according to how many slots there actually are
             int rows = (int) (Math.ceil((double) totalSlots / (double) slotsPerRow));
@@ -252,22 +253,22 @@ public class InventoryOverlay
             int bgh = rows * 18 + 7;
 
             RenderUtils.applyLayer(context, GuiLayer.UP);
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y      ,         0,         0,   7, bgh, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +   7, y      , 176 - bgw,         0, bgw,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y + bgh,         0,       215, bgw,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + bgw, y +   7,       169, 222 - bgh,   7, bgh, color); // right (bottom)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y      ,         0,         0,   7, bgh, color); // left (top)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y      , 176 - bgw,         0, bgw,   7, color); // top (right)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + bgh,         0,       215, bgw,   7, color); // bottom (left)
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + bgw, y +   7,       169, 222 - bgh,   7, bgh, color); // right (bottom)
 
             for (int row = 0; row < rows; row++)
             {
                 int rowLen = MathHelper.clamp(totalSlots - (row * slotsPerRow), 1, slotsPerRow);
-                RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, color);
+                RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, color);
 
                 // Render the background for the last non-existing slots on the last row,
                 // in two strips of the background texture from the double chest texture's top part.
                 if (rows > 1 && rowLen < slotsPerRow)
                 {
-                    RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
-                    RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
+                    RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
+                    RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
                 }
             }
 
@@ -291,15 +292,15 @@ public class InventoryOverlay
     {
 //        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_SINGLE_CHEST, context);
 //        Matrix4f posMatrix = context.getMatrices().peek().getPositionMatrix();
-        GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_DOUBLE_CHEST);
-        if (gpuTexture == null) return;
+        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
+        if (gpuTextureView == null) return;
 
         RenderUtils.applyLayer(context, GuiLayer.UP);
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y     ,   0,   0,   7,  61, color); // left (top)
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +   7, y     ,   7,   0, 169,   7, color); // top (right)
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y + 61,   0, 159, 169,   7, color); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 169, y +  7, 169, 105,   7,  61, color); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +   7, y +  7,   7,  17, 162,  54, color); // middle
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   7,  61, color); // left (top)
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y     ,   7,   0, 169,   7, color); // top (right)
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 61,   0, 159, 169,   7, color); // bottom (left)
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 169, y +  7, 169, 105,   7,  61, color); // right (bottom)
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y +  7,   7,  17, 162,  54, color); // middle
         RenderUtils.applyLayer(context, GuiLayer.POP);
     }
 
@@ -307,15 +308,15 @@ public class InventoryOverlay
     {
 //        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_DOUBLE_CHEST, context);
 //        Matrix4f posMatrix = context.getMatrices().peek().getPositionMatrix();
-        GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_DOUBLE_CHEST);
-        if (gpuTexture == null) return;
+        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
+        if (gpuTextureView == null) return;
 
         RenderUtils.applyLayer(context, GuiLayer.UP);
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y      ,   0,   0,   7, 115, color); // left (top)
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +   7, y      ,   7,   0, 169,   7, color); // top (right)
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x      , y + 115,   0, 215, 169,   7, color); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 169, y +   7, 169, 107,   7, 115, color); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x +   7, y +   7,   7,  17, 162, 108, color); // middle
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y      ,   0,   0,   7, 115, color); // left (top)
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y      ,   7,   0, 169,   7, color); // top (right)
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 115,   0, 215, 169,   7, color); // bottom (left)
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 169, y +   7, 169, 107,   7, 115, color); // right (bottom)
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y +   7,   7,  17, 162, 108, color); // middle
         RenderUtils.applyLayer(context, GuiLayer.POP);
     }
 
@@ -418,23 +419,23 @@ public class InventoryOverlay
 
 //        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, drawContext);
 //        Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
-        GpuTexture gpuTexture = RenderUtils.bindGpuTexture(TEXTURE_DOUBLE_CHEST);
-        if (gpuTexture == null) return;
+        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
+        if (gpuTextureView == null) return;
 
         RenderUtils.applyLayer(context, GuiLayer.UP);
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y     ,   0,   0, 50, 83); // top-left (main part)
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 50, y     , 173,   0,  3, 83); // right edge top
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x     , y + 83,   0, 163, 50,  3); // bottom edge left
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 50, y + 83, 173, 163,  3,  3); // bottom right corner
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0, 50, 83); // top-left (main part)
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 50, y     , 173,   0,  3, 83); // right edge top
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 83,   0, 163, 50,  3); // bottom edge left
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 50, y + 83, 173, 163,  3,  3); // bottom right corner
 
         for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
         {
-            RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + xOff, y + yOff, 61, 16, 18, 18);
+            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + xOff, y + yOff, 61, 16, 18, 18);
         }
 
         // Main hand and offhand
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18);
-        RenderUtils.drawTexturedRectBatched(context, gpuTexture, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18);
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18);
+        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18);
         RenderUtils.applyLayer(context, GuiLayer.POP);
 
         /*

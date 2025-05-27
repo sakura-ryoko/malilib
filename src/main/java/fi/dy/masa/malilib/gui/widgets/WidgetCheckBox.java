@@ -101,7 +101,7 @@ public class WidgetCheckBox extends WidgetBase
         int y = this.y + 1 + (this.height - this.fontHeight) / 2;
         int textColor = this.checked ? 0xFFFFFFFF : 0xB0B0B0B0;
 
-        this.drawStringWithShadow(drawContext, GuiLayer.NONE, this.x + iw + 3, y, textColor, this.displayText);
+        this.drawStringWithShadow(drawContext, GuiLayer.NONE, this.x + iw + 3, y, this.width, this.height, textColor, this.displayText);
     }
 
     @Override
