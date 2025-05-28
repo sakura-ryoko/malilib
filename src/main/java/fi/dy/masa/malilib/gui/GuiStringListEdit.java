@@ -4,13 +4,13 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigStringList;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.widgets.WidgetListStringListEdit;
 import fi.dy.masa.malilib.gui.widgets.WidgetStringListEditEntry;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -133,13 +133,13 @@ public class GuiStringListEdit extends GuiListBase<String, WidgetStringListEditE
     {
 //        super.drawTexturedBG(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, true);
 //        RenderUtils.applyLayer(drawContext, GuiLayer.BLUR);
-        RenderUtils.drawOutlinedBox(drawContext, GuiLayer.UP, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
     }
 
     @Override
     protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
-        this.drawStringWithShadow(drawContext, GuiLayer.TOP, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
+        this.drawStringWithShadow(drawContext, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
     }
 
     @Override

@@ -7,9 +7,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.screen.ScreenTexts;
 
-import fi.dy.masa.malilib.render.GuiLayer;
-import fi.dy.masa.malilib.render.RenderUtils;
-
 public class GuiTextFieldGeneric extends TextFieldWidget
 {
     protected int x;
@@ -17,9 +14,8 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     protected int width;
     protected int height;
     protected int zLevel;
-    protected GuiLayer layer;
 
-    public GuiTextFieldGeneric(int x, int y, int width, int height, TextRenderer textRenderer, GuiLayer type)
+    public GuiTextFieldGeneric(int x, int y, int width, int height, TextRenderer textRenderer)
     {
         super(textRenderer, x, y, width, height, ScreenTexts.EMPTY);
 
@@ -27,7 +23,6 @@ public class GuiTextFieldGeneric extends TextFieldWidget
         this.y = y;
         this.width = width;
         this.height = height;
-        this.layer = type;
 
         this.setMaxLength(256);
     }
@@ -95,7 +90,6 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta)
     {
-        RenderUtils.applyLayer(context, this.layer);
         if (this.zLevel != 0)
         {
             Matrix3x2fStack matrixStack = context.getMatrices();
@@ -103,22 +97,13 @@ public class GuiTextFieldGeneric extends TextFieldWidget
             // this.zLevel
             matrixStack.translate(0, 0);
 
-//            context.goUpLayer();
             super.renderWidget(context, mouseX, mouseY, delta);
-//            context.popLayer();
 
             matrixStack.popMatrix();
         }
         else
         {
-//            context.goUpLayer();
             super.renderWidget(context, mouseX, mouseY, delta);
-//            context.popLayer();
-        }
-
-        if (this.layer != GuiLayer.NONE)
-        {
-            RenderUtils.applyLayer(context, GuiLayer.POP);
         }
     }
 

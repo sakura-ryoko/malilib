@@ -13,7 +13,6 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -45,7 +44,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
 
         if (this.isDummy() == false)
         {
-            this.addLabel(GuiLayer.UP, x + 2, y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", listIndex + 1));
+            this.addLabel(x + 2, y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", listIndex + 1));
             bx = this.addTextField(textFieldX, y + 1, resetX, textFieldWidth, 20, initialValue);
 
             if (this.canBeMoved(true))
@@ -77,7 +76,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
 
     protected int addTextField(int x, int y, int resetX, int configWidth, int configHeight, IConfigLockedListEntry initialValue)
     {
-        GuiTextFieldGeneric field = this.createTextField(GuiLayer.UP, x, y + 1, configWidth - 4, configHeight - 3);
+        GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
         field.setText(initialValue != null ? initialValue.getDisplayName() : "");
 
@@ -173,12 +172,12 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
 
         if (this.isOdd)
         {
-            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0x20FFFFFF);
+            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x20FFFFFF);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0x30FFFFFF);
+            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x30FFFFFF);
         }
 
         this.drawSubWidgets(drawContext, mouseX, mouseY);

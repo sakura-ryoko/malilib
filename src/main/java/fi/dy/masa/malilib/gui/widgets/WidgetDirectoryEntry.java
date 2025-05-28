@@ -7,7 +7,6 @@ import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntry;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntryType;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.FileNameUtils;
 
@@ -57,16 +56,16 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY))
         {
-            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0x70FFFFFF);
+            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x70FFFFFF);
         }
         else if (this.isOdd)
         {
-            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0x20FFFFFF);
+            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x20FFFFFF);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0x38FFFFFF);
+            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x38FFFFFF);
         }
 
         IGuiIcon icon = null;
@@ -88,17 +87,17 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         {
 //            RenderUtils.color(1f, 1f, 1f, 1f);
 //            this.bindTexture(icon.getTexture(), drawContext);
-            icon.renderAt(drawContext, GuiLayer.NONE, this.x, this.y + (this.height - icon.getHeight()) / 2, this.zLevel + 10, false, false);
+            icon.renderAt(drawContext, this.x, this.y + (this.height - icon.getHeight()) / 2, this.zLevel + 10, false, false);
         }
 
         // Draw an outline if this is the currently selected entry
         if (selected)
         {
-            RenderUtils.drawOutline(drawContext, GuiLayer.NONE, this.x, this.y, this.width, this.height, 0xEEEEEEEE);
+            RenderUtils.drawOutline(drawContext, this.x, this.y, this.width, this.height, 0xEEEEEEEE);
         }
 
         int yOffset = (this.height - this.fontHeight) / 2 + 1;
-        this.drawString(drawContext, GuiLayer.NONE, this.x + xOffset + 2, this.y + yOffset, this.width - xOffset, this.height - yOffset, 0xFFFFFFFF, this.getDisplayName());
+        this.drawString(drawContext, this.x + xOffset + 2, this.y + yOffset, this.width - xOffset, this.height - yOffset, 0xFFFFFFFF, this.getDisplayName());
 
         super.render(drawContext, mouseX, mouseY, selected);
     }

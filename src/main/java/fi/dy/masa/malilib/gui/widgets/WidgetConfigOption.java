@@ -24,8 +24,6 @@ import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
-import fi.dy.masa.malilib.render.GuiLayer;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 
 public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapper>
@@ -90,7 +88,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             this.lastAppliedValue = null;
             this.initialKeybindSettings = null;
 
-            this.addLabel(GuiLayer.UP, x, y + 7, labelWidth, 8, 0xFFFFFFFF, wrapper.getLabel());
+            this.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, wrapper.getLabel());
         }
     }
 
@@ -134,7 +132,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         MaLiLib.logger.error("addConfigOption(): configName [{}] (width: {}), labelWidth [{}]", configName, configName.length(), labelWidth);
          */
 
-        this.addLabel(GuiLayer.UP, x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+        this.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
 
         String comment;
         IConfigInfoProvider infoProvider = this.host.getHoverInfoProvider();
@@ -222,7 +220,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             }
             else
             {
-                this.addConfigTextFieldEntry(GuiLayer.NONE, x, y, resetX, configWidth, configHeight, (IConfigValue) config);
+                this.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, (IConfigValue) config);
             }
 
             if (type != ConfigType.COLOR && config instanceof IConfigSlider)
@@ -351,9 +349,9 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addButton(resetButton, listenerReset);
     }
 
-    protected void addConfigTextFieldEntry(GuiLayer type, int x, int y, int resetX, int configWidth, int configHeight, IConfigValue config)
+    protected void addConfigTextFieldEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigValue config)
     {
-        GuiTextFieldGeneric field = this.createTextField(type, x, y + 1, configWidth - 4, configHeight - 3);
+        GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
         field.setText(config.getStringValue());
 

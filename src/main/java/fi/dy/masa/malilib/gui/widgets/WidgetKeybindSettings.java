@@ -14,7 +14,6 @@ import fi.dy.masa.malilib.gui.GuiKeybindSettings;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -90,8 +89,8 @@ public class WidgetKeybindSettings extends WidgetBase
 
         int edgeColor = this.keybind.areSettingsModified() ? 0xFFFFBB33 : 0xFFFFFFFF;
         //RenderUtils.depthTest(true);
-        RenderUtils.drawRect(drawContext, GuiLayer.NONE, x    , y + 0, 20, 20, edgeColor);
-        RenderUtils.drawRect(drawContext, GuiLayer.NONE, x + 1, y + 1, 18, 18, 0xFF000000);
+        RenderUtils.drawRect(drawContext, x, y, 20, 20, edgeColor);
+        RenderUtils.drawRect(drawContext, x + 1, y + 1, 18, 18, 0xFF000000);
         //RenderUtils.depthTest(false);
 
 //        RenderUtils.forceDraw(drawContext);
@@ -103,11 +102,11 @@ public class WidgetKeybindSettings extends WidgetBase
 //        RenderUtils.color(1f, 1f, 1f, 1f);
 
         //RenderUtils.depthTest(true);
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, GuiLayer.NONE, x, y,  0,  v1, w, w, z);
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, GuiLayer.NONE, x, y,  18, v2, w, w, z);
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, GuiLayer.NONE, x, y,  36, v3, w, w, z);
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, GuiLayer.NONE, x, y,  54, v4, w, w, z);
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, GuiLayer.NONE, x, y,  72, v5, w, w, z);
+        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  0,  v1, w, w, z);
+        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  18, v2, w, w, z);
+        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  36, v3, w, w, z);
+        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  54, v4, w, w, z);
+        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  72, v5, w, w, z);
         //RenderUtils.depthTest(false);
     }
 

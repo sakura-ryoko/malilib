@@ -755,12 +755,12 @@ public class RenderContext implements AutoCloseable
             if (otherFb != null)
             {
                 texture1 = otherFb.getColorAttachmentView();
-                texture2 = otherFb.useDepthAttachment ? otherFb.getColorAttachmentView() : null;
+                texture2 = otherFb.useDepthAttachment ? otherFb.getDepthAttachmentView() : null;
             }
             else
             {
                 texture1 = mainFb.getColorAttachmentView();
-                texture2 = mainFb.useDepthAttachment ? mainFb.getColorAttachmentView() : null;
+                texture2 = mainFb.useDepthAttachment ? mainFb.getDepthAttachmentView() : null;
             }
 
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());

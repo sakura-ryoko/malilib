@@ -3,10 +3,11 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
+
 import net.minecraft.client.gui.DrawContext;
+
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public class WidgetCheckBox extends WidgetBase
@@ -95,13 +96,13 @@ public class WidgetCheckBox extends WidgetBase
 
 //        RenderUtils.color(1f, 1f, 1f, 1f);
 //        this.bindTexture(icon.getTexture(), drawContext);
-        icon.renderAt(drawContext, GuiLayer.NONE, this.x, this.y, this.zLevel, false, false);
+        icon.renderAt(drawContext, this.x, this.y, this.zLevel, false, false);
 
         int iw = icon.getWidth();
         int y = this.y + 1 + (this.height - this.fontHeight) / 2;
         int textColor = this.checked ? 0xFFFFFFFF : 0xB0B0B0B0;
 
-        this.drawStringWithShadow(drawContext, GuiLayer.NONE, this.x + iw + 3, y, this.width, this.height, textColor, this.displayText);
+        this.drawStringWithShadow(drawContext, this.x + iw + 3, y, this.width, this.height, textColor, this.displayText);
     }
 
     @Override

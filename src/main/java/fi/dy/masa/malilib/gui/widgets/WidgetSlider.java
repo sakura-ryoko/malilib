@@ -6,8 +6,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
-import fi.dy.masa.malilib.render.GuiLayer;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public class WidgetSlider extends WidgetBase
 {
@@ -57,22 +55,18 @@ public class WidgetSlider extends WidgetBase
 
 //        RenderUtils.color(1f, 1f, 1f, 1f);
 
-        RenderUtils.applyLayer(drawContext, GuiLayer.DOWN);
         drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_DISABLE_TEXTURE, this.x + 1, this.y, this.width - 3, 20);
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
 
         double relPos = this.callback.getValueRelative();
         int sw = this.sliderWidth;
         int usableWidth = this.width - 4 - sw;
         int s = sw / 2;
 
-        RenderUtils.applyLayer(drawContext, GuiLayer.DOWN);
         drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, 20);
-        RenderUtils.applyLayer(drawContext, GuiLayer.POP);
 
         String str = this.callback.getFormattedDisplayValue();
         int w = this.getStringWidth(str);
-        this.drawString(drawContext, GuiLayer.NONE, this.x + (this.width / 2) - w / 2, this.y + 6, this.width, this.height, 0xFFFFFFA0, str);
+        this.drawString(drawContext, this.x + (this.width / 2) - w / 2, this.y + 6, this.width, this.height, 0xFFFFFFA0, str);
     }
 
     protected double getRelativePosition(int mouseX)

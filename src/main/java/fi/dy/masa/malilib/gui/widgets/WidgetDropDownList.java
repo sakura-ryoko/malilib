@@ -16,7 +16,6 @@ import fi.dy.masa.malilib.gui.MaLiLibIcons;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringRetriever;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 
@@ -70,7 +69,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         this.scrollBar.setMaxValue(entries.size() - this.maxVisibleEntries);
 
         TextFieldListener listener = new TextFieldListener(this);
-        this.searchBar = new TextFieldWrapper<>(new GuiTextFieldGeneric(x + 1, y - 18, this.width - 2, 16, this.textRenderer, GuiLayer.UP), listener);
+        this.searchBar = new TextFieldWrapper<>(new GuiTextFieldGeneric(x + 1, y - 18, this.width - 2, 16, this.textRenderer), listener);
         this.searchBar.getTextField().setFocused(true);
 
         this.updateFilteredEntries();
@@ -278,14 +277,14 @@ public class WidgetDropDownList<T> extends WidgetBase
 
 //        RenderUtils.depthMask(true);
 //        RenderUtils.depthTest(true);
-        RenderUtils.drawOutlinedBox(drawContext, GuiLayer.NONE, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
+        RenderUtils.drawOutlinedBox(drawContext, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
 
         String str = this.getDisplayString(this.getSelectedEntry());
         int txtX = this.x + 4;
         int txtY = this.y + this.height / 2 - this.fontHeight / 2;
         // 100
         matrixStackIn.translate(0, 0);
-        this.drawString(drawContext, GuiLayer.UP, txtX, txtY, this.width, this.height, 0xFFE0E0E0, str);
+        this.drawString(drawContext, txtX, txtY, this.width, this.height, 0xFFE0E0E0, str);
         txtY += this.height + 1;
         int scrollWidth = 10;
 
@@ -298,7 +297,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
 //            RenderUtils.depthMask(true);
 //            RenderUtils.depthTest(true);
-            RenderUtils.drawOutline(drawContext, GuiLayer.NONE, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
+            RenderUtils.drawOutline(drawContext, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
 
             int y = this.y + this.height + 1;
             int startIndex = Math.max(0, this.scrollBar.getValue());
@@ -316,9 +315,9 @@ public class WidgetDropDownList<T> extends WidgetBase
 
 //                RenderUtils.depthMask(true);
 //                RenderUtils.depthTest(true);
-                RenderUtils.drawRect(drawContext, GuiLayer.NONE, this.x, y, this.width - scrollWidth, this.height, bg);
+                RenderUtils.drawRect(drawContext, this.x, y, this.width - scrollWidth, this.height, bg);
                 str = this.getDisplayString(list.get(i));
-                this.drawString(drawContext, GuiLayer.NONE, txtX, txtY, this.width, this.height, 0xFFE0E0E0, str);
+                this.drawString(drawContext, txtX, txtY, this.width, this.height, 0xFFE0E0E0, str);
                 y += this.height;
                 txtY += this.height;
             }
@@ -336,7 +335,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 //            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
 
             MaLiLibIcons i = MaLiLibIcons.ARROW_UP;
-            RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, GuiLayer.UP, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
         else
         {
@@ -344,7 +343,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 //            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
 
             MaLiLibIcons i = MaLiLibIcons.ARROW_DOWN;
-            RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, GuiLayer.UP, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
 
 //        RenderUtils.depthMask(false);

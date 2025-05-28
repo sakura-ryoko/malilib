@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<TYPE>
@@ -58,7 +57,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
 //        RenderUtils.color(1f, 1f, 1f, 1f);
         IGuiIcon icon = reverse ? iconReverse : iconNatural;
 //        this.bindTexture(icon.getTexture(), drawContext);
-        icon.renderAt(drawContext, GuiLayer.NONE, iconX, this.y + 3, this.zLevel, true, sortColumn == mouseOverColumn);
+        icon.renderAt(drawContext, iconX, this.y + 3, this.zLevel, true, sortColumn == mouseOverColumn);
 
         for (int i = 0; i < this.getColumnCount(); ++i)
         {
@@ -66,7 +65,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
             int xStart = this.getColumnPosX(i);
             int xEnd = this.getColumnPosX(i + 1);
 
-            RenderUtils.drawOutline(drawContext, GuiLayer.NONE, xStart - 3, this.y + 1, xEnd - xStart - 2, this.height - 2, outlineColor);
+            RenderUtils.drawOutline(drawContext, xStart - 3, this.y + 1, xEnd - xStart - 2, this.height - 2, outlineColor);
         }
     }
 }

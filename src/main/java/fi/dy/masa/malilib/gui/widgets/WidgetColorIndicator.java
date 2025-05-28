@@ -9,7 +9,6 @@ import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.config.options.ConfigColor;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiColorEditorHSV;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -63,9 +62,9 @@ public class WidgetColorIndicator extends WidgetBase
         int height = this.getHeight();
 
         //RenderUtils.depthTest(true);
-        RenderUtils.drawRect(drawContext, GuiLayer.NONE, x    , y    , width    , height    , 0xFFFFFFFF);
-        RenderUtils.drawRect(drawContext, GuiLayer.NONE, x + 1, y + 1, width - 2, height - 2, 0xFF000000);
-        RenderUtils.drawRect(drawContext, GuiLayer.NONE, x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue());
+        RenderUtils.drawRect(drawContext, x    , y    , width    , height    , 0xFFFFFFFF);
+        RenderUtils.drawRect(drawContext, x + 1, y + 1, width - 2, height - 2, 0xFF000000);
+        RenderUtils.drawRect(drawContext, x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue());
         //RenderUtils.depthTest(false);
     }
 }

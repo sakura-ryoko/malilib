@@ -15,7 +15,6 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.ICompletionListener;
 import fi.dy.masa.malilib.interfaces.IConfirmationListener;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -97,15 +96,15 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
         matrixStack.pushMatrix();
         matrixStack.translate(0, 0);
 
-        RenderUtils.drawOutlinedBox(drawContext, GuiLayer.NONE, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xF0000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xF0000000, COLOR_HORIZONTAL_BAR);
 
         // Draw the title
-        this.drawStringWithShadow(drawContext, GuiLayer.NONE, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
+        this.drawStringWithShadow(drawContext, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
         int y = this.dialogTop + 20;
 
         for (String text : this.messageLines)
         {
-            this.drawString(drawContext, GuiLayer.NONE, text, this.dialogLeft + 10, y, this.textColor);
+            this.drawString(drawContext, text, this.dialogLeft + 10, y, this.textColor);
             y += this.fontHeight + 1;
         }
 

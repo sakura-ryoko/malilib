@@ -11,7 +11,6 @@ import fi.dy.masa.malilib.gui.GuiTextInputFeedback;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.DirectoryCreator;
 import fi.dy.masa.malilib.util.FileUtils;
@@ -107,19 +106,19 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
         {
             WidgetIcon hoveredIcon = this.getHoveredIcon(mouseX, mouseY);
 
-            this.iconRoot.render(drawContext, GuiLayer.NONE, false, hoveredIcon == this.iconRoot);
-            this.iconUp.render(drawContext, GuiLayer.NONE, false, hoveredIcon == this.iconUp);
-            this.iconCreateDir.render(drawContext, GuiLayer.NONE, false, hoveredIcon == this.iconCreateDir);
+            this.iconRoot.render(drawContext, false, hoveredIcon == this.iconRoot);
+            this.iconUp.render(drawContext, false, hoveredIcon == this.iconUp);
+            this.iconCreateDir.render(drawContext, false, hoveredIcon == this.iconCreateDir);
 
             int pathStartX = this.iconCreateDir.x + this.iconCreateDir.getWidth() + 6;
 
             // Draw the directory path text background
-            RenderUtils.drawRect(drawContext, GuiLayer.NONE, pathStartX, this.y, this.width - pathStartX - 2, this.height, 0x20FFFFFF);
+            RenderUtils.drawRect(drawContext, pathStartX, this.y, this.width - pathStartX - 2, this.height, 0x20FFFFFF);
 
             int textColor = 0xC0C0C0C0;
             int maxLen = (this.width - 40) / this.getStringWidth("a") - 4; // FIXME
             String path = FileUtils.getJoinedTrailingPathElements(this.currentDir, this.rootDir, maxLen, " / ");
-            this.drawString(drawContext, GuiLayer.NONE, pathStartX + 3, this.y + 3, this.width, this.height, textColor, path);
+            this.drawString(drawContext, pathStartX + 3, this.y + 3, this.width, this.height, textColor, path);
         }
     }
 

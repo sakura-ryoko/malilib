@@ -24,7 +24,6 @@ import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetLabel;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.MessageRenderer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -526,12 +525,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return widget;
     }
 
-    public WidgetLabel addLabel(GuiLayer type, int x, int y, int width, int height, int textColor, String... lines)
+    public WidgetLabel addLabel(int x, int y, int width, int height, int textColor, String... lines)
     {
-        return this.addLabel(type, x, y, width, height, textColor, Arrays.asList(lines));
+        return this.addLabel(x, y, width, height, textColor, Arrays.asList(lines));
     }
 
-    public WidgetLabel addLabel(GuiLayer type, int x, int y, int width, int height, int textColor, List<String> lines)
+    public WidgetLabel addLabel(int x, int y, int width, int height, int textColor, List<String> lines)
     {
         if (lines.size() > 0)
         {
@@ -544,7 +543,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             }
         }
 
-        return this.addWidget(new WidgetLabel(type, x, y, width, height, textColor, lines));
+        return this.addWidget(new WidgetLabel(x, y, width, height, textColor, lines));
     }
 
     protected boolean removeWidget(WidgetBase widget)
@@ -590,7 +589,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         // Draw the dark background
 //        RenderUtils.forceDraw(drawContext);
-        RenderUtils.drawRect(drawContext, GuiLayer.DOWN, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
+        RenderUtils.drawRect(drawContext, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
     }
 
     /**
@@ -604,7 +603,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
      * @param height ()
      * @param blur ()
      */
-    protected void drawTexturedBG(DrawContext drawContext, GuiLayer type, int topX, int topY, int width, int height, boolean blur)
+    protected void drawTexturedBG(DrawContext drawContext, int topX, int topY, int width, int height, boolean blur)
     {
         if (blur)
         {
@@ -612,18 +611,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
 
 //        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, true);
-        RenderUtils.applyLayer(drawContext, type);
         super.renderDarkening(drawContext, topX, topY, width, height);
-
-        if (type != GuiLayer.NONE)
-        {
-            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
-        }
     }
 
     protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
-        this.drawString(drawContext, GuiLayer.NONE, this.getTitleString(), LEFT, TOP, COLOR_WHITE);
+        this.drawString(drawContext, this.getTitleString(), LEFT, TOP, COLOR_WHITE);
     }
 
     protected void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
@@ -721,26 +714,14 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return this.textRenderer.getWidth(text);
     }
 
-    public void drawString(DrawContext drawContext, GuiLayer type, String text, int x, int y, int color)
+    public void drawString(DrawContext drawContext, String text, int x, int y, int color)
     {
-        RenderUtils.applyLayer(drawContext, type);
         drawContext.drawText(this.textRenderer, text, x, y, color, false);
-
-        if (type != GuiLayer.NONE)
-        {
-            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
-        }
     }
 
-    public void drawStringWithShadow(DrawContext drawContext, GuiLayer type, String text, int x, int y, int color)
+    public void drawStringWithShadow(DrawContext drawContext, String text, int x, int y, int color)
     {
-        RenderUtils.applyLayer(drawContext, type);
         drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
-
-        if (type != GuiLayer.NONE)
-        {
-            RenderUtils.applyLayer(drawContext, GuiLayer.POP);
-        }
     }
 
     public int getMaxPrettyNameLength(List<? extends IConfigBase> configs)

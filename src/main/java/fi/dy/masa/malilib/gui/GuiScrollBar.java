@@ -7,7 +7,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
-import fi.dy.masa.malilib.render.GuiLayer;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public class GuiScrollBar
@@ -80,7 +79,7 @@ public class GuiScrollBar
     {
         if (this.renderScrollbarBackground)
         {
-            RenderUtils.drawRect(drawContext, GuiLayer.NONE, xPosition, yPosition, width, height, this.backgroundColor);
+            RenderUtils.drawRect(drawContext, xPosition, yPosition, width, height, this.backgroundColor);
         }
 
         if (totalHeight > 0)
@@ -101,12 +100,12 @@ public class GuiScrollBar
                 int w = this.barTexture.getWidth();
                 int h = this.barTexture.getHeight();
 
-                RenderUtils.drawTexturedRect(drawContext, this.barTexture.getTexture(), GuiLayer.NONE, xPosition + 1, barPosition                , u, v        , w, barHeight - 2);
-                RenderUtils.drawTexturedRect(drawContext, this.barTexture.getTexture(), GuiLayer.NONE, xPosition + 1, barPosition + barHeight - 2, u, v + h - 2, w, 2);
+                RenderUtils.drawTexturedRect(drawContext, this.barTexture.getTexture(), xPosition + 1, barPosition                , u, v        , w, barHeight - 2);
+                RenderUtils.drawTexturedRect(drawContext, this.barTexture.getTexture(), xPosition + 1, barPosition + barHeight - 2, u, v + h - 2, w, 2);
             }
             else
             {
-                RenderUtils.drawRect(drawContext, GuiLayer.NONE, xPosition + 1, barPosition, width - 2, barHeight, this.foregroundColor);
+                RenderUtils.drawRect(drawContext, xPosition + 1, barPosition, width - 2, barHeight, this.foregroundColor);
             }
 
             //RenderUtils.forceDraw(drawContext);
