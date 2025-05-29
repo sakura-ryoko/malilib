@@ -180,7 +180,7 @@
     "malilib.gui.label_colored.off": "§c關閉§r",
     "malilib.gui.label_colored.on": "§a開啟§r",
     "malilib.gui.title.all_hotkeys": "所有已登錄的快捷鍵",
-    "malilib.gui.title.color_editor": "編輯顏色",
+    "malilib.gui.title.color_editor": "§n編輯顏色",
     "malilib.gui.title.color_list_edit": "編輯「%s」的顏色清單",
     "malilib.gui.title.configs": "Malilib 設定介面 - %s",
     "malilib.gui.title.create_directory": "建立新目錄",

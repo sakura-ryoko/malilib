@@ -480,8 +480,9 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int yd = this.heightSlider + this.gapSlider;
         int cx = this.xHS;
         int cy = this.yHS + this.sizeHS + 8;
-        int cw = this.sizeHS;
-        int ch = 16;
+//        int cw = this.sizeHS;
+        int cw = 32;
+        int ch = 32;
 
         RenderUtils.drawOutline(drawContext, x, y, w, h, 0xC0FFFFFF); // H
         y += yd;
@@ -848,7 +849,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        buffer.vertex(x    , y - s, z).color(c, c, c, c);
 
         RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSVColorHorizontalBarGuiElement(
+                                     new MaLiLibHSVColorHorizontalBarMarkerGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, y,
                                              barWidth, barHeight,
@@ -875,7 +876,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        buffer.vertex(x + s, y + s, z).color(c, c, c, c);
 
         RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSVColorVerticalBarGuiElement(
+                                     new MaLiLibHSVColorVerticalBarMarkerGuiElement(
                                              RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
                                              x, y,
                                              barWidth, barHeight,

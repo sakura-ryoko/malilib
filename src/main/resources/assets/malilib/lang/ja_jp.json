@@ -180,7 +180,7 @@
     "malilib.gui.label_colored.off": "§cオフ§r",
     "malilib.gui.label_colored.on": "§aオン§r",
     "malilib.gui.title.all_hotkeys": "ショートカット",
-    "malilib.gui.title.color_editor": "色の設定",
+    "malilib.gui.title.color_editor": "§n色の設定",
     "malilib.gui.title.color_list_edit": "'%s' の色リストを編集",
     "malilib.gui.title.configs": "MaLiLib 設定 - %s",
     "malilib.gui.title.create_directory": "新しいディレクトリの作成",

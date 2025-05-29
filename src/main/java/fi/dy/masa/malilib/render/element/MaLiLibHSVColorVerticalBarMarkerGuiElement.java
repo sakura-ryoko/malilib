@@ -9,7 +9,7 @@ import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.TextureSetup;
 
-public record MaLiLibHSVColorVerticalBarGuiElement(
+public record MaLiLibHSVColorVerticalBarMarkerGuiElement(
         RenderPipeline pipeline,
         TextureSetup textureSetup,
         Matrix3x2f pose,
@@ -22,9 +22,9 @@ public record MaLiLibHSVColorVerticalBarGuiElement(
         @Nullable ScreenRect bounds
 ) implements SimpleGuiElementRenderState
 {
-    public MaLiLibHSVColorVerticalBarGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int x, int y, int bw, int bh, float val, @Nullable ScreenRect scissorArea)
+    public MaLiLibHSVColorVerticalBarMarkerGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int x, int y, int bw, int bh, float val, @Nullable ScreenRect scissorArea)
     {
-        this(pipeline, textureSetup, pose, x, y, bw, bh, val, scissorArea, createBounds(x, y, x + bw, y + bh, pose, scissorArea));
+        this(pipeline, textureSetup, pose, x, y, bw, bh, val, scissorArea, createBounds(x, y, x + (bw), y + (bh), pose, scissorArea));
     }
 
     @Override
@@ -32,8 +32,10 @@ public record MaLiLibHSVColorVerticalBarGuiElement(
     {
         int xAdj = this.x();
         int yAdj = this.y();
+        int bhAdj = this.bh();
+        int bwAdj = this.bw();
 
-        yAdj += (int) (this.bh() * (1f - this.val()));
+        yAdj += (int) (bhAdj * (1f - this.val()));
         int s = 2;
         int c = 255;
 
@@ -42,7 +44,7 @@ public record MaLiLibHSVColorVerticalBarGuiElement(
         vertices.vertex(this.pose(), xAdj + s, yAdj, depth).color(c, c, c, c);
         vertices.vertex(this.pose(), xAdj + s, yAdj, depth).color(c, c, c, c);
 
-        xAdj += this.bh();
+        xAdj += (bwAdj);
 
         vertices.vertex(this.pose(), xAdj + s, yAdj - s, depth).color(c, c, c, c);
         vertices.vertex(this.pose(), xAdj - s, yAdj, depth).color(c, c, c, c);

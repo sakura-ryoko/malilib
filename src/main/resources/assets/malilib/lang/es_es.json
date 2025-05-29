@@ -180,7 +180,7 @@
     "malilib.gui.label_colored.off": "§cAPAGADO§r",
     "malilib.gui.label_colored.on": "§aENCENDIDO§r",
     "malilib.gui.title.all_hotkeys": "Todas las teclas de acceso rápido registradas",
-    "malilib.gui.title.color_editor": "Editor de colores",
+    "malilib.gui.title.color_editor": "§nEditor de colores",
     "malilib.gui.title.color_list_edit": "Editar lista de colores para '%s'",
     "malilib.gui.title.configs": "Configuraciones de Malilib: %s",
     "malilib.gui.title.create_directory": "Crear un nuevo directorio",
