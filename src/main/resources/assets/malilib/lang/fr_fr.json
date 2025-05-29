@@ -180,7 +180,7 @@
     "malilib.gui.label_colored.off": "§cDÉSACTIVÉ§r",
     "malilib.gui.label_colored.on": "§aSUR§r",
     "malilib.gui.title.all_hotkeys": "Tous les raccourcis clavier enregistrés",
-    "malilib.gui.title.color_editor": "Éditeur de couleurs",
+    "malilib.gui.title.color_editor": "§nÉditeur de couleurs",
     "malilib.gui.title.color_list_edit": "Modifier la liste de couleurs pour '%s'",
     "malilib.gui.title.configs": "Configurations de malilib - %s",
     "malilib.gui.title.create_directory": "Créer un nouveau répertoire",

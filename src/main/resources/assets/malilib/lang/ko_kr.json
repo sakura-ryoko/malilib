@@ -180,7 +180,7 @@
     "malilib.gui.label_colored.off": "§cOFF§r",
     "malilib.gui.label_colored.on": "§aON§r",
     "malilib.gui.title.all_hotkeys": "등록된 모든 단축키",
-    "malilib.gui.title.color_editor": "색상 편집기",
+    "malilib.gui.title.color_editor": "§n색상 편집기",
     "malilib.gui.title.color_list_edit": "'%s'에 대한 색상 목록 편집",
     "malilib.gui.title.configs": "malilib 설정 - %s",
     "malilib.gui.title.create_directory": "새 디렉토리 생성",

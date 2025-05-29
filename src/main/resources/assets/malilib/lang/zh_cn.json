@@ -180,7 +180,7 @@
     "malilib.gui.label_colored.off": "§c关闭§r",
     "malilib.gui.label_colored.on": "§a开启§r",
     "malilib.gui.title.all_hotkeys": "全部已注册快捷键",
-    "malilib.gui.title.color_editor": "颜色编辑器",
+    "malilib.gui.title.color_editor": "§n颜色编辑器",
     "malilib.gui.title.color_list_edit": "编辑'%s'颜色列表",
     "malilib.gui.title.configs": "MaLiLib 配置界面 - %s §l汉化 §rby §9DeepSeek-R1 §r& §6金合欢酱(acaciachan)",
     "malilib.gui.title.create_directory": "新建目录",
