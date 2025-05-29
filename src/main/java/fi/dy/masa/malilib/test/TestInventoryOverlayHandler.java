@@ -238,7 +238,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
                 if (entity.saveSelfData(view.getWriter()))
                 {
-                    return this.getTargetInventoryFromEntity(world.getEntityById(entity.getId()), view.getNbt());
+                    return this.getTargetInventoryFromEntity(world.getEntityById(entity.getId()), view.readNbt());
                 }
             }
             else

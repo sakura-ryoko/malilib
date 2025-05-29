@@ -35,6 +35,9 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
 
+/**
+ * MaLiLib 1.21.5+ RenderContext for World Rendering
+ */
 public class RenderContext implements AutoCloseable
 {
     private Supplier<String> name;
@@ -58,7 +61,7 @@ public class RenderContext implements AutoCloseable
 
     public RenderContext(RenderPipeline shader)
     {
-        this(() -> "RenderContext", shader);
+        this(() -> "malilib:RenderContext", shader);
     }
 
     public RenderContext(Supplier<String> name, RenderPipeline shader)
@@ -86,7 +89,7 @@ public class RenderContext implements AutoCloseable
 
     public BufferBuilder start(RenderPipeline shader)
     {
-        return this.start(() -> "RenderContext", shader);
+        return this.start(() -> "malilib:RenderContext", shader);
     }
 
     public BufferBuilder start(Supplier<String> name, RenderPipeline shader)

@@ -34,6 +34,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
@@ -1240,5 +1241,28 @@ public class NbtEntityUtils
             MaLiLib.LOGGER.warn("setEquipmentSlotsToNbt(): Failed to parse Equipment Slots Object; {}", err.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Get a Mob's Home Pos and Radius from NBT
+     * @param nbt ()
+     * @return ()
+     */
+    public static Pair<BlockPos, Integer> getHomePosFromNbt(@Nonnull NbtCompound nbt)
+    {
+        BlockPos pos = BlockPos.ORIGIN;
+        int radius = -1;
+
+        if (nbt.contains(NbtKeys.HOME_POS))
+        {
+            pos = nbt.get(NbtKeys.HOME_POS, BlockPos.CODEC).orElse(BlockPos.ORIGIN);
+        }
+
+        if (nbt.contains(NbtKeys.HOME_RADIUS))
+        {
+            radius = nbt.getInt(NbtKeys.HOME_RADIUS, -1);
+        }
+
+        return Pair.of(pos, radius);
     }
 }

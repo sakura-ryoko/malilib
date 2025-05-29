@@ -188,7 +188,7 @@ public interface IDataSyncer
 
         if (entity != null && entity.saveSelfData(nbtView.getWriter()))
         {
-            NbtCompound nbt = nbtView.getNbt();
+            NbtCompound nbt = nbtView.readNbt();
             return Pair.of(entity, nbt);
         }
 

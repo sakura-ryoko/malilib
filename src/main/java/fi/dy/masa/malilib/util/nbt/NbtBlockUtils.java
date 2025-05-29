@@ -9,17 +9,22 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.block.entity.*;
+import net.minecraft.block.spawner.TrialSpawnerData;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.storage.NbtReadView;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -322,6 +327,11 @@ public class NbtBlockUtils
         return list;
     }
 
+    /**
+     * Get the Redstone Outpout Signal from a Repeater
+     * @param nbt
+     * @return
+     */
     public static int getOutputSignalFromNbt(@Nonnull NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.OUTPUT_SIGNAL))
@@ -330,5 +340,10 @@ public class NbtBlockUtils
         }
 
         return 0;
+    }
+
+    public static Optional<TrialSpawnerData.Packed> getTrialSpawnerDataFromNbt(@Nonnull NbtCompound nbt)
+    {
+        return NbtUtils.readFlatMap(nbt, TrialSpawnerData.Packed.CODEC);
     }
 }
