@@ -180,7 +180,7 @@
     "malilib.gui.label_colored.off": "§cВИМК.§r",
     "malilib.gui.label_colored.on": "§aУВІМК.§r",
     "malilib.gui.title.all_hotkeys": "Усі зареєстровані гарячі клавіші",
-    "malilib.gui.title.color_editor": "Редактор кольору",
+    "malilib.gui.title.color_editor": "§nРедактор кольору",
     "malilib.gui.title.color_list_edit": "Редагувати список кольорів для «%s»",
     "malilib.gui.title.configs": "Налаштування Malilib - %s",
     "malilib.gui.title.create_directory": "Створити новий каталог",

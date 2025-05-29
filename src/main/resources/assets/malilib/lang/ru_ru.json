@@ -180,7 +180,7 @@
     "malilib.gui.label_colored.off": "§cВыкл§r",
     "malilib.gui.label_colored.on": "§aВкл§r",
     "malilib.gui.title.all_hotkeys": "Все зарегистрированные клавиши",
-    "malilib.gui.title.color_editor": "Color Editor",
+    "malilib.gui.title.color_editor": "§nColor Editor",
     "malilib.gui.title.color_list_edit": "Изменить список цветов для '%s'",
     "malilib.gui.title.configs": "Настройки Malilib - %s",
     "malilib.gui.title.create_directory": "Создать новую папку",

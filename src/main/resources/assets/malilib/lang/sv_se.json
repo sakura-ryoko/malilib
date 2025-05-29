@@ -180,7 +180,7 @@
     "malilib.gui.label_colored.off": "§cOFF§r",
     "malilib.gui.label_colored.on": "§aON§r",
     "malilib.gui.title.all_hotkeys": "Alla registrerade snabbtangenter",
-    "malilib.gui.title.color_editor": "Färg redigerare",
+    "malilib.gui.title.color_editor": "§nFärg redigerare",
     "malilib.gui.title.color_list_edit": "Redigera färglista för '%s'",
     "malilib.gui.title.configs": "malilib Configs - %s",
     "malilib.gui.title.create_directory": "Skapa en ny katalog",
