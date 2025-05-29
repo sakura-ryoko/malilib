@@ -214,6 +214,7 @@ public class RenderUtils
             return tex.getGlTextureView();
         }
 
+        MaLiLib.LOGGER.error("bindGpuTextureView: Result is null!");
         return null;
     }
 
@@ -602,24 +603,24 @@ public class RenderUtils
 //        drawContext.disableScissor();
     }
 
-    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
+    public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
     {
-        drawTexturedRectBatched(posMatrix, x, y, u, v, width, height, 0, -1, buffer);
+        drawTexturedRectBatched(x, y, u, v, width, height, 0, -1, buffer);
     }
 
-    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, int argb, VertexConsumer buffer)
+    public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, int argb, VertexConsumer buffer)
     {
-        drawTexturedRectBatched(posMatrix, x, y, u, v, width, height, 0, argb, buffer);
+        drawTexturedRectBatched(x, y, u, v, width, height, 0, argb, buffer);
     }
 
-    public static void drawTexturedRectBatched(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, float zLevel, int argb, VertexConsumer buffer)
+    public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, float zLevel, int argb, VertexConsumer buffer)
     {
         float pixelWidth = 0.00390625F;
 
-        buffer.vertex(posMatrix, x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth).color(argb);
-        buffer.vertex(posMatrix, x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
-        buffer.vertex(posMatrix, x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(argb);
-        buffer.vertex(posMatrix, x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
+        buffer.vertex(x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth).color(argb);
+        buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
+        buffer.vertex(x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(argb);
+        buffer.vertex(x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
     }
 
     public static void drawTexturedRectBatched(DrawContext drawContext, @Nonnull GpuTextureView gpuTextureView, int x, int y, int u, int v, int width, int height)
@@ -636,11 +637,11 @@ public class RenderUtils
     {
         addSimpleElement(drawContext,
                          new MaLiLibTexturedRectGuiElement(
-                                 RenderPipelines.GUI_OPAQUE_TEX_BG, TextureSetup.withoutGlTexture(gpuTextureView),
+                                 RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTextureView),
                                  new Matrix3x2f(drawContext.getMatrices()),
-                                 x, y, x, v,
-                                 width, height, zLevel,
-                                 argb, peekLastScissor(drawContext))
+                                 x, y, u, v,
+                                 width, height, argb,
+                                 peekLastScissor(drawContext))
         );
     }
 

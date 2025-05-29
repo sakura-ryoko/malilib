@@ -8,16 +8,15 @@ import javax.annotation.Nullable;
 import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 
-import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -54,7 +53,6 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.game.IEntityOwnedInventory;
-import fi.dy.masa.malilib.util.game.wrap.GameWrap;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
@@ -132,19 +130,18 @@ public class InventoryOverlay
 
     public static void renderInventoryBackground(DrawContext context, InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, int color, MinecraftClient mc)
     {
-        VertexConsumer buffer;
-        Matrix4f posMatrix;
+//        VertexConsumer buffer;
+//        Matrix4f posMatrix;
         //RenderUtils.blend(true);
-        /*
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR, ShaderPipelines.GUI_TEXTURED);
-        BufferBuilder buffer = ctx.getBuilder();
-         */
+//        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_TEX_COLOR_MASA);
+//        BufferBuilder buffer = ctx.getBuilder();
 
         if (type == InventoryRenderType.FURNACE)
         {
 //            buffer = RenderUtils.bindGuiTexture(TEXTURE_FURNACE, context);
 //            posMatrix = context.getMatrices().peek().getPositionMatrix();
             GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_FURNACE);
+//            ctx.bindTexture(TEXTURE_FURNACE, 0, 256, 256);
             if (gpuTextureView == null) return;
             
             RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   4,  64, color); // left (top)
@@ -263,14 +260,18 @@ public class InventoryOverlay
         //RenderUtils.depthTest(true); X
         //RenderUtils.blend(true);
 
-        /*
-        try
-        {
-            ctx.draw(buffer.end());
-            ctx.close();
-        }
-        catch (Exception ignored) { }
-         */
+//        try
+//        {
+//            BuiltBuffer meshData = buffer.endNullable();
+//
+//            if (meshData != null)
+//            {
+//                ctx.draw(buffer.end());
+//            }
+//
+//            ctx.close();
+//        }
+//        catch (Exception ignored) { }
     }
 
     public static void renderInventoryBackground27(int x, int y, int color, MinecraftClient mc, DrawContext context)
@@ -1186,10 +1187,10 @@ public class InventoryOverlay
         List<Text> list = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
         List<String> lines = new ArrayList<>();
 
-        if (MaLiLibReference.DEBUG_MODE)
-        {
-            dumpStack(stack, list);
-        }
+//        if (MaLiLibReference.DEBUG_MODE)
+//        {
+//            dumpStack(stack, list);
+//        }
         for (int i = 0; i < list.size(); ++i)
         {
             if (i == 0)
@@ -1222,10 +1223,10 @@ public class InventoryOverlay
             // it's also required when connected to a server;
             // or else not be able to see Enchantment tooltips. (>.>)
             List<Text> toolTips = stack.getTooltip(Item.TooltipContext.create(WorldUtils.getBestWorld(mc)), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
-            if (MaLiLibReference.DEBUG_MODE)
-            {
-                dumpStack(stack, toolTips);
-            }
+//            if (MaLiLibReference.DEBUG_MODE)
+//            {
+//                dumpStack(stack, toolTips);
+//            }
             drawContext.drawTooltip(mc.textRenderer,
                                     toolTips,
                                     stack.getTooltipData(), // Bundle/Optional Data
@@ -1245,7 +1246,7 @@ public class InventoryOverlay
             return;
         }
 
-        LOGGER.info("dumpStack(): [{}}]", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).getOrThrow());
+        LOGGER.info("dumpStack(): [{}}]", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).getPartialOrThrow());
 
         if (list != null && !list.isEmpty())
         {

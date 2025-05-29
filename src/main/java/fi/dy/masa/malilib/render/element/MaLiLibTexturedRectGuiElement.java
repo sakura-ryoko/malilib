@@ -19,15 +19,14 @@ public record MaLiLibTexturedRectGuiElement(
         int v,
         int width,
         int height,
-        float zLevel,
         int argb,
         @Nullable ScreenRect scissorArea,
         @Nullable ScreenRect bounds
 ) implements SimpleGuiElementRenderState
 {
-    public MaLiLibTexturedRectGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int x, int y, int u, int v, int width, int height, float zLevel, int argb, @Nullable ScreenRect scissorArea)
+    public MaLiLibTexturedRectGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int x, int y, int u, int v, int width, int height, int argb, @Nullable ScreenRect scissorArea)
     {
-        this(pipeline, textureSetup, pose, x, y, u, v, width, height, zLevel, argb, scissorArea, createBounds(x, y, x + width, y + height, pose, scissorArea));
+        this(pipeline, textureSetup, pose, x, y, u, v, width, height, argb, scissorArea, createBounds(x, y, x + width, y + height, pose, scissorArea));
     }
 
     @Override
@@ -35,10 +34,10 @@ public record MaLiLibTexturedRectGuiElement(
     {
         float pixelWidth = 0.00390625F;
 
-        vertices.vertex(this.pose(), this.x(), this.y() + this.height(), this.zLevel()).texture(this.u() * pixelWidth, (this.v() + this.height()) * pixelWidth).color(this.argb());
-        vertices.vertex(this.pose(), this.x() + this.width(), this.y() + this.height(), this.zLevel()).texture((this.u() + this.width()) * pixelWidth, (this.v() + this.height()) * pixelWidth).color(this.argb());
-        vertices.vertex(this.pose(), this.x() + this.width(), this.y(), this.zLevel()).texture((this.u() + this.width()) * pixelWidth, this.v() * pixelWidth).color(this.argb());
-        vertices.vertex(this.pose(), this.x(), this.y(), this.zLevel()).texture(this.u() * pixelWidth, this.v() * pixelWidth).color(this.argb());
+        vertices.vertex(this.pose(), this.x(), this.y() + this.height(), depth).texture(this.u() * pixelWidth, (this.v() + this.height()) * pixelWidth).color(this.argb());
+        vertices.vertex(this.pose(), this.x() + this.width(), this.y() + this.height(), depth).texture((this.u() + this.width()) * pixelWidth, (this.v() + this.height()) * pixelWidth).color(this.argb());
+        vertices.vertex(this.pose(), this.x() + this.width(), this.y(), depth).texture((this.u() + this.width()) * pixelWidth, this.v() * pixelWidth).color(this.argb());
+        vertices.vertex(this.pose(), this.x(), this.y(), depth).texture(this.u() * pixelWidth, this.v() * pixelWidth).color(this.argb());
     }
 
     @Nullable
