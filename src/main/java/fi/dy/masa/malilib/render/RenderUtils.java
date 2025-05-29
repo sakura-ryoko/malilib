@@ -2045,7 +2045,7 @@ public class RenderUtils
             final DyeColor dye = block.getColor() != null ? block.getColor() : DyeColor.PURPLE;
             final float[] colors = getColorComponents(dye.getEntityColor());
 //            return color(colors[0], colors[1], colors[2], 1f);
-            return ColorHelper.fromFloats(colors[0], colors[1], colors[2], 1f);
+            return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
         }
         else
         {
@@ -2079,7 +2079,7 @@ public class RenderUtils
             {
                 final float[] colors = getColorComponents(dye.getEntityColor());
 //            return color(colors[0], colors[1], colors[2], 1f);
-                return ColorHelper.fromFloats(colors[0], colors[1], colors[2], 1f);
+                return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
             }
         }
 
@@ -2187,7 +2187,7 @@ public class RenderUtils
             {
                 final float[] colors = getColorComponents(dye.getEntityColor());
 //            return color(colors[0], colors[1], colors[2], 1f);
-                return ColorHelper.fromFloats(colors[0], colors[1], colors[2], 1f);
+                return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
             }
         }
 

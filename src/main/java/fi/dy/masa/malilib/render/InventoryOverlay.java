@@ -278,7 +278,7 @@ public class InventoryOverlay
     {
 //        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_SINGLE_CHEST, context);
 //        Matrix4f posMatrix = context.getMatrices().peek().getPositionMatrix();
-        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
+        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_SINGLE_CHEST);
         if (gpuTextureView == null) return;
 
         RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   7,  61, color); // left (top)
@@ -401,7 +401,7 @@ public class InventoryOverlay
 
 //        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, drawContext);
 //        Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
-        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
+        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
         if (gpuTextureView == null) return;
 
         RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0, 50, 83); // top-left (main part)
