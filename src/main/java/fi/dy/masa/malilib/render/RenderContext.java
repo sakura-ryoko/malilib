@@ -59,11 +59,6 @@ public class RenderContext implements AutoCloseable
     private boolean started;
     private int indexCount;
 
-    public RenderContext(RenderPipeline shader)
-    {
-        this(() -> "malilib:RenderContext", shader);
-    }
-
     public RenderContext(Supplier<String> name, RenderPipeline shader)
     {
         this.name = name;
@@ -85,11 +80,6 @@ public class RenderContext implements AutoCloseable
         this.color = -1;
         this.lineWidth = 1.0f;
         this.started = true;
-    }
-
-    public BufferBuilder start(RenderPipeline shader)
-    {
-        return this.start(() -> "malilib:RenderContext", shader);
     }
 
     public BufferBuilder start(Supplier<String> name, RenderPipeline shader)
@@ -576,6 +566,11 @@ public class RenderContext implements AutoCloseable
         if (id != null)
         {
             RenderUtils.tex().destroyTexture(id);
+        }
+
+        if (this.texture != null)
+        {
+            RenderUtils.tex().destroyTexture(this.texture.getId());
         }
 
         RenderSystem.setShaderTexture(0, null);
