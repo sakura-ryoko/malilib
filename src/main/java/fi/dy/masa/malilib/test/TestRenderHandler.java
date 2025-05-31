@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -13,7 +15,10 @@ import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.*;
+import net.minecraft.client.render.BufferBuilderStorage;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
@@ -37,6 +42,7 @@ import net.minecraft.util.profiler.Profilers;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.render.InventoryOverlay;
@@ -66,23 +72,37 @@ public class TestRenderHandler implements IRenderer
     @Override
     public void onRenderGameOverlayPostAdvanced(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc)
     {
-        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
-            MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
-            MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
+        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
-            /*
-            profiler.push(this.getProfilerSectionSupplier() + "_inventory_overlay");
-            InventoryOverlay.Context context = RayTraceUtils.getTargetInventory(mc, true);
-
-            if (context != null)
+            if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
+                MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
             {
-                renderInventoryOverlay(context, drawContext, mc);
+                /*
+                profiler.push(this.getProfilerSectionSupplier() + "_inventory_overlay");
+                InventoryOverlay.Context context = RayTraceUtils.getTargetInventory(mc, true);
+
+                if (context != null)
+                {
+                    renderInventoryOverlay(context, drawContext, mc);
+                }
+
+                profiler.pop();
+                 */
+
+                TestInventoryOverlayHandler.getInstance().getRenderContext(drawContext, profiler, mc);
             }
 
-            profiler.pop();
-             */
+            if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
+            {
+                List<String> list = new ArrayList<>();
+                list.add("Test Line 1");
+                list.add("Test Line 2");
+                list.add("Test Line 3");
+                list.add("Test Line 4");
+                list.add("Test Line 5");
 
-            TestInventoryOverlayHandler.getInstance().getRenderContext(drawContext, profiler, mc);
+                RenderUtils.renderText(drawContext, 4, 4, 0.5F, 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
+            }
         }
     }
 

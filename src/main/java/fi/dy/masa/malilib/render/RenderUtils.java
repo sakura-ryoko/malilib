@@ -815,7 +815,7 @@ public class RenderUtils
 
             if (useBackground)
             {
-                drawRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) scale);
+                drawRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) (scale * 2));
             }
 
             drawContext.drawText(fontRenderer, line, x, y, textColor, useShadow);
