@@ -67,7 +67,7 @@ public class WidgetCheckBox extends WidgetBase
 
     /**
      * Set the current checked value
-     * @param checked
+     * @param checked ()
      * @param notifyListener If true, then the change listener (if set) will be notified.
      * If false, then the listener will not be notified
      */
