@@ -66,7 +66,7 @@ public class WidgetSlider extends WidgetBase
 
         String str = this.callback.getFormattedDisplayValue();
         int w = this.getStringWidth(str);
-        this.drawString(drawContext, this.x + (this.width / 2) - w / 2, this.y + 6, this.width, this.height, 0xFFFFFFA0, str);
+        this.drawString(drawContext, this.x + (this.width / 2) - w / 2, this.y + 6, 0xFFFFFFA0, str);
     }
 
     protected double getRelativePosition(int mouseX)

@@ -284,7 +284,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         int txtY = this.y + this.height / 2 - this.fontHeight / 2;
         // 100
         matrixStackIn.translate(0, 0);
-        this.drawString(drawContext, txtX, txtY, this.width, this.height, 0xFFE0E0E0, str);
+        this.drawString(drawContext, txtX, txtY, 0xFFE0E0E0, str);
         txtY += this.height + 1;
         int scrollWidth = 10;
 
@@ -317,7 +317,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 //                RenderUtils.depthTest(true);
                 RenderUtils.drawRect(drawContext, this.x, y, this.width - scrollWidth, this.height, bg);
                 str = this.getDisplayString(list.get(i));
-                this.drawString(drawContext, txtX, txtY, this.width, this.height, 0xFFE0E0E0, str);
+                this.drawString(drawContext, txtX, txtY, 0xFFE0E0E0, str);
                 y += this.height;
                 txtY += this.height;
             }

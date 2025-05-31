@@ -169,22 +169,22 @@ public abstract class WidgetBase
         return this.textRenderer.getWidth(text);
     }
 
-    public void drawString(DrawContext drawContext, int x, int y, int width, int height, int color, String text)
+    public void drawString(DrawContext drawContext, int x, int y, int color, String text)
     {
         drawContext.drawText(this.textRenderer, text, x, y, color, false);
     }
 
-    public void drawCenteredString(DrawContext drawContext, int x, int y, int width, int height, int color, String text)
+    public void drawCenteredString(DrawContext drawContext, int x, int y, int color, String text)
     {
         drawContext.drawText(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
     }
 
-    public void drawStringWithShadow(DrawContext drawContext, int x, int y, int width, int height, int color, String text)
+    public void drawStringWithShadow(DrawContext drawContext, int x, int y, int color, String text)
     {
         drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
     }
 
-    public void drawCenteredStringWithShadow(DrawContext drawContext, int x, int y, int width, int height, int color, String text)
+    public void drawCenteredStringWithShadow(DrawContext drawContext, int x, int y, int color, String text)
     {
 //        final int startX = x + 2;
 //        final int endX = x + width - 2;

@@ -151,7 +151,7 @@ public class ButtonGeneric extends ButtonBase
             {
                 int x = this.x + this.width / 2;
 
-                this.drawCenteredStringWithShadow(drawContext, x, y, this.width, this.height, color, this.displayString);
+                this.drawCenteredStringWithShadow(drawContext, x, y, color, this.displayString);
             }
             else
             {
@@ -162,7 +162,7 @@ public class ButtonGeneric extends ButtonBase
                     x += this.icon.getWidth() + 2;
                 }
 
-                this.drawStringWithShadow(drawContext, x, y, this.width, this.height, color, this.displayString);
+                this.drawStringWithShadow(drawContext, x, y, color, this.displayString);
             }
         }
     }

@@ -82,11 +82,11 @@ public class WidgetLabel extends WidgetBase
 
             if (this.centered)
             {
-                this.drawCenteredStringWithShadow(drawContext, this.x + this.width / 2, yTextStart + i * fontHeight, this.width, this.height, this.textColor, text);
+                this.drawCenteredStringWithShadow(drawContext, this.x + this.width / 2, yTextStart + i * fontHeight, this.textColor, text);
             }
             else
             {
-                this.drawStringWithShadow(drawContext, this.x, yTextStart + i * fontHeight, this.width, this.height, this.textColor, text);
+                this.drawStringWithShadow(drawContext, this.x, yTextStart + i * fontHeight, this.textColor, text);
             }
         }
     }

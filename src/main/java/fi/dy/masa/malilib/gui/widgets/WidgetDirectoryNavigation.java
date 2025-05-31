@@ -118,7 +118,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             int textColor = 0xC0C0C0C0;
             int maxLen = (this.width - 40) / this.getStringWidth("a") - 4; // FIXME
             String path = FileUtils.getJoinedTrailingPathElements(this.currentDir, this.rootDir, maxLen, " / ");
-            this.drawString(drawContext, pathStartX + 3, this.y + 3, this.width, this.height, textColor, path);
+            this.drawString(drawContext, pathStartX + 3, this.y + 3, textColor, path);
         }
     }
 
