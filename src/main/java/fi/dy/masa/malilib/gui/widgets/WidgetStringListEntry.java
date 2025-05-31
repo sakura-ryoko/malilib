@@ -42,7 +42,7 @@ public class WidgetStringListEntry extends WidgetListEntryBase<String>
         }
 
         int yOffset = (this.height - this.fontHeight) / 2 + 1;
-        this.drawStringWithShadow(drawContext, this.x + 2, this.y + yOffset, this.width, this.height, 0xFFFFFFFF, this.entry);
+        this.drawStringWithShadow(drawContext, this.x + 2, this.y + yOffset, 0xFFFFFFFF, this.entry);
 
         super.render(drawContext, mouseX, mouseY, selected);
     }
