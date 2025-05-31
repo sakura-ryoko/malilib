@@ -114,7 +114,7 @@
     "malilib.config.test_enum.prettyName.testEnumConfig": "Тест переліку налаштувань",
     "malilib.config.test_enum.prettyName.testEnumSinglePlayer": "Тест переліку гри наодинці",
     "malilib.config.test_enum.prettyName.testSelectorHotkey": "Тест селектора",
-    "malilib.config.test_enum.prettyName.testTestLines": "Test Text Lines",
+    "malilib.config.test_enum.prettyName.testTestLines": "Тест ліній тексту",
     "malilib.config.test_enum.prettyName.testWallsHotkey": "Тест стін",
     "malilib.error.failed_to_create_directory": "Не вдалося створити каталог «%s».",
     "malilib.error.file_or_directory_already_exists": "Файл або каталог «%s» вже існує.",
