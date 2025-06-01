@@ -1,6 +1,8 @@
 package malilib.util.nbt;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,6 +14,7 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipException;
 import javax.annotation.Nullable;
 
 import net.minecraft.nbt.CompressedStreamTools;
@@ -242,9 +245,21 @@ public class NbtUtils
         {
             return CompressedStreamTools.readCompressed(is);
         }
+        catch (ZipException e)
+        {
+            // Maybe the file is uncompressed, attempt to read it as such
+            try (DataInputStream is = new DataInputStream(new BufferedInputStream(Files.newInputStream(file))))
+            {
+                return CompressedStreamTools.read(is);
+            }
+            catch (Exception e2)
+            {
+                MaLiLib.LOGGER.warn("Failed to read (assumed uncompressed) NBT data from file '{}'", file.toAbsolutePath(), e2);
+            }
+        }
         catch (Exception e)
         {
-            MaLiLib.LOGGER.warn("Failed to read NBT data from file '{}'", file.toAbsolutePath());
+            MaLiLib.LOGGER.warn("Failed to read NBT data from file '{}'", file.toAbsolutePath(), e);
         }
 
         return null;
