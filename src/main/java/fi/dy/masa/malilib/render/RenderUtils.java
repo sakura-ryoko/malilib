@@ -1,12 +1,11 @@
 package fi.dy.masa.malilib.render;
 
+import java.lang.Math;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.joml.Matrix3x2f;
-import org.joml.Matrix3x2fStack;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
+import org.jetbrains.annotations.ApiStatus;
+import org.joml.*;
 
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
@@ -22,6 +21,7 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.state.ItemGuiElementRenderState;
 import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.gui.render.state.TextGuiElementRenderState;
@@ -30,11 +30,9 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BlockModelPart;
 import net.minecraft.client.render.model.BlockStateModel;
-import net.minecraft.client.texture.ResourceTexture;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.texture.TextureSetup;
+import net.minecraft.client.texture.*;
 import net.minecraft.client.util.BufferAllocator;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
@@ -61,7 +59,10 @@ import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
+import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
+import fi.dy.masa.malilib.render.special.MaLiLibBlockStateModelGuiElement;
+import fi.dy.masa.malilib.render.special.MaLiLibBlockModelGuiElementRenderer;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
@@ -247,6 +248,13 @@ public class RenderUtils
     public static void addSpecialElement(DrawContext drawContext, SpecialGuiElementRenderState specialElement)
     {
         ((IMixinDrawContext) drawContext).malilib_getRenderState().addSpecialElement(specialElement);
+    }
+
+    @ApiStatus.Internal
+    public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc)
+    {
+        // Add Gui Block Model Renderer
+        ((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuIRenderers().put(MaLiLibBlockStateModelGuiElement.class, new MaLiLibBlockModelGuiElementRenderer(immediate, mc.getBlockRenderManager()));
     }
 
     /**
@@ -2014,80 +2022,89 @@ public class RenderUtils
         }
     }
 
-    @SuppressWarnings("deprecation")
-    // FIXME, is this even used?
-    public static void renderModelInGui(int x, int y, BlockStateModel model, BlockState state, float zLevel, DrawContext context)
+    public static boolean stateModelHasQuads(BlockState state)
+    {
+        return modelHasQuads(Objects.requireNonNull(MinecraftClient.getInstance().getBlockRenderManager().getModel(state)));
+    }
+
+    public static boolean modelHasQuads(@Nonnull BlockStateModel model)
+    {
+        return hasQuads(model.getParts(new LocalRandom(0)));
+    }
+
+    public static boolean hasQuads(List<BlockModelPart> modelParts)
+    {
+        if (modelParts.isEmpty()) return false;
+        int totalSize = 0;
+
+        for (BlockModelPart part : modelParts)
+        {
+            for (Direction face : PositionUtils.ALL_DIRECTIONS)
+            {
+                totalSize += part.getQuads(face).size();
+            }
+        }
+
+        return totalSize > 0;
+    }
+
+    public static void renderModelInGui(DrawContext drawContext, int x, int y, BlockStateModel model, BlockState state, MinecraftClient mc)
+    {
+        renderModelInGui(drawContext, x, y, 0f, model, state, 0.625f, mc);
+    }
+
+    public static void renderModelInGui(DrawContext drawContext, int x, int y, float zLevel, BlockStateModel model, BlockState state, float scale, MinecraftClient mc)
     {
         if (state.getBlock() == Blocks.AIR)
         {
             return;
         }
 
-        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
-        matrix4fStack.pushMatrix();
-//        bindGuiOverlayTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, context);
-//        tex().getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
+        MatrixStack matrices = new MatrixStack();
+//        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+//        matrix4fStack.pushMatrix();
 
-//        bindShaderTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, 0);
+        GpuTextureView texture = bindGpuTextureView(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 
-//        blend(true);
-//        color(1f, 1f, 1f, 1f);
-
+        matrices.push();
         //setupGuiTransform(x, y, model.hasDepth(), zLevel);
-        setupGuiTransform(x, y, zLevel);
+//        setupGuiTransform(matrices, x, y, zLevel);
+        matrices.translate((float) (x + 8.0), (float) (y + 8.0), (float) (zLevel + 100.0));
+        matrices.scale((float) 16, (float) -16, (float) 16);
+        Quaternionf rot = new Quaternionf().rotationXYZ(30 * (float) (Math.PI / 180.0), 225 * (float) (Math.PI / 180.0), 0.0F);
+//        matrix4fStack.rotateX(matrix4fRotateFix(30));
+//        matrix4fStack.rotateY(matrix4fRotateFix(225));
+        matrices.multiply(rot);
+        matrices.scale(scale, scale, scale);
 
-        matrix4fStack.rotateX(matrix4fRotateFix(30));
-        matrix4fStack.rotateY(matrix4fRotateFix(225));
-        matrix4fStack.scale(0.625f, 0.625f, 0.625f);
-
-        renderBlockModel(model, state);
+        renderBlockModel(drawContext, matrices, model, state);
         //blend(false);
-        matrix4fStack.popMatrix();
+//        matrix4fStack.popMatrix();
+        matrices.pop();
     }
 
-    // FIXME, is this even used?
-    public static void setupGuiTransform(int xPosition, int yPosition, float zLevel)
+    public static void setupGuiTransform(MatrixStack matrices, int xPosition, int yPosition, float zLevel)
     {
-        setupGuiTransform(RenderSystem.getModelViewStack(), xPosition, yPosition, zLevel);
+        matrices.translate((float) (xPosition + 8.0), (float) (yPosition + 8.0), (float) (zLevel + 100.0));
+        matrices.scale((float) 16, (float) -16, (float) 16);
     }
 
-    // FIXME, is this even used?
-    public static void setupGuiTransform(Matrix4fStack matrix4fStack, int xPosition, int yPosition, float zLevel)
+    public static void renderBlockModel(DrawContext drawContext, MatrixStack matrices, BlockStateModel model, BlockState state)
     {
-        matrix4fStack.translate((float) (xPosition + 8.0), (float) (yPosition + 8.0), (float) (zLevel + 100.0));
-        matrix4fStack.scale((float) 16, (float) -16, (float) 16);
-    }
-
-    // FIXME, is this even used?
-    public static void renderBlockModel(BlockStateModel model, BlockState state)
-    {
-        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
-        matrix4fStack.pushMatrix();
-
-        matrix4fStack.translate((float) -0.5, (float) -0.5, (float) -0.5);
-        int color = 0xFFFFFFFF;
-
-        // TODO watch for side effects
-        //if (model.isBuiltin() == false)
-        //{
-        //RenderSystem.setShader(ShaderProgramKeys.RENDERTYPE_SOLID);
+//        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+//        matrix4fStack.pushMatrix();
+//
+//        matrix4fStack.translate((float) -0.5, (float) -0.5, (float) -0.5);
+//        int color = 0xFFFFFFFF;
 
         RenderContext ctx = new RenderContext(() -> "malilib:renderBlockModel", RenderPipelines.SOLID);
-        BufferBuilder buffer = ctx.getBuilder();
+        BufferBuilder builder = ctx.getBuilder();
 
-        for (Direction face : Direction.values())
-        {
-            RAND.setSeed(0);
-            //renderQuads(buffer, model.getQuads(state, face, RAND), state, color);
-            renderQuads(buffer, model.getParts(RAND), face, state, color);
-        }
-
-        RAND.setSeed(0);
-        renderQuads(buffer, model.getParts(RAND), null, state, color);
+        renderModel(model, state, matrices, builder);
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            BuiltBuffer meshData = builder.endNullable();
 
             if (meshData != null)
             {
@@ -2102,27 +2119,12 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockModel(): Draw Exception; {}", err.getMessage());
         }
 
-        matrix4fStack.popMatrix();
+//        matrix4fStack.popMatrix();
     }
 
-    private static void renderQuads(BufferBuilder renderer, List<BlockModelPart> quadlist, Direction face, BlockState state, int color)
-    {
-        for (BlockModelPart entry : quadlist)
-        {
-            List<BakedQuad> quads = entry.getQuads(face);
-            final int quadCount = quads.size();
-
-            for (int i = 0; i < quadCount; ++i)
-            {
-                BakedQuad quad = quads.get(i);
-                renderQuad(renderer, quad, state, 0xFFFFFFFF);
-            }
-        }
-    }
-
+    /*
     private static void renderQuad(BufferBuilder buffer, BakedQuad quad, BlockState state, int color)
     {
-        /*
         buffer.putVertexData(quad.getVertexData());
         buffer.setQuadColor(color);
 
@@ -2147,7 +2149,64 @@ public class RenderUtils
     {
         Vec3i direction = quad.getFace().getVector();
         renderer.normal(direction.getX(), direction.getY(), direction.getZ());
-        */
+    }
+    */
+
+    private static void renderModel(BlockStateModel model, BlockState state,
+                                    MatrixStack matrices, BufferBuilder builder)
+    {
+        LocalRandom random = new LocalRandom(0);
+        List<BlockModelPart> parts = model.getParts(random);
+        MatrixStack.Entry entry = matrices.peek();
+        int l = LightmapTextureManager.pack(15, 15);
+        int[] light = new int[] { l, l, l, l };
+        float[] brightness = new float[] { 0.75f, 0.75f, 0.75f, 1.0f };
+
+        for (BlockModelPart part : parts)
+        {
+            for (Direction face : PositionUtils.ALL_DIRECTIONS)
+            {
+                random.setSeed(0);
+                renderQuads(part.getQuads(face), brightness, light, entry, builder);
+            }
+
+            random.setSeed(0);
+            renderQuads(part.getQuads(null), brightness, light, entry, builder);
+        }
+    }
+
+    private static void renderQuads(List<BakedQuad> quads, float[] brightness, int[] light,
+                                    MatrixStack.Entry matrixEntry, BufferBuilder builder)
+    {
+        for (BakedQuad quad : quads)
+        {
+            renderQuad(quad, brightness, light, matrixEntry, builder);
+        }
+    }
+
+    private static void renderQuad(BakedQuad quad, float[] brightness, int[] light,
+                                   MatrixStack.Entry matrixEntry, BufferBuilder builder)
+    {
+        builder.quad(matrixEntry, quad, brightness, 1.0f, 1.0f, 1.0f, 1.0f, light, OverlayTexture.DEFAULT_UV, true);
+    }
+
+    private static void renderModelQuadOverlayBatched(BlockPos pos, BufferBuilder buffer, Color4f color, BakedQuad quad)
+    {
+        final int[] vertexData = quad.vertexData();
+        final int x = pos.getX();
+        final int y = pos.getY();
+        final int z = pos.getZ();
+        final int vertexSize = vertexData.length / 4;
+        float fx, fy, fz;
+
+        for (int index = 0; index < 4; ++index)
+        {
+            fx = x + Float.intBitsToFloat(vertexData[index * vertexSize    ]);
+            fy = y + Float.intBitsToFloat(vertexData[index * vertexSize + 1]);
+            fz = z + Float.intBitsToFloat(vertexData[index * vertexSize + 2]);
+
+            buffer.vertex(fx, fy, fz).color(color.r, color.g, color.b, color.a);
+        }
     }
 
     public static MinecraftClient mc()
