@@ -2214,7 +2214,7 @@ public class RenderUtils
 
     public static void renderBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color)
     {
-        renderBlockOutline(pos, expand, lineWidth, color, true);
+        renderBlockOutline(pos, expand, lineWidth, color, false);
     }
 
     public static void renderBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color, boolean renderThrough)
@@ -2294,7 +2294,7 @@ public class RenderUtils
     public static void renderBlockOutlineOverlapping(BlockPos pos, float expand, float lineWidth,
                                                      Color4f color1, Color4f color2, Color4f color3, Matrix4f matrix4f)
     {
-        renderBlockOutlineOverlapping(pos, expand, lineWidth, color1, color2, color3, matrix4f, true);
+        renderBlockOutlineOverlapping(pos, expand, lineWidth, color1, color2, color3, matrix4f, false);
     }
 
     public static void renderBlockOutlineOverlapping(BlockPos pos, float expand, float lineWidth,

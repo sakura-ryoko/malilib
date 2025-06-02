@@ -123,7 +123,7 @@ public class TestSelector implements IClientTickHandler
 
         if (this.posLookingAt != null)
         {
-            RenderUtils.renderBlockOutline(this.posLookingAt, expand, lineWidthBlockBox, this.colorLooking, true);
+            RenderUtils.renderBlockOutline(this.posLookingAt, expand, lineWidthBlockBox, this.colorLooking, false);
         }
 
         this.renderSelection(posMatrix, projMatrix, profiler, this.AREA_SELECTION, mc);
@@ -165,7 +165,7 @@ public class TestSelector implements IClientTickHandler
             else
             {
                 RenderUtils.renderBlockOutlineOverlapping(pos1, expand, lineWidthBlockBox, this.colorPos1, this.colorPos2,
-                                                          this.colorOverlapping, posMatrix, true);
+                                                          this.colorOverlapping, posMatrix, false);
             }
         }
         else
