@@ -2064,7 +2064,7 @@ public class RenderUtils
 //        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 //        matrix4fStack.pushMatrix();
 
-        GpuTextureView texture = bindGpuTextureView(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+//        GpuTextureView texture = bindGpuTextureView(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 
         matrices.push();
         //setupGuiTransform(x, y, model.hasDepth(), zLevel);
