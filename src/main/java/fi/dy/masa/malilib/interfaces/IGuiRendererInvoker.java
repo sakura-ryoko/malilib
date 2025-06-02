@@ -7,5 +7,5 @@ import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderStat
 
 public interface IGuiRendererInvoker
 {
-    void malilib$replaceSpecialGuIRenderers(Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> map);
+    void malilib$replaceSpecialGuiRenderers(Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> map);
 }

@@ -19,7 +19,7 @@ public abstract class MixinGuiRenderer implements IGuiRendererInvoker
     @Mutable @Shadow @Final private Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> specialElementRenderers;
 
     @Override
-    public void malilib$replaceSpecialGuIRenderers(Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> map)
+    public void malilib$replaceSpecialGuiRenderers(Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> map)
     {
         this.specialElementRenderers = new HashMap<>(map);
     }

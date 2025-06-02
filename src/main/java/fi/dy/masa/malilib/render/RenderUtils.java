@@ -256,13 +256,17 @@ public class RenderUtils
     @ApiStatus.Internal
     public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc)
     {
-        // Add Gui Block Model Renderer
         ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder = new ImmutableMap.Builder<>();
+
+        // Build new ImmutableMap
         builder.putAll(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
 
+        // Add Gui Block Model Renderer
         builder.put(MaLiLibBlockStateModelGuiElement.class, new MaLiLibBlockModelGuiElementRenderer(immediate, mc.getBlockRenderManager()));
+
+        // Invoke
         IGuiRendererInvoker invoker = (IGuiRendererInvoker) guiRenderer;
-        invoker.malilib$replaceSpecialGuIRenderers(builder.buildOrThrow());
+        invoker.malilib$replaceSpecialGuiRenderers(builder.buildOrThrow());
     }
 
     /**
