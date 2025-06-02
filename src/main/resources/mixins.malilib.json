@@ -35,6 +35,7 @@
         "render.MixinDrawContext",
         "render.MixinGameRenderer",
         "render.MixinGlBackend",
+        "render.MixinGuiRenderer",
         "render.MixinRenderPipelines",
         "render.MixinWorldRenderer",
         "screen.IMixinHandledScreen",

@@ -4,6 +4,7 @@ import java.lang.Math;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.*;
 
@@ -22,6 +23,7 @@ import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.render.GuiRenderer;
+import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
 import net.minecraft.client.gui.render.state.ItemGuiElementRenderState;
 import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.gui.render.state.TextGuiElementRenderState;
@@ -57,6 +59,7 @@ import net.minecraft.village.VillagerProfession;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
 import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
@@ -254,7 +257,12 @@ public class RenderUtils
     public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc)
     {
         // Add Gui Block Model Renderer
-        ((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuIRenderers().put(MaLiLibBlockStateModelGuiElement.class, new MaLiLibBlockModelGuiElementRenderer(immediate, mc.getBlockRenderManager()));
+        ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder = new ImmutableMap.Builder<>();
+        builder.putAll(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
+
+        builder.put(MaLiLibBlockStateModelGuiElement.class, new MaLiLibBlockModelGuiElementRenderer(immediate, mc.getBlockRenderManager()));
+        IGuiRendererInvoker invoker = (IGuiRendererInvoker) guiRenderer;
+        invoker.malilib$replaceSpecialGuIRenderers(builder.buildOrThrow());
     }
 
     /**

@@ -12,5 +12,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface IMixinGuiRenderer
 {
     @Accessor("specialElementRenderers")
-    Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> malilib_getSpecialGuIRenderers();
+    Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> malilib_getSpecialGuiRenderers();
 }
