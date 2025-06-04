@@ -43,6 +43,7 @@ public class MaLiLibBlockModelGuiElementRenderer extends SpecialGuiElementRender
         {
             BlockStateModel model = this.blockRenderManager.getModel(state.state());
             BlockRenderLayer layer = RenderLayers.getBlockLayer(state.state());
+
             RenderContext ctx = new RenderContext(() -> "malilib:gui_block_state_model", layer.getPipeline());
             BufferBuilder builder = ctx.getBuilder();
 

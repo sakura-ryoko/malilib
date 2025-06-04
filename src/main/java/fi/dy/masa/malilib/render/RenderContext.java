@@ -5,6 +5,8 @@ import java.util.OptionalInt;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.mojang.blaze3d.systems.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -12,10 +14,6 @@ import org.joml.Vector4f;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.RenderPass;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.VertexSorter;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.gl.Framebuffer;
@@ -258,18 +256,26 @@ public class RenderContext implements AutoCloseable
                 this.indexBuffer = null;
             }
 
+            GpuDevice device = RenderSystem.tryGetDevice();
+
+            if (device == null)
+            {
+                MaLiLib.LOGGER.warn("RenderContext#upload: GpuDevice is null for renderer '{}'", this.name.get());
+                return;
+            }
+
             if (this.vertexBuffer == null)
             {
                 // BufferType.VERTICES - 40
-                this.vertexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" VertexBuffer", 40, expectedSize);
+                this.vertexBuffer = device.createBuffer(() -> this.name.get()+" VertexBuffer", 40, expectedSize);
             }
             else if (this.vertexBuffer.size() < expectedSize)
             {
                 this.vertexBuffer.close();
-                this.vertexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" VertexBuffer", 40, expectedSize);
+                this.vertexBuffer = device.createBuffer(() -> this.name.get()+" VertexBuffer", 40, expectedSize);
             }
 
-            CommandEncoder encoder = RenderSystem.getDevice().createCommandEncoder();
+            CommandEncoder encoder = device.createCommandEncoder();
 
             if (!this.vertexBuffer.isClosed())
             {
@@ -298,7 +304,7 @@ public class RenderContext implements AutoCloseable
                     }
 
                     // BufferType.INDICES --> 72
-                    this.indexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" IndexBuffer", 72, meshData.getSortedBuffer());
+                    this.indexBuffer = device.createBuffer(() -> this.name.get()+" IndexBuffer", 72, meshData.getSortedBuffer());
                 }
             }
             else if (this.indexBuffer != null)
@@ -390,15 +396,23 @@ public class RenderContext implements AutoCloseable
 
         if (RenderSystem.isOnRenderThread())
         {
+            GpuDevice device = RenderSystem.tryGetDevice();
+
+            if (device == null)
+            {
+                MaLiLib.LOGGER.warn("RenderContext#uploadIndex: GpuDevice is null for renderer '{}'", this.name.get());
+                return;
+            }
+
             if (this.indexBuffer == null)
             {
-                this.indexBuffer = RenderSystem.getDevice().createBuffer(() -> this.name.get()+" IndexBuffer", 72, buffer.getBuffer());
+                this.indexBuffer = device.createBuffer(() -> this.name.get()+" IndexBuffer", 72, buffer.getBuffer());
             }
             else
             {
                 if (!this.indexBuffer.isClosed())
                 {
-                    RenderSystem.getDevice().createCommandEncoder().writeToBuffer(this.indexBuffer.slice(), buffer.getBuffer());
+                    device.createCommandEncoder().writeToBuffer(this.indexBuffer.slice(), buffer.getBuffer());
                 }
                 else
                 {
@@ -746,6 +760,14 @@ public class RenderContext implements AutoCloseable
                 modelOffset.set(this.offset);
             }
 
+            GpuDevice device = RenderSystem.getDevice();
+
+            if (device == null)
+            {
+                MaLiLib.LOGGER.warn("RenderContext#drawInternal: GpuDevice is null for renderer '{}'", this.name.get());
+                return;
+            }
+
             Framebuffer mainFb = RenderUtils.fb();
             GpuTextureView texture1;
             GpuTextureView texture2;
@@ -776,11 +798,11 @@ public class RenderContext implements AutoCloseable
                                                                 line);
 
             // Attach Frame buffers
-            try (RenderPass pass = RenderSystem.getDevice()
-                                               .createCommandEncoder()
-                                               .createRenderPass(this.name,
-                                                       texture1, OptionalInt.empty(),
-                                                       texture2, OptionalDouble.empty()))
+            try (RenderPass pass = device.createCommandEncoder()
+                    .createRenderPass(this.name,
+                            texture1, OptionalInt.empty(),
+                            texture2, OptionalDouble.empty())
+            )
             {
 //                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}] // isDevelopment [{}]", this.name.get(), this.shader.getLocation().toString(), RenderPassImpl.IS_DEVELOPMENT);
                 pass.setPipeline(this.shader);
