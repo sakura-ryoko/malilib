@@ -5,7 +5,6 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
-import fi.dy.masa.malilib.event.RenderEventHandler;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.*;
 
@@ -33,7 +32,10 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BlockModelPart;
 import net.minecraft.client.render.model.BlockStateModel;
-import net.minecraft.client.texture.*;
+import net.minecraft.client.texture.ResourceTexture;
+import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.texture.TextureSetup;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
@@ -58,15 +60,17 @@ import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.HudAlignment;
+import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
 import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
-import fi.dy.masa.malilib.render.special.MaLiLibBlockStateModelGuiElement;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockModelGuiElementRenderer;
+import fi.dy.masa.malilib.render.special.MaLiLibBlockStateModelGuiElement;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
@@ -268,9 +272,35 @@ public class RenderUtils
         // Event Callback
         ((RenderEventHandler) RenderEventHandler.getInstance()).onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
 
-        // Invoke
-        IGuiRendererInvoker invoker = (IGuiRendererInvoker) guiRenderer;
-        invoker.malilib$replaceSpecialGuiRenderers(builder.buildOrThrow());
+        // Invoke / Update
+        ((IGuiRendererInvoker) guiRenderer).malilib$replaceSpecialGuiRenderers(builder.buildOrThrow());
+
+        // Debug Built Map
+        if (MaLiLibReference.DEBUG_MODE)
+        {
+            dumpBuilerMap(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
+        }
+    }
+
+    private static void dumpBuilerMap(Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> entries)
+    {
+        System.out.print("DUMP SpecialGuiRenderers()\n");
+
+        if (entries == null || entries.size() == 0)
+        {
+            System.out.print("NULL OR EMPTY!\n");
+            return;
+        }
+
+        int i = 0;
+
+        for (Class<? extends SpecialGuiElementRenderState> entry : entries.keySet())
+        {
+            System.out.printf("[%d] K (State): [%s], V (Renderer): [%s]\n", i, entry.getName(), entries.get(entry).getClass().getName());
+            i++;
+        }
+
+        System.out.print("DUMP END\n");
     }
 
     /**
