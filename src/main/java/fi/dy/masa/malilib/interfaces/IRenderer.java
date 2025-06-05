@@ -2,6 +2,11 @@ package fi.dy.masa.malilib.interfaces;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import com.google.common.collect.ImmutableMap;
+import net.minecraft.client.gui.render.GuiRenderer;
+import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
+import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
 import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
@@ -102,4 +107,17 @@ public interface IRenderer
     {
         return () -> this.getClass().getName();
     }
+
+    /**
+     * Register your Special Gui Element (PIP) Renderer.
+     * Simply bind your sSpecial Gui Element State / Renderer to the Immutable Map Builder using this.
+     * -
+     * !!!WARNING!!!  This is called in the early Game Pre-Init() 'clinit' phase!
+     *
+     * @param guiRenderer ()
+     * @param immediate ()
+     * @param mc ()
+     * @param builder ()
+     */
+    default void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc, ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder) { }
 }

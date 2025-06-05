@@ -3,6 +3,11 @@ package fi.dy.masa.malilib.event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import com.google.common.collect.ImmutableMap;
+import net.minecraft.client.gui.render.GuiRenderer;
+import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
+import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
@@ -38,6 +43,7 @@ public class RenderEventHandler implements IRenderDispatcher
 //    private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
+    private final List<IRenderer> specialGuiRenderers = new ArrayList<>();
 
     public static IRenderDispatcher getInstance()
     {
@@ -113,6 +119,15 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.worldLastRenderers.contains(renderer) == false)
         {
             this.worldLastRenderers.add(renderer);
+        }
+    }
+
+    @Override
+    public void registerSpecialGuiRenderer(IRenderer renderer)
+    {
+        if (this.specialGuiRenderers.contains(renderer) == false)
+        {
+            this.specialGuiRenderers.add(renderer);
         }
     }
 
@@ -493,5 +508,17 @@ public class RenderEventHandler implements IRenderDispatcher
         }
 
         profiler.pop();
+    }
+
+    @ApiStatus.Internal
+    public void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc, ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder)
+    {
+        if (this.specialGuiRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.specialGuiRenderers)
+            {
+                renderer.onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
+            }
+        }
     }
 }

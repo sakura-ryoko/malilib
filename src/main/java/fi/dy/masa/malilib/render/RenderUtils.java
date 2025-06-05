@@ -5,6 +5,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
+import fi.dy.masa.malilib.event.RenderEventHandler;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.*;
 
@@ -264,6 +265,9 @@ public class RenderUtils
         // Add Gui Block Model Renderer
         builder.put(MaLiLibBlockStateModelGuiElement.class, new MaLiLibBlockModelGuiElementRenderer(immediate, mc.getBlockRenderManager()));
 
+        // Event Callback
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
+
         // Invoke
         IGuiRendererInvoker invoker = (IGuiRendererInvoker) guiRenderer;
         invoker.malilib$replaceSpecialGuiRenderers(builder.buildOrThrow());
@@ -344,9 +348,23 @@ public class RenderUtils
         drawOutline(drawContext, x - 1, y - 1, width + 2, height + 2, colorBorder);
     }
 
+    public static void drawOutlinedBox(DrawContext drawContext, int x, int y, int width, int height, float scale, int colorBg, int colorBorder)
+    {
+        // Draw the background
+        drawRect(drawContext, x, y, width, height, colorBg, scale);
+
+        // Draw the border
+        drawOutline(drawContext, x - 1, y - 1, width + 2, height + 2, scale, colorBorder);
+    }
+
     public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int colorBorder)
     {
         drawOutline(drawContext, x, y, width, height, 1, colorBorder);
+    }
+
+    public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, float scale, int colorBorder)
+    {
+        drawOutline(drawContext, x, y, width, height, scale, 1, colorBorder);
     }
 
     public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, int borderWidth, int colorBorder)
@@ -355,6 +373,14 @@ public class RenderUtils
         drawRect(drawContext, x + width - borderWidth, y, borderWidth, height, colorBorder); // right edge
         drawRect(drawContext, x + borderWidth, y, width - 2 * borderWidth, borderWidth, colorBorder); // top edge
         drawRect(drawContext, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder); // bottom edge
+    }
+
+    public static void drawOutline(DrawContext drawContext, int x, int y, int width, int height, float scale, int borderWidth, int colorBorder)
+    {
+        drawRect(drawContext, x, y, borderWidth, height, colorBorder, scale); // left edge
+        drawRect(drawContext, x + width - borderWidth, y, borderWidth, height, colorBorder, scale); // right edge
+        drawRect(drawContext, x + borderWidth, y, width - 2 * borderWidth, borderWidth, colorBorder, scale); // top edge
+        drawRect(drawContext, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, scale); // bottom edge
     }
 
     @Deprecated

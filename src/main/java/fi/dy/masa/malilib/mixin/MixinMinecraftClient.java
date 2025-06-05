@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
@@ -25,14 +26,26 @@ import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 import fi.dy.masa.malilib.test.ConfigTestEnum;
 import fi.dy.masa.malilib.test.TestSelector;
 
+import java.nio.file.Path;
+
 @Mixin(MinecraftClient.class)
 public abstract class MixinMinecraftClient
 {
     @Shadow public ClientWorld world;
     @Unique private ClientWorld worldBefore;
 
+    @Inject(method = "<init>(Lnet/minecraft/client/RunArgs;)V",
+            at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/level/storage/LevelStorage;createSymlinkFinder(Ljava/nio/file/Path;)Lnet/minecraft/util/path/SymlinkFinder;"))
+    private void malilib_onPreGameInit(RunArgs args, CallbackInfo ci,
+                                       @Local Path runDir)
+    {
+        // Register all mod handlers
+        ((InitializationHandler) InitializationHandler.getInstance()).onPreGameInit(runDir);
+    }
+
     @Inject(method = "<init>(Lnet/minecraft/client/RunArgs;)V", at = @At("RETURN"))
-    private void onInitComplete(RunArgs args, CallbackInfo ci)
+    private void malilib_onInitComplete(RunArgs args, CallbackInfo ci)
     {
         // Register all mod handlers
         ((InitializationHandler) InitializationHandler.getInstance()).onGameInitDone();
