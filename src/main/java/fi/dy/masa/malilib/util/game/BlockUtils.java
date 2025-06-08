@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -25,7 +26,9 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.*;
 import net.minecraft.storage.NbtWriteView;
 import net.minecraft.storage.WriteView;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.data.MaLiLibTag;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -569,5 +572,21 @@ public class BlockUtils
         }
 
         return true;
+    }
+
+    @SuppressWarnings("deprecation")
+    public static boolean matchSolidFullCubes(BlockState left, BlockState right)
+    {
+        if (left.isSolid() && right.isSolid())
+        {
+            return left.isOpaqueFullCube() && right.isOpaqueFullCube();
+        }
+
+        return false;
+    }
+
+    public static boolean matchMapColors(World world, BlockPos pos, BlockState left, BlockState right)
+    {
+        return left.getMapColor(world, pos) == right.getMapColor(world, pos);
     }
 }
