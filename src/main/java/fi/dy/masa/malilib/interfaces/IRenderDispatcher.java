@@ -62,5 +62,5 @@ public interface IRenderDispatcher
      * Register this renderer with a Special Gui Render State / Renderer callback from Vanilla.
      * @param renderer ()
      */
-    void registerSpecialGuiRenderer(IRenderer renderer);
+//    void registerSpecialGuiRenderer(IRenderer renderer);
 }

@@ -258,6 +258,8 @@ public class RenderUtils
         ((IMixinDrawContext) drawContext).malilib_getRenderState().addSpecialElement(specialElement);
     }
 
+    // FIXME
+/*
     @ApiStatus.Internal
     public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc)
     {
@@ -281,6 +283,7 @@ public class RenderUtils
             dumpBuilerMap(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
         }
     }
+*/
 
     private static void dumpBuilerMap(Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> entries)
     {
@@ -2111,6 +2114,8 @@ public class RenderUtils
             {
                 totalSize += part.getQuads(face).size();
             }
+
+            totalSize += part.getQuads(null).size();
         }
 
         return totalSize > 0;
@@ -2128,13 +2133,14 @@ public class RenderUtils
             return;
         }
 
-        RenderUtils.addSpecialElement(drawContext, new MaLiLibBlockStateModelGuiElement(
-                state,
-                x, y,
-                size,
-                zLevel, scale,
-                RenderUtils.peekLastScissor(drawContext))
-        );
+        // FIXME
+//        RenderUtils.addSpecialElement(drawContext, new MaLiLibBlockStateModelGuiElement(
+//                state,
+//                x, y,
+//                size,
+//                zLevel, scale,
+//                RenderUtils.peekLastScissor(drawContext))
+//        );
 
 //        MatrixStack matrices = new MatrixStack();
 ////        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
@@ -2303,6 +2309,11 @@ public class RenderUtils
     public static TextureManager tex()
     {
         return mc().getTextureManager();
+    }
+
+    public static LightmapTextureManager lightmap()
+    {
+        return mc().gameRenderer.getLightmapTextureManager();
     }
 
     /*

@@ -6,6 +6,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
 
+/**
+ * DISABLED -- DOES NOT WORK, DO NOT USE
+ */
+@Deprecated
 public record MaLiLibBlockStateModelGuiElement(
         BlockState state,
         int x1,

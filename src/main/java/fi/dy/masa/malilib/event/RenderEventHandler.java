@@ -43,7 +43,7 @@ public class RenderEventHandler implements IRenderDispatcher
 //    private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
-    private final List<IRenderer> specialGuiRenderers = new ArrayList<>();
+//    private final List<IRenderer> specialGuiRenderers = new ArrayList<>();
 
     public static IRenderDispatcher getInstance()
     {
@@ -122,14 +122,14 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
-    @Override
-    public void registerSpecialGuiRenderer(IRenderer renderer)
-    {
-        if (this.specialGuiRenderers.contains(renderer) == false)
-        {
-            this.specialGuiRenderers.add(renderer);
-        }
-    }
+//    @Override
+//    public void registerSpecialGuiRenderer(IRenderer renderer)
+//    {
+//        if (this.specialGuiRenderers.contains(renderer) == false)
+//        {
+//            this.specialGuiRenderers.add(renderer);
+//        }
+//    }
 
 //    @ApiStatus.Internal
 //    public void onRenderGameOverlayLastDrawer(DrawContext drawContext, MinecraftClient mc, float partialTicks)
@@ -510,15 +510,15 @@ public class RenderEventHandler implements IRenderDispatcher
         profiler.pop();
     }
 
-    @ApiStatus.Internal
-    public void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc, ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder)
-    {
-        if (this.specialGuiRenderers.isEmpty() == false)
-        {
-            for (IRenderer renderer : this.specialGuiRenderers)
-            {
-                renderer.onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
-            }
-        }
-    }
+//    @ApiStatus.Internal
+//    public void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc, ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder)
+//    {
+//        if (this.specialGuiRenderers.isEmpty() == false)
+//        {
+//            for (IRenderer renderer : this.specialGuiRenderers)
+//            {
+//                renderer.onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
+//            }
+//        }
+//    }
 }

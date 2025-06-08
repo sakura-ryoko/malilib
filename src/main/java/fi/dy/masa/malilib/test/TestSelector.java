@@ -48,6 +48,11 @@ public class TestSelector implements IClientTickHandler
                 {
                     select(true);
                 }
+
+                if (this.posLookingAt == null)
+                {
+                    this.updateLookingAt(mc);
+                }
             }
         }
     }
