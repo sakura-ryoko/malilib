@@ -101,7 +101,7 @@ public class TestRenderHandler implements IRenderer
                 list.add("Test Line 4");
                 list.add("Test Line 5");
 
-                RenderUtils.renderText(drawContext, 4, 4, 0.5F, 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
+                RenderUtils.renderText(drawContext, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
             }
         }
     }

@@ -495,8 +495,10 @@ public class RenderUtils
                 RenderPipelines.GUI,
                 TextureSetup.empty(),
                 new Matrix3x2f(drawContext.getMatrices()),
-                x, y, width, height,
-                scale, color, peekLastScissor(drawContext))
+                x, y,
+                width, height,
+                scale, color,
+                peekLastScissor(drawContext))
         );
     }
 
@@ -852,14 +854,14 @@ public class RenderUtils
 
         if (scaled)
         {
-            if (scale != 0)
-            {
-                xOff = (int) (xOff * scale);
-                yOff = (int) (yOff * scale);
-            }
+//            if (scale != 0)
+//            {
+//                xOff = (int) (xOff * scale);
+//                yOff = (int) (yOff * scale);
+//            }
 
             drawContext.getMatrices().pushMatrix();
-            drawContext.getMatrices().scale((float) scale, (float) scale);
+            drawContext.getMatrices().scale((float) scale, (float) scale);      // z = 1.0f
         }
 
         double posX = xOff + bgMargin;
@@ -894,7 +896,8 @@ public class RenderUtils
 
             if (useBackground)
             {
-                drawRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) (scale * 2));
+//                drawRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) (scale * 2));
+                drawRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor);
             }
 
             drawContext.drawText(fontRenderer, line, x, y, textColor, useShadow);
