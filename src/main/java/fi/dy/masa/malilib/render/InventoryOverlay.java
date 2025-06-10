@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.mixin.item.IMixinContainerComponent;
+import net.minecraft.component.type.ContainerComponent;
 import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 
@@ -518,6 +521,7 @@ public class InventoryOverlay
     public static InventoryRenderType getInventoryType(ItemStack stack)
     {
         Item item = stack.getItem();
+        ContainerComponent container = stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT);
 
         if (item instanceof BlockItem)
         {
@@ -525,7 +529,21 @@ public class InventoryOverlay
 
             if (block instanceof ShulkerBoxBlock || block instanceof ChestBlock || block instanceof BarrelBlock)
             {
-                return InventoryRenderType.FIXED_27;
+                final int size = ((IMixinContainerComponent) (Object) container).malilib_getStacks().size();
+
+                // For "Double Inventory" Barrels, etc.
+                if (size >= 0 && size < 27)
+                {
+                    return InventoryRenderType.FIXED_27;
+                }
+                else if (size >= 27 && size < 54)
+                {
+                    return InventoryRenderType.FIXED_54;
+                }
+                else if (size >= 54 && size < 256)
+                {
+                    return InventoryRenderType.GENERIC;
+                }
             }
             else if (block instanceof AbstractFurnaceBlock)
             {
@@ -1094,15 +1112,10 @@ public class InventoryOverlay
         matrixStack.scale(scale, scale);
 
 //        RenderUtils.enableDiffuseLightingGui3D();
-//        RenderUtils.color(1f, 1f, 1f, 1f);
-
+//        color = Colors.WHITE;
         drawContext.drawItem(stack.copy(), 0, 0);
-
-//        RenderUtils.color(1f, 1f, 1f, 1f);
         drawContext.drawStackOverlay(mc.textRenderer, stack.copy(), 0, 0);
-//        RenderUtils.forceDraw(drawContext);     // Do not remove, this fixes the "last stack size" bug
 
-//        RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
@@ -1131,12 +1144,9 @@ public class InventoryOverlay
         matrixStack.scale(scale, scale);
 
 //        RenderUtils.enableDiffuseLightingGui3D();
-//        RenderUtils.color(1f, 1f, 1f, 1f);
-
+        color = Colors.WHITE;
         drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_LOCKED_SLOT, 0, 0, 18, 18, color);
-        //RenderUtils.forceDraw(drawContext);
 
-//        RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
@@ -1161,11 +1171,8 @@ public class InventoryOverlay
 
 //        RenderUtils.enableDiffuseLightingGui3D();
         color = Colors.WHITE;
-
         drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, texture, 0, 0, 18, 18, color);
-        //RenderUtils.forceDraw(drawContext);
 
-//        color = RenderUtils.color(1f, 1f, 1f, 1f);
         matrixStack.popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)

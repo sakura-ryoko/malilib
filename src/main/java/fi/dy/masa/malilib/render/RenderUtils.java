@@ -603,7 +603,8 @@ public class RenderUtils
                 x, y, x + width, y + height,
                 u * pixelWidth, (u + width) * pixelWidth,
                 v * pixelWidth, (v + height) * pixelWidth,
-                argb, peekLastScissor(drawContext))
+                argb,
+                peekLastScissor(drawContext))
         );
     }
 
@@ -644,7 +645,8 @@ public class RenderUtils
     {
         addSimpleElement(drawContext,
                          new MaLiLibTexturedRectGuiElement(
-                                 RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTextureView),
+                                 RenderPipelines.GUI_TEXTURED,
+                                 TextureSetup.withoutGlTexture(gpuTextureView),
                                  new Matrix3x2f(drawContext.getMatrices()),
                                  x, y, u, v,
                                  width, height, argb,
@@ -722,9 +724,12 @@ public class RenderUtils
     public static void drawGradientRectBatched(DrawContext drawContext, float left, float top, float right, float bottom, int startColor, int endColor)
     {
         addSimpleElement(drawContext, new MaLiLibGradientRectGuiElement(
-                RenderPipelines.GUI, TextureSetup.empty(), new Matrix3x2f(drawContext.getMatrices()),
+                RenderPipelines.GUI,
+                TextureSetup.empty(),
+                new Matrix3x2f(drawContext.getMatrices()),
                 left, top, right, bottom,
-                startColor, endColor, peekLastScissor(drawContext))
+                startColor, endColor,
+                peekLastScissor(drawContext))
         );
     }
 
@@ -1677,11 +1682,13 @@ public class RenderUtils
             }
 
             addSimpleElement(drawContext,
-                             new MaLiLibLightTexturedGuiElement(RenderPipelines.GUI_TEXTURED, TextureSetup.withoutGlTexture(gpuTextureView),
-                                                                new Matrix3x2f(drawContext.getMatrices()),
-                                                                x1, y1, x2, y2,
-                                                                0.0f, 1.0f, 0.0f, 1.0f,
-                                                                -1, uv, peekLastScissor(drawContext))
+                             new MaLiLibLightTexturedGuiElement(RenderPipelines.GUI_TEXTURED,
+                                     TextureSetup.withoutGlTexture(gpuTextureView),
+                                     new Matrix3x2f(drawContext.getMatrices()),
+                                     x1, y1, x2, y2,
+                                     0.0f, 1.0f, 0.0f, 1.0f,
+                                     -1, uv,
+                                     peekLastScissor(drawContext))
             );
 
             if (mapState != null)
