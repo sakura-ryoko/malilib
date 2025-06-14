@@ -225,17 +225,17 @@ public interface IDataSyncer
         else
         {
             BlockEntity be = pair.getLeft();
+            BlockState state = world.getBlockState(pos);
+
+            if (state.isIn(BlockTags.AIR) || !state.hasBlockEntity())
+            {
+                // Don't keep requesting if we're tick warping or something.
+                return null;
+            }
 
             if (be instanceof Inventory inv1)
             {
-                BlockState state = world.getBlockState(pos);
-
-                if (state.isIn(BlockTags.AIR) || !state.hasBlockEntity())
-                {
-                    // Don't keep requesting if we're tick warping or something.
-                    return null;
-                }
-                else if (be instanceof ChestBlockEntity && state.contains(ChestBlock.CHEST_TYPE))
+                if (be instanceof ChestBlockEntity && state.contains(ChestBlock.CHEST_TYPE))
                 {
                     ChestType type = state.get(ChestBlock.CHEST_TYPE);
 
