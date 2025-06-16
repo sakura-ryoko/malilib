@@ -1,0 +1,21 @@
+{
+  "values": [
+    "#malilib:glass_blocks",
+    "#malilib:glass_panes",
+    "#malilib:coral_fans_fix",
+    "#malilib:leaves_fix",
+    "#malilib:sculk_blocks",
+    "minecraft:beehive",
+    "minecraft:bee_nest",
+    "minecraft:bookshelf",
+    "minecraft:blue_ice",
+    "minecraft:bush",
+    "minecraft:campfire",
+    "minecraft:chiseled_bookshelf",
+    "minecraft:ender_chest",
+    "minecraft:ice",
+    "minecraft:packed_ice",
+    "minecraft:soul_campfire",
+    "minecraft:turtle_egg"
+  ]
+}
