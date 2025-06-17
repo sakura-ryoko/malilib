@@ -683,7 +683,7 @@ public class InventoryUtils
                 slotCount = list.size();
             }
 
-            SimpleInventory inv = new SimpleInventory(slotCount);
+            EnderChestInventory inv = new EnderChestInventory();
             inv.readNbtList(nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS), registry);
 
             if (inv.isEmpty())

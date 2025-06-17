@@ -11,6 +11,7 @@
         "entity.MixinAbstractHorseEntity",
         "entity.MixinPiglinEntity",
         "entity.MixinSimpleInventory",
+        "item.IMixinContainerComponent",
         "item.MixinItemStack",
         "server.MixinMinecraftServer",
         "test.MixinBundleItem",

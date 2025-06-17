@@ -15,6 +15,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -45,6 +46,7 @@ import net.minecraft.world.World;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.mixin.item.IMixinContainerComponent;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.game.IEntityOwnedInventory;
@@ -98,6 +100,11 @@ public class InventoryOverlay
     public static final Identifier TEXTURE_EMPTY_SLOT_ARMOR_TRIM = Identifier.ofVanilla("container/slot/smithing_template_armor_trim");
     public static final Identifier TEXTURE_EMPTY_SLOT_UPGRADE    = Identifier.ofVanilla("container/slot/smithing_template_netherite_upgrade");
     public static final Identifier TEXTURE_EMPTY_SLOT_SWORD      = Identifier.ofVanilla("container/slot/sword");
+
+    // Other Slot-Related textures (Nine-Slice Slots w/mcmeta)
+    public static final Identifier TEXTURE_EMPTY_SLOT            = Identifier.ofVanilla("container/slot");
+    public static final Identifier TEXTURE_HIGHLIGHT_BACK        = Identifier.ofVanilla("container/slot_highlight_back");
+    public static final Identifier TEXTURE_HIGHLIGHT_FRONT       = Identifier.ofVanilla("container/slot_highlight_front");
 
     private static final EquipmentSlot[] VALID_EQUIPMENT_SLOTS = new EquipmentSlot[] { EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET };
     public static final InventoryProperties INV_PROPS_TEMP = new InventoryProperties();
@@ -492,6 +499,7 @@ public class InventoryOverlay
     public static InventoryRenderType getInventoryType(ItemStack stack)
     {
         Item item = stack.getItem();
+        ContainerComponent container = stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT);
 
         if (item instanceof BlockItem)
         {
@@ -499,7 +507,21 @@ public class InventoryOverlay
 
             if (block instanceof ShulkerBoxBlock || block instanceof ChestBlock || block instanceof BarrelBlock)
             {
-                return InventoryRenderType.FIXED_27;
+                final int size = ((IMixinContainerComponent) (Object) container).malilib_getStacks().size();
+
+                // For "Double Inventory" Barrels, etc.
+                if (size >= 0 && size <= 27)
+                {
+                    return InventoryRenderType.FIXED_27;
+                }
+                else if (size > 27 && size <= 54)
+                {
+                    return InventoryRenderType.FIXED_54;
+                }
+                else if (size > 54 && size < 256)
+                {
+                    return InventoryRenderType.GENERIC;
+                }
             }
             else if (block instanceof AbstractFurnaceBlock)
             {
