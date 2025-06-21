@@ -480,8 +480,10 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int yd = this.heightSlider + this.gapSlider;
         int cx = this.xHS;
         int cy = this.yHS + this.sizeHS + 8;
-        int cw = this.sizeHS;
-        int ch = 16;
+//        int cw = this.sizeHS;
+//        int ch = 16;
+        int cw = 32;
+        int ch = 32;
 
         RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF); // H
         y += yd;
