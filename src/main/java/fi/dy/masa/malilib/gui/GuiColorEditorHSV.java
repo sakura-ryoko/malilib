@@ -474,8 +474,10 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int yd = this.heightSlider + this.gapSlider;
         int cx = this.xHS;
         int cy = this.yHS + this.sizeHS + 8;
-        int cw = this.sizeHS;
-        int ch = 16;
+//        int cw = this.sizeHS;
+//        int ch = 16;
+        int cw = 32;
+        int ch = 32;
 
         RenderUtils.drawOutline(x, y, w, h, 0xC0FFFFFF); // H
         y += yd;
@@ -501,7 +503,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+//        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
 
         RenderUtils.setupBlend();
@@ -511,10 +514,17 @@ public class GuiColorEditorHSV extends GuiDialogBase
         //GlProgramManager.useProgram(SHADER_HUE.getProgram());
         //GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
 
-        buffer.vertex(x    , y    , z).texture(1, 0);
-        buffer.vertex(x    , y + h, z).texture(0, 0);
-        buffer.vertex(x + w, y + h, z).texture(0, 1);
-        buffer.vertex(x + w, y    , z).texture(1, 1);
+        final int[] colorPair = this.getColorPairForSelector();
+
+//        buffer.vertex(x    , y    , z).texture(1, 0);
+//        buffer.vertex(x    , y + h, z).texture(0, 0);
+//        buffer.vertex(x + w, y + h, z).texture(0, 1);
+//        buffer.vertex(x + w, y    , z).texture(1, 1);
+
+        buffer.vertex(x    , y    , z).color(colorPair[0]);
+        buffer.vertex(x    , y + h, z).color(colorPair[1]);
+        buffer.vertex(x + w, y + h, z).color(colorPair[2]);
+        buffer.vertex(x + w, y    , z).color(colorPair[3]);
 
         try
         {
@@ -620,6 +630,16 @@ public class GuiColorEditorHSV extends GuiDialogBase
         catch (Exception ignored) { }
 
         RenderSystem.disableBlend();
+    }
+
+    private int[] getColorPairForSelector()
+    {
+        int color1 = Color.HSBtoRGB(this.relH, 0f, 0f);
+        int color2 = Color.HSBtoRGB(this.relH, 1f, 0f);
+        int color3 = Color.HSBtoRGB(this.relH, 0f, 1f);
+        int color4 = Color.HSBtoRGB(this.relH, 1f, 1f);
+
+        return new int[]{ color1, color2, color3, color4 };
     }
 
     public static void renderGradientColorBar(int x, int y, float z, int width, int height, int colorStart, int colorEnd, BufferBuilder buffer)
