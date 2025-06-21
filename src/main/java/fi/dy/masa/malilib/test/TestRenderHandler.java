@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
@@ -20,16 +21,22 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.profiler.Profilers;
+import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
@@ -39,7 +46,9 @@ import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.game.BlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
+import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 @ApiStatus.Experimental
 public class TestRenderHandler implements IRenderer
@@ -207,6 +216,78 @@ public class TestRenderHandler implements IRenderer
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
                 RenderUtils.renderBundlePreview(stack, x, y, MaLiLibConfigs.Test.TEST_BUNDLE_PREVIEW_WIDTH.getIntegerValue(), true, drawContext);
+            }
+        }
+        else if (stack.isOf(Items.ENDER_CHEST))
+        {
+            if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
+            {
+                MinecraftClient mc = MinecraftClient.getInstance();
+                World world = WorldUtils.getBestWorld(mc);
+
+                if (mc.player == null || world == null)
+                {
+                    return;
+                }
+
+                PlayerEntity player = world.getPlayerByUuid(mc.player.getUuid());
+
+                if (player != null)
+                {
+                    Pair<Entity, NbtCompound> pair = TestDataSyncer.getInstance().requestEntity(world, player.getId());
+                    EnderChestInventory inv;
+
+                    if (pair != null && pair.getRight() != null && pair.getRight().contains(NbtKeys.ENDER_ITEMS))
+                    {
+                        inv = InventoryUtils.getPlayerEnderItemsFromNbt(pair.getRight(), world.getRegistryManager());
+                    }
+                    else
+                    {
+                        inv = player.getEnderChestInventory();
+                    }
+
+                    if (inv != null)
+                    {
+                        NbtCompound nbt = new NbtCompound();
+                        NbtList list = inv.toNbtList(world.getRegistryManager());
+
+                        nbt.put(NbtKeys.ENDER_ITEMS, list);
+                        RenderUtils.renderNbtItemsPreview(stack, nbt, x, y, false, drawContext);
+                    }
+
+                    // TODO 1.21.6+
+//                    EnderChestInventory inv;
+//
+//                    if (pair != null && pair.getRight() != null && pair.getRight().contains(NbtKeys.ENDER_ITEMS))
+//                    {
+//                        inv = InventoryUtils.getPlayerEnderItemsFromNbt(pair.getRight(), world.getRegistryManager());
+//                    }
+//                    else if (pair != null && pair.getLeft() instanceof PlayerEntity pe && !pe.getEnderChestInventory().isEmpty())
+//                    {
+//                        inv = pe.getEnderChestInventory();
+//                    }
+//                    else
+//                    {
+//                        // Last Ditch effort
+//                        inv = player.getEnderChestInventory();
+//                    }
+//
+//                    if (inv != null)
+//                    {
+//                        NbtInventory nbtInv = NbtInventory.fromInventory(inv);
+//
+//                        if (nbtInv.isEmpty())
+//                        {
+//                            return;
+//                        }
+//
+//                        NbtCompound nbt = new NbtCompound();
+//                        NbtList list = nbtInv.toNbtList();
+//
+//                        nbt.put(NbtKeys.ENDER_ITEMS, list);
+//                        RenderUtils.renderNbtItemsPreview(drawContext, stack, nbt, x, y, false);
+//                    }
+                }
             }
         }
     }
