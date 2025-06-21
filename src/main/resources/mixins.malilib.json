@@ -4,20 +4,9 @@
     "compatibilityLevel": "JAVA_21",
     "minVersion": "0.8",
     "client": [
-        "render.IMixinDrawContext",
-        "network.MixinClientConfigurationNetworkHandler",
-        "network.MixinClientPlayNetworkHandler",
-        "render.MixinDrawContext",
-        "server.MixinIntegratedServer",
-        "item.MixinItemStack",
-        "input.MixinKeyboard",
         "MixinMinecraftClient",
-        "server.MixinMinecraftServer",
-        "input.MixinMouse",
-        "render.MixinWorldRenderer",
         "entity.IMixinAbstractHorseEntity",
         "entity.IMixinAnimalArmorItem",
-        "network.IMixinDataQueryHandler",
         "entity.IMixinMerchantEntity",
         "entity.IMixinPiglinEntity",
         "entity.IMixinPlayerEntity",
@@ -25,13 +14,27 @@
         "entity.MixinPiglinEntity",
         "entity.MixinSimpleInventory",
         "hud.MixinInGameHud",
+        "input.MixinKeyboard",
+        "input.MixinMouse",
+        "item.MixinItemStack",
+        "network.IMixinDataQueryHandler",
+        "network.MixinClientConfigurationNetworkHandler",
+        "network.MixinClientPlayNetworkHandler",
+        "render.IMixinDrawContext",
+        "render.MixinDrawContext",
+        "render.MixinWorldRenderer",
         "screen.IMixinHandledScreen",
         "screen.MixinChatScreen",
         "screen.MixinHandledScreen",
         "screen.MixinInventoryScreen",
+        "server.MixinIntegratedServer",
+        "server.MixinMinecraftServer",
         "test.MixinBundleItem"
     ],
     "injectors": {
         "defaultRequire": 1
-  }
+    },
+    "mixins": [
+        "item.IMixinContainerComponent"
+    ]
 }
