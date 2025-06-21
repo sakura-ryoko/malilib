@@ -172,9 +172,6 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             return null;
         }
 
-        // todo the Post-Rewrite needs fixing.
-//        HitResult trace = TestRayTraceUtils.getRayTraceFromEntity(world, cameraEntity, false);
-
         HitResult trace;
 
         if (mc.player != cameraEntity)
