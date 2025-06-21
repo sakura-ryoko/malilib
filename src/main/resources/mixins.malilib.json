@@ -7,7 +7,6 @@
         "MixinMinecraftClient",
         "entity.IMixinAbstractHorseEntity",
         "entity.IMixinAnimalArmorItem",
-        "network.IMixinDataQueryHandler",
         "entity.IMixinMerchantEntity",
         "entity.IMixinPiglinEntity",
         "entity.IMixinPlayerEntity",
@@ -18,6 +17,7 @@
         "input.MixinKeyboard",
         "input.MixinMouse",
         "item.MixinItemStack",
+        "network.IMixinDataQueryHandler",
         "network.MixinClientConfigurationNetworkHandler",
         "network.MixinClientPlayNetworkHandler",
         "render.IMixinDrawContext",
@@ -33,5 +33,8 @@
     ],
     "injectors": {
         "defaultRequire": 1
-  }
+    },
+    "mixins": [
+        "item.IMixinContainerComponent"
+    ]
 }
