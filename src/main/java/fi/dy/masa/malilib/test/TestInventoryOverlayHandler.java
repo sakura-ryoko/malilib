@@ -8,14 +8,16 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
@@ -26,6 +28,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -34,12 +37,13 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IDataSyncer;
 import fi.dy.masa.malilib.interfaces.IInventoryOverlayHandler;
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
-import fi.dy.masa.malilib.mixin.entity.IMixinPiglinEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.game.RayTraceUtils;
+import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 @ApiStatus.Experimental
@@ -159,9 +163,17 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             return null;
         }
 
-        HitResult trace = TestRayTraceUtils.getRayTraceFromEntity(world, cameraEntity, false);
-        // todo the Post-Rewrite needs fixing.
-        //HitResult trace = RayTraceUtils.getRayTraceFromEntity(world, cameraEntity, RayTraceUtils.RayTraceFluidHandling.NONE);
+        HitResult trace;
+
+        if (mc.player != cameraEntity)
+        {
+            trace = RayTraceUtils.getRayTraceFromEntity(mc.world, cameraEntity, RaycastContext.FluidHandling.NONE);
+        }
+        else
+        {
+            trace = mc.crosshairTarget;
+        }
+
         NbtCompound nbt = new NbtCompound();
 
         if (trace == null)
@@ -218,11 +230,20 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
         {
             Entity entity = ((EntityHitResult) trace).getEntity();
 
-            if (world instanceof ServerWorld)
+            if (mc.targetedEntity != null && entity.getId() != mc.targetedEntity.getId())
             {
-                if (entity.saveSelfNbt(nbt))
+                MaLiLib.LOGGER.error("getTargetInventory(): entityId Not Equal: [{} != {}]", entity.getId(), mc.targetedEntity.getId());
+            }
+
+            MaLiLib.LOGGER.warn("getTargetInventory(): entityUUID [{}] vs targetedUUID [{}]", entity.getUuidAsString(), mc.targetedEntity != null ? mc.targetedEntity.getUuidAsString() : "<NULL>");
+
+            if (world instanceof ServerWorld sw)
+            {
+                entity = sw.getEntityById(entity.getId());
+
+                if (entity != null && entity.saveSelfNbt(nbt))
                 {
-                    return this.getTargetInventoryFromEntity(world.getEntityById(entity.getId()), nbt);
+                    return this.getTargetInventoryFromEntity(entity, nbt);
                 }
             }
             else
@@ -267,6 +288,38 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             inv = this.getDataSyncer().getBlockInventory(world, pos, false);
         }
 
+        BlockEntityType<?> beType = nbt != null ? NbtBlockUtils.getBlockEntityTypeFromNbt(nbt) : null;
+
+        if ((beType != null && beType.equals(BlockEntityType.ENDER_CHEST)) ||
+            be instanceof EnderChestBlockEntity)
+        {
+            if (MinecraftClient.getInstance().player != null)
+            {
+                PlayerEntity player = world.getPlayerByUuid(MinecraftClient.getInstance().player.getUuid());
+
+                if (player != null)
+                {
+                    // Fetch your own EnderItems from Server ...
+                    Pair<Entity, NbtCompound> enderPair = this.getDataSyncer().requestEntity(world, player.getId());
+                    EnderChestInventory enderItems = null;
+
+                    if (enderPair != null && enderPair.getRight() != null && enderPair.getRight().contains(NbtKeys.ENDER_ITEMS))
+                    {
+                        enderItems = InventoryUtils.getPlayerEnderItemsFromNbt(enderPair.getRight(), world.getRegistryManager());
+                    }
+                    else if (world instanceof ServerWorld)
+                    {
+                        enderItems = player.getEnderChestInventory();
+                    }
+
+                    if (enderItems != null)
+                    {
+                        inv = enderItems;
+                    }
+                }
+            }
+        }
+
         if (nbt != null && !nbt.isEmpty())
         {
             Inventory inv2 = InventoryUtils.getNbtInventory(nbt, inv != null ? inv.size() : -1, world.getRegistryManager());
@@ -309,18 +362,23 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
         {
             inv = new SimpleInventory(player.getInventory().main.toArray(new ItemStack[36]));
         }
-        else if (entity instanceof VillagerEntity)
-        {
-            inv = ((VillagerEntity) entity).getInventory();
-        }
+//        else if (entity instanceof VillagerEntity)
+//        {
+//            inv = ((VillagerEntity) entity).getInventory();
+//        }
         else if (entity instanceof AbstractHorseEntity)
         {
             inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
         }
-        else if (entity instanceof PiglinEntity)
+//        else if (entity instanceof PiglinEntity)
+//        {
+//            inv = ((IMixinPiglinEntity) entity).malilib_getInventory();
+//        }
+        else if (entity instanceof InventoryOwner)
         {
-            inv = ((IMixinPiglinEntity) entity).malilib_getInventory();
+            inv = ((InventoryOwner) entity).getInventory();
         }
+
         if (!nbt.isEmpty())
         {
             Inventory inv2;
