@@ -265,7 +265,7 @@ public class KeyBindImpl implements KeyBind
         if (sizePressed >= sizeRequired && (allowExtraKeys || sizePressed == sizeRequired))
         {
             this.pressed = PRESSED_KEYS.containsAll(this.keyCodes);
-            final int pressedSize = PRESSED_KEYS.size();;
+            final int pressedSize = PRESSED_KEYS.size();
             int keyCodeIndex = 0;
 
             for (int i = 0; i < pressedSize; ++i)
