@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.util;
 
+import java.util.Locale;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.MinecraftClient;
@@ -130,9 +131,9 @@ public class GuiUtils
         // Truncate to 2 decimal places
         return switch (type)
         {
-            case X -> String.format("%.2f", pos.x);
-            case Y -> String.format("%.2f", pos.y);
-            case Z -> String.format("%.2f", pos.z);
+            case X -> String.format(Locale.US, "%.2f", pos.x);
+            case Y -> String.format(Locale.US, "%.2f", pos.y);
+            case Z -> String.format(Locale.US, "%.2f", pos.z);
         };
 
     }
