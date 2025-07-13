@@ -19,6 +19,8 @@ public class ColorEditorScreenHsv extends BaseScreen
 
         this.setTitle("malilib.title.screen.color_editor");
         this.setScreenWidthAndHeight(300, 180);
+        this.addPreScreenCloseListener(() -> colorConsumer.accept(this.colorEditorWidget.getColor()));
+
         this.centerOnScreen();
     }
 

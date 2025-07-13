@@ -50,6 +50,7 @@ public class ColorEditorWidgetHsv extends ContainerWidget
     protected final LabelWidget componentLabels;
     protected final ImmutableList<IntegerEditWidget> editWidgets;
     protected int color;
+    protected int lastAppliedColor;
     protected int r;
     protected int g;
     protected int b;
@@ -57,7 +58,6 @@ public class ColorEditorWidgetHsv extends ContainerWidget
     protected float h;
     protected float s;
     protected float v;
-    protected boolean mouseDown;
 
     public ColorEditorWidgetHsv(Color4f colorIn, Consumer<Color4f> colorConsumer)
     {
@@ -70,6 +70,9 @@ public class ColorEditorWidgetHsv extends ContainerWidget
 
         this.colorConsumer = colorConsumer;
         this.colorIn = colorIn;
+
+        this.lastAppliedColor = colorIn;
+        this.canReceiveMouseClicks = true;
 
         this.editH = this.createIntegerEditWidgetHsv(v -> this.h = v / 360f, () -> (int) (this.h * 360), 360);
         this.editS = this.createIntegerEditWidgetHsv(v -> this.s = v / 100f, () -> (int) (this.s * 100), 100);
@@ -188,27 +191,13 @@ public class ColorEditorWidgetHsv extends ContainerWidget
     }
 
     @Override
-    protected boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
-    {
-        return super.onMouseClicked(mouseX, mouseY, mouseButton);
-    }
-
-    @Override
     public void onMouseReleased(int mouseX, int mouseY, int mouseButton)
     {
-        super.onMouseReleased(mouseX, mouseY, mouseButton);
-        this.mouseDown = false;
-    }
-
-    @Override
-    public boolean onMouseMoved(int mouseX, int mouseY)
-    {
-        if (this.mouseDown)
+        if (this.lastAppliedColor != this.color)
         {
-            return true;
+            this.colorConsumer.accept(this.color);
+            this.lastAppliedColor = this.color;
         }
-
-        return super.onMouseMoved(mouseX, mouseY);
     }
 
     protected IntegerEditWidget createIntegerEditWidgetHsv(IntConsumer consumer,
@@ -250,6 +239,11 @@ public class ColorEditorWidgetHsv extends ContainerWidget
                 widget.setValueFromSupplier();
             }
         }
+    }
+
+    public int getColor()
+    {
+        return this.color;
     }
 
     protected void setRgbComponentValue(int value, IntConsumer consumer)
@@ -299,7 +293,7 @@ public class ColorEditorWidgetHsv extends ContainerWidget
         this.s = hsv[1];
         this.v = hsv[2];
 
-        this.setColorInt((this.a << 24) | this.r << 16 | this.g << 8 | this.b);
+        this.setColorInt((this.a << 24) | (this.r << 16) | (this.g << 8) | this.b);
     }
 
     protected void updateColorFromHsvComponents()

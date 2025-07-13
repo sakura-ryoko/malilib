@@ -64,7 +64,7 @@ public class ColorConfigWidget extends BaseGenericConfigWidget<Color4f, ColorCon
     {
         super.updateWidgetState();
 
-        this.textField.setText(this.config.getStringValue());
+        this.textField.setTextNoNotify(this.config.getStringValue());
         this.textField.updateHoverStrings();
         this.colorIndicatorWidget.updateHoverStrings();
     }
