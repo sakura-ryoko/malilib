@@ -107,12 +107,13 @@ public class KeybindSettingsWidget extends InteractableWidget
 
         this.addOptionText(lines, "malilib.label.keybind_settings.allow_extra_keys", settings.getAllowExtraKeys(), defaultSettings.getAllowExtraKeys(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.order_sensitive", settings.isOrderSensitive(), defaultSettings.isOrderSensitive(), this::getDisplayString);
+        this.addOptionText(lines, "malilib.label.keybind_settings.allow_empty_keybind", settings.getAllowEmpty(), defaultSettings.getAllowEmpty(), this::getDisplayString);
+
         this.addOptionText(lines, "malilib.label.keybind_settings.exclusive", settings.isExclusive(), defaultSettings.isExclusive(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.first_only", settings.getFirstOnly(), defaultSettings.getFirstOnly(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.priority", settings.getPriority(), defaultSettings.getPriority(), this::getDisplayString);
-        this.addOptionText(lines, "malilib.label.keybind_settings.allow_empty_keybind", settings.getAllowEmpty(), defaultSettings.getAllowEmpty(), this::getDisplayString);
+        this.addOptionText(lines, "malilib.label.keybind_settings.toggle_held", settings.isToggle(), defaultSettings.isToggle(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.invert_held", settings.getInvertHeld(), defaultSettings.getInvertHeld(), this::getDisplayString);
-        this.addOptionText(lines, "malilib.label.keybind_settings.toggle", settings.isToggle(), defaultSettings.isToggle(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.show_toast", settings.getShowToast(), defaultSettings.getShowToast(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.message_output", settings.getMessageType(), defaultSettings.getMessageType(), this::getDisplayString);
 
