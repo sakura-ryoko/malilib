@@ -7,9 +7,9 @@ import net.minecraft.client.font.TextRenderer;
 
 public class GuiTextFieldDouble extends GuiTextFieldGeneric
 {
-    // Old regex didn't allow commas or other locale-specific notations
-//    private static final Pattern PATTER_NUMBER = Pattern.compile("^-?([0-9]+(\\.[0-9]*)?)?");
-    private static final Pattern PATTER_NUMBER = Pattern.compile("^\\b\\d[\\d,.' ]*\\b");
+    // Regex doesn't allow commas or other locale-specific notations
+    private static final Pattern PATTER_NUMBER = Pattern.compile("^-?([0-9]+(\\.[0-9]*)?)?");
+//    private static final Pattern PATTER_NUMBER = Pattern.compile("^\\b\\d[\\d,.' ]*\\b");
 
     public GuiTextFieldDouble(int x, int y, int width, int height, TextRenderer fontRenderer)
     {
@@ -28,7 +28,6 @@ public class GuiTextFieldDouble extends GuiTextFieldGeneric
                         return true;
                     }
                     catch (NumberFormatException ignored) { }
-                    return false;
                 }
 
                 try

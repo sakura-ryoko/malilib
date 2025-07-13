@@ -7,7 +7,7 @@ import net.minecraft.client.font.TextRenderer;
 
 public class GuiTextFieldInteger extends GuiTextFieldGeneric
 {
-    // Old regex didn't allow commas or other locale-specific notations
+    // Regex doesn't allow commas or other locale-specific notations
     private static final Pattern PATTER_NUMBER = Pattern.compile("-?[0-9]*");
 //    private static final Pattern PATTER_NUMBER = Pattern.compile("^\\b\\d[\\d,.' ]*\\b");
 
@@ -28,7 +28,6 @@ public class GuiTextFieldInteger extends GuiTextFieldGeneric
                         return true;
                     }
                     catch (NumberFormatException ignored) { }
-                    return false;
                 }
 
                 try
