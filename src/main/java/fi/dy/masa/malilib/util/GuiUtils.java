@@ -127,10 +127,6 @@ public class GuiUtils
 
     public static String getCoordinateValueString(CoordinateType type, Vec3d pos)
     {
-//                return String.valueOf(pos.x);
-//                return String.valueOf(pos.y);
-//                return String.valueOf(pos.z);
-
         // Truncate to 2 decimal places
         return switch (type)
         {
