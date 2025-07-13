@@ -266,6 +266,13 @@ public abstract class BaseNumberEditWidget extends ContainerWidget
         this.updateConsumer();
     }
 
+    protected void updateTextField()
+    {
+        this.textFieldWidget.setText(this.getValueStringForTextfield());
+    }
+
+    protected abstract String getValueStringForTextfield();
+
     protected abstract void updateConsumer();
 
     protected abstract void parseClampAndSetValue(String newValueStr);

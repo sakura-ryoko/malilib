@@ -90,16 +90,17 @@ public class IntegerEditWidget extends BaseNumberEditWidget implements RangedInt
         this.toStringFunction = toStringFunction;
     }
 
-    protected void updateTextField()
-    {
-        this.textFieldWidget.setText(this.toStringFunction.apply(this.value));
-    }
-
     public void setValidRange(int minValue, int maxValue)
     {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.textFieldWidget.setTextValidator(new IntegerTextFieldWidget.IntRangeValidator(minValue, maxValue));
+    }
+
+    @Override
+    protected String getValueStringForTextfield()
+    {
+        return this.toStringFunction.apply(this.value);
     }
 
     @Override
@@ -116,6 +117,7 @@ public class IntegerEditWidget extends BaseNumberEditWidget implements RangedInt
     {
         this.value = MathUtils.clamp(newValue, this.minValue, this.maxValue);
         this.sliderWidget.updateWidgetState();
+        this.textFieldWidget.getHoverInfoFactory().updateList();
     }
 
     public void setValueFromSupplier()

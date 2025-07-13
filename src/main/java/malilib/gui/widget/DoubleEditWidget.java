@@ -52,8 +52,7 @@ public class DoubleEditWidget extends BaseNumberEditWidget implements RangedDoub
         if (BaseScreen.isShiftDown()) { amount *= this.shiftModifier; }
         if (BaseScreen.isAltDown()) { amount *= this.altModifier; }
 
-        double v = (double) ((int) ((this.value + amount) * 100000)) / 100000.0;
-        this.setDoubleValue(v);
+        this.setDoubleValue(this.value + amount);
 
         return true;
     }
@@ -66,11 +65,6 @@ public class DoubleEditWidget extends BaseNumberEditWidget implements RangedDoub
     public void setSupplier(@Nullable DoubleSupplier supplier)
     {
         this.supplier = supplier;
-    }
-
-    protected void updateTextField()
-    {
-        this.textFieldWidget.setText(String.valueOf(this.value));
     }
 
     public void setBaseScrollAdjustAmount(double baseScrollAdjustAmount)
@@ -96,6 +90,12 @@ public class DoubleEditWidget extends BaseNumberEditWidget implements RangedDoub
     }
 
     @Override
+    protected String getValueStringForTextfield()
+    {
+        return String.valueOf(this.value);
+    }
+
+    @Override
     protected void parseClampAndSetValue(String newValueStr)
     {
         try
@@ -109,6 +109,7 @@ public class DoubleEditWidget extends BaseNumberEditWidget implements RangedDoub
     {
         this.value = MathUtils.clamp(newValue, this.minValue, this.maxValue);
         this.sliderWidget.updateWidgetState();
+        this.textFieldWidget.getHoverInfoFactory().updateList();
     }
 
     public void setValueFromSupplier()

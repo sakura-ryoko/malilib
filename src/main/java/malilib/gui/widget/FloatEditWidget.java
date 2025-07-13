@@ -59,16 +59,17 @@ public class FloatEditWidget extends BaseNumberEditWidget implements RangedFloat
         this.supplier = supplier;
     }
 
-    protected void updateTextField()
-    {
-        this.textFieldWidget.setText(String.valueOf(this.value));
-    }
-
     public void setValidRange(float minValue, float maxValue)
     {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.textFieldWidget.setTextValidator(new DoubleTextFieldWidget.DoubleValidator(minValue, maxValue));
+    }
+
+    @Override
+    protected String getValueStringForTextfield()
+    {
+        return String.valueOf(this.value);
     }
 
     @Override
@@ -85,6 +86,7 @@ public class FloatEditWidget extends BaseNumberEditWidget implements RangedFloat
     {
         this.value = MathUtils.clamp(newValue, this.minValue, this.maxValue);
         this.sliderWidget.updateWidgetState();
+        this.textFieldWidget.getHoverInfoFactory().updateList();
     }
 
     public void setValueFromSupplier()

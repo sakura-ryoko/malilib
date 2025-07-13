@@ -35,10 +35,10 @@ public class Vec3dEditWidget extends BaseTripleNumberEditWidget<Vec3d, DoubleEdi
     @Override
     protected DoubleEditWidget createNumberEditWidget(int width, int height, Vec3d initialPos, Coordinate coord)
     {
-        return new DoubleEditWidget(width, height,
-                                    coord.asDouble(initialPos),
-                                    -31000000.0, 31000000.0,
-                                    (val) -> this.setPos(val, coord));
+        return new CoordinateEditWidget(width, height,
+                                        coord.asDouble(initialPos),
+                                        -31000000.0, 31000000.0,
+                                        (val) -> this.setPos(val, coord));
     }
 
     @Override

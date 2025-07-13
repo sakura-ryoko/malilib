@@ -88,6 +88,7 @@ public class MaLiLibConfigScreen
 
         list.add(ConfigUtils.extractOptionsToExpandableGroup(list, MOD_INFO, "appearance",
                                                              MaLiLibConfigs.Generic.CONFIG_WIDGET_BACKGROUND,
+                                                             MaLiLibConfigs.Generic.COORDINATE_DECIMAL_CLAMPING,
                                                              MaLiLibConfigs.Generic.FILE_BROWSER_DATE_FORMAT,
                                                              MaLiLibConfigs.Generic.HOVERED_LIST_ENTRY_COLOR,
                                                              MaLiLibConfigs.Generic.HOVER_TEXT_MAX_WIDTH,

@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import malilib.action.ActionGroup;
 import malilib.config.category.BaseConfigOptionCategory;
 import malilib.config.category.ConfigOptionCategory;
+import malilib.config.option.BooleanAndIntConfig;
 import malilib.config.option.BooleanConfig;
 import malilib.config.option.ColorConfig;
 import malilib.config.option.ConfigOption;
@@ -40,6 +41,7 @@ public class MaLiLibConfigs
         public static final BooleanConfig CONFIG_BACKUP_ANTI_DUPLICATE              = new BooleanConfig("configBackupAntiDuplicate", true);
         public static final IntegerConfig CONFIG_BACKUP_COUNT                       = new IntegerConfig("configBackupCount", 20, 0, 200);
         public static final BooleanConfig CONFIG_WIDGET_BACKGROUND                  = new BooleanConfig("configWidgetBackground", true);
+        public static final BooleanAndIntConfig COORDINATE_DECIMAL_CLAMPING         = new BooleanAndIntConfig("coordinateDecimalClamping", true, 4, 0, 32);
         public static final IntegerConfig CUSTOM_HOTBAR_MESSAGE_LIMIT               = new IntegerConfig("customHotbarMessageLimit", 3, 1, 16);
         public static final IntegerConfig CUSTOM_SCREEN_SCALE                       = new IntegerConfig("customScreenScale", 2, 0, 8);
         public static final StringConfig  DATA_DUMP_CSV_DELIMITER                   = new StringConfig( "dataDumpCsvDelimiter", ",");
@@ -75,6 +77,7 @@ public class MaLiLibConfigs
                 CONFIG_WIDGET_BACKGROUND,
                 CONFIG_SEARCH_DEFAULT_SCOPE,
                 CONFIG_WRITE_METHOD,
+                COORDINATE_DECIMAL_CLAMPING,
                 CUSTOM_HOTBAR_MESSAGE_LIMIT,
                 CUSTOM_SCREEN_SCALE,
                 DATA_DUMP_CSV_DELIMITER,

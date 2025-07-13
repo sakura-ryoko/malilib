@@ -23,6 +23,7 @@ public class HorizontalSliderWidget extends BaseSliderWidget<SliderCallbackWithT
     @Override
     public void updateWidgetState()
     {
+        this.getHoverInfoFactory().updateList();
         this.callback.updateDisplayText();
     }
 

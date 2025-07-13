@@ -163,6 +163,7 @@ malilib.hover.config.expandable_config_group.config_entry=<c=909090>%s §8[%s]
 malilib.hover.config.expandable_config_group.contained_configs=<c=606060>Contained configs (§b%s<c=777>):
 malilib.hover.config.expandable_config_group.more=<c=606060>... and §b%s<c=606060> more
 malilib.hover.config.info_entry_widget=§7Display name: §f%s\n§7Internal name: §f%s\n§7Config type: §6%s
+malilib.hover.config.numeric.full_value=Full value: §b%s§r
 malilib.hover.config.numeric.range=Range: §b%s§r ... §b%s§r
 malilib.hover.config.numeric.range_and_default=Range: §b%s§r ... §b%s§r\nDefault: §b%s
 malilib.hover.config.open_quad_color_editor=Open color editor\nCurrent colors (AARRGGBB):\n  Top: §f%s§r\n  Bottom: §f%s§r\n  Left: §f%s§r\n  Right: §f%s§r
@@ -649,6 +650,7 @@ malilib.config.comment.configbackupcount=This is the number of backup copies tha
 malilib.config.comment.configsearchdefaultscope=This is the default search scope in the config menu search bar, any time the config menu is (re-)opened
 malilib.config.comment.configwidgetbackground=Enables a background color for the config option widgets on the config screens.\n\nThis is by default a slightly different color for odd and even rows.
 malilib.config.comment.configwritemethod=The write "method" that is used for writing to the config files.\n\n- §aNormal Write§r - malilib writes to the config file directly\n- §aTemp and Rename§r - malilib writes to a temporary file first, and then renames the temporary file over the old file\n\n§aNormal Write§r should work if you want to symlink or hard link the config files from some other location, whereas §aTemp and Rename§r in that case would just replace the <st>symlink</st> or hardlinked file and thus "break the link".\n\n§aTemp and Rename§r on the other hand should be safer against config file corruption, if the game were to crash while the configs are being written to. But then again malilib now by default keeps backups of the config files anyway.\n\n§dNote:§r This option is actually redundant for symlinks, as symlinks currently always use direct writing instead of temporary files and renaming. This is only needed if you use hardlinked config files.
+malilib.config.comment.coordinatedecimalclamping=Whether the number of decimal digits should be clamped in various coordinate fields, and how many digits should be kept.\n\nNote that the clamping doesn't necessarily affect the underlying precision of the stored value, if the value is never <i>modified</i> using the text field. You can also still <i>input</i> arbitrary precision using the text field. This config just clamps the value that gets printed to the text field.
 malilib.config.comment.customhotbarmessagelimit=This is the maximum number of concurrent messages that will be shown in the custom "action bar"/hot bar message renderer\n\nThat renderer is by default used to show the config option toggle messages etc.
 malilib.config.comment.customscreenscale=Custom screen scale value for any screens using the malilib screen classes.\n\nThe recommended scale is usually 2, although it depends on your screen/game window resolution. The screens are designed for scale 2 in a 1280x720 window.\n\nUse 0 for the default vanilla GUI scale value.
 malilib.config.comment.datadumpcsvdelimiter=The column delimiter to use for CSV format data dumps\n\nAn example use case is Litematica's Material List, when written to file in the CSV format instead of the "ascii art table" format.
@@ -714,6 +716,7 @@ malilib.config.name.configbackupcount=Config Backup Count
 malilib.config.name.configsearchdefaultscope=Config Search Default Scope
 malilib.config.name.configwidgetbackground=Config Widget Background
 malilib.config.name.configwritemethod=Config Write Method
+malilib.config.name.coordinatedecimalclamping=Coordinate Decimal Clamping
 malilib.config.name.customhotbarmessagelimit=Custom Hotbar Message Limit
 malilib.config.name.customscreenscale=Custom Screen Scale
 malilib.config.name.datadumpcsvdelimiter=Data Dump CSV Delimiter
