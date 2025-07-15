@@ -31,6 +31,10 @@
 		"mixins.malilib.json"
 	],
 
+	"breaks": {
+		"litematica": "<0.11.7"
+	},
+
 	"depends": {
 		"minecraft": "1.18.2",
 		"fabric-resource-loader-v0": "*"
