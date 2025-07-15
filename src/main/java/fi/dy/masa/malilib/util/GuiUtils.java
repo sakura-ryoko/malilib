@@ -138,6 +138,49 @@ public class GuiUtils
 
     }
 
+//    @Override
+//    protected String getValueStringForTextfield()
+//    {
+//        String val = super.getValueStringForTextfield();
+//
+//        if (MaLiLibConfigs.Generic.COORDINATE_DECIMAL_CLAMPING.getBooleanValue())
+//        {
+//            int decimals = MaLiLibConfigs.Generic.COORDINATE_DECIMAL_CLAMPING.getIntegerValue();
+//            int expIndex = val.indexOf('E');
+//            int dotIndex = val.indexOf('.');
+//
+//            if (dotIndex > 0)
+//            {
+//                // Scientific notation, yeet the decimals from the middle
+//                if (expIndex > dotIndex && val.length() > expIndex + 1)
+//                {
+//                    // 123.456789E12 => 123.45E12
+//
+//                    try
+//                    {
+//                        int expValue = Integer.parseInt(val.substring(expIndex + 1));
+//                        decimals += expValue;
+//                    }
+//                    catch (Exception ignore)
+//                    {
+//                        return val;
+//                    }
+//
+//                    int last = Math.min(val.length(), dotIndex + decimals + 1);
+//                    val = val.substring(0, last) + val.substring(expIndex);
+//                }
+//                // Normal decimal format
+//                else
+//                {
+//                    int last = Math.min(val.length(), dotIndex + decimals + 1);
+//                    val = val.substring(0, last);
+//                }
+//            }
+//        }
+//
+//        return val;
+//    }
+
     protected static int addLabel(int x, int y, CoordinateType type, GuiBase gui)
     {
         String label = type.name() + ":";
