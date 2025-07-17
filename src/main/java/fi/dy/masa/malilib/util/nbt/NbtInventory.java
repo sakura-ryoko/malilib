@@ -26,7 +26,9 @@ import fi.dy.masa.malilib.util.log.AnsiLogger;
 public class NbtInventory implements AutoCloseable
 {
     private static final AnsiLogger LOGGER = new AnsiLogger(NbtInventory.class, true, true);
+    public static final int VILLAGER_SIZE = 8;
     public static final int DEFAULT_SIZE = 27;
+    public static final int PLAYER_SIZE = 36;
     public static final int DOUBLE_SIZE = 54;
     public static final int MAX_SIZE = 256;
     private HashSet<StackWithSlot> items;
@@ -493,7 +495,7 @@ public class NbtInventory implements AutoCloseable
     {
 //        LOGGER.debug("getAdjustedSize(): sizeIn: [{}]", size);
 
-        if (size < 8)
+        if (size < VILLAGER_SIZE)
         {
             return size;
         }
@@ -501,7 +503,11 @@ public class NbtInventory implements AutoCloseable
         {
             return DEFAULT_SIZE;
         }
-        else if (size > DOUBLE_SIZE && size < MAX_SIZE)
+        else if (size < PLAYER_SIZE)
+        {
+            return PLAYER_SIZE;
+        }
+        else if (size < DOUBLE_SIZE)
         {
             return DOUBLE_SIZE;
         }

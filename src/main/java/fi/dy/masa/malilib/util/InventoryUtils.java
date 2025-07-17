@@ -505,6 +505,7 @@ public class InventoryUtils
 
             if (slotCount < 0)
             {
+                // Uses slots
                 slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
             }
 
@@ -528,6 +529,7 @@ public class InventoryUtils
             NbtList list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
             if (slotCount < 0)
             {
+                // Doesn't use slots
                 slotCount = list.size();
             }
 
@@ -563,6 +565,7 @@ public class InventoryUtils
 
             if (slotCount < 0)
             {
+                // Uses slots
                 slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
             }
 
@@ -669,8 +672,9 @@ public class InventoryUtils
             // -- Furnace, Brewing Stand, Shulker Box, Crafter, Barrel, Chest, Dispenser, Hopper, Bookshelf, Campfire
             if (slotCount < 0)
             {
+                // Uses slots
                 NbtList list = nbt.getListOrEmpty(NbtKeys.ITEMS);
-                slotCount = list.size();
+                slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
             }
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);
@@ -704,6 +708,7 @@ public class InventoryUtils
             if (slotCount < 0)
             {
                 NbtList list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
+                // Doesn't use slots
                 slotCount = list.size();
             }
 
@@ -734,7 +739,8 @@ public class InventoryUtils
 
             if (slotCount < 0)
             {
-                slotCount = list.size();
+                // Uses slots
+                slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
             }
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);
