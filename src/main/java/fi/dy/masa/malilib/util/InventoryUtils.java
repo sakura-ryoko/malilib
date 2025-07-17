@@ -508,6 +508,8 @@ public class InventoryUtils
                 slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
             }
 
+            slotCount = NbtInventory.getAdjustedSize(slotCount);
+
 //            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
 //            Inventories.readData(nbt, items, registry);
 
@@ -528,6 +530,8 @@ public class InventoryUtils
             {
                 slotCount = list.size();
             }
+
+            slotCount = NbtInventory.getAdjustedSize(slotCount);
 
 //            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
 //
@@ -561,6 +565,8 @@ public class InventoryUtils
             {
                 slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
             }
+
+            slotCount = NbtInventory.getAdjustedSize(slotCount);
 
 //            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
 //
@@ -667,6 +673,8 @@ public class InventoryUtils
                 slotCount = list.size();
             }
 
+            slotCount = NbtInventory.getAdjustedSize(slotCount);
+
 //            SimpleInventory inv = new SimpleInventory(slotCount);
 //            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
 //            Inventories.readNbt(nbt, items, registry);
@@ -699,6 +707,8 @@ public class InventoryUtils
                 slotCount = list.size();
             }
 
+            slotCount = NbtInventory.getAdjustedSize(slotCount);
+
 //            SimpleInventory inv = new SimpleInventory(slotCount);
 //            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.INVENTORY), registry);
 //
@@ -727,6 +737,7 @@ public class InventoryUtils
                 slotCount = list.size();
             }
 
+            slotCount = NbtInventory.getAdjustedSize(slotCount);
             NbtInventory nbtInv = NbtInventory.fromNbtList(list, false, registry);
 
             if (nbtInv == null || nbtInv.isEmpty())
