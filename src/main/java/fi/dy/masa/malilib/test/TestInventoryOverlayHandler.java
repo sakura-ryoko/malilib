@@ -222,7 +222,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
                 }
                 else
                 {
-                    Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos, be);
+                    Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
 
                     if (pair != null)
                     {
@@ -260,7 +260,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             }
             else
             {
-                Pair<Entity, NbtCompound> pair = this.getDataSyncer().requestEntity(world, entity.getId(), entity);
+                Pair<Entity, NbtCompound> pair = this.getDataSyncer().requestEntity(world, entity.getId());
 
                 if (pair != null)
                 {
@@ -289,7 +289,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
         {
             if (nbt.isEmpty())
             {
-                Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos, be);
+                Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
 
                 if (pair != null)
                 {
@@ -297,7 +297,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
                 }
             }
 
-            inv = this.getDataSyncer().getBlockInventory(world, pos, false, be);
+            inv = this.getDataSyncer().getBlockInventory(world, pos, false);
         }
 
         BlockEntityType<?> beType = nbt != null ? NbtBlockUtils.getBlockEntityTypeFromNbt(nbt) : null;
@@ -312,7 +312,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
                 if (player != null)
                 {
                     // Fetch your own EnderItems from Server ...
-                    Pair<Entity, NbtCompound> enderPair = this.getDataSyncer().requestEntity(world, player.getId(), player);
+                    Pair<Entity, NbtCompound> enderPair = this.getDataSyncer().requestEntity(world, player.getId());
                     EnderChestInventory enderItems = null;
 
                     if (enderPair != null && enderPair.getRight() != null && enderPair.getRight().contains(NbtKeys.ENDER_ITEMS))
@@ -464,7 +464,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             }
             else if (data.entity() != null)
             {
-                TestInventoryOverlayHandler.getInstance().getDataSyncer().requestEntity(world, data.entity().getId(), data.entity());
+                TestInventoryOverlayHandler.getInstance().getDataSyncer().requestEntity(world, data.entity().getId());
                 data = TestInventoryOverlayHandler.getInstance().getTargetInventoryFromEntity(data.entity(), data.nbt());
             }
 

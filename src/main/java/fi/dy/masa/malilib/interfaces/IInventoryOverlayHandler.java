@@ -135,7 +135,7 @@ public interface IInventoryOverlayHandler
     {
         if (!(world instanceof ServerWorld))
         {
-            Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos, null);
+            Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
 
             BlockState state = world.getBlockState(pos);
 
@@ -145,7 +145,7 @@ public interface IInventoryOverlayHandler
 
                 if (type != ChestType.SINGLE)
                 {
-                    return this.getDataSyncer().requestBlockEntity(world, pos.offset(ChestBlock.getFacing(state)), null);
+                    return this.getDataSyncer().requestBlockEntity(world, pos.offset(ChestBlock.getFacing(state)));
                 }
             }
 
