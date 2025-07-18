@@ -506,7 +506,7 @@ public class InventoryUtils
             if (slotCount < 0)
             {
                 // Uses slots
-                slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
+                slotCount = list.size();
             }
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);
@@ -674,7 +674,7 @@ public class InventoryUtils
             {
                 // Uses slots
                 NbtList list = nbt.getListOrEmpty(NbtKeys.ITEMS);
-                slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
+                slotCount = list.size();
             }
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);

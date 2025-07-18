@@ -495,19 +495,19 @@ public class NbtInventory implements AutoCloseable
     {
 //        LOGGER.debug("getAdjustedSize(): sizeIn: [{}]", size);
 
-        if (size < VILLAGER_SIZE)
+        if (size <= VILLAGER_SIZE)
         {
             return size;
         }
-        else if (size < DEFAULT_SIZE)
+        else if (size <= DEFAULT_SIZE)
         {
             return DEFAULT_SIZE;
         }
-        else if (size < PLAYER_SIZE)
+        else if (size <= PLAYER_SIZE)
         {
             return PLAYER_SIZE;
         }
-        else if (size < DOUBLE_SIZE)
+        else if (size <= DOUBLE_SIZE)
         {
             return DOUBLE_SIZE;
         }

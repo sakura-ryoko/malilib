@@ -12,6 +12,7 @@ import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -22,6 +23,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -144,7 +146,7 @@ public interface IDataSyncer
      * @return (The Data Pair|Null)
      */
     @Nullable
-    default Pair<BlockEntity, NbtCompound> requestBlockEntity(World world, BlockPos pos)
+    default Pair<BlockEntity, NbtCompound> requestBlockEntity(World world, BlockPos pos, @Nullable BlockEntity existing)
     {
         if (world == null)
         {
@@ -153,16 +155,25 @@ public interface IDataSyncer
 
         if (world == null) return null;
 
-        if (world.getBlockState(pos).getBlock() instanceof BlockEntityProvider)
+        if (world instanceof ServerWorld)
         {
-            BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
-
-            if (be != null)
+            if (world.getBlockState(pos).getBlock() instanceof BlockEntityProvider)
             {
-                NbtCompound nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
+                BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
 
-                return Pair.of(be, nbt);
+                if (be != null)
+                {
+                    NbtCompound nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
+
+                    return Pair.of(be, nbt);
+                }
             }
+        }
+        else if (existing != null)
+        {
+            NbtCompound nbt = existing.createNbtWithIdentifyingData(world.getRegistryManager());
+
+            return Pair.of(existing, nbt);
         }
 
         return null;
@@ -175,7 +186,7 @@ public interface IDataSyncer
      * @return (The Data Pair|Null)
      */
     @Nullable
-    default Pair<Entity, NbtCompound> requestEntity(World world, int entityId)
+    default Pair<Entity, NbtCompound> requestEntity(World world, int entityId, @Nullable Entity existing)
     {
         if (world == null)
         {
@@ -184,13 +195,40 @@ public interface IDataSyncer
 
         if (world == null) return null;
 
-        Entity entity = world.getEntityById(entityId);
-        NbtView nbtView = NbtView.getWriter(world.getRegistryManager());
-
-        if (entity != null && entity.saveSelfData(nbtView.getWriter()))
+        if (world instanceof ServerWorld)
         {
-            NbtCompound nbt = nbtView.readNbt();
-            return Pair.of(entity, nbt);
+            Entity entity = world.getEntityById(entityId);
+            NbtView nbtView = NbtView.getWriter(world.getRegistryManager());
+
+            if (entity != null)
+            {
+                entity.writeData(nbtView.getWriter());
+                NbtCompound nbt = nbtView.readNbt();
+                Identifier id = EntityType.getId(entity.getType());
+
+                if (nbt != null && id != null)
+                {
+                    nbt.putString("id", id.toString());
+                    return Pair.of(entity, nbt);
+                }
+            }
+        }
+        else
+        {
+            NbtView nbtView = NbtView.getWriter(world.getRegistryManager());
+
+            if (existing != null)
+            {
+                existing.writeData(nbtView.getWriter());
+                NbtCompound nbt = nbtView.readNbt();
+                Identifier id = EntityType.getId(existing.getType());
+
+                if (nbt != null && id != null)
+                {
+                    nbt.putString("id", id.toString());
+                    return Pair.of(existing, nbt);
+                }
+            }
         }
 
         return null;
@@ -206,7 +244,7 @@ public interface IDataSyncer
      */
     @Nullable
     @SuppressWarnings("deprecation")
-    default Inventory getBlockInventory(World world, BlockPos pos, boolean useNbt)
+    default Inventory getBlockInventory(World world, BlockPos pos, boolean useNbt, @Nullable BlockEntity existing)
     {
         if (world == null)
         {
@@ -215,7 +253,7 @@ public interface IDataSyncer
 
         if (world == null) return null;
 
-        Pair<BlockEntity, NbtCompound> pair = this.requestBlockEntity(world, pos);
+        Pair<BlockEntity, NbtCompound> pair = this.requestBlockEntity(world, pos, existing);
         Inventory inv = null;
 
         if (pair == null) return null;
@@ -248,7 +286,7 @@ public interface IDataSyncer
                         if (!world.isChunkLoaded(posAdj)) return null;
                         BlockState stateAdj = world.getBlockState(posAdj);
 
-                        Pair<BlockEntity, NbtCompound> pairAdj = this.requestBlockEntity(world, posAdj);
+                        Pair<BlockEntity, NbtCompound> pairAdj = this.requestBlockEntity(world, posAdj, null);
 
                         if (pairAdj == null)
                         {
@@ -289,7 +327,7 @@ public interface IDataSyncer
      * @return (Inventory|Null)
      */
     @Nullable
-    default Inventory getEntityInventory(World world, int entityId, boolean useNbt)
+    default Inventory getEntityInventory(World world, int entityId, boolean useNbt, @Nullable Entity existing)
     {
         if (world == null)
         {
@@ -298,7 +336,7 @@ public interface IDataSyncer
 
         if (world == null) return null;
 
-        Pair<Entity, NbtCompound> pair = this.requestEntity(world, entityId);
+        Pair<Entity, NbtCompound> pair = this.requestEntity(world, entityId, existing);
         Inventory inv = null;
 
         if (pair == null) return null;
