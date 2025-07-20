@@ -135,12 +135,10 @@ public abstract class MixinEntity implements INbtEntityInvoker
 
             // Ignore Passengers
             NbtView view = NbtView.getWriter(this.world.getRegistryManager());
-            this.writeCustomData(view.getWriter());
 
+            this.writeCustomData(view.getWriter());
             nbt.copyFrom(Objects.requireNonNullElse(view.readNbt(), new NbtCompound()));
             nbt.putString(NbtKeys.ID, EntityType.getId(this.type).toString());
-
-            MaLiLib.LOGGER.error("malilib$getNbtDataWithId: debug: [{}]", nbt.toString());
 
             return Optional.of(nbt);
         }
