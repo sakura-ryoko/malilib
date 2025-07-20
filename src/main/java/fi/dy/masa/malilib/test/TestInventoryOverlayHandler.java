@@ -44,6 +44,7 @@ import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.game.RayTraceUtils;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
+import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
 
@@ -250,12 +251,15 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
             if (world instanceof ServerWorld)
             {
-                NbtView view = NbtView.getWriter(world.getRegistryManager());
+//                NbtView view = NbtView.getWriter(world.getRegistryManager());
                 entity = world.getEntityById(entity.getId());
 
-                if (entity != null && entity.saveSelfData(view.getWriter()))
+//                if (entity != null && entity.saveSelfData(view.getWriter()))
+//                {
+//                    return this.getTargetInventoryFromEntity(world.getEntityById(entity.getId()), view.readNbt());
+                if (entity != null)
                 {
-                    return this.getTargetInventoryFromEntity(world.getEntityById(entity.getId()), view.readNbt());
+                    return this.getTargetInventoryFromEntity(entity, NbtEntityUtils.invokeEntityNbtDataNoPassengers(entity, entity.getId()));
                 }
             }
             else

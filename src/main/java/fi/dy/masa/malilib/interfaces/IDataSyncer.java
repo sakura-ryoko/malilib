@@ -30,7 +30,7 @@ import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.entity.IMixinPiglinEntity;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
-import fi.dy.masa.malilib.util.nbt.NbtView;
+import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 
 /**
  * Used as a common Server Data Syncer interface used by the IInventoryOverlayHandler Interface.
@@ -185,12 +185,15 @@ public interface IDataSyncer
         if (world == null) return null;
 
         Entity entity = world.getEntityById(entityId);
-        NbtView nbtView = NbtView.getWriter(world.getRegistryManager());
+//        NbtView nbtView = NbtView.getWriter(world.getRegistryManager());
 
-        if (entity != null && entity.saveSelfData(nbtView.getWriter()))
+//        if (entity != null && entity.saveSelfData(nbtView.getWriter()))
+//        {
+//            NbtCompound nbt = nbtView.readNbt();
+
+        if (entity != null)
         {
-            NbtCompound nbt = nbtView.readNbt();
-            return Pair.of(entity, nbt);
+            return Pair.of(entity, NbtEntityUtils.invokeEntityNbtDataNoPassengers(entity, entityId));
         }
 
         return null;

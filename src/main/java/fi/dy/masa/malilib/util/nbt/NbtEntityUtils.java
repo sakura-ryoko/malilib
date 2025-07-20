@@ -44,6 +44,19 @@ import fi.dy.masa.malilib.MaLiLib;
 public class NbtEntityUtils
 {
     /**
+     * Attempt to Invoke a custom version of writeData() without any passenger data.
+     * @param entity ()
+     * @param id ()
+     * @return ()
+     */
+    public static NbtCompound invokeEntityNbtDataNoPassengers(Entity entity, final int id)
+    {
+        Optional<NbtCompound> nbt = ((INbtEntityInvoker) entity).malilib$getNbtDataWithId(id);
+
+        return nbt.orElseGet(NbtCompound::new);
+    }
+
+    /**
      * Get an EntityType from NBT.
      *
      * @param nbt ()
