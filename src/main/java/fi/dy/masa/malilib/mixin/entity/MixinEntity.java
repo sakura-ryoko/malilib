@@ -144,7 +144,7 @@ public abstract class MixinEntity implements INbtEntityInvoker
         }
         catch (Exception err)
         {
-            MaLiLib.LOGGER.error("malilib$getNbtData: Exception writing NBT tags for entityId [{}]; Exception: {}", expectedId, err.getLocalizedMessage());
+            MaLiLib.LOGGER.error("malilib$getNbtDataWithId: Exception writing NBT tags for entityId [{}]; Exception: {}", expectedId, err.getLocalizedMessage());
             return Optional.empty();
         }
     }

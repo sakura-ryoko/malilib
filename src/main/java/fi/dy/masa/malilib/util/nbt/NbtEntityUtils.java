@@ -51,9 +51,7 @@ public class NbtEntityUtils
      */
     public static NbtCompound invokeEntityNbtDataNoPassengers(Entity entity, final int id)
     {
-        Optional<NbtCompound> nbt = ((INbtEntityInvoker) entity).malilib$getNbtDataWithId(id);
-
-        return nbt.orElseGet(NbtCompound::new);
+        return ((INbtEntityInvoker) entity).malilib$getNbtDataWithId(id).orElseGet(NbtCompound::new);
     }
 
     /**
