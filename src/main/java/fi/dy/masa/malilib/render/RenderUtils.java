@@ -2626,8 +2626,8 @@ public class RenderUtils
 
     public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f, boolean shouldResort)
     {
-        // MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL
-        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2);
+        // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2
+        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
