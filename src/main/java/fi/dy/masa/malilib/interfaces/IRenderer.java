@@ -2,11 +2,15 @@ package fi.dy.masa.malilib.interfaces;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import com.google.common.collect.ImmutableMap;
 import org.joml.Matrix4f;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.render.GuiRenderer;
+import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
+import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
@@ -117,5 +121,5 @@ public interface IRenderer
      * @param mc ()
      * @param builder ()
      */
-//    default void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc, ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder) { }
+    default void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc, ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder) { }
 }
