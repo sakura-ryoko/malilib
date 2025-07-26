@@ -30,6 +30,6 @@ public class ShortDat extends Dat<Short>
 
     public ShortDat(Short value)
     {
-        super(Short.class, value);
+        super(Short.class, Type.SHORT, value);
     }
 }

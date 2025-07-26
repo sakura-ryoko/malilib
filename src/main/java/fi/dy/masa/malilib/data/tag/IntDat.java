@@ -30,6 +30,6 @@ public class IntDat extends Dat<Integer>
 
     public IntDat(Integer value)
     {
-        super(Integer.class, value);
+        super(Integer.class, Type.INT, value);
     }
 }

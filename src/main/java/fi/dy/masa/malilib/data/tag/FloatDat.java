@@ -30,6 +30,6 @@ public class FloatDat extends Dat<Float>
 
     public FloatDat(Float value)
     {
-        super(Float.class, value);
+        super(Float.class, Type.FLOAT, value);
     }
 }

@@ -30,6 +30,6 @@ public class BoolDat extends Dat<Boolean>
 
     public BoolDat(Boolean value)
     {
-        super(Boolean.class, value);
+        super(Boolean.class, Type.BOOL, value);
     }
 }

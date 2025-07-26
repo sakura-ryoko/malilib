@@ -17,11 +17,11 @@ public class FractionDat extends Dat<Fraction>
 
     public FractionDat(Fraction value)
     {
-        super(Fraction.class, value);
+        super(Fraction.class, Type.FRACTION, value);
     }
 
     public FractionDat(final int numerator, final int denominator)
     {
-        super(Fraction.class, Fraction.getFraction(numerator, denominator));
+        super(Fraction.class, Type.FRACTION, Fraction.getFraction(numerator, denominator));
     }
 }

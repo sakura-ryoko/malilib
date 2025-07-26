@@ -8,8 +8,27 @@ import com.google.common.collect.Iterables;
 
 import fi.dy.masa.malilib.MaLiLib;
 
-public class ListDat<E>
+public class ListDat<E> implements IDat<List<Dat<E>>>
 {
+//    public static final Codec<ListDat<?>> CODEC = Codec.of(
+//            new Encoder<>()
+//            {
+//                @Override
+//                public <T> DataResult<T> encode(ListDat<?> input, DynamicOps<T> ops, T prefix)
+//                {
+//                    return null;
+//                }
+//            },
+//            new Decoder<>()
+//            {
+//                @Override
+//                public <T> DataResult<Pair<ListDat<?>, T>> decode(DynamicOps<T> ops, T input)
+//                {
+//                    return null;
+//                }
+//            }
+//        );
+
     private final List<Dat<E>> valueList;
     private final Class<E> type;
     private final Dat.Type datType;
@@ -18,16 +37,41 @@ public class ListDat<E>
     {
         this.valueList = new ArrayList<>();
         this.type = type;
-        this.datType = Dat.Type.getType(type);
-        list.forEach(
-                entry ->
-                        this.valueList.add(new Dat<>(type, entry))
-        );
+        this.datType = Dat.Type.LIST;
+
+        if (!list.isEmpty())
+        {
+            list.forEach(
+                    entry ->
+                            this.valueList.add(new Dat<>(type, this.datType, entry))
+            );
+        }
     }
 
-    public List<Dat<E>> getValueList() { return this.valueList; }
+    @Override
+    public Class<List<Dat<E>>> getType()
+    {
+        // Not useful
+        return null;
+    }
 
-    public Class<E> getType() { return this.type; }
+    public Class<E> getListType()
+    {
+        return this.type;
+    }
+
+    @Override
+    public List<Dat<E>> getValue()
+    {
+        return this.valueList;
+    }
+
+    @Override
+    public void setValue(List<Dat<E>> newValue)
+    {
+        this.clear();
+        this.valueList.addAll(newValue);
+    }
 
     public Dat.Type getDatType() { return this.datType; }
 
@@ -39,8 +83,15 @@ public class ListDat<E>
             return null;
         }
 
-        return this.valueList.get(index).getValue();
-
+        try
+        {
+            return this.valueList.get(index).getValue();
+        }
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("ListDat: Excepting getting list index [{}]; {}", index, err.getLocalizedMessage());
+            return null;
+        }
     }
 
     public @Nullable E set(int index, E newValue)
@@ -53,7 +104,7 @@ public class ListDat<E>
 
         try
         {
-            return this.valueList.set(index, new Dat<>(this.type, newValue)).getValue();
+            return this.valueList.set(index, new Dat<>(this.type, this.datType, newValue)).getValue();
         }
         catch (Exception err)
         {
@@ -66,12 +117,50 @@ public class ListDat<E>
     {
         try
         {
-            return this.valueList.add(new Dat<>(this.type, newValue));
+            return this.valueList.add(new Dat<>(this.type, this.datType, newValue));
         }
         catch (Exception err)
         {
             MaLiLib.LOGGER.error("ListDat: Excepting adding to list; {}", err.getLocalizedMessage());
             return false;
+        }
+    }
+
+    public @Nullable E getFirst()
+    {
+        if (this.valueList.isEmpty())
+        {
+            MaLiLib.LOGGER.error("ListDat: Excepting getting first index; Out Of Bounds (Empty)");
+            return null;
+        }
+
+        try
+        {
+            return this.valueList.getFirst().getValue();
+        }
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("ListDat: Excepting getting first index; {}", err.getLocalizedMessage());
+            return null;
+        }
+    }
+
+    public @Nullable E getLast()
+    {
+        if (this.valueList.isEmpty())
+        {
+            MaLiLib.LOGGER.error("ListDat: Excepting getting last index; Out Of Bounds (Empty)");
+            return null;
+        }
+
+        try
+        {
+            return this.valueList.getLast().getValue();
+        }
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.error("ListDat: Excepting getting last index; {}", err.getLocalizedMessage());
+            return null;
         }
     }
 
@@ -104,7 +193,7 @@ public class ListDat<E>
 
         otherList.valueList.forEach(
                 entry ->
-                        this.valueList.add(new Dat<>(this.type, (E) entry.getValue()))
+                        this.valueList.add(new Dat<>(this.type, this.datType, (E) entry.getValue()))
         );
 
         return this;

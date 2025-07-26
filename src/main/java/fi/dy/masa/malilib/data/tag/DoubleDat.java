@@ -30,6 +30,6 @@ public class DoubleDat extends Dat<Double>
 
     public DoubleDat(Double value)
     {
-        super(Double.class, value);
+        super(Double.class, Type.DOUBLE, value);
     }
 }

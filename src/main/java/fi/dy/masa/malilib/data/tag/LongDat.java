@@ -30,6 +30,6 @@ public class LongDat extends Dat<Long>
 
     public LongDat(Long value)
     {
-        super(Long.class, value);
+        super(Long.class, Type.LONG, value);
     }
 }
