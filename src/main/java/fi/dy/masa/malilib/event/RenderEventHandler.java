@@ -514,11 +514,13 @@ public class RenderEventHandler implements IRenderDispatcher
     @ApiStatus.Internal
     public void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc, ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder)
     {
+        MaLiLib.LOGGER.warn("onRegisterSpecialGuiRenderer():");
+
         if (this.specialGuiRenderers.isEmpty() == false)
         {
             for (IRenderer renderer : this.specialGuiRenderers)
             {
-                MaLiLib.debugLog("onRegisterSpecialGuiRenderer(): render for [{}]", renderer.getClass().getName());
+                MaLiLib.LOGGER.warn("onRegisterSpecialGuiRenderer(): render for [{}]", renderer.getClass().getName());
                 renderer.onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
             }
         }
