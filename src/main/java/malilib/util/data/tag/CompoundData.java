@@ -35,6 +35,21 @@ public class CompoundData extends BaseData implements DataView
     }
 
     @Override
+    public boolean containsList(String key, int listEntryType)
+    {
+        BaseData data = this.values.get(key);
+
+        return data != null &&
+               data.getType() == Constants.NBT.TAG_LIST &&
+               ((ListData) data).getContainedType() == listEntryType;
+    }
+
+    public boolean remove(String key)
+    {
+        return this.values.remove(key) != null;
+    }
+
+    @Override
     public Optional<BaseData> getData(String key)
     {
         return Optional.ofNullable(this.values.get(key));
@@ -198,13 +213,7 @@ public class CompoundData extends BaseData implements DataView
         return this;
     }
 
-    public CompoundData putCompound(String key, CompoundData value)
-    {
-        this.values.put(key, value);
-        return this;
-    }
-
-    public CompoundData putList(String key, ListData value)
+    public CompoundData put(String key, BaseData value)
     {
         this.values.put(key, value);
         return this;

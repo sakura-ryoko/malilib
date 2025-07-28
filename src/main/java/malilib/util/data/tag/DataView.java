@@ -8,6 +8,8 @@ public interface DataView
 {
     boolean contains(String key, int tagType);
 
+    boolean containsList(String key, int listEntryType);
+
     Optional<BaseData> getData(String key);
 
     boolean getBoolean(String key);
@@ -57,6 +59,7 @@ public interface DataView
         return this.getByte(key);
 
     }
+
     default short getShortOrDefault(String key, short defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_SHORT) == false)
@@ -67,6 +70,7 @@ public interface DataView
         return this.getShort(key);
 
     }
+
     default int getIntOrDefault(String key, int defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_INT) == false)
@@ -77,6 +81,7 @@ public interface DataView
         return this.getInt(key);
 
     }
+
     default long getLongOrDefault(String key, long defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_LONG) == false)
@@ -87,6 +92,7 @@ public interface DataView
         return this.getLong(key);
 
     }
+
     default float getFloatOrDefault(String key, float defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_FLOAT) == false)
@@ -97,6 +103,7 @@ public interface DataView
         return this.getFloat(key);
 
     }
+
     default double getDoubleOrDefault(String key, double defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_DOUBLE) == false)
@@ -107,6 +114,7 @@ public interface DataView
         return this.getDouble(key);
 
     }
+
     default String getStringOrDefault(String key, String defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_STRING) == false)
@@ -117,6 +125,7 @@ public interface DataView
         return this.getString(key);
 
     }
+
     default byte[] getByteArrayOrDefault(String key, byte[] defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_BYTE_ARRAY) == false)
@@ -127,6 +136,7 @@ public interface DataView
         return this.getByteArray(key);
 
     }
+
     default int[] getIntArrayOrDefault(String key, int[] defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_INT_ARRAY) == false)
@@ -137,6 +147,7 @@ public interface DataView
         return this.getIntArray(key);
 
     }
+
     default long[] getLongArrayOrDefault(String key, long[] defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_LONG_ARRAY) == false)
@@ -147,6 +158,7 @@ public interface DataView
         return this.getLongArray(key);
 
     }
+
     default CompoundData getCompoundOrDefault(String key, CompoundData defaultValue)
     {
         if (this.contains(key, Constants.NBT.TAG_COMPOUND) == false)
@@ -157,6 +169,7 @@ public interface DataView
         return this.getCompound(key);
 
     }
+
     default ListData getListOrDefault(String key, int containedType, ListData defaultValue)
     {
         Optional<BaseData> dataOpt = this.getData(key);
