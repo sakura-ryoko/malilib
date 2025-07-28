@@ -1,4 +1,4 @@
-package malilib.util.nbt;
+package malilib.util.data.tag;
 
 import malilib.util.data.Constants;
 
