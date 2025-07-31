@@ -186,29 +186,33 @@ public class BlockPos extends Vec3i
             return this.z;
         }
 
-        public void setX(int x)
+        public MutBlockPos setX(int x)
         {
             this.x = x;
+            return this;
         }
 
-        public void setY(int y)
+        public MutBlockPos setY(int y)
         {
             this.y = y;
+            return this;
         }
 
-        public void setZ(int z)
+        public MutBlockPos setZ(int z)
         {
             this.z = z;
+            return this;
         }
 
-        public void set(int x, int y, int z)
+        public MutBlockPos set(int x, int y, int z)
         {
             this.x = x;
             this.y = y;
             this.z = z;
+            return this;
         }
 
-        public BlockPos set(net.minecraft.util.math.Vec3i pos)
+        public MutBlockPos set(net.minecraft.util.math.Vec3i pos)
         {
             this.x = pos.getX();
             this.y = pos.getY();
@@ -216,7 +220,7 @@ public class BlockPos extends Vec3i
             return this;
         }
 
-        public BlockPos setOffset(net.minecraft.util.math.Vec3i pos, EnumFacing direction)
+        public MutBlockPos setOffset(net.minecraft.util.math.Vec3i pos, EnumFacing direction)
         {
             this.x = pos.getX() + direction.getXOffset();
             this.y = pos.getY() + direction.getYOffset();
@@ -224,12 +228,12 @@ public class BlockPos extends Vec3i
             return this;
         }
 
-        public BlockPos setOffset(net.minecraft.util.math.Vec3i pos, Direction direction)
+        public MutBlockPos setOffset(net.minecraft.util.math.Vec3i pos, Direction direction)
         {
             return this.setOffset(pos, direction, 1);
         }
 
-        public BlockPos setOffset(net.minecraft.util.math.Vec3i pos, Direction direction, int amount)
+        public MutBlockPos setOffset(net.minecraft.util.math.Vec3i pos, Direction direction, int amount)
         {
             this.x = pos.getX() + direction.getXOffset() * amount;
             this.y = pos.getY() + direction.getYOffset() * amount;
@@ -237,7 +241,7 @@ public class BlockPos extends Vec3i
             return this;
         }
 
-        public BlockPos move(Direction direction, int amount)
+        public MutBlockPos move(Direction direction, int amount)
         {
             this.set(this.getX() + direction.getXOffset() * amount,
                      this.getY() + direction.getYOffset() * amount,
@@ -246,7 +250,7 @@ public class BlockPos extends Vec3i
             return this;
         }
 
-        public BlockPos move(Direction direction)
+        public MutBlockPos move(Direction direction)
         {
             return this.move(direction, 1);
         }
