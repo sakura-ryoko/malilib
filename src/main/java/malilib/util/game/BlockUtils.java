@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import com.google.common.base.Splitter;
@@ -20,14 +21,19 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 
+import malilib.MaLiLib;
 import malilib.render.text.StyledTextLine;
 import malilib.util.StringUtils;
+import malilib.util.data.Constants;
 import malilib.util.data.Identifier;
+import malilib.util.data.tag.CompoundData;
 import malilib.util.game.wrap.NbtWrap;
 import malilib.util.game.wrap.RegistryUtils;
 import malilib.util.position.Direction;
+import malilib.util.world.BlockState;
 
 public class BlockUtils
 {
@@ -182,6 +188,86 @@ public class BlockUtils
         }
 
         return name;
+    }
+
+    public static IBlockState readBlockState(CompoundData data)
+    {
+        if (data.contains("Name", Constants.NBT.TAG_STRING) == false)
+        {
+            return Blocks.AIR.getDefaultState();
+        }
+        else
+        {
+            Block block = Block.REGISTRY.getObject(new Identifier(data.getString("Name")));
+            IBlockState vanillaState = block.getDefaultState();
+
+            if (data.contains("Properties", Constants.NBT.TAG_COMPOUND))
+            {
+                CompoundData propData = data.getCompound("Properties");
+                BlockStateContainer blockStateContainer = block.getBlockState();
+
+                for (String string : propData.getKeys())
+                {
+                    IProperty<?> prop = blockStateContainer.getProperty(string);
+
+                    if (prop != null)
+                    {
+                        vanillaState = setValueHelper(vanillaState, prop, string, propData, data);
+                    }
+                }
+            }
+
+            return vanillaState;
+        }
+    }
+
+    private static <T extends Comparable<T>>
+    IBlockState setValueHelper(IBlockState state,
+                               IProperty<T> prop,
+                               String valStr,
+                               CompoundData propData,
+                               CompoundData fullData)
+    {
+        com.google.common.base.Optional<T> optional = prop.parseValue(propData.getString(valStr));
+
+        if (optional.isPresent())
+        {
+            return state.withProperty(prop, optional.get());
+        }
+        else
+        {
+            MaLiLib.LOGGER.warn("Unable to read property: '{}' with value: '{}' for block state: '{}'",
+                                valStr, propData.getString(valStr), fullData.toString());
+            return state;
+        }
+    }
+
+    public static CompoundData writeBlockState(CompoundData data, BlockState state)
+    {
+        IBlockState vanillaState = state.toVanilla();
+
+        data.putString("Name", Block.REGISTRY.getNameForObject(vanillaState.getBlock()).toString());
+
+        if (state.toVanilla().getProperties().isEmpty() == false)
+        {
+            CompoundData propTag = new CompoundData();
+
+            for (Entry<IProperty<?>, Comparable<?>> entry : vanillaState.getProperties().entrySet())
+            {
+                IProperty<?> prop = entry.getKey();
+                propTag.putString(prop.getName(), getName(prop, entry.getValue()));
+            }
+
+            data.put("Properties", propTag);
+        }
+
+        return data;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Comparable<T>> String getName(IProperty<T> prop, Comparable<?> comparable)
+    {
+        return prop.getName((T) comparable);
     }
 
     @SuppressWarnings("unchecked")
