@@ -22,7 +22,7 @@ public interface Palette<T>
     int idFor(T value);
 
     /**
-     * @return the value corresponding to the given palette ID, if the ID exists in the palette
+     * @return the value corresponding to the given palette ID, if the ID exists in the palette, or otherwise null
      */
     @Nullable
     T getValue(int id);

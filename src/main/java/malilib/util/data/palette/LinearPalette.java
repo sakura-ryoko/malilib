@@ -3,42 +3,18 @@ package malilib.util.data.palette;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
 
-public class LinearPalette<T> implements Palette<T>
+public class LinearPalette<T> extends BasePalette<T> implements Palette<T>
 {
     protected final PaletteResizeHandler<T> paletteResizer;
-    protected final T[] values;
-    protected final int bits;
-    protected final int maxSize;
-    protected int currentSize;
+    protected final int entryWidthBits;
 
-    @SuppressWarnings("unchecked")
-    public LinearPalette(int bitsIn, PaletteResizeHandler<T> paletteResizer)
+    public LinearPalette(int entryWidthBits, PaletteResizeHandler<T> paletteResizer)
     {
-        this.bits = bitsIn;
-        this.maxSize = 1 << bitsIn;
-        this.values = (T[]) new Object[this.maxSize];
+        super(1 << entryWidthBits);
+
+        this.entryWidthBits = entryWidthBits;
         this.paletteResizer = paletteResizer;
-    }
-
-    @Override
-    public int getSize()
-    {
-        return this.currentSize;
-    }
-
-    @Override
-    public int getMaxSize()
-    {
-        return this.maxSize;
-    }
-
-    @Override
-    @Nullable
-    public T getValue(int id)
-    {
-        return id >= 0 && id < this.currentSize ? this.values[id] : null;
     }
 
     @Override
@@ -55,7 +31,7 @@ public class LinearPalette<T> implements Palette<T>
             }
         }
 
-        if (currentSize < this.maxSize)
+        if (currentSize < this.values.length)
         {
             this.values[currentSize] = value;
             ++this.currentSize;
@@ -63,7 +39,7 @@ public class LinearPalette<T> implements Palette<T>
         }
         else
         {
-            return this.paletteResizer.onResize(this.bits + 1, value, this);
+            return this.paletteResizer.onResize(this.entryWidthBits + 1, value, this);
         }
     }
 
@@ -82,6 +58,8 @@ public class LinearPalette<T> implements Palette<T>
 
         if (size <= this.values.length)
         {
+            Arrays.fill(this.values, null);
+
             for (int id = 0; id < size; ++id)
             {
                 this.values[id] = list.get(id);
@@ -96,11 +74,11 @@ public class LinearPalette<T> implements Palette<T>
     }
 
     @Override
-    public boolean overrideMapping(int id, T state)
+    public boolean overrideMapping(int id, T value)
     {
-        if (id >= 0 && id < this.values.length)
+        if (id >= 0 && id < this.currentSize)
         {
-            this.values[id] = state;
+            this.values[id] = value;
             return true;
         }
 
@@ -108,13 +86,10 @@ public class LinearPalette<T> implements Palette<T>
     }
 
     @Override
-    public LinearPalette<T> copy(PaletteResizeHandler<T> resizeHandler)
+    public LinearPalette<T> copy(PaletteResizeHandler<T> paletteResizer)
     {
-        LinearPalette<T> copy = new LinearPalette<>(this.bits, resizeHandler);
-
-        System.arraycopy(this.values, 0, copy.values, 0, this.values.length);
-        copy.currentSize  = this.currentSize;
-
+        LinearPalette<T> copy = new LinearPalette<>(this.entryWidthBits, paletteResizer);
+        copy.setMapping(this.getMapping());
         return copy;
     }
 }
