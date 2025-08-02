@@ -181,7 +181,7 @@ public class DataTypeUtils
     {
         if (tag.contains(tagName, Constants.NBT.TAG_INT_ARRAY))
         {
-            int[] pos = tag.getIntArray("Pos");
+            int[] pos = tag.getIntArray(tagName);
 
             if (pos.length == 3)
             {

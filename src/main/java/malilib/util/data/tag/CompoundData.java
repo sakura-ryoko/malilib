@@ -17,21 +17,52 @@ public class CompoundData extends BaseData implements DataView
         super(Constants.NBT.TAG_LIST, "TAG_Compound");
     }
 
+    @Override
     public int size()
     {
         return this.values.size();
     }
 
+    @Override
+    public boolean isEmpty()
+    {
+        return this.values.isEmpty();
+    }
+
+    @Override
     public Set<String> getKeys()
     {
         return this.values.keySet();
     }
 
     @Override
-    public boolean contains(String key, int tagType)
+    public boolean contains(String key, int requestedType)
     {
         BaseData data = this.values.get(key);
-        return data != null && data.getType() == tagType;
+
+        if (data == null)
+        {
+            return false;
+        }
+
+        int hasType = data.getType();
+
+        if (hasType == requestedType)
+        {
+            return true;
+        }
+
+        if (requestedType == Constants.NBT.TAG_ANY_NUMERIC)
+        {
+            return hasType == Constants.NBT.TAG_BYTE ||
+                   hasType == Constants.NBT.TAG_SHORT ||
+                   hasType == Constants.NBT.TAG_INT ||
+                   hasType == Constants.NBT.TAG_LONG ||
+                   hasType == Constants.NBT.TAG_FLOAT ||
+                   hasType == Constants.NBT.TAG_DOUBLE;
+        }
+
+        return false;
     }
 
     @Override
@@ -66,28 +97,132 @@ public class CompoundData extends BaseData implements DataView
     public byte getByte(String key)
     {
         BaseData data = this.values.get(key);
-        return data != null && data.getType() == Constants.NBT.TAG_BYTE ? ((ByteData) data).value : 0;
+
+        if (data == null)
+        {
+            return 0;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_BYTE)
+        {
+            return ((ByteData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_SHORT)
+        {
+            return (byte) ((ShortData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_INT)
+        {
+            return (byte) ((IntData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_LONG)
+        {
+            return (byte) ((LongData) data).value;
+        }
+
+        return 0;
     }
 
     @Override
     public short getShort(String key)
     {
         BaseData data = this.values.get(key);
-        return data != null && data.getType() == Constants.NBT.TAG_SHORT ? ((ShortData) data).value : 0;
+
+        if (data == null)
+        {
+            return 0;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_SHORT)
+        {
+            return ((ShortData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_INT)
+        {
+            return (short) ((IntData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_LONG)
+        {
+            return (short) ((LongData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_BYTE)
+        {
+            return ((ByteData) data).value;
+        }
+
+        return 0;
     }
 
     @Override
     public int getInt(String key)
     {
         BaseData data = this.values.get(key);
-        return data != null && data.getType() == Constants.NBT.TAG_INT ? ((IntData) data).value : 0;
+
+        if (data == null)
+        {
+            return 0;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_INT)
+        {
+            return ((IntData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_LONG)
+        {
+            return (int) ((LongData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_SHORT)
+        {
+            return ((ShortData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_BYTE)
+        {
+            return ((ByteData) data).value;
+        }
+
+        return 0;
     }
 
     @Override
     public long getLong(String key)
     {
         BaseData data = this.values.get(key);
-        return data != null && data.getType() == Constants.NBT.TAG_LONG ? ((LongData) data).value : 0L;
+
+        if (data == null)
+        {
+            return 0;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_LONG)
+        {
+            return ((LongData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_INT)
+        {
+            return ((IntData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_SHORT)
+        {
+            return ((ShortData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_BYTE)
+        {
+            return ((ByteData) data).value;
+        }
+
+        return 0;
     }
 
     @Override

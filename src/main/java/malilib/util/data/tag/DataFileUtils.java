@@ -12,7 +12,7 @@ public class DataFileUtils
         return null;
     }
 
-    public static boolean writeCompressedCompoundData(Path fileOut, CompoundData dataIn)
+    public static boolean writeCompressedData(Path fileOut, DataView dataIn)
     {
         return true;
     }

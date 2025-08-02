@@ -1,14 +1,21 @@
 package malilib.util.data.tag;
 
 import java.util.Optional;
+import java.util.Set;
 
 import malilib.util.data.Constants;
 
 public interface DataView
 {
-    boolean contains(String key, int tagType);
+    boolean contains(String key, int requestedType);
 
     boolean containsList(String key, int listEntryType);
+
+    int size();
+
+    boolean isEmpty();
+
+    Set<String> getKeys();
 
     Optional<BaseData> getData(String key);
 
