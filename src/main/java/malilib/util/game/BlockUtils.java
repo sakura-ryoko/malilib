@@ -21,7 +21,6 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 
 import malilib.MaLiLib;
@@ -45,7 +44,7 @@ public class BlockUtils
      * The string should be in either one of the following formats:<br>
      * 'minecraft:stone' or 'minecraft:smooth_stone_slab[half=top,waterlogged=false]'
      */
-    public static Optional<IBlockState> getBlockStateFromString(String str)
+    public static Optional<BlockState> getBlockStateFromString(String str)
     {
         int index = str.indexOf("["); // [prop=value]
         String blockName = index != -1 ? str.substring(0, index) : str;
@@ -86,7 +85,7 @@ public class BlockUtils
                 }
             }
 
-            return Optional.of(state);
+            return Optional.of(BlockState.of(state));
         }
 
         return Optional.empty();
@@ -190,11 +189,11 @@ public class BlockUtils
         return name;
     }
 
-    public static IBlockState readBlockState(CompoundData data)
+    public static BlockState readBlockState(CompoundData data)
     {
         if (data.contains("Name", Constants.NBT.TAG_STRING) == false)
         {
-            return Blocks.AIR.getDefaultState();
+            return BlockState.AIR;
         }
         else
         {
@@ -217,7 +216,7 @@ public class BlockUtils
                 }
             }
 
-            return vanillaState;
+            return BlockState.of(vanillaState);
         }
     }
 
@@ -244,11 +243,11 @@ public class BlockUtils
 
     public static CompoundData writeBlockState(CompoundData data, BlockState state)
     {
-        IBlockState vanillaState = state.toVanilla();
+        IBlockState vanillaState = state.vanillaState();
 
         data.putString("Name", Block.REGISTRY.getNameForObject(vanillaState.getBlock()).toString());
 
-        if (state.toVanilla().getProperties().isEmpty() == false)
+        if (state.vanillaState().getProperties().isEmpty() == false)
         {
             CompoundData propTag = new CompoundData();
 
