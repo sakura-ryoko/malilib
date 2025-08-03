@@ -1,5 +1,12 @@
 package malilib.util.data.tag;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+import malilib.util.data.Constants;
+import malilib.util.data.tag.util.SizeTracker;
+
 public abstract class BaseData
 {
     protected final int type;
@@ -22,4 +29,27 @@ public abstract class BaseData
     }
 
     public abstract BaseData copy();
+
+    public abstract void write(DataOutput output) throws IOException;
+
+    public static BaseData createTag(int tagType, DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+    {
+        switch (tagType)
+        {
+            case Constants.NBT.TAG_BYTE:        return ByteData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_SHORT:       return ShortData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_INT:         return IntData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_LONG:        return LongData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_FLOAT:       return FloatData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_DOUBLE:      return DoubleData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_STRING:      return StringData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_BYTE_ARRAY:  return ByteArrayData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_INT_ARRAY:   return IntArrayData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_LONG_ARRAY:  return LongArrayData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_COMPOUND:    return CompoundData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_LIST:        return ListData.read(input, depth, sizeTracker);
+            default:
+                throw new IOException("Unknown tag type " + tagType);
+        }
+    }
 }

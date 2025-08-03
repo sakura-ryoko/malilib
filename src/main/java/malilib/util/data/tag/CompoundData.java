@@ -1,20 +1,34 @@
 package malilib.util.data.tag;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import malilib.util.data.Constants;
+import malilib.util.data.tag.util.SizeTracker;
 
 public class CompoundData extends BaseData implements DataView
 {
-    private final LinkedHashMap<String, BaseData> values = new LinkedHashMap<>();
+    public static final String TAG_NAME = "TAG_Compound";
+    private static final Pattern SIMPLE_VALUE = Pattern.compile("[A-Za-z0-9._+-]+");
+
+    private final LinkedHashMap<String, BaseData> values;
 
     public CompoundData()
     {
-        super(Constants.NBT.TAG_LIST, "TAG_Compound");
+        this(new LinkedHashMap<>());
+    }
+
+    public CompoundData(LinkedHashMap<String, BaseData> values)
+    {
+        super(Constants.NBT.TAG_COMPOUND, TAG_NAME);
+
+        this.values = values;
     }
 
     @Override
@@ -93,6 +107,31 @@ public class CompoundData extends BaseData implements DataView
         return data != null && data.getType() == Constants.NBT.TAG_BYTE && ((ByteData) data).value != 0;
     }
 
+    protected long getAsAnyInt(BaseData data)
+    {
+        if (data.getType() == Constants.NBT.TAG_BYTE)
+        {
+            return ((ByteData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_SHORT)
+        {
+            return ((ShortData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_INT)
+        {
+            return ((IntData) data).value;
+        }
+
+        if (data.getType() == Constants.NBT.TAG_LONG)
+        {
+            return ((LongData) data).value;
+        }
+
+        return 0;
+    }
+
     @Override
     public byte getByte(String key)
     {
@@ -108,22 +147,7 @@ public class CompoundData extends BaseData implements DataView
             return ((ByteData) data).value;
         }
 
-        if (data.getType() == Constants.NBT.TAG_SHORT)
-        {
-            return (byte) ((ShortData) data).value;
-        }
-
-        if (data.getType() == Constants.NBT.TAG_INT)
-        {
-            return (byte) ((IntData) data).value;
-        }
-
-        if (data.getType() == Constants.NBT.TAG_LONG)
-        {
-            return (byte) ((LongData) data).value;
-        }
-
-        return 0;
+        return (byte) this.getAsAnyInt(data);
     }
 
     @Override
@@ -141,22 +165,7 @@ public class CompoundData extends BaseData implements DataView
             return ((ShortData) data).value;
         }
 
-        if (data.getType() == Constants.NBT.TAG_INT)
-        {
-            return (short) ((IntData) data).value;
-        }
-
-        if (data.getType() == Constants.NBT.TAG_LONG)
-        {
-            return (short) ((LongData) data).value;
-        }
-
-        if (data.getType() == Constants.NBT.TAG_BYTE)
-        {
-            return ((ByteData) data).value;
-        }
-
-        return 0;
+        return (short) this.getAsAnyInt(data);
     }
 
     @Override
@@ -174,22 +183,7 @@ public class CompoundData extends BaseData implements DataView
             return ((IntData) data).value;
         }
 
-        if (data.getType() == Constants.NBT.TAG_LONG)
-        {
-            return (int) ((LongData) data).value;
-        }
-
-        if (data.getType() == Constants.NBT.TAG_SHORT)
-        {
-            return ((ShortData) data).value;
-        }
-
-        if (data.getType() == Constants.NBT.TAG_BYTE)
-        {
-            return ((ByteData) data).value;
-        }
-
-        return 0;
+        return (int) this.getAsAnyInt(data);
     }
 
     @Override
@@ -207,22 +201,7 @@ public class CompoundData extends BaseData implements DataView
             return ((LongData) data).value;
         }
 
-        if (data.getType() == Constants.NBT.TAG_INT)
-        {
-            return ((IntData) data).value;
-        }
-
-        if (data.getType() == Constants.NBT.TAG_SHORT)
-        {
-            return ((ShortData) data).value;
-        }
-
-        if (data.getType() == Constants.NBT.TAG_BYTE)
-        {
-            return ((ByteData) data).value;
-        }
-
-        return 0;
+        return this.getAsAnyInt(data);
     }
 
     @Override
@@ -367,8 +346,85 @@ public class CompoundData extends BaseData implements DataView
         return copy;
     }
 
-    public <T> T convertTo(Function<CompoundData, T> converter)
+    @Override
+    public String toString()
     {
-        return converter.apply(this);
+        StringBuilder sb = new StringBuilder("{");
+        Set<String> keys = this.values.keySet();
+
+        for (String key : keys)
+        {
+            if (sb.length() != 1)
+            {
+                sb.append(',');
+            }
+
+            sb.append(handleEscape(key));
+            sb.append(':');
+            sb.append(this.values.get(key));
+        }
+
+        return sb.append('}').toString();
+    }
+
+    @Override
+    public void write(DataOutput output) throws IOException
+    {
+        for (Map.Entry<String, BaseData> entry : this.values.entrySet())
+        {
+            writeEntry(entry.getKey(), entry.getValue(), output);
+        }
+
+        output.writeByte(Constants.NBT.TAG_END);
+    }
+
+    public static CompoundData read(DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+    {
+        if (depth > 512)
+        {
+            throw new IOException("Tried to read NBT tag with too high complexity, depth > 512");
+        }
+
+        LinkedHashMap<String, BaseData> values = new LinkedHashMap<>();
+
+        while (true)
+        {
+            int tagType = input.readByte();
+            sizeTracker.increment(1);
+
+            if (tagType == Constants.NBT.TAG_END)
+            {
+                break;
+            }
+
+            String key = input.readUTF();
+            sizeTracker.increment(2 + key.length());
+            BaseData data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
+
+            if (data == null)
+            {
+                throw new IOException("CompoundData: Failed to read entry named " + key);
+            }
+
+            values.put(key, data);
+        }
+
+        return new CompoundData(values);
+    }
+
+    public static String handleEscape(String str)
+    {
+        return SIMPLE_VALUE.matcher(str).matches() ? str : StringData.quoteAndEscape(str);
+    }
+
+    public static void writeEntry(String key, BaseData data, DataOutput output) throws IOException
+    {
+        output.writeByte(data.getType());
+
+        if (data.getType() != Constants.NBT.TAG_END)
+        {
+            output.writeUTF(key);
+            data.write(output);
+        }
     }
 }

@@ -1,19 +1,32 @@
 package malilib.util.data.tag;
 
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.ArrayList;
+import com.google.common.collect.Lists;
 
 import malilib.util.data.Constants;
+import malilib.util.data.tag.util.SizeTracker;
 
 public class ListData extends BaseData
 {
-    protected final ArrayList<BaseData> list = new ArrayList<>();
+    public static final String TAG_NAME = "TAG_List";
+
+    protected final ArrayList<BaseData> list;
     protected final int containedType;
 
     public ListData(int containedType)
     {
-        super(Constants.NBT.TAG_LIST, "TAG_List");
+        this(containedType, new ArrayList<>());
+    }
+
+    public ListData(int containedType, ArrayList<BaseData> list)
+    {
+        super(Constants.NBT.TAG_LIST, TAG_NAME);
 
         this.containedType = containedType;
+        this.list = list;
     }
 
     public int getContainedType()
@@ -139,5 +152,71 @@ public class ListData extends BaseData
         }
 
         return copy;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("[");
+
+        for (int i = 0; i < this.list.size(); ++i)
+        {
+            if (i != 0)
+            {
+                sb.append(',');
+            }
+
+            sb.append(this.list.get(i).toString());
+        }
+
+        return sb.append(']').toString();
+    }
+
+    @Override
+    public void write(DataOutput output) throws IOException
+    {
+        int containedType = this.list.isEmpty() ? Constants.NBT.TAG_END : this.containedType;
+        int listSize = this.list.size();
+
+        output.writeByte(containedType);
+        output.writeInt(listSize);
+
+        for (int i = 0; i < listSize; ++i)
+        {
+            this.list.get(i).write(output);
+        }
+    }
+
+    public static ListData read(DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+    {
+        if (depth > 512)
+        {
+            throw new IOException("Tried to read NBT tag with too high complexity, depth > 512");
+        }
+
+        int tagType = input.readByte();
+        int len = input.readInt();
+        sizeTracker.increment(5);
+
+        if (tagType == Constants.NBT.TAG_END && len > 0)
+        {
+            throw new IOException("ListData of type TAG_End");
+        }
+
+        ArrayList<BaseData> list = Lists.newArrayListWithCapacity(len);
+
+        for (int i = 0; i < len; ++i)
+        {
+            BaseData data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
+
+            if (data == null)
+            {
+                throw new IOException("ListData: Failed to read entry at index " + i);
+            }
+
+            list.add(data);
+        }
+
+        return new ListData(tagType, list);
     }
 }
