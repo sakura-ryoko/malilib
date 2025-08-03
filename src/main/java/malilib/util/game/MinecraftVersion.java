@@ -120,7 +120,7 @@ public class MinecraftVersion
     public static final MinecraftVersion MC_1_7_1  = new MinecraftVersion("1.7.1",  -1, 3);
     public static final MinecraftVersion MC_1_7    = new MinecraftVersion("1.7",    -1, 3);
 
-    public static final MinecraftVersion MC_UNKNOWN = new MinecraftVersion("< 1.9",  -1, -1);
+    public static final MinecraftVersion MC_UNKNOWN = new MinecraftVersion("???",  -1, -1);
 
     public static final ImmutableList<MinecraftVersion> MINECRAFT_RELEASE_VERSIONS = ImmutableList.of(
         MC_1_7,
@@ -230,9 +230,9 @@ public class MinecraftVersion
         return Optional.empty();
     }
 
-    public static MinecraftVersion getVersionOrCreateSnapshotVersionByDataVersion(int dataVersion)
+    public static MinecraftVersion getOrCreateVersionFromDataVersion(int dataVersion)
     {
-        if (dataVersion < 0)
+        if (dataVersion <= 0)
         {
             return MC_UNKNOWN;
         }
