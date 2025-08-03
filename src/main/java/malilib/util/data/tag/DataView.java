@@ -58,7 +58,7 @@ public interface DataView
 
     default byte getByteOrDefault(String key, byte defaultValue)
     {
-        if (this.contains(key, Constants.NBT.TAG_BYTE) == false)
+        if (this.contains(key, Constants.NBT.TAG_ANY_NUMERIC) == false)
         {
             return defaultValue;
         }
@@ -69,7 +69,7 @@ public interface DataView
 
     default short getShortOrDefault(String key, short defaultValue)
     {
-        if (this.contains(key, Constants.NBT.TAG_SHORT) == false)
+        if (this.contains(key, Constants.NBT.TAG_ANY_NUMERIC) == false)
         {
             return defaultValue;
         }
@@ -80,7 +80,7 @@ public interface DataView
 
     default int getIntOrDefault(String key, int defaultValue)
     {
-        if (this.contains(key, Constants.NBT.TAG_INT) == false)
+        if (this.contains(key, Constants.NBT.TAG_ANY_NUMERIC) == false)
         {
             return defaultValue;
         }
@@ -91,7 +91,7 @@ public interface DataView
 
     default long getLongOrDefault(String key, long defaultValue)
     {
-        if (this.contains(key, Constants.NBT.TAG_LONG) == false)
+        if (this.contains(key, Constants.NBT.TAG_ANY_NUMERIC) == false)
         {
             return defaultValue;
         }

@@ -183,6 +183,12 @@ public class DataTypeUtils
         return null;
     }
 
+    public static BlockPos readBlockPosFromArrayTagOrDefault(DataView tag, String tagName, BlockPos defaultValue)
+    {
+        BlockPos pos = readBlockPosFromArrayTag(tag, tagName);
+        return pos != null ? pos : defaultValue;
+    }
+
     public static CompoundData removeBlockPosFromTag(CompoundData tag)
     {
         tag.remove("x");
