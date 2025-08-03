@@ -38,7 +38,8 @@ public class HashMapPalette<T> extends BasePalette<T> implements Palette<T>
     {
         if (this.currentSize < this.values.length)
         {
-            int id = this.valueToIdMap.put(value, this.currentSize);
+            int id = this.currentSize;
+            this.valueToIdMap.put(value, id);
             this.values[id] = value;
             ++this.currentSize;
             return id;
