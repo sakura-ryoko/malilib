@@ -1,13 +1,22 @@
 package malilib.util.game.wrap;
 
+import java.util.UUID;
 import javax.annotation.Nullable;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
+import net.minecraft.world.World;
 
+import malilib.MaLiLib;
 import malilib.util.MathUtils;
+import malilib.util.data.Constants;
+import malilib.util.data.tag.CompoundData;
+import malilib.util.data.tag.ListData;
+import malilib.util.data.tag.converter.DataConverterNbt;
 import malilib.util.inventory.InventoryUtils;
 import malilib.util.position.BlockPos;
 import malilib.util.position.Direction;
@@ -73,6 +82,11 @@ public class EntityWrap
     public static double getZ(Entity entity)
     {
         return entity.posZ;
+    }
+
+    public static UUID getUuid(Entity entity)
+    {
+        return entity.getUniqueID();
     }
 
     public static float getYaw(Entity entity)
@@ -205,5 +219,97 @@ public class EntityWrap
         }
 
         return hand;
+    }
+
+    /**
+     * Creates the entity from the provided data.
+     * Note: This does not spawn any of the entities in the world!
+     */
+    @Nullable
+    private static Entity createSingleEntityFromNbt(CompoundData data, World world)
+    {
+        try
+        {
+            NBTTagCompound nbt = DataConverterNbt.toVanillaCompound(data);
+            Entity entity = EntityList.createEntityFromNBT(nbt, world);
+
+            if (entity != null)
+            {
+                entity.setUniqueId(UUID.randomUUID());
+            }
+
+            return entity;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Creates the entity and any possible passengers from the provided data.
+     * Note: This does not spawn any of the entities in the world!
+     */
+    @Nullable
+    public static Entity createEntityAndPassengersFromNbt(CompoundData data, World world)
+    {
+        Entity entity = createSingleEntityFromNbt(data, world);
+
+        if (entity == null)
+        {
+            return null;
+        }
+
+        if (data.containsList("Passengers", Constants.NBT.TAG_COMPOUND))
+        {
+            ListData list = data.getList("Passengers", Constants.NBT.TAG_COMPOUND);
+            final int size = list.size();
+
+            for (int i = 0; i < size; ++i)
+            {
+                Entity passenger = createEntityAndPassengersFromNbt(list.getCompoundAt(i), world);
+
+                if (passenger != null)
+                {
+                    passenger.startRiding(entity, true);
+                }
+            }
+        }
+
+        return entity;
+    }
+
+    public static void spawnEntityAndPassengersInWorld(Entity entity, World world)
+    {
+        if (world.spawnEntity(entity) && entity.isBeingRidden())
+        {
+            for (Entity passenger : entity.getPassengers())
+            {
+                passenger.setPosition(EntityWrap.getX(entity),
+                                      EntityWrap.getY(entity) + entity.getMountedYOffset() + passenger.getYOffset(),
+                                      EntityWrap.getZ(entity));
+                spawnEntityAndPassengersInWorld(passenger, world);
+            }
+        }
+    }
+
+    @Nullable
+    public static CompoundData writeEntityToTag(Entity entity)
+    {
+        try
+        {
+            NBTTagCompound tag = new NBTTagCompound();
+
+            if (entity.writeToNBTOptional(tag))
+            {
+                return DataConverterNbt.fromVanillaCompound(tag);
+            }
+        }
+        catch (Exception e)
+        {
+            MaLiLib.LOGGER.error("Failed to write Entity {} to NBT", entity, e);
+        }
+
+        return null;
     }
 }
