@@ -64,7 +64,7 @@ public class MaLiLibConfigs
         public static final BooleanConfig SHOW_INTERNAL_CONFIG_NAME                 = new BooleanConfig("showInternalConfigName", false);
         public static final BooleanConfig SORT_CONFIGS_BY_NAME                      = new BooleanConfig("sortConfigsByName", false);
         public static final BooleanConfig SORT_EXTENSION_MOD_OPTIONS                = new BooleanConfig("sortExtensionModOptions", false);
-        public static final BooleanConfig TEXT_FIELD_RIGHT_CLICK_CONTEXT_MENU       = new BooleanConfig("textFieldRightClickContextMenu", true);
+        public static final BooleanConfig TEXT_FIELD_RIGHT_CLICK_CONTEXT_MENU       = new BooleanConfig("textFieldRightClickContextMenu", false);
         public static final BooleanConfig TRANSLATION_OVERRIDES                     = new BooleanConfig("translationOverrides", false);
 
         public static final ImmutableList<ConfigOption<?>> OPTIONS = ImmutableList.of(
