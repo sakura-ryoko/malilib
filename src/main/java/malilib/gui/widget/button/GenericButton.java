@@ -416,8 +416,6 @@ public class GenericButton extends InteractableWidget
     @Override
     protected int getTextPositionX(int x, int usableWidth, int textWidth)
     {
-        int textX = super.getTextPositionX(x, usableWidth, this.text.renderWidth);
-
         Icon icon = this.buttonIcon;
 
         if (this.iconAlignment == LeftRight.LEFT && icon != null &&
@@ -427,7 +425,7 @@ public class GenericButton extends InteractableWidget
             return x + this.iconOffset.getXOffset() + icon.getWidth() + this.textOffset.getXOffset();
         }
 
-        return textX;
+        return super.getTextPositionX(x, usableWidth, textWidth);
     }
 
     protected int getIconOffsetX(int buttonWidth, int iconWidth)
@@ -532,7 +530,7 @@ public class GenericButton extends InteractableWidget
         int usableHeight = this.getHeight() - padding.getVerticalTotal();
         x = this.getTextPositionX(x + padding.getLeft(), usableWidth, text.renderWidth);
         y = this.getTextPositionY(y + padding.getTop(), usableHeight, this.getLineHeight());
-        int width = this.fullText.renderWidth + 8;
+        int width = text.renderWidth + 8;
         int height = this.getLineHeight() + 6;
 
         this.renderFullTextBackground(x - 4, y - 4, z, width, height, ctx);
