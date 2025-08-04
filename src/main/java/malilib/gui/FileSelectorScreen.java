@@ -35,6 +35,7 @@ public class FileSelectorScreen extends BaseListScreen<BaseFileBrowserWidget>
         this.confirmButton.setActionListener(this::onConfirm);
 
         this.fileNameTextField = new BaseTextFieldWidget(240, 16);
+        this.fileNameTextField.setEmptyValueDisplayString(StringUtils.translate("malilib.label.file_selector_screen.file_name"));
 
         this.setTitle("malilib.title.screen.file_browser");
     }

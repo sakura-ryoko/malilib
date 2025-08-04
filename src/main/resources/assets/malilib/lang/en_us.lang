@@ -309,6 +309,7 @@ malilib.label.file_browser.move_as.info.file=Provide a name for the moved file:\
 malilib.label.file_browser.new_file_name=New name:
 malilib.label.file_browser.rename.info.directory=Provide a new name for the directory:\n  <c=ee2>%s
 malilib.label.file_browser.rename.info.file=Provide a new name for the file:\n  §b%s
+malilib.label.file_selector_screen.file_name=file name to use
 malilib.label.import_entries.empty_text_field_import_contents=string to import from
 malilib.label.keybind_settings.activate_on=Activate on
 malilib.label.keybind_settings.allow_empty_keybind=Allow empty keybind
