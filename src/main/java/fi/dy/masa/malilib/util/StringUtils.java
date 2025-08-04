@@ -527,59 +527,41 @@ public class StringUtils
      * @param indicator the appended shrinkage indicator, for example "..."
      * @return ()
      */
+    
     public static String clampTextToRenderLength(String text, final int maxWidth, LeftRight side, String indicator)
     {
+        int textWidth = getStringWidth(text);
         // The entire string fits, just return it as-is
-        if (getStringWidth(text) <= maxWidth)
-        {
-            return text;
-        }
+        if (textWidth <= maxWidth) return text;
 
         StringBuilder sb = new StringBuilder(128);
 
         final int indicatorWidth = getStringWidth(indicator);
         final int stringLen = text.length();
         int usedWidth = indicatorWidth;
+        int usableWidth = maxWidth - indicatorWidth;
+        int left = side.choose(0, textWidth - usableWidth);
+        
         int index = 0;
-        int lastIndex = stringLen - 1;
-        int indexIncrement = 1;
-
-        // Shrink from the left, so append/build from the right
-        if (side == LeftRight.LEFT)
-        {
-            index = stringLen - 1;
-            lastIndex = 0;
-            indexIncrement = -1;
+        
+        while (usedWidth < left && index < stringLen){
+            usedWidth += getStringWidth(text.substring(index, index + 1));
+            ++index;
         }
+        
+        usedWidth = 0;
+        
+        if (side == LeftRight.LEFT) sb.append(indicator);
 
-        while (usedWidth < maxWidth)
-        {
+        while (index < stringLen) {
             String chr = text.substring(index, index + 1);
-            int charWidth = getStringWidth(chr);
-
-            if (usedWidth + charWidth > maxWidth)
-            {
-                break;
-            }
-
+            if ((usedWidth += getStringWidth(chr)) > maxWidth) break;
             sb.append(chr);
-            usedWidth += charWidth;
-
-            if (index == lastIndex)
-            {
-                break;
-            }
-
-            index += indexIncrement;
+            ++index;
         }
 
-        if (side == LeftRight.LEFT)
-        {
-            return indicator + sb.reverse();
-        }
-
-        sb.append(indicator);
-
+        if (side == LeftRight.RIGHT) sb.append(indicator);
+        
         return sb.toString();
     }
 
