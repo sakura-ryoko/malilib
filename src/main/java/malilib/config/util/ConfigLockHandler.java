@@ -595,7 +595,7 @@ public class ConfigLockHandler
 
                     if (cfg instanceof BaseGenericConfig)
                     {
-                        Object oldValue = ((BaseGenericConfig<?>) cfg).getValue();
+                        T oldValue = cfg.getValue();
                         overrider.overrideConfigValue(cfg, overrideValue);
                         cfg.setOverrideMessage(msg);
 
@@ -608,8 +608,8 @@ public class ConfigLockHandler
                         overrider.overrideConfigValue(cfg, overrideValue);
                         cfg.setOverrideMessage(msg);
 
-                        MaLiLib.debugLog("    Overrode '{}.{}' (unknown values) with message '{}'",
-                                         pair.getLeft().getName(), name, msg);
+                        MaLiLib.debugLog("    Overrode '{}.{}' from (unknown value) to '{}' with message '{}'",
+                                         pair.getLeft().getName(), name, overrideValue, msg);
                     }
 
                     ++count;
