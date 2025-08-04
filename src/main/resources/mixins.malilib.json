@@ -5,6 +5,7 @@
 	"minVersion": "0.8",
 	"client": [
 		"access.AbstractHorseMixin",
+		"access.DataFixerMixin",
 		"access.GuiContainerMixin",
 		"access.NBTBaseMixin",
 		"access.NBTTagLongArrayMixin",
