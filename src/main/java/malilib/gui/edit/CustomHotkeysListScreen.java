@@ -29,6 +29,8 @@ public class CustomHotkeysListScreen extends BaseListScreen<DataListWidget<Custo
     protected final GenericButton addHotkeyButton;
     protected final GenericButton exportButton;
     protected final GenericButton importButton;
+    protected final GenericButton toggleAllOnButton;
+    protected final GenericButton toggleAllOffButton;
 
     public CustomHotkeysListScreen()
     {
@@ -39,9 +41,11 @@ public class CustomHotkeysListScreen extends BaseListScreen<DataListWidget<Custo
         this.exportButton  = GenericButton.create(16, "malilib.button.misc.export", this::openExportScreen);
         this.importButton  = GenericButton.create(16, "malilib.button.misc.import", this::openImportScreen);
         this.addHotkeyButton = GenericButton.create(16, "malilib.button.custom_hotkeys.add_hotkey", this::openAddHotkeyScreen);
+        this.toggleAllOnButton = GenericButton.create(16, "malilib.button.custom_hotkeys.all_on", () -> CustomHotkeyManager.INSTANCE.getAllCustomHotkeys().forEach(k -> k.setEnabled(true)));
+        this.toggleAllOffButton = GenericButton.create(16, "malilib.button.custom_hotkeys.all_off", () -> CustomHotkeyManager.INSTANCE.getAllCustomHotkeys().forEach(k -> k.setEnabled(false)));
         this.addHotkeyButton.translateAndAddHoverString("malilib.hover.button.custom_hotkeys.add_new_hotkey");
 
-        this.addPreScreenCloseListener(CustomHotkeyManager.INSTANCE::checkIfDirtyAndSaveAndUpdate);
+        this.addPreScreenCloseListener(CustomHotkeyManager.INSTANCE::checkDirtySaveAndUpdate);
         this.createSwitchModConfigScreenDropDown(MaLiLibReference.MOD_INFO);
     }
 
@@ -53,6 +57,9 @@ public class CustomHotkeysListScreen extends BaseListScreen<DataListWidget<Custo
         this.addWidget(this.addHotkeyButton);
         this.addWidget(this.importButton);
         this.addWidget(this.exportButton);
+        this.addWidget(this.toggleAllOnButton);
+        this.addWidget(this.toggleAllOffButton);
+
         this.getListWidget().refreshEntries();
     }
 
@@ -62,7 +69,11 @@ public class CustomHotkeysListScreen extends BaseListScreen<DataListWidget<Custo
         super.updateWidgetPositions();
 
         int y = this.getListWidget().getY() - 18;
+
         this.addHotkeyButton.setPosition(this.x + 10, y);
+        this.toggleAllOnButton.setPosition(this.addHotkeyButton.getRight() + 2, y);
+        this.toggleAllOffButton.setPosition(this.toggleAllOnButton.getRight() + 2, y);
+
         this.exportButton.setRight(this.getListWidget().getRight());
         this.exportButton.setY(y);
         this.importButton.setRight(this.exportButton.getX() - 2);

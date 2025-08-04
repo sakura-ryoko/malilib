@@ -11,6 +11,7 @@ import malilib.gui.widget.KeybindSettingsWidget;
 import malilib.gui.widget.LabelWidget;
 import malilib.gui.widget.button.GenericButton;
 import malilib.gui.widget.button.KeyBindConfigButton;
+import malilib.gui.widget.button.OnOffButton;
 import malilib.input.CustomHotkeyDefinition;
 import malilib.input.CustomHotkeyManager;
 import malilib.render.text.StyledTextLine;
@@ -23,6 +24,7 @@ public class CustomHotkeyDefinitionEntryWidget extends BaseDataListEntryWidget<C
     protected final KeybindSettingsWidget settingsWidget;
     protected final GenericButton editButton;
     protected final GenericButton removeButton;
+    protected final OnOffButton enableButton;
     protected boolean addEditElements = true;
 
     public CustomHotkeyDefinitionEntryWidget(CustomHotkeyDefinition data,
@@ -40,6 +42,7 @@ public class CustomHotkeyDefinitionEntryWidget extends BaseDataListEntryWidget<C
 
         this.keybindButton = new KeyBindConfigButton(160, 20, data.getKeyBind());
         this.settingsWidget = new KeybindSettingsWidget(data.getKeyBind(), data.getName());
+        this.enableButton = OnOffButton.simpleSlider(20, data::isEnabled, this::toggleHotkeyEnabled);
         this.editButton = GenericButton.create("malilib.button.misc.edit", this::editHotkey);
         this.removeButton = GenericButton.create("malilib.button.misc.remove", this::removeHotkey);
 
@@ -67,6 +70,7 @@ public class CustomHotkeyDefinitionEntryWidget extends BaseDataListEntryWidget<C
 
         if (this.addEditElements)
         {
+            this.addWidget(this.enableButton);
             this.addWidget(this.keybindButton);
             this.addWidget(this.settingsWidget);
             this.addWidget(this.editButton);
@@ -97,9 +101,12 @@ public class CustomHotkeyDefinitionEntryWidget extends BaseDataListEntryWidget<C
 
             this.editButton.setRight(this.keybindButton.getX() - 2);
             this.editButton.centerVerticallyInside(this);
+
+            this.enableButton.setRight(this.editButton.getX() - 2);
+            this.enableButton.centerVerticallyInside(this);
         }
 
-        this.nameLabelWidget.setWidth(this.editButton.getX() - this.nameLabelWidget.getX() - 4);
+        this.nameLabelWidget.setWidth(this.enableButton.getX() - this.nameLabelWidget.getX() - 4);
     }
 
     @Override
@@ -135,6 +142,16 @@ public class CustomHotkeyDefinitionEntryWidget extends BaseDataListEntryWidget<C
             MacroAction.getContainedActionsTooltip(lines, actions, 8);
             this.nameLabelWidget.getHoverInfoFactory().addTextLines(lines);
         }
+    }
+
+    protected void toggleHotkeyEnabled()
+    {
+        this.data.toggleEnabled();
+
+        this.scheduleTask(() -> {
+            CustomHotkeyManager.INSTANCE.markDirty();
+            this.listWidget.refreshEntries();
+        });
     }
 
     protected void removeHotkey()

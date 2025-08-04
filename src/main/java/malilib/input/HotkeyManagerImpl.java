@@ -14,11 +14,11 @@ import malilib.MaLiLib;
 
 public class HotkeyManagerImpl implements HotkeyManager
 {
-    protected final List<HotkeyCategory> keyBindCategories = new ArrayList<>();
+    protected final List<HotkeyCategory> hotkeyCategories = new ArrayList<>();
     protected final List<HotkeyProvider> keyBindProviders = new ArrayList<>();
     protected final Map<Hotkey, String> lockedHotkeys = new HashMap<>();
     protected Int2ObjectOpenHashMap<ArrayList<KeyBind>> hotkeyMap = new Int2ObjectOpenHashMap<>();
-    @Nullable protected ImmutableList<HotkeyCategory> immutableKeyBindCategories;
+    @Nullable protected ImmutableList<HotkeyCategory> immutableHotkeyCategories;
 
     @Override
     public void registerHotkeyProvider(HotkeyProvider provider)
@@ -43,12 +43,12 @@ public class HotkeyManagerImpl implements HotkeyManager
     @Override
     public ImmutableList<HotkeyCategory> getHotkeyCategories()
     {
-        if (this.immutableKeyBindCategories == null)
+        if (this.immutableHotkeyCategories == null)
         {
-            this.immutableKeyBindCategories = ImmutableList.copyOf(this.keyBindCategories);
+            this.immutableHotkeyCategories = ImmutableList.copyOf(this.hotkeyCategories);
         }
 
-        return this.immutableKeyBindCategories;
+        return this.immutableHotkeyCategories;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class HotkeyManagerImpl implements HotkeyManager
 
         for (HotkeyProvider handler : this.keyBindProviders)
         {
-            for (Hotkey hotkey : handler.getAllHotkeys())
+            for (Hotkey hotkey : handler.getEnabledHotkeys())
             {
                 this.addHotkeyToMap(hotkey, hotkeyMap);
             }
@@ -115,9 +115,9 @@ public class HotkeyManagerImpl implements HotkeyManager
     protected void addKeyBindCategory(HotkeyCategory category)
     {
         // Remove a previous entry, if any (matched based on the modName and keyCategory only!)
-        this.keyBindCategories.remove(category);
-        this.keyBindCategories.add(category);
-        this.immutableKeyBindCategories = null; // mark for rebuild
+        this.hotkeyCategories.remove(category);
+        this.hotkeyCategories.add(category);
+        this.immutableHotkeyCategories = null; // mark for rebuild
     }
 
     /**

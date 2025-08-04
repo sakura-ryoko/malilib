@@ -25,6 +25,7 @@ public class CustomHotkeyDefinition extends CommonDescription implements Hotkey,
     protected final List<String> lockOverrideMessages = new ArrayList<>(0);
     @Nullable protected String lockMessage;
     protected ImmutableList<NamedAction> actions;
+    protected boolean enabled = true;
     protected boolean locked;
 
     public CustomHotkeyDefinition(String name, KeyBind keyBind, ImmutableList<NamedAction> actions)
@@ -70,10 +71,25 @@ public class CustomHotkeyDefinition extends CommonDescription implements Hotkey,
         return this.keyBind;
     }
 
+    public boolean isEnabled()
+    {
+        return this.enabled;
+    }
+
     @Override
     public boolean isLocked()
     {
         return this.locked;
+    }
+
+    public void setEnabled(boolean enabled)
+    {
+        this.enabled = enabled;
+    }
+
+    public void toggleEnabled()
+    {
+        this.enabled = ! this.enabled;
     }
 
     @Override
@@ -141,6 +157,7 @@ public class CustomHotkeyDefinition extends CommonDescription implements Hotkey,
         JsonObject obj = new JsonObject();
 
         obj.addProperty("name", this.name);
+        obj.addProperty("enabled", this.enabled);
         obj.add("hotkey", this.keyBind.getAsJsonElement());
         obj.add("actions", JsonUtils.toArray(this.actions, NamedAction::toJson));
 
@@ -157,6 +174,7 @@ public class CustomHotkeyDefinition extends CommonDescription implements Hotkey,
 
         JsonObject obj = el.getAsJsonObject();
         String name = JsonUtils.getStringOrDefault(obj, "name", "?");
+        boolean enabled = JsonUtils.getBooleanOrDefault(obj, "enabled", true);
         KeyBind keyBind = KeyBindImpl.fromStorageString("", KeyBindSettings.INGAME_DEFAULT);
 
         if (JsonUtils.hasObject(obj, "hotkey"))
@@ -164,6 +182,9 @@ public class CustomHotkeyDefinition extends CommonDescription implements Hotkey,
             keyBind.setValueFromJsonElement(obj.get("hotkey"), name);
         }
 
-        return new CustomHotkeyDefinition(name, keyBind, ActionUtils.readActionsFromList(obj, "actions"));
+        CustomHotkeyDefinition hotkey = new CustomHotkeyDefinition(name, keyBind, ActionUtils.readActionsFromList(obj, "actions"));
+        hotkey.enabled = enabled;
+
+        return hotkey;
     }
 }

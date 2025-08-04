@@ -18,13 +18,20 @@ public class CustomHotkeyManager implements HotkeyProvider
 {
     public static final CustomHotkeyManager INSTANCE = new CustomHotkeyManager();
 
-    protected final List<CustomHotkeyDefinition> hotkeys = new ArrayList<>();
+    protected final List<CustomHotkeyDefinition> allHotkeys = new ArrayList<>();
+    protected final List<CustomHotkeyDefinition> enabledHotkeys = new ArrayList<>();
     protected boolean dirty;
 
     @Override
     public List<? extends Hotkey> getAllHotkeys()
     {
-        return this.hotkeys;
+        return this.allHotkeys;
+    }
+
+    @Override
+    public List<CustomHotkeyDefinition> getEnabledHotkeys()
+    {
+        return this.enabledHotkeys;
     }
 
     @Override
@@ -36,24 +43,25 @@ public class CustomHotkeyManager implements HotkeyProvider
 
     public List<CustomHotkeyDefinition> getAllCustomHotkeys()
     {
-        return this.hotkeys;
+        return this.allHotkeys;
     }
 
     public void addCustomHotkey(CustomHotkeyDefinition hotkey)
     {
-        this.hotkeys.add(hotkey);
+        this.allHotkeys.add(hotkey);
         this.dirty = true;
     }
 
     public void removeCustomHotkey(CustomHotkeyDefinition hotkey)
     {
-        this.hotkeys.remove(hotkey);
+        this.allHotkeys.remove(hotkey);
         this.dirty = true;
     }
 
     public void clear()
     {
-        this.hotkeys.clear();
+        this.allHotkeys.clear();
+        this.enabledHotkeys.clear();
         this.dirty = false;
     }
 
@@ -62,18 +70,23 @@ public class CustomHotkeyManager implements HotkeyProvider
         this.dirty = true;
     }
 
-    public boolean checkIfDirtyAndSaveAndUpdate()
+    public boolean checkDirtySaveAndUpdate()
     {
-        boolean dirty = false;
+        boolean dirty = this.dirty;
 
-        for (CustomHotkeyDefinition hotkey : this.hotkeys)
+        if (dirty == false)
         {
-            if (hotkey.getKeyBind().isDirty())
+            for (CustomHotkeyDefinition hotkey : this.allHotkeys)
             {
-                dirty = true;
-                break;
+                if (hotkey.getKeyBind().isDirty())
+                {
+                    dirty = true;
+                    break;
+                }
             }
         }
+
+        this.updateEnabledHotkeysList();
 
         if (dirty)
         {
@@ -82,6 +95,19 @@ public class CustomHotkeyManager implements HotkeyProvider
         }
 
         return dirty;
+    }
+
+    protected void updateEnabledHotkeysList()
+    {
+        this.enabledHotkeys.clear();
+
+        for (CustomHotkeyDefinition hotkey : this.allHotkeys)
+        {
+            if (hotkey.isEnabled())
+            {
+                this.enabledHotkeys.add(hotkey);
+            }
+        }
     }
 
     public boolean saveToFileIfDirty()
@@ -99,7 +125,7 @@ public class CustomHotkeyManager implements HotkeyProvider
         JsonObject obj = new JsonObject();
         JsonArray arr = new JsonArray();
 
-        for (CustomHotkeyDefinition hotkey : this.hotkeys)
+        for (CustomHotkeyDefinition hotkey : this.allHotkeys)
         {
             arr.add(hotkey.toJson());
             hotkey.getKeyBind().cacheSavedValue();
@@ -119,6 +145,8 @@ public class CustomHotkeyManager implements HotkeyProvider
             JsonObject obj = el.getAsJsonObject();
             JsonUtils.getArrayElementsIfExists(obj, "hotkeys", this::readAndAddHotkey);
         }
+
+        this.updateEnabledHotkeysList();
     }
 
     protected void readAndAddHotkey(JsonElement el)
@@ -127,7 +155,7 @@ public class CustomHotkeyManager implements HotkeyProvider
 
         if (hotkey != null)
         {
-            this.hotkeys.add(hotkey);
+            this.allHotkeys.add(hotkey);
         }
     }
 

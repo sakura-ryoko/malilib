@@ -5,11 +5,19 @@ import java.util.List;
 public interface HotkeyProvider
 {
     /**
-     * Returns a list of all hotkeys that should be registered.
-     * This is called when the master hotkey list in malilib is being rebuilt,
-     * Any hotkeys not on the returned list will not function!
+     * @return A list of all hotkeys in this provider.
      */
     List<? extends Hotkey> getAllHotkeys();
+
+    /**
+     * @return A list of all currently enabled hotkeys in this provider that should be registered.
+     * This is called when the master hotkey list in malilib is being rebuilt.
+     * Any hotkeys not on the returned list of any provider will not trigger/function!
+     */
+    default List<? extends Hotkey> getEnabledHotkeys()
+    {
+        return this.getAllHotkeys();
+    }
 
     /**
      * Returns a list of all the hotkeys, grouped in categories.
