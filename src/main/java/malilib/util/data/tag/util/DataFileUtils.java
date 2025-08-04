@@ -1,11 +1,15 @@
 package malilib.util.data.tag.util;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipException;
 import javax.annotation.Nullable;
 
@@ -13,7 +17,6 @@ import malilib.MaLiLib;
 import malilib.util.data.Constants;
 import malilib.util.data.tag.BaseData;
 import malilib.util.data.tag.CompoundData;
-import malilib.util.data.tag.DataView;
 
 public class DataFileUtils
 {
@@ -40,12 +43,12 @@ public class DataFileUtils
             }
             catch (Exception e2)
             {
-                MaLiLib.LOGGER.warn("Failed to read (assumed uncompressed) NBT data from file '{}'", file.toAbsolutePath(), e2);
+                MaLiLib.LOGGER.warn("DataFileUtils.readCompoundDataFromNbtFile: Failed to read (assumed uncompressed) NBT data from file '{}'", file.toAbsolutePath(), e2);
             }
         }
         catch (Exception e)
         {
-            MaLiLib.LOGGER.warn("Failed to read NBT data from file '{}'", file.toAbsolutePath(), e);
+            MaLiLib.LOGGER.warn("DataFileUtils.readCompoundDataFromNbtFile: Failed to read NBT data from file '{}'", file.toAbsolutePath(), e);
         }
 
         if (data instanceof CompoundData)
@@ -56,9 +59,23 @@ public class DataFileUtils
         return null;
     }
 
-    public static boolean writeCompoundDataToCompressedNbtFile(Path fileOut, DataView dataIn)
+    public static boolean writeCompoundDataToCompressedNbtFile(Path file, BaseData data)
     {
-        return true;
+        return writeCompoundDataToCompressedNbtFile(file, data, "");
+    }
+
+    public static boolean writeCompoundDataToCompressedNbtFile(Path file, BaseData data, String rootTagName)
+    {
+        try (DataOutputStream os = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(Files.newOutputStream(file)))))
+        {
+            return writeToNbtStream(os, data, rootTagName);
+        }
+        catch (Exception e)
+        {
+            MaLiLib.LOGGER.warn("DataFileUtils.writeCompoundDataToCompressedNbtFile: Failed to write NBT data to file '{}'", file.toAbsolutePath(), e);
+        }
+
+        return false;
     }
 
     @Nullable
@@ -80,9 +97,31 @@ public class DataFileUtils
         }
         catch (Exception e)
         {
-            MaLiLib.LOGGER.warn("DataFileUtils.read: Exception while reading NBT data", e);
+            MaLiLib.LOGGER.warn("DataFileUtils.readFromNbtStream: Exception while reading NBT data", e);
         }
 
         return null;
+    }
+
+    public static boolean writeToNbtStream(DataOutput output, BaseData data, String tagName)
+    {
+        try
+        {
+            output.writeByte(data.getType());
+
+            if (data.getType() != Constants.NBT.TAG_END)
+            {
+                output.writeUTF(tagName);
+                data.write(output);
+            }
+
+            return true;
+        }
+        catch (Exception e)
+        {
+            MaLiLib.LOGGER.warn("DataFileUtils.writeToNbtStream: Exception while writing NBT data", e);
+        }
+
+        return false;
     }
 }
