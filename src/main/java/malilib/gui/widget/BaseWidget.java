@@ -575,6 +575,12 @@ public class BaseWidget
         this.text = text;
     }
 
+    @Nullable
+    protected StyledTextLine getTextForRender()
+    {
+        return this.text;
+    }
+
     /**
      * Sets a simple single-line text to be rendered in the widget,
      * without having to add a LabelWidget for it.
@@ -662,6 +668,11 @@ public class BaseWidget
         return this.iconOffset.getElementPositionY(y, usableHeight, iconHeight);
     }
 
+    protected int getTextColorForRender()
+    {
+        return this.getTextSettings().getTextColor();
+    }
+
     public void renderTextLine(int x, int y, float z, int defaultColor, boolean shadow,
                                StyledTextLine text, ScreenContext ctx)
     {
@@ -687,9 +698,11 @@ public class BaseWidget
 
     protected void renderText(int x, int y, float z, int color, ScreenContext ctx)
     {
-        if (this.text != null)
+        StyledTextLine text = this.getTextForRender();
+
+        if (text != null)
         {
-            this.renderTextLine(x, y, z, color, this.text, ctx);
+            this.renderTextLine(x, y, z, color, text, ctx);
         }
     }
 
@@ -727,7 +740,7 @@ public class BaseWidget
 
     public void renderAt(int x, int y, float z, ScreenContext ctx)
     {
-        int color = this.getTextSettings().getTextColor();
+        int color = this.getTextColorForRender();
 
         this.renderIcon(x, y, z, ctx);
         this.renderText(x, y, z, color, ctx);

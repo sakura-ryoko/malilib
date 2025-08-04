@@ -11,6 +11,7 @@ import malilib.listener.EventListener;
 import malilib.render.ShapeRenderUtils;
 import malilib.render.buffer.VanillaWrappingVertexBuilder;
 import malilib.render.buffer.VertexBuilder;
+import malilib.render.text.StyledTextLine;
 import malilib.util.StringUtils;
 import malilib.util.game.wrap.RenderWrap;
 
@@ -21,6 +22,12 @@ public class OnOffButton extends GenericButton
     protected Icon iconOn;
     protected Icon iconOff;
     protected OnOffStyle style;
+    protected String displayStringOn;
+    protected String displayStringOff;
+    @Nullable protected StyledTextLine textForOn;
+    @Nullable protected StyledTextLine textForOff;
+    @Nullable protected StyledTextLine fullTextForOn;
+    @Nullable protected StyledTextLine fullTextForOff;
 
     /**
      * Pass -1 as the <b>width</b> to automatically set the width
@@ -40,19 +47,19 @@ public class OnOffButton extends GenericButton
         this.iconOn = DefaultIcons.SLIDER_GREEN;
         this.iconOff = DefaultIcons.SLIDER_RED;
 
-        this.setStyle(style);
+        this.setDisplayStringSupplier(this::getCurrentDisplayString);
         this.getBorderRenderer().getNormalSettings().setBorderWidthAndColor(1, 0xFF000000);
         this.getBackgroundRenderer().getNormalSettings().setColor(0xFF303030);
-        this.setDisplayStringSupplier(this::getCurrentDisplayString);
+
+        this.setStyle(style);   // This needs to happen before trying to update the texts in updateCachedTexts()
+        this.updateCachedTexts();
     }
 
     @Override
     public void updateButtonState()
     {
-        boolean value = this.getCurrentValue();
-        boolean isSlider = this.style == OnOffStyle.SLIDER_ON_OFF;
-
-        this.getTextSettings().setTextColor((isSlider == false || value) ? 0xFFE0E0E0 : 0xFF909090);
+        int color = this.getTextColorForRender();
+        this.getTextSettings().setTextColor(color);
 
         super.updateButtonState();
     }
@@ -73,7 +80,7 @@ public class OnOffButton extends GenericButton
     protected String getCurrentDisplayString()
     {
         boolean value = this.getCurrentValue();
-        return this.getDisplayStringForState(value);
+        return value ? this.displayStringOn : this.displayStringOff;
     }
 
     public boolean getCurrentValue()
@@ -83,13 +90,69 @@ public class OnOffButton extends GenericButton
 
     protected String getOnOffStringForState(boolean state)
     {
-        return this.style.getDisplayName(state);
+        return this.style != null ? this.style.getDisplayName(state) : "???";
     }
 
-    public String getDisplayStringForState(boolean value)
+    protected String buildDisplayStringForState(boolean value)
     {
         String valueStr = this.getOnOffStringForState(value);
         return this.translationKey != null ? StringUtils.translate(this.translationKey, valueStr) : valueStr;
+    }
+
+    @Nullable
+    @Override
+    protected StyledTextLine getTextForRender()
+    {
+        boolean value = this.getCurrentValue();
+        return value ? this.textForOn : this.textForOff;
+    }
+
+    @Override
+    protected StyledTextLine getFullTextForRender()
+    {
+        boolean value = this.getCurrentValue();
+        return value ? this.fullTextForOn : this.fullTextForOff;
+    }
+
+    @Override
+    protected int getTextColorForRender()
+    {
+        boolean value = this.getCurrentValue();
+        boolean isSlider = this.style == OnOffStyle.SLIDER_ON_OFF;
+
+        return (isSlider == false || value) ? 0xFFE0E0E0 : 0xFF909090;
+    }
+
+    @Override
+    protected int getTextColorForRender(boolean hovered)
+    {
+        if (this.isEnabled())
+        {
+            return this.getTextColorForRender();
+        }
+
+        return super.getTextColorForRender(hovered);
+    }
+
+    @Override
+    protected void updateDisplayString()
+    {
+        this.updateCachedTexts();
+        super.updateDisplayString();
+    }
+
+    protected void updateCachedTexts()
+    {
+        this.displayStringOn = this.buildDisplayStringForState(true);
+        this.displayStringOff = this.buildDisplayStringForState(false);
+
+        this.buildDisplayText(this.displayStringOn);
+        this.textForOn = this.text;
+        this.fullTextForOn = this.fullText;
+
+        this.buildDisplayText(this.displayStringOff);
+        this.textForOff = this.text;
+        this.fullTextForOff = this.fullText;
     }
 
     @Override
@@ -97,8 +160,8 @@ public class OnOffButton extends GenericButton
     {
         if (this.automaticWidth)
         {
-            int sw1 = this.getStringWidth(this.getDisplayStringForState(false));
-            int sw2 = this.getStringWidth(this.getDisplayStringForState(true));
+            int sw1 = this.getStringWidth(this.displayStringOff);
+            int sw2 = this.getStringWidth(this.displayStringOn);
             int width = Math.max(sw1, sw2);
 
             if (this.style == OnOffStyle.SLIDER_ON_OFF)

@@ -211,10 +211,12 @@ public class GenericButton extends InteractableWidget
 
     protected List<String> getFullLabelHoverString()
     {
-        if (this.text != null && this.fullDisplayString != null)
+        StyledTextLine text = this.getTextForRender();
+
+        if (this.getTextForRender() != null && this.fullDisplayString != null)
         {
             if (this.automaticWidth == false &&
-                this.text.renderWidth > this.getMaxDisplayStringWidth())
+                text.renderWidth > this.getMaxDisplayStringWidth())
             {
                 return ImmutableList.of(StringUtils.translate("malilib.hover.button.full_button_label",
                                                               this.fullDisplayString));
@@ -288,15 +290,16 @@ public class GenericButton extends InteractableWidget
         if (this.automaticWidth)
         {
             int width = this.padding.getHorizontalTotal();
+            StyledTextLine text = this.getTextForRender();
 
-            if (this.text != null)
+            if (text != null)
             {
-                width += this.text.renderWidth;
+                width += text.renderWidth;
             }
 
             if (this.buttonIcon != null)
             {
-                int extraPadding = this.text != null ? this.iconVsLabelPadding : 0;
+                int extraPadding = text != null ? this.iconVsLabelPadding : 0;
                 width += this.buttonIcon.getWidth() + extraPadding;
             }
 
@@ -321,7 +324,7 @@ public class GenericButton extends InteractableWidget
         {
             int height = 0;
 
-            if (this.text != null)
+            if (this.getTextForRender() != null)
             {
                 height = this.getLineHeight();
             }
@@ -375,21 +378,7 @@ public class GenericButton extends InteractableWidget
 
         if (this.fullDisplayString != null)
         {
-            StyledTextLine text = StyledTextLine.parseFirstLine(this.fullDisplayString);
-
-            if (this.automaticWidth == false)
-            {
-                int maxWidth = this.getMaxDisplayStringWidth();
-
-                if (text.renderWidth > maxWidth)
-                {
-                    // Only set fullText if the text is clamped
-                    this.fullText = text;
-                    text = StyledTextUtils.clampStyledTextToMaxWidth(text, maxWidth, LeftRight.RIGHT, " ...");
-                }
-            }
-
-            this.text = text;
+            this.buildDisplayText(this.fullDisplayString);
         }
         else
         {
@@ -397,6 +386,30 @@ public class GenericButton extends InteractableWidget
         }
 
         this.updateHoverStrings();
+    }
+
+    protected void buildDisplayText(String displayString)
+    {
+        StyledTextLine text = StyledTextLine.parseFirstLine(displayString);
+
+        if (this.automaticWidth == false)
+        {
+            int maxWidth = this.getMaxDisplayStringWidth();
+
+            if (text.renderWidth > maxWidth)
+            {
+                // Only set fullText if the text is clamped
+                this.fullText = text;
+                text = StyledTextUtils.clampStyledTextToMaxWidth(text, maxWidth, LeftRight.RIGHT, " ...");
+            }
+        }
+
+        this.text = text;
+    }
+
+    protected StyledTextLine getFullTextForRender()
+    {
+        return this.fullText;
     }
 
     /*
@@ -431,13 +444,14 @@ public class GenericButton extends InteractableWidget
     protected int getIconOffsetX(int buttonWidth, int iconWidth)
     {
         int iconXOffset = this.padding.getLeft() + this.iconOffset.getXOffset();
+        StyledTextLine text = this.getTextForRender();
 
         if (iconXOffset > 0)
         {
             return iconXOffset;
         }
         // With icon-only buttons, center it horizontally
-        else if (this.text == null || this.text.renderWidth == 0)
+        else if (text == null || text.renderWidth == 0)
         {
             return (buttonWidth - iconWidth) / 2;
         }
@@ -513,9 +527,11 @@ public class GenericButton extends InteractableWidget
     @Override
     protected void renderText(int x, int y, float z, int color, ScreenContext ctx)
     {
-        if (this.renderFullTextOnHover && this.fullText != null && this.isHoveredForRender(ctx))
+        StyledTextLine fullText = this.getFullTextForRender();
+
+        if (this.renderFullTextOnHover && fullText != null && this.isHoveredForRender(ctx))
         {
-            this.renderFullTextWithBackground(x, y, z, color,this.fullText, ctx);
+            this.renderFullTextWithBackground(x, y, z, color, fullText, ctx);
         }
         else
         {

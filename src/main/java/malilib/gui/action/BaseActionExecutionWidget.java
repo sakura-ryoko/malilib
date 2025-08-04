@@ -84,9 +84,10 @@ public abstract class BaseActionExecutionWidget extends ContainerWidget
 
         if (org.apache.commons.lang3.StringUtils.isBlank(name) == false)
         {
-            this.setText(StyledTextLine.parseFirstLine(name));
+            StyledTextLine text = StyledTextLine.parseFirstLine(name);
+            int width = text.renderWidth + 10;
 
-            int width = this.text.renderWidth + 10;
+            this.setText(text);
 
             if (width > this.getWidth())
             {
@@ -285,9 +286,11 @@ public abstract class BaseActionExecutionWidget extends ContainerWidget
     @Override
     public void setSize(int width, int height)
     {
-        if (this.text != null)
+        StyledTextLine text = this.getTextForRender();
+
+        if (text != null)
         {
-            width = Math.max(width, this.text.renderWidth + 6);
+            width = Math.max(width, text.renderWidth + 6);
             height = Math.max(height, 10);
         }
 
@@ -297,9 +300,11 @@ public abstract class BaseActionExecutionWidget extends ContainerWidget
     @Override
     public void setWidth(int width)
     {
-        if (this.text != null)
+        StyledTextLine text = this.getTextForRender();
+
+        if (text != null)
         {
-            width = Math.max(width, this.text.renderWidth + 6);
+            width = Math.max(width, text.renderWidth + 6);
         }
 
         super.setWidth(width);
