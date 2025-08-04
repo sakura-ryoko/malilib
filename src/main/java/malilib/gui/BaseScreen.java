@@ -71,7 +71,8 @@ public abstract class BaseScreen extends GuiScreen
     protected boolean renderBorder;
     protected boolean shouldCenter;
     protected boolean shouldRenderParent;
-    protected boolean underlineTitle = true;
+    protected boolean boldTitle;
+    protected boolean underlineTitle;
     protected boolean useCustomScreenScaling;
     protected boolean useTitleHierarchy = true;
     /** This indicates that the screen should be automatically resized to cover the entire window.
@@ -134,6 +135,7 @@ public abstract class BaseScreen extends GuiScreen
 
         this.reAddActiveWidgets();
         this.updateWidgetPositions();
+        this.updateTitleText();
         Keyboard.enableRepeatEvents(true);
 
         for (Runnable listener : this.postInitListeners)
@@ -366,15 +368,20 @@ public abstract class BaseScreen extends GuiScreen
         else
         {
             this.titleString = StringUtils.translate(titleKey, args);
-            this.titleText = this.buildTitle();
+            this.updateTitleText();
         }
+    }
+
+    public void updateTitleText()
+    {
+        this.titleText = this.buildTitle();
     }
 
     protected StyledTextLine buildTitle()
     {
-        if (this.underlineTitle)
+        if (this.underlineTitle || this.boldTitle)
         {
-            TextStyle style = TextStyle.builder().fromStyle(TextStyle.DEFAULT).withUnderline(true).build();
+            TextStyle style = TextStyle.builder().fromStyle(TextStyle.DEFAULT).withUnderline(this.underlineTitle).withBold(this.boldTitle).build();
             return StyledTextLine.parseFirstLine(this.getTitleString(), style);
         }
         else
@@ -1061,6 +1068,8 @@ public abstract class BaseScreen extends GuiScreen
         screen.setCanDragMove(true);
         screen.setShouldRenderParent(shouldRenderParent);
         screen.setPopupGuiZLevelBasedOn(GuiUtils.getCurrentScreen());
+        screen.boldTitle = true;
+
         return openScreen(screen);
     }
 
