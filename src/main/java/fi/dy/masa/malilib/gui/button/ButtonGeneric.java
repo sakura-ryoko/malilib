@@ -121,7 +121,8 @@ public class ButtonGeneric extends ButtonBase
         if (this.icon != null)
         {
             int offset = this.renderDefaultBackground ? 4 : 0;
-            int x = this.alignment == LeftRight.LEFT ? this.x + offset : this.x + this.width - this.icon.getWidth() - offset;
+            //int x = this.alignment == LeftRight.LEFT ? this.x + offset : this.x + this.width - this.icon.getWidth() - offset;
+            int x = this.alignment.getLeft(this.x, this.x + this.width, this.icon.getWidth(), offset);
             int y = this.y + (this.height - this.icon.getHeight()) / 2;
             int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
