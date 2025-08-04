@@ -25,7 +25,7 @@ public class ChunkPos extends net.minecraft.util.math.ChunkPos
 
     public static long asLong(int chunkX, int chunkZ)
     {
-        return ((long) chunkZ << 32) | (long) chunkX;
+        return ((long) chunkZ << 32) | ((long) chunkX & 0xFFFFFFFFL);
     }
 
     public static ChunkPos of(net.minecraft.util.math.ChunkPos pos)
