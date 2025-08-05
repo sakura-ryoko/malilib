@@ -81,6 +81,8 @@ public class HashMapPalette<T> extends BasePalette<T> implements Palette<T>
                 this.values[id] = val;
             }
 
+            this.currentSize = size;
+
             return true;
         }
 
