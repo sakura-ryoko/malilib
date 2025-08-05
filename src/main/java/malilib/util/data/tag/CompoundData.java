@@ -17,6 +17,7 @@ public class CompoundData extends BaseData implements DataView
     public static final String TAG_NAME = "TAG_Compound";
     private static final Pattern SIMPLE_VALUE = Pattern.compile("[A-Za-z0-9._+-]+");
 
+    // Linked map so that it maintains tag insertion order when iterating
     private final LinkedHashMap<String, BaseData> values;
 
     public CompoundData()

@@ -211,11 +211,21 @@ public class DataTypeUtils
 
     public static CompoundData writeVec3dToListTag(CompoundData tag, String tagName, Vec3d pos)
     {
+        return writeVec3dToListTag(tag, tagName, pos.x, pos.y, pos.z);
+    }
+
+    public static CompoundData writeVec3dToListTag(CompoundData tag, double x, double y, double z)
+    {
+        return writeVec3dToListTag(tag, "Pos", x, y, z);
+    }
+
+    public static CompoundData writeVec3dToListTag(CompoundData tag, String tagName, double x, double y, double z)
+    {
         ListData list = new ListData(Constants.NBT.TAG_DOUBLE);
 
-        list.add(new DoubleData(pos.x));
-        list.add(new DoubleData(pos.y));
-        list.add(new DoubleData(pos.z));
+        list.add(new DoubleData(x));
+        list.add(new DoubleData(y));
+        list.add(new DoubleData(z));
 
         tag.put(tagName, list);
 

@@ -33,6 +33,14 @@ import malilib.util.game.wrap.WorldWrap;
 
 public class StringUtils
 {
+    /**
+     * @return true if the given String is null or has a length of 0
+     */
+    public static boolean isEmpty(@Nullable String str)
+    {
+        return str == null || str.length() == 0;
+    }
+
     @Nullable
     public static Identifier identifier(String fullPath)
     {
