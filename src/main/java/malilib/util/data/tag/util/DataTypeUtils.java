@@ -98,13 +98,13 @@ public class DataTypeUtils
     @Nullable
     public static CompoundData writeVec3iToListTag(CompoundData tag, String tagName, Vec3i vec)
     {
-        ListData tagList = new ListData(Constants.NBT.TAG_INT);
+        ListData list = new ListData(Constants.NBT.TAG_INT);
 
-        tagList.add(new IntData(vec.getX()));
-        tagList.add(new IntData(vec.getY()));
-        tagList.add(new IntData(vec.getZ()));
+        list.add(new IntData(vec.getX()));
+        list.add(new IntData(vec.getY()));
+        list.add(new IntData(vec.getZ()));
 
-        tag.put(tagName, tagList);
+        tag.put(tagName, list);
 
         return tag;
     }
@@ -165,6 +165,12 @@ public class DataTypeUtils
         }
 
         return null;
+    }
+
+    public static BlockPos readBlockPosFromListTagOrDefault(DataView tag, String tagName, BlockPos defaultValue)
+    {
+        BlockPos pos = readBlockPosFromListTag(tag, tagName);
+        return pos != null ? pos : defaultValue;
     }
 
     @Nullable
