@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
 public class ListUtils
@@ -162,5 +163,16 @@ public class ListUtils
         }
 
         return false;
+    }
+
+    @Nullable
+    public static <T> T getFirstEntry(Collection<T> collection)
+    {
+        for (T entry : collection)
+        {
+            return entry;
+        }
+
+        return null;
     }
 }
