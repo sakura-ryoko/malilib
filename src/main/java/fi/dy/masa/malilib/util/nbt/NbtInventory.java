@@ -9,8 +9,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.*;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.StackWithSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -446,7 +448,7 @@ public class NbtInventory implements AutoCloseable
         }
 
         newInv.verifySize(slotsUsed, maxSlot);
-        newInv.dumpInv();
+//        newInv.dumpInv();
 
         return newInv;
     }
