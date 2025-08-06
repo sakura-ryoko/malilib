@@ -40,7 +40,7 @@ public class NbtInventory implements AutoCloseable
     {
         NbtInventory newInv = new NbtInventory();
 
-        LOGGER.info("init() size: [{}]", size);
+        //LOGGER.info("init() size: [{}]", size);
         size = getAdjustedSize(MathHelper.clamp(size, 1, MAX_SIZE));
         newInv.buildEmptyList(size);
 
@@ -114,7 +114,7 @@ public class NbtInventory implements AutoCloseable
                 (slot) ->
                     {
                         list.set(slot.slot(), slot.stack());
-                        LOGGER.info("toVanillaList():[{}]: slot [{}], stack: [{}]", i.get(), slot.slot(), slot.stack().toString());
+                        //LOGGER.info("toVanillaList():[{}]: slot [{}], stack: [{}]", i.get(), slot.slot(), slot.stack().toString());
                         i.getAndIncrement();
                     }
         );
@@ -143,7 +143,7 @@ public class NbtInventory implements AutoCloseable
         for (int i = 0; i < size; i++)
         {
             StackWithSlot slot = new StackWithSlot(i, list.get(i));
-            LOGGER.info("fromVanillaList():[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
+            //LOGGER.info("fromVanillaList():[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
             newInv.items.add(slot);
         }
 
@@ -162,30 +162,16 @@ public class NbtInventory implements AutoCloseable
             return null;
         }
 
-        Inventory inv;
-
         int sizeAdj = getAdjustedSize(Math.clamp(size, this.size(), MAX_SIZE));
+        Inventory inv = new SimpleInventory(sizeAdj);
 
-        if (sizeAdj <= DEFAULT_SIZE)
-        {
-            inv = new SimpleInventory(Math.clamp(sizeAdj, this.size(), DEFAULT_SIZE));
-        }
-        else if (sizeAdj <= DOUBLE_SIZE)
-        {
-            inv = new DoubleInventory(new SimpleInventory(DEFAULT_SIZE), new SimpleInventory(DEFAULT_SIZE));
-        }
-        else
-        {
-            inv = new SimpleInventory(Math.clamp(sizeAdj, this.size(), MAX_SIZE));
-        }
-
-        LOGGER.warn("toInventory(): inv size [{}]", inv.size());
+        //LOGGER.warn("toInventory(): sizeAdj [{}] -> inv size [{}]", sizeAdj, inv.size());
         AtomicInteger i = new AtomicInteger(0);
 
         this.items.forEach(
                 (slot) ->
                 {
-                    LOGGER.info("toInventory():[{}]: slot [{}], stack: [{}]", i.get(), slot.slot(), slot.stack().toString());
+                    //LOGGER.info("toInventory():[{}]: slot [{}], stack: [{}]", i.get(), slot.slot(), slot.stack().toString());
                     inv.setStack(slot.slot(), slot.stack());
                     i.getAndIncrement();
                 }
@@ -212,7 +198,7 @@ public class NbtInventory implements AutoCloseable
         for (int i = 0; i < size; i++)
         {
             StackWithSlot slot = new StackWithSlot(i, inv.getStack(i));
-            LOGGER.info("fromInventory():[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
+            //LOGGER.info("fromInventory():[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
             newInv.items.add(slot);
             slotsUsed.add(slot.slot());
 
@@ -313,7 +299,7 @@ public class NbtInventory implements AutoCloseable
                     if (!slot.stack().isEmpty())
                     {
                         NbtElement element = StackWithSlot.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), slot).getPartialOrThrow();
-                        LOGGER.info("toNbtList(): slot [{}] --> nbt: [{}]", slot.slot(), element.toString());
+                        //LOGGER.info("toNbtList(): slot [{}] --> nbt: [{}]", slot.slot(), element.toString());
                         nbt.add(element);
                     }
                 }
@@ -433,7 +419,7 @@ public class NbtInventory implements AutoCloseable
         int maxSlot = 0;
 
         newInv.items = new HashSet<>();
-        LOGGER.info("fromNbtList(): listSize: [{}], invSize: [{}]", list.size(), size);
+        //LOGGER.info("fromNbtList(): listSize: [{}], invSize: [{}]", list.size(), size);
 
         for (int i = 0; i < list.size(); i++)
         {
@@ -449,7 +435,7 @@ public class NbtInventory implements AutoCloseable
                 slot = StackWithSlot.CODEC.parse(registry.getOps(NbtOps.INSTANCE), list.get(i)).getPartialOrThrow();
             }
 
-            LOGGER.info("fromNbtList(): [{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
+            //LOGGER.info("fromNbtList(): [{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
             newInv.items.add(slot);
             slotsUsed.add(slot.slot());
 
@@ -480,7 +466,7 @@ public class NbtInventory implements AutoCloseable
         {
             if (!slotsUsed.contains(i))
             {
-                LOGGER.info("verifySize(): [{}]: found unused slot Number; adding Empty slot...", i);
+                //LOGGER.info("verifySize(): [{}]: found unused slot Number; adding Empty slot...", i);
                 this.items.add(new StackWithSlot(i, ItemStack.EMPTY));
             }
         }
@@ -494,7 +480,7 @@ public class NbtInventory implements AutoCloseable
      */
     public static int getAdjustedSize(int size)
     {
-        LOGGER.debug("getAdjustedSize(): sizeIn: [{}]", size);
+        //LOGGER.debug("getAdjustedSize(): sizeIn: [{}]", size);
 
         if (size <= VILLAGER_SIZE)
         {
@@ -524,8 +510,11 @@ public class NbtInventory implements AutoCloseable
         LOGGER.info("dumpInv() --> START");
 
         this.items.forEach(
-                (slot ->
-                        LOGGER.info("[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString()))
+                (slot) ->
+                {
+                    LOGGER.info("[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
+                    i.getAndIncrement();
+                }
         );
 
         LOGGER.info("dumpInv() --> END");
