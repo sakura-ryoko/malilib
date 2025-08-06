@@ -8,8 +8,6 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import org.apache.commons.lang3.math.Fraction;
 
 import com.mojang.brigadier.StringReader;
@@ -34,10 +32,11 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -52,6 +51,7 @@ import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
+import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
@@ -200,9 +200,9 @@ public class InventoryUtils
     /**
      * Swaps the stack from the slot <b>slotNum</b> to the given hotbar slot <b>hotbarSlot</b>
      *
-     * @param container
-     * @param slotNum
-     * @param hotbarSlot
+     * @param container ()
+     * @param slotNum ()
+     * @param hotbarSlot ()
      */
     public static void swapSlots(ScreenHandler container, int slotNum, int hotbarSlot)
     {
@@ -215,9 +215,9 @@ public class InventoryUtils
      * returns whether the given slot number is one of the regular inventory slots.
      * This means that the crafting slots and armor slots are not valid.
      *
-     * @param slotNumber
-     * @param allowOffhand
-     * @return
+     * @param slotNumber ()
+     * @param allowOffhand ()
+     * @return ()
      */
     public static boolean isRegularInventorySlot(int slotNumber, boolean allowOffhand)
     {
@@ -228,9 +228,9 @@ public class InventoryUtils
      * Finds an empty slot in the player inventory. Armor slots are not valid for the return value of this method.
      * Whether or not the offhand slot is valid, depends on the <b>allowOffhand</b> argument.
      *
-     * @param containerPlayer
-     * @param allowOffhand
-     * @param reverse
+     * @param containerPlayer ()
+     * @param allowOffhand ()
+     * @param reverse ()
      * @return the slot number, or -1 if none were found
      */
     public static int findEmptySlotInPlayerInventory(ScreenHandler containerPlayer, boolean allowOffhand, boolean reverse)
@@ -259,9 +259,9 @@ public class InventoryUtils
      * of damageable items. Does not allow crafting or armor slots or the offhand slot
      * in the ContainerPlayer container.
      *
-     * @param container
-     * @param stackReference
-     * @param reverse
+     * @param container ()
+     * @param stackReference ()
+     * @param reverse ()
      * @return the slot number, or -1 if none were found
      */
     public static int findSlotWithItem(ScreenHandler container, ItemStack stackReference, boolean reverse)
@@ -289,8 +289,8 @@ public class InventoryUtils
      * Swap the given item to the player's main hand, if that item is found
      * in the player's inventory.
      *
-     * @param stackReference
-     * @param mc
+     * @param stackReference ()
+     * @param mc ()
      * @return true if an item was swapped to the main hand, false if it was already in the hand, or was not found in the inventory
      */
     public static boolean swapItemToMainHand(ItemStack stackReference, MinecraftClient mc)
@@ -329,9 +329,9 @@ public class InventoryUtils
      * Gets the inventory at the given position, if any.
      * Combines chest inventories into double chest inventories when applicable.
      *
-     * @param world
-     * @param pos
-     * @return
+     * @param world ()
+     * @param pos ()
+     * @return ()
      */
     @Nullable
     public static Inventory getInventory(World world, BlockPos pos)
@@ -390,8 +390,8 @@ public class InventoryUtils
      * Checks if the given Shulker Box (or other storage item with the
      * same NBT data structure) currently contains any items.
      *
-     * @param stack
-     * @return
+     * @param stack ()
+     * @return ()
      */
     public static boolean shulkerBoxHasItems(ItemStack stack)
     {
@@ -408,9 +408,9 @@ public class InventoryUtils
     /**
      * Returns item represented as NBT if the ItemStack has NBT Items present.
      *
-     * @param stack
-     * @param registry
-     * @return
+     * @param stack ()
+     * @param registry ()
+     * @return ()
      */
     public static @Nullable NbtCompound stackHasNbtItems(ItemStack stack, @Nonnull DynamicRegistryManager registry)
     {
@@ -430,8 +430,8 @@ public class InventoryUtils
     /**
      * Checks if the given NBT currently contains any items, using the NBT Items[] interface.
      *
-     * @param nbt
-     * @return
+     * @param nbt ()
+     * @return ()
      */
     public static boolean hasNbtItems(NbtCompound nbt)
     {
@@ -469,17 +469,19 @@ public class InventoryUtils
      * Returns the list of items currently stored in the given NBT Items[] interface.
      * Does not keep empty slots.
      *
-     * @param tag The item holding the inventory contents
-     * @return
+     * @param nbt The item holding the inventory contents
+     * @return ()
      */
-    public static DefaultedList<ItemStack> getNbtItems(@Nonnull NbtCompound tag)
+    public static DefaultedList<ItemStack> getNbtItems(@Nonnull NbtCompound nbt)
     {
-        if (MinecraftClient.getInstance().world == null)
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        if (mc.world == null)
         {
             return DefaultedList.of();
         }
 
-        return getNbtItems(tag, -1, MinecraftClient.getInstance().world.getRegistryManager());
+        return getNbtItems(nbt, -1, mc.world.getRegistryManager());
     }
 
     /**
@@ -489,7 +491,7 @@ public class InventoryUtils
      * @param nbt       The tag holding the inventory contents
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
      * @param registry  the Dynamic Registry object
-     * @return
+     * @return ()
      */
     public static DefaultedList<ItemStack> getNbtItems(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
@@ -511,9 +513,6 @@ public class InventoryUtils
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);
 
-//            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-//            Inventories.readData(nbt, items, registry);
-
             NbtInventory nbtInv = NbtInventory.fromNbtList(list, false, registry);
 
             if (nbtInv == null || nbtInv.isEmpty())
@@ -526,6 +525,9 @@ public class InventoryUtils
         // A few Entities use this
         else if (nbt.contains(NbtKeys.INVENTORY))
         {
+            InventoryOverlay.InventoryRenderType type = InventoryOverlay.getInventoryType(nbt);
+            boolean isPlayer = type == InventoryOverlay.InventoryRenderType.PLAYER;
+
             NbtList list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
             if (slotCount < 0)
             {
@@ -535,21 +537,7 @@ public class InventoryUtils
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);
 
-//            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-//
-//            for (int i = 0; i < list.size(); i++)
-//            {
-//                final int index = i;
-////                ItemStack.fromNbt(registry, list.getCompoundOrEmpty(i)).ifPresent(itemStack -> items.set(index, itemStack));
-//                NbtCompound entry =  list.getCompoundOrEmpty(i);
-//
-//                if (!entry.isEmpty())
-//                {
-//                    items.set(index, ItemStack.CODEC.parse(NbtOps.INSTANCE, entry).getPartialOrThrow());
-//                }
-//            }
-
-            NbtInventory nbtInv = NbtInventory.fromNbtList(list, true, registry);
+            NbtInventory nbtInv = NbtInventory.fromNbtList(list, !isPlayer, registry);
 
             if (nbtInv == null || nbtInv.isEmpty())
             {
@@ -571,19 +559,6 @@ public class InventoryUtils
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);
 
-//            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-//
-//            for (int i = 0; i < list.size(); i++)
-//            {
-//                NbtCompound entry = list.getCompoundOrEmpty(i);
-//                int slot = entry.getByte(NbtKeys.SLOT, (byte) 0) & 255;
-//
-//                if (slot < items.size())
-//                {
-//                    items.set(slot, ItemStack.CODEC.parse(NbtOps.INSTANCE, entry).getPartialOrThrow());
-//                }
-//            }
-
             NbtInventory nbtInv = NbtInventory.fromNbtList(list, false, registry);
 
             if (nbtInv == null || nbtInv.isEmpty())
@@ -598,7 +573,7 @@ public class InventoryUtils
             // item (DecoratedPot, ItemEntity)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.ITEM));
             DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
-            items.add(0, entry);
+            items.addFirst(entry);
 
             return items;
         }
@@ -607,7 +582,7 @@ public class InventoryUtils
             // Item (ItemFrame)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.ITEM_2));
             DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
-            items.add(0, entry);
+            items.addFirst(entry);
 
             return items;
         }
@@ -616,7 +591,7 @@ public class InventoryUtils
             // Book (Lectern)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.BOOK));
             DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
-            items.add(0, entry);
+            items.addFirst(entry);
 
             return items;
         }
@@ -625,7 +600,7 @@ public class InventoryUtils
             // RecordItem (Jukebox)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.RECORD));
             DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
-            items.add(0, entry);
+            items.addFirst(entry);
 
             return items;
         }
@@ -638,7 +613,7 @@ public class InventoryUtils
      * Preserves empty slots, unless the "Inventory" interface is used.
      *
      * @param nbt     The tag holding the inventory contents
-     * @return
+     * @return ()
      */
     public static Inventory getNbtInventory(@Nonnull NbtCompound nbt)
     {
@@ -657,7 +632,7 @@ public class InventoryUtils
      * @param nbt       The tag holding the inventory contents
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
      * @param registry  The Dynamic Registry object
-     * @return
+     * @return ()
      */
     public static Inventory getNbtInventory(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
@@ -679,21 +654,7 @@ public class InventoryUtils
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);
 
-//            SimpleInventory inv = new SimpleInventory(slotCount);
-//            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-//            Inventories.readNbt(nbt, items, registry);
-
-//            if (items.isEmpty())
-//            {
-//                return null;
-//            }
-//
-//            for (int i = 0; i < slotCount; i++)
-//            {
-//                inv.setStack(i, items.get(i).copy());
-//            }
-
-            NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.ITEMS, false, registry);
+			NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.ITEMS, false, registry);
 
             if (nbtInv == null || nbtInv.isEmpty())
             {
@@ -704,6 +665,9 @@ public class InventoryUtils
         }
         else if (nbt.contains(NbtKeys.INVENTORY))
         {
+            InventoryOverlay.InventoryRenderType type = InventoryOverlay.getInventoryType(nbt);
+            boolean isPlayer = type == InventoryOverlay.InventoryRenderType.PLAYER;
+
             // Entities use this (Piglin, Villager, a few others)
             if (slotCount < 0)
             {
@@ -714,16 +678,8 @@ public class InventoryUtils
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);
 
-//            SimpleInventory inv = new SimpleInventory(slotCount);
-//            inv.readNbtList(nbt.getListOrEmpty(NbtKeys.INVENTORY), registry);
-//
-//            if (inv.isEmpty())
-//            {
-//                return null;
-//            }
-
-            // "Inventory" tags do not include Slot ID's
-            NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.INVENTORY, true, registry);
+            // "Inventory" tags might not include Slot ID's, but a Player will.
+            NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.INVENTORY, !isPlayer, registry);
 
             if (nbtInv == null || nbtInv.isEmpty())
             {
@@ -796,10 +752,10 @@ public class InventoryUtils
     /**
      * Executes the "Inventory Display Horse Fix" (Saddle Offset) for NBT-based Displays.
      *
-     * @param nbt
-     * @param slotCount
-     * @param registry
-     * @return
+     * @param nbt ()
+     * @param slotCount ()
+     * @param registry ()
+     * @return ()
      */
     public static Inventory getNbtInventoryHorseFix(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
@@ -820,8 +776,7 @@ public class InventoryUtils
             }
 
             SimpleInventory inv = new SimpleInventory(slotCount + 1);
-//            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount, ItemStack.EMPTY);
-//            Inventories.readNbt(nbt, items, registry);
+
             inv.setStack(0, horseEquipment.getLast());
 
             NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.ITEMS, false, registry);
@@ -882,7 +837,6 @@ public class InventoryUtils
             inv.readData(view.getReader().getTypedListView(NbtKeys.ENDER_ITEMS, StackWithSlot.CODEC));
 
             return inv;
-//            return (EnderChestInventory) nbtInv.toInventory(Math.max(list.size(), NbtInventory.DEFAULT_SIZE));
         }
 
         return null;
@@ -906,16 +860,14 @@ public class InventoryUtils
         {
             DefaultedList<ItemStack> result = DefaultedList.of();
 
-            for (int i = 0; i < offers.size(); i++)
-            {
-                TradeOffer entry = offers.get(i);
-
-                if (entry != null)
-                {
-                    ItemStack sellItem = entry.getSellItem();
-                    result.add(sellItem.copy());
-                }
-            }
+			for (TradeOffer entry : offers)
+			{
+				if (entry != null)
+				{
+					ItemStack sellItem = entry.getSellItem();
+					result.add(sellItem.copy());
+				}
+			}
 
             return result;
         }
@@ -929,7 +881,7 @@ public class InventoryUtils
      * Does not keep empty slots.
      *
      * @param stackIn The item holding the inventory contents
-     * @return
+     * @return ()
      */
     public static DefaultedList<ItemStack> getStoredItems(ItemStack stackIn)
     {
@@ -961,7 +913,7 @@ public class InventoryUtils
      *
      * @param stackIn   The item holding the inventory contents
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
-     * @return
+     * @return ()
      */
     public static DefaultedList<ItemStack> getStoredItems(ItemStack stackIn, int slotCount)
     {
@@ -1010,7 +962,11 @@ public class InventoryUtils
         }
     }
 
-    // Same code as above, but for BUNDLE_CONTENTS, such as for the Materials List under Litematica.
+	/**
+	 * Returns whether a bundle item stack has Items
+	 * @param stack ()
+	 * @return ()
+	 */
     public static boolean bundleHasItems(ItemStack stack)
     {
         BundleContentsComponent bundleContainer = stack.getComponents().get(DataComponentTypes.BUNDLE_CONTENTS);
@@ -1026,8 +982,8 @@ public class InventoryUtils
     /**
      * Returns a Fraction value, probably indicating fill % value, rather than an actual item count.
      *
-     * @param stack
-     * @return
+     * @param stack ()
+     * @return ()
      */
     public static Fraction bundleOccupancy(ItemStack stack)
     {
@@ -1044,8 +1000,8 @@ public class InventoryUtils
     /**
      * Returns the "slot count" (Item Stacks) in the Bundle.
      *
-     * @param stack
-     * @return
+     * @param stack ()
+     * @return ()
      */
     public static int bundleCountItems(ItemStack stack)
     {
@@ -1062,8 +1018,8 @@ public class InventoryUtils
     /**
      * Returns a list of ItemStacks from the Bundle.  Does not preserve Empty Stacks.
      *
-     * @param stackIn
-     * @return
+     * @param stackIn ()
+     * @return ()
      */
     public static DefaultedList<ItemStack> getBundleItems(ItemStack stackIn)
     {
@@ -1094,9 +1050,9 @@ public class InventoryUtils
     /**
      * Returns a list of ItemStacks from the Bundle.  Preserves Empty Stacks up to maxSlots.
      *
-     * @param stackIn
-     * @param maxSlots
-     * @return
+     * @param stackIn ()
+     * @param maxSlots ()
+     * @return ()
      */
     public static DefaultedList<ItemStack> getBundleItems(ItemStack stackIn, int maxSlots)
     {
@@ -1135,8 +1091,8 @@ public class InventoryUtils
      * Returns a map of the stored item counts in the given Shulker Box
      * (or other storage item with the same NBT data structure).
      *
-     * @param stackShulkerBox
-     * @return
+     * @param stackShulkerBox ()
+     * @return ()
      */
     public static Object2IntOpenHashMap<ItemType> getStoredItemCounts(ItemStack stackShulkerBox)
     {
@@ -1159,8 +1115,8 @@ public class InventoryUtils
      * This also counts the contents of any Shulker Boxes
      * (or other storage item with the same NBT data structure).
      *
-     * @param inv
-     * @return
+     * @param inv ()
+     * @return ()
      */
     public static Object2IntOpenHashMap<ItemType> getInventoryItemCounts(Inventory inv)
     {
@@ -1194,8 +1150,8 @@ public class InventoryUtils
     /**
      * Returns the given Inventory wrapped as a list of items
      *
-     * @param inv
-     * @return
+     * @param inv ()
+     * @return ()
      */
     public static DefaultedList<ItemStack> getAsItemList(Inventory inv)
     {
@@ -1223,8 +1179,8 @@ public class InventoryUtils
     /**
      * Returns the given list of items wrapped as an InventoryBasic
      *
-     * @param items
-     * @return
+     * @param items ()
+     * @return ()
      */
     public static @Nullable Inventory getAsInventory(DefaultedList<ItemStack> items)
     {
@@ -1369,9 +1325,9 @@ public class InventoryUtils
     /**
      * Get an Item's Registry Entry.
      *
-     * @param id
-     * @param registry
-     * @return
+     * @param id ()
+     * @param registry ()
+     * @return ()
      */
     public static RegistryEntry<Item> getItemEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
     {
@@ -1386,10 +1342,10 @@ public class InventoryUtils
     }
 
     /**
-     * Return whether or not the stack has Block Entity Nbt Data
+     * Return whether the stack has Block Entity Nbt Data
      *
-     * @param stack
-     * @return
+     * @param stack ()
+     * @return ()
      */
     public static boolean hasStoredBlockEntityData(ItemStack stack)
     {
@@ -1399,8 +1355,8 @@ public class InventoryUtils
     /**
      * Get the NBT Data out of a Stored Block Entity contained within an Item Stack.
      *
-     * @param stack
-     * @return
+     * @param stack ()
+     * @return ()
      */
     public static NbtCompound getStoredBlockEntityNbt(ItemStack stack)
     {
@@ -1417,19 +1373,99 @@ public class InventoryUtils
         return new NbtCompound();
     }
 
-    public static ItemStack fromNbtOrEmpty(@Nonnull RegistryWrapper.WrapperLookup registry, @Nonnull NbtElement tag)
+	/**
+	 * Return an item stack from NBT, or Empty
+	 * @param tag ()
+	 * @return ()
+	 */
+    public static ItemStack fromNbtOrEmpty(@Nullable NbtElement tag)
     {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        if (mc.world != null)
+        {
+            return fromNbtOrEmpty(mc.world.getRegistryManager(), tag);
+        }
+
+        return ItemStack.EMPTY;
+    }
+
+	/**
+	 * Return an item stack from an NBT key
+	 * @param nbt ()
+	 * @param key ()
+	 * @return ()
+	 */
+    public static ItemStack getStackCodec(@Nonnull NbtCompound nbt, String key)
+    {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        if (mc.world != null)
+        {
+            return getStackCodec(nbt, mc.world.getRegistryManager(), key);
+        }
+
+        return ItemStack.EMPTY;
+    }
+
+	/**
+	 * Insert an item stack into NBT using a key
+	 * @param nbt ()
+	 * @param stack ()
+	 * @param key ()
+	 * @return ()
+	 */
+    public static NbtCompound putStackCodec(@Nonnull NbtCompound nbt, @Nonnull ItemStack stack, String key)
+    {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        if (mc.world != null)
+        {
+            return putStackCodec(nbt, mc.world.getRegistryManager(), stack, key);
+        }
+
+        return new NbtCompound();
+    }
+
+	/**
+	 * Return an item stack from NBT, or Empty
+	 * @param tag ()
+	 * @param registry ()
+	 * @return ()
+	 */
+    public static ItemStack fromNbtOrEmpty(@Nonnull DynamicRegistryManager registry, @Nullable NbtElement tag)
+    {
+        if (tag == null)
+        {
+            return ItemStack.EMPTY;
+        }
+
         return ItemStack.CODEC.parse(registry.getOps(NbtOps.INSTANCE), tag).resultOrPartial().orElse(ItemStack.EMPTY);
     }
 
-    public static ItemStack getStackCodec(@Nonnull NbtCompound nbt, @Nonnull RegistryWrapper.WrapperLookup registry, String key)
+	/**
+	 * Return an item stack from an NBT key
+	 * @param nbt ()
+	 * @param registry ()
+	 * @param key ()
+	 * @return ()
+	 */
+    public static ItemStack getStackCodec(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry, String key)
     {
         return nbt.get(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
     }
 
-    public static NbtCompound putStackCodec(@Nonnull NbtCompound nbtIn, @Nonnull ItemStack stack, String key)
+	/**
+	 * Insert an item stack into NBT using a key
+	 * @param nbt ()
+	 * @param registry ()
+	 * @param stack ()
+	 * @param key ()
+	 * @return ()
+	 */
+    public static NbtCompound putStackCodec(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry, @Nonnull ItemStack stack, String key)
     {
-        nbtIn.put(key, ItemStack.CODEC, stack);
-        return nbtIn;
+        nbt.put(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE), stack);
+        return nbt;
     }
 }
