@@ -37,9 +37,9 @@ public abstract class BaseTripleNumberEditWidget<T, W extends BaseNumberEditWidg
         this.yCoordinateWidget = this.createNumberEditWidget(width, h, initialPos, Coordinate.Y);
         this.zCoordinateWidget = this.createNumberEditWidget(width, h, initialPos, Coordinate.Z);
 
-        this.xCoordinateWidget.setLabelText("malilib.label.misc.coordinate.x_colon");
-        this.yCoordinateWidget.setLabelText("malilib.label.misc.coordinate.y_colon");
-        this.zCoordinateWidget.setLabelText("malilib.label.misc.coordinate.z_colon");
+        this.xCoordinateWidget.setLabelText("malilib.label.misc.coordinate.x_label");
+        this.yCoordinateWidget.setLabelText("malilib.label.misc.coordinate.y_label");
+        this.zCoordinateWidget.setLabelText("malilib.label.misc.coordinate.z_label");
 
         BooleanSupplier enabledSupplier = this::isEnabled;
         this.moveToPlayerButton.setEnabledStatusSupplier(enabledSupplier);

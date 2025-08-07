@@ -86,10 +86,12 @@ public abstract class BaseNumberEditWidget extends ContainerWidget
         int y = this.getY();
         int tw = this.getWidth();
 
+        this.textFieldWidget.setY(y);
+
         if (this.addLabel)
         {
-            int ly = y + this.getHeight() / 2 - 3;
-            this.labelWidget.setPosition(x, ly);
+            this.labelWidget.setX(x);
+            this.labelWidget.centerVerticallyInside(this.textFieldWidget);
 
             if (this.labelFixedWidth >= 0)
             {
@@ -121,7 +123,7 @@ public abstract class BaseNumberEditWidget extends ContainerWidget
         this.sliderWidget.setWidth(tw);
         this.textFieldWidget.setWidth(tw);
         this.sliderWidget.setPosition(x, y);
-        this.textFieldWidget.setPosition(x, y);
+        this.textFieldWidget.setX(x);
         x = this.textFieldWidget.getRight() + 1;
 
         if (this.addValueAdjustButton)
