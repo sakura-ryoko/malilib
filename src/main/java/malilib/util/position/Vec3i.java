@@ -44,12 +44,20 @@ public class Vec3i extends net.minecraft.util.math.BlockPos
 
     public long squareDistanceTo(int x, int y, int z)
     {
-        return (long) this.getX() * x + (long) this.getY() * y + (long) this.getZ() * z;
+        long diffX = x - this.getX();
+        long diffY = y - this.getY();
+        long diffZ = z - this.getZ();
+
+        return diffX * diffX + diffY * diffY + diffZ * diffZ;
     }
 
     public double squareDistanceOfCenterTo(Vec3d pos)
     {
-        return (this.getX() + 0.5) * pos.x + (this.getY() + 0.5) * pos.y + (this.getZ() + 0.5) * pos.z;
+        double diffX = pos.x - (this.getX() + 0.5);
+        double diffY = pos.y - (this.getY() + 0.5);
+        double diffZ = pos.z - (this.getZ() + 0.5);
+
+        return diffX * diffX + diffY * diffY + diffZ * diffZ;
     }
 
     @Override

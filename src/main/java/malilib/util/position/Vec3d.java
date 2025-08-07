@@ -67,7 +67,11 @@ public class Vec3d
 
     public double squareDistanceTo(double x, double y, double z)
     {
-        return this.x * x + this.y * y + this.z * z;
+        double diffX = x - this.x;
+        double diffY = y - this.y;
+        double diffZ = z - this.z;
+
+        return diffX * diffX + diffY * diffY + diffZ * diffZ;
     }
 
     public double distanceTo(Vec3d other)
