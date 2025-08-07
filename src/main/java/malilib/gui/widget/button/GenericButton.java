@@ -68,7 +68,15 @@ public class GenericButton extends InteractableWidget
      */
     public GenericButton setActionListener(@Nullable EventListener actionListener)
     {
-        this.actionListener = (mBtn, btn) -> { if (mBtn == 0) { actionListener.onEvent(); return true; } return false; };
+        this.actionListener = (mBtn, btn) -> {
+            if (mBtn == 0)
+            {
+                actionListener.onEvent();
+                return true;
+            }
+            return false;
+        };
+
         return this;
     }
 
