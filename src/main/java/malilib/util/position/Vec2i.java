@@ -23,7 +23,7 @@ public class Vec2i
         return this.y;
     }
 
-    public double getSquaredDistance(int x, int y)
+    public double getSquaredDistanceTo(int x, int y)
     {
         double diffX = (double) x - (double) this.x;
         double diffY = (double) y - (double) this.y;
@@ -31,9 +31,9 @@ public class Vec2i
         return diffX * diffX + diffY * diffY;
     }
 
-    public double getDistance(int x, int y)
+    public double getDistanceTo(int x, int y)
     {
-        return Math.sqrt(this.getSquaredDistance(x, y));
+        return Math.sqrt(this.getSquaredDistanceTo(x, y));
     }
 
     @Override

@@ -64,7 +64,7 @@ public class RadialActionExecutionWidget extends BaseActionExecutionWidget
     @Override
     public boolean isMouseOver(int mouseX, int mouseY)
     {
-        double distance = this.center.getDistance(mouseX, mouseY);
+        double distance = this.center.getDistanceTo(mouseX, mouseY);
 
         if (distance >= this.innerRadius && distance <= this.outerRadius)
         {

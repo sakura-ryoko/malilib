@@ -37,12 +37,12 @@ public class Vec3i extends net.minecraft.util.math.BlockPos
     }
     */
 
-    public long squareDistanceTo(Vec3i other)
+    public long getSquaredDistanceTo(Vec3i other)
     {
-        return this.squareDistanceTo(other.getX(), other.getY(), other.getZ());
+        return this.getSquaredDistanceTo(other.getX(), other.getY(), other.getZ());
     }
 
-    public long squareDistanceTo(int x, int y, int z)
+    public long getSquaredDistanceTo(int x, int y, int z)
     {
         long diffX = x - this.getX();
         long diffY = y - this.getY();
@@ -51,7 +51,7 @@ public class Vec3i extends net.minecraft.util.math.BlockPos
         return diffX * diffX + diffY * diffY + diffZ * diffZ;
     }
 
-    public double squareDistanceOfCenterTo(Vec3d pos)
+    public double getSquaredDistanceOfCenterTo(Vec3d pos)
     {
         double diffX = pos.x - (this.getX() + 0.5);
         double diffY = pos.y - (this.getY() + 0.5);
@@ -65,4 +65,30 @@ public class Vec3i extends net.minecraft.util.math.BlockPos
     {
         return "Vec3i{x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + "}";
     }
+
+    /*
+    @Override
+    public boolean equals(Object object)
+    {
+        if (this == object) {
+            return true;
+        } else if (! (object instanceof Vec3i)) {
+            return false;
+        } else {
+            Vec3i vec3i = (Vec3i) object;
+            if (this.getX() != vec3i.getX()) {
+                return false;
+            } else if (this.getY() != vec3i.getY()) {
+                return false;
+            } else {
+                return this.getZ() == vec3i.getZ();
+            }
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return (this.getY() + this.getZ() * 31) * 31 + this.getX();
+    }
+    */
 }

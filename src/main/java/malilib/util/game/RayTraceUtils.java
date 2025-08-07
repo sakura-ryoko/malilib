@@ -47,7 +47,7 @@ public class RayTraceUtils
             List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(entity, bb);
 
             double closest = result != null && result.type == HitResult.Type.BLOCK ?
-                                     eyesPos.squareDistanceTo(result.pos) : Double.MAX_VALUE;
+                             eyesPos.getSquaredDistanceTo(result.pos) : Double.MAX_VALUE;
             RayTraceResult entityTrace = null;
             Entity targetEntity = null;
 
@@ -58,7 +58,7 @@ public class RayTraceUtils
 
                 if (traceTmp != null)
                 {
-                    double distance = eyesPos.squareDistanceTo(traceTmp.hitVec);
+                    double distance = eyesPos.getSquaredDistanceTo(traceTmp.hitVec);
 
                     if (distance < closest)
                     {
@@ -75,7 +75,7 @@ public class RayTraceUtils
             }
         }
 
-        if (result == null || eyesPos.distanceTo(result.pos) > range)
+        if (result == null || eyesPos.getDistanceTo(result.pos) > range)
         {
             result = HitResult.miss();
         }

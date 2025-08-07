@@ -37,8 +37,8 @@ public class ChunkSectionPos extends Vec3i
         @Override
         public int compare(ChunkSectionPos pos1, ChunkSectionPos pos2)
         {
-            double dist1 = pos1.squareDistanceTo(this.referencePosition);
-            double dist2 = pos2.squareDistanceTo(this.referencePosition);
+            double dist1 = pos1.getSquaredDistanceTo(this.referencePosition);
+            double dist2 = pos2.getSquaredDistanceTo(this.referencePosition);
 
             return Double.compare(dist1, dist2);
         }

@@ -55,17 +55,12 @@ public class Vec3d
         return new Vec3d(this.x * factor, this.y * factor, this.z * factor);
     }
 
-    public double squareDistanceTo(Vec3d other)
+    public double getSquaredDistanceTo(Vec3d other)
     {
-        return this.squareDistanceTo(other.x, other.y, other.z);
+        return this.getSquaredDistanceTo(other.x, other.y, other.z);
     }
 
-    public double squareDistanceTo(net.minecraft.util.math.Vec3d other)
-    {
-        return this.squareDistanceTo(other.x, other.y, other.z);
-    }
-
-    public double squareDistanceTo(double x, double y, double z)
+    public double getSquaredDistanceTo(double x, double y, double z)
     {
         double diffX = x - this.x;
         double diffY = y - this.y;
@@ -74,14 +69,14 @@ public class Vec3d
         return diffX * diffX + diffY * diffY + diffZ * diffZ;
     }
 
-    public double distanceTo(Vec3d other)
+    public double getDistanceTo(Vec3d other)
     {
-        return this.distanceTo(other.x, other.y, other.z);
+        return this.getDistanceTo(other.x, other.y, other.z);
     }
 
-    public double distanceTo(double x, double y, double z)
+    public double getDistanceTo(double x, double y, double z)
     {
-        return Math.sqrt(this.squareDistanceTo(x, y, z));
+        return Math.sqrt(this.getSquaredDistanceTo(x, y, z));
     }
 
     public Vec3d normalize()
@@ -89,14 +84,31 @@ public class Vec3d
         return normalized(this.x, this.y, this.z);
     }
 
-    public net.minecraft.util.math.Vec3d toVanilla()
+    public double getSquaredDistanceTo(net.minecraft.util.math.Vec3d other)
     {
-        return new net.minecraft.util.math.Vec3d(this.x, this.y, this.z);
+        return this.getSquaredDistanceTo(other.x, other.y, other.z);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Vec3d{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
     }
 
     public static Vec3d of(double x, double y, double z)
     {
         return new Vec3d(x, y, z);
+    }
+
+    public static Vec3d normalized(double x, double y, double z)
+    {
+        double d = Math.sqrt(x * x + y * y + z * z);
+        return d < 1.0E-4 ? ZERO : new Vec3d(x / d, y / d, z / d);
+    }
+
+    public net.minecraft.util.math.Vec3d toVanilla()
+    {
+        return new net.minecraft.util.math.Vec3d(this.x, this.y, this.z);
     }
 
     public static Vec3d of(net.minecraft.util.math.Vec3d pos)
@@ -109,15 +121,30 @@ public class Vec3d
         return new Vec3d(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static Vec3d normalized(double x, double y, double z)
+    @Override
+    public boolean equals(Object o)
     {
-        double d = Math.sqrt(x * x + y * y + z * z);
-        return d < 1.0E-4 ? ZERO : new Vec3d(x / d, y / d, z / d);
+        if (this == o) {return true;}
+        if (o == null || this.getClass() != o.getClass()) {return false;}
+
+        Vec3d vec3d = (Vec3d) o;
+
+        if (Double.compare(vec3d.x, this.x) != 0) {return false;}
+        if (Double.compare(vec3d.y, this.y) != 0) {return false;}
+        return Double.compare(vec3d.z, this.z) == 0;
     }
 
     @Override
-    public String toString()
+    public int hashCode()
     {
-        return "Vec3d{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(this.x);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(this.y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(this.z);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 }
