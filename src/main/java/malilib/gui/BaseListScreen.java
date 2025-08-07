@@ -83,6 +83,16 @@ public abstract class BaseListScreen<LISTWIDGET extends BaseListWidget> extends 
         return this.screenHeight - this.totalListMarginY;
     }
 
+    protected int getListRight()
+    {
+        return this.getListX() + this.getListWidth();
+    }
+
+    protected int getListBottom()
+    {
+        return this.getListY() + this.getListHeight();
+    }
+
     protected void setListPosition(int listX, int listY)
     {
         this.listX = listX;
