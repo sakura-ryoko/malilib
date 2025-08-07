@@ -13,6 +13,8 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
+import malilib.util.data.Identifier;
+
 public class RegistryUtils
 {
     public static Block getBlockByIdStr(String name)
@@ -56,9 +58,16 @@ public class RegistryUtils
         return getBlockIdStr(state.getBlock());
     }
 
-    public static Collection<ResourceLocation> getRegisteredBlockIds()
+    public static List<Identifier> getRegisteredBlockIds()
     {
-        return Block.REGISTRY.getKeys();
+        List<Identifier> blockIds = new ArrayList<>();
+
+        for (ResourceLocation rl : Block.REGISTRY.getKeys())
+        {
+            blockIds.add(new Identifier(rl));
+        }
+
+        return blockIds;
     }
 
     public static List<Block> getSortedBlockList()
