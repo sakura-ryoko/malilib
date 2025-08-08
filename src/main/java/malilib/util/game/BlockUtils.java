@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import com.google.common.base.Splitter;
-import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -44,7 +43,7 @@ public class BlockUtils
      * The string should be in either one of the following formats:<br>
      * 'minecraft:stone' or 'minecraft:smooth_stone_slab[half=top,waterlogged=false]'
      */
-    public static Optional<BlockState> getBlockStateFromString(String str)
+    public static Optional<IBlockState> getVanillaBlockStateFromString(String str)
     {
         int index = str.indexOf("["); // [prop=value]
         String blockName = index != -1 ? str.substring(0, index) : str;
@@ -85,10 +84,21 @@ public class BlockUtils
                 }
             }
 
-            return Optional.of(BlockState.of(state));
+            return Optional.of(state);
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * Parses the provided string into the full block state.<br>
+     * The string should be in either one of the following formats:<br>
+     * 'minecraft:stone' or 'minecraft:smooth_stone_slab[half=top,waterlogged=false]'
+     */
+    public static Optional<BlockState> getBlockStateFromString(String str)
+    {
+        Optional<IBlockState> vanillaStateOpt = getVanillaBlockStateFromString(str);
+        return vanillaStateOpt.isPresent() ? Optional.of(BlockState.of(vanillaStateOpt.get())) : Optional.empty();
     }
 
     /**
@@ -146,47 +156,46 @@ public class BlockUtils
      * This string format is what the Sponge schematic format uses in the palette.
      * @return an equivalent of IBlockState.toString() of the given tag representing a block state
      */
-    public static String getBlockStateStringFromTag(NBTTagCompound stateTag)
+    public static String blockStateDataToString(CompoundData data)
     {
-        String name = NbtWrap.getString(stateTag, "Name");
-
-        if (NbtWrap.containsCompound(stateTag, "Properties") == false)
+        if (data.contains("Name", Constants.NBT.TAG_STRING) == false)
         {
-            return name;
+            return "?";
         }
 
-        NBTTagCompound propTag = NbtWrap.getCompound(stateTag, "Properties");
-        ArrayList<Pair<String, String>> props = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
 
-        for (String key : NbtWrap.getKeys(propTag))
+        sb.append(data.getString("Name"));
+
+        if (data.contains("Properties", Constants.NBT.TAG_COMPOUND))
         {
-            props.add(Pair.of(key, NbtWrap.getString(propTag, key)));
-        }
+            CompoundData propData = data.getCompound("Properties");
 
-        final int size = props.size();
-
-        if (size > 0)
-        {
-            props.sort(Comparator.comparing(Pair::getLeft));
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(name).append('[');
-            Pair<String, String> pair = props.get(0);
-
-            sb.append(pair.getLeft()).append('=').append(pair.getRight());
-
-            for (int i = 1; i < size; ++i)
+            if (propData.size() > 0)
             {
-                pair = props.get(i);
-                sb.append(',').append(pair.getLeft()).append('=').append(pair.getRight());
+                sb.append('[');
+
+                ArrayList<String> propNames = new ArrayList<>(propData.getKeys());
+                propNames.sort(Comparator.naturalOrder());
+                int index = 0;
+
+                for (String propName : propNames)
+                {
+                    if (index > 0)
+                    {
+                        sb.append(',');
+                    }
+
+                    String propVal = propData.getString(propName);
+                    sb.append(propName).append('=').append(propVal);
+                    index++;
+                }
+
+                sb.append(']');
             }
-
-            sb.append(']');
-
-            return sb.toString();
         }
 
-        return name;
+        return sb.toString();
     }
 
     public static BlockState readBlockState(CompoundData data)

@@ -171,9 +171,14 @@ public class GameWrap
         return HitResult.of(getClient().objectMouseOver);
     }
 
-    public static long getCurrentWorldTick()
+    public static long getClientWorldTotalTick()
     {
         World world = getClientWorld();
+        return getWorldTotalTick(world);
+    }
+
+    public static long getWorldTotalTick(World world)
+    {
         return world != null ? world.getTotalWorldTime() : -1L;
     }
 

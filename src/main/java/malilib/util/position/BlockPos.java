@@ -55,6 +55,16 @@ public class BlockPos extends Vec3i
         return this.subtract(other.getX(), other.getY(), other.getZ());
     }
 
+    public BlockPos add(Vec3i other)
+    {
+        return this.add(other.getX(), other.getY(), other.getZ());
+    }
+
+    public BlockPos subtract(Vec3i other)
+    {
+        return this.subtract(other.getX(), other.getY(), other.getZ());
+    }
+
     @Override
     public BlockPos toImmutable()
     {
