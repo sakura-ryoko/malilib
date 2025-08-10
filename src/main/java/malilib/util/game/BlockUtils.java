@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import com.google.common.base.Splitter;
 
@@ -20,7 +20,6 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
 
 import malilib.MaLiLib;
 import malilib.render.text.StyledTextLine;
@@ -28,7 +27,6 @@ import malilib.util.StringUtils;
 import malilib.util.data.Constants;
 import malilib.util.data.Identifier;
 import malilib.util.data.tag.CompoundData;
-import malilib.util.game.wrap.NbtWrap;
 import malilib.util.game.wrap.RegistryUtils;
 import malilib.util.position.Direction;
 import malilib.util.world.BlockState;
@@ -36,58 +34,66 @@ import malilib.util.world.BlockState;
 public class BlockUtils
 {
     private static final Splitter COMMA_SPLITTER = Splitter.on(',');
-    private static final Splitter EQUAL_SPLITTER = Splitter.on('=').limit(2);
 
     /**
      * Parses the provided string into the full block state.<br>
      * The string should be in either one of the following formats:<br>
      * 'minecraft:stone' or 'minecraft:smooth_stone_slab[half=top,waterlogged=false]'
      */
-    public static Optional<IBlockState> getVanillaBlockStateFromString(String str)
+    public static Optional<IBlockState> getVanillaBlockStateFromString(String stateString)
     {
-        int index = str.indexOf("["); // [prop=value]
-        String blockName = index != -1 ? str.substring(0, index) : str;
+        int index = stateString.indexOf("["); // mod:block[prop=value,foo=bar]
+        String blockName = index != -1 ? stateString.substring(0, index) : stateString;
         Identifier id = new Identifier(blockName);
 
-        if (Block.REGISTRY.containsKey(id))
+        if (Block.REGISTRY.containsKey(id) == false)
         {
-            Block block = RegistryUtils.getBlockById(id);
-            IBlockState state = block.getDefaultState();
+            return Optional.empty();
+        }
 
-            if (index != -1 && str.length() > (index + 4) && str.charAt(str.length() - 1) == ']')
-            {
-                BlockStateContainer blockState = block.getBlockState();
-                String propStr = str.substring(index + 1, str.length() - 1);
+        Block block = RegistryUtils.getBlockById(id);
+        IBlockState state = block.getDefaultState();
 
-                for (String propAndVal : COMMA_SPLITTER.split(propStr))
-                {
-                    Iterator<String> valIter = EQUAL_SPLITTER.split(propAndVal).iterator();
-
-                    if (valIter.hasNext() == false)
-                    {
-                        continue;
-                    }
-
-                    IProperty<?> prop = blockState.getProperty(valIter.next());
-
-                    if (prop == null || valIter.hasNext() == false)
-                    {
-                        continue;
-                    }
-
-                    Comparable<?> val = getPropertyValueByName(prop, valIter.next());
-
-                    if (val != null)
-                    {
-                        state = getBlockStateWithProperty(state, prop, val);
-                    }
-                }
-            }
-
+        // No props
+        if (index < 0)
+        {
             return Optional.of(state);
         }
 
-        return Optional.empty();
+        // Broken props string
+        if (stateString.length() < (index + 4) || stateString.charAt(stateString.length() - 1) != ']')
+        {
+            return Optional.of(state);
+        }
+
+        BlockStateContainer stateContainer = block.getBlockState();
+        String propStr = stateString.substring(index + 1, stateString.length() - 1);
+
+        for (String propAndVal : COMMA_SPLITTER.split(propStr))
+        {
+            String[] parts = propAndVal.split("=");
+
+            if (parts.length != 2)
+            {
+                continue;
+            }
+
+            IProperty<?> prop = stateContainer.getProperty(parts[0]);
+
+            if (prop == null)
+            {
+                continue;
+            }
+
+            Comparable<?> val = getPropertyValueByName(prop, parts[1]);
+
+            if (val != null)
+            {
+                state = getBlockStateWithProperty(state, prop, val);
+            }
+        }
+
+        return Optional.of(state);
     }
 
     /**
@@ -110,44 +116,48 @@ public class BlockUtils
      * None of the values are checked for validity here, and this can be used for
      * parsing strings for states from another Minecraft version, such as 1.12 <-> 1.13+.
      */
-    public static NBTTagCompound getBlockStateTagFromString(String stateString)
+    public static Optional<CompoundData> getBlockStateDataFromString(String stateString,
+                                                                     Consumer<String> messageHandler)
     {
-        int index = stateString.indexOf("["); // [f=b]
+        int index = stateString.indexOf("["); // mod:block[prop=value,foo=bar]
         String blockName = index != -1 ? stateString.substring(0, index) : stateString;
-        NBTTagCompound tag = new NBTTagCompound();
+        CompoundData data = new CompoundData();
 
-        NbtWrap.putString(tag, "Name", blockName);
+        data.putString("Name", blockName);
 
-        if (index != -1 && stateString.length() > (index + 4) && stateString.charAt(stateString.length() - 1) == ']')
+        // No props
+        if (index < 0)
         {
-            NBTTagCompound propsTag = new NBTTagCompound();
-            String propStr = stateString.substring(index + 1, stateString.length() - 1);
-
-            for (String propAndVal : COMMA_SPLITTER.split(propStr))
-            {
-                Iterator<String> valIter = EQUAL_SPLITTER.split(propAndVal).iterator();
-
-                if (valIter.hasNext() == false)
-                {
-                    continue;
-                }
-
-                String propName = valIter.next();
-
-                if (valIter.hasNext() == false)
-                {
-                    continue;
-                }
-
-                String valStr = valIter.next();
-
-                NbtWrap.putString(propsTag, propName, valStr);
-            }
-
-            NbtWrap.putTag(tag, "Properties", propsTag);
+            return Optional.of(data);
         }
 
-        return tag;
+        if (stateString.length() < (index + 4) || stateString.charAt(stateString.length() - 1) != ']')
+        {
+            messageHandler.accept(StringUtils.translate("malilib.error.parse_block_state_string.invalid_props_string",
+                                                        stateString));
+            return Optional.empty();
+        }
+
+        CompoundData propsTag = new CompoundData();
+        String propStr = stateString.substring(index + 1, stateString.length() - 1);
+
+        for (String propAndVal : COMMA_SPLITTER.split(propStr))
+        {
+            String[] parts = propAndVal.split("=");
+
+            if (parts.length != 2)
+            {
+                messageHandler.accept(StringUtils.translate("malilib.error.parse_block_state_string.invalid_props_string",
+                                                            stateString));
+                return Optional.empty();
+            }
+
+            propsTag.putString(parts[0], parts[1]);
+        }
+
+        data.put("Properties", propsTag);
+
+        return Optional.of(data);
     }
 
     /**
