@@ -1,11 +1,18 @@
 package fi.dy.masa.malilib.data.tag;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.PrimitiveCodec;
+import net.minecraft.nbt.NbtByte;
+import net.minecraft.nbt.NbtElement;
 
-public class BoolDat extends Dat<Boolean>
+@ApiStatus.Experimental
+public class BoolDat implements IDat<Boolean>
 {
+	private Boolean value;
+
     public static final Codec<BoolDat> CODEC = Codec.of(
             new Encoder<>()
             {
@@ -30,6 +37,30 @@ public class BoolDat extends Dat<Boolean>
 
     public BoolDat(Boolean value)
     {
-        super(Boolean.class, Type.BOOL, value);
+        this.value = value;
     }
+
+	@Override
+	public Boolean getValue()
+	{
+		return this.value;
+	}
+
+	@Override
+	public void setValue(Boolean newValue)
+	{
+		this.value = newValue;
+	}
+
+	@Override
+	public DatType getType()
+	{
+		return DatType.BOOL;
+	}
+
+	@Override
+	public NbtElement toVanilla()
+	{
+		return NbtByte.of(this.value);
+	}
 }

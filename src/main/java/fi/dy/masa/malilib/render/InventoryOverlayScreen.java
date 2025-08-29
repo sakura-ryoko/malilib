@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.ShulkerBoxBlock;
@@ -22,8 +20,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.World;
@@ -125,7 +121,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
             if (MaLiLibReference.DEBUG_MODE)
             {
                 MaLiLib.LOGGER.warn("render():0: type [{}], previewData.type [{}], previewData.inv [{}], previewData.be [{}], previewData.ent [{}], previewData.nbt [{}]", type.toString(), this.previewData.type().toString(),
-                                    this.previewData.inv() != null, this.previewData.be() != null, this.previewData.entity() != null, this.previewData.nbt() != null ? this.previewData.nbt().getString("id") : null);
+                                    this.previewData.inv() != null, this.previewData.be() != null, this.previewData.entity() != null, this.previewData.nbt() != null ? this.previewData.nbt().getString("id").orElse("[invalid]") : null);
                 MaLiLib.LOGGER.error("0: -> inv.type [{}] // nbt.type [{}]", this.previewData.inv() != null ? InventoryOverlay.getInventoryType(this.previewData.inv()) : null, this.previewData.nbt() != null ? InventoryOverlay.getInventoryType(this.previewData.nbt()) : null);
                 MaLiLib.LOGGER.error("1: -> inv.size [{}] // inv.isEmpty [{}]", this.previewData.inv() != null ? this.previewData.inv().size() : -1, this.previewData.inv() != null ? this.previewData.inv().isEmpty() : -1);
                 MaLiLib.LOGGER.error("2: -> total slots [{}] // rows [{}] // startSlot [{}]", totalSlots, rows, startSlot);

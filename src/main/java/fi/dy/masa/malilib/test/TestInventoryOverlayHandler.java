@@ -43,10 +43,7 @@ import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.game.RayTraceUtils;
-import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
-import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
-import fi.dy.masa.malilib.util.nbt.NbtKeys;
-import fi.dy.masa.malilib.util.nbt.NbtView;
+import fi.dy.masa.malilib.util.nbt.*;
 
 @ApiStatus.Experimental
 public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
@@ -399,13 +396,15 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
                 nbt.contains(NbtKeys.ITEMS) &&
                 nbt.getList(NbtKeys.ITEMS).orElse(new NbtList()).size() > 1)
             {
+				MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): [Fix for horse inv] inv.size: [{}]", inv.size());
+
                 if (entity instanceof AbstractHorseEntity)
                 {
-                    inv2 = InventoryUtils.getNbtInventoryHorseFix(nbt, -1, entity.getRegistryManager());
+                    inv2 = InventoryUtils.getNbtInventoryHorseFix(nbt, inv.size(), entity.getRegistryManager());
                 }
                 else
                 {
-                    inv2 = InventoryUtils.getNbtInventory(nbt, -1, entity.getRegistryManager());
+                    inv2 = InventoryUtils.getNbtInventory(nbt, inv.size(), entity.getRegistryManager());
                 }
                 inv = null;
             }
@@ -413,19 +412,23 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             else if (inv != null &&
                     nbt.contains(NbtKeys.EQUIPMENT) && nbt.contains(NbtKeys.EATING_HAY))
             {
-                inv2 = InventoryUtils.getNbtInventoryHorseFix(nbt, -1, entity.getRegistryManager());
+				MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): [Fix for saddled horse inv] inv.size: [{}]", inv.size());
+
+                inv2 = InventoryUtils.getNbtInventoryHorseFix(nbt, inv.size(), entity.getRegistryManager());
                 inv = null;
             }
             // Fix for empty Villager/Piglin inv
-            else if (inv != null && inv.size() == 8 &&
+            else if (inv != null && inv.size() == NbtInventory.VILLAGER_SIZE &&
                     nbt.contains(NbtKeys.INVENTORY) &&
                     !nbt.getList(NbtKeys.INVENTORY).orElse(new NbtList()).isEmpty())
             {
-                inv2 = InventoryUtils.getNbtInventory(nbt, 8, entity.getRegistryManager());
+				MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): [Fix for empty villager/piglin inv] inv.size: [{}]", inv.size());
+                inv2 = InventoryUtils.getNbtInventory(nbt, NbtInventory.VILLAGER_SIZE, entity.getRegistryManager());
                 inv = null;
             }
             else
             {
+				MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): [Default] inv.size: [{}]", inv != null ? inv.size() : -1);
                 inv2 = InventoryUtils.getNbtInventory(nbt, inv != null ? inv.size() : -1, entity.getRegistryManager());
 
                 if (inv2 != null)

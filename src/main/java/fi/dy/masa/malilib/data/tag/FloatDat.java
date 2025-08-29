@@ -1,11 +1,18 @@
 package fi.dy.masa.malilib.data.tag;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.PrimitiveCodec;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtFloat;
 
-public class FloatDat extends Dat<Float>
+@ApiStatus.Experimental
+public class FloatDat implements IDat<Float>
 {
+	private Float value;
+
     public static final Codec<FloatDat> CODEC = Codec.of(
             new Encoder<>()
             {
@@ -30,6 +37,30 @@ public class FloatDat extends Dat<Float>
 
     public FloatDat(Float value)
     {
-        super(Float.class, Type.FLOAT, value);
+        this.value = value;
     }
+
+	@Override
+	public Float getValue()
+	{
+		return this.value;
+	}
+
+	@Override
+	public void setValue(Float newValue)
+	{
+		this.value = newValue;
+	}
+
+	@Override
+	public DatType getType()
+	{
+		return DatType.FLOAT;
+	}
+
+	@Override
+	public NbtElement toVanilla()
+	{
+		return NbtFloat.of(this.value);
+	}
 }

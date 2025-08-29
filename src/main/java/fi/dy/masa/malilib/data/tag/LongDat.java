@@ -1,11 +1,18 @@
 package fi.dy.masa.malilib.data.tag;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.PrimitiveCodec;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtLong;
 
-public class LongDat extends Dat<Long>
+@ApiStatus.Experimental
+public class LongDat implements IDat<Long>
 {
+	private Long value;
+
     public static final Codec<LongDat> CODEC = Codec.of(
             new Encoder<>()
             {
@@ -30,6 +37,30 @@ public class LongDat extends Dat<Long>
 
     public LongDat(Long value)
     {
-        super(Long.class, Type.LONG, value);
+        this.value = value;
     }
+
+	@Override
+	public Long getValue()
+	{
+		return this.value;
+	}
+
+	@Override
+	public void setValue(Long newValue)
+	{
+		this.value = newValue;
+	}
+
+	@Override
+	public DatType getType()
+	{
+		return DatType.LONG;
+	}
+
+	@Override
+	public NbtElement toVanilla()
+	{
+		return NbtLong.of(this.value);
+	}
 }

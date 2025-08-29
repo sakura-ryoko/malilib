@@ -1,10 +1,14 @@
 package fi.dy.masa.malilib.data.tag;
 
+import org.jetbrains.annotations.ApiStatus;
+
+import net.minecraft.nbt.NbtElement;
+
+@ApiStatus.Experimental
 public interface IDat<T>
 {
-    Class<T> getType();
-//    Codec<T> codec();
     T getValue();
     void setValue(T newValue);
-    Dat.Type getDatType();
+    DatType getType();
+	NbtElement toVanilla();
 }

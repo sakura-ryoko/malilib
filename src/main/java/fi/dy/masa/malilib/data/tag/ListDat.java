@@ -5,77 +5,69 @@ import java.util.List;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import com.google.common.collect.Iterables;
+import org.jetbrains.annotations.ApiStatus;
+
+import com.mojang.datafixers.util.Pair;
+import com.mojang.datafixers.util.Unit;
+import com.mojang.serialization.*;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 
 import fi.dy.masa.malilib.MaLiLib;
 
-public class ListDat<E> implements IDat<List<Dat<E>>>
+@ApiStatus.Experimental
+@SuppressWarnings("unchecked")
+public class ListDat<E> implements IDat<List<IDat<?>>>
 {
+	// FIXME
 //    public static final Codec<ListDat<?>> CODEC = Codec.of(
-//            new Encoder<>()
-//            {
-//                @Override
-//                public <T> DataResult<T> encode(ListDat<?> input, DynamicOps<T> ops, T prefix)
-//                {
-//                    return null;
-//                }
-//            },
-//            new Decoder<>()
-//            {
-//                @Override
-//                public <T> DataResult<Pair<ListDat<?>, T>> decode(DynamicOps<T> ops, T input)
-//                {
-//                    return null;
-//                }
-//            }
-//        );
+//			new Encoder<>()
+//			{
+//				@Override
+//				public <T> DataResult<T> encode(ListDat<?> input, DynamicOps<T> ops, T prefix)
+//				{
+//					List<?> list = input.toValueList();
+//					Codec<?> codec = input.getValueCodec();
+//					Serializer<?> serializer = new Serializer<>(codec);
+//					return serializer.encode(list, ops, prefix);
+//				}
+//			},
+//			new Decoder<>()
+//			{
+//				@Override
+//				public <T> DataResult<Pair<ListDat<?>, T>> decode(DynamicOps<T> ops, T input)
+//				{
+//					return null;
+//				}
+//			}
+//	);
 
-    private final List<Dat<E>> valueList;
-    private final Class<E> type;
-    private final Dat.Type datType;
+    private final List<IDat<?>> valueList;
+	private DatType valueType;
+	private Serializer<E> serializer;
 
-    public ListDat(Class<E> type, List<E> list)
+    public ListDat()
     {
         this.valueList = new ArrayList<>();
-        this.type = type;
-        this.datType = Dat.Type.LIST;
-
-        if (!list.isEmpty())
-        {
-            list.forEach(
-                    entry ->
-                            this.valueList.add(new Dat<>(type, this.datType, entry))
-            );
-        }
+		this.valueType = DatType.EMPTY;
+		this.serializer = null;
     }
 
-    @Override
-    public Class<List<Dat<E>>> getType()
-    {
-        // Not useful
-        return null;
-    }
+	public ListDat(IDat<E> value)
+	{
+		this.valueList = new ArrayList<>();
+		this.valueType = DatType.EMPTY;
+		this.serializer = null;
 
-    public Class<E> getListType()
-    {
-        return this.type;
-    }
+		this.add(value);
+	}
 
-    @Override
-    public List<Dat<E>> getValue()
-    {
-        return this.valueList;
-    }
+	private List<IDat<E>> cast()
+	{
+		return (List<IDat<E>>) (Object) this.valueList;
+	}
 
-    @Override
-    public void setValue(List<Dat<E>> newValue)
-    {
-        this.clear();
-        this.valueList.addAll(newValue);
-    }
-
-    public Dat.Type getDatType() { return this.datType; }
-
-    public @Nullable E get(int index)
+    public @Nullable IDat<E> get(int index)
     {
         if (index >= this.valueList.size())
         {
@@ -83,9 +75,9 @@ public class ListDat<E> implements IDat<List<Dat<E>>>
             return null;
         }
 
-        try
+		try
         {
-            return this.valueList.get(index).getValue();
+            return (IDat<E>) this.valueList.get(index).getValue();
         }
         catch (Exception err)
         {
@@ -94,7 +86,7 @@ public class ListDat<E> implements IDat<List<Dat<E>>>
         }
     }
 
-    public @Nullable E set(int index, E newValue)
+    public @Nullable IDat<E> set(final int index, final IDat<E> newValue)
     {
         if (index >= this.valueList.size())
         {
@@ -102,9 +94,15 @@ public class ListDat<E> implements IDat<List<Dat<E>>>
             return null;
         }
 
+		if (newValue.getType() != this.valueType)
+		{
+			MaLiLib.LOGGER.error("ListDat: Exception setting element [{}]; Invalid type [{}] when expecting type [{}]", index, newValue.getType().asString(), this.valueType.asString());
+			return null;
+		}
+
         try
         {
-            return this.valueList.set(index, new Dat<>(this.type, this.datType, newValue)).getValue();
+            return (IDat<E>) this.valueList.set(index, newValue).getValue();
         }
         catch (Exception err)
         {
@@ -113,11 +111,23 @@ public class ListDat<E> implements IDat<List<Dat<E>>>
         }
     }
 
-    public boolean add(E newValue)
+    public boolean add(final IDat<E> newValue)
     {
-        try
+		if (!this.isEmpty() && newValue.getType() != this.valueType)
+		{
+			MaLiLib.LOGGER.error("ListDat: Exception adding new element; Invalid type [{}] when expecting type [{}]", newValue.getType().asString(), this.valueType.asString());
+			return false;
+		}
+		else if (this.isEmpty())
+		{
+			this.valueType = newValue.getType();
+		}
+
+		try
         {
-            return this.valueList.add(new Dat<>(this.type, this.datType, newValue));
+            this.valueList.add(newValue);
+			this.refreshSerializer();
+			return true;
         }
         catch (Exception err)
         {
@@ -126,7 +136,7 @@ public class ListDat<E> implements IDat<List<Dat<E>>>
         }
     }
 
-    public @Nullable E getFirst()
+    public @Nullable IDat<E> getFirst()
     {
         if (this.valueList.isEmpty())
         {
@@ -136,7 +146,7 @@ public class ListDat<E> implements IDat<List<Dat<E>>>
 
         try
         {
-            return this.valueList.getFirst().getValue();
+            return (IDat<E>) this.valueList.getFirst().getValue();
         }
         catch (Exception err)
         {
@@ -145,7 +155,7 @@ public class ListDat<E> implements IDat<List<Dat<E>>>
         }
     }
 
-    public @Nullable E getLast()
+    public @Nullable IDat<E> getLast()
     {
         if (this.valueList.isEmpty())
         {
@@ -155,7 +165,7 @@ public class ListDat<E> implements IDat<List<Dat<E>>>
 
         try
         {
-            return this.valueList.getLast().getValue();
+            return (IDat<E>) this.valueList.getLast().getValue();
         }
         catch (Exception err)
         {
@@ -166,52 +176,189 @@ public class ListDat<E> implements IDat<List<Dat<E>>>
 
     public boolean isEmpty() { return this.valueList.isEmpty(); }
 
-    public int size() { return this.valueList.size(); }
+    public int size() { return this.valueList != null ? this.valueList.size() : 0; }
 
     public void clear() { this.valueList.clear(); }
 
-    public List<E> toList()
+    public List<E> toValueList()
     {
         List<E> list = new ArrayList<>();
 
         this.valueList.forEach(
                 entry ->
-                        list.add(entry.getValue())
+                        list.add((E) entry.getValue())
         );
 
         return list;
     }
 
-    @SuppressWarnings("unchecked")
-    public <F> @Nullable ListDat<E> copyFrom(ListDat<F> otherList)
+    public @Nullable ListDat<E> copyFrom(List<IDat<?>> otherList)
     {
-        if (this.type != otherList.getType() || this.datType != otherList.getDatType())
-        {
-            MaLiLib.LOGGER.error("ListDat: Excepting copying list from other list; Type Mismatch [{} != {}]", this.type.getName(), otherList.type.getName());
-            return null;
-        }
+		this.valueList.clear();
 
-        otherList.valueList.forEach(
-                entry ->
-                        this.valueList.add(new Dat<>(this.type, this.datType, (E) entry.getValue()))
-        );
+		if (!otherList.isEmpty())
+		{
+			this.valueList.addAll(otherList);
+			this.valueType = otherList.getFirst().getType();
+			this.refreshSerializer();
+		}
+		else
+		{
+			this.valueType = DatType.EMPTY;
+		}
 
         return this;
     }
 
-    public Stream<Dat<E>> stream() { return this.valueList.stream(); }
+    public Stream<IDat<E>> stream() { return this.cast().stream(); }
 
     public Stream<E> streamValues()
     {
-        return this.toList().stream();
+        return this.toValueList().stream();
     }
 
-    public Iterable<Dat<E>> iterator()
+    public Iterable<IDat<E>> iterator()
     {
-        return Iterables.concat(this.valueList);
+        return Iterables.concat(this.cast());
     }
-    public Iterable<E> iteratorValues()
-    {
-        return Iterables.concat(this.toList());
-    }
+
+	@Override
+	public List<IDat<?>> getValue()
+	{
+		return this.valueList;
+	}
+
+	@Override
+	public void setValue(List<IDat<?>> newValue)
+	{
+		this.copyFrom(newValue);
+	}
+
+	@Override
+	public DatType getType()
+	{
+		return DatType.LIST;
+	}
+
+	public DatType getValueType()
+	{
+		return this.valueType;
+	}
+
+	@Nullable
+	public Codec<E> getValueCodec()
+	{
+		return (Codec<E>) this.valueType.codec();
+	}
+
+	@Override
+	public NbtElement toVanilla()
+	{
+		NbtList list  = new NbtList();
+
+		this.valueList.forEach(
+				(entry) ->
+						list.add(entry.toVanilla())
+		);
+
+		return list;
+	}
+
+	private void refreshSerializer()
+	{
+		if (this.valueList.isEmpty())
+		{
+			this.serializer = null;
+			this.valueType = DatType.EMPTY;
+			return;
+		}
+
+		IDat<E> entry = this.getFirst();
+
+		if (entry == null)
+		{
+			MaLiLib.LOGGER.error("ListDat: Exception refreshing Serializer; first entry is empty!");
+			this.valueList.clear();
+			this.serializer = null;
+			this.valueType = DatType.EMPTY;
+			return;
+		}
+
+		this.valueType = entry.getType();
+		Codec<E> valueCodec = this.getValueCodec();
+
+		if (valueCodec == null)
+		{
+			MaLiLib.LOGGER.error("ListDat: Exception refreshing Serializer; first entry CODEC is empty!");
+			this.valueList.clear();
+			this.serializer = null;
+			this.valueType = DatType.EMPTY;
+			return;
+		}
+
+		this.serializer = new Serializer<>(valueCodec);
+	}
+
+	public record Serializer<E>(Codec<E> codec) implements Codec<List<E>>
+	{
+		@Override
+		public <T> DataResult<T> encode(List<E> input, DynamicOps<T> ops, T prefix)
+		{
+			if (codec() == null || input.isEmpty())
+			{
+				return DataResult.error(() -> "Empty List / Codec!");
+			}
+
+			ListBuilder<T> builder = ops.listBuilder();
+
+			for (E entry : input)
+			{
+				builder.add(codec().encodeStart(ops, entry));
+			}
+
+			return builder.build(prefix);
+		}
+
+		@Override
+		public <T> DataResult<Pair<List<E>, T>> decode(DynamicOps<T> ops, T input)
+		{
+			return ops.getList(input).flatMap(
+					inst -> {
+						final DecoderContext<T> decoder = new DecoderContext<>(ops);
+
+						inst.accept(decoder::accept);
+						return decoder.build();
+					}
+			);
+		}
+
+		private class DecoderContext<V>
+		{
+			private final DynamicOps<V> ops;
+			private final List<E> values = new ArrayList<>();
+			private final Stream.Builder<V> error = Stream.builder();
+			private DataResult<Unit> results = DataResult.success(Unit.INSTANCE, Lifecycle.stable());
+
+			private DecoderContext(final DynamicOps<V> ops)
+			{
+				this.ops = ops;
+			}
+
+			public void accept(final V value)
+			{
+				final DataResult<Pair<E, V>> valueEach = codec().decode(this.ops, value);
+				valueEach.error().ifPresent(err -> this.error.add(value));
+				valueEach.resultOrPartial().ifPresent(pair -> this.values.add(pair.getFirst()));
+				this.results = this.results.apply2stable((res, ele) -> res, valueEach);
+			}
+
+			public DataResult<Pair<List<E>, V>> build()
+			{
+				final V errors = this.ops.createList(this.error.build());
+				final Pair<List<E>, V> pair = Pair.of(List.copyOf(this.values), errors);
+
+				return this.results.map(unit -> pair).setPartial(pair);
+			}
+		}
+	}
 }

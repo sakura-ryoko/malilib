@@ -1,11 +1,18 @@
 package fi.dy.masa.malilib.data.tag;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.PrimitiveCodec;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtElement;
 
-public class DoubleDat extends Dat<Double>
+@ApiStatus.Experimental
+public class DoubleDat implements IDat<Double>
 {
+	private Double value;
+
     public static final Codec<DoubleDat> CODEC = Codec.of(
             new Encoder<>()
             {
@@ -30,6 +37,30 @@ public class DoubleDat extends Dat<Double>
 
     public DoubleDat(Double value)
     {
-        super(Double.class, Type.DOUBLE, value);
+        this.value = value;
     }
+
+	@Override
+	public Double getValue()
+	{
+		return this.value;
+	}
+
+	@Override
+	public void setValue(Double newValue)
+	{
+		this.value = newValue;
+	}
+
+	@Override
+	public DatType getType()
+	{
+		return DatType.DOUBLE;
+	}
+
+	@Override
+	public NbtElement toVanilla()
+	{
+		return NbtDouble.of(this.value);
+	}
 }
