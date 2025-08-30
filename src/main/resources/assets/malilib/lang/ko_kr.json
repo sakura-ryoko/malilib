@@ -194,7 +194,7 @@
     "malilib.gui.title.experimental": "실험기능",
     "malilib.gui.title.generic": "일반",
     "malilib.gui.title.inventory_overlay": "%s 보관함 오버레이 화면",
-    "malilib.gui.title.keybind_settings.advanced": "%s에 대한 고급 키 지정 설정",
+    "malilib.gui.title.keybind_settings.advanced": "%s에 대한 고급 키지정 설정",
     "malilib.gui.title.locked_list_edit": "'%s'에 대한 잠김 목록 편집",
     "malilib.gui.title.string_list_edit": "'%s'에 대한 문자열 목록 편집",
     "malilib.gui.title.test": "테스트",

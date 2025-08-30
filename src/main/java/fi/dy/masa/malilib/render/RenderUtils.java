@@ -34,16 +34,20 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.*;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.util.Colors;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
+import org.jetbrains.annotations.ApiStatus;
+import org.joml.Matrix3x2f;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -1560,13 +1564,8 @@ public class RenderUtils
         if (block != null && useBgColors)
         {
             // In 1.13+ there is the uncolored Shulker Box variant, which returns null from getColor()
-            final DyeColor dye = block.getColor() != null ? block.getColor() : DyeColor.PURPLE;
-            final float[] colors = getColorComponents(dye.getEntityColor());
+            final float[] colors = getColorComponents(block.getColor() != null ? block.getColor().getEntityColor() : 0xFF875F87);
             color(colors[0], colors[1], colors[2], 1f);
-        }
-        else
-        {
-            color(1f, 1f, 1f, 1f);
         }
     }
 
@@ -1587,96 +1586,90 @@ public class RenderUtils
 
     public static void setBundleBackgroundTintColor(ItemStack bundle, boolean useBgColors)
     {
-        if (useBgColors)
+        if (bundle.isIn(ItemTags.BUNDLES) && useBgColors)
         {
-            final DyeColor dye = getBundleColor(bundle);
-
-            if (dye != null)
-            {
-                final float[] colors = getColorComponents(dye.getEntityColor());
-                color(colors[0], colors[1], colors[2], 1f);
-                return;
-            }
+            // In 1.17+ there is the uncolored Bundle variant, which returns null from getColor()
+            final float[] colors = getColorComponents(getBundleColor(bundle));
+	        color(colors[0], colors[1], colors[2], 1f);
         }
-
-        color(1f, 1f, 1f, 1f);
     }
 
-    public static DyeColor getBundleColor(ItemStack bundle)
+    // returns real colors now instead of Dye Colors.
+    public static int getBundleColor(ItemStack bundle)
     {
         Item item = bundle.getItem();
 
         if (item == null)
         {
-            return null;
+            return Colors.WHITE;
         }
-        if (item.equals(Items.WHITE_BUNDLE))
+        if (item.equals(Items.WHITE_BUNDLE))            // 	#ffe6e6e6
         {
-            return DyeColor.WHITE;
+            return 0xFFE6E6E6;
         }
-        else if (item.equals(Items.ORANGE_BUNDLE))
+        else if (item.equals(Items.ORANGE_BUNDLE))      //	#fffb9320
         {
-            return DyeColor.ORANGE;
+            return 0xFFFB9320;
         }
-        else if (item.equals(Items.MAGENTA_BUNDLE))
+        else if (item.equals(Items.MAGENTA_BUNDLE))     // 	#ffcc49b9
         {
-            return DyeColor.MAGENTA;
+            return 0xFFCC49B9;
         }
-        else if (item.equals(Items.LIGHT_BLUE_BUNDLE))
+        else if (item.equals(Items.LIGHT_BLUE_BUNDLE))  // 	#ff30afe5
         {
-            return DyeColor.LIGHT_BLUE;
+            return 0xFF30AFE5;
         }
-        else if (item.equals(Items.YELLOW_BUNDLE))
+        else if (item.equals(Items.YELLOW_BUNDLE))      //	#fff2c705
         {
-            return DyeColor.YELLOW;
+            return 0xFFF2C705;
         }
-        else if (item.equals(Items.LIME_BUNDLE))
+        else if (item.equals(Items.LIME_BUNDLE))        // 	#ff9bdf39
         {
-            return DyeColor.LIME;
+            return 0xFF9BDF39;
         }
-        else if (item.equals(Items.PINK_BUNDLE))
+        else if (item.equals(Items.PINK_BUNDLE))        //	#fff8a6bd
         {
-            return DyeColor.PINK;
+            return 0xFFF8A6BD;
         }
-        else if (item.equals(Items.GRAY_BUNDLE))
+        else if (item.equals(Items.GRAY_BUNDLE))        // 	#ff6c7b83
         {
-            return DyeColor.GRAY;
+            return 0xFF6C7B83;
         }
-        else if (item.equals(Items.LIGHT_GRAY_BUNDLE))
+        else if (item.equals(Items.LIGHT_GRAY_BUNDLE))  // 	#ffb1aca3
         {
-            return DyeColor.LIGHT_GRAY;
+            return 0xFFB1ACA3;
         }
-        else if (item.equals(Items.CYAN_BUNDLE))
+        else if (item.equals(Items.CYAN_BUNDLE))        //  #ff14b4b
         {
-            return DyeColor.CYAN;
+            return 0xFF14B4B4;
         }
-        else if (item.equals(Items.BLUE_BUNDLE))
+        else if (item.equals(Items.BLUE_BUNDLE))        //  #ff4573c7
         {
-            return DyeColor.BLUE;
+            return 0xFF4573C7;
         }
-        else if (item.equals(Items.BROWN_BUNDLE))
+        else if (item.equals(Items.BROWN_BUNDLE))       // 	#ffd18a59
         {
-            return DyeColor.BROWN;
+            return 0xFFD18A59;
         }
-        else if (item.equals(Items.GREEN_BUNDLE))
+        else if (item.equals(Items.GREEN_BUNDLE))       // 	#ff77a119
         {
-            return DyeColor.GREEN;
+            return 0xFF77A119;
         }
-        else if (item.equals(Items.RED_BUNDLE))
+        else if (item.equals(Items.RED_BUNDLE))         //	#ffd2382e
         {
-            return DyeColor.RED;
+            return 0xFFD2382E;
         }
-        else if (item.equals(Items.BLACK_BUNDLE))
+        else if (item.equals(Items.BLACK_BUNDLE))       //  #ff38364f
         {
-            return DyeColor.BLACK;
+            return 0xFF38364F;
         }
-        else if (item.equals(Items.PURPLE_BUNDLE))
+        else if (item.equals(Items.PURPLE_BUNDLE))      // 	#ff942aca
         {
-            return DyeColor.PURPLE;
+            return 0xFF942ACA;
         }
         else
         {
-            return null;
+            return 0xFFA6572C;                                // #FFA6572C
         }
     }
 
@@ -1708,6 +1701,7 @@ public class RenderUtils
         color(1f, 1f, 1f, 1f);
     }
 
+    // todo - return real colors
     public static DyeColor getVillagerColor(VillagerProfession profession)
     {
         if (profession == null) return null;
