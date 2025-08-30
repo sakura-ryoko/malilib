@@ -178,6 +178,7 @@
     "malilib.gui.label.time_format.regular": "Regular",
     "malilib.gui.label.time_format.rfc1123": "RFC1123",
     "malilib.gui.label.time_format.time_am_pm": "Time AM/PM",
+    "malilib.gui.label.time_format.time_only": "Time 24-Hour",
     "malilib.gui.label.yes": "是",
     "malilib.gui.label_colored.off": "§c關閉§r",
     "malilib.gui.label_colored.on": "§a開啟§r",
