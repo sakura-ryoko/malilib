@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.block.entity.*;
+import net.minecraft.block.spawner.TrialSpawnerData;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
@@ -336,13 +337,13 @@ public class NbtBlockUtils
         return 0;
     }
 
-	/**
-	 * Get Trial Spawner Data from NBT
-	 * @param nbt ()
-	 * @return ()
-	 */
-    public static Optional<TrialSpawnerData.Packed> getTrialSpawnerDataFromNbt(@Nonnull NbtCompound nbt)
-    {
-        return NbtUtils.readFlatMap(nbt, TrialSpawnerData.Packed.CODEC);
-    }
+//	/**
+//	 * Get Trial Spawner Data from NBT
+//	 * @param nbt ()
+//	 * @return ()
+//	 */
+//    public static Optional<TrialSpawnerData.Packed> getTrialSpawnerDataFromNbt(@Nonnull NbtCompound nbt)
+//    {
+//        return NbtUtils.readFlatMap(nbt, TrialSpawnerData.Packed.CODEC);
+//    }
 }

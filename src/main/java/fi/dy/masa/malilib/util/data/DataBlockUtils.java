@@ -30,13 +30,12 @@ import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
-import fi.dy.masa.malilib.util.nbt.NbtView;
 
 @ApiStatus.Experimental
 public class DataBlockUtils
 {
 	/**
-	 * Get the Block Entity Type from the Data Tag Tag.
+	 * Get the Block Entity Type from the Data Tag.
 	 *
 	 * @param data ()
 	 * @return ()
@@ -53,8 +52,7 @@ public class DataBlockUtils
 
 	public static @Nullable Text getCustomName(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, String key)
 	{
-		NbtView view = NbtView.getReader(data, registry);
-		return BlockEntity.tryParseCustomName(Objects.requireNonNull(view.getReader()), key);
+		return BlockEntity.tryParseCustomName(DataConverterNbt.toVanillaCompound(data.getCompound(key)), registry);
 	}
 
 	/**
@@ -319,13 +317,13 @@ public class DataBlockUtils
 		return 0;
 	}
 
-	/**
-	 * Get Trial Spawner Data from Data Tag
-	 * @param data ()
-	 * @return ()
-	 */
-	public static Optional<TrialSpawnerData.Packed> getTrialSpawnerData(@Nonnull CompoundData data)
-	{
-		return DataTypeUtils.readFlatMap(data, TrialSpawnerData.Packed.CODEC);
-	}
+//	/**
+//	 * Get Trial Spawner Data from Data Tag
+//	 * @param data ()
+//	 * @return ()
+//	 */
+//	public static Optional<TrialSpawnerData.Packed> getTrialSpawnerData(@Nonnull CompoundData data)
+//	{
+//		return DataTypeUtils.readFlatMap(data, TrialSpawnerData.Packed.CODEC);
+//	}
 }

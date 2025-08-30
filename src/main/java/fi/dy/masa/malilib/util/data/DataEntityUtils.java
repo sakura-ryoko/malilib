@@ -46,23 +46,21 @@ import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
-import fi.dy.masa.malilib.util.nbt.INbtEntityInvoker;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
-import fi.dy.masa.malilib.util.nbt.NbtView;
 
 @ApiStatus.Experimental
 public class DataEntityUtils
 {
-	/**
-	 * Attempt to Invoke a custom version of writeData() without any passenger data.
-	 * @param entity ()
-	 * @param id ()
-	 * @return ()
-	 */
-	public static CompoundData invokeEntityDataTagNoPassengers(Entity entity, final int id)
-	{
-		return ((INbtEntityInvoker) entity).malilib$getDataTagWithId(id).orElseGet(CompoundData::new);
-	}
+//	/**
+//	 * Attempt to Invoke a custom version of writeData() without any passenger data.
+//	 * @param entity ()
+//	 * @param id ()
+//	 * @return ()
+//	 */
+//	public static CompoundData invokeEntityDataTagNoPassengers(Entity entity, final int id)
+//	{
+//		return ((INbtEntityInvoker) entity).malilib$getDataTagWithId(id).orElseGet(CompoundData::new);
+//	}
 
 	/**
 	 * Get an EntityType from Data Tag.
@@ -141,9 +139,11 @@ public class DataEntityUtils
 		if (type != null && data.contains(NbtKeys.ATTRIB, Constants.NBT.TAG_LIST))
 		{
 			AttributeContainer container = new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
-			ListData list = data.getList(NbtKeys.ATTRIB);
 
-			container.unpack(EntityAttributeInstance.Packed.LIST_CODEC.parse(NbtOps.INSTANCE, DataConverterNbt.toVanillaList(list)).getPartialOrThrow());
+//			ListData list = data.getList(NbtKeys.ATTRIB);
+//			container.unpack(EntityAttributeInstance.Packed.LIST_CODEC.parse(NbtOps.INSTANCE, DataConverterNbt.toVanillaList(list)).getPartialOrThrow());
+
+			container.readNbt(DataConverterNbt.toVanillaList(data.getList(NbtKeys.ATTRIB)));
 			return container;
 		}
 
@@ -1177,8 +1177,9 @@ public class DataEntityUtils
 		if (data.containsLenient(NbtKeys.FOOD_LEVEL))
 		{
 			hunger = new HungerManager();
-			NbtView view = NbtView.getReader(data, registry);
-			hunger.readData(view.getReader());
+//			NbtView view = NbtView.getReader(data, registry);
+//			hunger.readData(view.getReader());
+			hunger.readNbt(DataConverterNbt.toVanillaCompound(data));
 		}
 
 		return hunger;
@@ -1198,37 +1199,39 @@ public class DataEntityUtils
 		{
 			book = new ServerRecipeBook(manager::forEachRecipeDisplay);
 			NbtCompound nbt = DataConverterNbt.toVanillaCompound(data.getCompoundOrDefault(NbtKeys.RECIPE_BOOK, new CompoundData()));
-			book.unpack(ServerRecipeBook.Packed.CODEC
-					            .parse(NbtOps.INSTANCE, nbt).getOrThrow(),
-			            (key) -> manager.get(key).isPresent()
-			);
+//			book.unpack(ServerRecipeBook.Packed.CODEC
+//					            .parse(NbtOps.INSTANCE, nbt).getOrThrow(),
+//			            (key) -> manager.get(key).isPresent()
+//			);
+
+			book.readNbt(nbt.getCompoundOrEmpty(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
 		}
 
 		return book;
 	}
 
-	/**
-	 * Get a Mob's Home Pos and Radius from Data Tag
-	 * @param data ()
-	 * @return ()
-	 */
-	public static Pair<BlockPos, Integer> getHomePos(@Nonnull CompoundData data)
-	{
-		BlockPos pos = BlockPos.ORIGIN;
-		int radius = -1;
-
-		if (data.containsLenient(NbtKeys.HOME_POS))
-		{
-			pos = data.getCodec(NbtKeys.HOME_POS, BlockPos.CODEC).orElse(BlockPos.ORIGIN);
-		}
-
-		if (data.contains(NbtKeys.HOME_RADIUS, Constants.NBT.TAG_INT))
-		{
-			radius = data.getInt(NbtKeys.HOME_RADIUS);
-		}
-
-		return Pair.of(pos, radius);
-	}
+//	/**
+//	 * Get a Mob's Home Pos and Radius from Data Tag
+//	 * @param data ()
+//	 * @return ()
+//	 */
+//	public static Pair<BlockPos, Integer> getHomePos(@Nonnull CompoundData data)
+//	{
+//		BlockPos pos = BlockPos.ORIGIN;
+//		int radius = -1;
+//
+//		if (data.containsLenient(NbtKeys.HOME_POS))
+//		{
+//			pos = data.getCodec(NbtKeys.HOME_POS, BlockPos.CODEC).orElse(BlockPos.ORIGIN);
+//		}
+//
+//		if (data.contains(NbtKeys.HOME_RADIUS, Constants.NBT.TAG_INT))
+//		{
+//			radius = data.getInt(NbtKeys.HOME_RADIUS);
+//		}
+//
+//		return Pair.of(pos, radius);
+//	}
 
 //	/**
 //	 * Get a Copper Golem's Weathering Data from Data Tag
