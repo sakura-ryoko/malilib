@@ -178,7 +178,6 @@
     "malilib.gui.label.time_format.regular": "Regular",
     "malilib.gui.label.time_format.rfc1123": "RFC1123",
     "malilib.gui.label.time_format.time_am_pm": "Time AM/PM",
-    "malilib.gui.label.time_format.time_only": "Time Only",
     "malilib.gui.label.yes": "sì",
     "malilib.gui.label_colored.off": "§cSPENTO§r",
     "malilib.gui.label_colored.on": "§aON§r",
