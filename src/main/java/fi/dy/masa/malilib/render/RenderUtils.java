@@ -1,19 +1,26 @@
 package fi.dy.masa.malilib.render;
 
-import java.util.*;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
-import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix3x2f;
-import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
-
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.config.HudAlignment;
+import fi.dy.masa.malilib.event.RenderEventHandler;
+import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
+import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
+import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
+import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
+import fi.dy.masa.malilib.render.element.*;
+import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.log.AnsiLogger;
+import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
+import fi.dy.masa.malilib.util.position.PositionUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -51,6 +58,7 @@ import net.minecraft.item.*;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Colors;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -59,24 +67,14 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
+import org.jetbrains.annotations.ApiStatus;
+import org.joml.Matrix3x2f;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.config.HudAlignment;
-import fi.dy.masa.malilib.event.RenderEventHandler;
-import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
-import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
-import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
-import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
-import fi.dy.masa.malilib.render.element.*;
-import fi.dy.masa.malilib.render.special.MaLiLibBlockModelGuiElementRenderer;
-import fi.dy.masa.malilib.render.special.MaLiLibBlockStateModelGuiElement;
-import fi.dy.masa.malilib.util.*;
-import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.log.AnsiLogger;
-import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
-import fi.dy.masa.malilib.util.position.PositionUtils;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.*;
 
 public class RenderUtils
 {
@@ -1882,8 +1880,7 @@ public class RenderUtils
         if (block != null && useBgColors)
         {
             // In 1.13+ there is the uncolored Shulker Box variant, which returns null from getColor()
-            final DyeColor dye = block.getColor() != null ? block.getColor() : DyeColor.PURPLE;
-            final float[] colors = getColorComponents(dye.getEntityColor());
+            final float[] colors = getColorComponents(block.getColor() != null ? block.getColor().getEntityColor() : 0xFF875F87);
             return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
         }
         else
@@ -1909,20 +1906,18 @@ public class RenderUtils
 
     public static int setBundleBackgroundTintColor(ItemStack bundle, boolean useBgColors)
     {
-        if (useBgColors)
+        if (bundle.isIn(ItemTags.BUNDLES) && useBgColors)
         {
+            // In 1.17+ there is the uncolored Bundle variant, which returns null from getColor()
             final DyeColor dye = getBundleColor(bundle);
-
-            if (dye != null)
-            {
-                final float[] colors = getColorComponents(dye.getEntityColor());
-                return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
-            }
+            final float[] colors = getColorComponents(dye != null ? dye.getEntityColor() : 0xFFA6572C);
+            return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
         }
 
         return Colors.WHITE;
     }
 
+    // todo - return real colors
     public static DyeColor getBundleColor(ItemStack bundle)
     {
         Item item = bundle.getItem();
@@ -1931,73 +1926,73 @@ public class RenderUtils
         {
             return null;
         }
-        if (item.equals(Items.WHITE_BUNDLE))
+        if (item.equals(Items.WHITE_BUNDLE))            // 	#ffe6e6e6
         {
             return DyeColor.WHITE;
         }
-        else if (item.equals(Items.ORANGE_BUNDLE))
+        else if (item.equals(Items.ORANGE_BUNDLE))      //	#fffb9320
         {
             return DyeColor.ORANGE;
         }
-        else if (item.equals(Items.MAGENTA_BUNDLE))
+        else if (item.equals(Items.MAGENTA_BUNDLE))     // 	#ffcc49b9
         {
             return DyeColor.MAGENTA;
         }
-        else if (item.equals(Items.LIGHT_BLUE_BUNDLE))
+        else if (item.equals(Items.LIGHT_BLUE_BUNDLE))  // 	#ff30afe5
         {
             return DyeColor.LIGHT_BLUE;
         }
-        else if (item.equals(Items.YELLOW_BUNDLE))
+        else if (item.equals(Items.YELLOW_BUNDLE))      //	#fff2c705
         {
             return DyeColor.YELLOW;
         }
-        else if (item.equals(Items.LIME_BUNDLE))
+        else if (item.equals(Items.LIME_BUNDLE))        // 	#ff9bdf39
         {
             return DyeColor.LIME;
         }
-        else if (item.equals(Items.PINK_BUNDLE))
+        else if (item.equals(Items.PINK_BUNDLE))        //	#fff8a6bd
         {
             return DyeColor.PINK;
         }
-        else if (item.equals(Items.GRAY_BUNDLE))
+        else if (item.equals(Items.GRAY_BUNDLE))        // 	#ff6c7b83
         {
             return DyeColor.GRAY;
         }
-        else if (item.equals(Items.LIGHT_GRAY_BUNDLE))
+        else if (item.equals(Items.LIGHT_GRAY_BUNDLE))  // 	#ffb1aca3
         {
             return DyeColor.LIGHT_GRAY;
         }
-        else if (item.equals(Items.CYAN_BUNDLE))
+        else if (item.equals(Items.CYAN_BUNDLE))        //  #ff14b4b
         {
             return DyeColor.CYAN;
         }
-        else if (item.equals(Items.BLUE_BUNDLE))
+        else if (item.equals(Items.BLUE_BUNDLE))        //  #ff4573c7
         {
             return DyeColor.BLUE;
         }
-        else if (item.equals(Items.BROWN_BUNDLE))
+        else if (item.equals(Items.BROWN_BUNDLE))       // 	#ffd18a59
         {
             return DyeColor.BROWN;
         }
-        else if (item.equals(Items.GREEN_BUNDLE))
+        else if (item.equals(Items.GREEN_BUNDLE))       // 	#ff77a119
         {
             return DyeColor.GREEN;
         }
-        else if (item.equals(Items.RED_BUNDLE))
+        else if (item.equals(Items.RED_BUNDLE))         //	#ffd2382e
         {
             return DyeColor.RED;
         }
-        else if (item.equals(Items.BLACK_BUNDLE))
+        else if (item.equals(Items.BLACK_BUNDLE))       //  #ff38364f
         {
             return DyeColor.BLACK;
         }
-        else if (item.equals(Items.PURPLE_BUNDLE))
+        else if (item.equals(Items.PURPLE_BUNDLE))      // 	#ff942aca
         {
             return DyeColor.PURPLE;
         }
         else
         {
-            return null;
+            return null;                                // #FFA6572C
         }
     }
 
@@ -2028,6 +2023,7 @@ public class RenderUtils
         return Colors.WHITE;
     }
 
+    // todo - return real colors
     public static DyeColor getVillagerColor(RegistryEntry<VillagerProfession> profession)
     {
         if (profession == null)
