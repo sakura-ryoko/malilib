@@ -19,6 +19,9 @@ public enum TimeFormat implements IConfigOptionListEntry
     FORMATTED   ("formatted",  TimeFmtType.FORMATTED,   "malilib.gui.label.time_format.formatted"),
     RFC1123     ("rfc1123",    TimeFmtType.RFC1123,     "malilib.gui.label.time_format.rfc1123"),
     TIME_ONLY   ("time_only",  TimeFmtType.TIME_ONLY,   "malilib.gui.label.time_format.time_only"),
+	TIME_AM_PM  ("time_am_pm", TimeFmtType.TIME_AM_PM,  "malilib.gui.label.time_format.time_am_pm"),
+	DAY_AM_PM   ("day_am_pm",  TimeFmtType.DAY_AM_PM,   "malilib.gui.label.time_format.day_am_pm"),
+	DATE_AM_PM  ("date_am_pm", TimeFmtType.DATE_AM_PM,  "malilib.gui.label.time_format.date_am_pm"),
     DATE_ONLY   ("date_only",  TimeFmtType.DATE_ONLY,   "malilib.gui.label.time_format.date_only"),
     ;
 
