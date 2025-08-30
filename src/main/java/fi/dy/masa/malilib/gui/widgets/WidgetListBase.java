@@ -1,12 +1,6 @@
 package fi.dy.masa.malilib.gui.widgets;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
@@ -15,7 +9,6 @@ import net.minecraft.util.math.MathHelper;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 
 public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>> extends GuiBase
@@ -72,7 +65,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         if (mouseButton == 0 && this.scrollBar.wasMouseOver())
         {
@@ -80,7 +73,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             return true;
         }
 
-        if (this.onMouseClickedSearchBar(mouseX, mouseY, mouseButton))
+        if (this.onMouseClickedSearchBar(mouseX, mouseY, mouseButton, doubleClick))
         {
             return true;
         }
@@ -107,12 +100,12 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
                         }
                     }
 
-                    return widget.onMouseClicked(mouseX, mouseY, mouseButton);
+                    return widget.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
                 }
             }
         }
 
-        return super.onMouseClicked(mouseX, mouseY, mouseButton);
+        return super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
     }
 
     @Override
@@ -152,13 +145,13 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         return false;
     }
 
-    protected boolean onMouseClickedSearchBar(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedSearchBar(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         if (this.widgetSearchBar != null)
         {
             boolean searchOpenPre = this.widgetSearchBar.isSearchOpen();
 
-            if (this.widgetSearchBar.onMouseClickedImpl(mouseX, mouseY, mouseButton))
+            if (this.widgetSearchBar.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick))
             {
                 // Toggled the search bar on or off
                 if (this.widgetSearchBar.isSearchOpen() != searchOpenPre)

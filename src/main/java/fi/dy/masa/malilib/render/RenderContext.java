@@ -723,7 +723,7 @@ public class RenderContext implements AutoCloseable
         if (RenderSystem.isOnRenderThread())
         {
             Vector4f colorMod = new Vector4f(1f, 1f, 1f, 1f);
-            Vector3f modelOffset = new Vector3f();
+            Vector3f modelOffset = new Vector3f(0f, 0f, 0f);
             Matrix4f texMatrix = new Matrix4f();
             float line = 0.0f;
 
@@ -739,7 +739,7 @@ public class RenderContext implements AutoCloseable
 
             if (useOffset)
             {
-                RenderSystem.setModelOffset(this.offset[0], this.offset[1], this.offset[2]);
+//                RenderSystem.setModelOffset(this.offset[0], this.offset[1], this.offset[2]);
                 modelOffset.set(this.offset);
             }
 
@@ -849,10 +849,10 @@ public class RenderContext implements AutoCloseable
 
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> END", this.name.get());
 
-            if (useOffset)
-            {
-                RenderSystem.resetModelOffset();
-            }
+//            if (useOffset)
+//            {
+//                RenderSystem.resetModelOffset();
+//            }
         }
     }
 

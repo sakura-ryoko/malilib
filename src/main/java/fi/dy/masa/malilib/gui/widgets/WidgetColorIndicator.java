@@ -35,7 +35,7 @@ public class WidgetColorIndicator extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         //RenderUtils.forceDraw(this.drawContext);
         //RenderUtils.depthTest(false);

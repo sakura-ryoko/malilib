@@ -123,14 +123,14 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int button)
+    public boolean onMouseClicked(int mouseX, int mouseY, int button, boolean doubleClick)
     {
-        if (this.textField.mouseClicked(mouseX, mouseY, button))
+        if (this.textField.mouseClicked(mouseX, mouseY, button, doubleClick))
         {
             return true;
         }
 
-        return super.onMouseClicked(mouseX, mouseY, button);
+        return super.onMouseClicked(mouseX, mouseY, button, doubleClick);
     }
 
     protected ButtonListener createActionListener(ButtonType type)

@@ -28,9 +28,9 @@ public class ConfigButtonLockedList extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
-        super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+        super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
 
         //RenderUtils.forceDraw(this.drawContext);
         //RenderUtils.depthTest(false);

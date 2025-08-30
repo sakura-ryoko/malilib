@@ -41,11 +41,11 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         this.clearTextFieldFocus();
 
-        return super.onMouseClicked(mouseX, mouseY, mouseButton);
+        return super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
     }
 
     @Override

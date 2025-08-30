@@ -211,7 +211,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         this.clickedElement = this.getHoveredElement(mouseX, mouseY);
 
@@ -221,7 +221,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
             this.updateColorFromMouseInput(this.clickedElement, mouseX, mouseY);
         }
 
-        return super.onMouseClicked(mouseX, mouseY, mouseButton);
+        return super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
     }
 
     @Override

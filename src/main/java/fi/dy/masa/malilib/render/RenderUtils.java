@@ -70,8 +70,6 @@ import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
 import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
-import fi.dy.masa.malilib.render.special.MaLiLibBlockModelGuiElementRenderer;
-import fi.dy.masa.malilib.render.special.MaLiLibBlockStateModelGuiElement;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
@@ -789,7 +787,7 @@ public class RenderUtils
     {
         if (texture != null)
         {
-            Sprite sprite = mc().getSpriteAtlas(atlas).apply(texture);
+            Sprite sprite = mc().getAtlasManager().getAtlasTexture(atlas).getSprite(texture);
 
             if (sprite != null)
             {

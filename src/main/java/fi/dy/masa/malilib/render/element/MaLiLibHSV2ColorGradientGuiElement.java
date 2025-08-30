@@ -29,7 +29,7 @@ public record MaLiLibHSV2ColorGradientGuiElement(
     }
 
     @Override
-    public void setupVertices(VertexConsumer vertices, float depth)
+    public void setupVertices(VertexConsumer vertices)
     {
         int a1 = ((this.colorStart() >>> 24) & 0xFF);
         int r1 = ((this.colorStart() >>> 16) & 0xFF);
@@ -40,10 +40,10 @@ public record MaLiLibHSV2ColorGradientGuiElement(
         int g2 = ((this.colorEnd() >>>  8) & 0xFF);
         int b2 = (this.colorEnd()          & 0xFF);
 
-        vertices.vertex(this.pose(), this.x1(), this.y1(), depth).color(r1, g1, b1, a1);
-        vertices.vertex(this.pose(), this.x1(), this.y2(), depth).color(r1, g1, b1, a1);
-        vertices.vertex(this.pose(), this.x2(), this.y2(), depth).color(r2, g2, b2, a2);
-        vertices.vertex(this.pose(), this.x2(), this.y1(), depth).color(r2, g2, b2, a2);
+        vertices.vertex(this.pose(), this.x1(), this.y1()).color(r1, g1, b1, a1);
+        vertices.vertex(this.pose(), this.x1(), this.y2()).color(r1, g1, b1, a1);
+        vertices.vertex(this.pose(), this.x2(), this.y2()).color(r2, g2, b2, a2);
+        vertices.vertex(this.pose(), this.x2(), this.y1()).color(r2, g2, b2, a2);
     }
 
     @Nullable

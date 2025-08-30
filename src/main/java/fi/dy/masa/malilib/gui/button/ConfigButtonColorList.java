@@ -1,15 +1,14 @@
 package fi.dy.masa.malilib.gui.button;
 
+import javax.annotation.Nullable;
+
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiColorListEdit;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-
-import javax.annotation.Nullable;
 
 public class ConfigButtonColorList extends ButtonGeneric
 {
@@ -30,9 +29,9 @@ public class ConfigButtonColorList extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
-        super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+        super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
 
         //RenderUtils.forceDraw(this.drawContext);
         //RenderUtils.depthTest(false);

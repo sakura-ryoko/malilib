@@ -131,7 +131,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         if (this.isOpen && mouseY > this.y + this.height)
         {

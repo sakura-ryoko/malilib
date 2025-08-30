@@ -236,9 +236,9 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
-        if (super.onMouseClicked(mouseX, mouseY, mouseButton))
+        if (super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
         {
             return true;
         }

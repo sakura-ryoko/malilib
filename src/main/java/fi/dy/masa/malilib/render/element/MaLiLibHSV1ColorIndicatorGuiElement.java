@@ -31,12 +31,12 @@ public record MaLiLibHSV1ColorIndicatorGuiElement(
     }
 
     @Override
-    public void setupVertices(VertexConsumer vertices, float depth)
+    public void setupVertices(VertexConsumer vertices)
     {
-        vertices.vertex(this.pose(), this.x1(), this.y1(), depth).color(this.r(), this.g(), this.b(), this.a());
-        vertices.vertex(this.pose(), this.x1(), this.y2(), depth).color(this.r(), this.g(), this.b(), this.a());
-        vertices.vertex(this.pose(), this.x2(), this.y2(), depth).color(this.r(), this.g(), this.b(), this.a());
-        vertices.vertex(this.pose(), this.x2(), this.y1(), depth).color(this.r(), this.g(), this.b(), this.a());
+        vertices.vertex(this.pose(), this.x1(), this.y1()).color(this.r(), this.g(), this.b(), this.a());
+        vertices.vertex(this.pose(), this.x1(), this.y2()).color(this.r(), this.g(), this.b(), this.a());
+        vertices.vertex(this.pose(), this.x2(), this.y2()).color(this.r(), this.g(), this.b(), this.a());
+        vertices.vertex(this.pose(), this.x2(), this.y1()).color(this.r(), this.g(), this.b(), this.a());
     }
 
     @Nullable

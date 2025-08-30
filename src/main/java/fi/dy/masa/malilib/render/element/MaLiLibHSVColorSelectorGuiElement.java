@@ -29,7 +29,7 @@ public record MaLiLibHSVColorSelectorGuiElement(
     }
 
     @Override
-    public void setupVertices(VertexConsumer vertices, float depth)
+    public void setupVertices(VertexConsumer vertices)
     {
         int x2 = this.xs() + this.w();
 
@@ -46,8 +46,8 @@ public record MaLiLibHSVColorSelectorGuiElement(
             int b2 = ( color2         & 0xFF);
             int a = 255;
 
-            vertices.vertex(this.pose(), this.xs(), y, depth).color(r1, g1, b1, a);
-            vertices.vertex(this.pose(), x2, y, depth).color(r2, g2, b2, a);
+            vertices.vertex(this.pose(), this.xs(), y).color(r1, g1, b1, a);
+            vertices.vertex(this.pose(), x2, y).color(r2, g2, b2, a);
         }
     }
 

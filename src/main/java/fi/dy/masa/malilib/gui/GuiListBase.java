@@ -87,14 +87,14 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
-        if (super.onMouseClicked(mouseX, mouseY, mouseButton))
+        if (super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
         {
             return true;
         }
 
-        return this.getListWidget() != null && this.getListWidget().onMouseClicked(mouseX, mouseY, mouseButton);
+        return this.getListWidget() != null && this.getListWidget().onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
     }
 
     @Override

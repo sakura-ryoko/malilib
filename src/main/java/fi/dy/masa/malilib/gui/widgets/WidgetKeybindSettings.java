@@ -41,7 +41,7 @@ public class WidgetKeybindSettings extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         if (mouseButton == 0)
         {

@@ -76,7 +76,7 @@ public abstract class ButtonBase extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         this.mc.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 
@@ -92,7 +92,7 @@ public abstract class ButtonBase extends WidgetBase
     public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
     {
         int mouseButton = verticalAmount < 0 ? 1 : 0;
-        return this.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+        return this.onMouseClickedImpl(mouseX, mouseY, mouseButton, false);
     }
 
     @Override

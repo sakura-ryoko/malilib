@@ -7,6 +7,7 @@ import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,8 +24,8 @@ public class MixinGameRenderer
     @Shadow @Final private GuiRenderer guiRenderer;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void malilib_injectSpecialGuiRenderer(MinecraftClient client, HeldItemRenderer firstPersonHeldItemRenderer, BufferBuilderStorage buffers, CallbackInfo ci,
-                                                  @Local VertexConsumerProvider.Immediate immediate)
+    private void malilib_injectSpecialGuiRenderer(MinecraftClient client, HeldItemRenderer firstPersonHeldItemRenderer, BufferBuilderStorage buffers, BlockRenderManager blockRenderManager, CallbackInfo ci,
+												  @Local VertexConsumerProvider.Immediate immediate)
     {
         RenderUtils.registerSpecialGuiRenderers(this.guiRenderer, immediate, client);
     }

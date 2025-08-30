@@ -31,7 +31,7 @@ public record MaLiLibHSV2ColorSegmentedHueGuiElement(
     }
 
     @Override
-    public void setupVertices(VertexConsumer vertices, float depth)
+    public void setupVertices(VertexConsumer vertices)
     {
         int r1 = ((this.color1() >>> 16) & 0xFF);
         int g1 = ((this.color1() >>>  8) & 0xFF);
@@ -41,10 +41,10 @@ public record MaLiLibHSV2ColorSegmentedHueGuiElement(
         int b2 = ( this.color2()         & 0xFF);
         int a = 255;
 
-        vertices.vertex(this.pose(), this.x(), this.y() + this.sh(), depth).color(r1, g1, b1, a);
-        vertices.vertex(this.pose(), this.x() + this.w(), this.y() + this.h() + this.sh(), depth).color(r1, g1, b1, a);
-        vertices.vertex(this.pose(), this.x() + this.w() + this.sw(), this.y() + this.h(), depth).color(r2, g2, b2, a);
-        vertices.vertex(this.pose(), this.x() + this.sw(), this.y(), depth).color(r2, g2, b2, a);
+        vertices.vertex(this.pose(), this.x(), this.y() + this.sh()).color(r1, g1, b1, a);
+        vertices.vertex(this.pose(), this.x() + this.w(), this.y() + this.h() + this.sh()).color(r1, g1, b1, a);
+        vertices.vertex(this.pose(), this.x() + this.w() + this.sw(), this.y() + this.h()).color(r2, g2, b2, a);
+        vertices.vertex(this.pose(), this.x() + this.sw(), this.y()).color(r2, g2, b2, a);
     }
 
     @Nullable

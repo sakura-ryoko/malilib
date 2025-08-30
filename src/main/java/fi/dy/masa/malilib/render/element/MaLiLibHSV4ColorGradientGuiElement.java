@@ -28,12 +28,12 @@ public record MaLiLibHSV4ColorGradientGuiElement(
     }
 
     @Override
-    public void setupVertices(VertexConsumer vertices, float depth)
+    public void setupVertices(VertexConsumer vertices)
     {
-        vertices.vertex(this.pose(), this.x1(), this.y1(), depth).color(this.colorPair()[0]);
-        vertices.vertex(this.pose(), this.x1(), this.y2(), depth).color(this.colorPair()[1]);
-        vertices.vertex(this.pose(), this.x2(), this.y2(), depth).color(this.colorPair()[2]);
-        vertices.vertex(this.pose(), this.x2(), this.y1(), depth).color(this.colorPair()[3]);
+        vertices.vertex(this.pose(), this.x1(), this.y1()).color(this.colorPair()[0]);
+        vertices.vertex(this.pose(), this.x1(), this.y2()).color(this.colorPair()[1]);
+        vertices.vertex(this.pose(), this.x2(), this.y2()).color(this.colorPair()[2]);
+        vertices.vertex(this.pose(), this.x2(), this.y1()).color(this.colorPair()[3]);
     }
 
     @Nullable

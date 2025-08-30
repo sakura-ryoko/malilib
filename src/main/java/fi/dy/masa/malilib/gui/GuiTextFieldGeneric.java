@@ -28,9 +28,9 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton, boolean doubleClick)
     {
-        boolean ret = super.mouseClicked(mouseX, mouseY, mouseButton);
+        boolean ret = super.mouseClicked(mouseX, mouseY, mouseButton, doubleClick);
 
         if (this.isMouseOver((int) mouseX, (int) mouseY))
         {
@@ -248,8 +248,8 @@ public class GuiTextFieldGeneric extends TextFieldWidget
      * @param mouseButton ()
      * @return ()
      */
-    public boolean mouseClickedWrapper(double mouseX, double mouseY, int mouseButton)
+    public boolean mouseClickedWrapper(double mouseX, double mouseY, int mouseButton, boolean doubleClick)
     {
-        return this.mouseClicked(mouseX, mouseY, mouseButton);
+        return this.mouseClicked(mouseX, mouseY, mouseButton, doubleClick);
     }
 }

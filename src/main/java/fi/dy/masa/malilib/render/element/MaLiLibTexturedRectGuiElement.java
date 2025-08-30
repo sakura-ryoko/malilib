@@ -30,14 +30,14 @@ public record MaLiLibTexturedRectGuiElement(
     }
 
     @Override
-    public void setupVertices(VertexConsumer vertices, float depth)
+    public void setupVertices(VertexConsumer vertices)
     {
         float pixelWidth = 0.00390625F;
 
-        vertices.vertex(this.pose(), this.x(), this.y() + this.height(), depth).texture(this.u() * pixelWidth, (this.v() + this.height()) * pixelWidth).color(this.argb());
-        vertices.vertex(this.pose(), this.x() + this.width(), this.y() + this.height(), depth).texture((this.u() + this.width()) * pixelWidth, (this.v() + this.height()) * pixelWidth).color(this.argb());
-        vertices.vertex(this.pose(), this.x() + this.width(), this.y(), depth).texture((this.u() + this.width()) * pixelWidth, this.v() * pixelWidth).color(this.argb());
-        vertices.vertex(this.pose(), this.x(), this.y(), depth).texture(this.u() * pixelWidth, this.v() * pixelWidth).color(this.argb());
+        vertices.vertex(this.pose(), this.x(), this.y() + this.height()).texture(this.u() * pixelWidth, (this.v() + this.height()) * pixelWidth).color(this.argb());
+        vertices.vertex(this.pose(), this.x() + this.width(), this.y() + this.height()).texture((this.u() + this.width()) * pixelWidth, (this.v() + this.height()) * pixelWidth).color(this.argb());
+        vertices.vertex(this.pose(), this.x() + this.width(), this.y()).texture((this.u() + this.width()) * pixelWidth, this.v() * pixelWidth).color(this.argb());
+        vertices.vertex(this.pose(), this.x(), this.y()).texture(this.u() * pixelWidth, this.v() * pixelWidth).color(this.argb());
     }
 
     @Nullable

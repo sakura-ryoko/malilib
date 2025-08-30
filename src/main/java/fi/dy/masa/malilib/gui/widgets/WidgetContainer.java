@@ -52,7 +52,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         boolean handled = false;
 
@@ -62,7 +62,7 @@ public abstract class WidgetContainer extends WidgetBase
             {
                 for (WidgetBase widget : this.subWidgets)
                 {
-                    if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton))
+                    if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
                     {
                         // Don't call super if the button press got handled
                         handled = true;
@@ -72,7 +72,7 @@ public abstract class WidgetContainer extends WidgetBase
 
             if (handled == false)
             {
-                handled = this.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+                handled = this.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
             }
         }
 

@@ -254,11 +254,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton)
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton, boolean doubleClick)
     {
-        if (this.onMouseClicked((int) mouseX, (int) mouseY, mouseButton) == false)
+        if (this.onMouseClicked((int) mouseX, (int) mouseY, mouseButton, doubleClick) == false)
         {
-            return super.mouseClicked(mouseX, mouseY, mouseButton);
+            return super.mouseClicked(mouseX, mouseY, mouseButton, doubleClick);
         }
 
         return false;
@@ -310,11 +310,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return super.charTyped(charIn, modifiers);
     }
 
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         for (ButtonBase button : this.buttons)
         {
-            if (button.onMouseClicked(mouseX, mouseY, mouseButton))
+            if (button.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
             {
                 // Don't call super if the button press got handled
                 return true;
@@ -325,7 +325,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         for (TextFieldWrapper<?> entry : this.textFields)
         {
-            if (entry.mouseClicked(mouseX, mouseY, mouseButton))
+            if (entry.mouseClicked(mouseX, mouseY, mouseButton, doubleClick))
             {
                 // Don't call super if the button press got handled
                 handled = true;
@@ -336,7 +336,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
-                if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton))
+                if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
                 {
                     // Don't call super if the button press got handled
                     handled = true;

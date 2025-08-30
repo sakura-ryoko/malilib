@@ -16,6 +16,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
@@ -25,7 +26,7 @@ import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.BundleContentsComponent;
 import net.minecraft.component.type.ContainerComponent;
-import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.TypedEntityData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.*;
 import net.minecraft.item.BlockItem;
@@ -1362,11 +1363,11 @@ public class InventoryUtils
     {
         if (stack.contains(DataComponentTypes.BLOCK_ENTITY_DATA))
         {
-            NbtComponent component = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
+            TypedEntityData<BlockEntityType<?>> component = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
 
             if (component != null)
             {
-                return component.copyNbt();
+                return component.copyNbtWithoutId();
             }
         }
 

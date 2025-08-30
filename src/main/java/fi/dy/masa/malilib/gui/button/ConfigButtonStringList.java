@@ -1,12 +1,12 @@
 package fi.dy.masa.malilib.gui.button;
 
 import javax.annotation.Nullable;
+
 import fi.dy.masa.malilib.config.IConfigStringList;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiStringListEdit;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -28,9 +28,9 @@ public class ConfigButtonStringList extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
-        super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+        super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
 
         //RenderUtils.forceDraw(this.drawContext);
         //RenderUtils.depthTest(false);

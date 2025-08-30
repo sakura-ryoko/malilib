@@ -28,7 +28,7 @@ public record MaLiLibHSVColorVerticalBarMarkerGuiElement(
     }
 
     @Override
-    public void setupVertices(VertexConsumer vertices, float depth)
+    public void setupVertices(VertexConsumer vertices)
     {
         int xAdj = this.x();
         int yAdj = this.y();
@@ -39,17 +39,17 @@ public record MaLiLibHSVColorVerticalBarMarkerGuiElement(
         int s = 2;
         int c = 255;
 
-        vertices.vertex(this.pose(), xAdj - s, yAdj - s, depth).color(c, c, c, c);
-        vertices.vertex(this.pose(), xAdj - s, yAdj + s, depth).color(c, c, c, c);
-        vertices.vertex(this.pose(), xAdj + s, yAdj, depth).color(c, c, c, c);
-        vertices.vertex(this.pose(), xAdj + s, yAdj, depth).color(c, c, c, c);
+        vertices.vertex(this.pose(), xAdj - s, yAdj - s).color(c, c, c, c);
+        vertices.vertex(this.pose(), xAdj - s, yAdj + s).color(c, c, c, c);
+        vertices.vertex(this.pose(), xAdj + s, yAdj).color(c, c, c, c);
+        vertices.vertex(this.pose(), xAdj + s, yAdj).color(c, c, c, c);
 
         xAdj += (bwAdj);
 
-        vertices.vertex(this.pose(), xAdj + s, yAdj - s, depth).color(c, c, c, c);
-        vertices.vertex(this.pose(), xAdj - s, yAdj, depth).color(c, c, c, c);
-        vertices.vertex(this.pose(), xAdj - s, yAdj, depth).color(c, c, c, c);
-        vertices.vertex(this.pose(), xAdj + s, yAdj + s, depth).color(c, c, c, c);
+        vertices.vertex(this.pose(), xAdj + s, yAdj - s).color(c, c, c, c);
+        vertices.vertex(this.pose(), xAdj - s, yAdj).color(c, c, c, c);
+        vertices.vertex(this.pose(), xAdj - s, yAdj).color(c, c, c, c);
+        vertices.vertex(this.pose(), xAdj + s, yAdj + s).color(c, c, c, c);
     }
 
     @Nullable

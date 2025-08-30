@@ -64,9 +64,9 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 //        }
 //    }
 
-    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
-        if (this.textField.mouseClicked(mouseX, mouseY, mouseButton))
+        if (this.textField.mouseClicked(mouseX, mouseY, mouseButton, doubleClick))
         {
             return true;
         }

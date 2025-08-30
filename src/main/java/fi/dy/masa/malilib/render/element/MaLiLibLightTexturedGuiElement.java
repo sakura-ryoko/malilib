@@ -33,12 +33,12 @@ public record MaLiLibLightTexturedGuiElement(
     }
 
     @Override
-    public void setupVertices(VertexConsumer vertices, float depth)
+    public void setupVertices(VertexConsumer vertices)
     {
-        vertices.vertex(this.pose(), (float)this.x1(), (float)this.y2(), depth).texture(this.u1(), this.v2()).color(this.color()).light(this.light());
-        vertices.vertex(this.pose(), (float)this.x2(), (float)this.y2(), depth).texture(this.u2(), this.v2()).color(this.color()).light(this.light());
-        vertices.vertex(this.pose(), (float)this.x2(), (float)this.y1(), depth).texture(this.u2(), this.v1()).color(this.color()).light(this.light());
-        vertices.vertex(this.pose(), (float)this.x1(), (float)this.y1(), depth).texture(this.u1(), this.v1()).color(this.color()).light(this.light());
+        vertices.vertex(this.pose(), (float)this.x1(), (float)this.y2()).texture(this.u1(), this.v2()).color(this.color()).light(this.light());
+        vertices.vertex(this.pose(), (float)this.x2(), (float)this.y2()).texture(this.u2(), this.v2()).color(this.color()).light(this.light());
+        vertices.vertex(this.pose(), (float)this.x2(), (float)this.y1()).texture(this.u2(), this.v1()).color(this.color()).light(this.light());
+        vertices.vertex(this.pose(), (float)this.x1(), (float)this.y1()).texture(this.u1(), this.v1()).color(this.color()).light(this.light());
     }
 
     @Nullable

@@ -28,16 +28,10 @@ import fi.dy.masa.malilib.render.MaLiLibPipelines;
 public abstract class MixinRenderPipelines
 {
     @Shadow @Final public static Map<Identifier, RenderPipeline> PIPELINES;
-//    @Shadow @Final private static RenderPipeline.Snippet MATRICES_SNIPPET;                       // MATRICES --> TRANSFORMS_AND_PROJECTION_SNIPPET
-//    @Shadow @Final private static RenderPipeline.Snippet FOG_NO_COLOR_SNIPPET;                   // FOG_NO_COLOR --> TRANSFORMS_PROJECTION_FOG_SNIPPET
-//    @Shadow @Final private static RenderPipeline.Snippet MATRICES_COLOR_SNIPPET;                 // MATRICES_COLOR --> TRANSFORMS_AND_PROJECTION_SNIPPET
-//    @Shadow @Final private static RenderPipeline.Snippet MATRICES_COLOR_FOG_SNIPPET;             // MATRICES_COLOR_FOG --> TRANSFORMS_PROJECTION_FOG_SNIPPET
-//    @Shadow @Final private static RenderPipeline.Snippet MATRICES_COLOR_FOG_OFFSET_SNIPPET;      // MATRICES_COLOR_FOG_OFFSET
-//    @Shadow @Final private static RenderPipeline.Snippet MATRICES_COLOR_FOG_LIGHT_DIR_SNIPPET;   // MATRICES_COLOR_FOG_LIGHT_DIR --> TRANSFORMS_PROJECTION_FOG_LIGHTING_SNIPPET
 
     @Shadow @Final public static RenderPipeline.Snippet TRANSFORMS_AND_PROJECTION_SNIPPET;          // TRANSFORMS_AND_PROJECTION_SNIPPET
+	@Shadow @Final public static RenderPipeline.Snippet FOG_SNIPPET;                                // FOG
     @Shadow @Final public static RenderPipeline.Snippet GLOBALS_SNIPPET;                            // GLOBALS_SNIPPET
-    @Shadow @Final public static RenderPipeline.Snippet FOG_SNIPPET;                                // FOG
     @Shadow @Final public static RenderPipeline.Snippet TRANSFORMS_PROJECTION_FOG_SNIPPET;          // TRANSFORMS_PROJECTION_FOG_SNIPPET
     @Shadow @Final public static RenderPipeline.Snippet TRANSFORMS_PROJECTION_FOG_LIGHTING_SNIPPET; // TRANSFORMS_PROJECTION_FOG_LIGHTING_SNIPPET
     @Shadow @Final public static RenderPipeline.Snippet TERRAIN_SNIPPET;                            // TERRAIN
@@ -53,6 +47,7 @@ public abstract class MixinRenderPipelines
     @Shadow @Final public static RenderPipeline.Snippet WEATHER_SNIPPET;                            // WEATHER
     @Shadow @Final public static RenderPipeline.Snippet GUI_SNIPPET;                                // GUI
     @Shadow @Final public static RenderPipeline.Snippet POSITION_TEX_COLOR_SNIPPET;                 // GUI_TEXTURED
+	@Shadow @Final public static RenderPipeline.Snippet field_61743;                 // GUI_TEXT (?)
     @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_OUTLINE_SNIPPET;                 // RENDERTYPE_OUTLINE
     @Shadow @Final public static RenderPipeline.Snippet POST_EFFECT_PROCESSOR_SNIPPET;              // POST_PROCESSOR
 

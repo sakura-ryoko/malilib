@@ -29,7 +29,7 @@ public record MaLiLibGradientRectGuiElement(
     }
 
     @Override
-    public void setupVertices(VertexConsumer vertices, float depth)
+    public void setupVertices(VertexConsumer vertices)
     {
         int sa = (this.startColor() >> 24 & 0xFF);
         int sr = (this.startColor() >> 16 & 0xFF);
@@ -41,10 +41,10 @@ public record MaLiLibGradientRectGuiElement(
         int eg = (this.endColor() >> 8 & 0xFF);
         int eb = (this.endColor() & 0xFF);
 
-        vertices.vertex(this.pose(), this.right(), this.top(),    depth).color(sr, sg, sb, sa);
-        vertices.vertex(this.pose(), this.left(),  this.top(),    depth).color(sr, sg, sb, sa);
-        vertices.vertex(this.pose(), this.left(),  this.bottom(), depth).color(er, eg, eb, ea);
-        vertices.vertex(this.pose(), this.right(), this.bottom(), depth).color(er, eg, eb, ea);
+        vertices.vertex(this.pose(), this.right(), this.top()).color(sr, sg, sb, sa);
+        vertices.vertex(this.pose(), this.left(),  this.top()).color(sr, sg, sb, sa);
+        vertices.vertex(this.pose(), this.left(),  this.bottom()).color(er, eg, eb, ea);
+        vertices.vertex(this.pose(), this.right(), this.bottom()).color(er, eg, eb, ea);
     }
 
     @Nullable

@@ -68,9 +68,9 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
-        if (super.onMouseClickedImpl(mouseX, mouseY, mouseButton))
+        if (super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick))
         {
             return true;
         }
@@ -79,14 +79,14 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
 
         if (this.textField != null)
         {
-            ret |= this.textField.getTextField().mouseClicked(mouseX, mouseY, mouseButton);
+            ret |= this.textField.getTextField().mouseClicked(mouseX, mouseY, mouseButton, doubleClick);
         }
 
         if (this.subWidgets.isEmpty() == false)
         {
             for (WidgetBase widget : this.subWidgets)
             {
-                ret |= widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton);
+                ret |= widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
             }
         }
 

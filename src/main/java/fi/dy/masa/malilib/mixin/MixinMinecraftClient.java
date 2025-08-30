@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
-import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.resource.ResourcePackManager;
@@ -51,7 +50,8 @@ public abstract class MixinMinecraftClient
         ((InitializationHandler) InitializationHandler.getInstance()).onGameInitDone();
     }
 
-    @Inject(method = "startIntegratedServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/UserCache;setUseRemote(Z)V",
+    @Inject(method = "startIntegratedServer",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/ChunkLoadProgress;compose(Lnet/minecraft/world/chunk/ChunkLoadProgress;Lnet/minecraft/world/chunk/ChunkLoadProgress;)Lnet/minecraft/world/chunk/ChunkLoadProgress;",
             shift = At.Shift.BEFORE))
     private void malilib_onStartIntegratedServer(LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, boolean newWorld, CallbackInfo ci)
     {
@@ -66,8 +66,8 @@ public abstract class MixinMinecraftClient
         TickHandler.getInstance().onClientTick((MinecraftClient)(Object) this);
     }
 
-    @Inject(method = "joinWorld(Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/client/gui/screen/DownloadingTerrainScreen$WorldEntryReason;)V", at = @At("HEAD"))
-    private void onLoadWorldPre(ClientWorld worldClientIn, DownloadingTerrainScreen.WorldEntryReason worldEntryReason, CallbackInfo ci)
+    @Inject(method = "joinWorld", at = @At("HEAD"))
+    private void onLoadWorldPre(ClientWorld worldClientIn, CallbackInfo ci)
     {
         // Only handle dimension changes/respawns here.
         // The initial join is handled in MixinClientPlayNetworkHandler onGameJoin
@@ -80,8 +80,8 @@ public abstract class MixinMinecraftClient
         }
     }
 
-    @Inject(method = "joinWorld(Lnet/minecraft/client/world/ClientWorld;Lnet/minecraft/client/gui/screen/DownloadingTerrainScreen$WorldEntryReason;)V", at = @At("RETURN"))
-    private void onLoadWorldPost(ClientWorld worldClientIn, DownloadingTerrainScreen.WorldEntryReason worldEntryReason, CallbackInfo ci)
+    @Inject(method = "joinWorld", at = @At("RETURN"))
+    private void onLoadWorldPost(ClientWorld worldClientIn, CallbackInfo ci)
     {
         //MaLiLib.logger.error("MC#onLoadWorldPost(): world [{}], worldBefore [{}], worldClientIn [{}]", this.world != null, this.worldBefore != null, worldClientIn != null);
         if (this.worldBefore != null)

@@ -82,7 +82,7 @@ public class WidgetCheckBox extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         this.setChecked(! this.checked);
         return true;

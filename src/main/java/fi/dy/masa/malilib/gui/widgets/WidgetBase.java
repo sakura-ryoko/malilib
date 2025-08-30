@@ -87,17 +87,17 @@ public abstract class WidgetBase
                mouseY >= this.y && mouseY < this.y + this.height;
     }
 
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         if (this.isMouseOver(mouseX, mouseY))
         {
-            return this.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+            return this.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
         }
 
         return false;
     }
 
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
     {
         return false;
     }
