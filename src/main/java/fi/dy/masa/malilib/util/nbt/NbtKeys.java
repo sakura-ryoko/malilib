@@ -155,8 +155,10 @@ public class NbtKeys
     public static final String ABILITIES           = "abilities";           // PlayerEntity
     public static final String LEFT_SHOULDER       = "ShoulderEntityLeft";
     public static final String RIGHT_SHOULDER      = "ShoulderEntityRight";
+	public static final String NEXT_WEATHER_AGE	   = "next_weather_age";
+	public static final String WEATHER_STATE	   = "weather_state";
 
-    // Other/Outdated Tags (There are tons more not listed)
+	// Other/Outdated Tags (There are tons more not listed)
     public static final String OLD_ID              = "Id";
     // 24w09a (Data Components)
     public static final String OLD_TAGS            = "tags";

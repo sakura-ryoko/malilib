@@ -104,6 +104,10 @@ public class InventoryOverlayScreen extends Screen implements Drawable
                 armourItems.add(this.previewData.entity().getEquippedStack(EquipmentSlot.BODY));
                 //armourItems.add(ItemStack.EMPTY);
             }
+			else if (this.previewData.entity() instanceof CopperGolemEntity)
+			{
+				armourItems.add(this.previewData.entity().getEquippedStack(EquipmentSlot.SADDLE));
+			}
 
             final InventoryOverlay.InventoryRenderType type = (this.previewData.entity() instanceof VillagerEntity) ? InventoryOverlay.InventoryRenderType.VILLAGER : InventoryOverlay.getBestInventoryType(this.previewData.inv(), this.previewData.nbt() != null ? this.previewData.nbt() : new NbtCompound(), this.previewData);
             final InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, totalSlots);

@@ -10,6 +10,7 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
+import net.minecraft.block.Oxidizable;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
@@ -1276,4 +1277,22 @@ public class NbtEntityUtils
 
         return Pair.of(pos, radius);
     }
+
+	public static Pair<Oxidizable.OxidationLevel, Long> getWeatheringDataFromNbt(@Nonnull NbtCompound nbt)
+	{
+		Oxidizable.OxidationLevel level = Oxidizable.OxidationLevel.UNAFFECTED;
+		long age = -1L;
+
+		if (nbt.contains(NbtKeys.WEATHER_STATE))
+		{
+			level = nbt.get(NbtKeys.WEATHER_STATE, Oxidizable.OxidationLevel.CODEC).orElse(Oxidizable.OxidationLevel.UNAFFECTED);
+		}
+
+		if (nbt.contains(NbtKeys.NEXT_WEATHER_AGE))
+		{
+			age = nbt.getLong(NbtKeys.NEXT_WEATHER_AGE, -1L);
+		}
+
+		return Pair.of(level, age);
+	}
 }

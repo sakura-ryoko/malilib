@@ -26,6 +26,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.CopperGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -324,7 +325,7 @@ public class InventoryOverlay
         {
             renderLlamaArmorBackgroundSlots(drawContext, inv, x, y);
         }
-        else if (type == InventoryRenderType.WOLF || type == InventoryRenderType.HAPPY_GHAST)
+        else if (type == InventoryRenderType.WOLF || type == InventoryRenderType.HAPPY_GHAST || type == InventoryRenderType.COPPER_GOLEM)
         {
             renderWolfArmorBackgroundSlots(drawContext, inv, x, y);
         }
@@ -516,6 +517,10 @@ public class InventoryOverlay
             {
                 return InventoryRenderType.WOLF;
             }
+			else if (inventory.malilib$getEntityOwner() instanceof CopperGolemEntity)
+			{
+				return InventoryRenderType.COPPER_GOLEM;
+			}
             else if (inventory.malilib$getEntityOwner() instanceof AbstractHorseEntity)
             {
                 return InventoryRenderType.HORSE;
@@ -708,6 +713,10 @@ public class InventoryOverlay
             {
                 return InventoryRenderType.HAPPY_GHAST;
             }
+			else if (entityType.equals(EntityType.COPPER_GOLEM))
+			{
+				return InventoryRenderType.COPPER_GOLEM;
+			}
             else if (entityType.equals(EntityType.VILLAGER) ||
                      entityType.equals(EntityType.ALLAY) ||
                      entityType.equals(EntityType.PILLAGER) ||
@@ -834,7 +843,7 @@ public class InventoryOverlay
             INV_PROPS_TEMP.width = 68;
             INV_PROPS_TEMP.height = 68;
         }
-        else if (type == InventoryRenderType.HORSE || type == InventoryRenderType.LLAMA || type == InventoryRenderType.WOLF)
+        else if (type == InventoryRenderType.HORSE || type == InventoryRenderType.LLAMA || type == InventoryRenderType.WOLF || type == InventoryRenderType.COPPER_GOLEM)
         {
             INV_PROPS_TEMP.slotsPerRow = Math.max(1, totalSlots / 3);
             INV_PROPS_TEMP.slotOffsetX = 8;
@@ -1305,6 +1314,7 @@ public class InventoryOverlay
         LLAMA,
         WOLF,
         HAPPY_GHAST,
+		COPPER_GOLEM,
         FIXED_27,
         FIXED_54,
         VILLAGER,

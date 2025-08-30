@@ -25,9 +25,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
@@ -487,7 +485,7 @@ public class TestRenderHandler implements IRenderer
 
         //MaLiLib.logger.error("render: ctx-type [{}], inv [{}], raw Nbt [{}]", context.type().toString(), inv != null ? inv.size() : "null", nbt.isEmpty() ? "empty" : nbt.toString());
 
-        final boolean isWolf = (entityLivingBase instanceof WolfEntity);
+        final boolean isWolf = (entityLivingBase instanceof WolfEntity) || (entityLivingBase instanceof HappyGhastEntity) || (entityLivingBase instanceof CopperGolemEntity);
         final int xCenter = GuiUtils.getScaledWindowWidth() / 2;
         final int yCenter = GuiUtils.getScaledWindowHeight() / 2;
         int x = xCenter - 52 / 2;
@@ -575,7 +573,7 @@ public class TestRenderHandler implements IRenderer
 
         if (isWolf)
         {
-            InventoryOverlay.InventoryRenderType type = InventoryOverlay.InventoryRenderType.HORSE;
+            InventoryOverlay.InventoryRenderType type = InventoryOverlay.InventoryRenderType.WOLF;
             final InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, 2);
             final int rows = (int) Math.ceil((double) 2 / props.slotsPerRow);
             int xInv;
