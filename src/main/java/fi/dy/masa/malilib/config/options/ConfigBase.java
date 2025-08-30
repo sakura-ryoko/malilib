@@ -215,13 +215,18 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
     {
         if (CONFIG_TYPE_DEBUG || (MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG != null && MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG.getBooleanValue()))
         {
-            MaLiLib.LOGGER.info("CONFIG: type [{}], element [{}], oldStr [{}], newStr [{}]", type.name(), element, oldStr, newStr);
+            MaLiLib.LOGGER.info("CONFIG: type [{}], element [{}], oldStr [{}], newStr [{}]", type != null ? type.name() : "<NUL>", element, oldStr, newStr);
         }
     }
 
     @Override
     public String toString()
     {
-        return "ConfigBase{type=['"+this.type.name()+"'], name=['"+this.name+"'],prettyName=['"+this.prettyName+"'], translatedName=['"+this.translatedName+"'], translationPrefix=['"+this.translationPrefix+"'],comment=['"+this.comment+"']";
+        return "ConfigBase{type=['"+this.type != null ? this.type.name() : "<NUL>"+"'],"+
+		        "name=['"+this.name+"'],"+
+		        "prettyName=['"+this.prettyName+"'],"+
+		        "translatedName=['"+this.translatedName+"'],"+
+		        "translationPrefix=['"+this.translationPrefix+"'],"+
+		        "comment=['"+this.comment+"']";
     }
 }

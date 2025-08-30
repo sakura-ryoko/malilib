@@ -1,14 +1,23 @@
 package fi.dy.masa.malilib.gui;
 
-import java.awt.Color;
+import java.awt.*;
+import java.util.UUID;
 import javax.annotation.Nullable;
-import com.mojang.blaze3d.systems.RenderSystem;
+import org.apache.commons.lang3.math.Fraction;
+import org.apache.commons.lang3.tuple.Pair;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
@@ -49,6 +58,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     protected float relG;
     protected float relB;
     protected float relA;
+    private Pair<Identifier, NativeImageBackedTexture> dynamicTexture = null;
 
     public GuiColorEditorHSV(IConfigInteger config, @Nullable IDialogHandler dialogHandler, Screen parent)
     {
@@ -149,6 +159,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     {
         this.config.setIntegerValue(this.color);
 
+        this.clearDynamicTexture();
         super.removed();
     }
 
@@ -278,6 +289,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         this.color = (ai << 24) | (ri << 16) | (gi << 8) | bi;
 
+//        this.clearDynamicTexture();
         this.updateTextFieldsHSV(this.relH, this.relS, this.relV);
     }
 
@@ -289,6 +301,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.relS = hsv[1];
         this.relV = hsv[2];
 
+//        this.clearDynamicTexture();
         this.updateTextFieldsHSV(this.relH, this.relS, this.relV);
     }
 
@@ -308,6 +321,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.relG = (float) ((rgb >>>  8) & 0xFF) / 255f;
         this.relB = (float) ((rgb       ) & 0xFF) / 255f;
 
+//        this.clearDynamicTexture();
         this.updateTextFieldsRGB();
     }
 
@@ -399,6 +413,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
                 default:
             }
         }
+
+//        this.clearDynamicTexture();
     }
 
     protected void updateTextFieldsHSV(float h, float s, float v)
@@ -502,28 +518,30 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
         Tessellator tessellator = Tessellator.getInstance();
-//        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+//        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
 
         RenderUtils.setupBlend();
-
         RenderUtils.color(1, 1, 1, 1);
 
         //GlProgramManager.useProgram(SHADER_HUE.getProgram());
         //GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
 
-        final int[] colorPair = this.getColorPairForSelector();
+//        final int[] colorPair = this.getColorPairForSelector();
+        this.generateDynamicTextureForHSVSelector();
+        RenderSystem.setShaderTexture(0, this.dynamicTexture.getLeft());
 
-//        buffer.vertex(x    , y    , z).texture(1, 0);
-//        buffer.vertex(x    , y + h, z).texture(0, 0);
-//        buffer.vertex(x + w, y + h, z).texture(0, 1);
-//        buffer.vertex(x + w, y    , z).texture(1, 1);
+        buffer.vertex(x    , y    , z).texture(0, 0);
+        buffer.vertex(x    , y + h, z).texture(0, 1);
+        buffer.vertex(x + w, y + h, z).texture(1, 1);
+        buffer.vertex(x + w, y    , z).texture(1, 0);
 
-        buffer.vertex(x    , y    , z).color(colorPair[0]);
-        buffer.vertex(x    , y + h, z).color(colorPair[1]);
-        buffer.vertex(x + w, y + h, z).color(colorPair[2]);
-        buffer.vertex(x + w, y    , z).color(colorPair[3]);
+//        buffer.vertex(x    , y    , z).color(colorPair[0]);
+//        buffer.vertex(x    , y + h, z).color(colorPair[1]);
+//        buffer.vertex(x + w, y + h, z).color(colorPair[2]);
+//        buffer.vertex(x + w, y    , z).color(colorPair[3]);
 
         try
         {
@@ -630,14 +648,78 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderSystem.disableBlend();
     }
 
+    @Deprecated
     private int[] getColorPairForSelector()
     {
-        int color1 = Color.HSBtoRGB(this.relH, 0f, 0f);
-        int color2 = Color.HSBtoRGB(this.relH, 1f, 0f);
-        int color3 = Color.HSBtoRGB(this.relH, 0f, 1f);
-        int color4 = Color.HSBtoRGB(this.relH, 1f, 1f);
+        int color1 = Color.HSBtoRGB(this.relH, 0f, 0f);     // TOP LEFT
+        int color2 = Color.HSBtoRGB(this.relH, 1f, 0f);     // TOP RIGHT
+        int color3 = Color.HSBtoRGB(this.relH, 0f, 1f);     // BOTTOM RIGHT
+        int color4 = Color.HSBtoRGB(this.relH, 1f, 1f);     // BOTTOM LEFT
 
         return new int[]{ color1, color2, color3, color4 };
+    }
+
+    /**
+     * This Generates a Dynamic Image for the 4-Point Color Selector;
+     * - as opposed to using a custom Fragment shader.
+     */
+    private void generateDynamicTextureForHSVSelector()
+    {
+        final int sizeW = 256;
+        final int sizeH = 256;
+
+        if (this.dynamicTexture == null)
+        {
+            this.dynamicTexture = Pair.of(
+                    Identifier.of(MaLiLibReference.MOD_ID, UUID.randomUUID().toString()),
+                    new NativeImageBackedTexture(sizeW, sizeH, false)
+            );
+
+            this.mc.getTextureManager().registerTexture(this.dynamicTexture.getLeft(), this.dynamicTexture.getRight());
+        }
+
+        try (NativeImage image = new NativeImage(sizeW, sizeH, false))
+        {
+            for (int x = 0; x < sizeW; x++)
+            {
+                float brightness = Fraction.getFraction(x, sizeW).floatValue();
+
+                for (int y = 0; y < sizeH; y++)
+                {
+                    float saturation = Fraction.getFraction(y, sizeH).floatValue();
+
+                    // inverted Y (?)
+                    image.setColor(x, ((sizeH - 1) - y), ColorHelper.Abgr.toAbgr(Color.HSBtoRGB(this.relH, saturation, brightness)));
+                    // 1.21.10- seems to need ABGR, where Color.HSBtoRGB returns RGBA
+                }
+            }
+
+//            if (MaLiLibReference.DEBUG_MODE)
+//            {
+//                Path dir = MaLiLibReference.CONFIG_DIR.resolve(MaLiLibReference.MOD_ID);
+//                FileUtils.createDirectoriesIfMissing(dir);
+//                Path file = dir.resolve(this.dynamicTexture.getLeft().getPath() + ".png");
+//                image.writeTo(file);
+//            }
+
+            this.dynamicTexture.getRight().setImage(image);
+            this.dynamicTexture.getRight().upload();
+        }
+        catch (Throwable err)
+        {
+            MaLiLib.LOGGER.error("GuiColorEditorHSV: generate native image failed; {}", err.getLocalizedMessage());
+        }
+    }
+
+    private void clearDynamicTexture()
+    {
+        if (this.dynamicTexture != null)
+        {
+            Identifier id = this.dynamicTexture.getLeft();
+            this.mc.getTextureManager().destroyTexture(id);
+            this.dynamicTexture.getRight().close();
+            this.dynamicTexture = null;
+        }
     }
 
     public static void renderGradientColorBar(int x, int y, float z, int width, int height, int colorStart, int colorEnd, BufferBuilder buffer)
@@ -889,7 +971,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
                     return true;
                 }
-                catch (Exception e) {}
+                catch (Exception ignored) {}
             }
 
             return false;

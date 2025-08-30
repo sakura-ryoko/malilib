@@ -231,6 +231,11 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                 this.addButton(toggleBtn, new ListenerSliderToggle((IConfigSlider) config));
             }
         }
+        else if (type == ConfigType.TABLE)
+        {
+            ConfigButtonTable optionButton = new ConfigButtonTable(x, y, configWidth, configHeight, (IConfigTable) config, this.host, this.host.getDialogHandler());
+            this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
+        }
     }
 
     @Override

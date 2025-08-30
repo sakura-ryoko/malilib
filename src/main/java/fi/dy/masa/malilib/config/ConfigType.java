@@ -12,5 +12,6 @@ public enum ConfigType
     LOCKED_LIST,
     COLOR_LIST,
     OPTION_LIST,
-    HOTKEY
+    HOTKEY,
+    TABLE
 }

@@ -5,13 +5,13 @@ public interface ISliderCallback
     /**
      * Maximum number of values/steps the underlying data can have.
      * Return Integer.MAX_VALUE for unlimited/non-specified, like double data type ranges.
-     * @return
+     * @return ()
      */
     int getMaxSteps();
 
     /**
      * Returns the relative value (within the min - max range)
-     * @return
+     * @return ()
      */
     double getValueRelative();
 
@@ -23,7 +23,7 @@ public interface ISliderCallback
 
     /**
      * Returns the formatted display string for the current value
-     * @return
+     * @return ()
      */
     String getFormattedDisplayValue();
 }

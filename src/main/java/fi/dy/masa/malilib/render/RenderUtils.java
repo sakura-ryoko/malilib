@@ -28,20 +28,16 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.Colors;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
@@ -584,6 +580,19 @@ public class RenderUtils
         float maxX = (float) (pos.getX() + expand + 1);
         float maxY = (float) (pos.getY() + expand + 1);
         float maxZ = (float) (pos.getZ() + expand + 1);
+
+        drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
+    }
+
+    public static void drawBlockBoundingBoxSidesBatchedQuads(BlockPos pos, Vec3d cameraPos, Color4f color, double expand,
+                                                             BufferBuilder buffer)
+    {
+        float minX = (float) (pos.getX() - cameraPos.x - expand);
+        float minY = (float) (pos.getY() - cameraPos.y - expand);
+        float minZ = (float) (pos.getZ() - cameraPos.z - expand);
+        float maxX = (float) (pos.getX() - cameraPos.x + expand + 1);
+        float maxY = (float) (pos.getY() - cameraPos.y + expand + 1);
+        float maxZ = (float) (pos.getZ() - cameraPos.z + expand + 1);
 
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
     }
@@ -1411,8 +1420,7 @@ public class RenderUtils
         if (block != null && useBgColors)
         {
             // In 1.13+ there is the uncolored Shulker Box variant, which returns null from getColor()
-            final DyeColor dye = block.getColor() != null ? block.getColor() : DyeColor.PURPLE;
-            final float[] colors = getColorComponents(dye.getEntityColor());
+            final float[] colors = getColorComponents(block.getColor() != null ? block.getColor().getEntityColor() : 0xFF875F87);
             color(colors[0], colors[1], colors[2], 1f);
         }
         else
@@ -1438,110 +1446,109 @@ public class RenderUtils
 
     public static void setBundleBackgroundTintColor(ItemStack bundle, boolean useBgColors)
     {
-        if (useBgColors)
+        if (bundle.isOf(Items.BUNDLE) && useBgColors)
         {
-            final DyeColor dye = getBundleColor(bundle);
-
-            if (dye != null)
-            {
-                final float[] colors = getColorComponents(dye.getEntityColor());
-                color(colors[0], colors[1], colors[2], 1f);
-                return;
-            }
+            // In 1.17+ there is the uncolored Bundle variant, which returns null from getColor()
+            final float[] colors = getColorComponents(getBundleColor(bundle));
+	        color(colors[0], colors[1], colors[2], 1f);
         }
-
-        color(1f, 1f, 1f, 1f);
+        else
+        {
+            color(1f, 1f, 1f, 1f);
+        }
     }
 
-    public static DyeColor getBundleColor(ItemStack bundle)
+    // returns real colors now instead of Dye Colors.
+    public static int getBundleColor(ItemStack bundle)
     {
         Item item = bundle.getItem();
 
         if (item == null)
         {
-            return null;
+            return Colors.WHITE;
         }
         // TODO 1.21.2+
         /*
         if (item.equals(Items.WHITE_BUNDLE))
         {
-            return DyeColor.WHITE;
+            return 0xFFE6E6E6;
         }
-        else if (item.equals(Items.ORANGE_BUNDLE))
+        else if (item.equals(Items.ORANGE_BUNDLE))      //	#fffb9320
         {
-            return DyeColor.ORANGE;
+            return 0xFFFB9320;
         }
-        else if (item.equals(Items.MAGENTA_BUNDLE))
+        else if (item.equals(Items.MAGENTA_BUNDLE))     // 	#ffcc49b9
         {
-            return DyeColor.MAGENTA;
+            return 0xFFCC49B9;
         }
-        else if (item.equals(Items.LIGHT_BLUE_BUNDLE))
+        else if (item.equals(Items.LIGHT_BLUE_BUNDLE))  // 	#ff30afe5
         {
-            return DyeColor.LIGHT_BLUE;
+            return 0xFF30AFE5;
         }
-        else if (item.equals(Items.YELLOW_BUNDLE))
+        else if (item.equals(Items.YELLOW_BUNDLE))      //	#fff2c705
         {
-            return DyeColor.YELLOW;
+            return 0xFFF2C705;
         }
-        else if (item.equals(Items.LIME_BUNDLE))
+        else if (item.equals(Items.LIME_BUNDLE))        // 	#ff9bdf39
         {
-            return DyeColor.LIME;
+            return 0xFF9BDF39;
         }
-        else if (item.equals(Items.PINK_BUNDLE))
+        else if (item.equals(Items.PINK_BUNDLE))        //	#fff8a6bd
         {
-            return DyeColor.PINK;
+            return 0xFFF8A6BD;
         }
-        else if (item.equals(Items.GRAY_BUNDLE))
+        else if (item.equals(Items.GRAY_BUNDLE))        // 	#ff6c7b83
         {
-            return DyeColor.GRAY;
+            return 0xFF6C7B83;
         }
-        else if (item.equals(Items.LIGHT_GRAY_BUNDLE))
+        else if (item.equals(Items.LIGHT_GRAY_BUNDLE))  // 	#ffb1aca3
         {
-            return DyeColor.LIGHT_GRAY;
+            return 0xFFB1ACA3;
         }
-        else if (item.equals(Items.CYAN_BUNDLE))
+        else if (item.equals(Items.CYAN_BUNDLE))        //  #ff14b4b
         {
-            return DyeColor.CYAN;
+            return 0xFF14B4B4;
         }
-        else if (item.equals(Items.BLUE_BUNDLE))
+        else if (item.equals(Items.BLUE_BUNDLE))        //  #ff4573c7
         {
-            return DyeColor.BLUE;
+            return 0xFF4573C7;
         }
-        else if (item.equals(Items.BROWN_BUNDLE))
+        else if (item.equals(Items.BROWN_BUNDLE))       // 	#ffd18a59
         {
-            return DyeColor.BROWN;
+            return 0xFFD18A59;
         }
-        else if (item.equals(Items.GREEN_BUNDLE))
+        else if (item.equals(Items.GREEN_BUNDLE))       // 	#ff77a119
         {
-            return DyeColor.GREEN;
+            return 0xFF77A119;
         }
-        else if (item.equals(Items.RED_BUNDLE))
+        else if (item.equals(Items.RED_BUNDLE))         //	#ffd2382e
         {
-            return DyeColor.RED;
+            return 0xFFD2382E;
         }
-        else if (item.equals(Items.BLACK_BUNDLE))
+        else if (item.equals(Items.BLACK_BUNDLE))       //  #ff38364f
         {
-            return DyeColor.BLACK;
+            return 0xFF38364F;
         }
-        else if (item.equals(Items.PURPLE_BUNDLE))
+        else if (item.equals(Items.PURPLE_BUNDLE))      // 	#ff942aca
         {
-            return DyeColor.PURPLE;
+            return 0xFF942ACA;
         }
         else
         {
-            return null;
+            return 0xFFA6572C;                                // #FFA6572C
         }
          */
 
-        return DyeColor.BROWN;
+        return 0xFFA6572C;
     }
 
     public static void setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
     {
-        if (useBgColors)
+        if (useBgColors && data != null)
         {
             VillagerProfession profession = data != null ? data.getProfession() : null;
             setVillagerBackgroundTintColor(profession, useBgColors);
+            return;
         }
 
         color(1f, 1f, 1f, 1f);
@@ -1549,7 +1556,7 @@ public class RenderUtils
 
     public static void setVillagerBackgroundTintColor(VillagerProfession profession, boolean useBgColors)
     {
-        if (useBgColors)
+        if (useBgColors && profession != null)
         {
             final DyeColor dye = getVillagerColor(profession);
 
@@ -1564,6 +1571,7 @@ public class RenderUtils
         color(1f, 1f, 1f, 1f);
     }
 
+    // todo - return real colors
     public static DyeColor getVillagerColor(VillagerProfession profession)
     {
         if (profession == null) return null;
@@ -1798,4 +1806,430 @@ public class RenderUtils
      * Only required for translating the values to their RotationAxis.POSITIVE_?.rotationDegrees() equivalence
      */
     public static float matrix4fRotateFix(float ang) { return (ang * 0.017453292F); }
+
+    public static void renderBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color, MinecraftClient mc)
+    {
+        RenderSystem.lineWidth(lineWidth);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BuiltBuffer meshData;
+
+        drawBlockBoundingBoxOutlinesBatchedLines(pos, color, expand, buffer, mc);
+
+        try
+        {
+            meshData = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(meshData);
+            meshData.close();
+        }
+        catch (Exception ignored) { }
+    }
+
+    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Color4f color,
+                                                                double expand, BufferBuilder buffer, MinecraftClient mc)
+    {
+        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        final double dx = cameraPos.x;
+        final double dy = cameraPos.y;
+        final double dz = cameraPos.z;
+
+        float minX = (float) (pos.getX() - dx - expand);
+        float minY = (float) (pos.getY() - dy - expand);
+        float minZ = (float) (pos.getZ() - dz - expand);
+        float maxX = (float) (pos.getX() - dx + expand + 1);
+        float maxY = (float) (pos.getY() - dy + expand + 1);
+        float maxZ = (float) (pos.getZ() - dz + expand + 1);
+
+        fi.dy.masa.malilib.render.RenderUtils.drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
+    }
+
+    public static void drawConnectingLineBatchedLines(BlockPos pos1, BlockPos pos2, boolean center,
+                                                      Color4f color, BufferBuilder buffer, MinecraftClient mc)
+    {
+        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        final double dx = cameraPos.x;
+        final double dy = cameraPos.y;
+        final double dz = cameraPos.z;
+
+        float x1 = (float) (pos1.getX() - dx);
+        float y1 = (float) (pos1.getY() - dy);
+        float z1 = (float) (pos1.getZ() - dz);
+        float x2 = (float) (pos2.getX() - dx);
+        float y2 = (float) (pos2.getY() - dy);
+        float z2 = (float) (pos2.getZ() - dz);
+
+        if (center)
+        {
+            x1 += 0.5F;
+            y1 += 0.5F;
+            z1 += 0.5F;
+            x2 += 0.5F;
+            y2 += 0.5F;
+            z2 += 0.5F;
+        }
+
+        buffer.vertex(x1, y1, z1).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(x2, y2, z2).color(color.r, color.g, color.b, color.a);
+    }
+
+    public static void renderBlockOutlineOverlapping(BlockPos pos, float expand, float lineWidth,
+                                                     Color4f color1, Color4f color2, Color4f color3, Matrix4f matrix4f, MinecraftClient mc)
+    {
+        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        final double dx = cameraPos.x;
+        final double dy = cameraPos.y;
+        final double dz = cameraPos.z;
+
+        final float minX = (float) (pos.getX() - dx - expand);
+        final float minY = (float) (pos.getY() - dy - expand);
+        final float minZ = (float) (pos.getZ() - dz - expand);
+        final float maxX = (float) (pos.getX() - dx + expand + 1);
+        final float maxY = (float) (pos.getY() - dy + expand + 1);
+        final float maxZ = (float) (pos.getZ() - dz + expand + 1);
+
+        RenderSystem.lineWidth(lineWidth);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BuiltBuffer meshData;
+
+        // Min corner
+        buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a);
+        buffer.vertex(maxX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a);
+
+        buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a);
+        buffer.vertex(minX, maxY, minZ).color(color1.r, color1.g, color1.b, color1.a);
+
+        buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a);
+        buffer.vertex(minX, minY, maxZ).color(color1.r, color1.g, color1.b, color1.a);
+
+        // Max corner
+        buffer.vertex(minX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
+
+        buffer.vertex(maxX, minY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
+
+        buffer.vertex(maxX, maxY, minZ).color(color2.r, color2.g, color2.b, color2.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a);
+
+        // The rest of the edges
+        buffer.vertex(minX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(maxX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a);
+
+        buffer.vertex(minX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(maxX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+
+        buffer.vertex(maxX, minY, minZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(maxX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a);
+
+        buffer.vertex(minX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(minX, maxY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+
+        buffer.vertex(maxX, minY, minZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(maxX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+
+        buffer.vertex(minX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a);
+        buffer.vertex(minX, maxY, maxZ).color(color3.r, color3.g, color3.b, color3.a);
+
+        try
+        {
+            meshData = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(meshData);
+            meshData.close();
+        }
+        catch (Exception ignored) { }
+    }
+
+    public static void renderAreaOutline(BlockPos pos1, BlockPos pos2, float lineWidth,
+                                         Color4f colorX, Color4f colorY, Color4f colorZ, MinecraftClient mc)
+    {
+        RenderSystem.lineWidth(lineWidth);
+
+        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        final double dx = cameraPos.x;
+        final double dy = cameraPos.y;
+        final double dz = cameraPos.z;
+
+        double minX = Math.min(pos1.getX(), pos2.getX()) - dx;
+        double minY = Math.min(pos1.getY(), pos2.getY()) - dy;
+        double minZ = Math.min(pos1.getZ(), pos2.getZ()) - dz;
+        double maxX = Math.max(pos1.getX(), pos2.getX()) - dx + 1;
+        double maxY = Math.max(pos1.getY(), pos2.getY()) - dy + 1;
+        double maxZ = Math.max(pos1.getZ(), pos2.getZ()) - dz + 1;
+
+        drawBoundingBoxEdges((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, colorX, colorY, colorZ);
+    }
+
+    private static void drawBoundingBoxEdges(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, Color4f colorX, Color4f colorY, Color4f colorZ)
+    {
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BuiltBuffer meshData;
+
+        drawBoundingBoxLinesX(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorX);
+        drawBoundingBoxLinesY(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorY);
+        drawBoundingBoxLinesZ(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorZ);
+
+        try
+        {
+            meshData = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(meshData);
+            meshData.close();
+        }
+        catch (Exception ignored) { }
+    }
+
+    private static void drawBoundingBoxLinesX(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, Color4f color)
+    {
+        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+
+        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+
+        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+
+        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+    }
+
+    private static void drawBoundingBoxLinesY(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, Color4f color)
+    {
+        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+
+        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+
+        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+
+        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+    }
+
+    private static void drawBoundingBoxLinesZ(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, Color4f color)
+    {
+        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+
+        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
+
+        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+
+        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+    }
+
+    public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f, MinecraftClient mc)
+    {
+        RenderSystem.enableBlend();
+        RenderSystem.disableCull();
+
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BuiltBuffer meshData;
+
+        renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer, mc);
+
+        try
+        {
+            meshData = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(meshData);
+            meshData.close();
+        }
+        catch (Exception ignored) { }
+
+        RenderSystem.enableCull();
+        RenderSystem.disableBlend();
+    }
+
+    /**
+     * Assumes a BufferBuilder in GL_QUADS mode has been initialized
+     */
+    public static void renderAreaSidesBatched(BlockPos pos1, BlockPos pos2, Color4f color,
+                                              double expand, BufferBuilder buffer, MinecraftClient mc)
+    {
+        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        final double dx = cameraPos.x;
+        final double dy = cameraPos.y;
+        final double dz = cameraPos.z;
+        double minX = Math.min(pos1.getX(), pos2.getX()) - dx - expand;
+        double minY = Math.min(pos1.getY(), pos2.getY()) - dy - expand;
+        double minZ = Math.min(pos1.getZ(), pos2.getZ()) - dz - expand;
+        double maxX = Math.max(pos1.getX(), pos2.getX()) + 1 - dx + expand;
+        double maxY = Math.max(pos1.getY(), pos2.getY()) + 1 - dy + expand;
+        double maxZ = Math.max(pos1.getZ(), pos2.getZ()) + 1 - dz + expand;
+
+        fi.dy.masa.malilib.render.RenderUtils.drawBoxAllSidesBatchedQuads((float) minX, (float) minY, (float) minZ, (float) maxX, (float) maxY, (float) maxZ, color, buffer);
+    }
+
+    public static void renderAreaOutlineNoCorners(BlockPos pos1, BlockPos pos2,
+                                                  float lineWidth, Color4f colorX, Color4f colorY, Color4f colorZ, MinecraftClient mc)
+    {
+        final int xMin = Math.min(pos1.getX(), pos2.getX());
+        final int yMin = Math.min(pos1.getY(), pos2.getY());
+        final int zMin = Math.min(pos1.getZ(), pos2.getZ());
+        final int xMax = Math.max(pos1.getX(), pos2.getX());
+        final int yMax = Math.max(pos1.getY(), pos2.getY());
+        final int zMax = Math.max(pos1.getZ(), pos2.getZ());
+
+        final double expand = 0.001;
+        Vec3d cameraPos = mc.gameRenderer.getCamera().getPos();
+        final double dx = cameraPos.x;
+        final double dy = cameraPos.y;
+        final double dz = cameraPos.z;
+
+        final float dxMin = (float) (-dx - expand);
+        final float dyMin = (float) (-dy - expand);
+        final float dzMin = (float) (-dz - expand);
+        final float dxMax = (float) (-dx + expand);
+        final float dyMax = (float) (-dy + expand);
+        final float dzMax = (float) (-dz + expand);
+
+        final float minX = xMin + dxMin;
+        final float minY = yMin + dyMin;
+        final float minZ = zMin + dzMin;
+        final float maxX = xMax + dxMax;
+        final float maxY = yMax + dyMax;
+        final float maxZ = zMax + dzMax;
+
+        int start, end;
+
+        RenderSystem.lineWidth(lineWidth);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BuiltBuffer meshData;
+
+        // Edges along the X-axis
+        start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMin) ? xMin + 1 : xMin;
+        end   = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMin) ? xMax : xMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(start + dxMin, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex(end   + dxMax, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+        }
+
+        start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMin) ? xMin + 1 : xMin;
+        end   = (pos1.getX() == xMax && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMax && pos2.getZ() == zMin) ? xMax : xMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(start + dxMin, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex(end   + dxMax, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+        }
+
+        start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMax) ? xMin + 1 : xMin;
+        end   = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMax) ? xMax : xMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(start + dxMin, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex(end   + dxMax, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+        }
+
+        start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMax) ? xMin + 1 : xMin;
+        end   = (pos1.getX() == xMax && pos1.getY() == yMax && pos1.getZ() == zMax) || (pos2.getX() == xMax && pos2.getY() == yMax && pos2.getZ() == zMax) ? xMax : xMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(start + dxMin, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex(end   + dxMax, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+        }
+
+        // Edges along the Y-axis
+        start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMin) ? yMin + 1 : yMin;
+        end   = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMin) ? yMax : yMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(minX, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(minX, end   + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+        }
+
+        start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMin) ? yMin + 1 : yMin;
+        end   = (pos1.getX() == xMax && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMax && pos2.getZ() == zMin) ? yMax : yMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(maxX + 1, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(maxX + 1, end   + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+        }
+
+        start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMax) ? yMin + 1 : yMin;
+        end   = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMax) ? yMax : yMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(minX, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(minX, end   + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+        }
+
+        start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMax) ? yMin + 1 : yMin;
+        end   = (pos1.getX() == xMax && pos1.getY() == yMax && pos1.getZ() == zMax) || (pos2.getX() == xMax && pos2.getY() == yMax && pos2.getZ() == zMax) ? yMax : yMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(maxX + 1, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(maxX + 1, end   + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+        }
+
+        // Edges along the Z-axis
+        start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMin) ? zMin + 1 : zMin;
+        end   = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMax) ? zMax : zMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(minX, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(minX, minY, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+        }
+
+        start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMin) ? zMin + 1 : zMin;
+        end   = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMax) ? zMax : zMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(maxX + 1, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(maxX + 1, minY, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+        }
+
+        start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMin) ? zMin + 1 : zMin;
+        end   = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMax) ? zMax : zMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(minX, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(minX, maxY + 1, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+        }
+
+        start = (pos1.getX() == xMax && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMax && pos2.getZ() == zMin) ? zMin + 1 : zMin;
+        end   = (pos1.getX() == xMax && pos1.getY() == yMax && pos1.getZ() == zMax) || (pos2.getX() == xMax && pos2.getY() == yMax && pos2.getZ() == zMax) ? zMax : zMax + 1;
+
+        if (end > start)
+        {
+            buffer.vertex(maxX + 1, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(maxX + 1, maxY + 1, end   + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+        }
+
+        try
+        {
+            meshData = buffer.end();
+            BufferRenderer.drawWithGlobalProgram(meshData);
+            meshData.close();
+        }
+        catch (Exception ignored) { }
+    }
 }
