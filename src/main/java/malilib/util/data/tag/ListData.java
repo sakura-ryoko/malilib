@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import com.google.common.collect.Lists;
 
+import malilib.MaLiLib;
 import malilib.util.data.Constants;
 import malilib.util.data.tag.util.SizeTracker;
 
@@ -142,7 +143,7 @@ public class ListData extends BaseData
     }
 
     @Override
-    public BaseData copy()
+    public ListData copy()
     {
         ListData copy = new ListData(this.containedType);
 
@@ -207,7 +208,17 @@ public class ListData extends BaseData
 
         for (int i = 0; i < len; ++i)
         {
-            BaseData data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
+            BaseData data;
+
+            try
+            {
+                data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
+            }
+            catch (IOException e)
+            {
+                MaLiLib.LOGGER.warn("Failed to read data for list member at index {}", i);
+                throw e;
+            }
 
             if (data == null)
             {
