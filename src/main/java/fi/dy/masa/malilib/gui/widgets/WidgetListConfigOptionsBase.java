@@ -3,7 +3,10 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
+
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -41,46 +44,46 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
         this.clearTextFieldFocus();
 
-        return super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+        return super.onMouseClicked(click, doubleClick);
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
-        if (keyCode == KeyCodes.KEY_TAB)
+        if (input.key() == KeyCodes.KEY_TAB)
         {
-            return this.changeTextFieldFocus(Screen.hasShiftDown());
+            return this.changeTextFieldFocus(input.hasShift());
         }
         else
         {
             for (WIDGET widget : this.listWidgets)
             {
-                if (widget.onKeyTyped(keyCode, scanCode, modifiers))
+                if (widget.onKeyTyped(input))
                 {
                     return true;
                 }
             }
 
-            return super.onKeyTyped(keyCode, scanCode, modifiers);
+            return super.onKeyTyped(input);
         }
     }
 
     @Override
-    public boolean onCharTyped(char charIn, int modifiers)
+    public boolean onCharTyped(CharInput input)
     {
         for (WIDGET widget : this.listWidgets)
         {
-            if (widget.onCharTyped(charIn, modifiers))
+            if (widget.onCharTyped(input))
             {
                 return true;
             }
         }
 
-        return super.onCharTyped(charIn, modifiers);
+        return super.onCharTyped(input);
     }
 
     public void addTextField(TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper)

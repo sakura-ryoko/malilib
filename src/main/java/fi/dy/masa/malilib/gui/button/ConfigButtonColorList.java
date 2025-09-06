@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.gui.button;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.gui.Click;
+
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiColorListEdit;
@@ -29,12 +31,9 @@ public class ConfigButtonColorList extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
-
-        //RenderUtils.forceDraw(this.drawContext);
-        //RenderUtils.depthTest(false);
+        super.onMouseClickedImpl(click, doubleClick);
 
         if (this.dialogHandler != null)
         {

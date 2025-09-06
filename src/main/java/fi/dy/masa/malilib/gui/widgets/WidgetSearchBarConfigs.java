@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.gui.widgets;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.button.ConfigButtonKeybind;
@@ -39,14 +41,14 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         if (this.searchOpen)
         {
-            if (this.button.isMouseOver(mouseX, mouseY))
+            if (this.button.isMouseOver((int) click.x(), (int) click.y()))
             {
                 boolean selectedPre = this.button.isSelected();
-                this.button.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+                this.button.onMouseClicked(click, doubleClick);
 
                 if (selectedPre == false)
                 {
@@ -62,17 +64,17 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
             }
         }
 
-        return super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
+        return super.onMouseClickedImpl(click, doubleClick);
     }
 
     @Override
-    protected boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers)
+    protected boolean onKeyTypedImpl(KeyInput input)
     {
         if (this.searchOpen && this.button.isSelected())
         {
-            this.button.onKeyPressed(keyCode);
+            this.button.onKeyPressed(input.key());
 
-            if (keyCode == KeyCodes.KEY_ESCAPE)
+            if (input.key() == KeyCodes.KEY_ESCAPE)
             {
                 this.button.onClearSelection();
             }
@@ -80,7 +82,7 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
             return true;
         }
 
-        return super.onKeyTypedImpl(keyCode, scanCode, modifiers);
+        return super.onKeyTypedImpl(input);
     }
 
     @Override

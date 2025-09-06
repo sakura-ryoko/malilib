@@ -3,8 +3,11 @@ package fi.dy.masa.malilib.gui;
 import javax.annotation.Nullable;
 import org.joml.Matrix3x2fStack;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -85,9 +88,9 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
-        if (keyCode == KeyCodes.KEY_ENTER)
+        if (input.key() == KeyCodes.KEY_ENTER)
         {
             // Only close the GUI if the value was successfully applied
             if (this.applyValue(this.textField.getText()))
@@ -97,7 +100,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
 
             return true;
         }
-        else if (keyCode == KeyCodes.KEY_ESCAPE)
+        else if (input.key() == KeyCodes.KEY_ESCAPE)
         {
             GuiBase.openGui(this.getParent());
             return true;
@@ -105,32 +108,32 @@ public abstract class GuiTextInputBase extends GuiDialogBase
 
         if (this.textField.isFocused())
         {
-            return this.textField.keyPressed(keyCode, scanCode, modifiers);
+            return this.textField.keyPressed(input);
         }
 
-        return super.onKeyTyped(keyCode, scanCode, modifiers);
+        return super.onKeyTyped(input);
     }
 
     @Override
-    public boolean onCharTyped(char charIn, int modifiers)
+    public boolean onCharTyped(CharInput input)
     {
         if (this.textField.isFocused())
         {
-            return this.textField.charTyped(charIn, modifiers);
+            return this.textField.charTyped(input);
         }
 
-        return super.onCharTyped(charIn, modifiers);
+        return super.onCharTyped(input);
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int button, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
-        if (this.textField.mouseClicked(mouseX, mouseY, button, doubleClick))
+        if (this.textField.mouseClicked(click, doubleClick))
         {
             return true;
         }
 
-        return super.onMouseClicked(mouseX, mouseY, button, doubleClick);
+        return super.onMouseClicked(click, doubleClick);
     }
 
     protected ButtonListener createActionListener(ButtonType type)

@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.gui.widgets;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
@@ -34,7 +35,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         if (this.entry.getType() == DirectoryEntryType.DIRECTORY)
         {
@@ -42,7 +43,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         }
         else
         {
-            return super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
+            return super.onMouseClickedImpl(click, doubleClick);
         }
 
         return true;

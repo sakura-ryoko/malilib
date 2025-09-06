@@ -8,10 +8,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.CrafterBlockEntity;
 import net.minecraft.block.enums.Orientation;
 import net.minecraft.fluid.Fluids;
@@ -20,17 +18,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.*;
+import net.minecraft.state.property.Properties;
 import net.minecraft.storage.NbtWriteView;
-import net.minecraft.storage.WriteView;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import fi.dy.masa.malilib.data.MaLiLibTag;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.ResourceLocation;
 import fi.dy.masa.malilib.util.game.wrap.RegistryUtils;
@@ -522,18 +517,19 @@ public class BlockUtils
      * @param right ()
      * @return ()
      */
-    public static boolean isInSameGroup(BlockState left, BlockState right)
-    {
-        for (TagKey<Block> tagKey : MaLiLibTag.Blocks.REPLACEABLE_GROUPS)
-        {
-            if (left.isIn(tagKey) && right.isIn(tagKey))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+	// todo move to Litematica's CachedTagManager
+//    public static boolean isInSameGroup(BlockState left, BlockState right)
+//    {
+//        for (TagKey<Block> tagKey : MaLiLibTag.Blocks.REPLACEABLE_GROUPS)
+//        {
+//            if (left.isIn(tagKey) && right.isIn(tagKey))
+//            {
+//                return true;
+//            }
+//        }
+//
+//        return false;
+//    }
 
     /**
      * Match the properties list only of two block states, ignoring the block type

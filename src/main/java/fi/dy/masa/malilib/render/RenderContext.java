@@ -792,9 +792,9 @@ public class RenderContext implements AutoCloseable
 
                 ScissorState scissorState = RenderSystem.getScissorStateForRenderTypeDraws();
 
-                if (scissorState.method_72091())
+                if (scissorState.isEnabled())
                 {
-                    pass.enableScissor(scissorState.method_72092(), scissorState.method_72093(), scissorState.method_72094(), scissorState.method_72095());
+                    pass.enableScissor(scissorState.getX(), scissorState.getY(), scissorState.getWidth(), scissorState.getHeight());
                 }
 
                 RenderSystem.bindDefaultUniforms(pass);

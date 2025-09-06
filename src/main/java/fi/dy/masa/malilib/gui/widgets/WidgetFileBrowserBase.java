@@ -11,6 +11,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
@@ -55,19 +56,19 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
-        if (super.onKeyTyped(keyCode, scanCode, modifiers))
+        if (super.onKeyTyped(input))
         {
             return true;
         }
 
-        if ((keyCode == KeyCodes.KEY_BACKSPACE || keyCode == KeyCodes.KEY_LEFT) && this.currentDirectoryIsRoot() == false)
+        if ((input.key() == KeyCodes.KEY_BACKSPACE || input.key() == KeyCodes.KEY_LEFT) && this.currentDirectoryIsRoot() == false)
         {
             this.switchToParentDirectory();
             return true;
         }
-        else if ((keyCode == KeyCodes.KEY_RIGHT || keyCode == KeyCodes.KEY_ENTER) &&
+        else if ((input.key() == KeyCodes.KEY_RIGHT || input.key() == KeyCodes.KEY_ENTER) &&
                   this.getLastSelectedEntry() != null && this.getLastSelectedEntry().getType() == DirectoryEntryType.DIRECTORY)
         {
             this.switchToDirectory(this.getLastSelectedEntry().getDirectory().resolve(this.getLastSelectedEntry().getName()));

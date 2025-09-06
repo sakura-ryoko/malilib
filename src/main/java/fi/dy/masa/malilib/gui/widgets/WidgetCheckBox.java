@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
@@ -82,7 +83,7 @@ public class WidgetCheckBox extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         this.setChecked(! this.checked);
         return true;

@@ -10,11 +10,11 @@ repositories {
 //	flatDir { dirs 'libs' }
 }
 
-fabricApi {
-	configureDataGeneration {
-		client = true
-	}
-}
+//fabricApi {
+//	configureDataGeneration {
+//		client = true
+//	}
+//}
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -30,7 +30,7 @@ dependencies {
 	include(modApi(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
 
 	// Used to run DataGen only
-	modImplementation(modApi(fabricApi.module("fabric-data-generation-api-v1", project.fabric_api_version)))
+//	modImplementation(modApi(fabricApi.module("fabric-data-generation-api-v1", project.fabric_api_version)))
 
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 //	modCompileOnly "maven.modrinth:iris:${project.iris_version}+${project.iris_mc_version}-fabric"

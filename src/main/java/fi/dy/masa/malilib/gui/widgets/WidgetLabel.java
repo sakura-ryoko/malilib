@@ -64,7 +64,6 @@ public class WidgetLabel extends WidgetBase
 
         if (this.visible)
         {
-//            RenderUtils.blend(true);
             this.drawLabelBackground(drawContext);
             this.drawText(drawContext);
         }

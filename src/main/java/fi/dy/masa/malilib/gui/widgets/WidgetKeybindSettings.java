@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
@@ -41,13 +42,10 @@ public class WidgetKeybindSettings extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        if (mouseButton == 0)
+        if (click.keycode() == 0)
         {
-            //RenderUtils.forceDraw(this.drawContext);
-            //RenderUtils.depthTest(false);
-
             if (this.dialogHandler != null)
             {
                 this.dialogHandler.openDialog(new GuiKeybindSettings(this.keybind, this.keybindName, this.dialogHandler, GuiUtils.getCurrentScreen()));
@@ -60,7 +58,7 @@ public class WidgetKeybindSettings extends WidgetBase
             return true;
         }
         // Reset the settings to defaults on right click
-        else if (mouseButton == 1)
+        else if (click.keycode() == 1)
         {
             this.keybind.resetSettingsToDefaults();
             this.widgetList.refreshEntries();
@@ -74,8 +72,6 @@ public class WidgetKeybindSettings extends WidgetBase
     public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
-        //this.bindTexture(TEXTURE, drawContext);
 
         int w = 18;
         int v1 = this.settings.getActivateOn().ordinal() * w;
@@ -88,26 +84,18 @@ public class WidgetKeybindSettings extends WidgetBase
         int y = this.y;
 
         int edgeColor = this.keybind.areSettingsModified() ? 0xFFFFBB33 : 0xFFFFFFFF;
-        //RenderUtils.depthTest(true);
         RenderUtils.drawRect(drawContext, x, y, 20, 20, edgeColor);
         RenderUtils.drawRect(drawContext, x + 1, y + 1, 18, 18, 0xFF000000);
-        //RenderUtils.depthTest(false);
-
-//        RenderUtils.forceDraw(drawContext);
 
         x += 1;
         y += 1;
         float z = 0;
 
-//        RenderUtils.color(1f, 1f, 1f, 1f);
-
-        //RenderUtils.depthTest(true);
         RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  0,  v1, w, w, z);
         RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  18, v2, w, w, z);
         RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  36, v3, w, w, z);
         RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  54, v4, w, w, z);
         RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  72, v5, w, w, z);
-        //RenderUtils.depthTest(false);
     }
 
     @Override
@@ -155,6 +143,5 @@ public class WidgetKeybindSettings extends WidgetBase
         text.addAll(Arrays.asList(parts));
 
         RenderUtils.drawHoverText(drawContext, mouseX + 10, mouseY, text);
-//        RenderUtils.forceDraw(drawContext);
     }
 }

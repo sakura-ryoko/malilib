@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 
@@ -456,11 +457,11 @@ public class KeybindMulti implements IKeybind
     }
 
     @ApiStatus.Internal
-    public static void onKeyInputPre(int keyCode, int scanCode, int modifiers, int action)
+    public static void onKeyInputPre(KeyInput input, int action)
     {
-        if (keyCode != -1)
+        if (input.key() != -1)
         {
-            Integer valObj = keyCode;
+            Integer valObj = input.key();
             boolean state = action != GLFW.GLFW_RELEASE;
 
             if (state)
@@ -483,7 +484,7 @@ public class KeybindMulti implements IKeybind
 
         if (MaLiLibConfigs.Debug.KEYBIND_DEBUG.getBooleanValue())
         {
-            printKeybindDebugMessage(keyCode, scanCode, modifiers, action);
+            printKeybindDebugMessage(input.key(), input.scancode(), input.modifiers(), action);
         }
     }
 

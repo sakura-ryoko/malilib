@@ -6,7 +6,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
@@ -194,21 +197,21 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
         if (this.activeKeybindButton != null)
         {
-            this.activeKeybindButton.onKeyPressed(keyCode);
+            this.activeKeybindButton.onKeyPressed(input.key());
             return true;
         }
         else
         {
-            if (this.getListWidget().onKeyTyped(keyCode, scanCode, modifiers))
+            if (this.getListWidget().onKeyTyped(input))
             {
                 return true;
             }
 
-            if (keyCode == KeyCodes.KEY_ESCAPE && this.getParent() != GuiUtils.getCurrentScreen())
+            if (input.key() == KeyCodes.KEY_ESCAPE && this.getParent() != GuiUtils.getCurrentScreen())
             {
                 this.closeGui(true);
                 return true;
@@ -219,7 +222,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public boolean onCharTyped(char charIn, int modifiers)
+    public boolean onCharTyped(CharInput input)
     {
         if (this.activeKeybindButton != null)
         {
@@ -227,18 +230,18 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
             return true;
         }
 
-        if (this.getListWidget().onCharTyped(charIn, modifiers))
+        if (this.getListWidget().onCharTyped(input))
         {
             return true;
         }
 
-        return super.onCharTyped(charIn, modifiers);
+        return super.onCharTyped(input);
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
-        if (super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
+        if (super.onMouseClicked(click, doubleClick))
         {
             return true;
         }

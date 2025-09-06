@@ -3,7 +3,10 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.*;
 import javax.annotation.Nullable;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -65,32 +68,32 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
-        if (mouseButton == 0 && this.scrollBar.wasMouseOver())
+        if (click.keycode() == 0 && this.scrollBar.wasMouseOver())
         {
             this.scrollBar.setIsDragging(true);
             return true;
         }
 
-        if (this.onMouseClickedSearchBar(mouseX, mouseY, mouseButton, doubleClick))
+        if (this.onMouseClickedSearchBar(click, doubleClick))
         {
             return true;
         }
 
-        final int relativeY = mouseY - this.browserEntriesStartY - this.browserEntriesOffsetY;
+        final int relativeY = (int) (click.y() - this.browserEntriesStartY - this.browserEntriesOffsetY);
 
         if (relativeY >= 0 &&
-            mouseX >= this.browserEntriesStartX &&
-            mouseX < this.browserEntriesStartX + this.browserEntryWidth)
+            click.x() >= this.browserEntriesStartX &&
+            click.x() < this.browserEntriesStartX + this.browserEntryWidth)
         {
             for (int i = 0; i < this.listWidgets.size(); ++i)
             {
                 WIDGET widget = this.listWidgets.get(i);
 
-                if (widget.isMouseOver(mouseX, mouseY))
+                if (widget.isMouseOver((int) click.x(), (int) click.y()))
                 {
-                    if (widget.canSelectAt(mouseX, mouseY, mouseButton))
+                    if (widget.canSelectAt(click))
                     {
                         int entryIndex = widget.getListIndex();
 
@@ -100,32 +103,32 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
                         }
                     }
 
-                    return widget.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+                    return widget.onMouseClicked(click, doubleClick);
                 }
             }
         }
 
-        return super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+        return super.onMouseClicked(click, doubleClick);
     }
 
     @Override
-    public boolean onMouseReleased(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseReleased(Click click)
     {
-        if (mouseButton == 0)
+        if (click.keycode() == 0)
         {
             this.scrollBar.setIsDragging(false);
         }
 
         for (int i = 0; i < this.listWidgets.size(); ++i)
         {
-            this.listWidgets.get(i).onMouseReleased(mouseX, mouseY, mouseButton);
+            this.listWidgets.get(i).onMouseReleased(click);
         }
 
-        return super.onMouseReleased(mouseX, mouseY, mouseButton);
+        return super.onMouseReleased(click);
     }
 
     @Override
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         if (super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
         {
@@ -145,13 +148,13 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         return false;
     }
 
-    protected boolean onMouseClickedSearchBar(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedSearchBar(Click click, boolean doubleClick)
     {
         if (this.widgetSearchBar != null)
         {
             boolean searchOpenPre = this.widgetSearchBar.isSearchOpen();
 
-            if (this.widgetSearchBar.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick))
+            if (this.widgetSearchBar.onMouseClickedImpl(click, doubleClick))
             {
                 // Toggled the search bar on or off
                 if (this.widgetSearchBar.isSearchOpen() != searchOpenPre)
@@ -169,20 +172,20 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
-        if (this.onKeyTypedSearchBar(keyCode, scanCode, modifiers))
+        if (this.onKeyTypedSearchBar(input))
         {
             return true;
         }
         else if (this.allowKeyboardNavigation)
         {
-                 if (keyCode == KeyCodes.KEY_UP)        this.offsetSelectionOrScrollbar(-1, true);
-            else if (keyCode == KeyCodes.KEY_DOWN)      this.offsetSelectionOrScrollbar( 1, true);
-            else if (keyCode == KeyCodes.KEY_PAGE_UP)   this.offsetSelectionOrScrollbar(-this.maxVisibleBrowserEntries / 2, true);
-            else if (keyCode == KeyCodes.KEY_PAGE_DOWN) this.offsetSelectionOrScrollbar( this.maxVisibleBrowserEntries / 2, true);
-            else if (keyCode == KeyCodes.KEY_HOME)      this.offsetSelectionOrScrollbar(-this.listContents.size(), true);
-            else if (keyCode == KeyCodes.KEY_END)       this.offsetSelectionOrScrollbar( this.listContents.size(), true);
+                 if (input.key() == KeyCodes.KEY_UP)        this.offsetSelectionOrScrollbar(-1, true);
+            else if (input.key() == KeyCodes.KEY_DOWN)      this.offsetSelectionOrScrollbar( 1, true);
+            else if (input.key() == KeyCodes.KEY_PAGE_UP)   this.offsetSelectionOrScrollbar(-this.maxVisibleBrowserEntries / 2, true);
+            else if (input.key() == KeyCodes.KEY_PAGE_DOWN) this.offsetSelectionOrScrollbar( this.maxVisibleBrowserEntries / 2, true);
+            else if (input.key() == KeyCodes.KEY_HOME)      this.offsetSelectionOrScrollbar(-this.listContents.size(), true);
+            else if (input.key() == KeyCodes.KEY_END)       this.offsetSelectionOrScrollbar( this.listContents.size(), true);
             else return false;
 
             return true;
@@ -192,27 +195,27 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onCharTyped(char charIn, int modifiers)
+    public boolean onCharTyped(CharInput input)
     {
-        if (this.onCharTypedSearchBar(charIn, modifiers))
+        if (this.onCharTypedSearchBar(input))
         {
             return true;
         }
 
         for (WIDGET widget : this.listWidgets)
         {
-            if (widget.onCharTyped(charIn, modifiers))
+            if (widget.onCharTyped(input))
             {
                 return true;
             }
         }
 
-        return super.onCharTyped(charIn, modifiers);
+        return super.onCharTyped(input);
     }
 
-    protected boolean onKeyTypedSearchBar(int keyCode, int scanCode, int modifiers)
+    protected boolean onKeyTypedSearchBar(KeyInput input)
     {
-        if (this.widgetSearchBar != null && this.widgetSearchBar.onKeyTyped(keyCode, scanCode, modifiers))
+        if (this.widgetSearchBar != null && this.widgetSearchBar.onKeyTyped(input))
         {
             this.clearSelection();
             this.refreshBrowserEntries();
@@ -223,9 +226,9 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         return false;
     }
 
-    protected boolean onCharTypedSearchBar(char charIn, int modifiers)
+    protected boolean onCharTypedSearchBar(CharInput input)
     {
-        if (this.widgetSearchBar != null && this.widgetSearchBar.onCharTyped(charIn, modifiers))
+        if (this.widgetSearchBar != null && this.widgetSearchBar.onCharTyped(input))
         {
             this.clearSelection();
             this.refreshBrowserEntries();

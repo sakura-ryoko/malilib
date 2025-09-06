@@ -12,6 +12,7 @@ import net.minecraft.util.Identifier;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 
+@Deprecated(forRemoval = true)
 public class MaLiLibTag
 {
     public static class Blocks
@@ -65,12 +66,14 @@ public class MaLiLibTag
                 BlockTags.WALLS,
                 BlockTags.WOOL,
                 BlockTags.WOOL_CARPETS,
-
-                CONCRETE_BLOCKS,
-                CORAL_FANS_FIX,
-                GLASS_BLOCKS,
-                GLASS_PANES,
-                GLAZED_TERRACOTTA_BLOCKS
+				BlockTags.IMPERMEABLE
+//				,
+//
+//                CONCRETE_BLOCKS,
+//                CORAL_FANS_FIX,
+//                GLASS_BLOCKS,
+//                GLASS_PANES,
+//                GLAZED_TERRACOTTA_BLOCKS
         );
 
         private static TagKey<Block> createBlockTag(String name)

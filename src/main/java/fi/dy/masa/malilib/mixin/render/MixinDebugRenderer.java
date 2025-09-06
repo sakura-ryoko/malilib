@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(DebugRenderer.class)
 public class MixinDebugRenderer
 {
-    // This injection draws on the same layer as all of the other debug rendering, during the Main Phase; at the proper rendering order.
+    // This injection draws on the same layer as all the other debug rendering, during the Main Phase; at the proper rendering order.
     @Inject(method = "render", at = @At("TAIL"))
     private void malilib_onDebugRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo ci)
     {

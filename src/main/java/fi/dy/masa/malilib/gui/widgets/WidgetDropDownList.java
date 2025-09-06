@@ -8,7 +8,10 @@ import org.joml.Matrix4fStack;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -131,8 +134,11 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
+		int mouseX = (int) click.x();
+		int mouseY = (int) click.y();
+
         if (this.isOpen && mouseY > this.y + this.height)
         {
             if (mouseX < this.x + this.width - this.scrollbarWidth)
@@ -171,13 +177,13 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    public void onMouseReleasedImpl(int mouseX, int mouseY, int mouseButton)
+    public void onMouseReleasedImpl(Click click)
     {
         this.scrollBar.setIsDragging(false);
     }
 
     @Override
-    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolledImpl(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         if (this.isOpen)
         {
@@ -189,22 +195,22 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers)
+    protected boolean onKeyTypedImpl(KeyInput input)
     {
         if (this.isOpen)
         {
-            return this.searchBar.onKeyTyped(keyCode, scanCode, modifiers);
+            return this.searchBar.onKeyTyped(input);
         }
 
         return false;
     }
 
     @Override
-    protected boolean onCharTypedImpl(char charIn, int modifiers)
+    protected boolean onCharTypedImpl(CharInput input)
     {
         if (this.isOpen)
         {
-            return this.searchBar.onCharTyped(charIn, modifiers);
+            return this.searchBar.onCharTyped(input);
         }
 
         return false;

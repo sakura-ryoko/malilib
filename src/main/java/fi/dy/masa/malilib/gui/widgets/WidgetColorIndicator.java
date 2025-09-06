@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.function.IntConsumer;
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.config.IConfigColor;
@@ -35,10 +36,8 @@ public class WidgetColorIndicator extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        //RenderUtils.forceDraw(this.drawContext);
-        //RenderUtils.depthTest(false);
         GuiColorEditorHSV gui = new GuiColorEditorHSV(this.config, null, GuiUtils.getCurrentScreen());
         GuiBase.openGui(gui);
         return true;
@@ -61,10 +60,8 @@ public class WidgetColorIndicator extends WidgetBase
         int width = this.getWidth();
         int height = this.getHeight();
 
-        //RenderUtils.depthTest(true);
         RenderUtils.drawRect(drawContext, x    , y    , width    , height    , 0xFFFFFFFF);
         RenderUtils.drawRect(drawContext, x + 1, y + 1, width - 2, height - 2, 0xFF000000);
         RenderUtils.drawRect(drawContext, x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue());
-        //RenderUtils.depthTest(false);
     }
 }

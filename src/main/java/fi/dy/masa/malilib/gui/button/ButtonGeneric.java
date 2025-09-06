@@ -98,8 +98,6 @@ public class ButtonGeneric extends ButtonBase
         {
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
-//            RenderUtils.color(1f, 1f, 1f, 1f);
-
             this.drawBackground(drawContext);
             this.drawIcon(drawContext);
             this.drawText(drawContext);
@@ -110,9 +108,7 @@ public class ButtonGeneric extends ButtonBase
     {
         if (this.renderDefaultBackground)
         {
-//                ((IMixinDrawContext) drawContext).malilib_getRenderState().goDownLayer();
             drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, this.getTexture(this.hovered), this.x, this.y, this.width, this.height);
-//                ((IMixinDrawContext) drawContext).malilib_getRenderState().goUpLayer();
         }
     }
 
@@ -126,9 +122,7 @@ public class ButtonGeneric extends ButtonBase
             int y = this.y + (this.height - this.icon.getHeight()) / 2;
             int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
-            //RenderUtils.depthTest(true);
             RenderUtils.drawTexturedRect(drawContext, this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
-            //RenderUtils.depthTest(false);
         }
     }
 

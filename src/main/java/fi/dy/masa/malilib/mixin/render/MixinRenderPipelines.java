@@ -47,7 +47,7 @@ public abstract class MixinRenderPipelines
     @Shadow @Final public static RenderPipeline.Snippet WEATHER_SNIPPET;                            // WEATHER
     @Shadow @Final public static RenderPipeline.Snippet GUI_SNIPPET;                                // GUI
     @Shadow @Final public static RenderPipeline.Snippet POSITION_TEX_COLOR_SNIPPET;                 // GUI_TEXTURED
-	@Shadow @Final public static RenderPipeline.Snippet field_61743;                 // GUI_TEXT (?)
+	@Shadow @Final public static RenderPipeline.Snippet GUI_TEXT_SNIPPET;            				// GUI_TEXT
     @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_OUTLINE_SNIPPET;                 // RENDERTYPE_OUTLINE
     @Shadow @Final public static RenderPipeline.Snippet POST_EFFECT_PROCESSOR_SNIPPET;              // POST_PROCESSOR
 

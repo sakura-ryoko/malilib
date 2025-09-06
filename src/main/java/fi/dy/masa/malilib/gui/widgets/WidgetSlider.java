@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -27,17 +28,17 @@ public class WidgetSlider extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        this.callback.setValueRelative(this.getRelativePosition(mouseX));
-        this.lastMouseX = mouseX;
+        this.callback.setValueRelative(this.getRelativePosition((int) click.x()));
+        this.lastMouseX = (int) click.x();
         this.dragging = true;
 
         return true;
     }
 
     @Override
-    public void onMouseReleasedImpl(int mouseX, int mouseY, int mouseButton)
+    public void onMouseReleasedImpl(Click click)
     {
         this.dragging = false;
     }

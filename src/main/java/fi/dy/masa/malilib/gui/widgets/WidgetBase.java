@@ -2,7 +2,10 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -87,33 +90,33 @@ public abstract class WidgetBase
                mouseY >= this.y && mouseY < this.y + this.height;
     }
 
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
-        if (this.isMouseOver(mouseX, mouseY))
+        if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
-            return this.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
+            return this.onMouseClickedImpl(click, doubleClick);
         }
 
         return false;
     }
 
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         return false;
     }
 
-    public void onMouseReleased(int mouseX, int mouseY, int mouseButton)
+    public void onMouseReleased(Click click)
     {
-        this.onMouseReleasedImpl(mouseX, mouseY, mouseButton);
+        this.onMouseReleasedImpl(click);
     }
 
-    public void onMouseReleasedImpl(int mouseX, int mouseY, int mouseButton)
+    public void onMouseReleasedImpl(Click click)
     {
     }
 
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
-        if (this.isMouseOver(mouseX, mouseY))
+        if (this.isMouseOver((int) mouseX, (int) mouseY))
         {
             return this.onMouseScrolledImpl(mouseX, mouseY, horizontalAmount, verticalAmount);
         }
@@ -121,27 +124,27 @@ public abstract class WidgetBase
         return false;
     }
 
-    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolledImpl(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         return false;
     }
 
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
-        return this.onKeyTypedImpl(keyCode, scanCode, modifiers);
+        return this.onKeyTypedImpl(input);
     }
 
-    protected boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers)
+    protected boolean onKeyTypedImpl(KeyInput input)
     {
         return false;
     }
 
-    public boolean onCharTyped(char charIn, int modifiers)
+    public boolean onCharTyped(CharInput input)
     {
-        return this.onCharTypedImpl(charIn, modifiers);
+        return this.onCharTypedImpl(input);
     }
 
-    protected boolean onCharTypedImpl(char charIn, int modifiers)
+    protected boolean onCharTypedImpl(CharInput input)
     {
         return false;
     }
@@ -149,9 +152,9 @@ public abstract class WidgetBase
     /**
      * Returns true if this widget can be selected by clicking at the given point
      */
-    public boolean canSelectAt(int mouseX, int mouseY, int mouseButton)
+    public boolean canSelectAt(Click click)
     {
-        return this.isMouseOver(mouseX, mouseY);
+        return this.isMouseOver((int) click.x(), (int) click.y());
     }
 
 //    public VertexConsumer bindTexture(Identifier texture, DrawContext context)

@@ -2,7 +2,11 @@ package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
+
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
@@ -87,29 +91,29 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
-        if (super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
+        if (super.onMouseClicked(click, doubleClick))
         {
             return true;
         }
 
-        return this.getListWidget() != null && this.getListWidget().onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+        return this.getListWidget() != null && this.getListWidget().onMouseClicked(click, doubleClick);
     }
 
     @Override
-    public boolean onMouseReleased(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseReleased(Click click)
     {
-        if (super.onMouseReleased(mouseX, mouseY, mouseButton))
+        if (super.onMouseReleased(click))
         {
             return true;
         }
 
-        return this.getListWidget() != null && this.getListWidget().onMouseReleased(mouseX, mouseY, mouseButton);
+        return this.getListWidget() != null && this.getListWidget().onMouseReleased(click);
     }
 
     @Override
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         if (super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
         {
@@ -120,21 +124,21 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
         // Try to handle everything except ESC in the parent first
-        if (keyCode != KeyCodes.KEY_ESCAPE && super.onKeyTyped(keyCode, scanCode, modifiers))
+        if (input.key() != KeyCodes.KEY_ESCAPE && super.onKeyTyped(input))
         {
             return true;
         }
 
-        if (this.getListWidget() != null && this.getListWidget().onKeyTyped(keyCode, scanCode, modifiers))
+        if (this.getListWidget() != null && this.getListWidget().onKeyTyped(input))
         {
             return true;
         }
 
         // If the list widget or its sub widgets didn't consume the ESC, then send that to the parent (to close the GUI)
-        if (keyCode == KeyCodes.KEY_ESCAPE && super.onKeyTyped(keyCode, scanCode, modifiers))
+        if (input.key() == KeyCodes.KEY_ESCAPE && super.onKeyTyped(input))
         {
             return true;
         }
@@ -143,20 +147,20 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onCharTyped(char charIn, int modifiers)
+    public boolean onCharTyped(CharInput input)
     {
         // Try to handle everything except ESC in the parent first
-        if (super.onCharTyped(charIn, modifiers))
+        if (super.onCharTyped(input))
         {
             return true;
         }
 
-        if (this.getListWidget() != null && this.getListWidget().onCharTyped(charIn, modifiers))
+        if (this.getListWidget() != null && this.getListWidget().onCharTyped(input))
         {
             return true;
         }
 
-        return super.onCharTyped(charIn, modifiers);
+        return super.onCharTyped(input);
     }
 
     @Override

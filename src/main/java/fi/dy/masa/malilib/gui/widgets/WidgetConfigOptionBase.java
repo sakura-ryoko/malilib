@@ -2,7 +2,10 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
@@ -68,9 +71,9 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        if (super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick))
+        if (super.onMouseClickedImpl(click, doubleClick))
         {
             return true;
         }
@@ -79,14 +82,14 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
 
         if (this.textField != null)
         {
-            ret |= this.textField.getTextField().mouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+            ret |= this.textField.getTextField().mouseClicked(click, doubleClick);
         }
 
         if (this.subWidgets.isEmpty() == false)
         {
             for (WidgetBase widget : this.subWidgets)
             {
-                ret |= widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+                ret |= widget.isMouseOver((int) click.x(), (int) click.y()) && widget.onMouseClicked(click, doubleClick);
             }
         }
 
@@ -94,18 +97,18 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    public boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTypedImpl(KeyInput input)
     {
         if (this.textField != null && this.textField.isFocused())
         {
-            if (keyCode == KeyCodes.KEY_ENTER)
+            if (input.key() == KeyCodes.KEY_ENTER)
             {
                 this.applyNewValueToConfig();
                 return true;
             }
             else
             {
-                return this.textField.onKeyTyped(keyCode, scanCode, modifiers);
+                return this.textField.onKeyTyped(input);
             }
         }
 
@@ -113,18 +116,18 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    protected boolean onCharTypedImpl(char charIn, int modifiers)
+    protected boolean onCharTypedImpl(CharInput input)
     {
-        if (this.textField != null && this.textField.onCharTyped(charIn, modifiers))
+        if (this.textField != null && this.textField.onCharTyped(input))
         {
             return true;
         }
 
-        return super.onCharTypedImpl(charIn, modifiers);
+        return super.onCharTypedImpl(input);
     }
 
     @Override
-    public boolean canSelectAt(int mouseX, int mouseY, int mouseButton)
+    public boolean canSelectAt(Click click)
     {
         return false;
     }
@@ -134,7 +137,6 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
         if (this.textField != null)
         {
             this.textField.getTextField().render(drawContext, mouseX, mouseY, 0f);
-            //RenderUtils.forceDraw(drawContext);
         }
     }
 }

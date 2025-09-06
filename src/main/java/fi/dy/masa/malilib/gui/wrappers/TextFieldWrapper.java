@@ -1,6 +1,9 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
@@ -64,14 +67,14 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 //        }
 //    }
 
-    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    public boolean mouseClicked(Click click, boolean doubleClick)
     {
-        if (this.textField.mouseClicked(mouseX, mouseY, mouseButton, doubleClick))
+        if (this.textField.mouseClicked(click, doubleClick))
         {
             return true;
         }
 
-        if (this.textField.isMouseOver(mouseX, mouseY) == false)
+        if (this.textField.isMouseOver(click.x(), click.y()) == false)
         {
             this.textField.setFocused(false);
         }
@@ -79,14 +82,14 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
         return false;
     }
 
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
         String textPre = this.textField.getText();
 
-        if (this.textField.isFocused() && this.textField.keyPressed(keyCode, scanCode, modifiers))
+        if (this.textField.isFocused() && this.textField.keyPressed(input))
         {
             if (this.listener != null &&
-                (keyCode == KeyCodes.KEY_ENTER || keyCode == KeyCodes.KEY_TAB ||
+                (input.key() == KeyCodes.KEY_ENTER || input.key() == KeyCodes.KEY_TAB ||
                  this.textField.getText().equals(textPre) == false))
             {
                 this.listener.onTextChange(this.textField);
@@ -98,11 +101,11 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
         return false;
     }
 
-    public boolean onCharTyped(char charIn, int modifiers)
+    public boolean onCharTyped(CharInput input)
     {
         String textPre = this.textField.getText();
 
-        if (this.textField.isFocused() && this.textField.charTyped(charIn, modifiers))
+        if (this.textField.isFocused() && this.textField.charTyped(input))
         {
             if (this.listener != null && this.textField.getText().equals(textPre) == false)
             {

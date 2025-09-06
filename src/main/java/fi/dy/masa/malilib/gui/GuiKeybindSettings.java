@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
@@ -155,22 +156,22 @@ public class GuiKeybindSettings extends GuiDialogBase
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    public boolean keyPressed(KeyInput input)
     {
-        return this.onKeyTyped(keyCode, scanCode, modifiers);
+        return this.onKeyTyped(input);
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
-        if (keyCode == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
         {
             this.dialogHandler.closeDialog();
             return true;
         }
         else
         {
-            return super.onKeyTyped(keyCode, scanCode, modifiers);
+            return super.onKeyTyped(input);
         }
     }
 }

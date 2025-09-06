@@ -6,7 +6,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.MouseInput;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -76,23 +78,23 @@ public abstract class ButtonBase extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         this.mc.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 
         if (this.actionListener != null)
         {
-            this.actionListener.actionPerformedWithButton(this, mouseButton);
+            this.actionListener.actionPerformedWithButton(this, click.keycode());
         }
 
         return true;
     }
 
     @Override
-    public boolean onMouseScrolledImpl(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolledImpl(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         int mouseButton = verticalAmount < 0 ? 1 : 0;
-        return this.onMouseClickedImpl(mouseX, mouseY, mouseButton, false);
+        return this.onMouseClickedImpl(new Click(mouseX, mouseY, new MouseInput(mouseButton, -1)), false);
     }
 
     @Override

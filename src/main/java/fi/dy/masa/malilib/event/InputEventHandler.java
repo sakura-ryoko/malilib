@@ -10,6 +10,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.KeyInput;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.Message;
@@ -133,20 +136,20 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onKeyInput(int keyCode, int scanCode, int modifiers, int action, @Nonnull MinecraftClient mc)
+    public boolean onKeyInput(KeyInput input, int action, @Nonnull MinecraftClient mc)
     {
         boolean eventKeyState = action != GLFW.GLFW_RELEASE;
 
         // Update the cached pressed keys status
-        KeybindMulti.onKeyInputPre(keyCode, scanCode, modifiers, action);
+        KeybindMulti.onKeyInputPre(input, action);
 
-        boolean cancel = this.checkKeyBindsForChanges(keyCode);
+        boolean cancel = this.checkKeyBindsForChanges(input.key());
 
         if (this.keyboardHandlers.isEmpty() == false)
         {
             for (IKeyboardInputHandler handler : this.keyboardHandlers)
             {
-                if (handler.onKeyInput(keyCode, scanCode, modifiers, eventKeyState))
+                if (handler.onKeyInput(input, eventKeyState))
                 {
                     this.printInputCancellationDebugMessage(handler);
                     return true;
@@ -158,24 +161,25 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onMouseClick(int mouseX, int mouseY, int eventButton, int action, @Nonnull MinecraftClient mc)
+    public boolean onMouseClick(Click click, int action, @Nonnull MinecraftClient mc)
     {
         boolean cancel = false;
 
-        if (eventButton != -1)
+        if (click.keycode() != -1)
         {
             boolean eventButtonState = action == GLFW.GLFW_PRESS;
 
             // Update the cached pressed keys status
-            KeybindMulti.onKeyInputPre(eventButton - 100, 0, 0, action);
+//            KeybindMulti.onKeyInputPre(eventButton - 100, 0, 0, action);
+			KeybindMulti.onKeyInputPre(new KeyInput(click.keycode() - 100, 0, 0), action);
 
-            cancel = this.checkKeyBindsForChanges(eventButton - 100);
+            cancel = this.checkKeyBindsForChanges(click.keycode() - 100);
 
             if (this.mouseHandlers.isEmpty() == false)
             {
                 for (IMouseInputHandler handler : this.mouseHandlers)
                 {
-                    if (handler.onMouseClick(mouseX, mouseY, eventButton, eventButtonState))
+                    if (handler.onMouseClick(click, eventButtonState))
                     {
                         this.printInputCancellationDebugMessage(handler);
                         return true;
@@ -198,7 +202,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onMouseScroll(final int mouseX, final int mouseY, final double xOffset, final double yOffset, @Nonnull MinecraftClient mc)
+    public boolean onMouseScroll(final double mouseX, final double mouseY, final double xOffset, final double yOffset, @Nonnull MinecraftClient mc)
     {
         boolean discrete = mc.options.getDiscreteMouseScroll().getValue();
         double sensitivity = mc.options.getMouseWheelSensitivity().getValue();
@@ -242,7 +246,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public void onMouseMove(final int mouseX, final int mouseY, @Nonnull MinecraftClient mc)
+    public void onMouseMove(final double mouseX, final double mouseY, @Nonnull MinecraftClient mc)
     {
         if (this.mouseHandlers.isEmpty() == false)
         {

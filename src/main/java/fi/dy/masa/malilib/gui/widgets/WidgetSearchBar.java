@@ -1,13 +1,14 @@
 package fi.dy.masa.malilib.gui.widgets;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
-import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.util.KeyCodes;
-import fi.dy.masa.malilib.util.data.Constants;
 
 public class WidgetSearchBar extends WidgetBase
 {
@@ -45,27 +46,27 @@ public class WidgetSearchBar extends WidgetBase
         return this.searchOpen;
     }
 
-    public void setSearchOpen(boolean isOpen, int mouseX, int mouseY)
+    public void setSearchOpen(boolean isOpen, Click click)
     {
         this.searchOpen = isOpen;
 
         if (this.searchOpen)
         {
             this.searchBox.setFocused(true);
-			this.searchBox.onClick(mouseX, mouseY, false);
+			this.searchBox.onClick(click, false);
         }
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        if (this.searchOpen && this.searchBox.mouseClicked(mouseX, mouseY, mouseButton, doubleClick))
+        if (this.searchOpen && this.searchBox.mouseClicked(click, doubleClick))
         {
             return true;
         }
-        else if (this.iconSearch.isMouseOver(mouseX, mouseY))
+        else if (this.iconSearch.isMouseOver((int) click.x(), (int) click.y()))
         {
-            this.setSearchOpen(! this.searchOpen, mouseX, mouseY);
+            this.setSearchOpen(! this.searchOpen, click);
             return true;
         }
 
@@ -73,17 +74,17 @@ public class WidgetSearchBar extends WidgetBase
     }
 
     @Override
-    protected boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers)
+    protected boolean onKeyTypedImpl(KeyInput input)
     {
         if (this.searchOpen)
         {
-            if (this.searchBox.keyPressed(keyCode, scanCode, modifiers))
+            if (this.searchBox.keyPressed(input))
             {
                 return true;
             }
-            else if (keyCode == KeyCodes.KEY_ESCAPE)
+            else if (input.key() == KeyCodes.KEY_ESCAPE)
             {
-                if (GuiBase.isShiftDown())
+                if (input.hasShift())
                 {
                     this.mc.currentScreen.close();
                 }
@@ -98,21 +99,21 @@ public class WidgetSearchBar extends WidgetBase
     }
 
     @Override
-    protected boolean onCharTypedImpl(char charIn, int modifiers)
+    protected boolean onCharTypedImpl(CharInput input)
     {
         if (this.searchOpen)
         {
-            if (this.searchBox.charTyped(charIn, modifiers))
+            if (this.searchBox.charTyped(input))
             {
                 return true;
             }
         }
-        else if (Constants.isValidChar(charIn))
+        else if (input.isValidChar())
         {
             this.searchOpen = true;
             this.searchBox.setFocused(true);
             this.searchBox.setText("");
-            this.searchBox.charTyped(charIn, modifiers);
+            this.searchBox.charTyped(input);
 
             return true;
         }

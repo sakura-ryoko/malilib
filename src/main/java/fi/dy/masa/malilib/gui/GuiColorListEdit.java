@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigColorList;
@@ -144,16 +145,16 @@ public class GuiColorListEdit extends GuiListBase<Color4f, WidgetColorListEditEn
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
-        if (keyCode == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
         {
             this.dialogHandler.closeDialog();
             return true;
         }
         else
         {
-            return super.onKeyTyped(keyCode, scanCode, modifiers);
+            return super.onKeyTyped(input);
         }
     }
 }

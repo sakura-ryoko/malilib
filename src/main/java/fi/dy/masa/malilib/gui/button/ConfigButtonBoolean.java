@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.gui.button;
 
+import net.minecraft.client.gui.Click;
+
 import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiBase;
 
@@ -16,12 +18,12 @@ public class ConfigButtonBoolean extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         this.config.toggleBooleanValue();
         this.updateDisplayString();
 
-        return super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
+        return super.onMouseClickedImpl(click, doubleClick);
     }
 
     @Override

@@ -3,8 +3,11 @@ package fi.dy.masa.malilib.gui;
 import org.joml.Matrix3x2fStack;
 
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.screen.ScreenTexts;
 
 public class GuiTextFieldGeneric extends TextFieldWidget
@@ -28,13 +31,13 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton, boolean doubleClick)
+    public boolean mouseClicked(Click click, boolean doubleClick)
     {
-        boolean ret = super.mouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+        boolean ret = super.mouseClicked(click, doubleClick);
 
-        if (this.isMouseOver((int) mouseX, (int) mouseY))
+        if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
-            if (mouseButton == 1)
+            if (click.keycode() == 1)
             {
                 this.setText("");
             }
@@ -220,36 +223,31 @@ public class GuiTextFieldGeneric extends TextFieldWidget
 
     /**
      * For Compat/Crash prevention reasons
-     * @param keyCode ()
-     * @param scanCode ()
-     * @param modifiers ()
+     * @param input ()
      * @return ()
      */
-    public boolean keyPressedWrapper(int keyCode, int scanCode, int modifiers)
+    public boolean keyPressedWrapper(KeyInput input)
     {
-        return this.keyPressed(keyCode, scanCode, modifiers);
+        return this.keyPressed(input);
     }
 
     /**
      * For Compat/Crash prevention reasons
-     * @param chr ()
-     * @param modifiers ()
+     * @param input ()
      * @return ()
      */
-    public boolean charTypedWrapper(char chr, int modifiers)
+    public boolean charTypedWrapper(CharInput input)
     {
-        return this.charTyped(chr, modifiers);
+        return this.charTyped(input);
     }
 
     /**
      * For Compat/Crash prevention reasons
-     * @param mouseX ()
-     * @param mouseY ()
-     * @param mouseButton ()
+     * @param click ()
      * @return ()
      */
-    public boolean mouseClickedWrapper(double mouseX, double mouseY, int mouseButton, boolean doubleClick)
+    public boolean mouseClickedWrapper(Click click, boolean doubleClick)
     {
-        return this.mouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+        return this.mouseClicked(click, doubleClick);
     }
 }

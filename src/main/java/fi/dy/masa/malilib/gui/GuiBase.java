@@ -5,14 +5,22 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import org.lwjgl.glfw.GLFW;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.MouseInput;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
@@ -244,7 +252,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.mouseWheelHorizontalDeltaSum -= horizontalAmount;
             this.mouseWheelVerticalDeltaSum -= verticalAmount;
 
-            if (this.onMouseScrolled((int) mouseX, (int) mouseY, horizontalAmount, verticalAmount))
+            if (this.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
             {
                 return true;
             }
@@ -254,42 +262,42 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton, boolean doubleClick)
+    public boolean mouseClicked(Click click, boolean doubleClick)
     {
-        if (this.onMouseClicked((int) mouseX, (int) mouseY, mouseButton, doubleClick) == false)
+        if (this.onMouseClicked(click, doubleClick) == false)
         {
-            return super.mouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+            return super.mouseClicked(click, doubleClick);
         }
 
         return false;
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int mouseButton)
+    public boolean mouseReleased(Click click)
     {
-        if (this.onMouseReleased((int) mouseX, (int) mouseY, mouseButton) == false)
+        if (this.onMouseReleased(click) == false)
         {
-            return super.mouseReleased(mouseX, mouseY, mouseButton);
+            return super.mouseReleased(click);
         }
 
         return false;
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    public boolean keyPressed(KeyInput input)
     {
         this.keyInputCount++;
 
-        if (this.onKeyTyped(keyCode, scanCode, modifiers))
+        if (this.onKeyTyped(input))
         {
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(input);
     }
 
     @Override
-    public boolean charTyped(char charIn, int modifiers)
+    public boolean charTyped(CharInput input)
     {
         // This is an ugly fix for the issue that the key press from the hotkey that
         // opens a GUI would then also get into any text fields or search bars, as the
@@ -302,19 +310,19 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             return true;
         }
 
-        if (this.onCharTyped(charIn, modifiers))
+        if (this.onCharTyped(input))
         {
             return true;
         }
 
-        return super.charTyped(charIn, modifiers);
+        return super.charTyped(input);
     }
 
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
         for (ButtonBase button : this.buttons)
         {
-            if (button.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
+            if (button.onMouseClicked(click, doubleClick))
             {
                 // Don't call super if the button press got handled
                 return true;
@@ -325,7 +333,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         for (TextFieldWrapper<?> entry : this.textFields)
         {
-            if (entry.mouseClicked(mouseX, mouseY, mouseButton, doubleClick))
+            if (entry.mouseClicked(click, doubleClick))
             {
                 // Don't call super if the button press got handled
                 handled = true;
@@ -336,7 +344,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
-                if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
+                if (widget.isMouseOver((int) click.x(), (int) click.y()) && widget.onMouseClicked(click, doubleClick))
                 {
                     // Don't call super if the button press got handled
                     handled = true;
@@ -348,17 +356,17 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return handled;
     }
 
-    public boolean onMouseReleased(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseReleased(Click click)
     {
-        for (WidgetBase widget : this.widgets)
+		for (WidgetBase widget : this.widgets)
         {
-            widget.onMouseReleased(mouseX, mouseY, mouseButton);
+            widget.onMouseReleased(click);
         }
 
         return false;
     }
 
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         for (ButtonBase button : this.buttons)
         {
@@ -381,7 +389,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return false;
     }
 
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
         boolean handled = false;
         int selected = -1;
@@ -392,17 +400,17 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
             if (entry.isFocused())
             {
-                if (keyCode == KeyCodes.KEY_TAB)
+                if (input.key() == KeyCodes.KEY_TAB)
                 {
                     entry.setFocused(false);
                     selected = i;
                 }
                 else
                 {
-                    entry.onKeyTyped(keyCode, scanCode, modifiers);
+                    entry.onKeyTyped(input);
                 }
 
-                handled = keyCode != KeyCodes.KEY_ESCAPE;
+                handled = input.key() != KeyCodes.KEY_ESCAPE;
                 break;
             }
         }
@@ -411,7 +419,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
-                if (widget.onKeyTyped(keyCode, scanCode, modifiers))
+                if (widget.onKeyTyped(input))
                 {
                     // Don't call super if the button press got handled
                     handled = true;
@@ -422,9 +430,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (handled == false)
         {
-            if (keyCode == KeyCodes.KEY_ESCAPE)
+            if (input.key() == KeyCodes.KEY_ESCAPE)
             {
-                this.closeGui(isShiftDown() == false);
+                this.closeGui(input.hasShift() == false);
 
                 return true;
             }
@@ -432,7 +440,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (selected >= 0)
         {
-            if (isShiftDown())
+            if (input.hasShift())
             {
                 selected = selected > 0 ? selected - 1 : this.textFields.size() - 1;
             }
@@ -447,13 +455,13 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return handled;
     }
 
-    public boolean onCharTyped(char charIn, int modifiers)
+    public boolean onCharTyped(CharInput input)
     {
         boolean handled = false;
 
         for (TextFieldWrapper<?> entry : this.textFields)
         {
-            if (entry.onCharTyped(charIn, modifiers))
+            if (entry.onCharTyped(input))
             {
                 handled = true;
                 break;
@@ -464,7 +472,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
-                if (widget.onCharTyped(charIn, modifiers))
+                if (widget.onCharTyped(input))
                 {
                     // Don't call super if the button press got handled
                     handled = true;
@@ -731,18 +739,24 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         MinecraftClient.getInstance().setScreen(gui);
     }
 
-    public static boolean isShiftDown()
-    {
-        return hasShiftDown();
-    }
+	public static boolean isShiftDown()
+	{
+		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT)
+				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_SHIFT);
+	}
 
-    public static boolean isCtrlDown()
-    {
-        return hasControlDown();
-    }
+	public static boolean isCtrlDown()
+	{
+		return Util.getOperatingSystem() == Util.OperatingSystem.OSX
+			   ? InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SUPER)
+					   || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_SUPER)
+			   : InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL)
+					   || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_CONTROL);
+	}
 
-    public static boolean isAltDown()
-    {
-        return hasAltDown();
-    }
+	public static boolean isAltDown()
+	{
+		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_ALT)
+				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_ALT);
+	}
 }

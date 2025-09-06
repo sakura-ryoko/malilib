@@ -1910,90 +1910,93 @@ public class RenderUtils
         if (bundle.isIn(ItemTags.BUNDLES) && useBgColors)
         {
             // In 1.17+ there is the uncolored Bundle variant, which returns null from getColor()
-            final DyeColor dye = getBundleColor(bundle);
-            final float[] colors = getColorComponents(dye != null ? dye.getEntityColor() : 0xFFA6572C);
-            return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
+//            final DyeColor dye = getBundleColor(bundle);
+//            final float[] colors = getColorComponents(dye != null ? dye.getEntityColor() : 0xFFA6572C);
+//            return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
+
+			// Requires Alpha value
+			return getBundleColor(bundle);
         }
 
         return Colors.WHITE;
     }
 
-    // todo - return real colors
-    public static DyeColor getBundleColor(ItemStack bundle)
+    // returns real colors now instead of Dye Colors.
+    public static int getBundleColor(ItemStack bundle)
     {
         Item item = bundle.getItem();
 
         if (item == null)
         {
-            return null;
+            return Colors.WHITE;
         }
         if (item.equals(Items.WHITE_BUNDLE))            // 	#ffe6e6e6
         {
-            return DyeColor.WHITE;
+            return 0xFFE6E6E6;
         }
         else if (item.equals(Items.ORANGE_BUNDLE))      //	#fffb9320
         {
-            return DyeColor.ORANGE;
+            return 0xFFFB9320;
         }
         else if (item.equals(Items.MAGENTA_BUNDLE))     // 	#ffcc49b9
         {
-            return DyeColor.MAGENTA;
+            return 0xFFCC49B9;
         }
         else if (item.equals(Items.LIGHT_BLUE_BUNDLE))  // 	#ff30afe5
         {
-            return DyeColor.LIGHT_BLUE;
+            return 0xFF30AFE5;
         }
         else if (item.equals(Items.YELLOW_BUNDLE))      //	#fff2c705
         {
-            return DyeColor.YELLOW;
+            return 0xFFF2C705;
         }
         else if (item.equals(Items.LIME_BUNDLE))        // 	#ff9bdf39
         {
-            return DyeColor.LIME;
+            return 0xFF9BDF39;
         }
         else if (item.equals(Items.PINK_BUNDLE))        //	#fff8a6bd
         {
-            return DyeColor.PINK;
+            return 0xFFF8A6BD;
         }
         else if (item.equals(Items.GRAY_BUNDLE))        // 	#ff6c7b83
         {
-            return DyeColor.GRAY;
+            return 0xFF6C7B83;
         }
         else if (item.equals(Items.LIGHT_GRAY_BUNDLE))  // 	#ffb1aca3
         {
-            return DyeColor.LIGHT_GRAY;
+            return 0xFFB1ACA3;
         }
-        else if (item.equals(Items.CYAN_BUNDLE))        //  #ff14b4b
+        else if (item.equals(Items.CYAN_BUNDLE))        //  #ff14b4b4
         {
-            return DyeColor.CYAN;
+            return 0xFF14B4B4;
         }
         else if (item.equals(Items.BLUE_BUNDLE))        //  #ff4573c7
         {
-            return DyeColor.BLUE;
+            return 0xFF4573C7;
         }
         else if (item.equals(Items.BROWN_BUNDLE))       // 	#ffd18a59
         {
-            return DyeColor.BROWN;
+            return 0xFFD18A59;
         }
         else if (item.equals(Items.GREEN_BUNDLE))       // 	#ff77a119
         {
-            return DyeColor.GREEN;
+            return 0xFF77A119;
         }
         else if (item.equals(Items.RED_BUNDLE))         //	#ffd2382e
         {
-            return DyeColor.RED;
+            return 0xFFD2382E;
         }
         else if (item.equals(Items.BLACK_BUNDLE))       //  #ff38364f
         {
-            return DyeColor.BLACK;
+            return 0xFF38364F;
         }
         else if (item.equals(Items.PURPLE_BUNDLE))      // 	#ff942aca
         {
-            return DyeColor.PURPLE;
+            return 0xFF942ACA;
         }
         else
         {
-            return null;                                // #FFA6572C
+            return 0xFFA6572C;                                // #FFA6572C
         }
     }
 

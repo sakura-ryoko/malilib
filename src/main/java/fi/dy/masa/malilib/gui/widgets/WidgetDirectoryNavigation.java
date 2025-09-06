@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 import javax.annotation.Nullable;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -46,11 +47,11 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         if (this.searchOpen == false)
         {
-            WidgetIcon hoveredIcon = this.getHoveredIcon(mouseX, mouseY);
+            WidgetIcon hoveredIcon = this.getHoveredIcon((int) click.x(), (int) click.y());
 
             if (hoveredIcon == this.iconRoot)
             {
@@ -72,7 +73,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             }
         }
 
-        return super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
+        return super.onMouseClickedImpl(click, doubleClick);
     }
 
     @Nullable

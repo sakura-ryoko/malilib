@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.Keyboard;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.util.IF3KeyStateSetter;
@@ -26,9 +27,9 @@ public abstract class MixinKeyboard implements IF3KeyStateSetter
 
     @Inject(method = "onKey", cancellable = true,
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/Keyboard;debugCrashStartTime:J", ordinal = 0))
-    private void onKeyboardInput(long windowPointer, int key, int scanCode, int action, int modifiers, CallbackInfo ci)
+    private void onKeyboardInput(long window, int key, KeyInput input, CallbackInfo ci)
     {
-        if (((InputEventHandler) InputEventHandler.getInputManager()).onKeyInput(key, scanCode, modifiers, action, this.client))
+        if (((InputEventHandler) InputEventHandler.getInputManager()).onKeyInput(input, key, this.client))
         {
             ci.cancel();
         }

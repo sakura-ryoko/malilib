@@ -3,6 +3,8 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.List;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.config.IConfigLockedList;
 import fi.dy.masa.malilib.config.IConfigLockedListEntry;
@@ -205,13 +207,13 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
     }
 
     @Override
-    public boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTypedImpl(KeyInput input)
     {
         return false;
     }
 
     @Override
-    protected boolean onCharTypedImpl(char charIn, int modifiers)
+    protected boolean onCharTypedImpl(CharInput input)
     {
         return false;
     }

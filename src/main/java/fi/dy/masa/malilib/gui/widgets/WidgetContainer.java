@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
@@ -52,17 +55,17 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
         boolean handled = false;
 
-        if (this.isMouseOver(mouseX, mouseY))
+        if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
             if (this.subWidgets.isEmpty() == false)
             {
                 for (WidgetBase widget : this.subWidgets)
                 {
-                    if (widget.isMouseOver(mouseX, mouseY) && widget.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick))
+                    if (widget.isMouseOver((int) click.x(), (int) click.y()) && widget.onMouseClicked(click, doubleClick))
                     {
                         // Don't call super if the button press got handled
                         handled = true;
@@ -72,7 +75,7 @@ public abstract class WidgetContainer extends WidgetBase
 
             if (handled == false)
             {
-                handled = this.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
+                handled = this.onMouseClickedImpl(click, doubleClick);
             }
         }
 
@@ -80,23 +83,23 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public void onMouseReleased(int mouseX, int mouseY, int mouseButton)
+    public void onMouseReleased(Click click)
     {
         if (this.subWidgets.isEmpty() == false)
         {
             for (WidgetBase widget : this.subWidgets)
             {
-                widget.onMouseReleased(mouseX, mouseY, mouseButton);
+                widget.onMouseReleased(click);
             }
         }
 
-        this.onMouseReleasedImpl(mouseX, mouseY, mouseButton);
+        this.onMouseReleasedImpl(click);
     }
 
     @Override
-    public boolean onMouseScrolled(int mouseX, int mouseY, double horizontalAmount, double verticalAmount)
+    public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
-        if (this.isMouseOver(mouseX, mouseY))
+        if (this.isMouseOver((int) mouseX, (int) mouseY))
         {
             if (this.subWidgets.isEmpty() == false)
             {
@@ -116,7 +119,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
         boolean handled = false;
 
@@ -124,7 +127,7 @@ public abstract class WidgetContainer extends WidgetBase
         {
             for (WidgetBase widget : this.subWidgets)
             {
-                if (widget.onKeyTyped(keyCode, scanCode, modifiers))
+                if (widget.onKeyTyped(input))
                 {
                     // Don't call super if the key press got handled
                     handled = true;
@@ -134,14 +137,14 @@ public abstract class WidgetContainer extends WidgetBase
 
         if (handled == false)
         {
-            handled = this.onKeyTypedImpl(keyCode, scanCode, modifiers);
+            handled = this.onKeyTypedImpl(input);
         }
 
         return handled;
     }
 
     @Override
-    public boolean onCharTyped(char charIn, int modifiers)
+    public boolean onCharTyped(CharInput input)
     {
         boolean handled = false;
 
@@ -149,7 +152,7 @@ public abstract class WidgetContainer extends WidgetBase
         {
             for (WidgetBase widget : this.subWidgets)
             {
-                if (widget.onCharTyped(charIn, modifiers))
+                if (widget.onCharTyped(input))
                 {
                     // Don't call super if the key press got handled
                     handled = true;
@@ -159,7 +162,7 @@ public abstract class WidgetContainer extends WidgetBase
 
         if (handled == false)
         {
-            handled = this.onCharTypedImpl(charIn, modifiers);
+            handled = this.onCharTypedImpl(input);
         }
 
         return handled;

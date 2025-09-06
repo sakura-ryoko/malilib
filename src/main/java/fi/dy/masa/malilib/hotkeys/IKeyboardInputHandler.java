@@ -1,17 +1,17 @@
 package fi.dy.masa.malilib.hotkeys;
 
+import net.minecraft.client.input.KeyInput;
+
 public interface IKeyboardInputHandler
 {
     /**
      * Called on keyboard events with the keyCode and scanCode and modifiers, and whether the key was pressed or released.
-     * 
-     * @param keyCode
-     * @param scanCode
-     * @param modifiers
-     * @param eventKeyState
-     * @return
+     *
+	 * @param input ()
+     * @param eventKeyState ()
+     * @return ()
      */
-    default boolean onKeyInput(int keyCode, int scanCode, int modifiers, boolean eventKeyState)
+    default boolean onKeyInput(KeyInput input, boolean eventKeyState)
     {
         return false;
     }

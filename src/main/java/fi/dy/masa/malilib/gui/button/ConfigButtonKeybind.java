@@ -5,6 +5,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
+
+import net.minecraft.client.gui.Click;
+
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
@@ -33,16 +36,16 @@ public class ConfigButtonKeybind extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        super.onMouseClickedImpl(mouseX, mouseY, mouseButton, doubleClick);
+        super.onMouseClickedImpl(click, doubleClick);
 
         if (this.selected)
         {
-            this.addKey(mouseButton - 100);
+            this.addKey(click.keycode() - 100);
             this.updateDisplayString();
         }
-        else if (mouseButton == 0)
+        else if (click.keycode() == 0)
         {
             this.selected = true;
 

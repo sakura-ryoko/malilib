@@ -5,8 +5,10 @@ import javax.annotation.Nullable;
 import org.joml.Matrix3x2f;
 
 import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.texture.TextureSetup;
 import net.minecraft.util.math.MathHelper;
 
@@ -191,45 +193,45 @@ public class GuiColorEditorHSV extends GuiDialogBase
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    public boolean keyPressed(KeyInput input)
     {
-        return this.onKeyTyped(keyCode, scanCode, modifiers);
+        return this.onKeyTyped(input);
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
-        if (keyCode == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
         {
             this.dialogHandler.closeDialog();
             return true;
         }
         else
         {
-            return super.onKeyTyped(keyCode, scanCode, modifiers);
+            return super.onKeyTyped(input);
         }
     }
 
     @Override
-    public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
-        this.clickedElement = this.getHoveredElement(mouseX, mouseY);
+        this.clickedElement = this.getHoveredElement((int) click.x(), (int) click.y());
 
         if (this.clickedElement != null)
         {
             this.mouseDown = true;
-            this.updateColorFromMouseInput(this.clickedElement, mouseX, mouseY);
+            this.updateColorFromMouseInput(this.clickedElement, (int) click.x(), (int) click.y());
         }
 
-        return super.onMouseClicked(mouseX, mouseY, mouseButton, doubleClick);
+        return super.onMouseClicked(click, doubleClick);
     }
 
     @Override
-    public boolean onMouseReleased(int mouseX, int mouseY, int mouseButton)
+    public boolean onMouseReleased(Click click)
     {
         this.mouseDown = false;
         this.clickedElement = null;
-        return super.onMouseReleased(mouseX, mouseY, mouseButton);
+        return super.onMouseReleased(click);
     }
 
     protected float[] getCurrentColorHSV()
@@ -508,19 +510,11 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(drawContext, this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
         // Full SV Square --
-        // MaLiLibPipelines.POSITION_SIMPLE
-//        RenderContext ctx = new RenderContext(() -> "ColorSelector A", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
-//        BufferBuilder buffer = ctx.getBuilder();
-
         int r = (int) (this.relR * 255f);
         int g = (int) (this.relG * 255f);
         int b = (int) (this.relB * 255f);
         int a = 255;
         int c = 255;
-
-//        RenderUtils.blend(true);
-//        int tempColor = RenderUtils.color(r, g, b, a);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
 
         /*
         GlProgramManager.useProgram(SHADER_HUE.getProgram());
@@ -539,48 +533,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              RenderUtils.peekLastScissor(drawContext))
                                      );
 
-//        buffer.vertex(x    , y    , z).texture(1, 0);
-//        buffer.vertex(x    , y + h, z).texture(0, 0);
-//        buffer.vertex(x + w, y + h, z).texture(0, 1);
-//        buffer.vertex(x + w, y    , z).texture(1, 1);
-
-//        buffer.vertex(x    , y    , z).color(colorPair[0]);
-//        buffer.vertex(x    , y + h, z).color(colorPair[1]);
-//        buffer.vertex(x + w, y + h, z).color(colorPair[2]);
-//        buffer.vertex(x + w, y    , z).color(colorPair[3]);
-
-//        try
-//        {
-//            BuiltBuffer meshData = buffer.endNullable();
-//
-//            if (meshData != null)
-//            {
-//                ctx.draw(meshData, false);
-//                meshData.close();
-//            }
-//
-//            ctx.reset();
-//        }
-//        catch (Exception ignored) { }
-
         // Element Selectors --
-        // MaLiLibPipelines.POSITION_COLOR_SIMPLE
-//        buffer = ctx.start(() -> "ColorSelector B", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
-
-        /*
-        int r = (int) (this.relR * 255f);
-        int g = (int) (this.relG * 255f);
-        int b = (int) (this.relB * 255f);
-        int a = 255;
-        int c = 255;
-         */
-
-        // Current color indicator
-//        buffer.vertex(cx     , cy     , z).color(r, g, b, a);
-//        buffer.vertex(cx     , cy + ch, z).color(r, g, b, a);
-//        buffer.vertex(cx + cw, cy + ch, z).color(r, g, b, a);
-//        buffer.vertex(cx + cw, cy     , z).color(r, g, b, a);
-
         // Current color indicator
         RenderUtils.addSimpleElement(drawContext,
                                      new MaLiLibHSV1ColorIndicatorGuiElement(
@@ -595,10 +548,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         // SV selection marker for saturation, horizontal marker, vertical range
         int yt = y + (int) ((1 - this.relS) * h);
-//        buffer.vertex(x - 1    , yt    , z).color(c, c, c, a);
-//        buffer.vertex(x - 1    , yt + 1, z).color(c, c, c, a);
-//        buffer.vertex(x + w + 1, yt + 1, z).color(c, c, c, a);
-//        buffer.vertex(x + w + 1, yt    , z).color(c, c, c, a);
 
         // SV selection marker for saturation, horizontal marker, vertical range
         RenderUtils.addSimpleElement(drawContext,
@@ -614,10 +563,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         // SV selection marker for value, vertical marker, horizontal range
         int xt = x + (int) (this.relV * w);
-//        buffer.vertex(xt    , y - 1    , z).color(c, c, c, a);
-//        buffer.vertex(xt    , y + h + 1, z).color(c, c, c, a);
-//        buffer.vertex(xt + 1, y + h + 1, z).color(c, c, c, a);
-//        buffer.vertex(xt + 1, y - 1    , z).color(c, c, c, a);
 
         // SV selection marker for value, vertical marker, horizontal range
         RenderUtils.addSimpleElement(drawContext,
@@ -687,20 +632,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         renderGradientColorBar(drawContext, x, y, z, w, h, color1, color2);
         renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, (float) a / 255f);
         y += yd;
-
-//        try
-//        {
-//            BuiltBuffer meshData = buffer.endNullable();
-//
-//            if (meshData != null)
-//            {
-//                ctx.draw(meshData, false);
-//                meshData.close();
-//            }
-//
-//            ctx.close();
-//        }
-//        catch (Exception ignored) { }
     }
 
     private int[] getColorPairForSelector()
@@ -715,20 +646,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
     public static void renderGradientColorBar(DrawContext drawContext, int x, int y, float z, int width, int height, int colorStart, int colorEnd)
     {
-//        int a1 = ((colorStart >>> 24) & 0xFF);
-//        int r1 = ((colorStart >>> 16) & 0xFF);
-//        int g1 = ((colorStart >>>  8) & 0xFF);
-//        int b1 = (colorStart          & 0xFF);
-//        int a2 = ((colorEnd >>> 24) & 0xFF);
-//        int r2 = ((colorEnd >>> 16) & 0xFF);
-//        int g2 = ((colorEnd >>>  8) & 0xFF);
-//        int b2 = (colorEnd          & 0xFF);
-//
-//        buffer.vertex(x        , y         , z).color(r1, g1, b1, a1);
-//        buffer.vertex(x        , y + height, z).color(r1, g1, b1, a1);
-//        buffer.vertex(x + width, y + height, z).color(r2, g2, b2, a2);
-//        buffer.vertex(x + width, y         , z).color(r2, g2, b2, a2);
-
         RenderUtils.addSimpleElement(drawContext,
                                      new MaLiLibHSV2ColorGradientGuiElement(
                                              RenderPipelines.GUI,
@@ -792,19 +709,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
     public static void renderHueBarSegment(DrawContext drawContext, int x, int y, float z, int width, int height,
             int segmentWidth, int segmentHeight, int color1, int color2)
     {
-//        int r1 = ((color1 >>> 16) & 0xFF);
-//        int g1 = ((color1 >>>  8) & 0xFF);
-//        int b1 = ( color1         & 0xFF);
-//        int r2 = ((color2 >>> 16) & 0xFF);
-//        int g2 = ((color2 >>>  8) & 0xFF);
-//        int b2 = ( color2         & 0xFF);
-//        int a = 255;
-//
-//        buffer.vertex(x                       , y + segmentHeight         , z).color(r1, g1, b1, a);
-//        buffer.vertex(x + width               , y + height + segmentHeight, z).color(r1, g1, b1, a);
-//        buffer.vertex(x + width + segmentWidth, y + height                , z).color(r2, g2, b2, a);
-//        buffer.vertex(x + segmentWidth        , y                         , z).color(r2, g2, b2, a);
-
         RenderUtils.addSimpleElement(drawContext,
                                      new MaLiLibHSV2ColorSegmentedHueGuiElement(
                                              RenderPipelines.GUI,
@@ -820,25 +724,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
     public static void renderHSSelector(DrawContext drawContext, int xStart, int yStart, float z, int width, int height, float hue)
     {
-//        int x2 = xStart + width;
-//
-//        for (int y = yStart; y <= yStart + height; ++y)
-//        {
-//            float saturation = 1f - ((float) (y - yStart) / (float) height);
-//            int color1 = Color.HSBtoRGB(hue, saturation, 0f);
-//            int color2 = Color.HSBtoRGB(hue, saturation, 1f);
-//            int r1 = ((color1 >>> 16) & 0xFF);
-//            int g1 = ((color1 >>>  8) & 0xFF);
-//            int b1 = ( color1         & 0xFF);
-//            int r2 = ((color2 >>> 16) & 0xFF);
-//            int g2 = ((color2 >>>  8) & 0xFF);
-//            int b2 = ( color2         & 0xFF);
-//            int a = 255;
-//
-//            buffer.vertex(xStart, y, z).color(r1, g1, b1, a);
-//            buffer.vertex(x2    , y, z).color(r2, g2, b2, a);
-//        }
-
         RenderUtils.addSimpleElement(drawContext,
                                      new MaLiLibHSVColorSelectorGuiElement(
                                              RenderPipelines.GUI,
@@ -853,22 +738,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
     public static void renderBarMarkerHorizontalBar(DrawContext drawContext, int x, int y, float z, int barWidth, int barHeight, float value)
     {
-//        x += (int) (barWidth * value);
-//        int s = 2;
-//        int c = 255;
-//
-//        buffer.vertex(x - s, y - s, z).color(c, c, c, c);
-//        buffer.vertex(x    , y + s, z).color(c, c, c, c);
-//        buffer.vertex(x    , y + s, z).color(c, c, c, c);
-//        buffer.vertex(x + s, y - s, z).color(c, c, c, c);
-//
-//        y += barHeight;
-//
-//        buffer.vertex(x - s, y + s, z).color(c, c, c, c);
-//        buffer.vertex(x + s, y + s, z).color(c, c, c, c);
-//        buffer.vertex(x    , y - s, z).color(c, c, c, c);
-//        buffer.vertex(x    , y - s, z).color(c, c, c, c);
-
         RenderUtils.addSimpleElement(drawContext,
                                      new MaLiLibHSVColorHorizontalBarMarkerGuiElement(
                                              RenderPipelines.GUI,
@@ -883,22 +752,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
     public static void renderBarMarkerVerticalBar(DrawContext drawContext, int x, int y, float z, int barWidth, int barHeight, float value)
     {
-//        y += (int) (barHeight * (1f - value));
-//        int s = 2;
-//        int c = 255;
-//
-//        buffer.vertex(x - s, y - s, z).color(c, c, c, c);
-//        buffer.vertex(x - s, y + s, z).color(c, c, c, c);
-//        buffer.vertex(x + s, y    , z).color(c, c, c, c);
-//        buffer.vertex(x + s, y    , z).color(c, c, c, c);
-//
-//        x += barWidth;
-//
-//        buffer.vertex(x + s, y - s, z).color(c, c, c, c);
-//        buffer.vertex(x - s, y    , z).color(c, c, c, c);
-//        buffer.vertex(x - s, y    , z).color(c, c, c, c);
-//        buffer.vertex(x + s, y + s, z).color(c, c, c, c);
-
         RenderUtils.addSimpleElement(drawContext,
                                      new MaLiLibHSVColorVerticalBarMarkerGuiElement(
                                              RenderPipelines.GUI,
@@ -1018,7 +871,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
                     return true;
                 }
-                catch (Exception e) {}
+                catch (Exception ignored) {}
             }
 
             return false;

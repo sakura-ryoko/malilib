@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigLockedList;
@@ -143,16 +144,17 @@ public class GuiLockedListEdit extends GuiListBase<String, WidgetLockedListEditE
     }
 
     @Override
-    public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+    public boolean onKeyTyped(KeyInput input)
     {
-        if (keyCode == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
         {
             this.dialogHandler.closeDialog();
             return true;
         }
-        else if (keyCode == KeyCodes.KEY_ESCAPE)
+        else if (input.key() == KeyCodes.KEY_ESCAPE)
         {
-            return super.onKeyTyped(KeyCodes.KEY_ESCAPE, KeyCodes.KEY_NONE, KeyCodes.KEY_NONE);
+//            return super.onKeyTyped(KeyCodes.KEY_ESCAPE, KeyCodes.KEY_NONE, KeyCodes.KEY_NONE);
+			return super.onKeyTyped(new KeyInput(KeyCodes.KEY_ESCAPE, KeyCodes.KEY_NONE, KeyCodes.KEY_NONE));
         }
 
         return false;
