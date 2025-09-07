@@ -12,6 +12,7 @@ import net.minecraft.util.Identifier;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 
+// TODO (Migrate to CachedBlockTags)
 @Deprecated(forRemoval = true)
 public class MaLiLibTag
 {

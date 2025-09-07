@@ -68,6 +68,14 @@ public class CachedBlockTags
         return null;
     }
 
+	public void clearEntry(String name)
+	{
+		if (this.entries.containsKey(name))
+		{
+			this.entries.get(name).clear();
+		}
+	}
+
     public void clear()
     {
         this.entries.forEach(
