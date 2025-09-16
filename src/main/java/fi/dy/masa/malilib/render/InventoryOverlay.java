@@ -402,14 +402,6 @@ public class InventoryOverlay
 
     public static void renderEquipmentOverlayBackground(DrawContext context, int x, int y, LivingEntity entity)
     {
-//        RenderUtils.color(1f, 1f, 1f, 1f);
-        /*
-        RenderContext ctx = new RenderContext(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE, ShaderPipelines.POSITION_TEX_PANORAMA);
-        BufferBuilder buffer = ctx.getBuilder();
-         */
-
-//        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, drawContext);
-//        Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
         GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
         if (gpuTextureView == null) return;
 
@@ -427,18 +419,8 @@ public class InventoryOverlay
         RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18);
         RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18);
 
-        /*
-        try
-        {
-            ctx.draw(RenderUtils.fb(), buffer.end());
-            ctx.close();
-        }
-        catch (Exception ignored) { }
-         */
-
         if (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
         {
-            //RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, TEXTURE_EMPTY_SHIELD, drawContext);
             renderBackgroundSlotAt(context, TEXTURE_EMPTY_SHIELD, x + 28 + 1, y + 3 * 18 + 7 + 1);
         }
 
@@ -449,7 +431,6 @@ public class InventoryOverlay
             if (entity.getEquippedStack(eqSlot).isEmpty())
             {
                 Identifier texture = EMPTY_SLOT_TEXTURES[eqSlot.getEntitySlotId()];
-                //RenderUtils.renderSprite(x + xOff + 1, y + yOff + 1, 16, 16, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, texture, drawContext);
                 renderBackgroundSlotAt(context, texture, x + xOff + 1, y + yOff + 1);
             }
         }
@@ -502,6 +483,14 @@ public class InventoryOverlay
         else if (inv instanceof HopperMinecartEntity)
         {
             return InventoryRenderType.HOPPER;
+        }
+        else if (inv instanceof ChiseledBookshelfBlockEntity)
+        {
+            return InventoryRenderType.BOOKSHELF;
+        }
+        else if (inv instanceof ShelfBlockEntity)
+        {
+            return InventoryRenderType.WALL_SHELF;
         }
         else if (inv instanceof PlayerInventory)
         {
@@ -589,6 +578,10 @@ public class InventoryOverlay
             {
                 return InventoryRenderType.BOOKSHELF;
             }
+            else if (block instanceof ShelfBlock)
+            {
+                return InventoryRenderType.WALL_SHELF;
+            }
             else if (block instanceof EnderChestBlock)
             {
                 return InventoryRenderType.ENDER_CHEST;
@@ -662,6 +655,10 @@ public class InventoryOverlay
             else if (blockType.equals(BlockEntityType.CHISELED_BOOKSHELF))
             {
                 return InventoryRenderType.BOOKSHELF;
+            }
+            else if (blockType.equals(BlockEntityType.SHELF))
+            {
+                return InventoryRenderType.WALL_SHELF;
             }
             else if (blockType.equals(BlockEntityType.ENDER_CHEST))
             {
@@ -883,6 +880,15 @@ public class InventoryOverlay
             INV_PROPS_TEMP.width = 68;
             INV_PROPS_TEMP.height = 50;
             INV_PROPS_TEMP.totalSlots = 6;
+        }
+        else if (type == InventoryRenderType.WALL_SHELF)
+        {
+            INV_PROPS_TEMP.slotsPerRow = 3;
+            INV_PROPS_TEMP.slotOffsetX = 8;
+            INV_PROPS_TEMP.slotOffsetY = 8;
+            INV_PROPS_TEMP.width = 68;
+            INV_PROPS_TEMP.height = 50;
+            INV_PROPS_TEMP.totalSlots = 3;
         }
         else if (type == InventoryRenderType.BUNDLE)
         {
@@ -1321,6 +1327,7 @@ public class InventoryOverlay
         PLAYER,
         ENDER_CHEST,
         BOOKSHELF,
+        WALL_SHELF,
         SINGLE_ITEM,
         BUNDLE,
         ARMOR_STAND,

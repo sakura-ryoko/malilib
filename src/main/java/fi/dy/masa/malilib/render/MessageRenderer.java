@@ -21,7 +21,7 @@ public class MessageRenderer
     private boolean centeredH = true;
     private boolean centeredV = true;
     private boolean expandUp;
-    private float zLevel;
+//    private float zLevel;
 
     protected static final Identifier BG_TEXTURE = Identifier.ofVanilla("textures/gui/inworld_menu_list_background.png");
 
@@ -70,11 +70,11 @@ public class MessageRenderer
         return this;
     }
 
-    public MessageRenderer setZLevel(float zLevel)
-    {
-        this.zLevel = zLevel;
-        return this;
-    }
+//    public MessageRenderer setZLevel(float zLevel)
+//    {
+//        this.zLevel = zLevel;
+//        return this;
+//    }
 
     public int getMessageBoxWidth()
     {

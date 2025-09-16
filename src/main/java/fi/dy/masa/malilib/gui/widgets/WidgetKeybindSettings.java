@@ -44,7 +44,7 @@ public class WidgetKeybindSettings extends WidgetBase
     @Override
     protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        if (click.keycode() == 0)
+        if (click.getKeycode() == 0)
         {
             if (this.dialogHandler != null)
             {
@@ -58,7 +58,7 @@ public class WidgetKeybindSettings extends WidgetBase
             return true;
         }
         // Reset the settings to defaults on right click
-        else if (click.keycode() == 1)
+        else if (click.getKeycode() == 1)
         {
             this.keybind.resetSettingsToDefaults();
             this.widgetList.refreshEntries();

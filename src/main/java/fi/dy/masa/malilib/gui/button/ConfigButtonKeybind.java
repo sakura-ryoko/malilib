@@ -42,10 +42,10 @@ public class ConfigButtonKeybind extends ButtonGeneric
 
         if (this.selected)
         {
-            this.addKey(click.keycode() - 100);
+            this.addKey(click.getKeycode() - 100);
             this.updateDisplayString();
         }
-        else if (click.keycode() == 0)
+        else if (click.getKeycode() == 0)
         {
             this.selected = true;
 

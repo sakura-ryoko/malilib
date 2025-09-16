@@ -16,7 +16,7 @@ import fi.dy.masa.malilib.test.ConfigTestEnum;
 public class MixinClientPlayInteractionManager
 {
     @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
-    private void handleBreakingRestriction1(BlockPos pos, Direction side, CallbackInfoReturnable<Boolean> cir)
+    private void malilib_handleBreakingRestriction1(BlockPos pos, Direction side, CallbackInfoReturnable<Boolean> cir)
     {
         if (MaLiLibReference.DEBUG_MODE &&
             MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&

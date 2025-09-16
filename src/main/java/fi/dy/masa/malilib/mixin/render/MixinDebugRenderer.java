@@ -16,7 +16,9 @@ public class MixinDebugRenderer
 {
     // This injection draws on the same layer as all the other debug rendering, during the Main Phase; at the proper rendering order.
     @Inject(method = "render", at = @At("TAIL"))
-    private void malilib_onDebugRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY, double cameraZ, CallbackInfo ci)
+    private void malilib_onDebugRender(MatrixStack matrices, Frustum frustum,
+                                       VertexConsumerProvider.Immediate vertexConsumers, double cameraX, double cameraY,
+                                       double cameraZ, boolean bl, CallbackInfo ci)
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPostDebug(matrices, frustum, vertexConsumers, new Vec3d(cameraX, cameraY, cameraZ));
     }

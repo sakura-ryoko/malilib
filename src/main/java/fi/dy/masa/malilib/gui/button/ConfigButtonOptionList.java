@@ -29,7 +29,7 @@ public class ConfigButtonOptionList extends ButtonGeneric
     @Override
     protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        this.config.setOptionListValue(this.config.getOptionListValue().cycle(click.keycode() == 0));
+        this.config.setOptionListValue(this.config.getOptionListValue().cycle(click.getKeycode() == 0));
         this.updateDisplayString();
 
         return super.onMouseClickedImpl(click, doubleClick);

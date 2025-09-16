@@ -339,78 +339,78 @@ public abstract class MixinRenderPipelines
 
 
         // POSITION_MASA
-        MaLiLibPipelines.POSITION_MASA_NO_DEPTH_NO_CULL =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/no_depth/no_cull"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_MASA_NO_DEPTH =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/no_depth"))
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_MASA_LEQUAL_DEPTH_OFFSET_1 =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/lequal_depth/offset_1"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-                              .withDepthBias(-0.3f, -0.6f)
-                              .build();
-
-        MaLiLibPipelines.POSITION_MASA_LEQUAL_DEPTH_OFFSET_2 =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/lequal_depth/offset_2"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-                              .withDepthBias(-0.4f, -0.8f)
-                              .build();
-
-        MaLiLibPipelines.POSITION_MASA_LEQUAL_DEPTH_OFFSET_3 =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/lequal_depth/offset_3"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-                              .withDepthBias(-3f, -3f)
-                              .build();
-
-        MaLiLibPipelines.POSITION_MASA_LEQUAL_DEPTH =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/lequal_depth"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_MASA_GREATER_DEPTH =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/greater_depth"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_MASA_DEPTH_MASK =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/depth_mask"))
-                              .withCull(false)
-                              .withDepthWrite(true)
-                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_MASA =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .build();
+//        MaLiLibPipelines.POSITION_MASA_NO_DEPTH_NO_CULL =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/no_depth/no_cull"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_MASA_NO_DEPTH =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/no_depth"))
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_MASA_LEQUAL_DEPTH_OFFSET_1 =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/lequal_depth/offset_1"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+//                              .withDepthBias(-0.3f, -0.6f)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_MASA_LEQUAL_DEPTH_OFFSET_2 =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/lequal_depth/offset_2"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+//                              .withDepthBias(-0.4f, -0.8f)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_MASA_LEQUAL_DEPTH_OFFSET_3 =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/lequal_depth/offset_3"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+//                              .withDepthBias(-3f, -3f)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_MASA_LEQUAL_DEPTH =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/lequal_depth"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_MASA_GREATER_DEPTH =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/greater_depth"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_MASA_DEPTH_MASK =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa/depth_mask"))
+//                              .withCull(false)
+//                              .withDepthWrite(true)
+//                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_MASA =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position/masa"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .build();
 
         // POSITION_COLOR_TRANSLUCENT
         MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL =
@@ -656,75 +656,75 @@ public abstract class MixinRenderPipelines
 //
 
         // POSITION_TEX_MASA
-        MaLiLibPipelines.POSITION_TEX_MASA_NO_DEPTH_NO_CULL =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/no_depth/no_cull"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_TEX_MASA_NO_DEPTH =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/no_depth"))
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_1 =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/lequal_depth/offset_1"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-                              .withDepthBias(-0.3f, -0.6f)
-                              .build();
-
-        MaLiLibPipelines.POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_2 =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/lequal_depth/offset_2"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-                              .withDepthBias(-0.4f, -0.8f)
-                              .build();
-
-        MaLiLibPipelines.POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_3 =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/lequal_depth/offset_3"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-                              .withDepthBias(-3f, -3f)
-                              .build();
-
-        MaLiLibPipelines.POSITION_TEX_MASA_LEQUAL_DEPTH =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/lequal_depth"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_TEX_MASA_GREATER_DEPTH =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/greater_depth"))
-                              .withCull(false)
-                              .withDepthWrite(false)
-                              .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_TEX_MASA_DEPTH_MASK =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/depth_mask"))
-                              .withDepthWrite(true)
-                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
-                              .build();
-
-        MaLiLibPipelines.POSITION_TEX_MASA =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa"))
-                              .build();
+//        MaLiLibPipelines.POSITION_TEX_MASA_NO_DEPTH_NO_CULL =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/no_depth/no_cull"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_TEX_MASA_NO_DEPTH =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/no_depth"))
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_1 =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/lequal_depth/offset_1"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+//                              .withDepthBias(-0.3f, -0.6f)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_2 =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/lequal_depth/offset_2"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+//                              .withDepthBias(-0.4f, -0.8f)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_3 =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/lequal_depth/offset_3"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+//                              .withDepthBias(-3f, -3f)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_TEX_MASA_LEQUAL_DEPTH =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/lequal_depth"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_TEX_MASA_GREATER_DEPTH =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/greater_depth"))
+//                              .withCull(false)
+//                              .withDepthWrite(false)
+//                              .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_TEX_MASA_DEPTH_MASK =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa/depth_mask"))
+//                              .withDepthWrite(true)
+//                              .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+//                              .build();
+//
+//        MaLiLibPipelines.POSITION_TEX_MASA =
+//                RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_MASA_STAGE)
+//                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex/masa"))
+//                              .build();
 
         // POSITION_TEX_COLOR_TRANSLUCENT
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL =

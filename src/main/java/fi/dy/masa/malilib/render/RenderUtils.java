@@ -2325,43 +2325,6 @@ public class RenderUtils
         return mc().gameRenderer.getLightmapTextureManager();
     }
 
-    /*
-    public static void enableGUIStandardItemLighting(float scale)
-    {
-        RenderSystem.pushMatrix();
-        RenderSystem.rotate(-30.0F, 0.0F, 1.0F, 0.0F);
-        RenderSystem.rotate(165.0F, 1.0F, 0.0F, 0.0F);
-
-        enableStandardItemLighting(scale);
-
-        RenderSystem.popMatrix();
-    }
-
-    public static void enableStandardItemLighting(float scale)
-    {
-        RenderSystem.enableLighting();
-        RenderSystem.enableLight(0);
-        RenderSystem.enableLight(1);
-        RenderSystem.enableColorMaterial();
-        RenderUtils.colorMaterial(GL11.GL_FRONT_AND_BACK, GL11.GL_AMBIENT_AND_DIFFUSE);
-        RenderSystem.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, RenderHelper.setColorBuffer((float) LIGHT0_POS.x, (float) LIGHT0_POS.y, (float) LIGHT0_POS.z, 0.0f));
-
-        float lightStrength = 0.3F * scale;
-        RenderSystem.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, RenderHelper.setColorBuffer(lightStrength, lightStrength, lightStrength, 1.0F));
-        RenderSystem.glLight(GL11.GL_LIGHT0, GL11.GL_AMBIENT, RenderHelper.setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-        RenderSystem.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, RenderHelper.setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-        RenderSystem.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION, RenderHelper.setColorBuffer((float) LIGHT1_POS.x, (float) LIGHT1_POS.y, (float) LIGHT1_POS.z, 0.0f));
-        RenderSystem.glLight(GL11.GL_LIGHT1, GL11.GL_DIFFUSE, RenderHelper.setColorBuffer(lightStrength, lightStrength, lightStrength, 1.0F));
-        RenderSystem.glLight(GL11.GL_LIGHT1, GL11.GL_AMBIENT, RenderHelper.setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-        RenderSystem.glLight(GL11.GL_LIGHT1, GL11.GL_SPECULAR, RenderHelper.setColorBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-
-        RenderSystem.shadeModel(GL11.GL_FLAT);
-
-        float ambientLightStrength = 0.4F;
-        RenderSystem.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, RenderHelper.setColorBuffer(ambientLightStrength, ambientLightStrength, ambientLightStrength, 1.0F));
-    }
-    */
-
     /**
      * Only required for translating the values to their RotationAxis.POSITIVE_?.rotationDegrees() equivalence
      */

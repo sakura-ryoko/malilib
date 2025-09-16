@@ -41,27 +41,32 @@ public abstract class MixinWorldRenderer
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;FLcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
+                     target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
                      shift = At.Shift.BEFORE))
-    private void malilib_onRenderWorldPreWeather(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
-                                                 Camera camera, Matrix4f positionMatrix, Matrix4f projectionMatrix, GpuBufferSlice fog, Vector4f fogColor, boolean shouldRenderSky, CallbackInfo ci,
+    private void malilib_onRenderWorldPreWeather(ObjectAllocator allocator, RenderTickCounter tickCounter,
+                                                 boolean renderBlockOutline, Camera camera, Matrix4f matrix4f,
+                                                 Matrix4f projectionMatrix, Matrix4f matrix4f2,
+                                                 GpuBufferSlice gpuBufferSlice, Vector4f vector4f, boolean bl,
+                                                 CallbackInfo ci,
                                                  @Local Profiler profiler,
                                                  @Local Frustum frustum,
                                                  @Local FrameGraphBuilder frameGraphBuilder)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(matrix4f, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
     }
 
     @Inject(method = "render",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/WorldRenderer;renderLateDebug(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
+                    target = "Lnet/minecraft/client/render/WorldRenderer;renderLateDebug(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lnet/minecraft/client/render/Frustum;)V",
                     shift = At.Shift.BEFORE))
-    private void malilib_onRenderWorldLast(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline,
-                                           Camera camera, Matrix4f positionMatrix, Matrix4f projectionMatrix, GpuBufferSlice fog, Vector4f fogColor, boolean shouldRenderSky, CallbackInfo ci,
+    private void malilib_onRenderWorldLast(ObjectAllocator allocator, RenderTickCounter tickCounter,
+                                           boolean renderBlockOutline, Camera camera, Matrix4f matrix4f,
+                                           Matrix4f projectionMatrix, Matrix4f matrix4f2, GpuBufferSlice gpuBufferSlice,
+                                           Vector4f vector4f, boolean bl, CallbackInfo ci,
                                            @Local Profiler profiler,
                                            @Local Frustum frustum,
                                            @Local FrameGraphBuilder frameGraphBuilder)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(matrix4f, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
     }
 }

@@ -37,7 +37,7 @@ public class GuiTextFieldGeneric extends TextFieldWidget
 
         if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
-            if (click.keycode() == 1)
+            if (click.getKeycode() == 1)
             {
                 this.setText("");
             }

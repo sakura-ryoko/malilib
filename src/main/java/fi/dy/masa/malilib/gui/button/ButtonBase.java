@@ -84,7 +84,7 @@ public abstract class ButtonBase extends WidgetBase
 
         if (this.actionListener != null)
         {
-            this.actionListener.actionPerformedWithButton(this, click.keycode());
+            this.actionListener.actionPerformedWithButton(this, click.getKeycode());
         }
 
         return true;

@@ -23,7 +23,7 @@ public abstract class MixinMouse
 
     @Inject(method = "onCursorPos",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/Mouse;hasResolutionChanged:Z", ordinal = 0))
-    private void hookOnMouseMove(long handle, double xpos, double ypos, CallbackInfo ci)
+    private void malilib_hookOnMouseMove(long handle, double xpos, double ypos, CallbackInfo ci)
     {
 		Window clientWindow = this.client.getWindow();
 		double mouseX = ((Mouse) (Object) this).getX() * (double) clientWindow.getScaledWidth() / (double) clientWindow.getWidth();
@@ -35,7 +35,7 @@ public abstract class MixinMouse
     @Inject(method = "onMouseScroll", cancellable = true,
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getOverlay()Lnet/minecraft/client/gui/screen/Overlay;",
                     ordinal = 0, shift = At.Shift.AFTER))
-    private void hookOnMouseScroll(long handle, double xOffset, double yOffset, CallbackInfo ci)
+    private void malilib_hookOnMouseScroll(long handle, double xOffset, double yOffset, CallbackInfo ci)
     {
 		Window clientWindow = this.client.getWindow();
 		double mouseX = ((Mouse) (Object) this).getX() * (double) clientWindow.getScaledWidth() / (double) clientWindow.getWidth();
@@ -50,8 +50,8 @@ public abstract class MixinMouse
 
     @Inject(method = "onMouseButton", cancellable = true,
             at = @At(value = "INVOKE",
-					 target = "Lnet/minecraft/client/Mouse;method_74190(Lnet/minecraft/client/input/MouseInput;Z)Lnet/minecraft/client/input/MouseInput;"))
-    private void hookOnMouseClick(long window, MouseInput input, int action, CallbackInfo ci)
+					 target = "Lnet/minecraft/client/Mouse;modifyMouseInput(Lnet/minecraft/client/input/MouseInput;Z)Lnet/minecraft/client/input/MouseInput;"))
+    private void malilib_hookOnMouseClick(long window, MouseInput input, int action, CallbackInfo ci)
     {
         Window clientWindow = this.client.getWindow();
         double mouseX = ((Mouse) (Object) this).getX() * (double) clientWindow.getScaledWidth() / (double) clientWindow.getWidth();

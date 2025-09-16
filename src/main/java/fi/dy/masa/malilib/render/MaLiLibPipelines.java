@@ -49,15 +49,15 @@ public class MaLiLibPipelines
 //    public static RenderPipeline POSITION_TRANSLUCENT;
 
     // POSITION_MASA
-    public static RenderPipeline POSITION_MASA_NO_DEPTH_NO_CULL;
-    public static RenderPipeline POSITION_MASA_NO_DEPTH;
-    public static RenderPipeline POSITION_MASA_LEQUAL_DEPTH_OFFSET_1;
-    public static RenderPipeline POSITION_MASA_LEQUAL_DEPTH_OFFSET_2;
-    public static RenderPipeline POSITION_MASA_LEQUAL_DEPTH_OFFSET_3;
-    public static RenderPipeline POSITION_MASA_LEQUAL_DEPTH;
-    public static RenderPipeline POSITION_MASA_GREATER_DEPTH;
-    public static RenderPipeline POSITION_MASA_DEPTH_MASK;
-    public static RenderPipeline POSITION_MASA;
+//    public static RenderPipeline POSITION_MASA_NO_DEPTH_NO_CULL;
+//    public static RenderPipeline POSITION_MASA_NO_DEPTH;
+//    public static RenderPipeline POSITION_MASA_LEQUAL_DEPTH_OFFSET_1;
+//    public static RenderPipeline POSITION_MASA_LEQUAL_DEPTH_OFFSET_2;
+//    public static RenderPipeline POSITION_MASA_LEQUAL_DEPTH_OFFSET_3;
+//    public static RenderPipeline POSITION_MASA_LEQUAL_DEPTH;
+//    public static RenderPipeline POSITION_MASA_GREATER_DEPTH;
+//    public static RenderPipeline POSITION_MASA_DEPTH_MASK;
+//    public static RenderPipeline POSITION_MASA;
 
     // POSITION_COLOR_TRANSLUCENT
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL;
@@ -93,15 +93,15 @@ public class MaLiLibPipelines
 //    public static RenderPipeline POSITION_TEX_TRANSLUCENT;
 
     // POSITION_TEX_MASA
-    public static RenderPipeline POSITION_TEX_MASA_NO_DEPTH_NO_CULL;
-    public static RenderPipeline POSITION_TEX_MASA_NO_DEPTH;
-    public static RenderPipeline POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_1;
-    public static RenderPipeline POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_2;
-    public static RenderPipeline POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_3;
-    public static RenderPipeline POSITION_TEX_MASA_LEQUAL_DEPTH;
-    public static RenderPipeline POSITION_TEX_MASA_GREATER_DEPTH;
-    public static RenderPipeline POSITION_TEX_MASA_DEPTH_MASK;
-    public static RenderPipeline POSITION_TEX_MASA;
+//    public static RenderPipeline POSITION_TEX_MASA_NO_DEPTH_NO_CULL;
+//    public static RenderPipeline POSITION_TEX_MASA_NO_DEPTH;
+//    public static RenderPipeline POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_1;
+//    public static RenderPipeline POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_2;
+//    public static RenderPipeline POSITION_TEX_MASA_LEQUAL_DEPTH_OFFSET_3;
+//    public static RenderPipeline POSITION_TEX_MASA_LEQUAL_DEPTH;
+//    public static RenderPipeline POSITION_TEX_MASA_GREATER_DEPTH;
+//    public static RenderPipeline POSITION_TEX_MASA_DEPTH_MASK;
+//    public static RenderPipeline POSITION_TEX_MASA;
 
     // POSITION_TEX_COLOR_TRANSLUCENT
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL;

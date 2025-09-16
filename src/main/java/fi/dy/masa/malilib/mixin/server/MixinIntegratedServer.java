@@ -17,7 +17,7 @@ public class MixinIntegratedServer
     @Shadow @Final private MinecraftClient client;
 
     @Inject(method = "setupServer", at = @At("RETURN"))
-    private void setupServer(CallbackInfoReturnable<Boolean> cir)
+    private void malilib_setupServer(CallbackInfoReturnable<Boolean> cir)
     {
         if (cir.getReturnValue())
         {
@@ -26,7 +26,7 @@ public class MixinIntegratedServer
     }
 
     @Inject(method = "openToLan", at = @At("RETURN"))
-    private void checkOpenToLan(GameMode gameMode, boolean cheatsAllowed, int port, CallbackInfoReturnable<Boolean> cir)
+    private void malilib_checkOpenToLan(GameMode gameMode, boolean cheatsAllowed, int port, CallbackInfoReturnable<Boolean> cir)
     {
         if (cir.getReturnValue())
         {

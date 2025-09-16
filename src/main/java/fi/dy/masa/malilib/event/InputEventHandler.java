@@ -165,15 +165,15 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     {
         boolean cancel = false;
 
-        if (click.keycode() != -1)
+        if (click.getKeycode() != -1)
         {
             boolean eventButtonState = action == GLFW.GLFW_PRESS;
 
             // Update the cached pressed keys status
 //            KeybindMulti.onKeyInputPre(eventButton - 100, 0, 0, action);
-			KeybindMulti.onKeyInputPre(new KeyInput(click.keycode() - 100, 0, 0), action);
+			KeybindMulti.onKeyInputPre(new KeyInput(click.getKeycode() - 100, 0, 0), action);
 
-            cancel = this.checkKeyBindsForChanges(click.keycode() - 100);
+            cancel = this.checkKeyBindsForChanges(click.getKeycode() - 100);
 
             if (this.mouseHandlers.isEmpty() == false)
             {
