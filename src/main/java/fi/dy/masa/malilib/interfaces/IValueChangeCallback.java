@@ -6,7 +6,7 @@ public interface IValueChangeCallback<T extends IConfigBase>
 {
     /**
      * Called when (= after) the config's value is changed
-     * @param feature
+     * @param config ()
      */
     void onValueChanged(T config);
 }

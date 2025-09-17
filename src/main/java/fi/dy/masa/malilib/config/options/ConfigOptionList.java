@@ -80,9 +80,7 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
         {
             return this.value.fromString(newValue) != this.defaultValue;
         }
-        catch (Exception ignored)
-        {
-        }
+        catch (Exception ignored) { }
 
         return true;
     }
@@ -108,7 +106,13 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
     @Override
     public void setValueFromString(String value)
     {
+		IConfigOptionListEntry oldValue = this.value;
         this.value = this.value.fromString(value);
+
+		if (!this.value.equals(oldValue))
+		{
+			this.onValueChanged();
+		}
     }
 
     @Override

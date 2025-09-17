@@ -58,7 +58,13 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
     @Override
     public void setBooleanValue(boolean value)
     {
+		boolean oldValue = this.booleanConfig.getBooleanValue();
         this.booleanConfig.setBooleanValue(value);
+
+		if (oldValue != this.booleanConfig.getBooleanValue())
+		{
+			this.onValueChanged();
+		}
     }
 
     @Override
@@ -92,8 +98,15 @@ public class BooleanHotkeyGuiWrapper extends ConfigBoolean
     @Override
     public void resetToDefault()
     {
+//		boolean oldValue = this.booleanConfig.getBooleanValue();
         this.booleanConfig.resetToDefault();
         this.getKeybind().resetToDefault();
+
+//		if (this.getKeybind().isDirty() || oldValue != this.booleanConfig.getBooleanValue())
+//		{
+//			this.getKeybind().markClean();
+//			this.onValueChanged();
+//		}
     }
 
     public IConfigBoolean getBooleanConfig()

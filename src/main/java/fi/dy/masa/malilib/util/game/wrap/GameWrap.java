@@ -77,22 +77,6 @@ public class GameWrap
         return player != null ? player.getInventory() : null;
     }
 
-    /*
-    @Nullable
-    public static Container getPlayerInventoryContainer()
-    {
-        PlayerEntity player = getClient().player;
-        return player != null ? player.inventoryContainer : null;
-    }
-
-    @Nullable
-    public static Container getCurrentInventoryContainer()
-    {
-        PlayerEntity player = getClient().player;
-        return player != null ? player.openContainer : null;
-    }
-     */
-
     public static ClientPlayerInteractionManager getInteractionManager()
     {
         return getClient().interactionManager;
@@ -110,8 +94,6 @@ public class GameWrap
 
     public static double getPlayerReachDistance()
     {
-        //return getInteractionManager().getBlockReachDistance();
-
         if (getClientPlayer() != null)
         {
             return getClientPlayer().getBlockInteractionRange();
@@ -163,8 +145,6 @@ public class GameWrap
         {
             getClient().inGameHud.getChatHud().addMessage(Text.of(msg));
         }
-
-        //getClient().ingameGUI.addChatMessage(ChatType.CHAT, Text.of(msg));
     }
 
     public static void showHotbarMessage(String msg)
@@ -173,8 +153,6 @@ public class GameWrap
         {
             getClient().inGameHud.setOverlayMessage(Text.of(msg), false);
         }
-
-        //getClient().ingameGUI.addChatMessage(ChatType.GAME_INFO, Text.of(msg));
     }
 
     public static boolean sendChatMessage(String command)
@@ -219,7 +197,6 @@ public class GameWrap
 
     public static HitResult getHitResult()
     {
-        //return HitResult.of(getClient().objectMouseOver);
         return getClient().crosshairTarget;
     }
 
@@ -237,13 +214,11 @@ public class GameWrap
 
     public static int getRenderDistanceChunks()
     {
-        //return getOptions().renderDistanceChunks;
         return getOptions().getClampedViewDistance();
     }
 
     public static int getVanillaOptionsScreenScale()
     {
-        //return GameWrap.getOptions().guiScale;
         return getOptions().getGuiScale().getValue();
     }
 
@@ -259,7 +234,6 @@ public class GameWrap
 
     public static boolean isHideGui()
     {
-        //return getOptions().hideGUI;
         return getOptions().hudHidden;
     }
 
@@ -313,12 +287,10 @@ public class GameWrap
     {
         if (isSinglePlayer())
         {
-            //LevelStorage storage = MinecraftClient.getInstance().getLevelStorage();
             MinecraftServer server = getIntegratedServer();
 
             if (server != null)
             {
-                //File file = server.getActiveAnvilConverter().getFile(server.getFolderName(), "icon.png");
                 return server.getSavePath(WorldSavePath.ROOT);
             }
         }

@@ -102,9 +102,15 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
         return this.strings.equals(this.defaultValue) == false;
     }
 
+	private void addString(String str)
+	{
+		this.strings.add(str);
+	}
+
     @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+		List<String> oldList = new ArrayList<>(this.strings);
         this.strings.clear();
 
         try
@@ -116,8 +122,13 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
 
                 for (int i = 0; i < count; ++i)
                 {
-                    this.strings.add(arr.get(i).getAsString());
+                    this.addString(arr.get(i).getAsString());
                 }
+
+				if (!oldList.equals(this.strings))
+				{
+					this.onValueChanged();
+				}
             }
             else
             {

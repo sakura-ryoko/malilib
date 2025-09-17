@@ -93,6 +93,7 @@ public class ConfigHotkey extends ConfigBase<ConfigHotkey> implements IHotkey
     public void setValueFromString(String value)
     {
         this.keybind.setValueFromString(value);
+		this.checkIfClean();
     }
 
     @Override
@@ -111,7 +112,36 @@ public class ConfigHotkey extends ConfigBase<ConfigHotkey> implements IHotkey
     public void resetToDefault()
     {
         this.keybind.resetToDefault();
+	    this.checkIfClean();
     }
+
+	@Override
+	public boolean isDirty()
+	{
+		return this.keybind.isDirty();
+	}
+
+	@Override
+	public void markDirty()
+	{
+		this.keybind.markDirty();
+	}
+
+	@Override
+	public void markClean()
+	{
+		this.keybind.markClean();
+	}
+
+	@Override
+	public void checkIfClean()
+	{
+		if (this.keybind.isDirty())
+		{
+			this.keybind.markClean();
+			this.onValueChanged();
+		}
+	}
 
     @Override
     public void setValueFromJsonElement(JsonElement element)
@@ -126,11 +156,13 @@ public class ConfigHotkey extends ConfigBase<ConfigHotkey> implements IHotkey
             else if (element.isJsonPrimitive())
             {
                 this.keybind.setValueFromString(element.getAsString());
-            }
+			}
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
             }
+
+			this.checkIfClean();
         }
         catch (Exception e)
         {

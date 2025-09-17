@@ -157,16 +157,6 @@ public abstract class WidgetBase
         return this.isMouseOver((int) click.x(), (int) click.y());
     }
 
-//    public VertexConsumer bindTexture(Identifier texture, DrawContext context)
-//    {
-//        return RenderUtils.bindGuiTexture(texture, context);
-//    }
-//
-//    public VertexConsumer bindOverlayTexture(Identifier texture, DrawContext context)
-//    {
-//        return RenderUtils.bindGuiOverlayTexture(texture, context);
-//    }
-
     public int getStringWidth(String text)
     {
         return this.textRenderer.getWidth(text);

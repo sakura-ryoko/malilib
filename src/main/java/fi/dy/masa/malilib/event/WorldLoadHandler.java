@@ -3,6 +3,8 @@ package fi.dy.masa.malilib.event;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.data.CachedTagManager;
 import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.client.MinecraftClient;
@@ -87,14 +89,13 @@ public class WorldLoadHandler implements IWorldLoadManager
         {
             ((ConfigManager) ConfigManager.getInstance()).saveAllConfigs();
             RecipeBookUtils.clearMap();
-            //SyncHandler.getInstance().onStopServices();
         }
         // (Re-)Load all the configs from file when entering a world
         else if (worldBefore == null && worldAfter != null)
         {
             ((ConfigManager) ConfigManager.getInstance()).loadAllConfigs();
             InputEventHandler.getKeybindManager().updateUsedKeys();
-            //SyncHandler.getInstance().onStartServices(worldAfter);
+            CachedTagManager.startCache();
         }
 
         if (this.worldLoadPostHandlers.isEmpty() == false &&

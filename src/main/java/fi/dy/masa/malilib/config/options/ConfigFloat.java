@@ -168,9 +168,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
         {
             return Float.parseFloat(newValue) != this.defaultValue;
         }
-        catch (Exception ignored)
-        {
-        }
+        catch (Exception ignored) { }
 
         return true;
     }
@@ -213,7 +211,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
         {
             if (element.isJsonPrimitive())
             {
-                this.value = this.getClampedValue(element.getAsFloat());
+                this.setFloatValue(this.getClampedValue(element.getAsFloat()));
             }
             else
             {

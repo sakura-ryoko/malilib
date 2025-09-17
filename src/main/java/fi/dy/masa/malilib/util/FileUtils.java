@@ -24,26 +24,6 @@ public class FileUtils
     public static final Predicate<Path> ANY_FILE_FILEFILTER = Files::isRegularFile;
     public static final Predicate<Path> JSON_FILEFILTER = (f) -> Files.isRegularFile(f) && f.getFileName().toString().endsWith(".json");
 
-    /**
-     * Please stop using the File object, use {@link #getConfigDirectoryAsPath()}
-     * @return ()
-     */
-    @Deprecated(forRemoval = true)
-    public static File getConfigDirectory()
-    {
-        return new File(GameWrap.getClient().runDirectory, "config");
-    }
-
-    /**
-     * Please stop using the File object, use {@link #getMinecraftDirectoryAsPath()}
-     * @return ()
-     */
-    @Deprecated(forRemoval = true)
-    public static File getMinecraftDirectory()
-    {
-        return GameWrap.getClient().runDirectory;
-    }
-
     public static Path getConfigDirectoryAsPath()
     {
         return GameWrap.getClient().runDirectory.toPath().resolve("config");
@@ -307,6 +287,7 @@ public class FileUtils
         return false;
     }
 
+    @Deprecated
     public static File getCanonicalFileIfPossible(File file)
     {
         try
@@ -336,6 +317,7 @@ public class FileUtils
         return file;
     }
 
+    @Deprecated(forRemoval = true)
     public static String getJoinedTrailingPathElements(File file, File rootPath, int maxStringLength, String separator)
     {
         String path = "";

@@ -123,9 +123,29 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
     @Override
     public void resetToDefault()
     {
+//		boolean oldValue = super.getBooleanValue();
         super.resetToDefault();
         this.keybind.resetToDefault();
-    }
+//
+//		if (super.getBooleanValue() != oldValue)
+//		{
+//			this.keybind.markClean();
+//			// Don't duplicate the Callback
+//		}
+//		else
+//		{
+//			this.checkIfKeybindIsClean();
+//		}
+	}
+
+	private void checkIfKeybindIsClean()
+	{
+		if (this.keybind.isDirty())
+		{
+			this.keybind.markClean();
+			this.onValueChanged();
+		}
+	}
 
     @Override
     public void setValueFromJsonElement(JsonElement element)
@@ -145,6 +165,7 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
                 {
                     JsonObject hotkeyObj = obj.getAsJsonObject("hotkey");
                     this.keybind.setValueFromJsonElement(hotkeyObj);
+	                this.checkIfKeybindIsClean();
                 }
             }
             // Backwards compatibility with the old bugged serialization that only serialized the boolean value

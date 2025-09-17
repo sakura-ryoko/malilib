@@ -137,9 +137,7 @@ public class GuiKeybindSettings extends GuiDialogBase
             this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
         }
 
-//        drawContext.goTopLayer();
         super.render(drawContext, mouseX, mouseY, partialTicks);
-//        drawContext.popLayer();
     }
 
     @Override

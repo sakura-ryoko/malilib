@@ -28,52 +28,49 @@ public class CachedBlockTags
 {
     private static final CachedBlockTags INSTANCE = new CachedBlockTags();
     public static CachedBlockTags getInstance() { return INSTANCE; }
-    private final HashMap<String, Entry> entries;
+    private final HashMap<CachedTagKey, Entry> entries;
 
     private CachedBlockTags()
     {
         this.entries = new HashMap<>();
     }
 
-    public void build(String name, @Nonnull List<String> list)
+    public void build(CachedTagKey key, @Nonnull List<String> list)
     {
-        if (name.isEmpty())
-        {
-            MaLiLib.LOGGER.error("CachedBlockTags#build: Invalid list name.");
-            return;
-        }
-
         if (list.isEmpty())
         {
-            MaLiLib.LOGGER.warn("CachedBlockTags#build: list '{}' is empty.", name);
+            MaLiLib.LOGGER.warn("CachedBlockTags#build: list for '{}' is empty.", key.toString());
             return;
         }
 
         Entry entry = new Entry(list);
-        Entry oldEntry = this.entries.put(name, entry);
+        Entry oldEntry = this.entries.put(key, entry);
 
         if (oldEntry != null)
         {
             oldEntry.clear();
         }
+
+        MaLiLib.debugLog("CachedBlockTags#build: New tag list: '{}'", key.toString());
     }
 
-    public @Nullable Entry get(String name)
+    public @Nullable Entry get(CachedTagKey key)
     {
-        if (this.entries.containsKey(name))
+        if (this.entries.containsKey(key))
         {
-            return this.entries.get(name);
+            return this.entries.get(key);
         }
 
         return null;
     }
 
-	public void clearEntry(String name)
+	public void clearEntry(CachedTagKey key)
 	{
-		if (this.entries.containsKey(name))
+		if (this.entries.containsKey(key))
 		{
-			this.entries.get(name).clear();
-		}
+			this.entries.get(key).clear();
+            MaLiLib.debugLog("CachedBlockTags#clearEntry: Clear tag list Entry: '{}'", key.toString());
+        }
 	}
 
     public void clear()
@@ -81,18 +78,20 @@ public class CachedBlockTags
         this.entries.forEach(
                 (name, entry) -> entry.clear()
         );
+
+        MaLiLib.debugLog("CachedBlockTags#clear: Clear all");
     }
 
-    public List<String> matchAny(RegistryEntry<Block> block)
+    public List<CachedTagKey> matchAny(RegistryEntry<Block> block)
     {
-        List<String> list = new ArrayList<>();
+        List<CachedTagKey> list = new ArrayList<>();
 
         this.entries.forEach(
-                (name, entry) ->
+                (key, entry) ->
                 {
                     if (entry.contains(block))
                     {
-                        list.add(name);
+                        list.add(key);
                     }
                 }
         );
@@ -100,16 +99,16 @@ public class CachedBlockTags
         return list;
     }
 
-    public List<String> matchAny(Block block)
+    public List<CachedTagKey> matchAny(Block block)
     {
-        List<String> list = new ArrayList<>();
+        List<CachedTagKey> list = new ArrayList<>();
 
         this.entries.forEach(
-                (name, entry) ->
+                (key, entry) ->
                 {
                     if (entry.contains(block))
                     {
-                        list.add(name);
+                        list.add(key);
                     }
                 }
         );
@@ -117,16 +116,16 @@ public class CachedBlockTags
         return list;
     }
 
-    public List<String> matchAny(BlockState state)
+    public List<CachedTagKey> matchAny(BlockState state)
     {
-        List<String> list = new ArrayList<>();
+        List<CachedTagKey> list = new ArrayList<>();
 
         this.entries.forEach(
-                (name, entry) ->
+                (key, entry) ->
                 {
                     if (entry.contains(state))
                     {
-                        list.add(name);
+                        list.add(key);
                     }
                 }
         );
@@ -134,9 +133,9 @@ public class CachedBlockTags
         return list;
     }
 
-    public boolean match(String name, RegistryEntry<Block> block)
+    public boolean match(CachedTagKey key, RegistryEntry<Block> block)
     {
-        Entry entry = this.get(name);
+        Entry entry = this.get(key);
 
         if (entry != null)
         {
@@ -144,15 +143,15 @@ public class CachedBlockTags
         }
         else
         {
-            MaLiLib.LOGGER.warn("CachedBlockTags#match(BlockEntry): Invalid tag list '{}'", name);
+            MaLiLib.LOGGER.warn("CachedBlockTags#match(BlockEntry): Invalid tag list '{}'", key.toString());
         }
 
         return false;
     }
 
-    public boolean match(String name, Block block)
+    public boolean match(CachedTagKey key, Block block)
     {
-        Entry entry = this.get(name);
+        Entry entry = this.get(key);
 
         if (entry != null)
         {
@@ -160,15 +159,15 @@ public class CachedBlockTags
         }
         else
         {
-            MaLiLib.LOGGER.warn("CachedBlockTags#match(Block): Invalid tag list '{}'", name);
+            MaLiLib.LOGGER.warn("CachedBlockTags#match(Block): Invalid tag list '{}'", key.toString());
         }
 
         return false;
     }
 
-    public boolean match(String name, BlockState state)
+    public boolean match(CachedTagKey key, BlockState state)
     {
-        Entry entry = this.get(name);
+        Entry entry = this.get(key);
 
         if (entry != null)
         {
@@ -176,7 +175,7 @@ public class CachedBlockTags
         }
         else
         {
-            MaLiLib.LOGGER.warn("CachedBlockTags#match(State): Invalid tag list '{}'", name);
+            MaLiLib.LOGGER.warn("CachedBlockTags#match(State): Invalid tag list '{}'", key.toString());
         }
 
         return false;
@@ -187,8 +186,8 @@ public class CachedBlockTags
         JsonObject obj = new JsonObject();
 
         this.entries.forEach(
-                (name, entry) ->
-                        obj.add(name, entry.toJson())
+                (key, entry) ->
+                        obj.add(key.toString(), entry.toJson())
         );
 
         return obj;
@@ -203,10 +202,11 @@ public class CachedBlockTags
             if (obj.isJsonArray())
             {
                 Entry entry = Entry.fromJson(obj.get(key));
+                CachedTagKey tagKey = CachedTagKey.fromString(key);
 
                 if (entry != null)
                 {
-                    this.entries.put(key, entry);
+                    this.entries.put(tagKey, entry);
                 }
             }
         }

@@ -41,6 +41,7 @@ public class KeybindMulti implements IKeybind
     private boolean pressed;
     private boolean pressedLast;
     private int heldTime;
+	private boolean dirty;
     @Nullable
     private IHotkeyCallback callback;
 
@@ -59,12 +60,6 @@ public class KeybindMulti implements IKeybind
     }
 
     @Override
-    public Codec<KeybindMulti> codec()
-    {
-        return CODEC;
-    }
-
-    @Override
     public KeybindSettings getSettings()
     {
         return this.settings;
@@ -73,7 +68,13 @@ public class KeybindMulti implements IKeybind
     @Override
     public void setSettings(KeybindSettings settings)
     {
+		KeybindSettings oldSettings = this.settings;
         this.settings = settings;
+
+		if (!oldSettings.equals(settings))
+		{
+			this.markDirty();
+		}
     }
 
     @Override
@@ -88,7 +89,25 @@ public class KeybindMulti implements IKeybind
         return this.keyCodes.isEmpty() == false || this.settings.getAllowEmpty();
     }
 
-    /**
+	@Override
+	public boolean isDirty()
+	{
+		return this.dirty;
+	}
+
+	@Override
+	public void markDirty()
+	{
+		this.dirty = true;
+	}
+
+	@Override
+	public void markClean()
+	{
+		this.dirty = false;
+	}
+
+	/**
      * Checks if this keybind is now active but previously was not active,
      * and then updates the cached state.
      * @return true if this keybind just became pressed
@@ -223,6 +242,7 @@ public class KeybindMulti implements IKeybind
         this.keyCodes.clear();
         this.pressed = false;
         this.heldTime = 0;
+		this.markDirty();
     }
 
     @Override
@@ -231,6 +251,7 @@ public class KeybindMulti implements IKeybind
         if (this.keyCodes.contains(keyCode) == false)
         {
             this.keyCodes.add(keyCode);
+	        this.markDirty();
         }
     }
 
@@ -249,6 +270,7 @@ public class KeybindMulti implements IKeybind
     public void removeKey(int keyCode)
     {
         this.keyCodes.remove(keyCode);
+	    this.markDirty();
     }
 
     @Override
@@ -293,7 +315,13 @@ public class KeybindMulti implements IKeybind
     @Override
     public void resetSettingsToDefaults()
     {
+		KeybindSettings oldSettings = this.settings;
         this.settings = this.defaultSettings;
+
+		if (!oldSettings.equals(this.settings))
+		{
+			this.markDirty();
+		}
     }
 
     @Override
@@ -329,6 +357,7 @@ public class KeybindMulti implements IKeybind
     @Override
     public void setValueFromString(String str)
     {
+		String oldString = this.getStringValue();
         this.clearKeys();
         String[] keys = str.split(",");
 
@@ -346,6 +375,11 @@ public class KeybindMulti implements IKeybind
                 }
             }
         }
+
+		if (!oldString.equals(this.getStringValue()))
+		{
+			this.markDirty();
+		}
     }
 
     @Override

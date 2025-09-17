@@ -216,7 +216,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
         {
             if (element.isJsonPrimitive())
             {
-                this.value = this.getClampedValue(element.getAsInt());
+                this.setIntegerValue(this.getClampedValue(element.getAsInt()));
             }
             else
             {

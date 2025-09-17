@@ -11,5 +11,6 @@ public interface IConfigBoolean extends IConfigValue
     default void toggleBooleanValue()
     {
         this.setBooleanValue(! this.getBooleanValue());
+		this.checkIfClean();
     }
 }

@@ -102,26 +102,40 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
         return !this.colors.equals(this.defaultValue);
     }
 
-    @Override
+	private void addColor(Color4f color)
+	{
+		this.colors.add(color);
+	}
+
+	@Override
     public void setValueFromJsonElement(JsonElement element)
     {
-        this.colors.clear();
+		List<Color4f> oldList = new ArrayList<>(this.colors);
+	    this.colors.clear();
+
         try
         {
             if (element.isJsonArray())
             {
                 JsonArray arr = element.getAsJsonArray();
                 final int count = arr.size();
+
                 for (int i = 0; i < count; ++i)
                 {
-                    this.colors.add(Color4f.fromColor(StringUtils.getColor(arr.get(i).getAsString(), 0)));
+                    this.addColor(Color4f.fromColor(StringUtils.getColor(arr.get(i).getAsString(), 0)));
                 }
+
+				if (!oldList.equals(this.colors))
+				{
+					this.onValueChanged();
+				}
             }
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
             }
-        } catch (Exception e)
+        }
+		catch (Exception e)
         {
             MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
         }

@@ -22,6 +22,7 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
      */
     private final ConfigType wrappedType;
     private final IConfigBase wrappedConfig;
+    private boolean dirty = false;
 
     public ConfigTypeWrapper(ConfigType wrappedType, IConfigBase wrappedConfig)
     {
@@ -132,6 +133,34 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
         this.wrappedConfig.setComment(comment);
     }
 
+    @Override
+    public boolean isDirty()
+    {
+        return this.dirty;
+    }
+
+    @Override
+    public void markDirty()
+    {
+        this.dirty = true;
+    }
+
+    @Override
+    public void markClean()
+    {
+        this.dirty = false;
+    }
+
+    @Override
+    public void checkIfClean()
+    {
+        if (this.isDirty())
+        {
+            this.markClean();
+            this.onValueChanged();
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public void onValueChanged()
@@ -189,6 +218,8 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     {
         try
         {
+            String oldValue = this.getStringValue();
+
             switch (this.wrappedType)
             {
                 case HOTKEY:
@@ -217,6 +248,11 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
                     option.setOptionListValue(option.getOptionListValue().fromString(value));
                     break;
                 default:
+            }
+
+            if (!oldValue.equals(this.getStringValue()))
+            {
+                this.onValueChanged();
             }
         }
         catch (Exception e)
@@ -291,6 +327,8 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     {
         try
         {
+            String oldValue = this.getStringValue();
+
             switch (this.wrappedType)
             {
                 case HOTKEY:
@@ -340,6 +378,11 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
                     break;
                 }
             }
+
+            if (!oldValue.equals(this.getStringValue()))
+            {
+                this.onValueChanged();
+            }
         }
         catch (Exception e)
         {
@@ -362,9 +405,16 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     @Override
     public void setBooleanValue(boolean value)
     {
+        boolean oldValue = this.getBooleanValue();
+
         if (this.wrappedType == ConfigType.BOOLEAN)
         {
             ((IConfigBoolean) this.wrappedConfig).setBooleanValue(value);
+        }
+
+        if (oldValue != this.getBooleanValue())
+        {
+            this.onValueChanged();
         }
     }
 
@@ -407,6 +457,8 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     @Override
     public void setIntegerValue(int value)
     {
+        int oldValue = this.getIntegerValue();
+
         if (this.wrappedType == ConfigType.INTEGER)
         {
             ((IConfigInteger) this.wrappedConfig).setIntegerValue(value);
@@ -414,6 +466,11 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
         else if (this.wrappedType == ConfigType.COLOR)
         {
             ((IConfigColor) this.wrappedConfig).setIntegerValue(value);
+        }
+
+        if (oldValue != this.getIntegerValue())
+        {
+            this.onValueChanged();
         }
     }
 
@@ -462,9 +519,16 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     @Override
     public void setDoubleValue(double value)
     {
+        double oldValue = this.getDoubleValue();
+
         if (this.wrappedType == ConfigType.DOUBLE)
         {
             ((IConfigDouble) this.wrappedConfig).setDoubleValue(value);
+        }
+
+        if (oldValue != this.getDoubleValue())
+        {
+            this.onValueChanged();
         }
     }
 
@@ -495,9 +559,16 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     @Override
     public void setFloatValue(float value)
     {
+        float oldValue = this.getFloatValue();
+
         if (this.wrappedType == ConfigType.FLOAT)
         {
             ((IConfigFloat) this.wrappedConfig).setFloatValue(value);
+        }
+
+        if (oldValue != this.getFloatValue())
+        {
+            this.onValueChanged();
         }
     }
 
@@ -528,9 +599,16 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     @Override
     public void setOptionListValue(IConfigOptionListEntry value)
     {
+        IConfigOptionListEntry oldValue = this.getOptionListValue();
+
         if (this.wrappedType == ConfigType.OPTION_LIST)
         {
             ((IConfigOptionList) this.wrappedConfig).setOptionListValue(value);
+        }
+
+        if (oldValue != this.getOptionListValue())
+        {
+            this.onValueChanged();
         }
     }
 
@@ -545,6 +623,8 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     {
         try
         {
+            String oldValue = this.getStringValue();
+
             switch (this.wrappedType)
             {
                 case BOOLEAN:
@@ -573,6 +653,11 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
                     ((IHotkey) this.wrappedConfig).setValueFromJsonElement(element);
                     break;
                 default:
+            }
+
+            if (!oldValue.equals(this.getStringValue()))
+            {
+                this.onValueChanged();
             }
         }
         catch (Exception e)

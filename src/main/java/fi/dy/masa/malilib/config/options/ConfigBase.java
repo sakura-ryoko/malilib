@@ -22,6 +22,7 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
     private String translationPrefix = "";
     @Nullable
     private IValueChangeCallback<T> callback;
+	protected boolean dirty = false;
 
     public static final String COMMENT_KEY = "comment";
     public static final String PRETTY_NAME_KEY = "prettyName";
@@ -207,9 +208,42 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
         this.callback = callback;
     }
 
-    @SuppressWarnings("unchecked")
+	@Override
+	public boolean isDirty()
+	{
+		return this.dirty;
+	}
+
+	@Override
+	public void markDirty()
+	{
+		this.dirty = true;
+	}
+
+	@Override
+	public void markClean()
+	{
+		this.dirty = false;
+	}
+
+	@Override
+	public void checkIfClean()
+	{
+		if (this.isDirty())
+		{
+			this.markClean();
+			this.onValueChanged();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
     public void onValueChanged()
     {
+        if (CONFIG_TYPE_DEBUG || (MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG != null && MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG.getBooleanValue()))
+        {
+            MaLiLib.LOGGER.info("CONFIG: onValueChanged() -> type [{}], name [{}], hasCallback [{}]", type.name(), this.name, this.callback != null);
+        }
+
         if (this.callback != null)
         {
             this.callback.onValueChanged((T) this);

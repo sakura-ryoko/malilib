@@ -54,9 +54,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
         boolean reverse = this.getSortInReverse();
         int iconX = this.getColumnPosX(sortColumn + 1) - 21; // align to the right edge
 
-//        RenderUtils.color(1f, 1f, 1f, 1f);
         IGuiIcon icon = reverse ? iconReverse : iconNatural;
-//        this.bindTexture(icon.getTexture(), drawContext);
         icon.renderAt(drawContext, iconX, this.y + 3, this.zLevel, true, sortColumn == mouseOverColumn);
 
         for (int i = 0; i < this.getColumnCount(); ++i)

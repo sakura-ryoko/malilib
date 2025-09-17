@@ -86,6 +86,27 @@ public interface IConfigBase
     void setTranslatedName(String translatedName);
     void setComment(String comment);
 
+	/**
+	 * Return if something has recently changed
+	 * @return (True|False)
+	 */
+	boolean isDirty();
+
+	/**
+	 * Marks this as "dirty", ie, something has changed; and signals that onValueChanged() should be triggered.
+	 */
+	void markDirty();
+
+	/**
+	 * Marks this as "clean", after the onValueChanged() has been triggered.
+	 */
+	void markClean();
+
+	/**
+	 * Runs the test to see if the Config is marked dirty, and make it clean.
+	 */
+	void checkIfClean();
+
     /**
      * Set the value of this config option from a JSON element (is possible)
      * @param element

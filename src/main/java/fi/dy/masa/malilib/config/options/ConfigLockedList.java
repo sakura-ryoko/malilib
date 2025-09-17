@@ -159,6 +159,7 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
                     {
                         list.add(entry);
                         defList.remove(entry);
+						this.markDirty();
                     }
                 }
 
@@ -166,9 +167,11 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
                 if (defList.isEmpty() == false)
                 {
                     list.addAll(defList);
+					this.markDirty();
                 }
 
                 this.values.addAll(list);
+				this.checkIfClean();
             }
             else
             {

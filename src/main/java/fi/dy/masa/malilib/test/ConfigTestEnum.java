@@ -44,6 +44,7 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     private final boolean singlePlayer;
     private boolean valueBoolean;
     private IValueChangeCallback<IConfigBoolean> callback;
+    private boolean dirty = false;
 
     public static final ImmutableList<ConfigTestEnum> VALUES = ImmutableList.copyOf(values());
 
@@ -126,11 +127,18 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     @Override
     public void setValueFromString(String value)
     {
+        boolean oldValue = this.valueBoolean;
+
         switch (value)
         {
             case "true" -> this.valueBoolean = true;
             case "false" -> this.valueBoolean = false;
             default -> {}
+        }
+
+        if (oldValue != this.valueBoolean)
+        {
+            this.onValueChanged();
         }
     }
 
@@ -255,6 +263,34 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     }
 
     @Override
+    public boolean isDirty()
+    {
+        return this.dirty;
+    }
+
+    @Override
+    public void markDirty()
+    {
+        this.dirty = true;
+    }
+
+    @Override
+    public void markClean()
+    {
+        this.dirty = false;
+    }
+
+    @Override
+    public void checkIfClean()
+    {
+        if (this.isDirty())
+        {
+            this.markClean();
+            this.onValueChanged();
+        }
+    }
+
+    @Override
     public boolean isModified()
     {
         return this.valueBoolean != this.defaultValueBoolean;
@@ -285,7 +321,7 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
         {
             if (element.isJsonPrimitive())
             {
-                this.valueBoolean = element.getAsBoolean();
+                this.setBooleanValue(element.getAsBoolean());
             }
             else
             {

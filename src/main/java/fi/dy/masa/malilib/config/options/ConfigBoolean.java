@@ -114,7 +114,13 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
     @Override
     public void setValueFromString(String value)
     {
+		boolean oldValue = this.value;
         this.value = Boolean.parseBoolean(value);
+
+		if (oldValue != this.value)
+		{
+			this.onValueChanged();
+		}
     }
 
     @Override
@@ -124,7 +130,7 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
         {
             if (element.isJsonPrimitive())
             {
-                this.value = element.getAsBoolean();
+				this.setBooleanValue(element.getAsBoolean());
             }
             else
             {

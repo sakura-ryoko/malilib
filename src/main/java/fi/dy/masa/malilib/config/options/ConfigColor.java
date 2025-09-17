@@ -128,8 +128,13 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
     @Override
     public void setValueFromString(String value)
     {
+		Color4f oldColor = this.color;
         this.color = Color4f.fromString(value);
-//        this.setIntegerValue(Integer.parseInt(value));
+
+		if (oldColor.getIntValue() != this.color.getIntValue())
+		{
+			this.onValueChanged();
+		}
     }
 
     @Override
@@ -140,7 +145,8 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
 
         this.color = Color4f.fromColor(clamp);
 
-        if (oldValue != clamp)
+        if (oldValue != clamp ||
+            this.color.getIntValue() != oldValue)
         {
             this.onValueChanged();
         }
@@ -172,10 +178,13 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
     @Override
     public void resetToDefault()
     {
+        Color4f oldColor = this.color;
         this.color = this.defaultValue;
 
-//        this.setIntegerValue(this.defaultValue);
-//        this.color = Color4f.fromColor(this.getIntegerValue());
+        if (oldColor.getIntValue() != this.color.getIntValue())
+        {
+            this.onValueChanged();
+        }
     }
 
     @Override
@@ -199,9 +208,6 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
         {
             if (element.isJsonPrimitive())
             {
-//                this.value = this.getClampedValue(StringUtils.getColor(element.getAsString(), 0));
-//                this.color = Color4f.fromColor(this.value);
-
                 this.setValueFromString(element.getAsString());
             }
             else

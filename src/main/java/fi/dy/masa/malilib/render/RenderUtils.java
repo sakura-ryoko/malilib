@@ -561,7 +561,7 @@ public class RenderUtils
      * @param v
      * @param width
      * @param height
-     * @param zLevel
+     * @param zLevel (NOT USED)
      */
     public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel)
     {
@@ -579,7 +579,7 @@ public class RenderUtils
      * @param v
      * @param width
      * @param height
-     * @param zLevel
+     * @param zLevel (NOT USED)
      * @param argb
      */
     public static void drawTexturedRect(DrawContext drawContext, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, int argb)

@@ -16,7 +16,21 @@ public interface IKeybind extends IConfigResettable, IStringRepresentable
 {
     boolean isValid();
 
-    Codec<? extends IKeybind> codec();
+	/**
+	 * Return if something has recently changed for this Keybind
+	 * @return (True|False)
+	 */
+	boolean isDirty();
+
+	/**
+	 * Marks this keybind as "dirty", ie, something has changed; and signals that onValueChanged() should be triggered.
+	 */
+	void markDirty();
+
+	/**
+	 * Marks this keybind as "clean", after the onValueChanged() has been triggered.
+	 */
+	void markClean();
 
     /**
      * Returns true if the keybind was pressed down during the current game tick.

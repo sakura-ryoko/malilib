@@ -10,7 +10,6 @@ import fi.dy.masa.malilib.interfaces.IStringConsumerFeedback;
 
 public class DirectoryCreator implements IStringConsumerFeedback
 {
-    //protected final File dir;
     protected final Path dir;
     @Nullable protected final IDirectoryNavigator navigator;
 

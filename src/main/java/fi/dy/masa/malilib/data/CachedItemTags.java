@@ -27,71 +27,70 @@ public class CachedItemTags
 {
     private static final CachedItemTags INSTANCE = new CachedItemTags();
     public static CachedItemTags getInstance() { return INSTANCE; }
-    private final HashMap<String, Entry> entries;
+    private final HashMap<CachedTagKey, Entry> entries;
 
     private CachedItemTags()
     {
         this.entries = new HashMap<>();
     }
 
-    public void build(String name, @Nonnull List<String> list)
+    public void build(CachedTagKey key, @Nonnull List<String> list)
     {
-        if (name.isEmpty())
-        {
-            MaLiLib.LOGGER.error("CachedItemTags#build: Invalid list name.");
-            return;
-        }
-
         if (list.isEmpty())
         {
-            MaLiLib.LOGGER.warn("CachedItemTags#build: list '{}' is empty.", name);
+            MaLiLib.LOGGER.warn("CachedItemTags#build: list '{}' is empty.", key.toString());
             return;
         }
 
         Entry entry = new Entry(list);
-        Entry oldEntry = this.entries.put(name, entry);
+        Entry oldEntry = this.entries.put(key, entry);
 
         if (oldEntry != null)
         {
             oldEntry.clear();
         }
+
+        MaLiLib.debugLog("CachedItemTags#build: New tag list: '{}'", key.toString());
     }
 
-    public @Nullable Entry get(String name)
+    public @Nullable Entry get(CachedTagKey key)
     {
-        if (this.entries.containsKey(name))
+        if (this.entries.containsKey(key))
         {
-            return this.entries.get(name);
+            return this.entries.get(key);
         }
 
         return null;
     }
 
-	public void clearEntry(String name)
+	public void clearEntry(CachedTagKey key)
 	{
-		if (this.entries.containsKey(name))
+		if (this.entries.containsKey(key))
 		{
-			this.entries.get(name).clear();
+			this.entries.get(key).clear();
+            MaLiLib.debugLog("CachedItemTags#clearEntry: Clear tag list Entry: '{}'", key.toString());
 		}
 	}
 
 	public void clear()
     {
         this.entries.forEach(
-                (name, entry) -> entry.clear()
+                (key, entry) -> entry.clear()
         );
+
+        MaLiLib.debugLog("CachedItemTags#clear: Clear all");
     }
 
-    public List<String> matchAny(Item item)
+    public List<CachedTagKey> matchAny(Item item)
     {
-        List<String> list = new ArrayList<>();
+        List<CachedTagKey> list = new ArrayList<>();
 
         this.entries.forEach(
-                (name, entry) ->
+                (key, entry) ->
                 {
                     if (entry.contains(item))
                     {
-                        list.add(name);
+                        list.add(key);
                     }
                 }
         );
@@ -99,16 +98,16 @@ public class CachedItemTags
         return list;
     }
 
-    public List<String> matchAny(RegistryEntry<Item> item)
+    public List<CachedTagKey> matchAny(RegistryEntry<Item> item)
     {
-        List<String> list = new ArrayList<>();
+        List<CachedTagKey> list = new ArrayList<>();
 
         this.entries.forEach(
-                (name, entry) ->
+                (key, entry) ->
                 {
                     if (entry.contains(item))
                     {
-                        list.add(name);
+                        list.add(key);
                     }
                 }
         );
@@ -116,9 +115,9 @@ public class CachedItemTags
         return list;
     }
 
-    public boolean match(String name, Item item)
+    public boolean match(CachedTagKey key, Item item)
     {
-        Entry entry = this.get(name);
+        Entry entry = this.get(key);
 
         if (entry != null)
         {
@@ -126,15 +125,15 @@ public class CachedItemTags
         }
         else
         {
-            MaLiLib.LOGGER.warn("CachedItemTags#match(Item): Invalid tag list '{}'", name);
+            MaLiLib.LOGGER.warn("CachedItemTags#match(Item): Invalid tag list '{}'", key.toString());
         }
 
         return false;
     }
 
-    public boolean match(String name, RegistryEntry<Item> item)
+    public boolean match(CachedTagKey key, RegistryEntry<Item> item)
     {
-        Entry entry = this.get(name);
+        Entry entry = this.get(key);
 
         if (entry != null)
         {
@@ -142,7 +141,7 @@ public class CachedItemTags
         }
         else
         {
-            MaLiLib.LOGGER.warn("CachedItemTags#match(RegistryEntry): Invalid tag list '{}'", name);
+            MaLiLib.LOGGER.warn("CachedItemTags#match(RegistryEntry): Invalid tag list '{}'", key.toString());
         }
 
         return false;
@@ -153,8 +152,8 @@ public class CachedItemTags
         JsonObject obj = new JsonObject();
 
         this.entries.forEach(
-                (name, entry) ->
-                        obj.add(name, entry.toJson())
+                (key, entry) ->
+                        obj.add(key.toString(), entry.toJson())
         );
 
         return obj;
@@ -169,10 +168,11 @@ public class CachedItemTags
             if (obj.isJsonArray())
             {
                 Entry entry = Entry.fromJson(obj.get(key));
+                CachedTagKey tagKey = CachedTagKey.fromString(key);
 
                 if (entry != null)
                 {
-                    this.entries.put(key, entry);
+                    this.entries.put(tagKey, entry);
                 }
             }
         }

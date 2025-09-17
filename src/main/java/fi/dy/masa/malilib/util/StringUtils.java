@@ -18,6 +18,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import fi.dy.masa.malilib.MaLiLibReference;
+import net.minecraft.client.resource.language.I18n;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.JsonOps;
@@ -85,6 +87,16 @@ public class StringUtils
         }
 
         return "?";
+    }
+
+    public static String getMCVersionString()
+    {
+        return MaLiLibReference.MC_VERSION;
+    }
+
+    public static int getMCDataVersion()
+    {
+        return MaLiLibReference.MC_DATA_VERSION;
     }
 
     /**
@@ -766,7 +778,7 @@ public class StringUtils
             }
              */
 
-            return net.minecraft.client.resource.language.I18n.translate(translationKey, args);
+            return I18n.translate(translationKey, args);
         }
         catch (Exception e)
         {
@@ -796,7 +808,7 @@ public class StringUtils
      */
     public static boolean hasTranslation(String translationKey)
     {
-        return net.minecraft.client.resource.language.I18n.hasTranslation(translationKey);
+        return I18n.hasTranslation(translationKey);
     }
 
     /**
@@ -815,17 +827,17 @@ public class StringUtils
      */
     public static int getFontHeight()
     {
-        return net.minecraft.client.MinecraftClient.getInstance().textRenderer.fontHeight;
+        return MinecraftClient.getInstance().textRenderer.fontHeight;
     }
 
     public static int getStringWidth(String text)
     {
-        return net.minecraft.client.MinecraftClient.getInstance().textRenderer.getWidth(text);
+        return MinecraftClient.getInstance().textRenderer.getWidth(text);
     }
 
     public static void drawString(int x, int y, int color, String text, DrawContext drawContext)
     {
-        drawContext.drawText(net.minecraft.client.MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
+        drawContext.drawText(MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
     }
 
     /**
@@ -836,8 +848,6 @@ public class StringUtils
     public static String getDurationString(long durationMs)
     {
         return DurationFormat.PRETTY.format(durationMs);
-        // OG method
-        //return DurationFormatUtils.formatDurationWords(durationMs, true, true);
     }
 
     public static @Nullable String legacyTextDeserializer(MutableText oldText, @Nonnull DynamicRegistryManager registry)
