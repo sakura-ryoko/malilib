@@ -23,6 +23,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.nbt.INbtEntityInvoker;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
@@ -154,4 +156,10 @@ public abstract class MixinEntity implements INbtEntityInvoker
     {
         return this.malilib$gatherPassengerlessNbtInternal(expectedId);
     }
+
+	@Override
+	public Optional<CompoundData> malilib$getDataTagWithId(int expectedId)
+	{
+		return this.malilib$gatherPassengerlessNbtInternal(expectedId).map(DataConverterNbt::fromVanillaCompound);
+	}
 }

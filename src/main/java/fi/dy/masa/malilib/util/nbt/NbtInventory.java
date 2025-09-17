@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -19,11 +21,15 @@ import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.ListData;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 
 /**
- * This makes reading / Writing Inventories to / from NBT a piece of cake.
- * Supports Inventory, Nbt, or DefaultList<> interfaces; and uses the newer Mojang
+ * This makes reading / Writing Inventories to / from NBT (or Data Tag) a piece of cake.
+ * Supports Inventory, Nbt, Data Tag, or DefaultList<> interfaces; and uses the newer Mojang
  * 'StackWithSlot' system.
  */
 public class NbtInventory implements AutoCloseable
@@ -258,11 +264,11 @@ public class NbtInventory implements AutoCloseable
     }
 
     /**
-     * Converts the first Inventory element to a single NbtElement.
+     * Converts the first Inventory element to a single NbtCompound.
      * @return ()
      * @throws RuntimeException ()
      */
-    public NbtElement toNbtSingle(@Nonnull DynamicRegistryManager registry) throws RuntimeException
+    public NbtCompound toNbtSingle(@Nonnull DynamicRegistryManager registry) throws RuntimeException
     {
         if (this.size() > 1)
         {
@@ -275,11 +281,17 @@ public class NbtInventory implements AutoCloseable
         {
             NbtElement element = StackWithSlot.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), slot).getPartialOrThrow();
 //            LOGGER.info("toNbtSingle(): --> nbt: [{}]", element.toString());
-            return element;
+            return (NbtCompound) element;
         }
 
         return new NbtCompound();
     }
+
+	@ApiStatus.Experimental
+	public CompoundData toDataSingle(@Nonnull DynamicRegistryManager registry)
+	{
+		return DataConverterNbt.fromVanillaCompound(this.toNbtSingle(registry));
+	}
 
     /**
      * Converts this Inventory to a basic NbtList with Slot information.
@@ -309,6 +321,12 @@ public class NbtInventory implements AutoCloseable
 
         return nbt;
     }
+
+	@ApiStatus.Experimental
+	public ListData toDataList(@Nonnull DynamicRegistryManager registry)
+	{
+		return DataConverterNbt.fromVanillaList(this.toNbtList(registry));
+	}
 
     /**
      * Writes this Inventory to a Nbt Type (List or Compound) using a key; with slot information.
@@ -344,6 +362,30 @@ public class NbtInventory implements AutoCloseable
         throw new RuntimeException("Unsupported Nbt Type!");
     }
 
+	@ApiStatus.Experimental
+	public CompoundData toData(int type, String key, @Nonnull DynamicRegistryManager registry) throws RuntimeException
+	{
+		CompoundData data = new CompoundData();
+
+		if (type == Constants.NBT.TAG_LIST)
+		{
+			ListData list = this.toDataList(registry);
+
+			if (list.isEmpty())
+			{
+				return data;
+			}
+
+			return data.put(key, list);
+		}
+		else if (type == Constants.NBT.TAG_COMPOUND)
+		{
+			return data.put(key, this.toDataSingle(registry));
+		}
+
+		throw new RuntimeException("Unsupported Data Type!");
+	}
+
     /**
      * Creates a new NbtInventory from a Nbt Type (List or Compound) using a key; retains slot information.
      * @param nbtIn ()
@@ -373,6 +415,28 @@ public class NbtInventory implements AutoCloseable
         }
     }
 
+	@ApiStatus.Experimental
+	public static @Nullable NbtInventory fromData(@Nonnull CompoundData data, String key, boolean noSlotId, @Nonnull DynamicRegistryManager registry) throws RuntimeException
+	{
+		if (data.isEmpty() || !data.containsLenient(key))
+		{
+			return null;
+		}
+
+		if (data.contains(key, Constants.NBT.TAG_LIST))
+		{
+			return fromDataList(data.getList(key), noSlotId, registry);
+		}
+		else if (data.contains(key, Constants.NBT.TAG_COMPOUND))
+		{
+			return fromDataSingle(data.getCompound(key), registry);
+		}
+		else
+		{
+			throw new RuntimeException("Invalid Data Type!");
+		}
+	}
+
     /**
      * Creates a new NbtInventory from a single-member NbtCompound containing a single item with a slot number.
      * @param nbt ()
@@ -395,6 +459,19 @@ public class NbtInventory implements AutoCloseable
 
         return newInv;
     }
+
+	@ApiStatus.Experimental
+	public static @Nullable NbtInventory fromDataSingle(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry) throws RuntimeException
+	{
+		NbtCompound nbt = DataConverterNbt.toVanillaCompound(data);
+
+		if (nbt != null)
+		{
+			return fromNbtSingle(nbt, registry);
+		}
+
+		return null;
+	}
 
     /**
      * Creates a new NbtInventory from an NbtList; utilizing Slot information.
@@ -452,6 +529,19 @@ public class NbtInventory implements AutoCloseable
 
         return newInv;
     }
+
+	@ApiStatus.Experimental
+	public static @Nullable NbtInventory fromDataList(@Nonnull ListData list, boolean noSlotId, @Nonnull DynamicRegistryManager registry) throws RuntimeException
+	{
+		NbtList nbt = DataConverterNbt.toVanillaList(list);
+
+		if (nbt != null)
+		{
+			return fromNbtList(nbt, noSlotId, registry);
+		}
+
+		return null;
+	}
 
     /**
      * This exists because an NBT List can have empty slots not accounted for in the middle of its current size;

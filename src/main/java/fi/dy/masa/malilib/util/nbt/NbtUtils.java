@@ -17,10 +17,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.nbt.*;
 import net.minecraft.util.Uuids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.*;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
@@ -252,17 +249,10 @@ public class NbtUtils
 		return writeBlockPosToArrayTag(pos, tag, tagName);
 	}
 
-	public static @Nonnull NbtCompound writeVec3iToArrayTag(@Nonnull Vec3i pos, @Nonnull NbtCompound tag, String tagName)
-	{
-		return writeBlockPosToArrayTag(pos, tag, tagName);
-	}
-
 	public static @Nonnull NbtCompound writeBlockPosToArrayTag(@Nonnull Vec3i pos, @Nonnull NbtCompound tag, String tagName)
 	{
 		int[] arr = new int[]{pos.getX(), pos.getY(), pos.getZ()};
-
 		tag.putIntArray(tagName, arr);
-
 		return tag;
 	}
 
@@ -502,6 +492,41 @@ public class NbtUtils
 		tag.putInt(pre+"Z", pos.getZ());
 
 		return tag;
+	}
+
+	@SuppressWarnings("deprecation")
+	public static Direction readDirectionFromTag(@Nonnull NbtCompound tag, String key)
+	{
+		NbtElement ele = tag.get(key);
+
+		if (ele != null)
+		{
+			if (ele.getType() == Constants.NBT.TAG_INT)
+			{
+				return tag.get(key, Direction.INDEX_CODEC).orElse(Direction.SOUTH);
+			}
+			else if (ele.getType() == Constants.NBT.TAG_STRING)
+			{
+				return tag.get(key, Direction.CODEC).orElse(Direction.SOUTH);
+			}
+		}
+
+		return Direction.SOUTH;
+	}
+
+	@SuppressWarnings("deprecation")
+	public static NbtCompound writeDirectionToTagAsInt(@Nonnull NbtCompound tagIn, String key, Direction direction)
+	{
+		tagIn.put(key, Direction.INDEX_CODEC, direction);
+
+		return tagIn;
+	}
+
+	public static NbtCompound writeDirectionToTagAsString(@Nonnull NbtCompound tagIn, String key, Direction direction)
+	{
+		tagIn.put(key, Direction.CODEC, direction);
+
+		return tagIn;
 	}
 
 	/**
