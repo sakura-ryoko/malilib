@@ -1,11 +1,11 @@
 package fi.dy.masa.malilib.util.data.tag;
 
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-
-import malilib.util.data.Constants;
-import malilib.util.data.tag.util.SizeTracker;
 
 public abstract class BaseData
 {

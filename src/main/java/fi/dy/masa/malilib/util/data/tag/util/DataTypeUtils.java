@@ -1,20 +1,15 @@
 package fi.dy.masa.malilib.util.data.tag.util;
 
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
+
 import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-
-import malilib.util.data.Constants;
-import malilib.util.data.tag.BaseData;
-import malilib.util.data.tag.CompoundData;
-import malilib.util.data.tag.DataView;
-import malilib.util.data.tag.DoubleData;
-import malilib.util.data.tag.IntData;
-import malilib.util.data.tag.ListData;
-import malilib.util.position.BlockPos;
-import malilib.util.position.Vec3d;
-import malilib.util.position.Vec3i;
 
 public class DataTypeUtils
 {

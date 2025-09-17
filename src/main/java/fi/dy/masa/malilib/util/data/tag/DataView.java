@@ -1,9 +1,9 @@
 package fi.dy.masa.malilib.util.data.tag;
 
+import fi.dy.masa.malilib.util.data.Constants;
+
 import java.util.Optional;
 import java.util.Set;
-
-import malilib.util.data.Constants;
 
 public interface DataView
 {

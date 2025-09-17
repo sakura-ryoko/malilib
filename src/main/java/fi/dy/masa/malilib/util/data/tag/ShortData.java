@@ -4,8 +4,8 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import malilib.util.data.Constants;
-import malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
 public class ShortData extends BaseData
 {

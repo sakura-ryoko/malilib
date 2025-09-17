@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import com.google.common.collect.Lists;
 
-import malilib.util.data.Constants;
-import malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
 public class ListData extends BaseData
 {

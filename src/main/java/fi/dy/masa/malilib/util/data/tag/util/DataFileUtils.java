@@ -1,5 +1,10 @@
 package fi.dy.masa.malilib.util.data.tag.util;
 
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.BaseData;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInput;
@@ -12,11 +17,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipException;
 import javax.annotation.Nullable;
-
-import malilib.MaLiLib;
-import malilib.util.data.Constants;
-import malilib.util.data.tag.BaseData;
-import malilib.util.data.tag.CompoundData;
 
 public class DataFileUtils
 {

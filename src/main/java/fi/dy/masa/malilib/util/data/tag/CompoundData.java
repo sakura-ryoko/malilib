@@ -1,5 +1,8 @@
 package fi.dy.masa.malilib.util.data.tag;
 
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -8,9 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import malilib.util.data.Constants;
-import malilib.util.data.tag.util.SizeTracker;
 
 public class CompoundData extends BaseData implements DataView
 {
