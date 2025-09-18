@@ -54,6 +54,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
         // Can't add OPEN_GUI_CONFIGS here, because things will break
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
+                OPEN_GUI_CONFIGS,
 //                ENABLE_ACTIONBAR_MESSAGES,
                 ENABLE_CONFIG_SWITCHER
 //                ENABLE_STATUS_EFFECTS_SHIFT
