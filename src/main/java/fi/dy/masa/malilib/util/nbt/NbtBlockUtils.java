@@ -289,7 +289,7 @@ public class NbtBlockUtils
         if (nbt.contains(NbtKeys.PROFILE))
         {
             //ProfileComponent.CODEC.parse(NbtOps.INSTANCE, nbt.get(NbtKeys.PROFILE)).resultOrPartial().ifPresent(profile::set);
-            profile = nbt.get(NbtKeys.PROFILE, ProfileComponent.field_49359).orElse(null);
+            profile = nbt.get(NbtKeys.PROFILE, ProfileComponent.CODEC).orElse(null);
         }
 
         return Pair.of(profile, Pair.of(note, name));
