@@ -46,14 +46,13 @@ public class WidgetSearchBar extends WidgetBase
         return this.searchOpen;
     }
 
-    public void setSearchOpen(boolean isOpen, Click click)
+    public void setSearchOpen(boolean isOpen)
     {
         this.searchOpen = isOpen;
 
         if (this.searchOpen)
         {
             this.searchBox.setFocused(true);
-			this.searchBox.onClick(click, false);
         }
     }
 
@@ -66,7 +65,8 @@ public class WidgetSearchBar extends WidgetBase
         }
         else if (this.iconSearch.isMouseOver((int) click.x(), (int) click.y()))
         {
-            this.setSearchOpen(! this.searchOpen, click);
+            this.setSearchOpen(! this.searchOpen);
+			this.searchBox.onClick(click, false);
             return true;
         }
 
