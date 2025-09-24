@@ -4,6 +4,9 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.base.Splitter;
+import fi.dy.masa.malilib.data.CachedTagUtils;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.block.Block;
@@ -503,9 +506,11 @@ public class BlockUtils
      */
     public static void setStackNbt(@Nonnull ItemStack stack, @Nonnull BlockEntity be, @Nonnull DynamicRegistryManager registry)
     {
-        NbtCompound nbt = be.createComponentlessNbt(registry);
+        if (stack.isEmpty()) return;
+//        NbtCompound nbt = be.createComponentlessNbt(registry);
         NbtView view = NbtView.getWriter(registry);
-        view = view.writeNbt(nbt);
+//        view = view.writeNbt(nbt);
+        be.writeComponentlessData(view.getWriter());
         BlockItem.setBlockEntityData(stack, be.getType(), (NbtWriteView) view.getWriter());
         stack.applyComponentsFrom(be.createComponentMap());
     }
@@ -517,9 +522,8 @@ public class BlockUtils
      * @param right ()
      * @return ()
      */
-	// todo move to Litematica's CachedTagManager
-//    public static boolean isInSameGroup(BlockState left, BlockState right)
-//    {
+    public static boolean isInSameGroup(BlockState left, BlockState right)
+    {
 //        for (TagKey<Block> tagKey : MaLiLibTag.Blocks.REPLACEABLE_GROUPS)
 //        {
 //            if (left.isIn(tagKey) && right.isIn(tagKey))
@@ -527,9 +531,14 @@ public class BlockUtils
 //                return true;
 //            }
 //        }
-//
-//        return false;
-//    }
+
+        Pair<RegistryEntryList<Block>, RegistryEntry<Block>> pairLeft = CachedTagUtils.matchReplaceableBlockTag(left);
+        Pair<RegistryEntryList<Block>, RegistryEntry<Block>> pairRight = CachedTagUtils.matchReplaceableBlockTag(right);
+
+        // Do not check the block tag (getRight())
+        return pairLeft.getLeft() != null && pairRight.getLeft() != null &&
+               pairLeft.getLeft().getTagKey().equals(pairRight.getLeft().getTagKey());
+    }
 
     /**
      * Match the properties list only of two block states, ignoring the block type

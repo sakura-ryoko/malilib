@@ -4,8 +4,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
+import java.util.Optional;
 
 public class CachedTagUtils
 {
@@ -157,5 +160,125 @@ public class CachedTagUtils
         }
 
         return false;
+    }
+
+    /**
+     * Match "Replaceable" Cached Block Tags
+     * @param block (Block Entry)
+     * @return ()
+     */
+    public static Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchReplaceableBlockTag(RegistryEntry<Block> block)
+    {
+        Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.REPLACEABLE_BLOCKS_KEY, block);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CONCRETE_BLOCKS_KEY, block);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CORAL_FANS_KEY, block);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLASS_PANES_KEY, block);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLAZED_TERRACOTTA_BLOCKS_KEY, block);
+
+        return pair.orElseGet(() -> Pair.of(null, null));
+    }
+
+    /**
+     * Match "Replaceable" Cached Block Tags
+     * @param block (Block)
+     * @return ()
+     */
+    public static Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchReplaceableBlockTag(Block block)
+    {
+        Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.REPLACEABLE_BLOCKS_KEY, block);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CONCRETE_BLOCKS_KEY, block);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CORAL_FANS_KEY, block);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLASS_PANES_KEY, block);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLAZED_TERRACOTTA_BLOCKS_KEY, block);
+
+        return pair.orElseGet(() -> Pair.of(null, null));
+    }
+
+    /**
+     * Match "Replaceable" Cached Block Tags
+     * @param state (Block State)
+     * @return ()
+     */
+    public static Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchReplaceableBlockTag(BlockState state)
+    {
+        Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.REPLACEABLE_BLOCKS_KEY, state);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CONCRETE_BLOCKS_KEY, state);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CORAL_FANS_KEY, state);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLASS_PANES_KEY, state);
+
+        if (pair.isPresent())
+        {
+            return pair.get();
+        }
+
+        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLAZED_TERRACOTTA_BLOCKS_KEY, state);
+
+        return pair.orElseGet(() -> Pair.of(null, null));
     }
 }

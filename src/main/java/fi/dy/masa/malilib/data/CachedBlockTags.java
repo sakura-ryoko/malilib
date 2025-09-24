@@ -1,9 +1,6 @@
 package fi.dy.masa.malilib.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.gson.JsonArray;
@@ -23,6 +20,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 import fi.dy.masa.malilib.MaLiLib;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class CachedBlockTags
 {
@@ -181,6 +179,75 @@ public class CachedBlockTags
         return false;
     }
 
+    public Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> matchPair(CachedTagKey key, RegistryEntry<Block> block)
+    {
+        Entry entry = this.get(key);
+
+        if (entry != null)
+        {
+            Pair <RegistryEntryList<Block>, RegistryEntry<Block>> pair = entry.matchPair(block);
+
+            if (pair.getLeft() == null && pair.getRight() == null)
+            {
+                return Optional.empty();
+            }
+
+            return Optional.of(pair);
+        }
+        else
+        {
+            MaLiLib.LOGGER.warn("CachedBlockTags#matchPair(BlockEntry): Invalid tag list '{}'", key.toString());
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> matchPair(CachedTagKey key, Block block)
+    {
+        Entry entry = this.get(key);
+
+        if (entry != null)
+        {
+            Pair <RegistryEntryList<Block>, RegistryEntry<Block>> pair = entry.matchPair(block);
+
+            if (pair.getLeft() == null && pair.getRight() == null)
+            {
+                return Optional.empty();
+            }
+
+            return Optional.of(pair);
+        }
+        else
+        {
+            MaLiLib.LOGGER.warn("CachedBlockTags#matchPair(Block): Invalid tag list '{}'", key.toString());
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> matchPair(CachedTagKey key, BlockState state)
+    {
+        Entry entry = this.get(key);
+
+        if (entry != null)
+        {
+            Pair <RegistryEntryList<Block>, RegistryEntry<Block>> pair = entry.matchPair(state);
+
+            if (pair.getLeft() == null && pair.getRight() == null)
+            {
+                return Optional.empty();
+            }
+
+            return Optional.of(pair);
+        }
+        else
+        {
+            MaLiLib.LOGGER.warn("CachedBlockTags#matchPair(State): Invalid tag list '{}'", key.toString());
+        }
+
+        return Optional.empty();
+    }
+
     public JsonElement toJson()
     {
         JsonObject obj = new JsonObject();
@@ -331,6 +398,34 @@ public class CachedBlockTags
         public boolean contains(BlockState state)
         {
             return this.contains(state.getBlock());
+        }
+
+        public Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchPair(RegistryEntry<Block> entry)
+        {
+            for (RegistryEntryList<Block> listEntry : this.tags)
+            {
+                if (listEntry.contains(entry))
+                {
+                    return Pair.of(listEntry, null);
+                }
+            }
+
+            if (this.blocks.contains(entry))
+            {
+                return Pair.of(null, entry);
+            }
+
+            return Pair.of(null, null);
+        }
+
+        public Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchPair(Block block)
+        {
+            return this.matchPair(Registries.BLOCK.getEntry(block));
+        }
+
+        public Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchPair(BlockState state)
+        {
+            return this.matchPair(state.getBlock());
         }
 
         public List<String> toList()

@@ -18,6 +18,7 @@ public class CachedTagManager
     public static final CachedTagKey GLASS_PANES_KEY              = new CachedTagKey(MaLiLibReference.MOD_ID, "glass_panes");
     public static final CachedTagKey GLAZED_TERRACOTTA_BLOCKS_KEY = new CachedTagKey(MaLiLibReference.MOD_ID, "glazed_terracotta_blocks");
     public static final CachedTagKey SCULK_BLOCKS_KEY             = new CachedTagKey(MaLiLibReference.MOD_ID, "sculk_blocks");
+    public static final CachedTagKey REPLACEABLE_BLOCKS_KEY       = new CachedTagKey(MaLiLibReference.MOD_ID, "replaceable_blocks");
 //    public static final CachedTagKey ORE_BLOCKS_KEY               = new CachedTagKey(MaLiLibReference.MOD_ID, "ore_blocks");
 
     public static List<CachedTagKey> getKeys()
@@ -29,6 +30,7 @@ public class CachedTagManager
         list.add(GLASS_PANES_KEY);
         list.add(GLAZED_TERRACOTTA_BLOCKS_KEY);
         list.add(SCULK_BLOCKS_KEY);
+        list.add(REPLACEABLE_BLOCKS_KEY);
 //        list.add(ORE_BLOCKS_KEY);
 
         return list;
@@ -43,16 +45,18 @@ public class CachedTagManager
         CachedBlockTags.getInstance().build(GLASS_PANES_KEY, buildGlassPanesCache());
         CachedBlockTags.getInstance().build(GLAZED_TERRACOTTA_BLOCKS_KEY, buildGlazedTerracottaCache());
         CachedBlockTags.getInstance().build(SCULK_BLOCKS_KEY, buildSculkCache());
+        CachedBlockTags.getInstance().build(REPLACEABLE_BLOCKS_KEY, buildReplaceableCache());
 //        CachedBlockTags.getInstance().build(ORE_BLOCKS_KEY, buildOreCache());
 	}
 
-	private static void clearCache()
+    private static void clearCache()
 	{
         CachedBlockTags.getInstance().clearEntry(CORAL_FANS_KEY);
         CachedBlockTags.getInstance().clearEntry(CONCRETE_BLOCKS_KEY);
         CachedBlockTags.getInstance().clearEntry(GLASS_PANES_KEY);
         CachedBlockTags.getInstance().clearEntry(GLAZED_TERRACOTTA_BLOCKS_KEY);
         CachedBlockTags.getInstance().clearEntry(SCULK_BLOCKS_KEY);
+        CachedBlockTags.getInstance().clearEntry(REPLACEABLE_BLOCKS_KEY);
 //        CachedBlockTags.getInstance().clearEntry(ORE_BLOCKS_KEY);
 	}
 
@@ -165,6 +169,44 @@ public class CachedTagManager
         list.add(Registries.BLOCK.getId(Blocks.SCULK_SENSOR).toString());
         list.add(Registries.BLOCK.getId(Blocks.SCULK_SHRIEKER).toString());
         list.add(Registries.BLOCK.getId(Blocks.SCULK_VEIN).toString());
+
+        return list;
+    }
+
+    private static List<String> buildReplaceableCache()
+    {
+        List<String> list = new ArrayList<>();
+
+        list.add("#"+BlockTags.ANVIL.id().toString());
+        list.add("#"+BlockTags.BEDS.id().toString());
+        list.add("#"+BlockTags.BUTTONS.id().toString());
+        list.add("#"+BlockTags.CANDLE_CAKES.id().toString());
+        list.add("#"+BlockTags.CANDLES.id().toString());
+        list.add("#"+BlockTags.CEILING_HANGING_SIGNS.id().toString());
+        list.add("#"+BlockTags.CONCRETE_POWDER.id().toString());
+        list.add("#"+BlockTags.CORAL_PLANTS.id().toString());
+        list.add("#"+BlockTags.DOORS.id().toString());
+        list.add("#"+BlockTags.FENCE_GATES.id().toString());
+        list.add("#"+BlockTags.FENCES.id().toString());
+        list.add("#"+BlockTags.FLOWER_POTS.id().toString());
+        list.add("#"+BlockTags.FLOWERS.id().toString());
+        list.add("#"+BlockTags.LEAVES.id().toString());
+        list.add("#"+BlockTags.LOGS.id().toString());
+        list.add("#"+BlockTags.PLANKS.id().toString());
+        list.add("#"+BlockTags.PRESSURE_PLATES.id().toString());
+        list.add("#"+BlockTags.SAPLINGS.id().toString());
+        list.add("#"+BlockTags.SHULKER_BOXES.id().toString());
+        list.add("#"+BlockTags.SLABS.id().toString());
+        list.add("#"+BlockTags.STAIRS.id().toString());
+        list.add("#"+BlockTags.STANDING_SIGNS.id().toString());
+        list.add("#"+BlockTags.TERRACOTTA.id().toString());
+        list.add("#"+BlockTags.TRAPDOORS.id().toString());
+        list.add("#"+BlockTags.WALL_HANGING_SIGNS.id().toString());
+        list.add("#"+BlockTags.WALL_SIGNS.id().toString());
+        list.add("#"+BlockTags.WALLS.id().toString());
+        list.add("#"+BlockTags.WOOL.id().toString());
+        list.add("#"+BlockTags.WOOL_CARPETS.id().toString());
+        list.add("#"+BlockTags.IMPERMEABLE.id().toString());
 
         return list;
     }

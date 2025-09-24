@@ -1,9 +1,6 @@
 package fi.dy.masa.malilib.data;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.gson.JsonArray;
@@ -22,6 +19,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 import fi.dy.masa.malilib.MaLiLib;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class CachedItemTags
 {
@@ -145,6 +143,52 @@ public class CachedItemTags
         }
 
         return false;
+    }
+
+    public Optional<Pair<RegistryEntryList<Item>, RegistryEntry<Item>>> matchPair(CachedTagKey key, Item item)
+    {
+        Entry entry = this.get(key);
+
+        if (entry != null)
+        {
+            Pair <RegistryEntryList<Item>, RegistryEntry<Item>> pair = entry.matchPair(item);
+
+            if (pair.getLeft() == null && pair.getRight() == null)
+            {
+                return Optional.empty();
+            }
+
+            return Optional.of(pair);
+        }
+        else
+        {
+            MaLiLib.LOGGER.warn("CachedItemTags#matchPair(Item): Invalid tag list '{}'", key.toString());
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<Pair<RegistryEntryList<Item>, RegistryEntry<Item>>> matchPair(CachedTagKey key, RegistryEntry<Item> item)
+    {
+        Entry entry = this.get(key);
+
+        if (entry != null)
+        {
+            Pair <RegistryEntryList<Item>, RegistryEntry<Item>> pair = entry.matchPair(item);
+
+            if (pair.getLeft() == null && pair.getRight() == null)
+            {
+                return Optional.empty();
+            }
+
+            return Optional.of(pair);
+        }
+        else
+        {
+            MaLiLib.LOGGER.warn("CachedItemTags#matchPair(RegistryEntry): Invalid tag list '{}'", key.toString());
+        }
+
+        return Optional.empty();
     }
 
     public JsonElement toJson()
@@ -310,6 +354,29 @@ public class CachedItemTags
             );
 
             return list;
+        }
+
+        public Pair<RegistryEntryList<Item>, RegistryEntry<Item>> matchPair(RegistryEntry<Item> entry)
+        {
+            for (RegistryEntryList<Item> listEntry : this.tags)
+            {
+                if (listEntry.contains(entry))
+                {
+                    return Pair.of(listEntry, null);
+                }
+            }
+
+            if (this.items.contains(entry))
+            {
+                return Pair.of(null, entry);
+            }
+
+            return Pair.of(null, null);
+        }
+
+        public Pair<RegistryEntryList<Item>, RegistryEntry<Item>> matchPair(Item item)
+        {
+            return this.matchPair(Registries.ITEM.getEntry(item));
         }
 
         public JsonElement toJson()
