@@ -8,7 +8,7 @@ public class MaLiLibReference
     public static final String MOD_ID = "malilib";
     public static final String MOD_NAME = "MaLiLib";
     public static final String MOD_VERSION = StringUtils.getModVersionString(MOD_ID);
-    public static final String MC_VERSION = SharedConstants.getGameVersion().name();
+    public static final String MC_VERSION = SharedConstants.getGameVersion().id();
     public static final int MC_DATA_VERSION = SharedConstants.getGameVersion().dataVersion().id();
     public static final boolean DEBUG_MODE = isDebug();
     public static final boolean LOCAL_DEBUG = false;
