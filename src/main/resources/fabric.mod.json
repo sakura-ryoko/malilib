@@ -37,6 +37,6 @@
 		"fabric-resource-loader-v0": "*"
 	},
 	"breaks": {
-		"iris": "<1.9.1-"
+		"iris": "<1.9.2-"
 	}
 }
