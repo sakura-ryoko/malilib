@@ -75,9 +75,6 @@ public class InventoryOverlay
     public static final Identifier TEXTURE_PLAYER_INV       = Identifier.ofVanilla("textures/gui/container/inventory.png");
     public static final Identifier TEXTURE_SINGLE_CHEST     = Identifier.ofVanilla("textures/gui/container/shulker_box.png");
 
-    // 1.21.3-
-    //public static final Identifier TEXTURE_EMPTY_SHIELD     = Identifier.ofVanilla("item/empty_armor_slot_shield");
-    // 1.21.4+
     public static final Identifier TEXTURE_EMPTY_SHIELD     = Identifier.ofVanilla("container/slot/shield");
     public static final Identifier TEXTURE_LOCKED_SLOT      = Identifier.ofVanilla("container/crafter/disabled_slot");
 
@@ -85,9 +82,11 @@ public class InventoryOverlay
     public static final Identifier TEXTURE_EMPTY_HORSE_ARMOR = Identifier.ofVanilla("container/slot/horse_armor");
     public static final Identifier TEXTURE_EMPTY_LLAMA_ARMOR = Identifier.ofVanilla("container/slot/llama_armor");
     public static final Identifier TEXTURE_EMPTY_SADDLE      = Identifier.ofVanilla("container/slot/saddle");
+
     // Brewer Slots (1.21.4+)
     public static final Identifier TEXTURE_EMPTY_BREWER_FUEL = Identifier.ofVanilla("container/slot/brewing_fuel");
     public static final Identifier TEXTURE_EMPTY_POTION      = Identifier.ofVanilla("container/slot/potion");
+
     // Other Misc Empty Slots (1.21.4+)
     public static final Identifier TEXTURE_EMPTY_SLOT_AMETHYST   = Identifier.ofVanilla("container/slot/amethyst_shard");
     public static final Identifier TEXTURE_EMPTY_SLOT_AXE        = Identifier.ofVanilla("container/slot/axe");
@@ -117,13 +116,6 @@ public class InventoryOverlay
 
     private static final Identifier[] EMPTY_SLOT_TEXTURES = new Identifier[]
     {
-            /* 1.21.3-
-        Identifier.ofVanilla("item/empty_armor_slot_boots"),
-        Identifier.ofVanilla("item/empty_armor_slot_leggings"),
-        Identifier.ofVanilla("item/empty_armor_slot_chestplate"),
-        Identifier.ofVanilla("item/empty_armor_slot_helmet")
-             */
-        // 1.21.4+
         Identifier.ofVanilla("container/slot/boots"),
         Identifier.ofVanilla("container/slot/leggings"),
         Identifier.ofVanilla("container/slot/chestplate"),
@@ -139,18 +131,9 @@ public class InventoryOverlay
 
     public static void renderInventoryBackground(DrawContext context, InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, int color, MinecraftClient mc)
     {
-//        VertexConsumer buffer;
-//        Matrix4f posMatrix;
-        //RenderUtils.blend(true);
-//        RenderContext ctx = new RenderContext(MaLiLibPipelines.POSITION_TEX_COLOR_MASA);
-//        BufferBuilder buffer = ctx.getBuilder();
-
         if (type == InventoryRenderType.FURNACE)
         {
-//            buffer = RenderUtils.bindGuiTexture(TEXTURE_FURNACE, context);
-//            posMatrix = context.getMatrices().peek().getPositionMatrix();
             GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_FURNACE);
-//            ctx.bindTexture(TEXTURE_FURNACE, 0, 256, 256);
             if (gpuTextureView == null) return;
             
             RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   4,  64, color); // left (top)
@@ -161,8 +144,6 @@ public class InventoryOverlay
         }
         else if (type == InventoryRenderType.BREWING_STAND)
         {
-//            buffer = RenderUtils.bindGuiTexture(TEXTURE_BREWING_STAND, context);
-//            posMatrix = context.getMatrices().peek().getPositionMatrix();
             GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_BREWING_STAND);
             if (gpuTextureView == null) return;
 
@@ -175,8 +156,6 @@ public class InventoryOverlay
         else if (type == InventoryRenderType.CRAFTER)
         {
             // We just hack in the Dispenser Texture, so it displays right.  Easy.
-//            buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, context);
-//            posMatrix = context.getMatrices().peek().getPositionMatrix();
             GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
             if (gpuTextureView == null) return;
 
@@ -188,8 +167,6 @@ public class InventoryOverlay
         }
         else if (type == InventoryRenderType.DISPENSER)
         {
-//            buffer = RenderUtils.bindGuiTexture(TEXTURE_DISPENSER, context);
-//            posMatrix = context.getMatrices().peek().getPositionMatrix();
             GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
             if (gpuTextureView == null) return;
 
@@ -201,8 +178,6 @@ public class InventoryOverlay
         }
         else if (type == InventoryRenderType.HOPPER)
         {
-//            buffer = RenderUtils.bindGuiTexture(TEXTURE_HOPPER, context);
-//            posMatrix = context.getMatrices().peek().getPositionMatrix();
             GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_HOPPER);
             if (gpuTextureView == null) return;
 
@@ -215,8 +190,6 @@ public class InventoryOverlay
         // Most likely a Villager, or possibly a Llama
         else if (type == InventoryRenderType.VILLAGER)
         {
-//            buffer = RenderUtils.bindGuiTexture(TEXTURE_DOUBLE_CHEST, context);
-//            posMatrix = context.getMatrices().peek().getPositionMatrix();
             GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
             if (gpuTextureView == null) return;
 
@@ -236,8 +209,6 @@ public class InventoryOverlay
         }
         else
         {
-//            buffer = RenderUtils.bindGuiTexture(TEXTURE_DOUBLE_CHEST, context);
-//            posMatrix = context.getMatrices().peek().getPositionMatrix();
             GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
             if (gpuTextureView == null) return;
 
@@ -265,28 +236,10 @@ public class InventoryOverlay
                 }
             }
         }
-
-        //RenderUtils.depthTest(true); X
-        //RenderUtils.blend(true);
-
-//        try
-//        {
-//            BuiltBuffer meshData = buffer.endNullable();
-//
-//            if (meshData != null)
-//            {
-//                ctx.draw(buffer.end());
-//            }
-//
-//            ctx.close();
-//        }
-//        catch (Exception ignored) { }
     }
 
     public static void renderInventoryBackground27(int x, int y, int color, MinecraftClient mc, DrawContext context)
     {
-//        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_SINGLE_CHEST, context);
-//        Matrix4f posMatrix = context.getMatrices().peek().getPositionMatrix();
         GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_SINGLE_CHEST);
         if (gpuTextureView == null) return;
 
@@ -299,8 +252,6 @@ public class InventoryOverlay
 
     public static void renderInventoryBackground54(int x, int y, int color, MinecraftClient mc, DrawContext context)
     {
-//        VertexConsumer buffer = RenderUtils.bindGuiTexture(TEXTURE_DOUBLE_CHEST, context);
-//        Matrix4f posMatrix = context.getMatrices().peek().getPositionMatrix();
         GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
         if (gpuTextureView == null) return;
 
@@ -1139,15 +1090,12 @@ public class InventoryOverlay
     public static void renderStackAt(DrawContext drawContext, ItemStack stack, float x, float y, float scale, MinecraftClient mc, double mouseX, double mouseY)
     {
         Matrix3x2fStack matrixStack = drawContext.getMatrices();
+
         matrixStack.pushMatrix();
         matrixStack.translate(x, y);
         matrixStack.scale(scale, scale);
-
-//        RenderUtils.enableDiffuseLightingGui3D();
-//        color = Colors.WHITE;
         drawContext.drawItem(stack.copy(), 0, 0);
         drawContext.drawStackOverlay(mc.textRenderer, stack.copy(), 0, 0);
-
         matrixStack.popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
@@ -1174,11 +1122,8 @@ public class InventoryOverlay
         matrixStack.pushMatrix();
         matrixStack.translate(x, y);
         matrixStack.scale(scale, scale);
-
-//        RenderUtils.enableDiffuseLightingGui3D();
         color = Colors.WHITE;
         drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_LOCKED_SLOT, 0, 0, 18, 18, color);
-
         matrixStack.popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
@@ -1200,11 +1145,8 @@ public class InventoryOverlay
         matrixStack.pushMatrix();
         matrixStack.translate(x, y);
         matrixStack.scale(scale, scale);
-
-//        RenderUtils.enableDiffuseLightingGui3D();
         color = Colors.WHITE;
         drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, texture, 0, 0, 18, 18, color);
-
         matrixStack.popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
