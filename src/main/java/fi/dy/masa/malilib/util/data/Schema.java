@@ -22,7 +22,8 @@ public enum Schema implements IEnumCodecProvider
     // TODO --> Add Schema Versions to this as versions get released
     // Minecraft Data Versions
     SCHEMA_FUTURE  (9999, "FUTURE"),
-	SCHEMA_1_21_10 (4555, "1.21.10-rc1"),
+	SCHEMA_25W41A  (4657, "25w41a"),
+	SCHEMA_1_21_10 (4556, "1.21.10"),
 	SCHEMA_1_21_09 (4554, "1.21.9"),
 	SCHEMA_25W36B  (4546, "25w36b"),
 	SCHEMA_25W31A  (4534, "25w31a"),
