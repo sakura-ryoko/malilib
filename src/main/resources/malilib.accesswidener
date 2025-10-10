@@ -24,3 +24,6 @@ accessible field net/minecraft/client/gl/RenderPipelines RENDERTYPE_OUTLINE_SNIP
 accessible field net/minecraft/client/gl/RenderPipelines POST_EFFECT_PROCESSOR_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
 accessible class net/minecraft/client/gui/DrawContext$ScissorStack
 accessible field net/minecraft/client/gui/DrawContext scissorStack Lnet/minecraft/client/gui/DrawContext$ScissorStack;
+accessible field net/minecraft/client/option/KeyBinding defaultKey Lnet/minecraft/client/util/InputUtil$Key;
+accessible field net/minecraft/client/option/KeyBinding boundKey Lnet/minecraft/client/util/InputUtil$Key;
+accessible field net/minecraft/client/option/KeyBinding category Lnet/minecraft/client/option/KeyBinding$Category;

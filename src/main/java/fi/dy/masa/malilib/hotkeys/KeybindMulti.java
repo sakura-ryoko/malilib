@@ -17,10 +17,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings.Context;
-import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.IF3KeyStateSetter;
-import fi.dy.masa.malilib.util.InfoUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.*;
 
 public class KeybindMulti implements IKeybind
 {
@@ -390,7 +387,12 @@ public class KeybindMulti implements IKeybind
 
     public static int getKeyCode(KeyBinding keybind)
     {
-        InputUtil.Key input = InputUtil.fromTranslationKey(keybind.getBoundKeyTranslationKey());
+		if (!InputUtils.isBound(keybind))
+		{
+			return KeyCodes.KEY_NONE;
+		}
+
+	    InputUtil.Key input = InputUtils.getBoundKey(keybind);
         return input.getCategory() == InputUtil.Type.MOUSE ? input.getCode() - 100 : input.getCode();
     }
 
