@@ -467,15 +467,20 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_color/translucent/lequal_depth"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
                               .build();
 
-        MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_GREATER_DEPTH =
+//	    MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LESS_DEPTH =
+//			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+//			                  .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_color/translucent/less_depth"))
+//			                  .withDepthWrite(false)
+//			                  .withDepthTestFunction(DepthTestFunction.LESS_DEPTH_TEST)
+//			                  .build();
+
+	    MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_GREATER_DEPTH =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_color/translucent/greater_depth"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
                               .build();
@@ -513,7 +518,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_COLOR_MASA_LEQUAL_DEPTH_OFFSET_1 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_color/masa/lequal_depth/offset_1"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -523,7 +527,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_COLOR_MASA_LEQUAL_DEPTH_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_color/masa/lequal_depth/offset_2"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -533,7 +536,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_COLOR_MASA_LEQUAL_DEPTH_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_color/masa/lequal_depth/offset_3"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -550,19 +552,25 @@ public abstract class MixinRenderPipelines
 //                              .withDepthBias(-0.6f, -1.2f)
 //                              .build();
 
-        MaLiLibPipelines.POSITION_COLOR_MASA_LEQUAL_DEPTH =
+	    MaLiLibPipelines.POSITION_COLOR_MASA_LEQUAL_DEPTH =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_color/masa/lequal_depth"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
                               .build();
 
-        MaLiLibPipelines.POSITION_COLOR_MASA_GREATER_DEPTH =
+//	    MaLiLibPipelines.POSITION_COLOR_MASA_LESS_DEPTH =
+//			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
+//			                  .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_color/masa/less_depth"))
+//			                  .withDepthWrite(false)
+//			                  .withColorWrite(true)
+//			                  .withDepthTestFunction(DepthTestFunction.LESS_DEPTH_TEST)
+//			                  .build();
+
+	    MaLiLibPipelines.POSITION_COLOR_MASA_GREATER_DEPTH =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_color/masa/greater_depth"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
@@ -747,7 +755,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_1 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/translucent/lequal_depth/offset_1"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -757,7 +764,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/translucent/lequal_depth/offset_2"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -767,7 +773,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/translucent/lequal_depth/offset_3"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -777,7 +782,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/translucent/lequal_depth"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -786,7 +790,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_GREATER_DEPTH =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/translucent/greater_depth"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
@@ -828,7 +831,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_1 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/masa/lequal_depth/offset_1"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -838,7 +840,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/masa/lequal_depth/offset_2"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -848,7 +849,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/masa/lequal_depth/offset_3"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -858,7 +858,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/masa/lequal_depth"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -867,7 +866,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_MASA_GREATER_DEPTH =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/position_tex_color/masa/greater_depth"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.GREATER_DEPTH_TEST)
@@ -1289,7 +1287,6 @@ public abstract class MixinRenderPipelines
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/offset"))
                               .withDepthBias(-3.0f, -3.0f)
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
@@ -1298,7 +1295,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.MINIHUD_SHAPE_DEPTH_MASK =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/depth_mask"))
-                              .withCull(false)
                               .withDepthWrite(true)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
@@ -1307,7 +1303,6 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.MINIHUD_SHAPE =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
