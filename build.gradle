@@ -27,7 +27,8 @@ dependencies {
 
 	include(modApi(fabricApi.module("fabric-api-base", project.fabric_api_version)))
 	include(modApi(fabricApi.module("fabric-networking-api-v1", project.fabric_api_version)))
-	include(modApi(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
+    include(modApi(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
+	include(modApi(fabricApi.module("fabric-resource-loader-v1", project.fabric_api_version)))
 
 	// Used to run DataGen only
 //	modImplementation(modApi(fabricApi.module("fabric-data-generation-api-v1", project.fabric_api_version)))
