@@ -279,7 +279,7 @@ public class CustomIconEditScreen extends BaseScreen
             x += 2;
             y += 2;
 
-            this.bindTexture(this.texture);
+            RenderWrap.bindTexture(this.texture);
 
             ShapeRenderUtils.renderScaledTexturedRectangle(x, y, z,
                                                            this.u, this.v,

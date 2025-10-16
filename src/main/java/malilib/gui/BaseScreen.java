@@ -27,7 +27,6 @@ import malilib.render.text.StyledTextLine;
 import malilib.render.text.TextRenderer;
 import malilib.render.text.TextStyle;
 import malilib.util.StringUtils;
-import malilib.util.data.Identifier;
 import malilib.util.game.wrap.GameWrap;
 import malilib.util.game.wrap.RenderWrap;
 import malilib.util.position.Vec2i;
@@ -861,11 +860,6 @@ public abstract class BaseScreen extends GuiScreen
         }
 
         return textFields;
-    }
-
-    public void bindTexture(Identifier texture)
-    {
-        RenderWrap.bindTexture(texture);
     }
 
     public BaseScreen setZ(float z)
