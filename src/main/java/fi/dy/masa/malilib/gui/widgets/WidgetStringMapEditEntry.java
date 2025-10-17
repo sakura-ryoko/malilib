@@ -108,7 +108,7 @@ public class WidgetStringMapEditEntry extends WidgetConfigOptionBase<Pair<String
 
         String key = textFieldKey.getTextField().getText();
         String value = textFieldValue.getTextField().getText();
-        resetButton.setEnabled(!key.equals(defaultValue.getLeft()) && !value.equals(defaultValue.getRight()));
+        resetButton.setEnabled(!key.equals(defaultValue.getLeft()) || !value.equals(defaultValue.getRight()));
 
         return resetButton.getX() + resetButton.getWidth() + 4;
     }
@@ -123,8 +123,8 @@ public class WidgetStringMapEditEntry extends WidgetConfigOptionBase<Pair<String
     @Override
     public boolean wasConfigModified() {
         return !this.isDummy() &&
-                !this.textFieldKey.getTextField().getText().equals(this.initialValue.getLeft()) &&
-                !this.textFieldValue.getTextField().getText().equals(this.initialValue.getRight());
+                (!this.textFieldKey.getTextField().getText().equals(this.initialValue.getLeft()) ||
+                !this.textFieldValue.getTextField().getText().equals(this.initialValue.getRight()));
     }
 
     @Override
@@ -236,7 +236,7 @@ public class WidgetStringMapEditEntry extends WidgetConfigOptionBase<Pair<String
         public boolean onTextChange(GuiTextFieldGeneric textField) {
             String key = parent.textFieldKey.getTextField().getText();
             String value = parent.textFieldValue.getTextField().getText();
-            this.buttonReset.setEnabled(!key.equals(defaultValue.getLeft()) && !value.equals(defaultValue.getRight()));
+            this.buttonReset.setEnabled(!key.equals(defaultValue.getLeft()) || !value.equals(defaultValue.getRight()));
             return false;
         }
     }
@@ -305,7 +305,7 @@ public class WidgetStringMapEditEntry extends WidgetConfigOptionBase<Pair<String
     @Override
     public boolean hasPendingModifications() {
         if (this.textFieldKey != null && this.textFieldValue != null) {
-            return !this.textFieldKey.getTextField().getText().equals(this.lastAppliedVKey) &&
+            return !this.textFieldKey.getTextField().getText().equals(this.lastAppliedVKey) ||
                     !this.textFieldValue.getTextField().getText().equals(this.lastAppliedVValue);
         }
         return false;
