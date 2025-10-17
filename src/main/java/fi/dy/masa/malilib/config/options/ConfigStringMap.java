@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigStringMap;
+import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.util.Pair;
 import net.minecraft.util.dynamic.Codecs;
 
@@ -62,6 +63,21 @@ public class ConfigStringMap extends ConfigBase<ConfigStringMap> implements ICon
 
     private final ImmutableList<Pair<String, String>> defaultMap;
     private final List<Pair<String, String>> map = new ArrayList<>();
+
+    public ConfigStringMap(String name, ImmutableList<Pair<String, String>> defaultValue)
+    {
+        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+    }
+
+    public ConfigStringMap(String name, ImmutableList<Pair<String, String>> defaultValue, String comment)
+    {
+        this(name, defaultValue, comment, StringUtils.splitCamelCase(name), name);
+    }
+
+    public ConfigStringMap(String name, ImmutableList<Pair<String, String>> defaultValue, String comment, String prettyName)
+    {
+        this(name, defaultValue, comment, prettyName, name);
+    }
 
     public ConfigStringMap(String name, ImmutableList<Pair<String, String>> defaultValue, String comment, String prettyName, String translatedName)
     {
