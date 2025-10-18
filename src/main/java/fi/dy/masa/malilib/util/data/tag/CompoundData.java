@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.util.data.tag;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
 import java.io.DataInput;
@@ -12,6 +13,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 
 public class CompoundData extends BaseData implements DataView
 {
@@ -90,6 +98,12 @@ public class CompoundData extends BaseData implements DataView
                data.getType() == Constants.NBT.TAG_LIST &&
                ((ListData) data).getContainedType() == listEntryType;
     }
+
+	@Override
+	public boolean containsLenient(String key)
+	{
+		return this.values.containsKey(key);
+	}
 
     public boolean remove(String key)
     {
@@ -262,6 +276,18 @@ public class CompoundData extends BaseData implements DataView
         return data != null && data.getType() == Constants.NBT.TAG_LIST ? (ListData) data : new ListData(containedType);
     }
 
+	@Override
+	public <T> Optional<T> getCodec(String key, Codec<T> codec, DynamicOps<NbtElement> ops)
+	{
+		BaseData data = this.values.get(key);
+
+		return data == null
+		       ? Optional.empty()
+		       : codec.parse(ops, DataConverterNbt.toVanillaNbt(data))
+		              .resultOrPartial(
+							  e -> MaLiLib.LOGGER.error("Failed to get field ({}={}): {}", key, data.toString(), e)
+		              );
+	}
 
     public CompoundData putBoolean(String key, boolean value)
     {
@@ -335,7 +361,22 @@ public class CompoundData extends BaseData implements DataView
         return this;
     }
 
-    @Override
+	public <T> CompoundData putCodec(String key, Codec<T> codec, @Nullable T value)
+	{
+		return this.putCodec(key, codec, value, NbtOps.INSTANCE);
+	}
+
+	public <T> CompoundData putCodec(String key, Codec<T> codec, @Nullable T value, DynamicOps<NbtElement> ops)
+	{
+		if (value != null)
+		{
+			this.values.put(key, DataConverterNbt.fromVanillaNbt(codec.encodeStart(ops, value).getOrThrow()));
+		}
+
+		return this;
+	}
+
+	@Override
     public CompoundData copy()
     {
         CompoundData copy = new CompoundData();

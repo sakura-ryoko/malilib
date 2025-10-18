@@ -5,13 +5,20 @@ import fi.dy.masa.malilib.util.data.Constants;
 import java.util.Optional;
 import java.util.Set;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+
 public interface DataView
 {
     boolean contains(String key, int requestedType);
 
     boolean containsList(String key, int listEntryType);
 
-    int size();
+	boolean containsLenient(String key);
+
+	int size();
 
     boolean isEmpty();
 
@@ -45,6 +52,15 @@ public interface DataView
 
     ListData getList(String key, int containedType);
 
+	default <T> Optional<T> getCodec(String key, Codec<T> codec)
+	{
+		return this.getCodec(key, codec, NbtOps.INSTANCE);
+	}
+
+	default <T> Optional<T> getCodec(String key, Codec<T> codec, DynamicOps<NbtElement> ops)
+	{
+		return Optional.empty();
+	}
 
     default boolean getBooleanOrDefault(String key, boolean defaultValue)
     {

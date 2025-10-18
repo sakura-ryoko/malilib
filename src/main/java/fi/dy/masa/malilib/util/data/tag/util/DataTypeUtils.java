@@ -2,14 +2,28 @@ package fi.dy.masa.malilib.util.data.tag.util;
 
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.*;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.nbt.NbtKeys;
+
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.MapCodec;
 
 public class DataTypeUtils
 {
@@ -41,7 +55,48 @@ public class DataTypeUtils
         tag.putLong(keyL, uuid.getLeastSignificantBits());
     }
 
-    public static CompoundData getOrCreateCompound(CompoundData tagIn, String tagName)
+	/**
+	 * Get the Entity's UUID from Data Tag.
+	 *
+	 * @param data ()
+	 * @return ()
+	 */
+	public static @Nullable UUID getUUIDCodec(@Nonnull CompoundData data)
+	{
+		return getUUIDCodec(data, NbtKeys.UUID);
+	}
+
+	/**
+	 * Get the Entity's UUID from Data Tag.
+	 *
+	 * @param data ()
+	 * @param key ()
+	 * @return ()
+	 */
+	public static @Nullable UUID getUUIDCodec(@Nonnull CompoundData data, String key)
+	{
+		if (data.contains(key, Constants.NBT.TAG_INT_ARRAY))
+		{
+			return data.getCodec(key, Uuids.INT_STREAM_CODEC).orElse(null);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get the Entity's UUID from Data Tag.
+	 *
+	 * @param dataIn ()
+	 * @param key ()
+	 * @param uuid ()
+	 * @return ()
+	 */
+	public static CompoundData putUUIDCodec(@Nonnull CompoundData dataIn, @Nonnull UUID uuid, String key)
+	{
+		return dataIn.putCodec(key, Uuids.INT_STREAM_CODEC, uuid);
+	}
+
+	public static CompoundData getOrCreateCompound(CompoundData tagIn, String tagName)
     {
         CompoundData tag;
 
@@ -58,7 +113,7 @@ public class DataTypeUtils
         return tag;
     }
 
-    public static <T> ListData asListTag(Collection<T> values, Function<T, BaseData> tagFactory)
+	public static <T> ListData asListTag(Collection<T> values, Function<T, BaseData> tagFactory)
     {
         ListData list = null;
 
@@ -131,7 +186,12 @@ public class DataTypeUtils
         return defaultValue;
     }
 
-    @Nullable
+	public static BlockPos getPosCodec(@Nonnull CompoundData tag, String key)
+	{
+		return tag.getCodec(key, BlockPos.CODEC).orElse(BlockPos.ORIGIN);
+	}
+
+	@Nullable
     public static BlockPos readBlockPos(DataView tag)
     {
         if (tag.contains("x", Constants.NBT.TAG_INT) &&
@@ -265,4 +325,71 @@ public class DataTypeUtils
 
         return null;
     }
+
+	@SuppressWarnings("deprecation")
+	public static Direction readDirectionFromTag(@Nonnull CompoundData tag, String key)
+	{
+		if (tag.contains(key, Constants.NBT.TAG_INT))
+		{
+			return tag.getCodec(key, Direction.INDEX_CODEC).orElse(Direction.SOUTH);
+		}
+		else if (tag.contains(key, Constants.NBT.TAG_STRING))
+		{
+			return tag.getCodec(key, Direction.CODEC).orElse(Direction.SOUTH);
+		}
+
+		return Direction.SOUTH;
+	}
+
+	@SuppressWarnings("deprecation")
+	public static CompoundData writeDirectionToTagAsInt(@Nonnull CompoundData tagIn, String key, Direction direction)
+	{
+		return tagIn.putCodec(key, Direction.INDEX_CODEC, direction);
+	}
+
+	public static CompoundData writeDirectionToTagAsString(@Nonnull CompoundData tagIn, String key, Direction direction)
+	{
+		return tagIn.putCodec(key, Direction.CODEC, direction);
+	}
+
+	/**
+	 * Reads in a Flat Map from Data Tag -- this way we don't need Mojang's code complexity
+	 * @param <T> ()
+	 * @param data ()
+	 * @param mapCodec ()
+	 * @return ()
+	 */
+	public static <T> Optional<T> readFlatMap(@Nonnull CompoundData data, MapCodec<T> mapCodec)
+	{
+		DynamicOps<NbtElement> ops = NbtOps.INSTANCE;
+		NbtCompound nbt = DataConverterNbt.toVanillaCompound(data);
+
+		return switch (ops.getMap(nbt).flatMap(map -> mapCodec.decode(ops, map)))
+		{
+			case DataResult.Success<T> result -> Optional.of(result.value());
+			case DataResult.Error<T> error -> error.partialValue();
+			default -> Optional.empty();
+		};
+	}
+
+	/**
+	 * Writes a Flat Map to Data Tag -- this way we don't need Mojang's code complexity
+	 * @param <T> ()
+	 * @param mapCodec ()
+	 * @param value ()
+	 * @return ()
+	 */
+	public static <T> CompoundData writeFlatMap(MapCodec<T> mapCodec, T value)
+	{
+		DynamicOps<NbtElement> ops = NbtOps.INSTANCE;
+		NbtCompound nbt = new NbtCompound();
+
+		switch (mapCodec.encoder().encodeStart(ops, value))
+		{
+			case DataResult.Success<NbtElement> result -> nbt.copyFrom((NbtCompound) result.value());
+			case DataResult.Error<NbtElement> error -> error.partialValue().ifPresent(partial -> nbt.copyFrom((NbtCompound) partial));
+		}
+
+		return DataConverterNbt.fromVanillaCompound(nbt);
+	}
 }

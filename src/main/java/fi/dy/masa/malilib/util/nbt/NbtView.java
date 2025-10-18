@@ -18,6 +18,8 @@ import net.minecraft.util.ErrorReporter;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.mixin.nbt.IMixinNbtReadView;
 import fi.dy.masa.malilib.mixin.nbt.IMixinNbtWriteView;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 
 /**
  * This is a wrapper to the new "ReadView / WriteView" that Mojang made; and provides a seamless way to extract an NbtCompound to / from it.
@@ -45,6 +47,20 @@ public class NbtView
         wrapper.writer = null;
         return wrapper;
     }
+
+	/**
+	 * Build a Reader instance.
+	 * @param data ()
+	 * @param registry ()
+	 * @return ()
+	 */
+	public static NbtView getReader(CompoundData data, @Nonnull DynamicRegistryManager registry)
+	{
+		NbtView wrapper = new NbtView();
+		wrapper.reader = NbtReadView.create(log, registry, DataConverterNbt.toVanillaCompound(data));
+		wrapper.writer = null;
+		return wrapper;
+	}
 
     /**
      * Build a Writer instance, with a new empty Writer.
@@ -117,6 +133,22 @@ public class NbtView
         return null;
     }
 
+	/**
+	 * Return whatever NbtCompound that this Reader/Writer contains; but as a CompoundData
+	 * @return ()
+	 */
+	public @Nullable CompoundData readData()
+	{
+		NbtCompound nbt = this.readNbt();
+
+		if (nbt != null)
+		{
+			return DataConverterNbt.fromVanillaCompound(nbt);
+		}
+
+		return null;
+	}
+
     /**
      * Copy an NbtCompound into a Writer instance.  NOTE; that a Reader instance is Read-Only.
      * @param nbtIn ()
@@ -137,6 +169,23 @@ public class NbtView
 
         return this;
     }
+
+	/**
+	 * Copy an CompoundData into a Writer instance.  NOTE; that a Reader instance is Read-Only.
+	 * @param dataIn ()
+	 * @return ()
+	 */
+	public @Nullable NbtView writeData(@Nonnull CompoundData dataIn)
+	{
+		NbtCompound nbt = DataConverterNbt.toVanillaCompound(dataIn);
+
+		if (nbt != null)
+		{
+			return this.writeNbt(nbt);
+		}
+
+		return null;
+	}
 
     /**
      * Reads a Flat Map value from the Nbt.

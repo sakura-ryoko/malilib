@@ -30,6 +30,8 @@ public abstract class BaseData
 
     public abstract BaseData copy();
 
+	public abstract String toString();
+
     public abstract void write(DataOutput output) throws IOException;
 
     public static BaseData createTag(int tagType, DataInput input, int depth, SizeTracker sizeTracker) throws IOException

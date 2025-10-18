@@ -35,6 +35,11 @@ public class ListData extends BaseData
         return this.containedType;
     }
 
+	public boolean isEmpty()
+	{
+		return this.list.isEmpty();
+	}
+
     public int size()
     {
         return this.list.size();

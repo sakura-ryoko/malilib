@@ -55,7 +55,7 @@ public class NbtEntityUtils
         return ((INbtEntityInvoker) entity).malilib$getNbtDataWithId(id).orElseGet(NbtCompound::new);
     }
 
-    /**
+	/**
      * Get an EntityType from NBT.
      *
      * @param nbt ()
@@ -71,7 +71,7 @@ public class NbtEntityUtils
         return null;
     }
 
-    /**
+	/**
      * Write an EntityType to NBT
      *
      * @param type ()
@@ -99,7 +99,26 @@ public class NbtEntityUtils
         return nbt;
     }
 
-    /**
+	/**
+	 * Get EntityType Registry Reference
+	 *
+	 * @param id (id)
+	 * @param registry (registry)
+	 * @return ()
+	 */
+	public static RegistryEntry.Reference<EntityType<?>> getEntityTypeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+	{
+		try
+		{
+			return registry.getOrThrow(Registries.ENTITY_TYPE.getKey()).getEntry(id).orElseThrow();
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+	}
+
+	/**
      * Get the AttributeContainer from NBT
      *
      * @param nbt ()
@@ -287,7 +306,49 @@ public class NbtEntityUtils
         return statusEffects;
     }
 
-    /**
+	/**
+	 * Decode Equipment Slot values from NBT.
+	 *
+	 * @param nbt ()
+	 * @param registry ()
+	 * @return ()
+	 */
+	public static @Nullable EntityEquipment getEquipmentSlotsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
+	{
+		if (nbt.contains(NbtKeys.EQUIPMENT))
+		{
+			Optional<EntityEquipment> opt = EntityEquipment.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.EQUIPMENT)).result();
+
+			if (opt.isPresent())
+			{
+				return opt.get();
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Encode Equipment Slots to NBT.
+	 *
+	 * @param equipment ()
+	 * @param registry ()
+	 * @return ()
+	 */
+	public static @Nullable NbtElement setEquipmentSlotsToNbt(@Nonnull EntityEquipment equipment, @Nonnull DynamicRegistryManager registry)
+	{
+		try
+		{
+			return EntityEquipment.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), equipment).getOrThrow();
+		}
+		catch (Exception err)
+		{
+			MaLiLib.LOGGER.warn("setEquipmentSlotsToNbt(): Failed to parse Equipment Slots Object; {}", err.getMessage());
+			return null;
+		}
+	}
+
+	/**
      * Get a ItemStack List of all Equipped Hand Items.
      * 0/1 [{MainHand}, {OffHand}]
      *
@@ -631,25 +692,6 @@ public class NbtEntityUtils
     }
 
     /**
-     * Get EntityType Registry Reference
-     *
-     * @param id (id)
-     * @param registry (registry)
-     * @return ()
-     */
-    public static RegistryEntry.Reference<EntityType<?>> getEntityTypeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
-    {
-        try
-        {
-            return registry.getOrThrow(Registries.ENTITY_TYPE.getKey()).getEntry(id).orElseThrow();
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-    }
-
-    /**
      * Try to get the Leash Data from NBT using LeashData (Not Fake)
      * @param nbt ()
      * @return ()
@@ -693,7 +735,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<Direction, Direction> getItemFrameDirectionsFromNbt(@Nonnull NbtCompound nbt)
     {
         Direction facing = null;
@@ -701,7 +742,7 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.FACING_2))
         {
-            facing = nbt.get(NbtKeys.FACING_2, Direction.INDEX_CODEC).orElse(Direction.DOWN);
+	        facing = NbtUtils.readDirectionFromTag(nbt, NbtKeys.FACING_2);
         }
         if (nbt.contains(NbtKeys.ITEM_ROTATION))
         {
@@ -718,7 +759,6 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<Direction, PaintingVariant> getPaintingDataFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         Direction facing = null;
@@ -726,7 +766,7 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.FACING))
         {
-            facing = nbt.get(NbtKeys.FACING, Direction.INDEX_CODEC).orElse(Direction.SOUTH);
+			facing = NbtUtils.readDirectionFromTag(nbt, NbtKeys.FACING);
         }
         if (nbt.contains(NbtKeys.VARIANT))
         {
@@ -934,7 +974,27 @@ public class NbtEntityUtils
         return null;
     }
 
-    /**
+	/**
+	 * Get a Tropical Fish Pattern from NBT.
+	 *
+	 * @param nbt ()
+	 * @return ()
+	 */
+	public static @Nullable TropicalFishEntity.Pattern getFishPatternFromNbt(@Nonnull NbtCompound nbt)
+	{
+		if (nbt.contains(NbtKeys.VARIANT_2))
+		{
+			return nbt.get(NbtKeys.VARIANT_2, TropicalFishEntity.Variant.CODEC).orElse(TropicalFishEntity.DEFAULT_VARIANT).pattern();
+		}
+		else if (nbt.contains(NbtKeys.BUCKET_VARIANT))
+		{
+			return TropicalFishEntity.Pattern.byIndex(nbt.getInt(NbtKeys.BUCKET_VARIANT, 0) & '\uffff');
+		}
+
+		return null;
+	}
+
+	/**
      * Get a Wolves' Variant and Collar Color from NBT.
      *
      * @param nbt ()
@@ -1214,48 +1274,6 @@ public class NbtEntityUtils
     }
 
     /**
-     * Decode Equipment Slot values from NBT.
-     *
-     * @param nbt ()
-     * @param registry ()
-     * @return ()
-     */
-    public static @Nullable EntityEquipment getEquipmentSlotsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
-    {
-        if (nbt.contains(NbtKeys.EQUIPMENT))
-        {
-            Optional<EntityEquipment> opt = EntityEquipment.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.EQUIPMENT)).result();
-
-            if (opt.isPresent())
-            {
-                return opt.get();
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Encode Equipment Slots to NBT.
-     *
-     * @param equipment ()
-     * @param registry ()
-     * @return ()
-     */
-    public static @Nullable NbtElement setEquipmentSlotsToNbt(@Nonnull EntityEquipment equipment, @Nonnull DynamicRegistryManager registry)
-    {
-        try
-        {
-            return EntityEquipment.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), equipment).getOrThrow();
-        }
-        catch (Exception err)
-        {
-            MaLiLib.LOGGER.warn("setEquipmentSlotsToNbt(): Failed to parse Equipment Slots Object; {}", err.getMessage());
-            return null;
-        }
-    }
-
-    /**
      * Get a Mob's Home Pos and Radius from NBT
      * @param nbt ()
      * @return ()
@@ -1278,6 +1296,11 @@ public class NbtEntityUtils
         return Pair.of(pos, radius);
     }
 
+	/**
+	 * Get a Copper Golem's Weathering Data from NBT
+	 * @param nbt ()
+	 * @return ()
+	 */
 	public static Pair<Oxidizable.OxidationLevel, Long> getWeatheringDataFromNbt(@Nonnull NbtCompound nbt)
 	{
 		Oxidizable.OxidationLevel level = Oxidizable.OxidationLevel.UNAFFECTED;
