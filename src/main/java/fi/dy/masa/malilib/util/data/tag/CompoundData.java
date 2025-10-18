@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.util.data.tag;
 
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
@@ -400,7 +401,18 @@ public class CompoundData extends BaseData implements DataView
 
             String key = input.readUTF();
             sizeTracker.increment(2 + key.length());
-            BaseData data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
+	        BaseData data;
+
+	        try
+	        {
+		        data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
+	        }
+
+	        catch (IOException e)
+	        {
+		        MaLiLib.LOGGER.warn("Failed to read data for compound member {}", key);
+		        throw e;
+	        }
 
             if (data == null)
             {
