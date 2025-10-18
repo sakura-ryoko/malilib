@@ -1251,6 +1251,7 @@ public class InventoryOverlay
         public int slotOffsetY = 8;
     }
 
+	@Deprecated
     public enum InventoryRenderType
     {
         BREWING_STAND,
@@ -1287,8 +1288,10 @@ public class InventoryOverlay
      * @param nbt
      * @param handler
      */
+    @Deprecated
     public record Context(InventoryRenderType type, @Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt, Refresher handler) {}
 
+	@Deprecated
     public interface Refresher
     {
         Context onContextRefresh(Context data, World world);
