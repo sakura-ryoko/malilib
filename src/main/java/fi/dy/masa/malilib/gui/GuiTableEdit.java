@@ -1,22 +1,23 @@
 package fi.dy.masa.malilib.gui;
 
 import fi.dy.masa.malilib.config.ConfigManager;
-import fi.dy.masa.malilib.config.IConfigStringMap;
+import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
-import fi.dy.masa.malilib.gui.widgets.WidgetListStringMapEdit;
-import fi.dy.masa.malilib.gui.widgets.WidgetStringMapEditEntry;
+import fi.dy.masa.malilib.gui.widgets.WidgetListTableEdit;
+import fi.dy.masa.malilib.gui.widgets.WidgetTableEditEntry;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
-public class GuiStringMapEdit extends GuiListBase<Pair<String, String>, WidgetStringMapEditEntry, WidgetListStringMapEdit> {
-    protected final IConfigStringMap config;
+import java.util.List;
+
+public class GuiTableEdit extends GuiListBase<List<Object>, WidgetTableEditEntry, WidgetListTableEdit> {
+    protected final IConfigTable config;
     protected final IConfigGui configGui;
     protected int dialogWidth;
     protected int dialogHeight;
@@ -25,13 +26,13 @@ public class GuiStringMapEdit extends GuiListBase<Pair<String, String>, WidgetSt
     @Nullable
     protected final IDialogHandler dialogHandler;
 
-    public GuiStringMapEdit(IConfigStringMap config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler, Screen parent) {
+    public GuiTableEdit(IConfigTable config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler, Screen parent) {
         super(0, 0);
 
         this.config = config;
         this.configGui = configGui;
         this.dialogHandler = dialogHandler;
-        this.title = "Edit string map for '" + config.getName() + "'";
+        this.title = "Edit table for '" + config.getName() + "'";
 
         if (this.dialogHandler == null) {
             this.setParent(parent);
@@ -62,7 +63,7 @@ public class GuiStringMapEdit extends GuiListBase<Pair<String, String>, WidgetSt
         super.initGui();
     }
 
-    public IConfigStringMap getConfig() {
+    public IConfigTable getConfig() {
         return this.config;
     }
 
@@ -73,12 +74,12 @@ public class GuiStringMapEdit extends GuiListBase<Pair<String, String>, WidgetSt
 
     @Override
     protected int getBrowserHeight() {
-        return this.dialogHeight - 30;
+        return this.dialogHeight - 40;
     }
 
     @Override
-    protected WidgetListStringMapEdit createListWidget(int listX, int listY) {
-        return new WidgetListStringMapEdit(this.dialogLeft + 10, this.dialogTop + 20, this.getBrowserWidth(), this.getBrowserHeight(), this.dialogWidth - 100, this);
+    protected WidgetListTableEdit createListWidget(int listX, int listY) {
+        return new WidgetListTableEdit(this.dialogLeft + 10, this.dialogTop + 30, this.getBrowserWidth(), this.getBrowserHeight(), this.dialogWidth - 100, this);
     }
 
     @Override
@@ -108,6 +109,21 @@ public class GuiStringMapEdit extends GuiListBase<Pair<String, String>, WidgetSt
     @Override
     protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks) {
         this.drawStringWithShadow(drawContext, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
+        for (int i = 0; i < this.config.getLabels().size(); i++) {
+            String str = this.config.getLabels().get(i);
+
+            int x = dialogLeft + 18;
+            if (this.config.showEntryNumbers()) {
+                x += 15;
+            }
+            if (this.config.allowNewEntry()) {
+                x = x + i * ((dialogWidth - 170) / this.config.getTypes().size()) + 2;
+            } else {
+                x = x + i * ((dialogWidth - 130) / this.config.getTypes().size()) + 2;
+            }
+
+            this.drawStringWithShadow(drawContext, str, x, this.dialogTop + 25, COLOR_WHITE);
+        }
     }
 
     @Override
