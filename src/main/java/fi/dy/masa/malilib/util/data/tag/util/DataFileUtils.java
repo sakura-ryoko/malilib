@@ -4,6 +4,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -16,7 +17,11 @@ import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipException;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtSizeTracker;
 
 public class DataFileUtils
 {
@@ -124,4 +129,40 @@ public class DataFileUtils
 
         return false;
     }
+
+	public static CompoundData readFromFileUsingNbtIo(@Nonnull Path file)
+	{
+		return readFromFileUsingNbtIo(file, NbtSizeTracker.ofUnlimitedBytes());
+	}
+
+	public static CompoundData readFromFileUsingNbtIo(@Nonnull Path file, NbtSizeTracker tracker)
+	{
+		if (!Files.exists(file) || !Files.isReadable(file))
+		{
+			return null;
+		}
+
+		try
+		{
+			return DataConverterNbt.fromVanillaCompound(NbtIo.readCompressed(Files.newInputStream(file), tracker));
+		}
+		catch (Exception e)
+		{
+			MaLiLib.LOGGER.warn("DataFileUtils.readFromFileUsingNbtIo: Failed to read NBT data from file '{}'", file.toString());
+		}
+
+		return null;
+	}
+
+	public static void writeToFileUsingNbtIo(@Nonnull CompoundData tag, @Nonnull Path file)
+	{
+		try
+		{
+			NbtIo.writeCompressed(DataConverterNbt.toVanillaCompound(tag), file);
+		}
+		catch (Exception err)
+		{
+			MaLiLib.LOGGER.warn("DataFileUtils.writeToFileUsingNbtIo: Failed to write NBT data to file");
+		}
+	}
 }

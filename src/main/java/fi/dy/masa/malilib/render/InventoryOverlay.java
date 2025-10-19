@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.mixin.item.IMixinContainerComponent;
 import net.minecraft.component.type.ContainerComponent;
+
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
 
@@ -56,6 +58,11 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.DataBlockUtils;
+import fi.dy.masa.malilib.util.data.DataEntityUtils;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.game.IEntityOwnedInventory;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
@@ -238,6 +245,122 @@ public class InventoryOverlay
         }
     }
 
+	@ApiStatus.Experimental
+	public static void renderInventoryBackgroundNew(DrawContext context, InventoryOverlayType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc)
+	{
+		renderInventoryBackgroundNew(context, type, x, y, slotsPerRow, totalSlots, -1, mc);
+	}
+
+	@ApiStatus.Experimental
+	public static void renderInventoryBackgroundNew(DrawContext context, InventoryOverlayType type, int x, int y, int slotsPerRow, int totalSlots, int color, MinecraftClient mc)
+	{
+		if (type == InventoryOverlayType.FURNACE)
+		{
+			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_FURNACE);
+			if (gpuTextureView == null) return;
+
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   4,  64, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  4, y     ,  84,   0,  92,   4, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 64,   0, 162,  92,   4, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 92, y +  4, 172, 102,   4,  64, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  4, y +  4,  52,  13,  88,  60, color); // middle
+		}
+		else if (type == InventoryOverlayType.BREWING_STAND)
+		{
+			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_BREWING_STAND);
+			if (gpuTextureView == null) return;
+
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   4,  68, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   4, y     ,  63,   0, 113,   4, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 68,   0, 162, 113,   4, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 113, y +  4, 172,  98,   4,  68, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   4, y +  4,  13,  13, 109,  64, color); // middle
+		}
+		else if (type == InventoryOverlayType.CRAFTER)
+		{
+			// We just hack in the Dispenser Texture, so it displays right.  Easy.
+			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
+			if (gpuTextureView == null) return;
+
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  61, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 115,   0,  61,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,  61,  16,  54,  54, color); // middle
+		}
+		else if (type == InventoryOverlayType.DISPENSER)
+		{
+			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
+			if (gpuTextureView == null) return;
+
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  61, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 115,   0,  61,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,  61,  16,  54,  54, color); // middle
+		}
+		else if (type == InventoryOverlayType.HOPPER)
+		{
+			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_HOPPER);
+			if (gpuTextureView == null) return;
+
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   7,  25, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y     ,  79,   0,  97,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 25,   0, 126,  97,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  97, y +  7, 169, 108,   7,  25, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y +  7,  43,  19,  90,  18, color); // middle
+		}
+		// Most likely a Villager, or possibly a Llama
+		else if (type == InventoryOverlayType.VILLAGER)
+		{
+			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
+			if (gpuTextureView == null) return;
+
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  79, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 133,   0,  43,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 79,   0, 215,  43,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 43, y +  7, 169, 143,   7,  79, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,   7,  17,  36,  72, color); // 2x4 slots
+		}
+		else if (type == InventoryOverlayType.FIXED_27)
+		{
+			renderInventoryBackground27(x, y, color, mc, context);
+		}
+		else if (type == InventoryOverlayType.FIXED_54)
+		{
+			renderInventoryBackground54(x, y, color, mc, context);
+		}
+		else
+		{
+			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
+			if (gpuTextureView == null) return;
+
+			// Draw the slot backgrounds according to how many slots there actually are
+			int rows = (int) (Math.ceil((double) totalSlots / (double) slotsPerRow));
+			int bgw = Math.min(totalSlots, slotsPerRow) * 18 + 7;
+			int bgh = rows * 18 + 7;
+
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y      ,         0,         0,   7, bgh, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y      , 176 - bgw,         0, bgw,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + bgh,         0,       215, bgw,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + bgw, y +   7,       169, 222 - bgh,   7, bgh, color); // right (bottom)
+
+			for (int row = 0; row < rows; row++)
+			{
+				int rowLen = MathHelper.clamp(totalSlots - (row * slotsPerRow), 1, slotsPerRow);
+				RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, color);
+
+				// Render the background for the last non-existing slots on the last row,
+				// in two strips of the background texture from the double chest texture's top part.
+				if (rows > 1 && rowLen < slotsPerRow)
+				{
+					RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
+					RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
+				}
+			}
+		}
+	}
+
     public static void renderInventoryBackground27(int x, int y, int color, MinecraftClient mc, DrawContext context)
     {
         GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_SINGLE_CHEST);
@@ -282,7 +405,28 @@ public class InventoryOverlay
         }
     }
 
-    public static void renderBrewerBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y)
+	@ApiStatus.Experimental
+	public static void renderInventoryBackgroundSlotsNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int x, int y)
+	{
+		if (type == InventoryOverlayType.BREWING_STAND)
+		{
+			renderBrewerBackgroundSlots(drawContext, inv, x, y);
+		}
+		else if (type == InventoryOverlayType.HORSE)
+		{
+			renderHorseArmorBackgroundSlots(drawContext, inv, x, y);
+		}
+		else if (type == InventoryOverlayType.LLAMA)
+		{
+			renderLlamaArmorBackgroundSlots(drawContext, inv, x, y);
+		}
+		else if (type == InventoryOverlayType.WOLF || type == InventoryOverlayType.HAPPY_GHAST || type == InventoryOverlayType.COPPER_GOLEM)
+		{
+			renderWolfArmorBackgroundSlots(drawContext, inv, x, y);
+		}
+	}
+
+	public static void renderBrewerBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y)
     {
         renderBrewerBackgroundSlots(drawContext, inv, x, y, 0.9f, 0, 0);
     }
@@ -474,7 +618,95 @@ public class InventoryOverlay
         return InventoryRenderType.GENERIC;
     }
 
-    public static InventoryRenderType getInventoryType(ItemStack stack)
+	@ApiStatus.Experimental
+	public static InventoryOverlayType getInventoryTypeNew(@Nullable Inventory inv)
+	{
+		if (inv == null)
+		{
+			return InventoryOverlayType.GENERIC;
+		}
+
+		if (inv instanceof ShulkerBoxBlockEntity)
+		{
+			return InventoryOverlayType.FIXED_27;
+		}
+		else if (inv instanceof DoubleInventory)
+		{
+			return InventoryOverlayType.FIXED_54;
+		}
+		else if (inv instanceof AbstractChestBoatEntity)
+		{
+			return InventoryOverlayType.FIXED_27;
+		}
+		else if (inv instanceof ChestMinecartEntity)
+		{
+			return InventoryOverlayType.FIXED_27;
+		}
+		else if (inv instanceof AbstractFurnaceBlockEntity)
+		{
+			return InventoryOverlayType.FURNACE;
+		}
+		else if (inv instanceof BrewingStandBlockEntity)
+		{
+			return InventoryOverlayType.BREWING_STAND;
+		}
+		else if (inv instanceof CrafterBlockEntity)
+		{
+			return InventoryOverlayType.CRAFTER;
+		}
+		else if (inv instanceof DispenserBlockEntity)
+		{
+			// this includes the Dropper as a subclass
+			return InventoryOverlayType.DISPENSER;
+		}
+		else if (inv instanceof HopperBlockEntity)
+		{
+			return InventoryOverlayType.HOPPER;
+		}
+		else if (inv instanceof HopperMinecartEntity)
+		{
+			return InventoryOverlayType.HOPPER;
+		}
+		else if (inv instanceof ChiseledBookshelfBlockEntity)
+		{
+			return InventoryOverlayType.BOOKSHELF;
+		}
+		else if (inv instanceof ShelfBlockEntity)
+		{
+			return InventoryOverlayType.WALL_SHELF;
+		}
+		else if (inv instanceof PlayerInventory)
+		{
+			return InventoryOverlayType.PLAYER;
+		}
+		else if (inv instanceof IEntityOwnedInventory inventory)
+		{
+			if (inventory.malilib$getEntityOwner() instanceof LlamaEntity)
+			{
+				return InventoryOverlayType.LLAMA;
+			}
+			else if (inventory.malilib$getEntityOwner() instanceof WolfEntity)
+			{
+				return InventoryOverlayType.WOLF;
+			}
+			else if (inventory.malilib$getEntityOwner() instanceof CopperGolemEntity)
+			{
+				return InventoryOverlayType.COPPER_GOLEM;
+			}
+			else if (inventory.malilib$getEntityOwner() instanceof AbstractHorseEntity)
+			{
+				return InventoryOverlayType.HORSE;
+			}
+			else if (inventory.malilib$getEntityOwner() instanceof PiglinEntity)
+			{
+				return InventoryOverlayType.VILLAGER;
+			}
+		}
+
+		return InventoryOverlayType.GENERIC;
+	}
+
+	public static InventoryRenderType getInventoryType(ItemStack stack)
     {
         Item item = stack.getItem();
         ContainerComponent container = stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT);
@@ -546,7 +778,80 @@ public class InventoryOverlay
         return InventoryRenderType.GENERIC;
     }
 
-    /**
+	@ApiStatus.Experimental
+	public static InventoryOverlayType getInventoryTypeNew(ItemStack stack)
+	{
+		Item item = stack.getItem();
+		ContainerComponent container = stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT);
+
+		if (item instanceof BlockItem)
+		{
+			Block block = ((BlockItem) item).getBlock();
+
+			if (block instanceof ShulkerBoxBlock || block instanceof ChestBlock || block instanceof BarrelBlock)
+			{
+				final int size = ((IMixinContainerComponent) (Object) container).malilib_getStacks().size();
+
+				// For "Double Inventory" Barrels, etc.
+				if (size >= 0 && size <= 27)
+				{
+					return InventoryOverlayType.FIXED_27;
+				}
+				else if (size > 27 && size <= 54)
+				{
+					return InventoryOverlayType.FIXED_54;
+				}
+				else if (size > 54 && size < 256)
+				{
+					return InventoryOverlayType.GENERIC;
+				}
+			}
+			else if (block instanceof AbstractFurnaceBlock)
+			{
+				return InventoryOverlayType.FURNACE;
+			}
+			else if (block instanceof DispenserBlock) // this includes the Dropper as a sub class
+			{
+				return InventoryOverlayType.DISPENSER;
+			}
+			else if (block instanceof HopperBlock)
+			{
+				return InventoryOverlayType.HOPPER;
+			}
+			else if (block instanceof BrewingStandBlock)
+			{
+				return InventoryOverlayType.BREWING_STAND;
+			}
+			else if (block instanceof CrafterBlock)
+			{
+				return InventoryOverlayType.CRAFTER;
+			}
+			else if (block instanceof DecoratedPotBlock || block instanceof JukeboxBlock || block instanceof LecternBlock)
+			{
+				return InventoryOverlayType.SINGLE_ITEM;
+			}
+			else if (block instanceof ChiseledBookshelfBlock)
+			{
+				return InventoryOverlayType.BOOKSHELF;
+			}
+			else if (block instanceof ShelfBlock)
+			{
+				return InventoryOverlayType.WALL_SHELF;
+			}
+			else if (block instanceof EnderChestBlock)
+			{
+				return InventoryOverlayType.ENDER_CHEST;
+			}
+		}
+		else if (item instanceof BundleItem)
+		{
+			return InventoryOverlayType.BUNDLE;
+		}
+
+		return InventoryOverlayType.GENERIC;
+	}
+
+	/**
      * Attempts to get the Inventory Type based on raw NBT tags.
      * @param nbt
      * @return
@@ -691,6 +996,152 @@ public class InventoryOverlay
         return InventoryRenderType.GENERIC;
     }
 
+	/**
+	 * Attempts to get the Inventory Type based on raw NBT tags.
+	 * @param data
+	 * @return
+	 */
+	@ApiStatus.Experimental
+	public static InventoryOverlayType getInventoryTypeNew(@Nonnull CompoundData data)
+	{
+		BlockEntityType<?> blockType = DataBlockUtils.getBlockEntityType(data);
+
+		if (blockType != null)
+		{
+			if (blockType.equals(BlockEntityType.SHULKER_BOX) ||
+				blockType.equals(BlockEntityType.BARREL) ||
+				blockType.equals(BlockEntityType.CHEST) ||
+				blockType.equals(BlockEntityType.TRAPPED_CHEST))
+			{
+				if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
+				{
+					ListData list = data.getList(NbtKeys.ITEMS);
+
+					if (list.size() > 27)
+					{
+						return InventoryOverlayType.FIXED_54;
+					}
+				}
+
+				return InventoryOverlayType.FIXED_27;
+			}
+			else if (blockType.equals(BlockEntityType.FURNACE) ||
+					blockType.equals(BlockEntityType.BLAST_FURNACE) ||
+					blockType.equals(BlockEntityType.SMOKER))
+			{
+				return InventoryOverlayType.FURNACE;
+			}
+			else if (blockType.equals(BlockEntityType.DISPENSER) ||
+					blockType.equals(BlockEntityType.DROPPER))
+			{
+				return InventoryOverlayType.DISPENSER;
+			}
+			else if (blockType.equals(BlockEntityType.HOPPER))
+			{
+				return InventoryOverlayType.HOPPER;
+			}
+			else if (blockType.equals(BlockEntityType.BREWING_STAND))
+			{
+				return InventoryOverlayType.BREWING_STAND;
+			}
+			else if (blockType.equals(BlockEntityType.CRAFTER))
+			{
+				return InventoryOverlayType.CRAFTER;
+			}
+			else if (blockType.equals(BlockEntityType.DECORATED_POT) ||
+					blockType.equals(BlockEntityType.JUKEBOX) ||
+					blockType.equals(BlockEntityType.LECTERN))
+			{
+				return InventoryOverlayType.SINGLE_ITEM;
+			}
+			else if (blockType.equals(BlockEntityType.CHISELED_BOOKSHELF))
+			{
+				return InventoryOverlayType.BOOKSHELF;
+			}
+			else if (blockType.equals(BlockEntityType.SHELF))
+			{
+				return InventoryOverlayType.WALL_SHELF;
+			}
+			else if (blockType.equals(BlockEntityType.ENDER_CHEST))
+			{
+				return InventoryOverlayType.ENDER_CHEST;
+			}
+		}
+
+		EntityType<?> entityType = DataEntityUtils.getEntityType(data);
+
+		if (entityType != null)
+		{
+			if (entityType.equals(EntityType.CHEST_MINECART) ||
+				entityType.equals(EntityType.ACACIA_CHEST_BOAT) ||
+				entityType.equals(EntityType.BAMBOO_CHEST_RAFT) ||
+				entityType.equals(EntityType.BIRCH_CHEST_BOAT) ||
+				entityType.equals(EntityType.CHERRY_CHEST_BOAT) ||
+				entityType.equals(EntityType.DARK_OAK_CHEST_BOAT) ||
+				entityType.equals(EntityType.JUNGLE_CHEST_BOAT) ||
+				entityType.equals(EntityType.MANGROVE_CHEST_BOAT) ||
+				entityType.equals(EntityType.OAK_CHEST_BOAT) ||
+				entityType.equals(EntityType.PALE_OAK_CHEST_BOAT) ||
+				entityType.equals(EntityType.SPRUCE_CHEST_BOAT))
+			{
+				return InventoryOverlayType.FIXED_27;
+			}
+			else if (entityType.equals(EntityType.HOPPER_MINECART))
+			{
+				return InventoryOverlayType.HOPPER;
+			}
+			else if (entityType.equals(EntityType.HORSE) ||
+					entityType.equals(EntityType.DONKEY) ||
+					entityType.equals(EntityType.MULE) ||
+					entityType.equals(EntityType.CAMEL) ||
+					entityType.equals(EntityType.SKELETON_HORSE) ||
+					entityType.equals(EntityType.ZOMBIE_HORSE))
+			{
+				return InventoryOverlayType.HORSE;
+			}
+			else if (entityType.equals(EntityType.LLAMA) ||
+					entityType.equals(EntityType.TRADER_LLAMA))
+			{
+				return InventoryOverlayType.LLAMA;
+			}
+			else if (entityType.equals(EntityType.WOLF))
+			{
+				return InventoryOverlayType.WOLF;
+			}
+			else if (entityType.equals(EntityType.HAPPY_GHAST))
+			{
+				return InventoryOverlayType.HAPPY_GHAST;
+			}
+			else if (entityType.equals(EntityType.COPPER_GOLEM))
+			{
+				return InventoryOverlayType.COPPER_GOLEM;
+			}
+			else if (entityType.equals(EntityType.VILLAGER) ||
+					entityType.equals(EntityType.ALLAY) ||
+					entityType.equals(EntityType.PILLAGER) ||
+					entityType.equals(EntityType.PIGLIN) ||
+					entityType.equals(EntityType.WANDERING_TRADER) ||
+					entityType.equals(EntityType.ZOMBIE_VILLAGER))
+			{
+				return InventoryOverlayType.VILLAGER;
+			}
+			else if (entityType.equals(EntityType.PLAYER))
+			{
+				return InventoryOverlayType.PLAYER;
+			}
+			else if (entityType.equals(EntityType.ARMOR_STAND))
+			{
+				return InventoryOverlayType.ARMOR_STAND;
+			}
+			else if (data.containsLenient(NbtKeys.ATTRIB) || data.containsLenient(NbtKeys.EFFECTS) || data.containsLenient(NbtKeys.FALL_FLYING))
+			{
+				return InventoryOverlayType.LIVING_ENTITY;
+			}
+		}
+
+		return InventoryOverlayType.GENERIC;
+	}
+
     /**
      * Two-Way match to try to get the Best Inventory Type based on the INV Object, or NBT Tags.
      * @param inv
@@ -737,7 +1188,55 @@ public class InventoryOverlay
         return i;
     }
 
-    /**
+	/**
+	 * Two-Way match to try to get the Best Inventory Type based on the INV Object, or NBT Tags.
+	 * @param inv
+	 * @param data
+	 * @return
+	 */
+	@ApiStatus.Experimental
+	public static InventoryOverlayType getBestInventoryTypeNew(@Nonnull Inventory inv, @Nonnull CompoundData data)
+	{
+		InventoryOverlayType i = getInventoryTypeNew(inv);
+		InventoryOverlayType n = getInventoryTypeNew(data);
+
+		// Don't use the NBT value if the INV result is FIXED_54.
+		if (i != n && i == InventoryOverlayType.GENERIC)
+		{
+			return n;
+		}
+
+		return i;
+	}
+
+	/**
+	 * Three-Way match to try to get the Best Inventory Type based on the INV Object, NBT tags, or an Overlay Context.
+	 * @param inv
+	 * @param data
+	 * @param ctx
+	 * @return
+	 */
+	@ApiStatus.Experimental
+	public static InventoryOverlayType getBestInventoryTypeNew(@Nullable Inventory inv, @Nonnull CompoundData data, InventoryOverlayContext ctx)
+	{
+		InventoryOverlayType i = getInventoryTypeNew(inv);
+		InventoryOverlayType n = getInventoryTypeNew(data);
+
+		// Don't use the NBT value if the INV result is FIXED_54.
+		if (i != n && i == InventoryOverlayType.GENERIC)
+		{
+			if (n != ctx.type() && ctx.type() != InventoryOverlayType.GENERIC)
+			{
+				return ctx.type();
+			}
+
+			return n;
+		}
+
+		return i;
+	}
+
+	/**
      * Returns the instance of the shared/temporary properties instance,
      * with the values set for the type of inventory provided.
      * Don't hold on to the instance, as the values will mutate when this
@@ -873,6 +1372,144 @@ public class InventoryOverlay
         return INV_PROPS_TEMP;
     }
 
+	/**
+	 * Returns the instance of the shared/temporary properties instance,
+	 * with the values set for the type of inventory provided.
+	 * Don't hold on to the instance, as the values will mutate when this
+	 * method is called again!
+	 * @param type ()
+	 * @param totalSlots ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static InventoryProperties getInventoryPropsTempNew(InventoryOverlayType type, int totalSlots)
+	{
+		// Default slotsPerARow is only used for Bundles
+		return getInventoryPropsTempNew(type, totalSlots, 9);
+	}
+
+	/**
+	 * Returns the instance of the shared/temporary properties instance,
+	 * with the values set for the type of inventory provided.
+	 * Don't hold on to the instance, as the values will mutate when this
+	 * method is called again!
+	 * @param type ()
+	 * @param totalSlots ()
+	 * @param slotsPerARow ()
+	 * @return
+	 */
+	@ApiStatus.Experimental
+	public static InventoryProperties getInventoryPropsTempNew(InventoryOverlayType type, int totalSlots, int slotsPerARow)
+	{
+		INV_PROPS_TEMP.totalSlots = totalSlots;
+
+		if (type == InventoryOverlayType.FURNACE)
+		{
+			INV_PROPS_TEMP.slotsPerRow = 1;
+			INV_PROPS_TEMP.slotOffsetX = 0;
+			INV_PROPS_TEMP.slotOffsetY = 0;
+			INV_PROPS_TEMP.width = 96;
+			INV_PROPS_TEMP.height = 68;
+		}
+		else if (type == InventoryOverlayType.BREWING_STAND)
+		{
+			INV_PROPS_TEMP.slotsPerRow = 9;
+			INV_PROPS_TEMP.slotOffsetX = 0;
+			INV_PROPS_TEMP.slotOffsetY = 0;
+			//INV_PROPS_TEMP.width = 127;
+			INV_PROPS_TEMP.width = 109;
+			INV_PROPS_TEMP.height = 72;
+		}
+		else if (type == InventoryOverlayType.CRAFTER || type == InventoryOverlayType.DISPENSER)
+		{
+			INV_PROPS_TEMP.slotsPerRow = 3;
+			INV_PROPS_TEMP.slotOffsetX = 8;
+			INV_PROPS_TEMP.slotOffsetY = 8;
+			INV_PROPS_TEMP.width = 68;
+			INV_PROPS_TEMP.height = 68;
+		}
+		else if (type == InventoryOverlayType.HORSE || type == InventoryOverlayType.LLAMA || type == InventoryOverlayType.WOLF || type == InventoryOverlayType.COPPER_GOLEM)
+		{
+			INV_PROPS_TEMP.slotsPerRow = Math.max(1, totalSlots / 3);
+			INV_PROPS_TEMP.slotOffsetX = 8;
+			INV_PROPS_TEMP.slotOffsetY = 8;
+			INV_PROPS_TEMP.width = totalSlots * 18 / 3 + 14;
+			INV_PROPS_TEMP.height = 68;
+		}
+		else if (type == InventoryOverlayType.HOPPER)
+		{
+			INV_PROPS_TEMP.slotsPerRow = 5;
+			INV_PROPS_TEMP.slotOffsetX = 8;
+			INV_PROPS_TEMP.slotOffsetY = 8;
+			INV_PROPS_TEMP.width = 105;
+			INV_PROPS_TEMP.height = 32;
+		}
+		else if (type == InventoryOverlayType.VILLAGER)
+		{
+			INV_PROPS_TEMP.slotsPerRow = 2;
+			INV_PROPS_TEMP.slotOffsetX = 8;
+			INV_PROPS_TEMP.slotOffsetY = 8;
+			INV_PROPS_TEMP.width = 50;
+			INV_PROPS_TEMP.height = 86;
+		}
+		else if (type == InventoryOverlayType.SINGLE_ITEM)
+		{
+			INV_PROPS_TEMP.slotsPerRow = 1;
+			INV_PROPS_TEMP.slotOffsetX = 8;
+			INV_PROPS_TEMP.slotOffsetY = 8;
+			INV_PROPS_TEMP.width = 32;
+			INV_PROPS_TEMP.height = 32;
+		}
+		else if (type == InventoryOverlayType.BOOKSHELF)
+		{
+			INV_PROPS_TEMP.slotsPerRow = 3;
+			INV_PROPS_TEMP.slotOffsetX = 8;
+			INV_PROPS_TEMP.slotOffsetY = 8;
+			INV_PROPS_TEMP.width = 68;
+			INV_PROPS_TEMP.height = 50;
+			INV_PROPS_TEMP.totalSlots = 6;
+		}
+		else if (type == InventoryOverlayType.WALL_SHELF)
+		{
+			INV_PROPS_TEMP.slotsPerRow = 3;
+			INV_PROPS_TEMP.slotOffsetX = 8;
+			INV_PROPS_TEMP.slotOffsetY = 8;
+			INV_PROPS_TEMP.width = 68;
+			INV_PROPS_TEMP.height = 50;
+			INV_PROPS_TEMP.totalSlots = 3;
+		}
+		else if (type == InventoryOverlayType.BUNDLE)
+		{
+			INV_PROPS_TEMP.slotsPerRow = slotsPerARow != 9 ? MathUtils.clamp(slotsPerARow, 6, 9) : 9;
+			INV_PROPS_TEMP.slotOffsetX = 8;
+			INV_PROPS_TEMP.slotOffsetY = 8;
+			int rows = (int) (Math.ceil((double) totalSlots / (double) INV_PROPS_TEMP.slotsPerRow));
+			INV_PROPS_TEMP.width = Math.min(INV_PROPS_TEMP.slotsPerRow, totalSlots) * 18 + 14;
+			INV_PROPS_TEMP.height = rows * 18 + 14;
+			INV_PROPS_TEMP.totalSlots = rows * INV_PROPS_TEMP.slotsPerRow;
+		}
+		else
+		{
+			if (type == InventoryOverlayType.FIXED_27 || type == InventoryOverlayType.PLAYER || type == InventoryOverlayType.ENDER_CHEST)
+			{
+				totalSlots = 27;
+			}
+			else if (type == InventoryOverlayType.FIXED_54)
+			{
+				totalSlots = 54;
+			}
+
+			INV_PROPS_TEMP.slotsPerRow = 9;
+			INV_PROPS_TEMP.slotOffsetX = 8;
+			INV_PROPS_TEMP.slotOffsetY = 8;
+			int rows = (int) (Math.ceil((double) totalSlots / (double) INV_PROPS_TEMP.slotsPerRow));
+			INV_PROPS_TEMP.width = Math.min(INV_PROPS_TEMP.slotsPerRow, totalSlots) * 18 + 14;
+			INV_PROPS_TEMP.height = rows * 18 + 14;
+		}
+
+		return INV_PROPS_TEMP;
+	}
+
     public static void renderInventoryStacks(DrawContext drawContext, InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc)
     {
         renderInventoryStacks(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, 0, 0);
@@ -901,7 +1538,38 @@ public class InventoryOverlay
         renderInventoryStacks(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, mouseX, mouseY);
     }
 
-    /**
+	@ApiStatus.Experimental
+	public static void renderInventoryStacksNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc)
+	{
+		renderInventoryStacksNew(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, 0, 0);
+	}
+
+	/**
+	 * Supports lockable Crafter Slots
+	 * @param type
+	 * @param inv
+	 * @param startX
+	 * @param startY
+	 * @param slotsPerRow
+	 * @param startSlot
+	 * @param maxSlots
+	 * @param disabledSlots (Locked Crafter Slots as a numbered Set)
+	 * @param mc
+	 * @param drawContext
+	 */
+	@ApiStatus.Experimental
+	public static void renderInventoryStacksNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc)
+	{
+		renderInventoryStacksNew(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, disabledSlots, mc, 0, 0);
+	}
+
+	@ApiStatus.Experimental
+	public static void renderInventoryStacksNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc, double mouseX, double mouseY)
+	{
+		renderInventoryStacksNew(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, mouseX, mouseY);
+	}
+
+	/**
      * Render the Inventory Stacks.  Now Supports Lockable Crafter Slots.
      *
      * @param type
@@ -987,7 +1655,94 @@ public class InventoryOverlay
         }
     }
 
-    public static void renderEquipmentStacks(DrawContext drawContext, LivingEntity entity, int x, int y, MinecraftClient mc)
+	/**
+	 * Render the Inventory Stacks.  Now Supports Lockable Crafter Slots.
+	 *
+	 * @param type
+	 * @param inv
+	 * @param startX
+	 * @param startY
+	 * @param slotsPerRow
+	 * @param startSlot
+	 * @param maxSlots
+	 * @param disabledSlots  (Locked Crafter Slots as a numbered Set)
+	 * @param mc
+	 * @param drawContext
+	 * @param mouseX
+	 * @param mouseY
+	 */
+	@ApiStatus.Experimental
+	public static void renderInventoryStacksNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc, double mouseX, double mouseY)
+	{
+		if (inv == null)
+		{
+			// Only so this doesn't crash if inv was set to null
+			inv = new SimpleInventory(maxSlots > 0 ? maxSlots : INV_PROPS_TEMP.totalSlots);
+		}
+
+		if (type == InventoryOverlayType.FURNACE)
+		{
+			renderStackAt(drawContext, inv.getStack(0), startX + 8, startY + 8, 1, mc, mouseX, mouseY);
+			renderStackAt(drawContext, inv.getStack(1), startX + 8, startY + 44, 1, mc, mouseX, mouseY);
+			renderStackAt(drawContext, inv.getStack(2), startX + 68, startY + 26, 1, mc, mouseX, mouseY);
+		}
+		else if (type == InventoryOverlayType.BREWING_STAND)
+		{
+			renderStackAt(drawContext, inv.getStack(0), startX + 47, startY + 42, 1, mc, mouseX, mouseY);
+			renderStackAt(drawContext, inv.getStack(1), startX + 70, startY + 49, 1, mc, mouseX, mouseY);
+			renderStackAt(drawContext, inv.getStack(2), startX + 93, startY + 42, 1, mc, mouseX, mouseY);
+			renderStackAt(drawContext, inv.getStack(3), startX + 70, startY + 8, 1, mc, mouseX, mouseY);
+			renderStackAt(drawContext, inv.getStack(4), startX + 8, startY + 8, 1, mc, mouseX, mouseY);
+		}
+		else
+		{
+			final int slots = inv.size();
+			int x = startX;
+			int y = startY;
+
+			if (maxSlots < 0)
+			{
+				maxSlots = slots;
+			}
+
+//            LOGGER.debug("renderInventoryStacks: slotsPerRow [{}], startSlot [{}], maxSlots [{}]", slotsPerRow, startSlot, maxSlots);
+
+			for (int slot = startSlot, i = 0; slot < slots && i < maxSlots; )
+			{
+				for (int column = 0; column < slotsPerRow && slot < slots && i < maxSlots; ++column, ++slot, ++i)
+				{
+					ItemStack stack = inv.getStack(slot).copy();
+
+					if (disabledSlots.contains(slot))
+					{
+						// Requires -1 offset, because locked texture is 18 x 18.
+						renderLockedSlotAt(drawContext, x - 1, y - 1, 1, mouseX, mouseY);
+					}
+					else if (!stack.isEmpty())
+					{
+//                        LOGGER.debug("renderInventoryStacks: slot[{}/{}]: [{}]", slot, slots, stack.toString());
+						renderStackAt(drawContext, stack, x, y, 1, mc, mouseX, mouseY);
+					}
+
+					x += 18;
+				}
+
+				x = startX;
+				y += 18;
+			}
+		}
+
+		if (hoveredStack != null)
+		{
+			var stack = hoveredStack.copy();
+			hoveredStack = null;
+			// Some mixin / side effects can happen here
+			//drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
+			renderStackToolTipStyled(drawContext, (int) mouseX, (int) mouseY, stack, mc);
+		}
+	}
+
+	public static void renderEquipmentStacks(DrawContext drawContext, LivingEntity entity, int x, int y, MinecraftClient mc)
     {
         renderEquipmentStacks(drawContext, entity, x, y, mc, 0, 0);
     }

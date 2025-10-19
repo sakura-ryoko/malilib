@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.block.Oxidizable;
 import net.minecraft.entity.*;
@@ -49,6 +50,7 @@ import fi.dy.masa.malilib.util.nbt.INbtEntityInvoker;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
 
+@ApiStatus.Experimental
 public class DataEntityUtils
 {
 	/**
@@ -139,7 +141,7 @@ public class DataEntityUtils
 		if (type != null && data.contains(NbtKeys.ATTRIB, Constants.NBT.TAG_LIST))
 		{
 			AttributeContainer container = new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
-			ListData list = data.getList(NbtKeys.ATTRIB, Constants.NBT.TAG_COMPOUND);
+			ListData list = data.getList(NbtKeys.ATTRIB);
 
 			container.unpack(EntityAttributeInstance.Packed.LIST_CODEC.parse(NbtOps.INSTANCE, DataConverterNbt.toVanillaList(list)).getPartialOrThrow());
 			return container;
@@ -260,7 +262,7 @@ public class DataEntityUtils
 			key = NbtKeys.CUSTOM_NAME;
 		}
 
-		return data.putCodec(key, TextCodecs.CODEC, name, registry.getOps(NbtOps.INSTANCE));
+		return data.putCodec(key, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE), name);
 	}
 
 	/**
@@ -568,7 +570,7 @@ public class DataEntityUtils
 	 */
 	public static @Nullable TradeOfferList getTradeOffers(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
 	{
-		if (data.contains(NbtKeys.OFFERS, Constants.NBT.TAG_COMPOUND))
+		if (data.contains(NbtKeys.OFFERS, Constants.NBT.TAG_LIST))
 		{
 			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
 		}

@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -285,7 +287,7 @@ public class NbtInventory implements AutoCloseable
         return new NbtCompound();
     }
 
-	// TODO
+	@ApiStatus.Experimental
 	public CompoundData toDataSingle(@Nonnull DynamicRegistryManager registry)
 	{
 		return DataConverterNbt.fromVanillaCompound(this.toNbtSingle(registry));
@@ -320,7 +322,7 @@ public class NbtInventory implements AutoCloseable
         return nbt;
     }
 
-	// TODO
+	@ApiStatus.Experimental
 	public ListData toDataList(@Nonnull DynamicRegistryManager registry)
 	{
 		return DataConverterNbt.fromVanillaList(this.toNbtList(registry));
@@ -360,6 +362,7 @@ public class NbtInventory implements AutoCloseable
         throw new RuntimeException("Unsupported Nbt Type!");
     }
 
+	@ApiStatus.Experimental
 	public CompoundData toData(int type, String key, @Nonnull DynamicRegistryManager registry) throws RuntimeException
 	{
 		CompoundData data = new CompoundData();
@@ -412,6 +415,7 @@ public class NbtInventory implements AutoCloseable
         }
     }
 
+	@ApiStatus.Experimental
 	public static @Nullable NbtInventory fromData(@Nonnull CompoundData data, String key, boolean noSlotId, @Nonnull DynamicRegistryManager registry) throws RuntimeException
 	{
 		if (data.isEmpty() || !data.containsLenient(key))
@@ -421,7 +425,7 @@ public class NbtInventory implements AutoCloseable
 
 		if (data.contains(key, Constants.NBT.TAG_LIST))
 		{
-			return fromDataList(data.getList(key, Constants.NBT.TAG_COMPOUND), noSlotId, registry);
+			return fromDataList(data.getList(key), noSlotId, registry);
 		}
 		else if (data.contains(key, Constants.NBT.TAG_COMPOUND))
 		{
@@ -456,7 +460,7 @@ public class NbtInventory implements AutoCloseable
         return newInv;
     }
 
-	// TODO
+	@ApiStatus.Experimental
 	public static @Nullable NbtInventory fromDataSingle(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry) throws RuntimeException
 	{
 		NbtCompound nbt = DataConverterNbt.toVanillaCompound(data);
@@ -526,7 +530,7 @@ public class NbtInventory implements AutoCloseable
         return newInv;
     }
 
-	// TODO
+	@ApiStatus.Experimental
 	public static @Nullable NbtInventory fromDataList(@Nonnull ListData list, boolean noSlotId, @Nonnull DynamicRegistryManager registry) throws RuntimeException
 	{
 		NbtList nbt = DataConverterNbt.toVanillaList(list);

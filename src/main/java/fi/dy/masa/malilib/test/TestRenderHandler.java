@@ -98,7 +98,14 @@ public class TestRenderHandler implements IRenderer
                 profiler.pop();
                  */
 
-                TestInventoryOverlayHandler.getInstance().getRenderContext(drawContext, profiler, mc);
+	            if (TestInventoryOverlayHandler.getInstance().isNewCode())
+	            {
+		            TestInventoryOverlayHandler.getInstance().getRenderContextNew(drawContext, profiler, mc);
+	            }
+				else
+	            {
+		            TestInventoryOverlayHandler.getInstance().getRenderContext(drawContext, profiler, mc);
+	            }
             }
 
             if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())

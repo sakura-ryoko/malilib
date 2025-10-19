@@ -3,15 +3,23 @@ package fi.dy.masa.malilib.util.data.tag.converter;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.*;
+import fi.dy.masa.malilib.util.log.AnsiLogger;
+
 import net.minecraft.nbt.*;
 
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Experimental
 public class DataConverterNbt
 {
+//	private static final AnsiLogger LOGGER = new AnsiLogger(DataConverterNbt.class, true, true);
+
     @Nullable
     public static BaseData fromVanillaNbt(NbtElement vanillaTag)
     {
+//		LOGGER.debug("fromVanillaNbt: type: [{}]", vanillaTag.getType());
+
         switch (vanillaTag.getType())
         {
             case Constants.NBT.TAG_BYTE:        return new ByteData(((NbtByte) vanillaTag).value());
@@ -24,8 +32,8 @@ public class DataConverterNbt
             case Constants.NBT.TAG_BYTE_ARRAY:  return new ByteArrayData(((NbtByteArray) vanillaTag).getByteArray());
             case Constants.NBT.TAG_INT_ARRAY:   return new IntArrayData(((NbtIntArray) vanillaTag).getIntArray());
             case Constants.NBT.TAG_LONG_ARRAY:  return new LongArrayData(((NbtLongArray) vanillaTag).getLongArray());
-            case Constants.NBT.TAG_COMPOUND:    return fromVanillaCompound((NbtCompound) vanillaTag);
-            case Constants.NBT.TAG_LIST:        return fromVanillaList((NbtList) vanillaTag);
+            case Constants.NBT.TAG_COMPOUND:    return fromVanillaCompound(vanillaTag.asCompound().orElse(new NbtCompound()));
+            case Constants.NBT.TAG_LIST:        return fromVanillaList(vanillaTag.asNbtList().orElse(new NbtList()));
             default:
                 MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaCompound: Unknown NBT tag id {}", vanillaTag.getType());
         }
@@ -33,29 +41,34 @@ public class DataConverterNbt
         return null;
     }
 
-    @Nullable
     public static ListData fromVanillaList(NbtList vanillaList)
     {
-        ListData list = new ListData(vanillaList.getType());
+        ListData list = new ListData();
+
+		if (vanillaList == null || vanillaList.isEmpty())
+		{
+			return list;
+		}
 
         for (int index = 0; index < vanillaList.size(); index++)
         {
             NbtElement entry = vanillaList.get(index);
 
-            if (entry.getType() == Constants.NBT.TAG_END)
-            {
-                MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaList: Got TAG_End in a list at index {}", index);
-                return null;
-            }
+			if (entry != null)
+			{
+				if (entry.getType() == Constants.NBT.TAG_END)
+				{
+					MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaList: Got TAG_End in a list at index {}", index);
+					return list;
+				}
 
-            BaseData convertedTag = fromVanillaNbt(entry);
+				BaseData convertedTag = fromVanillaNbt(entry);
 
-            if (convertedTag == null)
-            {
-                return null;
-            }
-
-            list.add(convertedTag);
+				if (convertedTag != null)
+				{
+					list.add(convertedTag);
+				}
+			}
         }
 
         return list;
@@ -63,18 +76,29 @@ public class DataConverterNbt
 
     public static CompoundData fromVanillaCompound(NbtCompound vanillaCompound)
     {
-        CompoundData data = new CompoundData();
+	    CompoundData data = new CompoundData();
+
+	    if (vanillaCompound == null || vanillaCompound.isEmpty())
+		{
+			return data;
+		}
 
         for (String key : vanillaCompound.getKeys())
         {
-            BaseData convertedTag = fromVanillaNbt(vanillaCompound.get(key));
+			NbtElement ele = vanillaCompound.get(key);
 
-            if (convertedTag != null)
-            {
-                data.put(key, convertedTag);
-            }
+			if (ele != null)
+			{
+				BaseData convertedTag = fromVanillaNbt(ele);
+
+				if (convertedTag != null)
+				{
+					data = data.put(key, convertedTag);
+				}
+			}
         }
 
+//	    LOGGER.warn("fromVanillaCompound: data: [{}]", data.toString());
         return data;
     }
 
@@ -102,30 +126,34 @@ public class DataConverterNbt
         return null;
     }
 
-    @Nullable
     public static NbtList toVanillaList(ListData listData)
     {
         NbtList list = new NbtList();
+
+		if (listData == null || listData.isEmpty())
+		{
+			return list;
+		}
 
         for (int index = 0; index < listData.size(); index++)
         {
             BaseData entry = listData.get(index);
 
-            if (entry.getType() == Constants.NBT.TAG_END)
-            {
-                MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaList: Got TAG_End in a list at index {}", index);
-                return null;
-            }
+			if (entry != null)
+			{
+				if (entry.getType() == Constants.NBT.TAG_END)
+				{
+					MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaList: Got TAG_End in a list at index {}", index);
+					return list;
+				}
 
-            NbtElement convertedTag = toVanillaNbt(entry);
+				NbtElement convertedTag = toVanillaNbt(entry);
 
-            if (convertedTag == null)
-            {
-                MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaList: Got a null tag in a list at index {}", index);
-                return null;
-            }
-
-            list.add(convertedTag);
+				if (convertedTag != null)
+				{
+					list.add(convertedTag);
+				}
+			}
         }
 
         return list;
@@ -137,17 +165,23 @@ public class DataConverterNbt
 
         for (String key : compoundData.getKeys())
         {
-            NbtElement convertedTag = toVanillaNbt(compoundData.getData(key).orElse(null));
+	        BaseData data = compoundData.getData(key).orElse(null);
 
-            if (convertedTag == null)
-            {
-                MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaCompound: Got a null tag in a compound with key {}", key);
-                return null;
-            }
+	        if (data != null)
+	        {
+		        NbtElement convertedTag = toVanillaNbt(data);
 
-            tag.put(key, convertedTag);
+		        if (convertedTag == null)
+		        {
+			        MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaCompound:B: Got a null tag in a compound with key {}", key);
+					continue;
+		        }
+
+		        tag.put(key, convertedTag);
+	        }
         }
 
+//		LOGGER.debug("toVanillaCompound: nbt [{}]", tag.toString());
         return tag;
     }
 }

@@ -249,17 +249,10 @@ public class NbtUtils
 		return writeBlockPosToArrayTag(pos, tag, tagName);
 	}
 
-	public static @Nonnull NbtCompound writeVec3iToArrayTag(@Nonnull Vec3i pos, @Nonnull NbtCompound tag, String tagName)
-	{
-		return writeBlockPosToArrayTag(pos, tag, tagName);
-	}
-
 	public static @Nonnull NbtCompound writeBlockPosToArrayTag(@Nonnull Vec3i pos, @Nonnull NbtCompound tag, String tagName)
 	{
 		int[] arr = new int[]{pos.getX(), pos.getY(), pos.getZ()};
-
 		tag.putIntArray(tagName, arr);
-
 		return tag;
 	}
 

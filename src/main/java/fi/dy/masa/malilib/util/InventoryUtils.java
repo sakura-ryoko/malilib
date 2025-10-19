@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.util;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.commons.lang3.math.Fraction;
+import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -53,6 +55,13 @@ import net.minecraft.world.World;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
+import fi.dy.masa.malilib.render.InventoryOverlayType;
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.DataEntityUtils;
+import fi.dy.masa.malilib.util.data.tag.BaseData;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.ListData;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
@@ -198,7 +207,53 @@ public class InventoryUtils
         return true;
     }
 
-    /**
+	/**
+	 * Same as above, but still intended to compare CompoundData
+	 *
+	 * @param tag1        (CompoundData tag1)
+	 * @param tag2        (CompoundData tag2)
+	 * @param ignoredKeys (Keys to ignore) [OPTIONAL]
+	 * @return (result)
+	 */
+	@ApiStatus.Experimental
+	public static boolean areDataEqualIgnoreKeys(@Nonnull CompoundData tag1, @Nonnull CompoundData tag2, @Nullable Set<String> ignoredKeys)
+	{
+		Set<String> keys1;
+		Set<String> keys2;
+
+		keys1 = tag1.getKeys();
+		keys2 = tag2.getKeys();
+
+		if (ignoredKeys != null)
+		{
+			keys1.removeAll(ignoredKeys);
+			keys2.removeAll(ignoredKeys);
+		}
+
+		if (!Objects.equals(keys1, keys2))
+		{
+			return false;
+		}
+
+		for (String key : keys1)
+		{
+			Optional<BaseData> data1 = tag1.getData(key);
+			Optional<BaseData> data2 = tag2.getData(key);
+
+			if (!data1.isPresent() || !data2.isPresent())
+			{
+				return false;
+			}
+			else if (!Objects.equals(data1.get(), data2.get()))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
      * Swaps the stack from the slot <b>slotNum</b> to the given hotbar slot <b>hotbarSlot</b>
      *
      * @param container ()
@@ -428,8 +483,30 @@ public class InventoryUtils
         return null;
     }
 
-    /**
-     * Checks if the given NBT currently contains any items, using the NBT Items[] interface.
+	/**
+	 * Returns item represented as Data Tag if the ItemStack has NBT Items present.
+	 *
+	 * @param stack ()
+	 * @param registry ()
+	 * @return ()
+	 */
+	public static @Nullable CompoundData stackHasDataItems(ItemStack stack, @Nonnull DynamicRegistryManager registry)
+	{
+		if (!stack.isEmpty())
+		{
+			CompoundData data = DataConverterNbt.fromVanillaCompound((NbtCompound) ItemStack.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), stack).getOrThrow());
+
+			if (hasDataItems(data))
+			{
+				return data;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+     * Checks if the given NBT currently contains any items.
      *
      * @param nbt ()
      * @return ()
@@ -466,7 +543,46 @@ public class InventoryUtils
         else return nbt.contains(NbtKeys.RECORD);
     }
 
-    /**
+	/**
+	 * Checks if the given Data Tag currently contains any items.
+	 *
+	 * @param data ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static boolean hasDataItems(CompoundData data)
+	{
+		if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
+		{
+			ListData tagList = data.getList(NbtKeys.ITEMS);
+			return tagList != null && !tagList.isEmpty();
+		}
+		else if (data.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST))
+		{
+			ListData tagList = data.getList(NbtKeys.INVENTORY);
+			return tagList != null && !tagList.isEmpty();
+		}
+		else if (data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
+		{
+			ListData tagList = data.getList(NbtKeys.ENDER_ITEMS);
+			return tagList != null && !tagList.isEmpty();
+		}
+		else if (data.contains(NbtKeys.ITEM, Constants.NBT.TAG_COMPOUND))
+		{
+			return true;
+		}
+		else if (data.contains(NbtKeys.ITEM_2, Constants.NBT.TAG_COMPOUND))
+		{
+			return true;
+		}
+		else if (data.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
+		{
+			return true;
+		}
+		else return data.contains(NbtKeys.RECORD, Constants.NBT.TAG_COMPOUND);
+	}
+
+	/**
      * Returns the list of items currently stored in the given NBT Items[] interface.
      * Does not keep empty slots.
      *
@@ -609,7 +725,152 @@ public class InventoryUtils
         return DefaultedList.of();
     }
 
-    /**
+	/**
+	 * Returns the list of items currently stored in the given NBT Items[] interface.
+	 * Does not keep empty slots.
+	 *
+	 * @param data The item holding the inventory contents
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static DefaultedList<ItemStack> getDataItems(@Nonnull CompoundData data)
+	{
+		MinecraftClient mc = MinecraftClient.getInstance();
+
+		if (mc.world == null)
+		{
+			return DefaultedList.of();
+		}
+
+		return getDataItems(data, -1, mc.world.getRegistryManager());
+	}
+
+	/**
+	 * Returns the list of items currently stored in the given NBT Items[] interface.
+	 * Preserves empty slots, unless the "Inventory" interface is used.
+	 *
+	 * @param data       The tag holding the inventory contents
+	 * @param slotCount the maximum number of slots, and thus also the size of the list to create
+	 * @param registry  the Dynamic Registry object
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static DefaultedList<ItemStack> getDataItems(@Nonnull CompoundData data, int slotCount, @Nonnull DynamicRegistryManager registry)
+	{
+		if (slotCount > NbtInventory.MAX_SIZE)
+		{
+			slotCount = NbtInventory.MAX_SIZE;
+		}
+
+		// Most Common Tag --> NbtElement.LIST_TYPE ???
+		if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
+		{
+			ListData list = data.getList(NbtKeys.ITEMS);
+
+			if (slotCount < 0)
+			{
+				// Uses slots
+				slotCount = list.size();
+			}
+
+			slotCount = NbtInventory.getAdjustedSize(slotCount);
+
+			NbtInventory nbtInv = NbtInventory.fromDataList(list, false, registry);
+
+			if (nbtInv == null || nbtInv.isEmpty())
+			{
+				return DefaultedList.of();
+			}
+
+			return nbtInv.toVanillaList(slotCount);
+		}
+		// A few Entities use this
+		else if (data.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST))
+		{
+			InventoryOverlayType type = InventoryOverlay.getInventoryTypeNew(data);
+			boolean isPlayer = type == InventoryOverlayType.PLAYER;
+
+			ListData list = data.getList(NbtKeys.INVENTORY);
+			if (slotCount < 0)
+			{
+				// Doesn't use slots
+				slotCount = list.size();
+			}
+
+			slotCount = NbtInventory.getAdjustedSize(slotCount);
+
+			NbtInventory nbtInv = NbtInventory.fromDataList(list, !isPlayer, registry);
+
+			if (nbtInv == null || nbtInv.isEmpty())
+			{
+				return DefaultedList.of();
+			}
+
+			return nbtInv.toVanillaList(slotCount);
+		}
+		// Ender Chest
+		else if (data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
+		{
+			ListData list = data.getList(NbtKeys.ENDER_ITEMS);
+
+			if (slotCount < 0)
+			{
+				// Uses slots
+				slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
+			}
+
+			slotCount = NbtInventory.getAdjustedSize(slotCount);
+
+			NbtInventory nbtInv = NbtInventory.fromDataList(list, false, registry);
+
+			if (nbtInv == null || nbtInv.isEmpty())
+			{
+				return DefaultedList.of();
+			}
+
+			return nbtInv.toVanillaList(slotCount);
+		}
+		else if (data.contains(NbtKeys.ITEM, Constants.NBT.TAG_COMPOUND))
+		{
+			// item (DecoratedPot, ItemEntity)
+			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM));
+			DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+			items.addFirst(entry);
+
+			return items;
+		}
+		else if (data.contains(NbtKeys.ITEM_2, Constants.NBT.TAG_COMPOUND))
+		{
+			// Item (ItemFrame)
+			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM_2));
+			DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+			items.addFirst(entry);
+
+			return items;
+		}
+		else if (data.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
+		{
+			// Book (Lectern)
+			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.BOOK));
+			DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+			items.addFirst(entry);
+
+			return items;
+		}
+		else if (data.contains(NbtKeys.RECORD, Constants.NBT.TAG_COMPOUND))
+		{
+			// RecordItem (Jukebox)
+			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.RECORD));
+			DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
+			items.addFirst(entry);
+
+			return items;
+		}
+
+		return DefaultedList.of();
+	}
+
+	/**
      * Returns Inventory of items currently stored in the given NBT Items[] interface.
      * Preserves empty slots, unless the "Inventory" interface is used.
      *
@@ -626,7 +887,25 @@ public class InventoryUtils
         return getNbtInventory(nbt, -1, MinecraftClient.getInstance().world.getRegistryManager());
     }
 
-    /**
+	/**
+	 * Returns Inventory of items currently stored in the given NBT Items[] interface.
+	 * Preserves empty slots, unless the "Inventory" interface is used.
+	 *
+	 * @param data     The tag holding the inventory contents
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static Inventory getDataInventory(@Nonnull CompoundData data)
+	{
+		if (MinecraftClient.getInstance().world == null)
+		{
+			return null;
+		}
+
+		return getDataInventory(data, -1, MinecraftClient.getInstance().world.getRegistryManager());
+	}
+
+	/**
      * Returns Inventory of items currently stored in the given NBT Items[] interface.
      * Preserves empty slots, unless the "Inventory" interface is used.
      *
@@ -750,7 +1029,132 @@ public class InventoryUtils
         return null;
     }
 
-    /**
+	/**
+	 * Returns Inventory of items currently stored in the given NBT Items[] interface.
+	 * Preserves empty slots, unless the "Inventory" interface is used.
+	 *
+	 * @param data       The tag holding the inventory contents
+	 * @param slotCount the maximum number of slots, and thus also the size of the list to create
+	 * @param registry  The Dynamic Registry object
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static Inventory getDataInventory(@Nonnull CompoundData data, int slotCount, @Nonnull DynamicRegistryManager registry)
+	{
+		if (slotCount > NbtInventory.MAX_SIZE)
+		{
+			slotCount = NbtInventory.MAX_SIZE;
+		}
+
+		if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
+		{
+			// Standard 'Items' tag for most Block Entities --
+			// -- Furnace, Brewing Stand, Shulker Box, Crafter, Barrel, Chest, Dispenser, Hopper, Bookshelf, Campfire
+			if (slotCount < 0)
+			{
+				// Uses slots
+				ListData list = data.getList(NbtKeys.ITEMS);
+				slotCount = list.size();
+			}
+
+			slotCount = NbtInventory.getAdjustedSize(slotCount);
+
+			NbtInventory nbtInv = NbtInventory.fromData(data, NbtKeys.ITEMS, false, registry);
+
+			if (nbtInv == null || nbtInv.isEmpty())
+			{
+				return null;
+			}
+
+			return nbtInv.toInventory(slotCount);
+		}
+		else if (data.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST))
+		{
+			InventoryOverlayType type = InventoryOverlay.getInventoryTypeNew(data);
+			boolean isPlayer = type == InventoryOverlayType.PLAYER;
+
+			// Entities use this (Piglin, Villager, a few others)
+			if (slotCount < 0)
+			{
+				ListData list = data.getList(NbtKeys.INVENTORY);
+				// Doesn't use slots
+				slotCount = list.size();
+			}
+
+			slotCount = NbtInventory.getAdjustedSize(slotCount);
+
+			// "Inventory" tags might not include Slot ID's, but a Player will.
+			NbtInventory nbtInv = NbtInventory.fromData(data, NbtKeys.INVENTORY, !isPlayer, registry);
+
+			if (nbtInv == null || nbtInv.isEmpty())
+			{
+				return null;
+			}
+
+			return nbtInv.toInventory(slotCount);
+		}
+		else if (data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
+		{
+			// Ender Chest
+			ListData list = data.getList(NbtKeys.ENDER_ITEMS);
+
+			if (slotCount < 0)
+			{
+				// Uses slots
+				slotCount = Math.max(list.size(), NbtInventory.DEFAULT_SIZE);
+			}
+
+			slotCount = NbtInventory.getAdjustedSize(slotCount);
+			NbtInventory nbtInv = NbtInventory.fromDataList(list, false, registry);
+
+			if (nbtInv == null || nbtInv.isEmpty())
+			{
+				return null;
+			}
+
+			return nbtInv.toInventory(Math.max(slotCount, NbtInventory.DEFAULT_SIZE));
+		}
+		else if (data.contains(NbtKeys.ITEM, Constants.NBT.TAG_COMPOUND))
+		{
+			// item (DecoratedPot, ItemEntity)
+			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM));
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
+
+			return inv;
+		}
+		else if (data.contains(NbtKeys.ITEM_2, Constants.NBT.TAG_COMPOUND))
+		{
+			// Item (Item Frame)
+			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM_2));
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
+
+			return inv;
+		}
+		else if (data.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
+		{
+			// Book (Lectern)
+			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.BOOK));
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
+
+			return inv;
+		}
+		else if (data.contains(NbtKeys.RECORD, Constants.NBT.TAG_COMPOUND))
+		{
+			// RecordItem (Jukebox)
+			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.RECORD));
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
+
+			return inv;
+		}
+
+		return null;
+	}
+
+	/**
      * Executes the "Inventory Display Horse Fix" (Saddle Offset) for NBT-based Displays.
      *
      * @param nbt ()
@@ -816,6 +1220,73 @@ public class InventoryUtils
         return null;
     }
 
+	/**
+	 * Executes the "Inventory Display Horse Fix" (Saddle Offset) for NBT-based Displays.
+	 *
+	 * @param data ()
+	 * @param slotCount ()
+	 * @param registry ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static Inventory getDataInventoryHorseFix(@Nonnull CompoundData data, int slotCount, @Nonnull DynamicRegistryManager registry)
+	{
+		DefaultedList<ItemStack> horseEquipment = DataEntityUtils.getHorseEquipment(data, registry);
+
+		if (slotCount > NbtInventory.MAX_SIZE)
+		{
+			slotCount = NbtInventory.MAX_SIZE;
+		}
+
+		// Shift inv ahead by 1 slot for horses (1.21 only)
+		if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
+		{
+			if (slotCount < 0)
+			{
+				ListData list = data.getList(NbtKeys.ITEMS);
+				slotCount = list.size();
+			}
+
+			SimpleInventory inv = new SimpleInventory(slotCount + 1);
+
+			inv.setStack(0, horseEquipment.getLast());
+
+			NbtInventory nbtInv = NbtInventory.fromData(data, NbtKeys.ITEMS, false, registry);
+
+			// Chested Horse
+			if (nbtInv != null && !nbtInv.isEmpty())
+			{
+				DefaultedList<ItemStack> items = nbtInv.toVanillaList(slotCount + 1);
+
+				for (int i = 0; i < slotCount; i++)
+				{
+					inv.setStack(i + 1, items.get(i));
+				}
+			}
+
+			return inv;
+		}
+		// Saddled only fix
+		else if (!horseEquipment.getLast().isEmpty())
+		{
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, horseEquipment.getLast().copy());
+
+			return inv;
+		}
+		else if (data.contains(NbtKeys.ITEM, Constants.NBT.TAG_COMPOUND))
+		{
+			// item (DecoratedPot, ItemEntity)
+			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM));
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
+
+			return inv;
+		}
+
+		return null;
+	}
+
     @Nullable
     public static EnderChestInventory getPlayerEnderItems(PlayerEntity player)
     {
@@ -843,6 +1314,26 @@ public class InventoryUtils
         return null;
     }
 
+	@Nullable
+	@ApiStatus.Experimental
+	public static EnderChestInventory getPlayerEnderItemsFromData(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	{
+		LOGGER.debug("getPlayerEnderItemsFromData: containsList({}) : containsLeinient({})", data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST), data.containsLenient(NbtKeys.ENDER_ITEMS));
+		if (data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
+		{
+			EnderChestInventory inv = new EnderChestInventory();
+			NbtView view = NbtView.getReader(data, registry);
+
+			inv.readData(view.getReader().getTypedListView(NbtKeys.ENDER_ITEMS, StackWithSlot.CODEC));
+
+			LOGGER.debug("getPlayerEnderItemsFromData: inv [{}]", inv.size());
+			return inv;
+		}
+
+		LOGGER.debug("getPlayerEnderItemsFromData: inv: [NULL]");
+		return null;
+	}
+
     public static DefaultedList<ItemStack> getSellingItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         TradeOfferList offers = NbtEntityUtils.getTradeOffersFromNbt(nbt, registry);
@@ -855,7 +1346,20 @@ public class InventoryUtils
         return DefaultedList.of();
     }
 
-    public static DefaultedList<ItemStack> getSellingItems(@Nonnull TradeOfferList offers)
+	@ApiStatus.Experimental
+	public static DefaultedList<ItemStack> getSellingItemsFromData(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	{
+		TradeOfferList offers = DataEntityUtils.getTradeOffers(data, registry);
+
+		if (offers != null)
+		{
+			return getSellingItems(offers);
+		}
+
+		return DefaultedList.of();
+	}
+
+	public static DefaultedList<ItemStack> getSellingItems(@Nonnull TradeOfferList offers)
     {
         if (!offers.isEmpty())
         {
@@ -1375,6 +1879,28 @@ public class InventoryUtils
     }
 
 	/**
+	 * Get the Data Tag out of a Stored Block Entity contained within an Item Stack.
+	 *
+	 * @param stack ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static CompoundData getStoredBlockEntityDataTag(ItemStack stack)
+	{
+		if (stack.contains(DataComponentTypes.BLOCK_ENTITY_DATA))
+		{
+			TypedEntityData<BlockEntityType<?>> component = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
+
+			if (component != null)
+			{
+				return DataConverterNbt.fromVanillaCompound(component.copyNbtWithoutId());
+			}
+		}
+
+		return new CompoundData();
+	}
+
+	/**
 	 * Return an item stack from NBT, or Empty
 	 * @param tag ()
 	 * @return ()
@@ -1390,6 +1916,24 @@ public class InventoryUtils
 
         return ItemStack.EMPTY;
     }
+
+	/**
+	 * Return an item stack from Data Tag, or Empty
+	 * @param data ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static ItemStack fromDataOrEmpty(@Nullable CompoundData data)
+	{
+		MinecraftClient mc = MinecraftClient.getInstance();
+
+		if (mc.world != null)
+		{
+			return fromDataOrEmpty(mc.world.getRegistryManager(), data);
+		}
+
+		return ItemStack.EMPTY;
+	}
 
 	/**
 	 * Return an item stack from an NBT key
@@ -1408,6 +1952,25 @@ public class InventoryUtils
 
         return ItemStack.EMPTY;
     }
+
+	/**
+	 * Return an item stack from a Data Tag key
+	 * @param data ()
+	 * @param key ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static ItemStack getStackCodec(@Nonnull CompoundData data, String key)
+	{
+		MinecraftClient mc = MinecraftClient.getInstance();
+
+		if (mc.world != null)
+		{
+			return getStackCodec(data, mc.world.getRegistryManager(), key);
+		}
+
+		return ItemStack.EMPTY;
+	}
 
 	/**
 	 * Insert an item stack into NBT using a key
@@ -1429,6 +1992,26 @@ public class InventoryUtils
     }
 
 	/**
+	 * Insert an item stack into Data Tag using a key
+	 * @param data ()
+	 * @param stack ()
+	 * @param key ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static CompoundData putStackCodec(@Nonnull CompoundData data, @Nonnull ItemStack stack, String key)
+	{
+		MinecraftClient mc = MinecraftClient.getInstance();
+
+		if (mc.world != null)
+		{
+			return putStackCodec(data, mc.world.getRegistryManager(), stack, key);
+		}
+
+		return new CompoundData();
+	}
+
+	/**
 	 * Return an item stack from NBT, or Empty
 	 * @param tag ()
 	 * @param registry ()
@@ -1445,6 +2028,23 @@ public class InventoryUtils
     }
 
 	/**
+	 * Return an item stack from Data Tag, or Empty
+	 * @param tag ()
+	 * @param registry ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static ItemStack fromDataOrEmpty(@Nonnull DynamicRegistryManager registry, @Nullable CompoundData tag)
+	{
+		if (tag == null)
+		{
+			return ItemStack.EMPTY;
+		}
+
+		return ItemStack.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(tag)).resultOrPartial().orElse(ItemStack.EMPTY);
+	}
+
+	/**
 	 * Return an item stack from an NBT key
 	 * @param nbt ()
 	 * @param registry ()
@@ -1455,6 +2055,19 @@ public class InventoryUtils
     {
         return nbt.get(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
     }
+
+	/**
+	 * Return an item stack from a Data Tag key
+	 * @param data ()
+	 * @param registry ()
+	 * @param key ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static ItemStack getStackCodec(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, String key)
+	{
+		return data.getCodec(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
+	}
 
 	/**
 	 * Insert an item stack into NBT using a key
@@ -1469,4 +2082,18 @@ public class InventoryUtils
         nbt.put(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE), stack);
         return nbt;
     }
+
+	/**
+	 * Insert an item stack into Data Tag using a key
+	 * @param data ()
+	 * @param registry ()
+	 * @param stack ()
+	 * @param key ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public static CompoundData putStackCodec(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, @Nonnull ItemStack stack, String key)
+	{
+		return data.putCodec(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE), stack);
+	}
 }

@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.interfaces;
 
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -30,6 +31,9 @@ import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.entity.IMixinPiglinEntity;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
+import fi.dy.masa.malilib.util.data.DataEntityUtils;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 
 /**
@@ -106,6 +110,16 @@ public interface IDataSyncer
     @Nullable
     default NbtCompound getFromBlockEntityCacheNbt(BlockPos pos) { return null; }
 
+	/**
+	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
+	 * Note, that these functions are intended to be simple Getters.
+	 * For Requesting Server Data, use `requestBlockEntity()`
+	 * @param pos ()
+	 * @return ()
+	 */
+	@Nullable
+	default CompoundData getFromBlockEntityCacheData(BlockPos pos) { return null; }
+
     /**
      * Used to return an BlockEntity Object from the Entity Data Syncer Cache at the specific BlockPos.
      * Note, that these functions are intended to be simple Getters.
@@ -125,6 +139,16 @@ public interface IDataSyncer
      */
     @Nullable
     default NbtCompound getFromEntityCacheNbt(int entityId) { return null; }
+
+	/**
+	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
+	 * Note, that these functions are intended to be simple Getters.
+	 * For Requesting Server Data, use `requestEntity()`
+	 * @param entityId ()
+	 * @return ()
+	 */
+	@Nullable
+	default CompoundData getFromEntityCacheData(int entityId) { return null; }
 
     /**
      * Used to return an Entity Object from the Entity Data Syncer Cache at the specific BlockPos.
@@ -168,6 +192,36 @@ public interface IDataSyncer
         return null;
     }
 
+	/**
+	 * Request the Block Entity Pair from the server;
+	 * if the Cache contains the Data, return the data Pair.
+	 * @param world ()
+	 * @param pos ()
+	 * @return (The Data Pair|Null)
+	 */
+	@Nullable
+	default Pair<BlockEntity, CompoundData> requestBlockEntityNew(World world, BlockPos pos)
+	{
+		if (world == null)
+		{
+			world = this.getWorld();
+		}
+
+		if (world == null) return null;
+
+		if (world.getBlockState(pos).getBlock() instanceof BlockEntityProvider)
+		{
+			BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
+
+			if (be != null)
+			{
+				return Pair.of(be, DataConverterNbt.fromVanillaCompound(be.createNbtWithIdentifyingData(world.getRegistryManager())));
+			}
+		}
+
+		return null;
+	}
+
     /**
      * Request the Entity Pair from the server;
      * if the Cache contains the Data, return the data Pair.
@@ -185,11 +239,6 @@ public interface IDataSyncer
         if (world == null) return null;
 
         Entity entity = world.getEntityById(entityId);
-//        NbtView nbtView = NbtView.getWriter(world.getRegistryManager());
-
-//        if (entity != null && entity.saveSelfData(nbtView.getWriter()))
-//        {
-//            NbtCompound nbt = nbtView.readNbt();
 
         if (entity != null)
         {
@@ -198,6 +247,32 @@ public interface IDataSyncer
 
         return null;
     }
+
+	/**
+	 * Request the Entity Pair from the server;
+	 * if the Cache contains the Data, return the data Pair.
+	 * @param entityId ()
+	 * @return (The Data Pair|Null)
+	 */
+	@Nullable
+	default Pair<Entity, CompoundData> requestEntityNew(World world, int entityId)
+	{
+		if (world == null)
+		{
+			world = this.getWorld();
+		}
+
+		if (world == null) return null;
+
+		Entity entity = world.getEntityById(entityId);
+
+		if (entity != null)
+		{
+			return Pair.of(entity, DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entityId));
+		}
+
+		return null;
+	}
 
     /**
      * Used to Obtain the Inventory Object from the Specified BlockPos,
@@ -284,6 +359,91 @@ public interface IDataSyncer
         return inv;
     }
 
+	/**
+	 * Used to Obtain the Inventory Object from the Specified BlockPos,
+	 * and handle if it is a Double Chest.  If the Data doesn't exist in the Cache, request it.
+	 * @param world (Provided for compatibility with other worlds)
+	 * @param pos ()
+	 * @param useNbt ()
+	 * @return (Inventory|EmptyInventory|Null)
+	 */
+	@Nullable
+	@SuppressWarnings("deprecation")
+	default Inventory getBlockInventoryNew(World world, BlockPos pos, boolean useNbt)
+	{
+		if (world == null)
+		{
+			world = this.getWorld();
+		}
+
+		if (world == null) return null;
+
+		Pair<BlockEntity, CompoundData> pair = this.requestBlockEntityNew(world, pos);
+		Inventory inv = null;
+
+		if (pair == null) return null;
+
+		if (useNbt)
+		{
+			inv = InventoryUtils.getDataInventory(pair.getRight(), -1, world.getRegistryManager());
+		}
+		else
+		{
+			BlockEntity be = pair.getLeft();
+			BlockState state = world.getBlockState(pos);
+
+			if (state.isIn(BlockTags.AIR) || !state.hasBlockEntity())
+			{
+				// Don't keep requesting if we're tick warping or something.
+				return null;
+			}
+
+			if (be instanceof Inventory inv1)
+			{
+				if (be instanceof ChestBlockEntity && state.contains(ChestBlock.CHEST_TYPE))
+				{
+					ChestType type = state.get(ChestBlock.CHEST_TYPE);
+
+					if (type != ChestType.SINGLE)
+					{
+						BlockPos posAdj = pos.offset(ChestBlock.getFacing(state));
+
+						if (!world.isChunkLoaded(posAdj)) return null;
+						BlockState stateAdj = world.getBlockState(posAdj);
+
+						Pair<BlockEntity, CompoundData> pairAdj = this.requestBlockEntityNew(world, posAdj);
+
+						if (pairAdj == null)
+						{
+							return inv1;
+						}
+
+						if (stateAdj.getBlock() == state.getBlock() &&
+							pairAdj.getLeft() instanceof ChestBlockEntity inv2 &&
+							stateAdj.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE &&
+							stateAdj.get(ChestBlock.FACING) == state.get(ChestBlock.FACING))
+						{
+							Inventory invRight = type == ChestType.RIGHT ? inv1 : inv2;
+							Inventory invLeft = type == ChestType.RIGHT ? inv2 : inv1;
+
+							inv = new DoubleInventory(invRight, invLeft);
+						}
+					}
+					else
+					{
+						inv = inv1;
+					}
+				}
+				else
+				{
+					inv = inv1;
+				}
+			}
+		}
+
+		return inv;
+	}
+
     /**
      * Used to Obtain the Inventory Object from the Specified Entity, if available;
      * and handle if it needs special handling.  If the Data doesn't exist in the Cache, request it.
@@ -341,6 +501,63 @@ public interface IDataSyncer
         return inv;
     }
 
+	/**
+	 * Used to Obtain the Inventory Object from the Specified Entity, if available;
+	 * and handle if it needs special handling.  If the Data doesn't exist in the Cache, request it.
+	 * @param entityId ()
+	 * @param useData ()
+	 * @return (Inventory|Null)
+	 */
+	@Nullable
+	default Inventory getEntityInventoryNew(World world, int entityId, boolean useData)
+	{
+		if (world == null)
+		{
+			world = this.getWorld();
+		}
+
+		if (world == null) return null;
+
+		Pair<Entity, CompoundData> pair = this.requestEntityNew(world, entityId);
+		Inventory inv = null;
+
+		if (pair == null) return null;
+
+		if (useData)
+		{
+			inv = InventoryUtils.getDataInventory(pair.getRight(), -1, world.getRegistryManager());
+		}
+		else
+		{
+			Entity entity = pair.getLeft();
+
+			if (entity instanceof Inventory)
+			{
+				inv = (Inventory) entity;
+			}
+			else if (entity instanceof PlayerEntity player)
+			{
+				inv = new SimpleInventory(player.getInventory().getMainStacks().toArray(new ItemStack[36]));
+			}
+			else if (entity instanceof VillagerEntity)
+			{
+				inv = ((VillagerEntity) entity).getInventory();
+			}
+			else if (entity instanceof AbstractHorseEntity)
+			{
+				inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
+			}
+			else if (entity instanceof PiglinEntity)
+			{
+				inv = ((IMixinPiglinEntity) entity).malilib_getInventory();
+			}
+
+			return inv;
+		}
+
+		return inv;
+	}
+
     /**
      * Used by your Packet Receiver to hande incoming data from BlockPos and the Server Side NBT tags.
      * @param pos ()
@@ -371,4 +588,39 @@ public interface IDataSyncer
      * @param nbt (The NBT Data returned by the server)
      */
     default void handleVanillaQueryNbt(int transactionId, NbtCompound nbt) {}
+
+	/**
+	 * Used by your Packet Receiver to hande incoming data from BlockPos and the Server Side NBT tags.
+	 * @param pos ()
+	 * @param data ()
+	 * @param type (Optional)
+	 * @return (BlockEntity|Null)
+	 */
+	@ApiStatus.Experimental
+	default BlockEntity handleBlockEntityData(BlockPos pos, CompoundData data, @Nullable Identifier type) { return null; }
+
+	/**
+	 * Used by your Packet Receiver to hande incoming data from the entityId and the Server Side NBT tags.
+	 * @param data ()
+	 * @return (Entity|Null)
+	 */
+	@ApiStatus.Experimental
+	default Entity handleEntityData(int entityId, CompoundData data) { return null; }
+
+	/**
+	 * Used by your Packet Receiver if any Bulk handling of NBT Tags for multiple Entities is required.
+	 * This is usually used for something like downloading an entire ChunkPos worth of Entity Data; such as with Litematica.
+	 * @param transactionId ()
+	 * @param data ()
+	 */
+	@ApiStatus.Experimental
+	default void handleBulkEntityData(int transactionId, CompoundData data) {}
+
+	/**
+	 * Vanilla QueryNbt Packet Receiver & Handling
+	 * @param transactionId (QueryNbt Transaction Id)
+	 * @param data (The NBT Data returned by the server)
+	 */
+	@ApiStatus.Experimental
+	default void handleVanillaQueryNbt(int transactionId, CompoundData data) {}
 }

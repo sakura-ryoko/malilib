@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.ApiStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,7 @@ import fi.dy.masa.malilib.mixin.nbt.IMixinNbtReadView;
 import fi.dy.masa.malilib.mixin.nbt.IMixinNbtWriteView;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 
 /**
  * This is a wrapper to the new "ReadView / WriteView" that Mojang made; and provides a seamless way to extract an NbtCompound to / from it.
@@ -54,6 +56,7 @@ public class NbtView
 	 * @param registry ()
 	 * @return ()
 	 */
+	@ApiStatus.Experimental
 	public static NbtView getReader(CompoundData data, @Nonnull DynamicRegistryManager registry)
 	{
 		NbtView wrapper = new NbtView();
@@ -175,6 +178,7 @@ public class NbtView
 	 * @param dataIn ()
 	 * @return ()
 	 */
+	@ApiStatus.Experimental
 	public @Nullable NbtView writeData(@Nonnull CompoundData dataIn)
 	{
 		NbtCompound nbt = DataConverterNbt.toVanillaCompound(dataIn);
@@ -249,7 +253,27 @@ public class NbtView
         return this.readNbt();
     }
 
-    /**
+	/**
+	 * Writes a Flat Map value to the Data Tag
+	 * @param <T> ()
+	 * @param mapCodec ()
+	 * @param value ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public <T> CompoundData writeFlatMapNew(MapCodec<T> mapCodec, T value)
+	{
+		if (this.isReader())
+		{
+			LOGGER.error("writeFlatMapNew(): Called from a Reader Context");
+			return new CompoundData();
+		}
+
+		this.writeData(DataTypeUtils.writeFlatMap(mapCodec, value));
+		return this.readData();
+	}
+
+	/**
      * Writes a CODEC utilizing 'key' to the Nbt
      * @param <T> ()
      * @param key ()
@@ -276,4 +300,33 @@ public class NbtView
             return new NbtCompound();
         }
     }
+
+	/**
+	 * Writes a CODEC utilizing 'key' to the Data Tag
+	 * @param <T> ()
+	 * @param key ()
+	 * @param codec ()
+	 * @param value ()
+	 * @return ()
+	 */
+	@ApiStatus.Experimental
+	public <T> CompoundData writeCodecNew(String key, Codec<T> codec, T value)
+	{
+		if (this.isReader())
+		{
+			LOGGER.error("writeCodecNew(): Called from a Reader Context");
+			return new CompoundData();
+		}
+
+		try
+		{
+			this.writer.put(key, codec, value);
+			return this.readData();
+		}
+		catch (Exception err)
+		{
+			LOGGER.warn("writeCodecNew(): Exception writing to key '{}'; {}", key, err.getLocalizedMessage());
+			return new CompoundData();
+		}
+	}
 }

@@ -50,7 +50,7 @@ public interface DataView
 
     CompoundData getCompound(String key);
 
-    ListData getList(String key, int containedType);
+    ListData getList(String key);
 
 	default <T> Optional<T> getCodec(String key, Codec<T> codec)
 	{
