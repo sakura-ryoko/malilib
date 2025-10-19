@@ -11,6 +11,7 @@ import fi.dy.masa.malilib.config.IConfigTable;
 import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,7 +147,7 @@ Class<?>... types
         }
     }
 
-    public ConfigTable(String name, String comment, String prettyName, String translatedName,
+    private ConfigTable(String name, String comment, String prettyName, String translatedName,
                        @Nullable String displayString, List<List<Object>> defaultValue,
                        List<String> labels, boolean showEntryNumbers, boolean allowAddNewEntry,
                        Class<?>... types) {
@@ -320,6 +321,8 @@ Class<?>... types
         private boolean allowAddNewEntry = true;
         private Class<?>[] types;
 
+        private int entryCount = -1;
+
         public Builder setName(String name) {
             this.name = name;
             return this;
@@ -370,13 +373,29 @@ Class<?>... types
             return this;
         }
 
+        public Builder setEntryCount(@Range(from = 1, to = Integer.MAX_VALUE) int count) {
+            this.entryCount = count;
+            return this;
+        }
+
         public ConfigTable build() {
-            defaultValue = new ArrayList<>();
-            defaultValue.add(getDummy(List.of(types)));
+            if (defaultValue == null){
+                defaultValue = new ArrayList<>();
+            }
+            if (defaultValue.size() == 1 && entryCount > 0) {
+                for (int i = 0; i < entryCount; i++) {
+                    defaultValue.add(new ArrayList<>(defaultValue.getFirst()));
+                }
+            } else if (entryCount > 0){
+                for (int i = 0; i < entryCount; i++) {
+                    defaultValue.add(getDummy(List.of(types)));
+                }
+            } else {
+                defaultValue.add(getDummy(List.of(types)));
+            }
             if (comment == null) comment = name + " Comment?";
             if (prettyName == null) prettyName = name;
             if (translatedName == null) translatedName = name;
-
 
             if (labels.size() != types.length) {
                 throw new IllegalArgumentException("Labels size mismatch: expected " + types.length + " but got " + labels.size());
