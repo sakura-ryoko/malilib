@@ -13,6 +13,9 @@ import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.IConfigValue;
 import fi.dy.masa.malilib.config.options.*;
+import fi.dy.masa.malilib.config.options.table.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.Label;
+import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
@@ -24,6 +27,8 @@ import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.Color4f;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
+
+import static fi.dy.masa.malilib.config.options.table.type.EntryTypes.*;
 
 public class MaLiLibConfigs implements IConfigHandler
 {
@@ -38,7 +43,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigInteger           ACTIONBAR_HUD_TICKS         = new ConfigInteger           ("actionbarHudTicks",       60, 1, 240).apply(GENERIC_KEY);
         public static final ConfigFloat             IN_GAME_MESSAGE_TIMEOUT     = new ConfigFloat             ("inGameMessageTimeout",    5.0f, 0.5f, 15.0f).apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
-//        public static final ConfigBooleanHotkeyed   ENABLE_STATUS_EFFECTS_SHIFT = new ConfigBooleanHotkeyed   ("enableStatusEffectsShift",true, "").apply(GENERIC_KEY);
+//        public static final ConfigBooleanHotkeyed   RENDER_TRANSPARENCY_FIX     = new ConfigBooleanHotkeyed   ("renderTransparencyFix",   true, "").apply(GENERIC_KEY);
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
@@ -48,7 +53,7 @@ public class MaLiLibConfigs implements IConfigHandler
                 ACTIONBAR_HUD_TICKS,
                 IN_GAME_MESSAGE_TIMEOUT,
                 ENABLE_CONFIG_SWITCHER,
-//                ENABLE_STATUS_EFFECTS_SHIFT,
+//                RENDER_TRANSPARENCY_FIX,
                 REALMS_COMMON_CONFIG
         );
 
@@ -57,7 +62,7 @@ public class MaLiLibConfigs implements IConfigHandler
                 OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
                 ENABLE_CONFIG_SWITCHER
-//                ENABLE_STATUS_EFFECTS_SHIFT
+//                RENDER_TRANSPARENCY_FIX
         );
     }
 
@@ -105,6 +110,57 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "testString", "Test String").apply(TEST_KEY);
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_1             =
+                new ConfigTable.Builder("testTable1", STRING, INTEGER, BOOLEAN, LABEL, DOUBLE)
+                        .build(true).apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_2             =
+                new ConfigTable.Builder("testTable2", LABEL, DOUBLE, DOUBLE, DOUBLE)
+                        .setEntryCount(4)
+                        .setDefaultValue(
+                                T(L("cat:"), 0.0, 0.0, 0.0),
+                                T(L("dog:"), 0.0, 0.0, 0.0),
+                                T(L("cow:"), 0.0, 0.0, 0.0),
+                                T(L("fox:"), 0.0, 0.0, 0.0)
+                        )
+                        .setAllowAddNewEntry(false)
+                        .setDisplayString("Display string")
+                        .setLabels("", "X position", "Y position", "Z position")
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_3             =
+                new ConfigTable.Builder("testTable3", STRING, INTEGER, INTEGER)
+                        .setShowEntryNumbers(false)
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_4             =
+                new ConfigTable.Builder("testTable4", DOUBLE, INTEGER, STRING, BOOLEAN)
+                        .setDefaultValue(T(0.0, 1, "2", true), T(1.0, 3, "5", false))
+                        .setLabels("Label 1", L("Label 2", "With a comment!"), L("Label 3", "With a big\n\nand scary\n\ncomment >:3"))
+                        .setComment("Comment")
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_5             =
+                new ConfigTable.Builder("testTable5", LABEL, DOUBLE, INTEGER, STRING)
+                        .setComment("Another comment")
+                        .setDefaultValue(T(L("Horizontal label!", "With comments too!"), 213.0, 43, "22"))
+                        .setEntryCount(5)
+                        .setAllowAddNewEntry(false)
+                        .setLabels(List.of("Label 1", "Label 2"))
+                        .build().apply(TEST_KEY);
+
+        private static TableRow T(Object... objects)
+        {
+            return TableRow.of(objects);
+        }
+
+        private static Label L(String... strings)
+        {
+            return switch (strings.length)
+            {
+                case 0 -> Label.of();
+                case 1 -> Label.of(strings[0]);
+                case 2 -> Label.of(strings[0], strings[1]);
+                default -> throw new IllegalArgumentException("Must be < 2 entries");
+            };
+        }
+
         public static final ConfigInteger           TEST_BUNDLE_PREVIEW_WIDTH       = new ConfigInteger("testBundlePreviewWidth", 9, 6, 9, "Test Bundle Preview Width").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY          = new ConfigBooleanHotkeyed("testInventoryOverlay", false, "LEFT_ALT").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY_OG       = new ConfigBooleanHotkeyed("testInventoryOverlayOG", false, "").apply(TEST_KEY);
@@ -127,6 +183,11 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_STRING,
                 TEST_CONFIG_STRING_LIST,
                 TEST_CONFIG_LOCKED_LIST,
+                TEST_CONFIG_TABLE_1,
+                TEST_CONFIG_TABLE_2,
+                TEST_CONFIG_TABLE_3,
+                TEST_CONFIG_TABLE_4,
+                TEST_CONFIG_TABLE_5,
                 TEST_BUNDLE_PREVIEW_WIDTH,
                 TEST_INVENTORY_OVERLAY,
                 TEST_INVENTORY_OVERLAY_OG,

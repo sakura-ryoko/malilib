@@ -1,8 +1,6 @@
 package fi.dy.masa.malilib.util.data;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,9 +10,12 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.datafixers.util.Either;
-import net.minecraft.block.Oxidizable;
-import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeRegistry;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
@@ -24,8 +25,6 @@ import net.minecraft.entity.player.HungerManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
@@ -34,7 +33,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerRecipeBook;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -44,12 +42,11 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
 
-import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.EntityUtils;
-import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
@@ -452,7 +449,7 @@ public class DataEntityUtils
 	{
 		if (data.contains(NbtKeys.OFFERS, Constants.NBT.TAG_LIST))
 		{
-			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -619,7 +616,7 @@ public class DataEntityUtils
 
 		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_COMPOUND))
 		{
-			variant = PaintingEntity.VARIANT_ENTRY_CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data)).resultOrPartial().orElse(null);
+			variant = PaintingEntity.VARIANT_ENTRY_CODEC.parse(registry.getOps(DataOps.INSTANCE), data).resultOrPartial().orElse(null);
 		}
 
 		return Pair.of(facing, variant != null ? variant.value() : null);
@@ -683,7 +680,7 @@ public class DataEntityUtils
 //		{
 //			Optional<RegistryEntry<ChickenVariant>> variant = ChickenVariant.ENTRY_CODEC
 //					.fieldOf(NbtKeys.VARIANT).codec()
-//					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+//					.parse(registry.getOps(DataOps.INSTANCE), data)
 //					.resultOrPartial();
 //
 //			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(ChickenVariants.DEFAULT);
@@ -705,7 +702,7 @@ public class DataEntityUtils
 //		{
 //			Optional<RegistryEntry<CowVariant>> variant = CowVariant.ENTRY_CODEC
 //					.fieldOf(NbtKeys.VARIANT).codec()
-//					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+//					.parse(registry.getOps(DataOps.INSTANCE), data)
 //					.resultOrPartial();
 //
 //			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(CowVariants.DEFAULT);

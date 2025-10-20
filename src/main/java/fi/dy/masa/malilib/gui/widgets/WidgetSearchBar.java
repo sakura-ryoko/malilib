@@ -66,6 +66,7 @@ public class WidgetSearchBar extends WidgetBase
         else if (this.iconSearch.isMouseOver(mouseX, mouseY))
         {
             this.setSearchOpen(! this.searchOpen);
+            this.searchBox.onClick(mouseX, mouseY);
             return true;
         }
 

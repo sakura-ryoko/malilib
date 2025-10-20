@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +44,7 @@ import net.minecraft.world.World;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.render.InventoryOverlay;
@@ -88,18 +90,53 @@ public class TestRenderHandler implements IRenderer
 
             TestInventoryOverlayHandler.getInstance().getRenderContext(drawContext, profiler, mc);
         }
+
+        if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
+        {
+            List<String> list = new ArrayList<>();
+            list.add("Test Line 1");
+            list.add("Test Line 2");
+            list.add("Test Line 3");
+            list.add("Test Line 4");
+            list.add("Test Line 5");
+
+            RenderUtils.renderText(4, 4, 0.5F, 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list, drawContext);
+        }
     }
 
     @Override
     public void onRenderWorldLastAdvanced(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler)
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
-
-        if (mc.player != null)
+        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
-            profiler.push(MaLiLibReference.MOD_ID + "_targeting_overlay");
-            this.renderTargetingOverlay(posMatrix, mc);
-            profiler.pop();
+            MinecraftClient mc = MinecraftClient.getInstance();
+
+            if (mc.player != null)
+            {
+                profiler.push(MaLiLibReference.MOD_ID + "_selector");
+
+                if (TestSelector.INSTANCE.shouldRender())
+                {
+                    TestSelector.INSTANCE.render(posMatrix, projMatrix, profiler, mc);
+                }
+
+                profiler.swap(MaLiLibReference.MOD_ID + "_targeting_overlay");
+                this.renderTargetingOverlay(posMatrix, mc);
+
+                profiler.swap(MaLiLibReference.MOD_ID + "_test_walls");
+
+                if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+                {
+                    if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
+                    {
+                        TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+                    }
+
+                    TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+                }
+
+                profiler.pop();
+            }
         }
     }
 
@@ -139,24 +176,24 @@ public class TestRenderHandler implements IRenderer
     @Override
     public void onRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, Profiler profiler)
     {
-        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-        {
-            MinecraftClient mc = MinecraftClient.getInstance();
-
-            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
-
-            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-            {
-                if (TestWalls.needsUpdate(camera.getBlockPos()))
-                {
-                    TestWalls.update(camera, mc);
-                }
-
-                TestWalls.draw(camera.getPos(), posMatrix, projMatrix, mc, profiler);
-            }
-
-            profiler.pop();
-        }
+//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+//        {
+//            MinecraftClient mc = MinecraftClient.getInstance();
+//
+//            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
+//
+//            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+//            {
+//                if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
+//                {
+//                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+//                }
+//
+//                TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+//            }
+//
+//            profiler.pop();
+//        }
     }
 
     @Override

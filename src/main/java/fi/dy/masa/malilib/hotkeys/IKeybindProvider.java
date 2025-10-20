@@ -7,7 +7,7 @@ public interface IKeybindProvider
      * Classes implementing this interface should add all of their keybinds
      * using the {@link IKeybindManager#addKeybindToMap(IKeybind)} method when this method is called.
      * Assume any previously added keybinds have been cleared just before this method is called.
-     * @param manager
+     * @param manager ()
      */
     void addKeysToMap(IKeybindManager manager);
 
@@ -15,7 +15,7 @@ public interface IKeybindProvider
      * Called when the event handler is registered.
      * Any mod that wants all their keybinds to appear in the master/combined list of all
      * keybinds, should add them here using the {@link IKeybindManager#addHotkeysForCategory(String, String, java.util.List)} method).
-     * @param manager
+     * @param manager ()
      */
     void addHotkeys(IKeybindManager manager);
 }

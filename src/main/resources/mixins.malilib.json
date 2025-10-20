@@ -4,7 +4,7 @@
     "compatibilityLevel": "JAVA_21",
     "minVersion": "0.8",
     "client": [
-        "MixinMinecraftClient",
+        "client.MixinMinecraftClient",
         "entity.IMixinAbstractHorseEntity",
         "entity.IMixinAnimalArmorItem",
         "entity.IMixinMerchantEntity",
@@ -29,12 +29,15 @@
         "screen.MixinInventoryScreen",
         "server.MixinIntegratedServer",
         "server.MixinMinecraftServer",
-        "test.MixinBundleItem"
+        "test.MixinBundleItem",
+        "test.MixinClientPlayInteractionManager_testSelector",
+        "test.MixinMinecraftClient_testSelector"
     ],
     "injectors": {
         "defaultRequire": 1
     },
     "mixins": [
-        "item.IMixinContainerComponent"
+        "item.IMixinContainerComponent",
+        "test.MixinSharedConstants"
     ]
 }

@@ -9,14 +9,13 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.block.entity.*;
-import net.minecraft.block.spawner.TrialSpawnerData;
+import net.minecraft.block.entity.BeaconBlockEntity;
+import net.minecraft.block.entity.BeehiveBlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.SignText;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
@@ -29,7 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.Vibrations;
 
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
-import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
@@ -167,7 +166,7 @@ public class DataBlockUtils
 
 		if (data.contains(NbtKeys.LISTENER, Constants.NBT.TAG_COMPOUND))
 		{
-			listener = data.getCodec(NbtKeys.LISTENER, Vibrations.ListenerData.CODEC, registry.getOps(NbtOps.INSTANCE)).orElseGet(Vibrations.ListenerData::new);
+			listener = data.getCodec(NbtKeys.LISTENER, Vibrations.ListenerData.CODEC, registry.getOps(DataOps.INSTANCE)).orElseGet(Vibrations.ListenerData::new);
 		}
 
 		return Pair.of(lastFreq, listener);
@@ -212,13 +211,13 @@ public class DataBlockUtils
 		if (data.contains(NbtKeys.FRONT_TEXT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.FRONT_TEXT);
-			SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(front::set);
+			SignText.CODEC.parse(registry.getOps(DataOps.INSTANCE), comp).resultOrPartial().ifPresent(front::set);
 		}
 
 		if (data.contains(NbtKeys.BACK_TEXT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.BACK_TEXT);
-			SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(back::set);
+			SignText.CODEC.parse(registry.getOps(DataOps.INSTANCE), comp).resultOrPartial().ifPresent(back::set);
 		}
 
 		if (data.contains(NbtKeys.WAXED, Constants.NBT.TAG_BYTE))
@@ -243,7 +242,7 @@ public class DataBlockUtils
 
 		if (data.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
 		{
-			book = data.getCodec(NbtKeys.BOOK, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
+			book = data.getCodec(NbtKeys.BOOK, ItemStack.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(ItemStack.EMPTY);
 		}
 
 		if (data.contains(NbtKeys.PAGE, Constants.NBT.TAG_INT))

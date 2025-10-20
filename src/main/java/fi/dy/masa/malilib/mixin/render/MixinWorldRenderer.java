@@ -68,4 +68,14 @@ public abstract class MixinWorldRenderer
         }
          */
     }
+
+//    @Inject(method = "reload()V", at = @At("HEAD"))
+//    private void malilib_verifyRenderTransparencyFix(CallbackInfo ci)
+//    {
+//        if (MaLiLibConfigs.Generic.RENDER_TRANSPARENCY_FIX.getBooleanValue() &&
+//            MinecraftClient.isFabulousGraphicsOrBetter())
+//        {
+//            this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
+//        }
+//    }
 }
