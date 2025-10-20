@@ -77,7 +77,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<ConfigTable.Ent
                 this.addListActionButton(bx - offset, by, ButtonType.MOVE_UP);
             }
             offset += bOff;
-            bx = this.addTextFields(textFieldX, y + 1, bx - offset + 10, width - offset, 20, initialValue, types);
+            int totalTextFieldWidth = (bx - offset + 9) - textFieldX;
+            bx = this.addTextFields(textFieldX, y + 1, bx - offset + 10, totalTextFieldWidth, 20, initialValue, types);
         } else {
             this.addListActionButton(textFieldX, by, ButtonType.ADD);
         }
@@ -116,7 +117,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<ConfigTable.Ent
 
         boolean resetEnabled = false;
 
-        configWidth -= 2 * (resetButton.getWidth()) - 10;
+        configWidth -= resetButton.getWidth();
 
         for (int i = 0; i < types.size(); i++) {
             Class<?> type = types.get(i);

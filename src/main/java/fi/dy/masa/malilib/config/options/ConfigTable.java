@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-// TODO: fix slight overlap of the last text widget and the reset button that sometimes happens in GuiTableEdit
 public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable {
     public static final Codec<ConfigTable> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
