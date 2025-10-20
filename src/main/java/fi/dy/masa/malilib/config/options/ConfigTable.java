@@ -349,6 +349,14 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
         String getString(int index) {
             return (String) this.list.get(index);
         }
+
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof Entry entry)) {
+                return false;
+            }
+            return list.equals(entry.list);
+        }
     }
 
     public static class Builder {
@@ -454,6 +462,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
         public ConfigTable build() {
             if (defaultValue == null){
                 defaultValue = new ArrayList<>();
+            } else {
+                defaultValue = new ArrayList<>(defaultValue);
             }
             if (defaultValue.size() == 1 && entryCount > 0) {
                 for (int i = 0; i < entryCount; i++) {
@@ -469,10 +479,6 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
             if (comment == null) comment = name + " Comment?";
             if (prettyName == null) prettyName = name;
             if (translatedName == null) translatedName = name;
-
-            if (labels.size() != types.length) {
-                throw new IllegalArgumentException("Labels size mismatch: expected " + types.length + " but got " + labels.size());
-            }
             for (Entry v : defaultValue) {
                 for (int j = 0; j < types.length; j++) {
                     if (v.list.get(j).getClass() != types[j] || (types[j] != Integer.class && types[j] != Double.class && types[j] != String.class)) {

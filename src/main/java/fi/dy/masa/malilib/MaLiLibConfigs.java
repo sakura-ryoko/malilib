@@ -104,6 +104,31 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "testString", "Test String").apply(TEST_KEY);
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_1             =
+                new ConfigTable.Builder("testTable1", String.class, String.class)
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_2             =
+                new ConfigTable.Builder("testTable2", Integer.class, Integer.class)
+                        .setEntryCount(1)
+                        .setAllowAddNewEntry(false)
+                        .setLabels("Label 1", "Label 2")
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_3             =
+                new ConfigTable.Builder("testTable3", String.class, Integer.class)
+                        .setShowEntryNumbers(false)
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_4             =
+                new ConfigTable.Builder("testTable4", Double.class, Integer.class, String.class)
+                        .setDefaultValue(ConfigTable.Entry.of(0.0, 1, "2"), ConfigTable.Entry.of(1.0, 3, "5"))
+                        .setLabels(List.of("Label 1", "Label 2"))
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_5             =
+                new ConfigTable.Builder("testTable5", Double.class, Integer.class, String.class)
+                        .setDefaultValue(ConfigTable.Entry.of(213.0, 43, "22"))
+                        .setEntryCount(5)
+                        .setAllowAddNewEntry(false)
+                        .setLabels(List.of("Label 1", "Label 2"))
+                        .build().apply(TEST_KEY);
         public static final ConfigInteger           TEST_BUNDLE_PREVIEW_WIDTH       = new ConfigInteger("testBundlePreviewWidth", 9, 6, 9, "Test Bundle Preview Width").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY          = new ConfigBooleanHotkeyed("testInventoryOverlay", false, "LEFT_ALT").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY_OG       = new ConfigBooleanHotkeyed("testInventoryOverlayOG", false, "").apply(TEST_KEY);
@@ -126,6 +151,11 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_STRING,
                 TEST_CONFIG_STRING_LIST,
                 TEST_CONFIG_LOCKED_LIST,
+                TEST_CONFIG_TABLE_1,
+                TEST_CONFIG_TABLE_2,
+                TEST_CONFIG_TABLE_3,
+                TEST_CONFIG_TABLE_4,
+                TEST_CONFIG_TABLE_5,
                 TEST_BUNDLE_PREVIEW_WIDTH,
                 TEST_INVENTORY_OVERLAY,
                 TEST_INVENTORY_OVERLAY_OG,
