@@ -14,22 +14,10 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable {
-    /*
-String name
-String comment
-String prettyName
-String translatedName
-@Nullable String displayString
-List<List<Object>> defaultValue
-List<List<Object>> value
-List<String> labels
-boolean showEntryNumbers
-boolean allowAddNewEntry
-Class<?>... types
-     */
     public static final Codec<ConfigTable> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
@@ -329,6 +317,19 @@ Class<?>... types
             this.list = list;
         }
 
+        public Entry(Object... objs) {
+            this.list = new ArrayList<>();
+            Collections.addAll(this.list, objs);
+        }
+
+        public static Entry of(Object... objs) {
+            Entry entry = new Entry();
+            for (Object obj : objs) {
+                entry.add(obj);
+            }
+            return entry;
+        }
+
         void add(Object obj) {
             this.list.add(obj);
         }
@@ -380,6 +381,11 @@ Class<?>... types
 
         private int entryCount = -1;
 
+        public Builder(String name, Class<?>... types) {
+            this.name = name;
+            this.types = types;
+        }
+
         public Builder setName(String name) {
             this.name = name;
             return this;
@@ -410,8 +416,18 @@ Class<?>... types
             return this;
         }
 
+        public Builder setDefaultValue(Entry... defaultValue) {
+            this.defaultValue = List.of(defaultValue);
+            return this;
+        }
+
         public Builder setLabels(List<String> labels) {
             this.labels = labels;
+            return this;
+        }
+
+        public Builder setLabels(String... labels) {
+            this.labels = List.of(labels);
             return this;
         }
 
