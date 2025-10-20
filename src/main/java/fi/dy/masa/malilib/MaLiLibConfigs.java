@@ -111,6 +111,7 @@ public class MaLiLibConfigs implements IConfigHandler
                 new ConfigTable.Builder("testTable2", Integer.class, Integer.class)
                         .setEntryCount(1)
                         .setAllowAddNewEntry(false)
+                        .setDisplayString("Display string")
                         .setLabels("Label 1", "Label 2")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_3             =
@@ -121,9 +122,11 @@ public class MaLiLibConfigs implements IConfigHandler
                 new ConfigTable.Builder("testTable4", Double.class, Integer.class, String.class)
                         .setDefaultValue(ConfigTable.Entry.of(0.0, 1, "2"), ConfigTable.Entry.of(1.0, 3, "5"))
                         .setLabels(List.of("Label 1", "Label 2"))
+                        .setComment("Comment")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_5             =
                 new ConfigTable.Builder("testTable5", Double.class, Integer.class, String.class)
+                        .setComment("Another comment")
                         .setDefaultValue(ConfigTable.Entry.of(213.0, 43, "22"))
                         .setEntryCount(5)
                         .setAllowAddNewEntry(false)

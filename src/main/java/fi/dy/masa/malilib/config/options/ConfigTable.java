@@ -330,23 +330,23 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
             return entry;
         }
 
-        void add(Object obj) {
+        public void add(Object obj) {
             this.list.add(obj);
         }
 
-        Object get(int index) {
+        public Object get(int index) {
             return this.list.get(index);
         }
-        
-        Integer getInt(int index) {
+
+        public Integer getInt(int index) {
             return (Integer) this.list.get(index);
         }
-        
-        Double getDouble(int index) {
+
+        public Double getDouble(int index) {
             return (Double) this.list.get(index);
         }
-        
-        String getString(int index) {
+
+        public String getString(int index) {
             return (String) this.list.get(index);
         }
 
@@ -473,8 +473,6 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                 for (int i = 0; i < entryCount; i++) {
                     defaultValue.add(getDummy(List.of(types)));
                 }
-            } else {
-                defaultValue.add(getDummy(List.of(types)));
             }
             if (comment == null) comment = name + " Comment?";
             if (prettyName == null) prettyName = name;
