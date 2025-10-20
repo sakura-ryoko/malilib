@@ -306,6 +306,22 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
         return showEntryNumbers;
     }
 
+    public static @NotNull Entry getDummy(List<Class<?>> types) {
+        Entry dummy = new Entry();
+        for (Class<?> type : types) {
+            if (type == String.class) {
+                dummy.add("");
+            } else if (type == Integer.class) {
+                dummy.add(0);
+            } else if (type == Double.class) {
+                dummy.add(0.0);
+            } else {
+                throw new IllegalStateException("Unsupported type: " + type.getName());
+            }
+        }
+        return dummy;
+    }
+
     public static class Entry {
         public final List<Object> list;
 
@@ -360,22 +376,6 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     }
 
     public static class Builder {
-        private static @NotNull Entry getDummy(List<Class<?>> types) {
-            Entry dummy = new Entry();
-            for (Class<?> type : types) {
-                if (type == String.class) {
-                    dummy.add("");
-                } else if (type == Integer.class) {
-                    dummy.add(0);
-                } else if (type == Double.class) {
-                    dummy.add(0.0);
-                } else {
-                    throw new IllegalStateException("Unsupported type: " + type.getName());
-                }
-            }
-            return dummy;
-        }
-
         private String name;
         private String comment = null;
         private String prettyName = null;

@@ -19,7 +19,6 @@ import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,22 +85,6 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<ConfigTable.Ent
 
     protected boolean isDummy() {
         return this.listIndex < 0;
-    }
-
-    private @NotNull ConfigTable.Entry getDummy() {
-        ConfigTable.Entry dummy = new ConfigTable.Entry();
-        for (Class<?> type : types) {
-            if (type == String.class) {
-                dummy.list.add("");
-            } else if (type == Integer.class) {
-                dummy.list.add(0);
-            } else if (type == Double.class) {
-                dummy.list.add(0.0);
-            } else {
-                throw new IllegalStateException("Unsupported type: " + type.getName());
-            }
-        }
-        return dummy;
     }
 
     protected void addListActionButton(int x, int y, ButtonType type) {
@@ -216,7 +199,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<ConfigTable.Ent
         List<ConfigTable.Entry> list = this.parent.getConfig().getTable();
         final int size = list.size();
         int index = this.listIndex < 0 ? size : (Math.min(this.listIndex, size));
-        list.add(index, getDummy());
+        list.add(index, ConfigTable.getDummy(types));
         this.parent.getConfig().setModified();
         this.parent.refreshEntries();
         this.parent.markConfigsModified();
