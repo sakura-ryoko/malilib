@@ -1,14 +1,13 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.config.IConfigTable;
+import fi.dy.masa.malilib.config.options.ConfigTable;
 import fi.dy.masa.malilib.gui.GuiTableEdit;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-public class WidgetListTableEdit extends WidgetListConfigOptionsBase<List<Object>, WidgetTableEditEntry> {
+public class WidgetListTableEdit extends WidgetListConfigOptionsBase<ConfigTable.Entry, WidgetTableEditEntry> {
 
     protected final IConfigTable config;
 
@@ -23,7 +22,7 @@ public class WidgetListTableEdit extends WidgetListConfigOptionsBase<List<Object
     }
 
     @Override
-    protected Collection<List<Object>> getAllEntries() {
+    protected Collection<ConfigTable.Entry> getAllEntries() {
         return this.config.getTable();
     }
 
@@ -44,11 +43,11 @@ public class WidgetListTableEdit extends WidgetListConfigOptionsBase<List<Object
     }
 
     @Override
-    protected WidgetTableEditEntry createListEntryWidget(int x, int y, int listIndex, boolean isOdd, List<Object> entry) {
+    protected WidgetTableEditEntry createListEntryWidget(int x, int y, int listIndex, boolean isOdd, ConfigTable.Entry entry) {
         IConfigTable config = this.config;
 
         if (listIndex >= 0 && listIndex < config.getTable().size()) {
-            List<Object> defaultValue = listIndex < config.getDefaultTable().size() ? config.getDefaultTable().get(listIndex) : getDummy(config);
+            ConfigTable.Entry defaultValue = listIndex < config.getDefaultTable().size() ? config.getDefaultTable().get(listIndex) : getDummy(config);
 
             return new WidgetTableEditEntry(x, y, this.browserEntryWidth, this.browserEntryHeight,
                     listIndex, isOdd, config.getTable().get(listIndex), defaultValue, this, config.getTypes());
@@ -58,15 +57,15 @@ public class WidgetListTableEdit extends WidgetListConfigOptionsBase<List<Object
         }
     }
 
-    private static @NotNull List<Object> getDummy(IConfigTable config) {
-        List<Object> dummy = new ArrayList<>();
+    private static @NotNull ConfigTable.Entry getDummy(IConfigTable config) {
+        ConfigTable.Entry dummy = new ConfigTable.Entry();
         for (Class<?> type : config.getTypes()) {
             if (type == String.class) {
-                dummy.add("");
+                dummy.list.add("");
             } else if (type == Integer.class) {
-                dummy.add(0);
+                dummy.list.add(0);
             } else if (type == Double.class) {
-                dummy.add(0.0);
+                dummy.list.add(0.0);
             } else {
                 throw new IllegalStateException("Unsupported type: " + type.getName());
             }

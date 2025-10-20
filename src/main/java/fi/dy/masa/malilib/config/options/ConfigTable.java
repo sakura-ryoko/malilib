@@ -39,26 +39,26 @@ Class<?>... types
                     PrimitiveCodec.STRING.fieldOf("displayString").forGetter(get -> get.displayString == null ? "n" : "s" + get.displayString),
                     Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("defaultTable").forGetter(get -> {
                         List<List<String>> table = new ArrayList<>();
-                        for (List<Object> list : get.getDefaultTable()) {
-                            List<String> entry = new ArrayList<>();
-                            for (Object obj : list) {
+                        for (Entry entry : get.getDefaultTable()) {
+                            List<String> entry2 = new ArrayList<>();
+                            for (Object obj : entry.list) {
                                 switch (obj) {
-                                    case String str -> entry.add("str" + str);
-                                    case Integer integer -> entry.add("int" + integer);
-                                    case Double dbl -> entry.add("dbl" + dbl);
+                                    case String str -> entry2.add("str" + str);
+                                    case Integer integer -> entry2.add("int" + integer);
+                                    case Double dbl -> entry2.add("dbl" + dbl);
                                     default ->
                                             throw new IllegalStateException("Unsupported type: " + obj.getClass().getName());
                                 }
                             }
-                            table.add(entry);
+                            table.add(entry2);
                         }
                         return table;
                     }),
                     Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("table").forGetter(get -> {
                         List<List<String>> table = new ArrayList<>();
-                        for (List<Object> list : get.getTable()) {
+                        for (Entry list : get.getTable()) {
                             List<String> entry = new ArrayList<>();
-                            for (Object obj : list) {
+                            for (Object obj : list.list) {
                                 switch (obj) {
                                     case String str -> entry.add("str" + str);
                                     case Integer integer -> entry.add("int" + integer);
@@ -92,8 +92,8 @@ Class<?>... types
             ).apply(inst, ConfigTable::new)
     );
 
-    private final ImmutableList<List<Object>> defaultTable;
-    private final List<List<Object>> table = new ArrayList<>();
+    private final ImmutableList<Entry> defaultTable;
+    private final List<Entry> table = new ArrayList<>();
     private final @Nullable String displayString;
     private final ImmutableList<Class<?>> types;
     private final List<String> labels;
@@ -105,10 +105,10 @@ Class<?>... types
         this.table.addAll(parse(value));
     }
 
-    private static List<List<Object>> parse(List<List<String>> defaultValue) {
-        List<List<Object>> temp = new ArrayList<>();
+    private static List<Entry> parse(List<List<String>> defaultValue) {
+        List<Entry> temp = new ArrayList<>();
         for (List<String> list : defaultValue) {
-            List<Object> entryList = new ArrayList<>();
+            Entry entryList = new Entry();
             for (String entry : list) {
                 String typeName = entry.substring(0, 3);
                 String valueString = entry.substring(3);
@@ -148,7 +148,7 @@ Class<?>... types
     }
 
     private ConfigTable(String name, String comment, String prettyName, String translatedName,
-                       @Nullable String displayString, List<List<Object>> defaultValue,
+                       @Nullable String displayString, List<Entry> defaultValue,
                        List<String> labels, boolean showEntryNumbers, boolean allowAddNewEntry,
                        Class<?>... types) {
         super(null, name, comment, prettyName, translatedName);
@@ -163,26 +163,48 @@ Class<?>... types
 
         this.types = ilb.build();
         this.displayString = displayString;
-        ImmutableList.Builder<List<Object>> ilb2 = ImmutableList.builder();
-        for (List<Object> list : defaultValue) {
-            ilb2.add(List.copyOf(list));
+        ImmutableList.Builder<Entry> ilb2 = ImmutableList.builder();
+        for (Entry list : defaultValue) {
+            Entry newEntry = new Entry();
+            newEntry.list.addAll(List.copyOf(list.list));
+            ilb2.add(newEntry);
         }
         this.defaultTable = ilb2.build();
         this.table.addAll(defaultTable);
     }
 
     @Override
-    public List<List<Object>> getTable() {
+    public List<Entry> getTable() {
         return table;
     }
 
     @Override
-    public ImmutableList<List<Object>> getDefaultTable() {
+    public List<List<Object>> getRawTable() {
+        List<List<Object>> rawTable = new ArrayList<>();
+        for (Entry entry : table) {
+            List<Object> rawEntry = new ArrayList<>(entry.list);
+            rawTable.add(rawEntry);
+        }
+        return rawTable;
+    }
+
+    @Override
+    public ImmutableList<Entry> getDefaultTable() {
         return defaultTable;
     }
 
     @Override
-    public void setTable(List<List<Object>> newTable) {
+    public ImmutableList<List<Object>> getDefaultRawTable() {
+        ImmutableList.Builder<List<Object>> ilb = new ImmutableList.Builder<>();
+        for (Entry entry : defaultTable) {
+            List<Object> rawEntry = new ArrayList<>(entry.list);
+            ilb.add(rawEntry);
+        }
+        return ilb.build();
+    }
+
+    @Override
+    public void setTable(List<Entry> newTable) {
         if (!this.table.equals(newTable)) {
             this.table.clear();
             this.table.addAll(newTable);
@@ -217,7 +239,10 @@ Class<?>... types
 
     @Override
     public void setValueFromJsonElement(JsonElement element) {
-        List<List<Object>> oldTable = new ArrayList<>(table);
+        List<List<Object>> oldTable = new ArrayList<>();
+        for (Entry entry : table) {
+            oldTable.add(new ArrayList<>(entry.list));
+        }
         table.clear();
         try {
             JsonArray arr = element.getAsJsonArray();
@@ -227,7 +252,7 @@ Class<?>... types
                     throw new Exception();
 
                 }
-                var tempList = new ArrayList<>();
+                List<Object> tempList = new ArrayList<>();
                 for (JsonElement el2 : jarr) {
                     if (el2.isJsonPrimitive()) {
                         if (el2.getAsJsonPrimitive().isString()) {
@@ -246,7 +271,7 @@ Class<?>... types
                         throw new Exception();
                     }
                 }
-                table.add(tempList);
+                table.add(new Entry(tempList));
             }
 
             if (!table.equals(oldTable)) {
@@ -263,7 +288,7 @@ Class<?>... types
 
         for (var entry : table) {
             JsonArray entryArr = new JsonArray();
-            for (var obj : entry) {
+            for (var obj : entry.list) {
                 if (obj instanceof String str) {
                     entryArr.add(str);
                 } else if (obj instanceof Integer integer) {
@@ -293,9 +318,41 @@ Class<?>... types
         return showEntryNumbers;
     }
 
+    public static class Entry {
+        public final List<Object> list;
+
+        public Entry() {
+            this.list = new ArrayList<>();
+        }
+
+        public Entry(List<Object> list) {
+            this.list = list;
+        }
+
+        void add(Object obj) {
+            this.list.add(obj);
+        }
+
+        Object get(int index) {
+            return this.list.get(index);
+        }
+        
+        Integer getInt(int index) {
+            return (Integer) this.list.get(index);
+        }
+        
+        Double getDouble(int index) {
+            return (Double) this.list.get(index);
+        }
+        
+        String getString(int index) {
+            return (String) this.list.get(index);
+        }
+    }
+
     public static class Builder {
-        private static @NotNull List<Object> getDummy(List<Class<?>> types) {
-            List<Object> dummy = new ArrayList<>();
+        private static @NotNull Entry getDummy(List<Class<?>> types) {
+            Entry dummy = new Entry();
             for (Class<?> type : types) {
                 if (type == String.class) {
                     dummy.add("");
@@ -315,7 +372,7 @@ Class<?>... types
         private String prettyName = null;
         private String translatedName = null;
         private @Nullable String displayString = null;
-        private List<List<Object>> defaultValue = null;
+        private List<Entry> defaultValue = null;
         private List<String> labels = List.of();
         private boolean showEntryNumbers = true;
         private boolean allowAddNewEntry = true;
@@ -348,7 +405,7 @@ Class<?>... types
             return this;
         }
 
-        public Builder setDefaultValue(List<List<Object>> defaultValue) {
+        public Builder setDefaultValue(List<Entry> defaultValue) {
             this.defaultValue = defaultValue;
             return this;
         }
@@ -384,7 +441,7 @@ Class<?>... types
             }
             if (defaultValue.size() == 1 && entryCount > 0) {
                 for (int i = 0; i < entryCount; i++) {
-                    defaultValue.add(new ArrayList<>(defaultValue.getFirst()));
+                    defaultValue.add(new Entry(defaultValue.getFirst().list));
                 }
             } else if (entryCount > 0){
                 for (int i = 0; i < entryCount; i++) {
@@ -400,10 +457,10 @@ Class<?>... types
             if (labels.size() != types.length) {
                 throw new IllegalArgumentException("Labels size mismatch: expected " + types.length + " but got " + labels.size());
             }
-            for (List<Object> v : defaultValue) {
+            for (Entry v : defaultValue) {
                 for (int j = 0; j < types.length; j++) {
-                    if (v.get(j).getClass() != types[j] || (types[j] != Integer.class && types[j] != Double.class && types[j] != String.class)) {
-                        throw new IllegalArgumentException("Type mismatch: expected " + types[j] + " but got " + v.get(j).getClass());
+                    if (v.list.get(j).getClass() != types[j] || (types[j] != Integer.class && types[j] != Double.class && types[j] != String.class)) {
+                        throw new IllegalArgumentException("Type mismatch: expected " + types[j] + " but got " + v.list.get(j).getClass());
                     }
                 }
             }

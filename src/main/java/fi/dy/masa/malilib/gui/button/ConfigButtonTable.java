@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.gui.button;
 
 import fi.dy.masa.malilib.config.IConfigTable;
+import fi.dy.masa.malilib.config.options.ConfigTable;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTableEdit;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
@@ -8,8 +9,6 @@ import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.util.GuiUtils;
 import net.minecraft.client.gui.Click;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class ConfigButtonTable extends ButtonGeneric {
     private final IConfigTable config;
@@ -50,12 +49,12 @@ public class ConfigButtonTable extends ButtonGeneric {
 
         sb.append("{");
         boolean addDivider = false;
-        for (List<Object> entry : this.config.getTable()) {
+        for (ConfigTable.Entry entry : this.config.getTable()) {
             if (addDivider) {
                 sb.append("; ");
             }
             boolean addDividerEntry = false;
-            for (Object entryPart : entry) {
+            for (Object entryPart : entry.list) {
                 if (addDividerEntry) {
                     sb.append(", ");
                 }

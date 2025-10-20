@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
+import fi.dy.masa.malilib.config.options.ConfigTable;
 import fi.dy.masa.malilib.gui.GuiTextFieldDouble;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.GuiTextFieldInteger;
@@ -23,20 +24,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
+public class WidgetTableEditEntry extends WidgetConfigOptionBase<ConfigTable.Entry> {
     protected final WidgetListTableEdit parent;
-    protected final List<Object> defaultValue;
+    protected final ConfigTable.Entry defaultValue;
     protected final int listIndex;
     protected final boolean isOdd;
     private final List<Class<?>> types;
 
     private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields =  new ArrayList<>();
 
-    protected List<Object> initialValue;
+    protected ConfigTable.Entry initialValue;
     private final List<String> lastAppliedValues = new ArrayList<>();
 
     public WidgetTableEditEntry(int x, int y, int width, int height,
-                                int listIndex, boolean isOdd, List<Object> initialValue, List<Object> defaultValue,
+                                int listIndex, boolean isOdd, ConfigTable.Entry initialValue, ConfigTable.Entry defaultValue,
                                 WidgetListTableEdit parent, List<Class<?>> types) {
         super(x, y, width, height, parent, initialValue, listIndex);
 
@@ -86,15 +87,15 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
         return this.listIndex < 0;
     }
 
-    private @NotNull List<Object> getDummy() {
-        List<Object> dummy = new ArrayList<>();
+    private @NotNull ConfigTable.Entry getDummy() {
+        ConfigTable.Entry dummy = new ConfigTable.Entry();
         for (Class<?> type : types) {
             if (type == String.class) {
-                dummy.add("");
+                dummy.list.add("");
             } else if (type == Integer.class) {
-                dummy.add(0);
+                dummy.list.add(0);
             } else if (type == Double.class) {
-                dummy.add(0.0);
+                dummy.list.add(0.0);
             } else {
                 throw new IllegalStateException("Unsupported type: " + type.getName());
             }
@@ -108,7 +109,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
         this.addButton(button, listener);
     }
 
-    protected int addTextFields(int x, int y, int resetX, int configWidth, int configHeight, List<Object> initialValue, List<Class<?>> types) {
+    protected int addTextFields(int x, int y, int resetX, int configWidth, int configHeight, ConfigTable.Entry initialValue, List<Class<?>> types) {
         ButtonGeneric resetButton = this.createResetButton(resetX, y);
         ChangeListenerTextField listenerChange = new ChangeListenerTextField(resetButton, this.defaultValue, this);
         ListenerResetConfig listenerReset = new ListenerResetConfig(resetButton, this);
@@ -119,7 +120,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
 
         for (int i = 0; i < types.size(); i++) {
             Class<?> type = types.get(i);
-            Object value = initialValue.get(i);
+            Object value = initialValue.list.get(i);
 
             GuiTextFieldGeneric tf = switch (value) {
                 case String ignored when type == String.class ->
@@ -137,7 +138,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
             this.parent.addTextField(wrapper);
             this.textFields.add(wrapper);
 
-            resetEnabled = resetEnabled || !value.toString().equals(this.defaultValue.get(i).toString());
+            resetEnabled = resetEnabled || !value.toString().equals(this.defaultValue.list.get(i).toString());
         }
 
         this.addButton(resetButton, listenerReset);
@@ -165,7 +166,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
             TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
             Class<?> type = this.types.get(i);
             String text = tfw.getTextField().getText();
-            Object initial = this.initialValue.get(i);
+            Object initial = this.initialValue.list.get(i);
 
             if (type == String.class || type == Integer.class || type == Double.class) {
                 if (!text.equals(String.valueOf(initial))) {
@@ -183,10 +184,10 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
     public void applyNewValueToConfig() {
         if (!this.isDummy()) {
             IConfigTable config = this.parent.getConfig();
-            List<List<Object>> list = config.getTable();
+            List<ConfigTable.Entry> list = config.getTable();
 
             if (list.size() > this.listIndex) {
-                List<Object> temp = new ArrayList<>();
+                ConfigTable.Entry temp = new ConfigTable.Entry();
                 lastAppliedValues.clear();
                 for (int i = 0; i < this.textFields.size(); i++) {
                     TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
@@ -194,11 +195,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
                     String text = tfw.getTextField().getText();
                     lastAppliedValues.add(text);
                     if (type == String.class) {
-                        temp.add(text);
+                        temp.list.add(text);
                     } else if (type == Integer.class) {
-                        temp.add(Integer.parseInt(text));
+                        temp.list.add(Integer.parseInt(text));
                     } else if (type == Double.class) {
-                        temp.add(Double.parseDouble(text));
+                        temp.list.add(Double.parseDouble(text));
                     } else {
                         throw new IllegalStateException("Unsupported type: " + type.getName());
                     }
@@ -211,7 +212,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
     }
 
     private void insertEntryBefore() {
-        List<List<Object>> list = this.parent.getConfig().getTable();
+        List<ConfigTable.Entry> list = this.parent.getConfig().getTable();
         final int size = list.size();
         int index = this.listIndex < 0 ? size : (Math.min(this.listIndex, size));
         list.add(index, getDummy());
@@ -221,7 +222,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
     }
 
     private void removeEntry() {
-        List<List<Object>> list = this.parent.getConfig().getTable();
+        List<ConfigTable.Entry> list = this.parent.getConfig().getTable();
         final int size = list.size();
 
         if (this.listIndex >= 0 && this.listIndex < size) {
@@ -233,11 +234,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
     }
 
     private void moveEntry(boolean down) {
-        List<List<Object>> list = this.parent.getConfig().getTable();
+        List<ConfigTable.Entry> list = this.parent.getConfig().getTable();
         final int size = list.size();
 
         if (this.listIndex >= 0 && this.listIndex < size) {
-            List<Object> tmp;
+            ConfigTable.Entry tmp;
             int index1 = this.listIndex;
             int index2 = -1;
 
@@ -285,10 +286,10 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
     }
 
     public static class ChangeListenerTextField extends ConfigOptionChangeListenerTextField {
-        protected final List<Object> defaultValue;
+        protected final ConfigTable.Entry defaultValue;
         private final WidgetTableEditEntry parent;
 
-        public ChangeListenerTextField(ButtonBase buttonReset, List<Object> defaultValue, WidgetTableEditEntry parent) {
+        public ChangeListenerTextField(ButtonBase buttonReset, ConfigTable.Entry defaultValue, WidgetTableEditEntry parent) {
             super(null, null, buttonReset);
 
             this.parent = parent;
@@ -299,7 +300,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
         public boolean onTextChange(GuiTextFieldGeneric ignored) {
             for (int i = 0; i < this.parent.types.size(); i++) {
                 TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = this.parent.textFields.get(i);
-                String defaultText = this.defaultValue.get(i).toString();
+                String defaultText = this.defaultValue.list.get(i).toString();
 
                 if (!wrapper.getTextField().getText().equals(defaultText)) {
                     this.buttonReset.setEnabled(true);
@@ -324,7 +325,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<List<Object>> {
         public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
             for (int i = 0; i < this.parent.types.size(); i++) {
                 TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = this.parent.textFields.get(i);
-                String defaultText = this.parent.defaultValue.get(i).toString();
+                String defaultText = this.parent.defaultValue.list.get(i).toString();
                 wrapper.getTextField().setText(defaultText);
             }
             this.buttonReset.setEnabled(false);
