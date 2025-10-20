@@ -1553,6 +1553,10 @@ public class RenderUtils
             final float[] colors = getColorComponents(block.getColor() != null ? block.getColor().getEntityColor() : 0xFF875F87);
             color(colors[0], colors[1], colors[2], 1f);
         }
+        else
+        {
+	        color(1f, 1f, 1f, 1f);
+        }
     }
 
     /**
@@ -1577,6 +1581,10 @@ public class RenderUtils
             // In 1.17+ there is the uncolored Bundle variant, which returns null from getColor()
             final float[] colors = getColorComponents(getBundleColor(bundle));
 	        color(colors[0], colors[1], colors[2], 1f);
+        }
+		else
+        {
+			color(1f, 1f, 1f, 1f);
         }
     }
 
