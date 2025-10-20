@@ -34,9 +34,15 @@
 	"depends": {
 		"minecraft": ">=1.21.9 <=1.21.10",
 		"fabric-networking-api-v1": ">=5.0.12",
-		"fabric-resource-loader-v0": "*"
+		"fabric-resource-loader-v0": "*",
+        "fabric-resource-loader-v1": "*"
 	},
+    "suggests": {
+        "sodium": ">=0.7.2-",
+        "iris": ">=1.9.6-"
+    },
 	"breaks": {
+        "sodium": "<0.7.0-",
 		"iris": "<1.9.4-"
 	}
 }
