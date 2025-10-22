@@ -12,6 +12,8 @@ import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.IConfigValue;
 import fi.dy.masa.malilib.config.options.*;
+import fi.dy.masa.malilib.config.options.table.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
@@ -23,6 +25,8 @@ import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
+
+import static fi.dy.masa.malilib.config.options.table.type.EntryTypes.*;
 
 public class MaLiLibConfigs implements IConfigHandler
 {
@@ -105,29 +109,29 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_1             =
-                new ConfigTable.Builder("testTable1", String.class, String.class)
+                new ConfigTable.Builder("testTable1", STRING, STRING)
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_2             =
-                new ConfigTable.Builder("testTable2", Integer.class, Integer.class)
+                new ConfigTable.Builder("testTable2", INTEGER, INTEGER)
                         .setEntryCount(1)
                         .setAllowAddNewEntry(false)
                         .setDisplayString("Display string")
                         .setLabels("Label 1", "Label 2")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_3             =
-                new ConfigTable.Builder("testTable3", String.class, Integer.class)
+                new ConfigTable.Builder("testTable3", STRING, INTEGER)
                         .setShowEntryNumbers(false)
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_4             =
-                new ConfigTable.Builder("testTable4", Double.class, Integer.class, String.class)
-                        .setDefaultValue(ConfigTable.Entry.of(0.0, 1, "2"), ConfigTable.Entry.of(1.0, 3, "5"))
+                new ConfigTable.Builder("testTable4", DOUBLE, INTEGER, STRING)
+                        .setDefaultValue(TableRow.of(0.0, 1, "2"), TableRow.of(1.0, 3, "5"))
                         .setLabels(List.of("Label 1", "Label 2"))
                         .setComment("Comment")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_5             =
-                new ConfigTable.Builder("testTable5", Double.class, Integer.class, String.class)
+                new ConfigTable.Builder("testTable5", DOUBLE, INTEGER, STRING)
                         .setComment("Another comment")
-                        .setDefaultValue(ConfigTable.Entry.of(213.0, 43, "22"))
+                        .setDefaultValue(TableRow.of(213.0, 43, "22"))
                         .setEntryCount(5)
                         .setAllowAddNewEntry(false)
                         .setLabels(List.of("Label 1", "Label 2"))

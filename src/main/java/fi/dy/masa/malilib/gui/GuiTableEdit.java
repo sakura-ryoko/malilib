@@ -2,7 +2,7 @@ package fi.dy.masa.malilib.gui;
 
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigTable;
-import fi.dy.masa.malilib.config.options.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.widgets.WidgetListTableEdit;
@@ -15,7 +15,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.KeyInput;
 import org.jetbrains.annotations.Nullable;
 
-public class GuiTableEdit extends GuiListBase<ConfigTable.Entry, WidgetTableEditEntry, WidgetListTableEdit> {
+public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, WidgetListTableEdit> {
     protected final IConfigTable config;
     protected final IConfigGui configGui;
     protected int dialogWidth;

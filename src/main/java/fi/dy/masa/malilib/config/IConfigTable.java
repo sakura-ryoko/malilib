@@ -1,25 +1,26 @@
 package fi.dy.masa.malilib.config;
 
 import com.google.common.collect.ImmutableList;
-import fi.dy.masa.malilib.config.options.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.TableRow;
+import fi.dy.masa.malilib.config.options.table.type.EntryTypes;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public interface IConfigTable extends IConfigBase {
-    List<ConfigTable.Entry> getTable();
+    List<TableRow> getTable();
     List<List<Object>> getRawTable();
 
-    ImmutableList<ConfigTable.Entry> getDefaultTable();
+    ImmutableList<TableRow> getDefaultTable();
     ImmutableList<List<Object>> getDefaultRawTable();
 
-    void setTable(List<ConfigTable.Entry> newTable);
+    void setTable(List<TableRow> newTable);
 
     void setModified();
 
     @Nullable String getDisplayString();
 
-    List<Class<?>> getTypes();
+    List<EntryTypes> getTypes();
     List<String> getLabels();
     boolean allowNewEntry();
     boolean showEntryNumbers();

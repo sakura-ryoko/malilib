@@ -1,12 +1,13 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.config.IConfigTable;
-import fi.dy.masa.malilib.config.options.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.gui.GuiTableEdit;
 
 import java.util.Collection;
 
-public class WidgetListTableEdit extends WidgetListConfigOptionsBase<ConfigTable.Entry, WidgetTableEditEntry> {
+public class WidgetListTableEdit extends WidgetListConfigOptionsBase<TableRow, WidgetTableEditEntry> {
 
     protected final IConfigTable config;
 
@@ -21,7 +22,7 @@ public class WidgetListTableEdit extends WidgetListConfigOptionsBase<ConfigTable
     }
 
     @Override
-    protected Collection<ConfigTable.Entry> getAllEntries() {
+    protected Collection<TableRow> getAllEntries() {
         return this.config.getTable();
     }
 
@@ -42,11 +43,11 @@ public class WidgetListTableEdit extends WidgetListConfigOptionsBase<ConfigTable
     }
 
     @Override
-    protected WidgetTableEditEntry createListEntryWidget(int x, int y, int listIndex, boolean isOdd, ConfigTable.Entry entry) {
+    protected WidgetTableEditEntry createListEntryWidget(int x, int y, int listIndex, boolean isOdd, TableRow entry) {
         IConfigTable config = this.config;
 
         if (listIndex >= 0 && listIndex < config.getTable().size()) {
-            ConfigTable.Entry defaultValue = listIndex < config.getDefaultTable().size() ? config.getDefaultTable().get(listIndex) : ConfigTable.getDummy(config.getTypes());
+            TableRow defaultValue = listIndex < config.getDefaultTable().size() ? config.getDefaultTable().get(listIndex) : ConfigTable.getDummy(config.getTypes());
 
             return new WidgetTableEditEntry(x, y, this.browserEntryWidth, this.browserEntryHeight,
                     listIndex, isOdd, config.getTable().get(listIndex), defaultValue, this, config.getTypes());

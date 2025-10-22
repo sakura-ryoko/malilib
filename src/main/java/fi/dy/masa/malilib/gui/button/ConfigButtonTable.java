@@ -1,7 +1,9 @@
 package fi.dy.masa.malilib.gui.button;
 
 import fi.dy.masa.malilib.config.IConfigTable;
-import fi.dy.masa.malilib.config.options.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.TableRow;
+import fi.dy.masa.malilib.config.options.table.type.Entry;
+import fi.dy.masa.malilib.config.options.table.type.EntryTypes;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTableEdit;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
@@ -49,16 +51,24 @@ public class ConfigButtonTable extends ButtonGeneric {
 
         sb.append("{");
         boolean addDivider = false;
-        for (ConfigTable.Entry entry : this.config.getTable()) {
+        for (TableRow row : this.config.getTable()) {
             if (addDivider) {
                 sb.append("; ");
             }
             boolean addDividerEntry = false;
-            for (Object entryPart : entry.list) {
+            for (Entry entryPart : row.list) {
                 if (addDividerEntry) {
                     sb.append(", ");
                 }
-                sb.append(entryPart.toString());
+                if (entryPart.getType() == EntryTypes.STRING) {
+                    sb.append(((fi.dy.masa.malilib.config.options.table.type.StringEntry) entryPart).getValue());
+                } else if (entryPart.getType() == EntryTypes.INTEGER) {
+                    sb.append(((fi.dy.masa.malilib.config.options.table.type.IntegerEntry) entryPart).getValue());
+                } else if (entryPart.getType() == EntryTypes.DOUBLE) {
+                    sb.append(((fi.dy.masa.malilib.config.options.table.type.DoubleEntry) entryPart).getValue());
+                } else {
+                    throw new IllegalStateException();
+                }
                 addDividerEntry = true;
             }
                 addDivider = true;
