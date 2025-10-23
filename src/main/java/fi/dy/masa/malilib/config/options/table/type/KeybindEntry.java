@@ -76,10 +76,21 @@ public class KeybindEntry extends Entry{
 
     @Override
     public JsonObject getAsJsonObject() {
-        return null;
+        JsonObject obj = new JsonObject();
+
+        obj.addProperty("type", "keybind");
+        obj.addProperty("keybind", this.keybind.getStringValue());
+        obj.add("settings", this.keybind.getSettings().toJson());
+
+        return obj;
     }
 
-    public static Entry getFromJsonObject(JsonObject obj) {
-        return null;
+    public static KeybindEntry getFromJsonObject(JsonObject obj) {
+        JsonObject settingsObj = obj.getAsJsonObject("settings");
+        KeybindSettings settings = KeybindSettings.fromJson(settingsObj);
+
+        IKeybind keybind = KeybindMulti.fromStorageString(obj.get("keybind").getAsString(), settings);
+
+        return new KeybindEntry(keybind);
     }
 }

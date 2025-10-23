@@ -1,9 +1,7 @@
 package fi.dy.masa.malilib.config.options.table;
 
-import fi.dy.masa.malilib.config.options.table.type.DoubleEntry;
-import fi.dy.masa.malilib.config.options.table.type.Entry;
-import fi.dy.masa.malilib.config.options.table.type.IntegerEntry;
-import fi.dy.masa.malilib.config.options.table.type.StringEntry;
+import fi.dy.masa.malilib.config.options.table.type.*;
+import fi.dy.masa.malilib.hotkeys.IKeybind;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +38,8 @@ public class TableRow {
                 case String s -> tableRow.add(new StringEntry(s));
                 case Integer i -> tableRow.add(new IntegerEntry(i));
                 case Double v -> tableRow.add(new DoubleEntry(v));
+                case IKeybind k -> tableRow.add(new KeybindEntry(k));
+                case Entry e -> tableRow.add(e);
                 default -> throw new IllegalArgumentException("Unsupported entry type: " + entry.getClass().getName());
             }
         }
@@ -62,6 +62,10 @@ public class TableRow {
         return (DoubleEntry) this.list.get(index);
     }
 
+    public KeybindEntry getKeybindEntry(int index) {
+        return (KeybindEntry) this.list.get(index);
+    }
+
     public StringEntry getStringEntry(int index) {
         return (StringEntry) this.list.get(index);
     }
@@ -76,6 +80,10 @@ public class TableRow {
 
     public String getString(int index) {
         return ((StringEntry) this.list.get(index)).getValue();
+    }
+
+    public IKeybind getKeybind(int index) {
+        return ((KeybindEntry) this.list.get(index)).getKeybind();
     }
 
     @Override

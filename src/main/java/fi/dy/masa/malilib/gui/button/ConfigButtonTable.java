@@ -2,8 +2,7 @@ package fi.dy.masa.malilib.gui.button;
 
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.TableRow;
-import fi.dy.masa.malilib.config.options.table.type.Entry;
-import fi.dy.masa.malilib.config.options.table.type.EntryTypes;
+import fi.dy.masa.malilib.config.options.table.type.*;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTableEdit;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
@@ -60,12 +59,15 @@ public class ConfigButtonTable extends ButtonGeneric {
                 if (addDividerEntry) {
                     sb.append(", ");
                 }
+                // honestly this is starting to become impossible :sob:
                 if (entryPart.getType() == EntryTypes.STRING) {
-                    sb.append(((fi.dy.masa.malilib.config.options.table.type.StringEntry) entryPart).getValue());
+                    sb.append(((StringEntry) entryPart).getValue());
                 } else if (entryPart.getType() == EntryTypes.INTEGER) {
-                    sb.append(((fi.dy.masa.malilib.config.options.table.type.IntegerEntry) entryPart).getValue());
+                    sb.append(((IntegerEntry) entryPart).getValue());
                 } else if (entryPart.getType() == EntryTypes.DOUBLE) {
-                    sb.append(((fi.dy.masa.malilib.config.options.table.type.DoubleEntry) entryPart).getValue());
+                    sb.append(((DoubleEntry) entryPart).getValue());
+                } else if (entryPart.getType() == EntryTypes.KEYBIND) {
+                    sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
                 } else {
                     throw new IllegalStateException();
                 }

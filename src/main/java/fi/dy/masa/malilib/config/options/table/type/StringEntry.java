@@ -34,7 +34,7 @@ public class StringEntry extends Entry {
         return obj;
     }
 
-    public static Entry getFromJsonObject(JsonObject obj) {
+    public static StringEntry getFromJsonObject(JsonObject obj) {
         String val = obj.get("value").getAsString();
         return StringEntry.of(val);
     }

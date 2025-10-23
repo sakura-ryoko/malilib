@@ -34,12 +34,8 @@ public class DoubleEntry extends Entry {
         return obj;
     }
 
-    public static Entry getFromJsonObject(JsonObject obj) {
+    public static DoubleEntry getFromJsonObject(JsonObject obj) {
         try {
-            if (!obj.has("type") || !obj.get("type").getAsString().equals("double")) {
-                System.out.println("JSON object is not of type double: " + obj);
-                return DoubleEntry.of(0.0);
-            }
             double val = Double.parseDouble(obj.get("value").getAsString());
             return DoubleEntry.of(val);
         } catch (NumberFormatException e) {

@@ -34,7 +34,7 @@ public class IntegerEntry extends Entry {
         return obj;
     }
 
-    public static Entry getFromJsonObject(JsonObject obj) {
+    public static IntegerEntry getFromJsonObject(JsonObject obj) {
         try {
             int val = Integer.parseInt(obj.get("value").getAsString());
             return IntegerEntry.of(val);
