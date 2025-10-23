@@ -18,7 +18,6 @@ import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.data.tag.ListData;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.input.CharInput;
@@ -54,11 +53,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         this.defaultValue = defaultValue;
 
         this.initialValue = initialValue;
-        
-        this.entries = new ArrayList<>();
-        for (Entry entry : initialValue.list) {
-            entries.add(entry.copy());
-        }
+        this.entries = initialValue.list;
 
         this.parent = parent;
         this.types = types;
@@ -159,6 +154,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                         "",
                         null,
                         null);
+                keybindButton.updateDisplayString();
                 this.keybindWidgets.add(new Pair<>(keybindButton, settingsWidget));
                 this.subWidgets.add(keybindButton);
                 this.subWidgets.add(settingsWidget);
@@ -239,9 +235,9 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                         }
                     } else if (type == EntryTypes.KEYBIND) {
                         assert this.entries.get(i) instanceof KeybindEntry;
-                        temp.list.add(this.entries.get(i));
-                        KeybindEntry entry1 = (KeybindEntry) this.entries.get(i);
-                        lastAppliedValues.add(entry1.getStringValue());
+                        KeybindEntry keybindEntry = (KeybindEntry) this.entries.get(i);
+                        temp.list.add(keybindEntry);
+                        lastAppliedValues.add(keybindEntry.getStringValue());
                     }
                 }
 
@@ -350,11 +346,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                             button.onSelected();
                         }
 
+                        System.out.println(pair.getRight().keybind.getStringValue());
+
                         return true;
                     } else if (button.isSelected()) {
                         button.onClearSelection();
-
-
 
                         return true;
                     }
@@ -376,6 +372,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                         if (input.key() == KeyCodes.KEY_ESCAPE) {
                             button.onClearSelection();
                         }
+                        this.parent.getConfig().setModified();
+                        this.parent.markConfigsModified();
 
                         // need to set enable the reset button here
 
