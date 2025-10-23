@@ -34,6 +34,19 @@ public class StringEntry extends Entry {
         return obj;
     }
 
+    @Override
+    public Entry copy() {
+        return new StringEntry(value);
+    }
+
+    @Override
+    public boolean wasConfigModified(Entry entry) {
+        if (!(entry instanceof StringEntry other)) {
+            return true;
+        }
+        return !this.value.equals(other.value);
+    }
+
     public static StringEntry getFromJsonObject(JsonObject obj) {
         String val = obj.get("value").getAsString();
         return StringEntry.of(val);

@@ -34,6 +34,19 @@ public class IntegerEntry extends Entry {
         return obj;
     }
 
+    @Override
+    public Entry copy() {
+        return new IntegerEntry(value);
+    }
+
+    @Override
+    public boolean wasConfigModified(Entry entry) {
+        if (!(entry instanceof IntegerEntry other)) {
+            return true;
+        }
+        return this.value != other.value;
+    }
+
     public static IntegerEntry getFromJsonObject(JsonObject obj) {
         try {
             int val = Integer.parseInt(obj.get("value").getAsString());

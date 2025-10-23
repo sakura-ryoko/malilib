@@ -119,7 +119,7 @@ public class MaLiLibConfigs implements IConfigHandler
                         .setLabels("Label 1", "Label 2")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_3             =
-                new ConfigTable.Builder("testTable3", STRING, INTEGER)
+                new ConfigTable.Builder("testTable3", STRING, INTEGER, KEYBIND, INTEGER)
                         .setShowEntryNumbers(false)
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_4             =

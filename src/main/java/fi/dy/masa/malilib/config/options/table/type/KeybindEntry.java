@@ -6,7 +6,7 @@ import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 
-public class KeybindEntry extends Entry{
+public class KeybindEntry extends Entry {
     private IKeybind keybind;
     
     public KeybindEntry(IKeybind keybind) {
@@ -83,6 +83,21 @@ public class KeybindEntry extends Entry{
         obj.add("settings", this.keybind.getSettings().toJson());
 
         return obj;
+    }
+
+    @Override
+    public Entry copy() {
+        // cursed but whatever
+        return KeybindEntry.getFromJsonObject(this.getAsJsonObject());
+    }
+
+    @Override
+    public boolean wasConfigModified(Entry entry) {
+        if (!(entry instanceof KeybindEntry other)) {
+            return true;
+        }
+        return !this.keybind.getStringValue().equals(other.keybind.getStringValue()) ||
+               !this.keybind.getSettings().equals(other.keybind.getSettings());
     }
 
     public static KeybindEntry getFromJsonObject(JsonObject obj) {

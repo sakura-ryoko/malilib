@@ -15,6 +15,7 @@ public class WidgetListTableEdit extends WidgetListConfigOptionsBase<TableRow, W
         super(x, y, width, height, configWidth);
 
         this.config = parent.getConfig();
+        this.browserEntryHeight = 24;
     }
 
     public IConfigTable getConfig() {

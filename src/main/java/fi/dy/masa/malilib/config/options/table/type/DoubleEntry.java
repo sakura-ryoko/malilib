@@ -34,6 +34,19 @@ public class DoubleEntry extends Entry {
         return obj;
     }
 
+    @Override
+    public Entry copy() {
+        return new DoubleEntry(value);
+    }
+
+    @Override
+    public boolean wasConfigModified(Entry entry) {
+        if (!(entry instanceof DoubleEntry other)) {
+            return true;
+        }
+        return this.value != other.value;
+    }
+
     public static DoubleEntry getFromJsonObject(JsonObject obj) {
         try {
             double val = Double.parseDouble(obj.get("value").getAsString());
