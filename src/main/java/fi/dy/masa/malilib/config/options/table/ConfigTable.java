@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.config.options.table;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -35,6 +36,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                                     case StringEntry str -> temp.add("str" + str.getValue());
                                     case IntegerEntry integer -> temp.add("int" + integer.getValue());
                                     case DoubleEntry dbl -> temp.add("dbl" + dbl.getValue());
+                                    case KeybindEntry kbe -> temp.add("key" + kbe.getStringValue());
                                     default ->
                                             throw new IllegalStateException("Unsupported type: " + entry.getType());
                                 }
@@ -52,6 +54,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                                     case StringEntry str -> temp.add("str" + str.getValue());
                                     case IntegerEntry integer -> temp.add("int" + integer.getValue());
                                     case DoubleEntry dbl -> temp.add("dbl" + dbl.getValue());
+                                    case KeybindEntry kbe -> temp.add("key" + kbe.getStringValue());
                                     default ->
                                             throw new IllegalStateException("Unsupported type: " + entry.getType());
                                 }
@@ -102,6 +105,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                     case "str" -> entryList.add(StringEntry.of(valueString));
                     case "int" -> entryList.add(IntegerEntry.of(Integer.parseInt(valueString)));
                     case "dbl" -> entryList.add(DoubleEntry.of(Double.parseDouble(valueString)));
+                    case "key" -> entryList.add(KeybindEntry.from(valueString));
                     default -> throw new IllegalStateException("Unsupported type name: " + typeName);
                 }
             }
@@ -240,18 +244,15 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                 }
                 List<Entry> tempList = new ArrayList<>();
                 for (JsonElement el2 : jarr) {
-                    if (el2.isJsonPrimitive()) {
-                        if (el2.getAsJsonPrimitive().isString()) {
-                            tempList.add(StringEntry.of(el2.getAsString()));
-                        } else if (el2.getAsJsonPrimitive().isNumber()) {
-                            Number num = el2.getAsNumber();
-                            try {
-                                tempList.add(IntegerEntry.of(Integer.parseInt(el2.getAsString())));
-                            } catch (Exception e) {
-                                tempList.add(DoubleEntry.of(num.doubleValue()));
+                    if (el2.isJsonObject()) {
+                        JsonObject obj = el2.getAsJsonObject();
+                        if (obj.has("type")) {
+                            switch (obj.get("type").getAsString()) {
+                                case "keybind" -> tempList.add(KeybindEntry.getFromJsonObject(obj));
+                                case "string"  -> tempList.add(StringEntry.getFromJsonObject(obj));
+                                case "integer" -> tempList.add(IntegerEntry.getFromJsonObject(obj));
+                                case "double"  -> tempList.add(DoubleEntry.getFromJsonObject(obj));
                             }
-                        } else {
-                            throw new Exception();
                         }
                     } else {
                         throw new Exception();
@@ -275,13 +276,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
         for (var row : table) {
             JsonArray entryArr = new JsonArray();
             for (Entry entry : row.list) {
-                if (entry instanceof StringEntry str) {
-                    entryArr.add(str.getValue());
-                } else if (entry instanceof IntegerEntry integer) {
-                    entryArr.add(integer.getValue());
-                } else if (entry instanceof DoubleEntry dbl) {
-                    entryArr.add(dbl.getValue());
-                }
+                entryArr.add(entry.getAsJsonObject());
             }
             tableArr.add(entryArr);
         }

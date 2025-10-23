@@ -1,9 +1,8 @@
 package fi.dy.masa.malilib.config.options.table.type;
 
-public abstract class Entry {
-    public abstract EntryTypes getType();
+import com.google.gson.JsonObject;
 
-    @Override
+public abstract class Entry {@Override
     public String toString() {
         throw new UnsupportedOperationException();
     }
@@ -18,4 +17,7 @@ public abstract class Entry {
         }
         throw new IllegalStateException();
     }
+    public abstract EntryTypes getType();
+
+    public abstract JsonObject getAsJsonObject();
 }
