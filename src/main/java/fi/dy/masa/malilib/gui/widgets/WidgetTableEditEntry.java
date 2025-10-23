@@ -18,6 +18,7 @@ import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.tag.ListData;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.input.CharInput;
@@ -41,6 +42,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
     private final List<Pair<ConfigButtonKeybind, WidgetKeybindSettings>> keybindWidgets = new ArrayList<>();
 
     protected TableRow initialValue;
+    private List<String> lastAppliedValues = new ArrayList<>();
 
     public WidgetTableEditEntry(int x, int y, int width, int height,
                                 int listIndex, boolean isOdd, TableRow initialValue, TableRow defaultValue,
@@ -219,6 +221,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
 
             if (list.size() > this.listIndex) {
                 TableRow temp = new TableRow();
+                lastAppliedValues.clear();
 
                 for (int i = 0; i < this.entries.size(); i++) {
                     Entry entry = this.entries.get(i);
@@ -226,6 +229,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                     if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE) {
                         TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
                         String text = tfw.getTextField().getText();
+                        lastAppliedValues.add(text);
                         if (type == EntryTypes.STRING) {
                             temp.list.add(StringEntry.of(text));
                         } else if (type == EntryTypes.INTEGER) {
@@ -236,6 +240,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                     } else if (type == EntryTypes.KEYBIND) {
                         assert this.entries.get(i) instanceof KeybindEntry;
                         temp.list.add(this.entries.get(i));
+                        KeybindEntry entry1 = (KeybindEntry) this.entries.get(i);
+                        lastAppliedValues.add(entry1.getStringValue());
                     }
                 }
 
@@ -487,8 +493,33 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
 
     @Override
     public boolean hasPendingModifications() {
-        return true;
+        if (this.textFields.isEmpty()) {
+            assert this.isDummy();
+            return false;
+        }
+        for (int i = 0; i < this.entries.size(); i++) {
+            Entry entry = this.entries.get(i);
+            String lastApplied = i < this.lastAppliedValues.size() ? this.lastAppliedValues.get(i) : null;
+
+            if (entry.getType() != EntryTypes.KEYBIND) {
+                TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
+                String text = tfw.getTextField().getText();
+
+                if (!text.equals(lastApplied)) {
+                    return true;
+                }
+            } else {
+                assert this.entries.get(i) instanceof KeybindEntry;
+                KeybindEntry entry1 = (KeybindEntry) this.entries.get(i);
+
+                if (!entry1.getStringValue().equals(lastApplied)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
+
 
     @Override
     protected boolean onMouseClickedImpl(Click click, boolean doubleClick) {
