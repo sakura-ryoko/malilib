@@ -82,67 +82,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     );
 
     private final ImmutableList<TableRow> defaultTable;
-    private final List<TableRow> table = new ArrayList<>() {
-        @Override
-        public TableRow get(int index) {
-            return super.get(index);
-        }
-
-        @Override
-        public TableRow getFirst() {
-            return super.getFirst();
-        }
-
-        @Override
-        public TableRow getLast() {
-            return super.getLast();
-        }
-
-        @Override
-        public TableRow set(int index, TableRow element) {
-            return super.set(index, element);
-        }
-
-        @Override
-        public boolean add(TableRow tableRow) {
-            return super.add(tableRow);
-        }
-
-        @Override
-        public void add(int index, TableRow element) {
-            super.add(index, element);
-        }
-
-        @Override
-        public void addFirst(TableRow element) {
-            super.addFirst(element);
-        }
-
-        @Override
-        public void addLast(TableRow element) {
-            super.addLast(element);
-        }
-
-        @Override
-        public TableRow remove(int index) {
-            return super.remove(index);
-        }
-
-        @Override
-        public TableRow removeFirst() {
-            return super.removeFirst();
-        }
-
-        @Override
-        public TableRow removeLast() {
-            return super.removeLast();
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-        }
-    };
+    private final List<TableRow> table = new ArrayList<>();
     private final @Nullable String displayString;
     private final ImmutableList<EntryTypes> types;
     private final List<String> labels;
