@@ -121,6 +121,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                 case "str" -> temp.add(EntryTypes.STRING);
                 case "int" -> temp.add(EntryTypes.INTEGER);
                 case "dbl" -> temp.add(EntryTypes.DOUBLE);
+                case "key" -> temp.add(EntryTypes.KEYBIND);
                 default -> throw new IllegalStateException("Unsupported type name: " + typeName);
             }
         }
