@@ -16,6 +16,8 @@ public abstract class Entry {
             return Integer.toString(((IntegerEntry) entry).getValue());
         } else if (entry.getType() == EntryTypes.DOUBLE) {
             return Double.toString(((DoubleEntry) entry).getValue());
+        } else if (entry.getType() == EntryTypes.BOOLEAN) {
+            return Boolean.toString(((BooleanEntry) entry).getValue());
         } else if (entry.getType() == EntryTypes.KEYBIND) {
             return ((KeybindEntry) entry).getKeybind().getStringValue();
         }

@@ -9,11 +9,9 @@ import fi.dy.masa.malilib.gui.GuiTextFieldDouble;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.GuiTextFieldInteger;
 import fi.dy.masa.malilib.gui.MaLiLibIcons;
-import fi.dy.masa.malilib.gui.button.ButtonBase;
-import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.ConfigButtonKeybind;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.gui.button.*;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -34,14 +32,17 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
     protected final boolean isOdd;
     private final List<EntryTypes> types;
     private final List<Entry> entries;
+    private ButtonGeneric buttonReset;
 
     private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields =  new ArrayList<>();
 
     // You're probably going to hate me for this, but...
     private final List<Pair<ConfigButtonKeybind, WidgetKeybindSettings>> keybindWidgets = new ArrayList<>();
 
+    private final List<ConfigButtonBoolean> booleanWidgets = new ArrayList<>();
+
     protected TableRow initialValue;
-    private List<String> lastAppliedValues = new ArrayList<>();
+    private final List<String> lastAppliedValues = new ArrayList<>();
 
     public WidgetTableEditEntry(int x, int y, int width, int height,
                                 int listIndex, boolean isOdd, TableRow initialValue, TableRow defaultValue,
@@ -105,13 +106,9 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
     }
 
     protected int addWidgets(int x, int y, int resetX, int configWidth, int configHeight, TableRow initialValue, List<EntryTypes> types) {
-        ButtonGeneric resetButton = this.createResetButton(resetX, y);
-        ChangeListenerTextField listenerChange = new ChangeListenerTextField(resetButton, this.defaultValue, this);
-        ListenerResetConfig listenerReset = new ListenerResetConfig(resetButton, this);
-
+        this.buttonReset = this.createResetButton(resetX, y);
         boolean resetEnabled = false;
-
-        configWidth -= resetButton.getWidth();
+        configWidth -= buttonReset.getWidth();
 
         for (int i = 0; i < types.size(); i++) {
             EntryTypes type = types.get(i);
@@ -131,10 +128,17 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                 };
                 tf.setMaxLength(this.maxTextfieldTextLength);
                 tf.setText(Entry.getString(value));
-                TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = new TextFieldWrapper<>(tf, listenerChange);
+                TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = new TextFieldWrapper<>(tf, new ITextFieldListener<GuiTextFieldGeneric>() {
+                    @Override
+                    public boolean onTextChange(GuiTextFieldGeneric textField) {
+                        checkResetButtonState();
+                        return false;
+                    }
+                });
                 this.parent.addTextField(wrapper);
                 this.textFields.add(wrapper);
                 this.keybindWidgets.add(null);
+                this.booleanWidgets.add(null);
             } else if (type == EntryTypes.KEYBIND) {
                 KeybindEntry keybindEntry = (KeybindEntry) value;
                 ConfigButtonKeybind keybindButton = new ConfigButtonKeybind(
@@ -159,18 +163,33 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                 this.subWidgets.add(keybindButton);
                 this.subWidgets.add(settingsWidget);
                 this.textFields.add(null);
+                this.booleanWidgets.add(null);
+            } else if (type == EntryTypes.BOOLEAN) {
+                ConfigButtonBoolean booleanButton = new ConfigButtonBoolean(
+                        x + i * (configWidth / types.size()) + 2,
+                        y,
+                        configWidth / types.size() - 4,
+                        configHeight -3,
+                        ((BooleanEntry) value).getBooleanValue());
+
+                booleanButton.setActionListener((button, mouseButton) -> checkResetButtonState());
+
+                this.subWidgets.add(booleanButton);
+                this.booleanWidgets.add(booleanButton);
+                this.textFields.add(null);
+                this.keybindWidgets.add(null);
             } else {
                 throw new IllegalStateException("Unsupported type: " + type.name());
             }
 
-            resetEnabled = resetEnabled || value.wasConfigModified(this.defaultValue.get(i));
+            resetEnabled |= value.wasConfigModified(this.defaultValue.get(i));
         }
 
-        this.addButton(resetButton, listenerReset);
+        this.addButton(buttonReset, (button, mouseButton) -> reset());
 
-        resetButton.setEnabled(resetEnabled);
+        buttonReset.setEnabled(resetEnabled);
 
-        return resetButton.getX() + resetButton.getWidth() + 4;
+        return buttonReset.getX() + buttonReset.getWidth() + 4;
     }
 
     protected ButtonGeneric createResetButton(int x, int y) {
@@ -194,19 +213,6 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
             }
         }
         return false;
-
-//        for (int i = 0; i < this.textFields.size(); i++) {
-//            TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
-//            EntryTypes type = this.types.get(i);
-//            String text = tfw.getTextField().getText();
-//            Object initial = this.initialValue.list.get(i);
-//
-//            if (!text.equals(String.valueOf(initial))) {
-//                return true;
-//            }
-//        }
-//
-//        return false;
     }
 
     @Override
@@ -238,10 +244,12 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                         KeybindEntry keybindEntry = (KeybindEntry) this.entries.get(i);
                         temp.list.add(keybindEntry);
                         lastAppliedValues.add(keybindEntry.getStringValue());
+                    } else if (type == EntryTypes.BOOLEAN) {
+                        assert this.entries.get(i) instanceof BooleanEntry;
+                        BooleanEntry booleanEntry = (BooleanEntry) this.entries.get(i);
+                        temp.list.add(booleanEntry);
+                        lastAppliedValues.add(Boolean.toString(booleanEntry.getValue()));
                     }
-                }
-
-                for (int i = 0; i < this.textFields.size(); i++) {
                 }
 
                 list.set(this.listIndex, temp);
@@ -346,12 +354,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                             button.onSelected();
                         }
 
-                        System.out.println(pair.getRight().keybind.getStringValue());
-
+                        this.checkResetButtonState();
                         return true;
                     } else if (button.isSelected()) {
                         button.onClearSelection();
-
+                        this.checkResetButtonState();
                         return true;
                     }
                 }
@@ -375,7 +382,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                         this.parent.getConfig().setModified();
                         this.parent.markConfigsModified();
 
-                        // need to set enable the reset button here
+                        this.checkResetButtonState();
 
                         return true;
                     }
@@ -386,63 +393,76 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
     }
 
     public static class ChangeListenerTextField extends ConfigOptionChangeListenerTextField {
-        protected final TableRow defaultValue;
         private final WidgetTableEditEntry parent;
 
-        public ChangeListenerTextField(ButtonBase buttonReset, TableRow defaultValue, WidgetTableEditEntry parent) {
+        public ChangeListenerTextField(ButtonBase buttonReset, WidgetTableEditEntry parent) {
             super(null, null, buttonReset);
 
             this.parent = parent;
-            this.defaultValue = defaultValue;
         }
 
         @Override
         public boolean onTextChange(GuiTextFieldGeneric ignored) {
-            for (int i = 0; i < this.parent.types.size(); i++) {
-                TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = this.parent.textFields.get(i);
-                if (wrapper == null) {
-                    continue;
-                }
-                String defaultText = Entry.getString(this.defaultValue.list.get(i));
-
-                if (!wrapper.getTextField().getText().equals(defaultText)) {
-                    this.buttonReset.setEnabled(true);
-                    return false;
-                }
-            }
-            this.buttonReset.setEnabled(false);
+            this.parent.checkResetButtonState();
             return false;
         }
     }
 
-    private static class ListenerResetConfig implements IButtonActionListener {
-        private final WidgetTableEditEntry parent;
-        private final ButtonGeneric buttonReset;
-
-        public ListenerResetConfig(ButtonGeneric buttonReset, WidgetTableEditEntry parent) {
-            this.buttonReset = buttonReset;
-            this.parent = parent;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
-            for (int i = 0; i < this.parent.textFields.size(); i++) {
-                TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = this.parent.textFields.get(i);
+    private boolean checkResetButtonState() {
+        for (int i = 0; i < this.types.size(); i++) {
+            EntryTypes type = this.types.get(i);
+            if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE) {
+                TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = this.textFields.get(i);
                 if (wrapper != null) {
-                    String defaultText = Entry.getString(this.parent.defaultValue.list.get(i));
-                    wrapper.getTextField().setText(defaultText);
-                } else {
-                    Entry entry = this.parent.entry.get(i);
-                    if (entry instanceof KeybindEntry keybindEntry) {
-                        KeybindEntry defaultValue = (KeybindEntry) this.parent.defaultValue.list.get(i);
-                        keybindEntry.getKeybind().setValueFromString(defaultValue.getKeybind().getStringValue());
-                        keybindEntry.getKeybind().setSettings(defaultValue.getKeybind().getSettings());
-                        this.parent.keybindWidgets.get(i).getLeft().updateDisplayString();
+                    String defaultText = Entry.getString(this.defaultValue.list.get(i));
+                    if (!wrapper.getTextField().getText().equals(defaultText)) {
+                        this.buttonReset.setEnabled(true);
+                        return true;
                     }
                 }
+            } else if (type == EntryTypes.KEYBIND) {
+                assert this.entries.get(i) instanceof KeybindEntry;
+                KeybindEntry entry = (KeybindEntry) this.entries.get(i);
+                if (entry.getKeybind().isModified()) {
+                    this.buttonReset.setEnabled(true);
+                    return true;
+                }
+            } else if (type == EntryTypes.BOOLEAN) {
+                assert this.entries.get(i) instanceof BooleanEntry;
+                BooleanEntry entry = (BooleanEntry) this.entries.get(i);
+                if (entry.getBooleanValue().isModified()) {
+                    this.buttonReset.setEnabled(true);
+                    return true;
+                }
             }
-            this.buttonReset.setEnabled(false);
         }
+        this.buttonReset.setEnabled(false);
+        return false;
+    }
+
+    private void reset() {
+        for (int i = 0; i < this.types.size(); i++) {
+            EntryTypes type = this.types.get(i);
+            if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE) {
+                TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = this.textFields.get(i);
+                if (wrapper != null) {
+                    String defaultText = Entry.getString(this.defaultValue.list.get(i));
+                    wrapper.getTextField().setText(defaultText);
+                }
+            } else if (type == EntryTypes.KEYBIND) {
+                assert this.entries.get(i) instanceof KeybindEntry;
+                KeybindEntry entry = (KeybindEntry) this.entries.get(i);
+                entry.getKeybind().resetToDefault();
+                this.keybindWidgets.get(i).getLeft().updateDisplayString();
+
+            } else if (type == EntryTypes.BOOLEAN) {
+                assert this.entries.get(i) instanceof BooleanEntry;
+                BooleanEntry entry = (BooleanEntry) this.entries.get(i);
+                entry.getBooleanValue().resetToDefault();
+                this.booleanWidgets.get(i).updateDisplayString();
+            }
+        }
+        this.checkResetButtonState();
     }
 
     private static class ListenerListActions implements IButtonActionListener {
@@ -499,18 +519,27 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
             Entry entry = this.entries.get(i);
             String lastApplied = i < this.lastAppliedValues.size() ? this.lastAppliedValues.get(i) : null;
 
-            if (entry.getType() != EntryTypes.KEYBIND) {
-                TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
-                String text = tfw.getTextField().getText();
-
-                if (!text.equals(lastApplied)) {
-                    return true;
-                }
-            } else {
+            if (entry.getType() == EntryTypes.KEYBIND) {
                 assert this.entries.get(i) instanceof KeybindEntry;
                 KeybindEntry entry1 = (KeybindEntry) this.entries.get(i);
 
                 if (!entry1.getStringValue().equals(lastApplied)) {
+                    return true;
+                }
+            } else if (entry.getType() == EntryTypes.BOOLEAN) {
+                assert this.entries.get(i) instanceof BooleanEntry;
+                BooleanEntry entry1 = (BooleanEntry) this.entries.get(i);
+                String boolStr = Boolean.toString(entry1.getValue());
+
+                if (!boolStr.equals(lastApplied)) {
+                    return true;
+                }
+
+            } else {
+                TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
+                String text = tfw.getTextField().getText();
+
+                if (!text.equals(lastApplied)) {
                     return true;
                 }
             }

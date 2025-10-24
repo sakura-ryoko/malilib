@@ -108,4 +108,10 @@ public class KeybindEntry extends Entry {
 
         return new KeybindEntry(keybind);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof KeybindEntry other)) return false;
+        return other.getStringValue().equals(this.getStringValue());
+    }
 }

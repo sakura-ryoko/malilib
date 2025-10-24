@@ -51,4 +51,10 @@ public class StringEntry extends Entry {
         String val = obj.get("value").getAsString();
         return StringEntry.of(val);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof StringEntry other)) return false;
+        return other.getValue().equals(this.getValue());
+    }
 }

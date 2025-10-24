@@ -123,8 +123,8 @@ public class MaLiLibConfigs implements IConfigHandler
                         .setShowEntryNumbers(false)
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_4             =
-                new ConfigTable.Builder("testTable4", DOUBLE, INTEGER, STRING)
-                        .setDefaultValue(TableRow.of(0.0, 1, "2"), TableRow.of(1.0, 3, "5"))
+                new ConfigTable.Builder("testTable4", DOUBLE, INTEGER, STRING, BOOLEAN)
+                        .setDefaultValue(TableRow.of(0.0, 1, "2", true), TableRow.of(1.0, 3, "5", false))
                         .setLabels(List.of("Label 1", "Label 2"))
                         .setComment("Comment")
                         .build().apply(TEST_KEY);

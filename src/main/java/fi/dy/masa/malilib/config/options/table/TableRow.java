@@ -38,6 +38,7 @@ public class TableRow {
                 case String s -> tableRow.add(new StringEntry(s));
                 case Integer i -> tableRow.add(new IntegerEntry(i));
                 case Double v -> tableRow.add(new DoubleEntry(v));
+                case Boolean b -> tableRow.add(new BooleanEntry(b));
                 case IKeybind k -> tableRow.add(new KeybindEntry(k));
                 case Entry e -> tableRow.add(e);
                 default -> throw new IllegalArgumentException("Unsupported entry type: " + entry.getClass().getName());
@@ -62,6 +63,10 @@ public class TableRow {
         return (DoubleEntry) this.list.get(index);
     }
 
+    public BooleanEntry getBooleanEntry(int index) {
+        return (BooleanEntry) this.list.get(index);
+    }
+
     public KeybindEntry getKeybindEntry(int index) {
         return (KeybindEntry) this.list.get(index);
     }
@@ -78,6 +83,10 @@ public class TableRow {
         return ((DoubleEntry) this.list.get(index)).getValue();
     }
 
+    public Boolean getBoolean(int index) {
+        return ((BooleanEntry) this.list.get(index)).getValue();
+    }
+
     public String getString(int index) {
         return ((StringEntry) this.list.get(index)).getValue();
     }
@@ -91,6 +100,14 @@ public class TableRow {
         if (!(other instanceof TableRow entry)) {
             return false;
         }
-        return list.equals(entry.list);
+        if (this.list.size() != entry.list.size()) {
+            return false;
+        }
+        for (int i = 0; i < this.list.size(); i++) {
+            if (!this.list.get(i).equals(entry.list.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

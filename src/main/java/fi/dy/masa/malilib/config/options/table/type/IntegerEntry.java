@@ -57,4 +57,10 @@ public class IntegerEntry extends Entry {
             return IntegerEntry.of(0);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof IntegerEntry other)) return false;
+        return other.getValue() == this.getValue();
+    }
 }

@@ -36,6 +36,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                                     case StringEntry str -> temp.add("str" + str.getValue());
                                     case IntegerEntry integer -> temp.add("int" + integer.getValue());
                                     case DoubleEntry dbl -> temp.add("dbl" + dbl.getValue());
+                                    case BooleanEntry bln -> temp.add("bln" + bln.getValue());
                                     case KeybindEntry kbe -> temp.add("key" + kbe.getStringValue());
                                     default ->
                                             throw new IllegalStateException("Unsupported type: " + entry.getType());
@@ -54,6 +55,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                                     case StringEntry str -> temp.add("str" + str.getValue());
                                     case IntegerEntry integer -> temp.add("int" + integer.getValue());
                                     case DoubleEntry dbl -> temp.add("dbl" + dbl.getValue());
+                                    case BooleanEntry bln -> temp.add("bln" + bln.getValue());
                                     case KeybindEntry kbe -> temp.add("key" + kbe.getStringValue());
                                     default ->
                                             throw new IllegalStateException("Unsupported type: " + entry.getType());
@@ -105,6 +107,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                     case "str" -> entryList.add(StringEntry.of(valueString));
                     case "int" -> entryList.add(IntegerEntry.of(Integer.parseInt(valueString)));
                     case "dbl" -> entryList.add(DoubleEntry.of(Double.parseDouble(valueString)));
+                    case "bln" -> entryList.add(BooleanEntry.of(Boolean.parseBoolean(valueString)));
                     case "key" -> entryList.add(KeybindEntry.from(valueString));
                     default -> throw new IllegalStateException("Unsupported type name: " + typeName);
                 }
@@ -121,6 +124,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                 case "str" -> temp.add(EntryTypes.STRING);
                 case "int" -> temp.add(EntryTypes.INTEGER);
                 case "dbl" -> temp.add(EntryTypes.DOUBLE);
+                case "bln" -> temp.add(EntryTypes.BOOLEAN);
                 case "key" -> temp.add(EntryTypes.KEYBIND);
                 default -> throw new IllegalStateException("Unsupported type name: " + typeName);
             }
@@ -225,7 +229,12 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
     @Override
     public boolean isModified() {
-        return !table.equals(defaultTable);
+        for (int i = 0; i < table.size() && i < defaultTable.size(); i++) {
+            if (!table.get(i).equals(defaultTable.get(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -253,6 +262,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                                 case "string"  -> tempList.add(StringEntry.getFromJsonObject(obj));
                                 case "integer" -> tempList.add(IntegerEntry.getFromJsonObject(obj));
                                 case "double"  -> tempList.add(DoubleEntry.getFromJsonObject(obj));
+                                case "boolean" -> tempList.add(BooleanEntry.getFromJsonObject(obj));
                             }
                         }
                     } else {
@@ -309,6 +319,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                 dummy.add(IntegerEntry.of(0));
             } else if (type == EntryTypes.DOUBLE) {
                 dummy.add(DoubleEntry.of(0.0));
+            } else if (type == EntryTypes.BOOLEAN) {
+                dummy.add(BooleanEntry.of(false));
             } else if (type == EntryTypes.KEYBIND) {
                 dummy.add(KeybindEntry.of(""));
             } else {
