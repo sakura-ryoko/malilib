@@ -109,7 +109,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_1             =
-                new ConfigTable.Builder("testTable1", STRING, STRING)
+                new ConfigTable.Builder("testTable1", STRING, INTEGER, KEYBIND, BOOLEAN, DOUBLE, BOOLEAN, BOOLEAN)
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_2             =
                 new ConfigTable.Builder("testTable2", INTEGER, INTEGER)

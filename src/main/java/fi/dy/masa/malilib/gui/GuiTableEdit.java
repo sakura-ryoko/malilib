@@ -39,7 +39,7 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
     }
 
     protected void setWidthAndHeight() {
-        this.dialogWidth = 400;
+        this.dialogWidth = GuiUtils.getScaledWindowWidth() - 100;
         this.dialogHeight = GuiUtils.getScaledWindowHeight() - 90;
     }
 
