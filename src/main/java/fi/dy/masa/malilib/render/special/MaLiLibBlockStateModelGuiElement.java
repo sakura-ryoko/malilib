@@ -15,15 +15,14 @@ public record MaLiLibBlockStateModelGuiElement(
         int x1,
         int y1,
         int size,
-        float zLevel,
         float scale,
         @Nullable ScreenRect scissorArea,
         @Nullable ScreenRect bounds
 ) implements SpecialGuiElementRenderState
 {
-    public MaLiLibBlockStateModelGuiElement(BlockState state, int x1, int y1, int size, float zLevel, float scale, @Nullable ScreenRect scissorArea)
+    public MaLiLibBlockStateModelGuiElement(BlockState state, int x1, int y1, int size, float scale, @Nullable ScreenRect scissorArea)
     {
-        this(state, x1, y1, size, zLevel, scale, scissorArea, SpecialGuiElementRenderState.createBounds(x1, y1, x1 + size, y1 + size, scissorArea));
+        this(state, x1, y1, size, scale, scissorArea, SpecialGuiElementRenderState.createBounds(x1, y1, x1 + size, y1 + size, scissorArea));
     }
 
     @Override

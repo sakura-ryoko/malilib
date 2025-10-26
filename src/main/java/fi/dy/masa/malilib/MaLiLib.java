@@ -19,8 +19,6 @@ public class MaLiLib implements ModInitializer
         Registry.CONFIG_SCREEN.registerConfigScreenFactory(
                 new ModInfo(MaLiLibReference.MOD_ID, MaLiLibReference.MOD_NAME, MaLiLibConfigGui::new)
         );
-//
-//        MaLiLibTag.register();
     }
 
     public static void debugLog(String key, Object... args)

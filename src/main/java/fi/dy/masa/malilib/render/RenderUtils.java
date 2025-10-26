@@ -71,6 +71,7 @@ import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
 import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
+import fi.dy.masa.malilib.render.special.MaLiLibBlockStateModelGuiElement;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
@@ -2132,10 +2133,10 @@ public class RenderUtils
 
     public static void renderModelInGui(DrawContext drawContext, int x, int y, BlockState state)
     {
-        renderModelInGui(drawContext, x, y, 16, 0f, state, 0.625f);
+        renderModelInGui(drawContext, x, y, 16, state, 0.625f);
     }
 
-    public static void renderModelInGui(DrawContext drawContext, int x, int y, int size, float zLevel, BlockState state, float scale)
+    public static void renderModelInGui(DrawContext drawContext, int x, int y, int size, BlockState state, float scale)
     {
         if (state.getBlock() == Blocks.AIR)
         {
@@ -2147,101 +2148,10 @@ public class RenderUtils
 //                state,
 //                x, y,
 //                size,
-//                zLevel, scale,
+//                scale,
 //                RenderUtils.peekLastScissor(drawContext))
 //        );
-
-//        MatrixStack matrices = new MatrixStack();
-////        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
-////        matrix4fStack.pushMatrix();
-//
-////        GpuTextureView texture = bindGpuTextureView(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-//
-//        matrices.push();
-//        //setupGuiTransform(x, y, model.hasDepth(), zLevel);
-////        setupGuiTransform(matrices, x, y, zLevel);
-//        matrices.translate((float) (x + 8.0), (float) (y + 8.0), (float) (zLevel + 100.0));
-//        matrices.scale((float) 16, (float) -16, (float) 16);
-//        Quaternionf rot = new Quaternionf().rotationXYZ(30 * (float) (Math.PI / 180.0), 225 * (float) (Math.PI / 180.0), 0.0F);
-////        matrix4fStack.rotateX(matrix4fRotateFix(30));
-////        matrix4fStack.rotateY(matrix4fRotateFix(225));
-//        matrices.multiply(rot);
-//        matrices.scale(scale, scale, scale);
-//
-//        renderBlockModel(drawContext, matrices, model, state);
-//        //blend(false);
-////        matrix4fStack.popMatrix();
-//        matrices.pop();
     }
-
-//    public static void setupGuiTransform(MatrixStack matrices, int xPosition, int yPosition, float zLevel)
-//    {
-//        matrices.translate((float) (xPosition + 8.0), (float) (yPosition + 8.0), (float) (zLevel + 100.0));
-//        matrices.scale((float) 16, (float) -16, (float) 16);
-//    }
-//
-//    public static void renderBlockModel(DrawContext drawContext, MatrixStack matrices, BlockStateModel model, BlockState state)
-//    {
-////        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
-////        matrix4fStack.pushMatrix();
-////
-////        matrix4fStack.translate((float) -0.5, (float) -0.5, (float) -0.5);
-////        int color = 0xFFFFFFFF;
-//
-//        RenderContext ctx = new RenderContext(() -> "malilib:renderBlockModel", RenderPipelines.SOLID);
-//        BufferBuilder builder = ctx.getBuilder();
-//
-//        renderModel(model, state, matrices, builder);
-//
-//        try
-//        {
-//            BuiltBuffer meshData = builder.endNullable();
-//
-//            if (meshData != null)
-//            {
-//                ctx.draw(meshData, false);
-//                meshData.close();
-//            }
-//
-//            ctx.close();
-//        }
-//        catch (Exception err)
-//        {
-//            MaLiLib.LOGGER.error("renderBlockModel(): Draw Exception; {}", err.getMessage());
-//        }
-//
-////        matrix4fStack.popMatrix();
-//    }
-
-    /*
-    private static void renderQuad(BufferBuilder buffer, BakedQuad quad, BlockState state, int color)
-    {
-        buffer.putVertexData(quad.getVertexData());
-        buffer.setQuadColor(color);
-
-        if (quad.hasColor())
-        {
-            BlockColors blockColors = mc().getBlockColorMap();
-            int m = blockColors.getColorMultiplier(state, null, null, quad.getColorIndex());
-
-            float r = (float) (m >>> 16 & 0xFF) / 255F;
-            float g = (float) (m >>>  8 & 0xFF) / 255F;
-            float b = (float) (m        & 0xFF) / 255F;
-            buffer.multiplyColor(r, g, b, 4);
-            buffer.multiplyColor(r, g, b, 3);
-            buffer.multiplyColor(r, g, b, 2);
-            buffer.multiplyColor(r, g, b, 1);
-        }
-
-        putQuadNormal(buffer, quad);
-    }
-
-    private static void putQuadNormal(BufferBuilder renderer, BakedQuad quad)
-    {
-        Vec3i direction = quad.getFace().getVector();
-        renderer.normal(direction.getX(), direction.getY(), direction.getZ());
-    }
-    */
 
     private static void renderModel(BlockStateModel model, BlockState state,
                                     MatrixStack matrices, BufferBuilder builder)
