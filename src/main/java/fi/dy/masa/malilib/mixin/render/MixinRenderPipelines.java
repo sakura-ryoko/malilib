@@ -1215,13 +1215,13 @@ public abstract class MixinRenderPipelines
                               .build());
 
         MaLiLibPipelines.TRANSLUCENT_MASA_OFFSET =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
                               .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/translucent/masa/offset"))
                               .withDepthBias(-0.3f, -0.6f)
                               .build());
 
         MaLiLibPipelines.TRIPWIRE_MASA_OFFSET =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
                               .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/tripwire/masa/offset"))
                               .withShaderDefine("ALPHA_CUTOUT", 0.1F)
                               .withDepthBias(-0.3f, -0.6f)
@@ -1252,12 +1252,12 @@ public abstract class MixinRenderPipelines
                               .build());
 
         MaLiLibPipelines.TRANSLUCENT_MASA =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
                               .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/translucent/masa"))
                               .build());
 
         MaLiLibPipelines.TRIPWIRE_MASA =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
                               .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/tripwire/masa"))
                               .withShaderDefine("ALPHA_CUTOUT", 0.1F)
                               .build());
