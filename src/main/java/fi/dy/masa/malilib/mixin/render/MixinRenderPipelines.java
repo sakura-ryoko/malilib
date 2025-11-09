@@ -1282,16 +1282,26 @@ public abstract class MixinRenderPipelines
                               .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                               .build();
 
-        MaLiLibPipelines.MINIHUD_SHAPE_OFFSET =
+        MaLiLibPipelines.MINIHUD_SHAPE_OFFSET_NO_CULL =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
-                              .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/offset"))
+                              .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/offset_no_cull"))
                               .withDepthBias(-3.0f, -3.0f)
+                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
                               .build();
 
-        MaLiLibPipelines.MINIHUD_SHAPE_DEPTH_MASK =
+	    MaLiLibPipelines.MINIHUD_SHAPE_OFFSET =
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+			                  .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/offset"))
+			                  .withDepthBias(-3.0f, -3.0f)
+			                  .withDepthWrite(false)
+			                  .withColorWrite(true)
+			                  .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+			                  .build();
+
+	    MaLiLibPipelines.MINIHUD_SHAPE_DEPTH_MASK =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/depth_mask"))
                               .withDepthWrite(true)
@@ -1299,7 +1309,16 @@ public abstract class MixinRenderPipelines
                               .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                               .build();
 
-        MaLiLibPipelines.MINIHUD_SHAPE =
+	    MaLiLibPipelines.MINIHUD_SHAPE_NO_CULL =
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+			                  .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/minihud/shape"))
+			                  .withCull(false)
+			                  .withDepthWrite(false)
+			                  .withColorWrite(true)
+			                  .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+			                  .build();
+
+	    MaLiLibPipelines.MINIHUD_SHAPE =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/minihud/shape"))
                               .withDepthWrite(false)
