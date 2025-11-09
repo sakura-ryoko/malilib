@@ -11,7 +11,7 @@ public interface IFileBrowserIconProvider
 
     IGuiIcon getIconCreateDirectory();
 
-    IGuiIcon getIconSearch();
+	IGuiIcon getIconSearch();
 
     IGuiIcon getIconDirectory();
 

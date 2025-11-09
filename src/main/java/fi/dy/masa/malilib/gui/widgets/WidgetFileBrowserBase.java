@@ -21,13 +21,13 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 
-public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntry, WidgetDirectoryEntry> implements IDirectoryNavigator
+public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntry, WidgetDirectoryEntry>
+		implements IDirectoryNavigator
 {
     protected static final PathFilter DIRECTORY_FILTER = new PathFilter();
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     protected final IDirectoryCache cache;
-    //protected File currentDirectory;
     protected Path currentDirectory;
     protected final String browserContext;
     protected final IFileBrowserIconProvider iconProvider;
@@ -395,17 +395,6 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
             }
         }
     }
-
-    /*
-    public static class FileFilterDirectories implements FileFilter
-    {
-        @Override
-        public boolean accept(File pathName)
-        {
-            return pathName.isDirectory() && pathName.getName().startsWith(".") == false;
-        }
-    }
-     */
 
     public static class PathFilter implements DirectoryStream.Filter<Path>
     {

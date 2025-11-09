@@ -8,14 +8,19 @@ import net.minecraft.block.BlockState;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.gui.GuiListBase;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
+import fi.dy.masa.malilib.test.gui.widgets.WidgetTestList;
+import fi.dy.masa.malilib.test.gui.widgets.WidgetTestListEntry;
+import fi.dy.masa.malilib.util.StringUtils;
 
 public class GuiTestList extends GuiListBase<GuiTestList.Entry, WidgetTestListEntry, WidgetTestList>
         implements ISelectionListener<GuiTestList.Entry>
 {
-    protected final int iconSize = 64;
+    public final int iconSize = 64;
+
     public GuiTestList()
     {
         super(10, 60);
+	    this.title = StringUtils.translate("malilib.gui.title.test_widget_list");
     }
 
     @Override

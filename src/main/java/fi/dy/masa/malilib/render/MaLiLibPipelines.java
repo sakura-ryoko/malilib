@@ -65,6 +65,7 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_1;
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2;
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3;
+	public static RenderPipeline POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH;
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline POSITION_COLOR_TRANSLUCENT_DEPTH_MASK;
@@ -76,6 +77,7 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_COLOR_MASA_LEQUAL_DEPTH_OFFSET_1;
     public static RenderPipeline POSITION_COLOR_MASA_LEQUAL_DEPTH_OFFSET_2;
     public static RenderPipeline POSITION_COLOR_MASA_LEQUAL_DEPTH_OFFSET_3;
+	public static RenderPipeline POSITION_COLOR_MASA_LEQUAL_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_COLOR_MASA_LEQUAL_DEPTH;
     public static RenderPipeline POSITION_COLOR_MASA_GREATER_DEPTH;
     public static RenderPipeline POSITION_COLOR_MASA_DEPTH_MASK;
@@ -109,6 +111,7 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_1;
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2;
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3;
+	public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_GREATER_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_TRANSLUCENT_DEPTH_MASK;
@@ -120,6 +123,7 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_1;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_2;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_3;
+	public static RenderPipeline POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_NO_CULL;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_GREATER_DEPTH;
     public static RenderPipeline POSITION_TEX_COLOR_MASA_DEPTH_MASK;
@@ -200,8 +204,10 @@ public class MaLiLibPipelines
     // MINIHUD_SHAPE
     public static RenderPipeline MINIHUD_SHAPE_NO_DEPTH_OFFSET;
     public static RenderPipeline MINIHUD_SHAPE_NO_DEPTH;
+	public static RenderPipeline MINIHUD_SHAPE_OFFSET_NO_CULL;
     public static RenderPipeline MINIHUD_SHAPE_OFFSET;
     public static RenderPipeline MINIHUD_SHAPE_DEPTH_MASK;
+	public static RenderPipeline MINIHUD_SHAPE_NO_CULL;
     public static RenderPipeline MINIHUD_SHAPE;
 
     // GUI

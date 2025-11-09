@@ -2632,8 +2632,9 @@ public class RenderUtils
 
     public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f, boolean shouldResort)
     {
+		boolean culling = shouldCull(pos1, pos2);
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2
-        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", culling ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
@@ -2851,4 +2852,57 @@ public class RenderUtils
             MaLiLib.LOGGER.error("drawAreaOutlineNoCorners(): Draw Exception; {}", err.getMessage());
         }
     }
+
+	public static boolean shouldCull(BlockPos pos1, BlockPos pos2)
+	{
+		return shouldCull(new Box(pos1.getX(), pos1.getY(), pos1.getZ(), pos2.getX(), pos2.getY(), pos2.getZ()));
+	}
+
+	public static boolean shouldCull(Vec3d pos1, Vec3d pos2)
+	{
+		return shouldCull(new Box(pos1, pos2));
+	}
+
+	/**
+	 * The POSITION_COLOR Bottom Side causes Z fighting at certain distances;
+	 * If and only if the Side collides with a Block surface.
+	 * Calculate `withCull` if and only if the bottom side
+	 * is Air that meets with Non-Air.  We are only considering the Center Block Pos here.
+	 * NOTE that this causes a noticable "shift" in how the selection box appears when
+	 * Enabling culling; so we should only do so in this case; and only to stop "Z Fighting" .
+	 * @param bb
+	 * @return
+	 */
+	public static boolean shouldCull(Box bb)
+	{
+		Entity camera = mc().getCameraEntity();
+		final Vec3d minPos = bb.getMinPos();
+		final Vec3d maxPos = bb.getMaxPos();
+		Vec3d mid = bb.getCenter();
+		BlockPos pos;
+
+		if (minPos.getY() < maxPos.getY())
+		{
+			pos = new BlockPos((int) mid.x, (int) minPos.y, (int) mid.z);
+		}
+		else
+		{
+			pos = new BlockPos((int) mid.x, (int) maxPos.y, (int) mid.z);
+		}
+
+		if (mc().world != null)
+		{
+			// Calculate only if the Down Direction is a Block, while above it is Air.
+			BlockState state = mc().world.getBlockState(pos);
+			BlockState stateDown = mc().world.getBlockState(pos.offset(Direction.DOWN));
+
+			if (camera != null && state.isAir() && !stateDown.isAir())
+			{
+				// Causes Z fighting on the floor (~24 Block distance)
+				return camera.getPos().distanceTo(mid) >= 23;
+			}
+		}
+
+		return false;
+	}
 }

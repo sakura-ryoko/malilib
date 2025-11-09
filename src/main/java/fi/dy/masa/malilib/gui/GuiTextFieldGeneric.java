@@ -4,8 +4,12 @@ import org.joml.Matrix3x2fStack;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
+
+import fi.dy.masa.malilib.util.StringUtils;
 
 public class GuiTextFieldGeneric extends TextFieldWidget
 {
@@ -107,7 +111,42 @@ public class GuiTextFieldGeneric extends TextFieldWidget
         }
     }
 
-    /**
+	/**
+	 * Render a hover tooltip for this Text Field
+	 * @param translationKey ()
+	 * @param args ()
+	 */
+	public void setHoverTooltip(String translationKey, Object... args)
+	{
+		if (translationKey != null && !translationKey.isEmpty())
+		{
+			if (StringUtils.hasTranslation(translationKey))
+			{
+				this.setTooltip(Tooltip.of(StringUtils.translateAsText(translationKey, args)));
+			}
+			else
+			{
+				if (args != null && args.length > 0)
+				{
+					this.setTooltip(Tooltip.of(Text.of(String.format(translationKey, args))));
+				}
+				else
+				{
+					this.setTooltip(Tooltip.of(Text.of(translationKey)));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Clear the Hover tooltip
+	 */
+	public void clearHoverTooltip()
+	{
+		this.setTooltip(null);
+	}
+
+	/**
      * For Compat/Crash prevention reasons
      * @param text ()
      */

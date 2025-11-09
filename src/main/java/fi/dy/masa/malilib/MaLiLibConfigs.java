@@ -109,6 +109,8 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY_OG       = new ConfigBooleanHotkeyed("testInventoryOverlayOG", false, "").apply(TEST_KEY);
         public static final ConfigHotkey            TEST_INVENTORY_OVERLAY_TOGGLE   = new ConfigHotkey("testInventoryOverlayToggle", "BUTTON_3", OVERLAY_TOGGLE).apply(TEST_KEY);
         public static final ConfigHotkey            TEST_GUI_KEYBIND                = new ConfigHotkey("testGuiKeybind", "").apply(TEST_KEY);
+	    public static final ConfigHotkey            TEST_GUI_EDITOR_KEYBIND         = new ConfigHotkey("testGuiEditorKeybind", "").apply(TEST_KEY);
+	    public static final ConfigHotkey            TEST_GUI_FILE_BROWSER_KEYBIND   = new ConfigHotkey("testGuiFileBrowserKeybind", "").apply(TEST_KEY);
         public static final ConfigOptionList        TEST_DATE_TIME_OPTION           = new ConfigOptionList("testDateTimeList", TimeFormat.RFC1123).apply(TEST_KEY);
         public static final ConfigOptionList        TEST_DURATION_OPTION            = new ConfigOptionList("testDurationList", DurationFormat.PRETTY).apply(TEST_KEY);
         public static final ConfigHotkey            TEST_RUN_DATETIME_TEST          = new ConfigHotkey("testRunDateTimeTest", "").apply(TEST_KEY);
@@ -131,6 +133,8 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_INVENTORY_OVERLAY_OG,
                 TEST_INVENTORY_OVERLAY_TOGGLE,
                 TEST_GUI_KEYBIND,
+                TEST_GUI_EDITOR_KEYBIND,
+                TEST_GUI_FILE_BROWSER_KEYBIND,
                 TEST_DATE_TIME_OPTION,
                 TEST_DURATION_OPTION,
                 TEST_RUN_DATETIME_TEST
@@ -142,6 +146,8 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_INVENTORY_OVERLAY_OG,
                 TEST_INVENTORY_OVERLAY_TOGGLE,
                 TEST_GUI_KEYBIND,
+                TEST_GUI_EDITOR_KEYBIND,
+                TEST_GUI_FILE_BROWSER_KEYBIND,
                 TEST_RUN_DATETIME_TEST
         );
     }
