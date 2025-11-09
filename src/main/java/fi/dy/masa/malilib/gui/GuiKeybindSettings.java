@@ -2,12 +2,10 @@ package fi.dy.masa.malilib.gui;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import com.google.common.collect.ImmutableList;
-
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyInput;
-
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.config.options.ConfigOptionList;
@@ -130,7 +128,7 @@ public class GuiKeybindSettings extends GuiDialogBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
@@ -141,26 +139,26 @@ public class GuiKeybindSettings extends GuiDialogBase
     }
 
     @Override
-    protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawScreenBackground(GuiGraphics drawContext, int mouseX, int mouseY)
     {
 //        super.drawTexturedBG(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, true);
         RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
     }
 
     @Override
-    protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawTitle(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         this.drawStringWithShadow(drawContext, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
     }
 
     @Override
-    public boolean keyPressed(KeyInput input)
+    public boolean keyPressed(KeyEvent input)
     {
         return this.onKeyTyped(input);
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
         {

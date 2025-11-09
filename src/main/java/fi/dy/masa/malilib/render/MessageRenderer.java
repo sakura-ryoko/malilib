@@ -2,10 +2,8 @@ package fi.dy.masa.malilib.render;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 
@@ -23,7 +21,7 @@ public class MessageRenderer
     private boolean expandUp;
 //    private float zLevel;
 
-    protected static final Identifier BG_TEXTURE = Identifier.ofVanilla("textures/gui/inworld_menu_list_background.png");
+    protected static final ResourceLocation BG_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/inworld_menu_list_background.png");
 
     public MessageRenderer(int bgColor, int borderColor)
     {
@@ -114,7 +112,7 @@ public class MessageRenderer
         return height;
     }
 
-    public void drawMessages(DrawContext drawContext, int x, int y)
+    public void drawMessages(GuiGraphics drawContext, int x, int y)
     {
         if (!this.messages.isEmpty())
         {

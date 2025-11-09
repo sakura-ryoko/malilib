@@ -5,27 +5,26 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.ApiStatus;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Util;
-import net.minecraft.util.WorldSavePath;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.profiler.Profilers;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelResource;
+import net.minecraft.world.phys.HitResult;
 
 /**
  * Post-ReWrite code
@@ -33,62 +32,62 @@ import net.minecraft.world.World;
 @ApiStatus.Experimental
 public class GameWrap
 {
-    public static MinecraftClient getClient()
+    public static Minecraft getClient()
     {
-        return MinecraftClient.getInstance();
+        return Minecraft.getInstance();
     }
 
     @Nullable
-    public static ClientWorld getClientWorld()
+    public static ClientLevel getClientWorld()
     {
-        return getClient().world;
+        return getClient().level;
     }
 
     @Nullable
-    public static ServerWorld getClientPlayersServerWorld()
+    public static ServerLevel getClientPlayersServerWorld()
     {
         Entity player = getClientPlayer();
         MinecraftServer server = getIntegratedServer();
-        return player != null && server != null ? server.getWorld(player.getEntityWorld().getRegistryKey()) : null;
+        return player != null && server != null ? server.getLevel(player.level().dimension()) : null;
     }
 
     @Nullable
-    public static DynamicRegistryManager getClientRegistryManager()
+    public static RegistryAccess getClientRegistryManager()
     {
-        return getClientWorld() != null ? getClientWorld().getRegistryManager() : null;
+        return getClientWorld() != null ? getClientWorld().registryAccess() : null;
     }
 
     @Nullable
-    public static DynamicRegistryManager getServerRegistryManager()
+    public static RegistryAccess getServerRegistryManager()
     {
-        return getClientPlayersServerWorld() != null ? getClientPlayersServerWorld().getRegistryManager() : null;
+        return getClientPlayersServerWorld() != null ? getClientPlayersServerWorld().registryAccess() : null;
     }
 
     @Nullable
-    public static PlayerEntity getClientPlayer()
+    public static Player getClientPlayer()
     {
         return getClient().player;
     }
 
     @Nullable
-    public static PlayerInventory getPlayerInventory()
+    public static Inventory getPlayerInventory()
     {
-        PlayerEntity player = getClient().player;
+        Player player = getClient().player;
         return player != null ? player.getInventory() : null;
     }
 
-    public static ClientPlayerInteractionManager getInteractionManager()
+    public static MultiPlayerGameMode getInteractionManager()
     {
-        return getClient().interactionManager;
+        return getClient().gameMode;
     }
 
-    public static void clickSlot(int syncId, int slotId, int mouseButton, SlotActionType clickType)
+    public static void clickSlot(int syncId, int slotId, int mouseButton, ClickType clickType)
     {
-        ClientPlayerInteractionManager controller = getInteractionManager();
+        MultiPlayerGameMode controller = getInteractionManager();
 
         if (controller != null)
         {
-            controller.clickSlot(syncId, slotId, mouseButton, clickType, getClientPlayer());
+            controller.handleInventoryMouseClick(syncId, slotId, mouseButton, clickType, getClientPlayer());
         }
     }
 
@@ -96,7 +95,7 @@ public class GameWrap
     {
         if (getClientPlayer() != null)
         {
-            return getClientPlayer().getBlockInteractionRange();
+            return getClientPlayer().blockInteractionRange();
         }
 
         return 4.5d;
@@ -105,63 +104,63 @@ public class GameWrap
     @Nullable
     public static MinecraftServer getIntegratedServer()
     {
-        return getClient().getServer();
+        return getClient().getSingleplayerServer();
     }
 
     @Nullable
-    public static ClientPlayNetworkHandler getNetworkConnection()
+    public static ClientPacketListener getNetworkConnection()
     {
-        return getClient().getNetworkHandler();
+        return getClient().getConnection();
     }
 
-    public static GameOptions getOptions()
+    public static Options getOptions()
     {
         return getClient().options;
     }
 
     public static GameRules getGameRules()
     {
-        if (getClient().isIntegratedServerRunning())
+        if (getClient().hasSingleplayerServer())
         {
-            if (getClient().getServer() != null)
+            if (getClient().getSingleplayerServer() != null)
             {
-                return getClient().getServer().getGameRules();
+                return getClient().getSingleplayerServer().getGameRules();
             }
         }
         else
         {
-            if (getClient().getNetworkHandler() != null)
+            if (getClient().getConnection() != null)
             {
-                return new GameRules(getClient().getNetworkHandler().getEnabledFeatures());
+                return new GameRules(getClient().getConnection().enabledFeatures());
             }
         }
 
-        return new GameRules(FeatureSet.empty());
+        return new GameRules(FeatureFlagSet.of());
     }
 
     public static void printToChat(String msg)
     {
-        if (getClient().world != null)
+        if (getClient().level != null)
         {
-            getClient().inGameHud.getChatHud().addMessage(Text.of(msg));
+            getClient().gui.getChat().addMessage(Component.nullToEmpty(msg));
         }
     }
 
     public static void showHotbarMessage(String msg)
     {
-        if (getClient().world != null)
+        if (getClient().level != null)
         {
-            getClient().inGameHud.setOverlayMessage(Text.of(msg), false);
+            getClient().gui.setOverlayMessage(Component.nullToEmpty(msg), false);
         }
     }
 
     public static boolean sendChatMessage(String command)
     {
-        PlayerEntity player = getClientPlayer();
+        Player player = getClientPlayer();
 
         if (player != null)
         {
-            player.sendMessage(Text.of(command), false);
+            player.displayClientMessage(Component.nullToEmpty(command), false);
             return true;
         }
 
@@ -184,7 +183,7 @@ public class GameWrap
     @Nullable
     public static Entity getCameraEntity()
     {
-        MinecraftClient mc = getClient();
+        Minecraft mc = getClient();
         Entity entity = mc.getCameraEntity();
         return entity != null ? entity : mc.player;
     }
@@ -192,94 +191,94 @@ public class GameWrap
     public static String getPlayerName()
     {
         Entity player = getClientPlayer();
-        return player != null ? player.getName().getLiteralString() : "?";
+        return player != null ? player.getName().tryCollapseToString() : "?";
     }
 
     public static HitResult getHitResult()
     {
-        return getClient().crosshairTarget;
+        return getClient().hitResult;
     }
 
     public static long getCurrentWorldTick()
     {
-        World world = getClientWorld();
-        return world != null ? world.getTime() : -1L;
+        Level world = getClientWorld();
+        return world != null ? world.getGameTime() : -1L;
     }
 
     public static boolean isCreativeMode()
     {
-        PlayerEntity player = getClientPlayer();
-        return player != null && player.isInCreativeMode();
+        Player player = getClientPlayer();
+        return player != null && player.hasInfiniteMaterials();
     }
 
     public static int getRenderDistanceChunks()
     {
-        return getOptions().getClampedViewDistance();
+        return getOptions().getEffectiveRenderDistance();
     }
 
     public static int getVanillaOptionsScreenScale()
     {
-        return getOptions().getGuiScale().getValue();
+        return getOptions().guiScale().get();
     }
 
     public static boolean isSinglePlayer()
     {
-        return getClient().isInSingleplayer();
+        return getClient().isLocalServer();
     }
 
     public static boolean isUnicode()
     {
-        return getClient().forcesUnicodeFont();
+        return getClient().isEnforceUnicode();
     }
 
     public static boolean isHideGui()
     {
-        return getOptions().hudHidden;
+        return getOptions().hideGui;
     }
 
     public static void scheduleToClientThread(Runnable task)
     {
-        MinecraftClient mc = getClient();
+        Minecraft mc = getClient();
 
-        if (mc.isOnThread())
+        if (mc.isSameThread())
         {
             task.run();
         }
         else
         {
-            mc.createTask(task);
+            mc.wrapRunnable(task);
         }
     }
 
     public static void profilerPush(String name)
     {
-        Profilers.get().push(name);
+        Profiler.get().push(name);
     }
 
     public static void profilerPush(Supplier<String> nameSupplier)
     {
-        Profilers.get().push(nameSupplier);
+        Profiler.get().push(nameSupplier);
     }
 
     public static void profilerSwap(String name)
     {
-        Profilers.get().swap(name);
+        Profiler.get().popPush(name);
     }
 
     public static void profilerSwap(Supplier<String> nameSupplier)
     {
-        Profilers.get().swap(nameSupplier);
+        Profiler.get().popPush(nameSupplier);
     }
 
     public static void profilerPop()
     {
-        Profilers.get().pop();
+        Profiler.get().pop();
     }
 
     public static void openFile(Path file)
     {
         //OpenGlHelper.openFile(file.toFile());
-        Util.getOperatingSystem().open(file);
+        Util.getPlatform().openPath(file);
     }
 
     @Nullable
@@ -291,7 +290,7 @@ public class GameWrap
 
             if (server != null)
             {
-                return server.getSavePath(WorldSavePath.ROOT);
+                return server.getWorldPath(LevelResource.ROOT);
             }
         }
 

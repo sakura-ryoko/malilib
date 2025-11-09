@@ -5,19 +5,19 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.minecraft.client.network.ClientConfigurationNetworkHandler;
-import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
-import net.minecraft.registry.DynamicRegistryManager;
 import fi.dy.masa.malilib.event.WorldLoadHandler;
+import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.protocol.configuration.ClientboundFinishConfigurationPacket;
 
-@Mixin(ClientConfigurationNetworkHandler.class)
+@Mixin(ClientConfigurationPacketListenerImpl.class)
 public class MixinClientConfigurationNetworkHandler
 {
-    @Inject(method = "onReady", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/network/ClientConnection;transitionInbound(Lnet/minecraft/network/state/NetworkState;Lnet/minecraft/network/listener/PacketListener;)V",
+    @Inject(method = "handleConfigurationFinished", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/network/Connection;setupInboundProtocol(Lnet/minecraft/network/ProtocolInfo;Lnet/minecraft/network/PacketListener;)V",
             shift = At.Shift.BEFORE)
     )
-    private void malilib_onPlayLogin(ReadyS2CPacket packet, CallbackInfo ci, @Local DynamicRegistryManager.Immutable immutable)
+    private void malilib_onPlayLogin(ClientboundFinishConfigurationPacket packet, CallbackInfo ci, @Local RegistryAccess.Frozen immutable)
     {
         ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadImmutable(immutable);
     }

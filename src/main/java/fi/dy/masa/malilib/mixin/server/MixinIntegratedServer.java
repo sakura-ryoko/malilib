@@ -6,31 +6,31 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.world.GameMode;
 import fi.dy.masa.malilib.event.ServerHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.world.level.GameType;
 
 @Mixin(value = IntegratedServer.class)
 public class MixinIntegratedServer
 {
-    @Shadow @Final private MinecraftClient client;
+    @Shadow @Final private Minecraft minecraft;
 
-    @Inject(method = "setupServer", at = @At("RETURN"))
+    @Inject(method = "initServer", at = @At("RETURN"))
     private void malilib_setupServer(CallbackInfoReturnable<Boolean> cir)
     {
         if (cir.getReturnValue())
         {
-            ((ServerHandler) ServerHandler.getInstance()).onServerIntegratedSetup(this.client.getServer());
+            ((ServerHandler) ServerHandler.getInstance()).onServerIntegratedSetup(this.minecraft.getSingleplayerServer());
         }
     }
 
-    @Inject(method = "openToLan", at = @At("RETURN"))
-    private void malilib_checkOpenToLan(GameMode gameMode, boolean cheatsAllowed, int port, CallbackInfoReturnable<Boolean> cir)
+    @Inject(method = "publishServer", at = @At("RETURN"))
+    private void malilib_checkOpenToLan(GameType gameMode, boolean cheatsAllowed, int port, CallbackInfoReturnable<Boolean> cir)
     {
         if (cir.getReturnValue())
         {
-            ((ServerHandler) ServerHandler.getInstance()).onServerOpenToLan(this.client.getServer());
+            ((ServerHandler) ServerHandler.getInstance()).onServerOpenToLan(this.minecraft.getSingleplayerServer());
         }
     }
 }

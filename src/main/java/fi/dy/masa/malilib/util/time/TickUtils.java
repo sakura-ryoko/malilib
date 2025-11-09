@@ -1,8 +1,7 @@
 package fi.dy.masa.malilib.util.time;
 
 import org.jetbrains.annotations.ApiStatus;
-
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -23,15 +22,15 @@ public class TickUtils
      */
     public static float getTickRate()
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        Minecraft mc = Minecraft.getInstance();
 
-        if (mc.isIntegratedServerRunning() && mc.getServer() != null)
+        if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null)
         {
-            return mc.getServer().getTickManager().getTickRate();
+            return mc.getSingleplayerServer().tickRateManager().tickrate();
         }
-        else if (mc.world != null)
+        else if (mc.level != null)
         {
-            return mc.world.getTickManager().getTickRate();
+            return mc.level.tickRateManager().tickrate();
         }
 
         return -1F;
@@ -43,15 +42,15 @@ public class TickUtils
      */
     public static float getMillisPerTick()
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        Minecraft mc = Minecraft.getInstance();
 
-        if (mc.isIntegratedServerRunning() && mc.getServer() != null)
+        if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null)
         {
-            return mc.getServer().getTickManager().getMillisPerTick();
+            return mc.getSingleplayerServer().tickRateManager().millisecondsPerTick();
         }
-        else if (mc.world != null)
+        else if (mc.level != null)
         {
-            return mc.world.getTickManager().getMillisPerTick();
+            return mc.level.tickRateManager().millisecondsPerTick();
         }
 
         return -1F;
@@ -63,11 +62,11 @@ public class TickUtils
      */
     public static long getSprintTicks()
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        Minecraft mc = Minecraft.getInstance();
 
-        if (mc.isIntegratedServerRunning() && mc.getServer() != null)
+        if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null)
         {
-            return ((IMixinServerTickManager) mc.getServer().getTickManager()).malilib_getSprintTicks();
+            return ((IMixinServerTickManager) mc.getSingleplayerServer().tickRateManager()).malilib_getSprintTicks();
         }
         else if (getInstance().hasServuxData())
         {
@@ -83,19 +82,19 @@ public class TickUtils
      */
     public static boolean isStepping()
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        Minecraft mc = Minecraft.getInstance();
 
-        if (mc.isIntegratedServerRunning() && mc.getServer() != null)
+        if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null)
         {
-            return mc.getServer().getTickManager().isStepping();
+            return mc.getSingleplayerServer().tickRateManager().isSteppingForward();
         }
         else if (getInstance().hasServuxData())
         {
             return getInstance().isStepping();
         }
-        else if (mc.world != null)
+        else if (mc.level != null)
         {
-            return mc.world.getTickManager().isStepping();
+            return mc.level.tickRateManager().isSteppingForward();
         }
 
         return false;
@@ -107,19 +106,19 @@ public class TickUtils
      */
     public static boolean isFrozen()
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        Minecraft mc = Minecraft.getInstance();
 
-        if (mc.isIntegratedServerRunning() && mc.getServer() != null)
+        if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null)
         {
-            return mc.getServer().getTickManager().isFrozen();
+            return mc.getSingleplayerServer().tickRateManager().isFrozen();
         }
         else if (getInstance().hasServuxData())
         {
             return getInstance().isFrozen();
         }
-        else if (mc.world != null)
+        else if (mc.level != null)
         {
-            return mc.world.getTickManager().isFrozen();
+            return mc.level.tickRateManager().isFrozen();
         }
 
         return false;
@@ -131,17 +130,17 @@ public class TickUtils
      */
     public static boolean isSprinting()
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        Minecraft mc = Minecraft.getInstance();
 
-        if (mc.isIntegratedServerRunning() && mc.getServer() != null)
+        if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null)
         {
-            return mc.getServer().getTickManager().isSprinting();
+            return mc.getSingleplayerServer().tickRateManager().isSprinting();
         }
         else if (getInstance().hasServuxData())
         {
             return getInstance().isSprinting();
         }
-        else if (mc.world != null)
+        else if (mc.level != null)
         {
             Data timeData = getInstance();
 
@@ -356,7 +355,7 @@ public class TickUtils
         @ApiStatus.Internal
         public void updateNanoTick(long timeUpdate)
         {
-            if (!MinecraftClient.getInstance().isIntegratedServerRunning())
+            if (!Minecraft.getInstance().hasSingleplayerServer())
             {
                 final long currentTime = System.nanoTime();
 
@@ -407,7 +406,7 @@ public class TickUtils
 
             if (server != null)
             {
-                this.measuredMSPT = MathUtils.average(server.getTickTimes()) / 1000000D;
+                this.measuredMSPT = MathUtils.average(server.getTickTimesNanos()) / 1000000D;
                 this.measuredTPS = this.measuredMSPT <= 50 ? this.tickRate : (1000D / this.measuredMSPT);
                 this.actualTPS = (1000D / this.measuredMSPT);
                 if (MaLiLibReference.DEBUG_MODE)

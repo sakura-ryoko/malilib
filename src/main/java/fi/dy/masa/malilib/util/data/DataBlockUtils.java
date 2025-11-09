@@ -10,21 +10,21 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.block.entity.*;
-import net.minecraft.block.spawner.TrialSpawnerData;
-import net.minecraft.component.type.ProfileComponent;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.recipe.Recipe;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.event.Vibrations;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.block.entity.*;
+import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerStateData;
+import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
@@ -45,16 +45,16 @@ public class DataBlockUtils
 	{
 		if (data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
 		{
-			return Registries.BLOCK_ENTITY_TYPE.getOptionalValue(Identifier.tryParse(data.getString(NbtKeys.ID))).orElse(null);
+			return BuiltInRegistries.BLOCK_ENTITY_TYPE.getOptional(ResourceLocation.tryParse(data.getString(NbtKeys.ID))).orElse(null);
 		}
 
 		return null;
 	}
 
-	public static @Nullable Text getCustomName(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, String key)
+	public static @Nullable Component getCustomName(@Nonnull CompoundData data, @Nonnull RegistryAccess registry, String key)
 	{
 		NbtView view = NbtView.getReader(data, registry);
-		return BlockEntity.tryParseCustomName(Objects.requireNonNull(view.getReader()), key);
+		return BlockEntity.parseCustomNameSafe(Objects.requireNonNull(view.getReader()), key);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class DataBlockUtils
 	public static CompoundData setBlockEntityType(BlockEntityType<?> type, @Nullable CompoundData dataIn)
 	{
 		CompoundData data = new CompoundData();
-		Identifier id = BlockEntityType.getId(type);
+		ResourceLocation id = BlockEntityType.getKey(type);
 
 		if (id != null)
 		{
@@ -106,20 +106,20 @@ public class DataBlockUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static Pair<RegistryEntry<StatusEffect>, RegistryEntry<StatusEffect>> getBeaconEffects(@Nonnull CompoundData data)
+	public static Pair<Holder<MobEffect>, Holder<MobEffect>> getBeaconEffects(@Nonnull CompoundData data)
 	{
-		Set<RegistryEntry<StatusEffect>> effects = BeaconBlockEntity.EFFECTS_BY_LEVEL.stream().flatMap(Collection::stream).collect(Collectors.toSet());
-		RegistryEntry<StatusEffect> primary = null;
-		RegistryEntry<StatusEffect> secondary = null;
+		Set<Holder<MobEffect>> effects = BeaconBlockEntity.BEACON_EFFECTS.stream().flatMap(Collection::stream).collect(Collectors.toSet());
+		Holder<MobEffect> primary = null;
+		Holder<MobEffect> secondary = null;
 
 		if (data.contains(NbtKeys.PRIMARY_EFFECT, Constants.NBT.TAG_STRING))
 		{
-			primary = data.getCodec(NbtKeys.PRIMARY_EFFECT, Registries.STATUS_EFFECT.getEntryCodec()).filter(effects::contains).orElse(null);
+			primary = data.getCodec(NbtKeys.PRIMARY_EFFECT, BuiltInRegistries.MOB_EFFECT.holderByNameCodec()).filter(effects::contains).orElse(null);
 		}
 
 		if (data.contains(NbtKeys.SECONDARY_EFFECT, Constants.NBT.TAG_STRING))
 		{
-			secondary = data.getCodec(NbtKeys.SECONDARY_EFFECT, Registries.STATUS_EFFECT.getEntryCodec()).filter(effects::contains).orElse(null);
+			secondary = data.getCodec(NbtKeys.SECONDARY_EFFECT, BuiltInRegistries.MOB_EFFECT.holderByNameCodec()).filter(effects::contains).orElse(null);
 		}
 
 		return Pair.of(primary, secondary);
@@ -130,14 +130,14 @@ public class DataBlockUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static Pair<List<BeehiveBlockEntity.BeeData>, BlockPos> getBeesData(@Nonnull CompoundData data)
+	public static Pair<List<BeehiveBlockEntity.Occupant>, BlockPos> getBeesData(@Nonnull CompoundData data)
 	{
-		List<BeehiveBlockEntity.BeeData> bees = new ArrayList<>();
-		BlockPos flower = BlockPos.ORIGIN;
+		List<BeehiveBlockEntity.Occupant> bees = new ArrayList<>();
+		BlockPos flower = BlockPos.ZERO;
 
 		if (data.contains(NbtKeys.BEES, Constants.NBT.TAG_LIST))
 		{
-			bees = data.getCodec(NbtKeys.BEES, BeehiveBlockEntity.BeeData.LIST_CODEC).orElse(List.of());
+			bees = data.getCodec(NbtKeys.BEES, BeehiveBlockEntity.Occupant.LIST_CODEC).orElse(List.of());
 		}
 
 		if (data.containsLenient(NbtKeys.FLOWER))
@@ -155,9 +155,9 @@ public class DataBlockUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static Pair<Integer, Vibrations.ListenerData> getSkulkSensorVibrations(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static Pair<Integer, VibrationSystem.Data> getSkulkSensorVibrations(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		Vibrations.ListenerData listener = null;
+		VibrationSystem.Data listener = null;
 		int lastFreq = -1;
 
 		if (data.contains(NbtKeys.VIBRATION, Constants.NBT.TAG_INT))
@@ -167,7 +167,7 @@ public class DataBlockUtils
 
 		if (data.contains(NbtKeys.LISTENER, Constants.NBT.TAG_COMPOUND))
 		{
-			listener = data.getCodec(NbtKeys.LISTENER, Vibrations.ListenerData.CODEC, registry.getOps(NbtOps.INSTANCE)).orElseGet(Vibrations.ListenerData::new);
+			listener = data.getCodec(NbtKeys.LISTENER, VibrationSystem.Data.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElseGet(VibrationSystem.Data::new);
 		}
 
 		return Pair.of(lastFreq, listener);
@@ -181,7 +181,7 @@ public class DataBlockUtils
 	public static Pair<Long, BlockPos> getExitPortal(@Nonnull CompoundData data)
 	{
 		long age = -1;
-		BlockPos pos = BlockPos.ORIGIN;
+		BlockPos pos = BlockPos.ZERO;
 
 		if (data.contains(NbtKeys.AGE, Constants.NBT.TAG_LONG))
 		{
@@ -203,7 +203,7 @@ public class DataBlockUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static Pair<Pair<SignText, SignText>, Boolean> getSignText(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static Pair<Pair<SignText, SignText>, Boolean> getSignText(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		AtomicReference<SignText> front = new AtomicReference<>(null);
 		AtomicReference<SignText> back = new AtomicReference<>(null);
@@ -212,13 +212,13 @@ public class DataBlockUtils
 		if (data.contains(NbtKeys.FRONT_TEXT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.FRONT_TEXT);
-			SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(front::set);
+			SignText.DIRECT_CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(front::set);
 		}
 
 		if (data.contains(NbtKeys.BACK_TEXT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.BACK_TEXT);
-			SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(back::set);
+			SignText.DIRECT_CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(back::set);
 		}
 
 		if (data.contains(NbtKeys.WAXED, Constants.NBT.TAG_BYTE))
@@ -236,14 +236,14 @@ public class DataBlockUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static Pair<ItemStack, Integer> getBook(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static Pair<ItemStack, Integer> getBook(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		ItemStack book = ItemStack.EMPTY;
 		int current = -1;
 
 		if (data.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
 		{
-			book = data.getCodec(NbtKeys.BOOK, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
+			book = data.getCodec(NbtKeys.BOOK, ItemStack.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
 		}
 
 		if (data.contains(NbtKeys.PAGE, Constants.NBT.TAG_INT))
@@ -261,15 +261,15 @@ public class DataBlockUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static Pair<ProfileComponent, Pair<Identifier, Text>> getSkullData(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static Pair<ResolvableProfile, Pair<ResourceLocation, Component>> getSkullData(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		ProfileComponent profile = null;
-		Identifier note = null;
-		Text name = null;
+		ResolvableProfile profile = null;
+		ResourceLocation note = null;
+		Component name = null;
 
 		if (data.contains(NbtKeys.NOTE, Constants.NBT.TAG_STRING))
 		{
-			note = data.getCodec(NbtKeys.NOTE, Identifier.CODEC).orElse(null);
+			note = data.getCodec(NbtKeys.NOTE, ResourceLocation.CODEC).orElse(null);
 		}
 
 		if (data.contains(NbtKeys.SKULL_NAME, Constants.NBT.TAG_COMPOUND))
@@ -279,7 +279,7 @@ public class DataBlockUtils
 
 		if (data.contains(NbtKeys.PROFILE, Constants.NBT.TAG_COMPOUND))
 		{
-			profile = data.getCodec(NbtKeys.PROFILE, ProfileComponent.CODEC).orElse(null);
+			profile = data.getCodec(NbtKeys.PROFILE, ResolvableProfile.CODEC).orElse(null);
 		}
 
 		return Pair.of(profile, Pair.of(note, name));
@@ -291,10 +291,10 @@ public class DataBlockUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static Reference2IntOpenHashMap<RegistryKey<Recipe<?>>> getRecipesUsed(@Nonnull CompoundData data)
+	public static Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> getRecipesUsed(@Nonnull CompoundData data)
 	{
-		Codec<Map<RegistryKey<Recipe<?>>, Integer>> CODEC = Codec.unboundedMap(Recipe.KEY_CODEC, Codec.INT);
-		Reference2IntOpenHashMap<RegistryKey<Recipe<?>>> list = new Reference2IntOpenHashMap<>();
+		Codec<Map<ResourceKey<Recipe<?>>, Integer>> CODEC = Codec.unboundedMap(Recipe.KEY_CODEC, Codec.INT);
+		Reference2IntOpenHashMap<ResourceKey<Recipe<?>>> list = new Reference2IntOpenHashMap<>();
 
 		if (data.containsLenient(NbtKeys.RECIPES_USED))
 		{
@@ -324,8 +324,8 @@ public class DataBlockUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static Optional<TrialSpawnerData.Packed> getTrialSpawnerData(@Nonnull CompoundData data)
+	public static Optional<TrialSpawnerStateData.Packed> getTrialSpawnerData(@Nonnull CompoundData data)
 	{
-		return DataTypeUtils.readFlatMap(data, TrialSpawnerData.Packed.CODEC);
+		return DataTypeUtils.readFlatMap(data, TrialSpawnerStateData.Packed.MAP_CODEC);
 	}
 }

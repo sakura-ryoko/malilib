@@ -1,6 +1,6 @@
 package fi.dy.masa.malilib.hotkeys;
 
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.KeyEvent;
 
 public interface IKeyboardInputHandler
 {
@@ -11,7 +11,7 @@ public interface IKeyboardInputHandler
      * @param eventKeyState ()
      * @return ()
      */
-    default boolean onKeyInput(KeyInput input, boolean eventKeyState)
+    default boolean onKeyInput(KeyEvent input, boolean eventKeyState)
     {
         return false;
     }

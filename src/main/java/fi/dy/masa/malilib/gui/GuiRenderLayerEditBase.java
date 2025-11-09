@@ -1,7 +1,5 @@
 package fi.dy.masa.malilib.gui;
 
-import net.minecraft.util.math.Direction;
-
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
@@ -13,6 +11,7 @@ import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.LayerMode;
 import fi.dy.masa.malilib.util.LayerRange;
 import fi.dy.masa.malilib.util.StringUtils;
+import net.minecraft.core.Direction;
 
 public abstract class GuiRenderLayerEditBase extends GuiBase
 {
@@ -89,7 +88,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 
         if (layerMode == LayerMode.LAYER_RANGE)
         {
-            this.textField2 = new GuiTextFieldInteger(x, y, width, 20, this.textRenderer);
+            this.textField2 = new GuiTextFieldInteger(x, y, width, 20, this.font);
             this.addTextField(this.textField2, new TextFieldListener(layerMode, layerRange, true));
 
             this.createHotkeyCheckBoxes(x + width + 24, y, layerRange);
@@ -102,7 +101,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
             this.textField2 = null;
         }
 
-        this.textField1 = new GuiTextFieldInteger(x, y, width, 20, this.textRenderer);
+        this.textField1 = new GuiTextFieldInteger(x, y, width, 20, this.font);
         this.addTextField(this.textField1, new TextFieldListener(layerMode, layerRange, false));
         this.createValueAdjustButton(x + width + 3, y, false, layerRange, valueAdjustIcon);
         y += 23;
@@ -118,12 +117,12 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
     {
         if (this.textField1 != null)
         {
-            this.textField1.setText(String.valueOf(layerRange.getCurrentLayerValue(false)));
+            this.textField1.setValue(String.valueOf(layerRange.getCurrentLayerValue(false)));
         }
 
         if (this.textField2 != null)
         {
-            this.textField2.setText(String.valueOf(layerRange.getCurrentLayerValue(true)));
+            this.textField2.setValue(String.valueOf(layerRange.getCurrentLayerValue(true)));
         }
     }
 
@@ -268,7 +267,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 
             try
             {
-                value = Integer.parseInt(textField.getText());
+                value = Integer.parseInt(textField.getValue());
             }
             catch (NumberFormatException e)
             {

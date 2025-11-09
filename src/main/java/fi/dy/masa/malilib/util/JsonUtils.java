@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.util;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.UUID;
@@ -11,8 +10,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.gson.*;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 
 import fi.dy.masa.malilib.MaLiLib;
 
@@ -313,7 +312,7 @@ public class JsonUtils
         return vec3dFromJson(obj, name) != null;
     }
 
-    public static JsonArray vec3dToJson(Vec3d vec)
+    public static JsonArray vec3dToJson(Vec3 vec)
     {
         JsonArray arr = new JsonArray();
 
@@ -325,7 +324,7 @@ public class JsonUtils
     }
 
     @Nullable
-    public static Vec3d vec3dFromJson(JsonObject obj, String name)
+    public static Vec3 vec3dFromJson(JsonObject obj, String name)
     {
         if (hasArray(obj, name))
         {
@@ -335,7 +334,7 @@ public class JsonUtils
             {
                 try
                 {
-                    return new Vec3d(arr.get(0).getAsDouble(), arr.get(1).getAsDouble(), arr.get(2).getAsDouble());
+                    return new Vec3(arr.get(0).getAsDouble(), arr.get(1).getAsDouble(), arr.get(2).getAsDouble());
                 }
                 catch (Exception ignore) {}
             }

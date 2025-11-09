@@ -2,11 +2,9 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
-
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -44,7 +42,7 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
     }
 
     @Override
-    public boolean onMouseClicked(Click click, boolean doubleClick)
+    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
         this.clearTextFieldFocus();
 
@@ -52,11 +50,11 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         if (input.key() == KeyCodes.KEY_TAB)
         {
-            return this.changeTextFieldFocus(input.hasShift());
+            return this.changeTextFieldFocus(input.hasShiftDown());
         }
         else
         {
@@ -73,7 +71,7 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
     }
 
     @Override
-    public boolean onCharTyped(CharInput input)
+    public boolean onCharTyped(CharacterEvent input)
     {
         for (WIDGET widget : this.listWidgets)
         {

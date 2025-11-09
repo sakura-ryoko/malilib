@@ -11,38 +11,42 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.CrafterBlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.BufferBuilderStorage;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.text.Text;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.profiler.Profilers;
-import net.minecraft.world.World;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.HappyGhast;
+import net.minecraft.world.entity.animal.coppergolem.CopperGolem;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MapItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.CrafterBlockEntity;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
@@ -79,7 +83,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderGameOverlayPostAdvanced(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc)
+    public void onRenderGameOverlayPostAdvanced(GuiGraphics drawContext, float partialTicks, ProfilerFiller profiler, Minecraft mc)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -193,7 +197,7 @@ public class TestRenderHandler implements IRenderer
 //    }
 
     @Override
-    public void onRenderWorldPostDebugRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera, Profiler profiler)
+    public void onRenderWorldPostDebugRender(PoseStack matrices, Frustum frustum, MultiBufferSource.BufferSource immediate, Vec3 camera, ProfilerFiller profiler)
     {
 //        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
 //        {
@@ -239,7 +243,7 @@ public class TestRenderHandler implements IRenderer
 //    }
 
     @Override
-    public void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, BufferBuilderStorage buffers, Profiler profiler)
+    public void onRenderWorldPreWeather(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, RenderBuffers buffers, ProfilerFiller profiler)
     {
 //        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
 //        {
@@ -262,11 +266,11 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderWorldLastAdvanced(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, BufferBuilderStorage buffers, Profiler profiler)
+    public void onRenderWorldLastAdvanced(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, RenderBuffers buffers, ProfilerFiller profiler)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
-            MinecraftClient mc = MinecraftClient.getInstance();
+            Minecraft mc = Minecraft.getInstance();
 
             if (mc.player != null)
             {
@@ -277,10 +281,10 @@ public class TestRenderHandler implements IRenderer
                     TestSelector.INSTANCE.render(posMatrix, projMatrix, profiler, mc);
                 }
 
-                profiler.swap(MaLiLibReference.MOD_ID + "_targeting_overlay");
+                profiler.popPush(MaLiLibReference.MOD_ID + "_targeting_overlay");
                 this.renderTargetingOverlay(posMatrix, mc);
 
-                profiler.swap(MaLiLibReference.MOD_ID + "_test_walls");
+                profiler.popPush(MaLiLibReference.MOD_ID + "_test_walls");
 
                 if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
                 {
@@ -298,7 +302,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
+    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -313,7 +317,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
+    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -322,7 +326,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
+    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -331,12 +335,12 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderTooltipLast(DrawContext drawContext, ItemStack stack, int x, int y)
+    public void onRenderTooltipLast(GuiGraphics drawContext, ItemStack stack, int x, int y)
     {
         Item item = stack.getItem();
-        Profiler profiler = Profilers.get();
+        ProfilerFiller profiler = Profiler.get();
 
-        if (item instanceof FilledMapItem)
+        if (item instanceof MapItem)
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
@@ -345,7 +349,7 @@ public class TestRenderHandler implements IRenderer
                 profiler.pop();
             }
         }
-        else if (stack.getComponents().contains(DataComponentTypes.CONTAINER) && InventoryUtils.shulkerBoxHasItems(stack))
+        else if (stack.getComponents().has(DataComponents.CONTAINER) && InventoryUtils.shulkerBoxHasItems(stack))
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
@@ -354,7 +358,7 @@ public class TestRenderHandler implements IRenderer
                 profiler.pop();
             }
         }
-        else if (stack.getComponents().contains(DataComponentTypes.BUNDLE_CONTENTS) && InventoryUtils.bundleHasItems(stack))
+        else if (stack.getComponents().has(DataComponents.BUNDLE_CONTENTS) && InventoryUtils.bundleHasItems(stack))
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
@@ -363,30 +367,30 @@ public class TestRenderHandler implements IRenderer
                 profiler.pop();
             }
         }
-        else if (stack.isOf(Items.ENDER_CHEST))
+        else if (stack.is(Items.ENDER_CHEST))
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
-                MinecraftClient mc = MinecraftClient.getInstance();
-                World world = WorldUtils.getBestWorld(mc);
+                Minecraft mc = Minecraft.getInstance();
+                Level world = WorldUtils.getBestWorld(mc);
 
                 if (mc.player == null || world == null)
                 {
                     return;
                 }
 
-                PlayerEntity player = world.getPlayerByUuid(mc.player.getUuid());
+                Player player = world.getPlayerByUUID(mc.player.getUUID());
 
                 if (player != null)
                 {
-                    Pair<Entity, NbtCompound> pair = TestDataSyncer.getInstance().requestEntity(world, player.getId());
-                    EnderChestInventory inv;
+                    Pair<Entity, CompoundTag> pair = TestDataSyncer.getInstance().requestEntity(world, player.getId());
+                    PlayerEnderChestContainer inv;
 
                     if (pair != null && pair.getRight() != null && pair.getRight().contains(NbtKeys.ENDER_ITEMS))
                     {
-                        inv = InventoryUtils.getPlayerEnderItemsFromNbt(pair.getRight(), world.getRegistryManager());
+                        inv = InventoryUtils.getPlayerEnderItemsFromNbt(pair.getRight(), world.registryAccess());
                     }
-                    else if (pair != null && pair.getLeft() instanceof PlayerEntity pe && !pe.getEnderChestInventory().isEmpty())
+                    else if (pair != null && pair.getLeft() instanceof Player pe && !pe.getEnderChestInventory().isEmpty())
                     {
                         inv = pe.getEnderChestInventory();
                     }
@@ -400,8 +404,8 @@ public class TestRenderHandler implements IRenderer
                     {
                         try (NbtInventory nbtInv = NbtInventory.fromInventory(inv))
                         {
-                            NbtList list = nbtInv.toNbtList(world.getRegistryManager());
-                            NbtCompound nbt = new NbtCompound();
+                            ListTag list = nbtInv.toNbtList(world.registryAccess());
+                            CompoundTag nbt = new CompoundTag();
 
                             nbt.put(NbtKeys.ENDER_ITEMS, list);
                             RenderUtils.renderNbtItemsPreview(drawContext, stack, nbt, x, y, false);
@@ -419,17 +423,17 @@ public class TestRenderHandler implements IRenderer
         return () -> MaLiLibReference.MOD_ID + "_test";
     }
 
-    private void renderTargetingOverlay(Matrix4f posMatrix, MinecraftClient mc)
+    private void renderTargetingOverlay(Matrix4f posMatrix, Minecraft mc)
     {
         Entity entity = mc.getCameraEntity();
 
         if (entity != null &&
-            mc.crosshairTarget != null &&
-            mc.crosshairTarget.getType() == HitResult.Type.BLOCK &&
+            mc.hitResult != null &&
+            mc.hitResult.getType() == HitResult.Type.BLOCK &&
             MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
             GuiBase.isCtrlDown())
         {
-            BlockHitResult hitResult = (BlockHitResult) mc.crosshairTarget;
+            BlockHitResult hitResult = (BlockHitResult) mc.hitResult;
 
             /*
             RenderUtils.depthMask(false);
@@ -443,8 +447,8 @@ public class TestRenderHandler implements IRenderer
             RenderUtils.renderBlockTargetingOverlay(
                     entity,
                     hitResult.getBlockPos(),
-                    hitResult.getSide(),
-                    hitResult.getPos(),
+                    hitResult.getDirection(),
+                    hitResult.getLocation(),
                     color, posMatrix);
 
             /*
@@ -457,13 +461,13 @@ public class TestRenderHandler implements IRenderer
     }
 
     // OG / Tweakeroo method also
-    public static void renderInventoryOverlayOG(DrawContext drawContext, InventoryOverlay.Context context, MinecraftClient mc)
+    public static void renderInventoryOverlayOG(GuiGraphics drawContext, InventoryOverlay.Context context, Minecraft mc)
     {
         //MinecraftClient mc = MinecraftClient.getInstance();
         LivingEntity entityLivingBase = null;
         BlockEntity be = null;
-        Inventory inv = null;
-        NbtCompound nbt = new NbtCompound();
+        Container inv = null;
+        CompoundTag nbt = new CompoundTag();
 
         if (context == null)
         {
@@ -487,27 +491,27 @@ public class TestRenderHandler implements IRenderer
         }
         if (context.nbt() != null)
         {
-            nbt.copyFrom(context.nbt());
+            nbt.merge(context.nbt());
         }
 
         //MaLiLib.logger.error("render: ctx-type [{}], inv [{}], raw Nbt [{}]", context.type().toString(), inv != null ? inv.size() : "null", nbt.isEmpty() ? "empty" : nbt.toString());
 
-        final boolean isWolf = (entityLivingBase instanceof WolfEntity) || (entityLivingBase instanceof HappyGhastEntity) || (entityLivingBase instanceof CopperGolemEntity);
+        final boolean isWolf = (entityLivingBase instanceof Wolf) || (entityLivingBase instanceof HappyGhast) || (entityLivingBase instanceof CopperGolem);
         final int xCenter = GuiUtils.getScaledWindowWidth() / 2;
         final int yCenter = GuiUtils.getScaledWindowHeight() / 2;
         int x = xCenter - 52 / 2;
         int y = yCenter - 92;
 
         MaLiLib.LOGGER.error("0: -> inv.type [{}] // nbt.type [{}]", context.inv() != null ? InventoryOverlay.getInventoryType(context.inv()) : null, context.nbt() != null ? InventoryOverlay.getInventoryType(context.nbt()) : null);
-        MaLiLib.LOGGER.error("1: -> inv.size [{}] // inv.isEmpty [{}]", context.inv() != null ? context.inv().size() : -1, context.inv() != null ? context.inv().isEmpty() : -1);
+        MaLiLib.LOGGER.error("1: -> inv.size [{}] // inv.isEmpty [{}]", context.inv() != null ? context.inv().getContainerSize() : -1, context.inv() != null ? context.inv().isEmpty() : -1);
 
-        if (inv != null && inv.size() > 0)
+        if (inv != null && inv.getContainerSize() > 0)
         {
-            final boolean isHorse = (entityLivingBase instanceof AbstractHorseEntity);
-            final int totalSlots = isHorse ? inv.size() - 1 : inv.size();
+            final boolean isHorse = (entityLivingBase instanceof AbstractHorse);
+            final int totalSlots = isHorse ? inv.getContainerSize() - 1 : inv.getContainerSize();
             final int firstSlot = isHorse ? 1 : 0;
 
-            InventoryOverlay.InventoryRenderType type = (entityLivingBase instanceof VillagerEntity) ? InventoryOverlay.InventoryRenderType.VILLAGER : InventoryOverlay.getBestInventoryType(inv, nbt, context);
+            InventoryOverlay.InventoryRenderType type = (entityLivingBase instanceof Villager) ? InventoryOverlay.InventoryRenderType.VILLAGER : InventoryOverlay.getBestInventoryType(inv, nbt, context);
             final InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, totalSlots);
             final int rows = (int) Math.ceil((double) totalSlots / props.slotsPerRow);
             Set<Integer> lockedSlots = new HashSet<>();
@@ -539,7 +543,7 @@ public class TestRenderHandler implements IRenderer
                 }
             }
 
-            if (context.be() != null && context.be().getCachedState().getBlock() instanceof ShulkerBoxBlock sbb)
+            if (context.be() != null && context.be().getBlockState().getBlock() instanceof ShulkerBoxBlock sbb)
             {
                 RenderUtils.setShulkerboxBackgroundTintColor(sbb, true);
             }
@@ -548,10 +552,10 @@ public class TestRenderHandler implements IRenderer
 
             if (isHorse)
             {
-                Inventory horseInv = new SimpleInventory(2);
-                ItemStack horseArmor = (((AbstractHorseEntity) entityLivingBase).getBodyArmor());
-                horseInv.setStack(0, horseArmor != null && !horseArmor.isEmpty() ? horseArmor : ItemStack.EMPTY);
-                horseInv.setStack(1, inv.getStack(0));
+                Container horseInv = new SimpleContainer(2);
+                ItemStack horseArmor = (((AbstractHorse) entityLivingBase).getBodyArmorItem());
+                horseInv.setItem(0, horseArmor != null && !horseArmor.isEmpty() ? horseArmor : ItemStack.EMPTY);
+                horseInv.setItem(1, inv.getItem(0));
 
                 InventoryOverlay.renderInventoryBackground(drawContext, type, xInv, yInv, 1, 2, mc);
                 if (type == InventoryOverlay.InventoryRenderType.LLAMA)
@@ -596,9 +600,9 @@ public class TestRenderHandler implements IRenderer
             xInv = xCenter + 2;
             yInv = Math.min(yInv, yCenter - 92);
 
-            Inventory wolfInv = new SimpleInventory(2);
-            ItemStack wolfArmor = ((WolfEntity) entityLivingBase).getBodyArmor();
-            wolfInv.setStack(0, wolfArmor != null && !wolfArmor.isEmpty() ? wolfArmor : ItemStack.EMPTY);
+            Container wolfInv = new SimpleContainer(2);
+            ItemStack wolfArmor = ((Wolf) entityLivingBase).getBodyArmorItem();
+            wolfInv.setItem(0, wolfArmor != null && !wolfArmor.isEmpty() ? wolfArmor : ItemStack.EMPTY);
             InventoryOverlay.renderInventoryBackground(drawContext, type, xInv, yInv, 1, 2, mc);
             InventoryOverlay.renderWolfArmorBackgroundSlots(drawContext, wolfInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY);
             InventoryOverlay.renderInventoryStacks(drawContext, type, wolfInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, 1, 0, 2, mc);

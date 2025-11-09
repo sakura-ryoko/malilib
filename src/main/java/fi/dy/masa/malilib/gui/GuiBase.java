@@ -4,24 +4,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
-
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.input.MouseInput;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-
+import com.mojang.blaze3d.platform.InputConstants;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
@@ -38,49 +34,49 @@ import fi.dy.masa.malilib.util.KeyCodes;
 
 public abstract class GuiBase extends Screen implements IMessageConsumer, IStringConsumer
 {
-    public static final String TXT_AQUA = Formatting.AQUA.toString();
-    public static final String TXT_BLACK = Formatting.BLACK.toString();
-    public static final String TXT_BLUE = Formatting.BLUE.toString();
-    public static final String TXT_GOLD = Formatting.GOLD.toString();
-    public static final String TXT_GRAY = Formatting.GRAY.toString();
-    public static final String TXT_GREEN = Formatting.GREEN.toString();
-    public static final String TXT_RED = Formatting.RED.toString();
-    public static final String TXT_WHITE = Formatting.WHITE.toString();
-    public static final String TXT_YELLOW = Formatting.YELLOW.toString();
+    public static final String TXT_AQUA = ChatFormatting.AQUA.toString();
+    public static final String TXT_BLACK = ChatFormatting.BLACK.toString();
+    public static final String TXT_BLUE = ChatFormatting.BLUE.toString();
+    public static final String TXT_GOLD = ChatFormatting.GOLD.toString();
+    public static final String TXT_GRAY = ChatFormatting.GRAY.toString();
+    public static final String TXT_GREEN = ChatFormatting.GREEN.toString();
+    public static final String TXT_RED = ChatFormatting.RED.toString();
+    public static final String TXT_WHITE = ChatFormatting.WHITE.toString();
+    public static final String TXT_YELLOW = ChatFormatting.YELLOW.toString();
 
-    public static final String TXT_BOLD = Formatting.BOLD.toString();
-    public static final String TXT_ITALIC = Formatting.ITALIC.toString();
-    public static final String TXT_RST = Formatting.RESET.toString();
-    public static final String TXT_STRIKETHROUGH = Formatting.STRIKETHROUGH.toString();
-    public static final String TXT_UNDERLINE = Formatting.UNDERLINE.toString();
+    public static final String TXT_BOLD = ChatFormatting.BOLD.toString();
+    public static final String TXT_ITALIC = ChatFormatting.ITALIC.toString();
+    public static final String TXT_RST = ChatFormatting.RESET.toString();
+    public static final String TXT_STRIKETHROUGH = ChatFormatting.STRIKETHROUGH.toString();
+    public static final String TXT_UNDERLINE = ChatFormatting.UNDERLINE.toString();
 
-    public static final String TXT_DARK_AQUA = Formatting.DARK_AQUA.toString();
-    public static final String TXT_DARK_BLUE = Formatting.DARK_BLUE.toString();
-    public static final String TXT_DARK_GRAY = Formatting.DARK_GRAY.toString();
-    public static final String TXT_DARK_GREEN = Formatting.DARK_GREEN.toString();
-    public static final String TXT_DARK_PURPLE = Formatting.DARK_PURPLE.toString();
-    public static final String TXT_DARK_RED = Formatting.DARK_RED.toString();
+    public static final String TXT_DARK_AQUA = ChatFormatting.DARK_AQUA.toString();
+    public static final String TXT_DARK_BLUE = ChatFormatting.DARK_BLUE.toString();
+    public static final String TXT_DARK_GRAY = ChatFormatting.DARK_GRAY.toString();
+    public static final String TXT_DARK_GREEN = ChatFormatting.DARK_GREEN.toString();
+    public static final String TXT_DARK_PURPLE = ChatFormatting.DARK_PURPLE.toString();
+    public static final String TXT_DARK_RED = ChatFormatting.DARK_RED.toString();
 
-    public static final String TXT_LIGHT_PURPLE = Formatting.LIGHT_PURPLE.toString();
+    public static final String TXT_LIGHT_PURPLE = ChatFormatting.LIGHT_PURPLE.toString();
 
     protected static final String BUTTON_LABEL_ADD = TXT_DARK_GREEN + "+" + TXT_RST;
     protected static final String BUTTON_LABEL_REMOVE = TXT_DARK_RED + "-" + TXT_RST;
 
-    public static final Identifier BG_TEXTURE = Identifier.ofVanilla("textures/gui/inworld_menu_list_background.png");
+    public static final ResourceLocation BG_TEXTURE = ResourceLocation.withDefaultNamespace("textures/gui/inworld_menu_list_background.png");
 
     public static final int COLOR_WHITE          = 0xFFFFFFFF;
     public static final int TOOLTIP_BACKGROUND   = 0xB0000000;
     public static final int COLOR_HORIZONTAL_BAR = 0xFF999999;
     protected static final int LEFT         = 20;
     protected static final int TOP          = 10;
-    public final MinecraftClient mc = MinecraftClient.getInstance();
-    public final TextRenderer textRenderer = this.mc.textRenderer;
-    public final int fontHeight = this.textRenderer.fontHeight;
+    public final Minecraft mc = Minecraft.getInstance();
+    public final Font font = this.mc.font;
+    public final int fontHeight = this.font.lineHeight;
     private final List<ButtonBase> buttons = new ArrayList<>();
     private final List<WidgetBase> widgets = new ArrayList<>();
     private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields = new ArrayList<>();
     private final MessageRenderer messageRenderer = new MessageRenderer(0xDD000000, COLOR_HORIZONTAL_BAR);
-    protected DrawContext drawContext;
+    protected GuiGraphics drawContext;
     private long openTime;
     protected WidgetBase hoveredWidget = null;
     protected String title = "";
@@ -93,8 +89,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     protected GuiBase()
     {
-        super(ScreenTexts.EMPTY);
-        this.client = mc;
+        super(CommonComponents.EMPTY);
+        this.minecraft = mc;
     }
 
     public GuiBase setParent(@Nullable Screen parent)
@@ -120,9 +116,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public Text getTitle()
+    public Component getTitle()
     {
-        return Text.of(this.getTitleString());
+        return Component.nullToEmpty(this.getTitleString());
     }
 
     public void setTitle(String title)
@@ -131,13 +127,13 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public boolean shouldPause()
+    public boolean isPauseScreen()
     {
         return false;
     }
 
     @Override
-    public void resize(MinecraftClient mc, int width, int height)
+    public void resize(Minecraft mc, int width, int height)
     {
         if (this.getParent() != null)
         {
@@ -169,7 +165,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
         else
         {
-            this.close();
+            this.onClose();
         }
     }
 
@@ -192,14 +188,14 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.drawContext == null || this.drawContext.equals(drawContext) == false)
         {
             this.drawContext = drawContext;
         }
 
-        drawContext.createNewRootLayer();
+        drawContext.nextStratum();
 
         // Draw Background / Title
         this.drawScreenBackground(drawContext, mouseX, mouseY);
@@ -215,13 +211,13 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.drawGuiMessages(drawContext);
     }
 
-    public DrawContext getDrawContext()
+    public GuiGraphics getDrawContext()
     {
         return this.drawContext;
     }
 
     @Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks)
+    public void renderBackground(GuiGraphics context, int mouseX, int mouseY, float deltaTicks)
     {
         // NO BLUR / MASKING
     }
@@ -262,7 +258,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubleClick)
+    public boolean mouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
         if (this.onMouseClicked(click, doubleClick) == false)
         {
@@ -273,7 +269,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public boolean mouseReleased(Click click)
+    public boolean mouseReleased(MouseButtonEvent click)
     {
         if (this.onMouseReleased(click) == false)
         {
@@ -284,7 +280,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public boolean keyPressed(KeyInput input)
+    public boolean keyPressed(KeyEvent input)
     {
         this.keyInputCount++;
 
@@ -297,7 +293,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public boolean charTyped(CharInput input)
+    public boolean charTyped(CharacterEvent input)
     {
         // This is an ugly fix for the issue that the key press from the hotkey that
         // opens a GUI would then also get into any text fields or search bars, as the
@@ -318,7 +314,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return super.charTyped(input);
     }
 
-    public boolean onMouseClicked(Click click, boolean doubleClick)
+    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
         for (ButtonBase button : this.buttons)
         {
@@ -356,7 +352,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return handled;
     }
 
-    public boolean onMouseReleased(Click click)
+    public boolean onMouseReleased(MouseButtonEvent click)
     {
 		for (WidgetBase widget : this.widgets)
         {
@@ -389,7 +385,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return false;
     }
 
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         boolean handled = false;
         int selected = -1;
@@ -432,7 +428,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             if (input.key() == KeyCodes.KEY_ESCAPE)
             {
-                this.closeGui(input.hasShift() == false);
+                this.closeGui(input.hasShiftDown() == false);
 
                 return true;
             }
@@ -440,7 +436,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (selected >= 0)
         {
-            if (input.hasShift())
+            if (input.hasShiftDown())
             {
                 selected = selected > 0 ? selected - 1 : this.textFields.size() - 1;
             }
@@ -455,7 +451,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return handled;
     }
 
-    public boolean onCharTyped(CharInput input)
+    public boolean onCharTyped(CharacterEvent input)
     {
         boolean handled = false;
 
@@ -512,7 +508,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.messageRenderer.setNextMessageType(type);
     }
 
-    protected void drawGuiMessages(DrawContext drawContext)
+    protected void drawGuiMessages(GuiGraphics drawContext)
     {
         this.messageRenderer.drawMessages(drawContext, this.width / 2, this.height / 2);
     }
@@ -597,7 +593,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
      * @param mouseX ()
      * @param mouseY ()
      */
-    protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawScreenBackground(GuiGraphics drawContext, int mouseX, int mouseY)
     {
         // Draw the dark background
         RenderUtils.drawRect(drawContext, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
@@ -614,27 +610,27 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
      * @param height ()
      * @param blur ()
      */
-    protected void drawTexturedBG(DrawContext drawContext, int topX, int topY, int width, int height, boolean blur)
+    protected void drawTexturedBG(GuiGraphics drawContext, int topX, int topY, int width, int height, boolean blur)
     {
         if (blur)
         {
-            super.applyBlur(drawContext);
+            super.renderBlurredBackground(drawContext);
         }
 
 //        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, true);
-        super.renderDarkening(drawContext, topX, topY, width, height);
+        super.renderMenuBackground(drawContext, topX, topY, width, height);
     }
 
-    protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawTitle(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         this.drawString(drawContext, this.getTitleString(), LEFT, TOP, COLOR_WHITE);
     }
 
-    protected void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawContents(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
     }
 
-    protected void drawButtons(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawButtons(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         for (ButtonBase button : this.buttons)
         {
@@ -642,7 +638,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
     }
 
-    protected void drawTextFields(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawTextFields(GuiGraphics drawContext, int mouseX, int mouseY)
     {
         for (TextFieldWrapper<?> entry : this.textFields)
         {
@@ -650,7 +646,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
     }
 
-    protected void drawWidgets(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawWidgets(GuiGraphics drawContext, int mouseX, int mouseY)
     {
         this.hoveredWidget = null;
 
@@ -668,7 +664,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
     }
 
-    protected void drawButtonHoverTexts(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawButtonHoverTexts(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.shouldRenderHoverStuff() == false)
         {
@@ -686,10 +682,10 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     protected boolean shouldRenderHoverStuff()
     {
-        return this.mc.currentScreen == this;
+        return this.mc.screen == this;
     }
 
-    protected void drawHoveredWidget(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawHoveredWidget(GuiGraphics drawContext, int mouseX, int mouseY)
     {
         if (this.shouldRenderHoverStuff() == false)
         {
@@ -709,17 +705,17 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public int getStringWidth(String text)
     {
-        return this.textRenderer.getWidth(text);
+        return this.font.width(text);
     }
 
-    public void drawString(DrawContext drawContext, String text, int x, int y, int color)
+    public void drawString(GuiGraphics drawContext, String text, int x, int y, int color)
     {
-        drawContext.drawText(this.textRenderer, text, x, y, color, false);
+        drawContext.drawString(this.font, text, x, y, color, false);
     }
 
-    public void drawStringWithShadow(DrawContext drawContext, String text, int x, int y, int color)
+    public void drawStringWithShadow(GuiGraphics drawContext, String text, int x, int y, int color)
     {
-        drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
+        drawContext.drawString(this.font, text, x, y, color);
     }
 
     public int getMaxPrettyNameLength(List<? extends IConfigBase> configs)
@@ -736,27 +732,27 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public static void openGui(Screen gui)
     {
-        MinecraftClient.getInstance().setScreen(gui);
+        Minecraft.getInstance().setScreen(gui);
     }
 
 	public static boolean isShiftDown()
 	{
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT)
-				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_SHIFT);
+		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT)
+				|| InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_SHIFT);
 	}
 
 	public static boolean isCtrlDown()
 	{
-		return Util.getOperatingSystem() == Util.OperatingSystem.OSX
-			   ? InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SUPER)
-					   || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_SUPER)
-			   : InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL)
-					   || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_CONTROL);
+		return Util.getPlatform() == Util.OS.OSX
+			   ? InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SUPER)
+					   || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_SUPER)
+			   : InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL)
+					   || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_CONTROL);
 	}
 
 	public static boolean isAltDown()
 	{
-		return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_ALT)
-				|| InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_ALT);
+		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_ALT)
+				|| InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_ALT);
 	}
 }

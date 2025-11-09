@@ -1,13 +1,14 @@
 package fi.dy.masa.malilib.util.position;
 
+import javax.annotation.Nonnull;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import org.joml.Vector3f;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 
 /**
  * Post-ReWrite code
@@ -29,23 +30,23 @@ public class Vec3f
             ).apply(inst, Vec3f::new)
     );
     public static final Codec<Vec3f> CODEC = FLOAT_CODEC;
-    public static final PacketCodec<ByteBuf, Vec3f> PACKET_CODEC = new PacketCodec<>()
+    public static final StreamCodec<ByteBuf, Vec3f> PACKET_CODEC = new StreamCodec<>()
     {
         @Override
-        public void encode(ByteBuf buf, Vec3f value)
+        public void encode(@Nonnull ByteBuf buf, Vec3f value)
         {
-            PacketCodecs.FLOAT.encode(buf, value.x);
-            PacketCodecs.FLOAT.encode(buf, value.y);
-            PacketCodecs.FLOAT.encode(buf, value.z);
+            ByteBufCodecs.FLOAT.encode(buf, value.x);
+            ByteBufCodecs.FLOAT.encode(buf, value.y);
+            ByteBufCodecs.FLOAT.encode(buf, value.z);
         }
 
         @Override
-        public Vec3f decode(ByteBuf buf)
+        public @Nonnull Vec3f decode(@Nonnull ByteBuf buf)
         {
             return new Vec3f(
-                    PacketCodecs.FLOAT.decode(buf),
-                    PacketCodecs.FLOAT.decode(buf),
-                    PacketCodecs.FLOAT.decode(buf)
+                    ByteBufCodecs.FLOAT.decode(buf),
+                    ByteBufCodecs.FLOAT.decode(buf),
+                    ByteBufCodecs.FLOAT.decode(buf)
             );
         }
     };

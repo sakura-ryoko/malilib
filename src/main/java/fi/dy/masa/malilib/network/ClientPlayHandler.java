@@ -1,18 +1,18 @@
 package fi.dy.masa.malilib.network;
 
 import com.google.common.collect.ArrayListMultimap;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
 
 /**
  * The Client Network Play handler
  * @param <T> (Payload)
  */
-public class ClientPlayHandler<T extends CustomPayload> implements IClientPlayHandler
+public class ClientPlayHandler<T extends CustomPacketPayload> implements IClientPlayHandler
 {
-    private static final ClientPlayHandler<CustomPayload> INSTANCE = new ClientPlayHandler<>();
-    private final ArrayListMultimap<Identifier, IPluginClientPlayHandler<T>> handlers = ArrayListMultimap.create();
+    private static final ClientPlayHandler<CustomPacketPayload> INSTANCE = new ClientPlayHandler<>();
+    private final ArrayListMultimap<ResourceLocation, IPluginClientPlayHandler<T>> handlers = ArrayListMultimap.create();
     public static IClientPlayHandler getInstance()
     {
         return INSTANCE;
@@ -22,9 +22,9 @@ public class ClientPlayHandler<T extends CustomPayload> implements IClientPlayHa
 
     @Override
     @SuppressWarnings("unchecked")
-    public <P extends CustomPayload> void registerClientPlayHandler(IPluginClientPlayHandler<P> handler)
+    public <P extends CustomPacketPayload> void registerClientPlayHandler(IPluginClientPlayHandler<P> handler)
     {
-        Identifier channel = handler.getPayloadChannel();
+        ResourceLocation channel = handler.getPayloadChannel();
 
         if (this.handlers.containsEntry(channel, handler) == false)
         {
@@ -33,9 +33,9 @@ public class ClientPlayHandler<T extends CustomPayload> implements IClientPlayHa
     }
 
     @Override
-    public <P extends CustomPayload> void unregisterClientPlayHandler(IPluginClientPlayHandler<P> handler)
+    public <P extends CustomPacketPayload> void unregisterClientPlayHandler(IPluginClientPlayHandler<P> handler)
     {
-        Identifier channel = handler.getPayloadChannel();
+        ResourceLocation channel = handler.getPayloadChannel();
 
         if (this.handlers.remove(channel, handler))
         {
@@ -45,7 +45,7 @@ public class ClientPlayHandler<T extends CustomPayload> implements IClientPlayHa
     }
 
     @ApiStatus.Internal
-    public void reset(Identifier channel)
+    public void reset(ResourceLocation channel)
     {
         if (this.handlers.isEmpty() == false)
         {

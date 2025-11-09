@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.gui.interfaces;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 
 public interface IGuiIcon
 {
@@ -13,7 +13,7 @@ public interface IGuiIcon
 
     int getV();
 
-    void renderAt(DrawContext drawContext, int x, int y, float zLevel, boolean enabled, boolean selected);
+    void renderAt(GuiGraphics drawContext, int x, int y, float zLevel, boolean enabled, boolean selected);
 
-    Identifier getTexture();
+    ResourceLocation getTexture();
 }

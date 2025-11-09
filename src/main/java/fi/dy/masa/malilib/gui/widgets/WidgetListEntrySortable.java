@@ -1,9 +1,7 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.client.gui.DrawContext;
-
+import net.minecraft.client.gui.GuiGraphics;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
 
@@ -47,7 +45,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
         return -1;
     }
 
-    protected void renderColumnHeader(DrawContext drawContext, int mouseX, int mouseY, IGuiIcon iconNatural, IGuiIcon iconReverse)
+    protected void renderColumnHeader(GuiGraphics drawContext, int mouseX, int mouseY, IGuiIcon iconNatural, IGuiIcon iconReverse)
     {
         int mouseOverColumn = this.getMouseOverColumn(mouseX, mouseY);
         int sortColumn = this.getCurrentSortColumn();

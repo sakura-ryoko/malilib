@@ -4,17 +4,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ARGB;
 import io.netty.buffer.ByteBuf;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.math.ColorHelper;
-
 import fi.dy.masa.malilib.util.MathUtils;
 
 /**
@@ -39,25 +36,25 @@ public class Color4f
     );
     public static final Codec<Color4f> CODEC = RGBA_CODEC;
     public static final Codec<List<Color4f>> LIST_CODEC = CODEC.listOf();
-    public static final PacketCodec<ByteBuf, Color4f> PACKET_CODEC = new PacketCodec<>()
+    public static final StreamCodec<ByteBuf, Color4f> PACKET_CODEC = new StreamCodec<>()
     {
         @Override
         public void encode(ByteBuf buf, Color4f value)
         {
-            PacketCodecs.FLOAT.encode(buf, value.r);
-            PacketCodecs.FLOAT.encode(buf, value.g);
-            PacketCodecs.FLOAT.encode(buf, value.b);
-            PacketCodecs.FLOAT.encode(buf, value.a);
+            ByteBufCodecs.FLOAT.encode(buf, value.r);
+            ByteBufCodecs.FLOAT.encode(buf, value.g);
+            ByteBufCodecs.FLOAT.encode(buf, value.b);
+            ByteBufCodecs.FLOAT.encode(buf, value.a);
         }
 
         @Override
         public Color4f decode(ByteBuf buf)
         {
             return new Color4f(
-                    PacketCodecs.FLOAT.decode(buf),
-                    PacketCodecs.FLOAT.decode(buf),
-                    PacketCodecs.FLOAT.decode(buf),
-                    PacketCodecs.FLOAT.decode(buf)
+                    ByteBufCodecs.FLOAT.decode(buf),
+                    ByteBufCodecs.FLOAT.decode(buf),
+                    ByteBufCodecs.FLOAT.decode(buf),
+                    ByteBufCodecs.FLOAT.decode(buf)
             );
         }
     };
@@ -143,7 +140,7 @@ public class Color4f
 
     public int toVanillaArgb()
     {
-        return ColorHelper.fromFloats(this.a, this.r, this.g, this.b);
+        return ARGB.colorFromFloat(this.a, this.r, this.g, this.b);
     }
 
     @Override

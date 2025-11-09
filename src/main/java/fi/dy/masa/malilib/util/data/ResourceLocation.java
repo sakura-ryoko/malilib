@@ -3,40 +3,40 @@ package fi.dy.masa.malilib.util.data;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import io.netty.buffer.ByteBuf;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.Identifier;
 
 /**
  * Wraps the Mojmap "ResourceLocation" with Identifier
  * -
  * Post-ReWrite code
  */
+@Deprecated(forRemoval = true)
 public class ResourceLocation
 {
     public static final Codec<ResourceLocation> CODEC = RecordCodecBuilder.create(
             resourceLocationInstance -> resourceLocationInstance.group(
-                    Identifier.CODEC.fieldOf("id").forGetter(get -> get.id)
+                    net.minecraft.resources.ResourceLocation.CODEC.fieldOf("id").forGetter(get -> get.id)
             ).apply(resourceLocationInstance, ResourceLocation::new)
     );
-    public static final PacketCodec<ByteBuf, ResourceLocation> PACKET_CODEC = PacketCodecs.STRING.xmap(ResourceLocation::of, ResourceLocation::toString);
-    private final Identifier id;
+    public static final StreamCodec<ByteBuf, ResourceLocation> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(ResourceLocation::of, ResourceLocation::toString);
+    private final net.minecraft.resources.ResourceLocation id;
 
     public ResourceLocation(String str)
     {
-        this.id = Identifier.of(str);
+        this.id = net.minecraft.resources.ResourceLocation.parse(str);
     }
 
     public ResourceLocation(String name, String path)
     {
-        this.id = Identifier.of(name, path);
+        this.id = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(name, path);
     }
 
-    public ResourceLocation(Identifier id)
+    public ResourceLocation(net.minecraft.resources.ResourceLocation id)
     {
         this.id = id;
     }
@@ -56,12 +56,12 @@ public class ResourceLocation
         return new ResourceLocation("minecraft", path);
     }
 
-    public static ResourceLocation of(Identifier id)
+    public static ResourceLocation of(net.minecraft.resources.ResourceLocation id)
     {
         return new ResourceLocation(id);
     }
 
-    public static List<ResourceLocation> of(List<Identifier> list)
+    public static List<ResourceLocation> of(List<net.minecraft.resources.ResourceLocation> list)
     {
         List<ResourceLocation> newList = new ArrayList<>();
 
@@ -70,7 +70,7 @@ public class ResourceLocation
         return newList;
     }
 
-    public @Nullable Identifier getId()
+    public @Nullable net.minecraft.resources.ResourceLocation getId()
     {
         return this.id;
     }

@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.interfaces;
 
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.integrated.IntegratedServer;
 
 public interface IServerListener
 {

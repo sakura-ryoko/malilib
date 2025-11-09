@@ -1,13 +1,11 @@
 package fi.dy.masa.malilib.test.gui;
 
 import org.jetbrains.annotations.Nullable;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.gui.GuiListBase;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class GuiTestList extends GuiListBase<GuiTestList.Entry, WidgetTestListEntry, WidgetTestList>
         implements ISelectionListener<GuiTestList.Entry>

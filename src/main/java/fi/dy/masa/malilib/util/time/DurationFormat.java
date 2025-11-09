@@ -1,10 +1,9 @@
 package fi.dy.masa.malilib.util.time;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.util.StringRepresentable;
 import com.google.common.collect.ImmutableList;
-
-import net.minecraft.util.StringIdentifiable;
-
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.time.formatter.DurationFmt;
@@ -12,7 +11,7 @@ import fi.dy.masa.malilib.util.time.formatter.DurationFmt;
 /**
  * Ported from CoreLib by Sakura Ryoko
  */
-public enum DurationFormat implements IConfigOptionListEntry, StringIdentifiable
+public enum DurationFormat implements IConfigOptionListEntry, StringRepresentable
 {
     REGULAR      ("regular",      DurationFmtType.REGULAR,      "malilib.gui.label.duration_format.regular"),
     PRETTY       ("pretty",       DurationFmtType.PRETTY,       "malilib.gui.label.duration_format.pretty"),
@@ -20,7 +19,7 @@ public enum DurationFormat implements IConfigOptionListEntry, StringIdentifiable
     FORMATTED    ("formatted",    DurationFmtType.FORMATTED,    "malilib.gui.label.duration_format.formatted"),
     ;
 
-    public static final StringIdentifiable.EnumCodec<DurationFormat> CODEC = StringIdentifiable.createCodec(DurationFormat::values);
+    public static final StringRepresentable.EnumCodec<DurationFormat> CODEC = StringRepresentable.fromEnum(DurationFormat::values);
     public static final ImmutableList<DurationFormat> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
@@ -35,7 +34,7 @@ public enum DurationFormat implements IConfigOptionListEntry, StringIdentifiable
     }
 
     @Override
-    public String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.configString;
     }

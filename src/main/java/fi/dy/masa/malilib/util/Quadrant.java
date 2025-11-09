@@ -1,25 +1,24 @@
 package fi.dy.masa.malilib.util;
 
+import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
-
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.phys.Vec3;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
-public enum Quadrant implements IConfigOptionListEntry, StringIdentifiable
+public enum Quadrant implements IConfigOptionListEntry, StringRepresentable
 {
     NORTH_WEST ("north_west"),
     NORTH_EAST ("north_east"),
     SOUTH_WEST ("south_west"),
     SOUTH_EAST ("south_east");
 
-    public static final StringIdentifiable.EnumCodec<Quadrant> CODEC = StringIdentifiable.createCodec(Quadrant::values);
-    public static final PacketCodec<ByteBuf, Quadrant> PACKET_CODEC = PacketCodecs.STRING.xmap(Quadrant::fromStringStatic, Quadrant::asString);
+    public static final StringRepresentable.EnumCodec<Quadrant> CODEC = StringRepresentable.fromEnum(Quadrant::values);
+    public static final StreamCodec<ByteBuf, Quadrant> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(Quadrant::fromStringStatic, Quadrant::getSerializedName);
     public static final ImmutableList<Quadrant> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
@@ -30,7 +29,7 @@ public enum Quadrant implements IConfigOptionListEntry, StringIdentifiable
     }
 
     @Override
-    public String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.configString;
     }
@@ -89,12 +88,12 @@ public enum Quadrant implements IConfigOptionListEntry, StringIdentifiable
         return Quadrant.NORTH_WEST;
     }
 
-    public static Quadrant getQuadrant(BlockPos pos, Vec3d center)
+    public static Quadrant getQuadrant(BlockPos pos, Vec3 center)
     {
         return getQuadrant(pos.getX(), pos.getZ(), center);
     }
 
-    public static Quadrant getQuadrant(int x, int z, Vec3d center)
+    public static Quadrant getQuadrant(int x, int z, Vec3 center)
     {
         // West
         if (x <= center.x)
@@ -126,7 +125,7 @@ public enum Quadrant implements IConfigOptionListEntry, StringIdentifiable
         }
     }
 
-    public static Quadrant getQuadrant(double x, double z, Vec3d center)
+    public static Quadrant getQuadrant(double x, double z, Vec3 center)
     {
         // West
         if (x <= center.x)

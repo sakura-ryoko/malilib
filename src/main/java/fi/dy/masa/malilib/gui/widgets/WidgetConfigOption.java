@@ -1,11 +1,9 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import javax.annotation.Nullable;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import com.google.common.collect.ImmutableList;
-
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-
 import fi.dy.masa.malilib.config.*;
 import fi.dy.masa.malilib.config.gui.*;
 import fi.dy.masa.malilib.config.gui.ConfigOptionListenerResetConfig.ConfigResetterButton;
@@ -80,7 +78,10 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                 }
             }
 
-            this.addConfigOption(x, y, labelWidth, configWidth, config);
+			if (config != null)
+			{
+				this.addConfigOption(x, y, labelWidth, configWidth, config);
+			}
         }
         else
         {
@@ -258,7 +259,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             {
                 if (this.textField != null)
                 {
-                    modified |= this.initialStringValue.equals(this.textField.getTextField().getText()) == false;
+                    modified |= this.initialStringValue.equals(this.textField.getTextField().getValue()) == false;
                 }
 
                 if (this.initialKeybindSettings != null && this.initialKeybindSettings.equals(((IHotkey) config).getKeybind().getSettings()) == false)
@@ -285,7 +286,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         {
             if (this.textField != null && this.hasPendingModifications())
             {
-                config.setValueFromString(this.textField.getTextField().getText());
+                config.setValueFromString(this.textField.getTextField().getValue());
             }
 
             this.lastAppliedValue = config.getStringValue();
@@ -353,7 +354,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
-        field.setText(config.getStringValue());
+        field.setValue(config.getStringValue());
 
         ButtonGeneric resetButton = this.createResetButton(resetX, y, config);
         ConfigOptionChangeListenerTextField listenerChange = new ConfigOptionChangeListenerTextField(config, field, resetButton);
@@ -396,7 +397,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 //        RenderUtils.color(1f, 1f, 1f, 1f);

@@ -2,9 +2,7 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.client.gui.DrawContext;
-
+import net.minecraft.client.gui.GuiGraphics;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -32,7 +30,7 @@ public class WidgetHoverInfo extends WidgetBase
     /**
      * Adds the provided lines to the list.
      * The strings will be split into separate lines from any "\n" sequences.
-     * @param lines
+     * @param lines ()
      */
     public void addLines(String... lines)
     {
@@ -54,13 +52,13 @@ public class WidgetHoverInfo extends WidgetBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(drawContext, mouseX, mouseY, selected);
         RenderUtils.drawHoverText(drawContext, mouseX, mouseY, this.lines);

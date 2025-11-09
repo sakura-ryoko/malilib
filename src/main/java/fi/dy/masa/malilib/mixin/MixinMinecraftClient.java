@@ -1,13 +1,6 @@
 package fi.dy.masa.malilib.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.RunArgs;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.server.SaveLoader;
-import net.minecraft.world.level.storage.LevelStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,104 +19,111 @@ import fi.dy.masa.malilib.test.ConfigTestEnum;
 import fi.dy.masa.malilib.test.TestSelector;
 
 import java.nio.file.Path;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.main.GameConfig;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.server.WorldStem;
+import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.world.level.storage.LevelStorageSource;
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public abstract class MixinMinecraftClient
 {
-    @Shadow public ClientWorld world;
-    @Unique private ClientWorld worldBefore;
+    @Shadow public ClientLevel level;
+    @Unique private ClientLevel worldBefore;
 
-    @Inject(method = "<init>(Lnet/minecraft/client/RunArgs;)V",
+    @Inject(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V",
             at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/level/storage/LevelStorage;createSymlinkFinder(Ljava/nio/file/Path;)Lnet/minecraft/util/path/SymlinkFinder;"))
-    private void malilib_onPreGameInit(RunArgs args, CallbackInfo ci,
+            target = "Lnet/minecraft/world/level/storage/LevelStorageSource;parseValidator(Ljava/nio/file/Path;)Lnet/minecraft/world/level/validation/DirectoryValidator;"))
+    private void malilib_onPreGameInit(GameConfig args, CallbackInfo ci,
                                        @Local Path runDir)
     {
         // Register all mod handlers
         ((InitializationHandler) InitializationHandler.getInstance()).onPreGameInit(runDir);
     }
 
-    @Inject(method = "<init>(Lnet/minecraft/client/RunArgs;)V", at = @At("RETURN"))
-    private void malilib_onInitComplete(RunArgs args, CallbackInfo ci)
+    @Inject(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V", at = @At("RETURN"))
+    private void malilib_onInitComplete(GameConfig args, CallbackInfo ci)
     {
         // Register all mod handlers
         ((InitializationHandler) InitializationHandler.getInstance()).onGameInitDone();
     }
 
-    @Inject(method = "startIntegratedServer",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/ChunkLoadProgress;compose(Lnet/minecraft/world/chunk/ChunkLoadProgress;Lnet/minecraft/world/chunk/ChunkLoadProgress;)Lnet/minecraft/world/chunk/ChunkLoadProgress;",
+    @Inject(method = "doWorldLoad",
+			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/progress/LevelLoadListener;compose(Lnet/minecraft/server/level/progress/LevelLoadListener;Lnet/minecraft/server/level/progress/LevelLoadListener;)Lnet/minecraft/server/level/progress/LevelLoadListener;",
             shift = At.Shift.BEFORE))
-    private void malilib_onStartIntegratedServer(LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, boolean newWorld, CallbackInfo ci)
+    private void malilib_onStartIntegratedServer(LevelStorageSource.LevelStorageAccess session, PackRepository dataPackManager, WorldStem saveLoader, boolean newWorld, CallbackInfo ci)
     {
         //MaLiLib.printDebug("malilib_onStartIntegratedServer(): Get DynamicRegistry from IntegratedServer");
-        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadImmutable(saveLoader.combinedDynamicRegistries().getCombinedRegistryManager());
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadImmutable(saveLoader.registries().compositeAccess());
     }
 
     @Inject(method = "tick()V", at = @At("RETURN"))
     private void onPostKeyboardInput(CallbackInfo ci)
     {
         KeybindMulti.reCheckPressedKeys();
-        TickHandler.getInstance().onClientTick((MinecraftClient)(Object) this);
+        TickHandler.getInstance().onClientTick((Minecraft)(Object) this);
     }
 
-    @Inject(method = "joinWorld", at = @At("HEAD"))
-    private void onLoadWorldPre(ClientWorld worldClientIn, CallbackInfo ci)
+    @Inject(method = "setLevel", at = @At("HEAD"))
+    private void onLoadWorldPre(ClientLevel worldClientIn, CallbackInfo ci)
     {
         // Only handle dimension changes/respawns here.
         // The initial join is handled in MixinClientPlayNetworkHandler onGameJoin
 
         //MaLiLib.logger.error("MC#onLoadWorldPre(): world [{}], worldBefore [{}], worldClientIn [{}]", this.world != null, this.worldBefore != null, worldClientIn != null);
-        if (this.world != null)
+        if (this.level != null)
         {
-            this.worldBefore = this.world;
-            ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.world, worldClientIn, (MinecraftClient)(Object) this);
+            this.worldBefore = this.level;
+            ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.level, worldClientIn, (Minecraft)(Object) this);
         }
     }
 
-    @Inject(method = "joinWorld", at = @At("RETURN"))
-    private void onLoadWorldPost(ClientWorld worldClientIn, CallbackInfo ci)
+    @Inject(method = "setLevel", at = @At("RETURN"))
+    private void onLoadWorldPost(ClientLevel worldClientIn, CallbackInfo ci)
     {
         //MaLiLib.logger.error("MC#onLoadWorldPost(): world [{}], worldBefore [{}], worldClientIn [{}]", this.world != null, this.worldBefore != null, worldClientIn != null);
         if (this.worldBefore != null)
         {
-            ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, worldClientIn, (MinecraftClient)(Object) this);
+            ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, worldClientIn, (Minecraft)(Object) this);
             this.worldBefore = null;
         }
     }
 
-    @Inject(method = "enterReconfiguration(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("HEAD"))
+    @Inject(method = "clearClientLevel(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("HEAD"))
     private void onReconfigurationPre(Screen screen, CallbackInfo ci)
     {
         //MaLiLib.logger.error("MC#onReconfigurationPre(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
-        this.worldBefore = this.world;
-        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.worldBefore, null, (MinecraftClient)(Object) this);
+        this.worldBefore = this.level;
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.worldBefore, null, (Minecraft)(Object) this);
     }
 
-    @Inject(method = "enterReconfiguration(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("RETURN"))
+    @Inject(method = "clearClientLevel(Lnet/minecraft/client/gui/screens/Screen;)V", at = @At("RETURN"))
     private void onReconfigurationPost(Screen screen, CallbackInfo ci)
     {
         //MaLiLib.logger.error("MC#onReconfigurationPost(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
-        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, null, (MinecraftClient)(Object) this);
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, null, (Minecraft)(Object) this);
         this.worldBefore = null;
     }
 
-    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;Z)V", at = @At("HEAD"))
+    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;Z)V", at = @At("HEAD"))
     private void onDisconnectPre(Screen screen, boolean bl, CallbackInfo ci)
     {
         //MaLiLib.logger.error("MC#onDisconnectPre(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
-        this.worldBefore = this.world;
-        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.worldBefore, null, (MinecraftClient)(Object) this);
+        this.worldBefore = this.level;
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.worldBefore, null, (Minecraft)(Object) this);
     }
 
-    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screen/Screen;Z)V", at = @At("RETURN"))
+    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;Z)V", at = @At("RETURN"))
     private void onDisconnectPost(Screen screen, boolean bl, CallbackInfo ci)
     {
         //MaLiLib.logger.error("MC#onDisconnectPost(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
-        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, null, (MinecraftClient)(Object) this);
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, null, (Minecraft)(Object) this);
         this.worldBefore = null;
     }
 
-    @Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
     private void onLeftClickMouse(CallbackInfoReturnable<Boolean> cir)
     {
         if (MaLiLibReference.DEBUG_MODE &&
@@ -136,7 +136,7 @@ public abstract class MixinMinecraftClient
         }
     }
 
-    @Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "startUseItem", at = @At("HEAD"), cancellable = true)
     private void onRightClickMouse(CallbackInfo ci)
     {
         if (MaLiLibReference.DEBUG_MODE &&

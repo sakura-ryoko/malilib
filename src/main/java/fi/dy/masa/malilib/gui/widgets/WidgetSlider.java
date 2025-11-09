@@ -1,17 +1,16 @@
 package fi.dy.masa.malilib.gui.widgets;
 
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-
 import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 public class WidgetSlider extends WidgetBase
 {
-    public static final Identifier BUTTON_TEXTURE = Identifier.ofVanilla("widget/button");
-    public static final Identifier BUTTON_DISABLE_TEXTURE = Identifier.ofVanilla("widget/button_disabled");
+    public static final ResourceLocation BUTTON_TEXTURE = ResourceLocation.withDefaultNamespace("widget/button");
+    public static final ResourceLocation BUTTON_DISABLE_TEXTURE = ResourceLocation.withDefaultNamespace("widget/button_disabled");
 
     protected final ISliderCallback callback;
     protected int sliderWidth;
@@ -24,11 +23,11 @@ public class WidgetSlider extends WidgetBase
 
         this.callback = callback;
         int usableWidth = this.width - 4;
-        this.sliderWidth = MathHelper.clamp(usableWidth / callback.getMaxSteps(), 8, usableWidth / 2);
+        this.sliderWidth = Mth.clamp(usableWidth / callback.getMaxSteps(), 8, usableWidth / 2);
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
         this.callback.setValueRelative(this.getRelativePosition((int) click.x()));
         this.lastMouseX = (int) click.x();
@@ -38,13 +37,13 @@ public class WidgetSlider extends WidgetBase
     }
 
     @Override
-    public void onMouseReleasedImpl(Click click)
+    public void onMouseReleasedImpl(MouseButtonEvent click)
     {
         this.dragging = false;
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 
@@ -56,14 +55,14 @@ public class WidgetSlider extends WidgetBase
 
 //        RenderUtils.color(1f, 1f, 1f, 1f);
 
-        drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_DISABLE_TEXTURE, this.x + 1, this.y, this.width - 3, 20);
+        drawContext.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_DISABLE_TEXTURE, this.x + 1, this.y, this.width - 3, 20);
 
         double relPos = this.callback.getValueRelative();
         int sw = this.sliderWidth;
         int usableWidth = this.width - 4 - sw;
         int s = sw / 2;
 
-        drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, 20);
+        drawContext.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, 20);
 
         String str = this.callback.getFormattedDisplayValue();
         int w = this.getStringWidth(str);
@@ -73,6 +72,6 @@ public class WidgetSlider extends WidgetBase
     protected double getRelativePosition(int mouseX)
     {
         int relPos = mouseX - this.x - this.sliderWidth / 2;
-        return MathHelper.clamp((double) relPos / (double) (this.width - this.sliderWidth - 4), 0, 1);
+        return Mth.clamp((double) relPos / (double) (this.width - this.sliderWidth - 4), 0, 1);
     }
 }

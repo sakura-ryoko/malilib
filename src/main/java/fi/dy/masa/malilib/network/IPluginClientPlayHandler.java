@@ -5,23 +5,23 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
-import net.minecraft.util.Identifier;
 import fi.dy.masa.malilib.MaLiLib;
 
 /**
  * Interface for ClientPlayHandler, for downstream mods.
  * @param <T> (Payload)
  */
-public interface IPluginClientPlayHandler<T extends CustomPayload> extends ClientPlayNetworking.PlayPayloadHandler<T>
+public interface IPluginClientPlayHandler<T extends CustomPacketPayload> extends ClientPlayNetworking.PlayPayloadHandler<T>
 {
     int FROM_SERVER = 1;
     int TO_SERVER = 2;
@@ -34,26 +34,26 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * Returns your HANDLER's CHANNEL ID
      * @return (Channel ID)
      */
-    Identifier getPayloadChannel();
+    ResourceLocation getPayloadChannel();
 
     /**
      * Returns if your Channel ID has been registered to your Play Payload.
      * @param channel (Your Channel ID)
      * @return (true / false)
      */
-    boolean isPlayRegistered(Identifier channel);
+    boolean isPlayRegistered(ResourceLocation channel);
 
     /**
      * Sets your HANDLER as registered.
      * @param channel (Your Channel ID)
      */
-    void setPlayRegistered(Identifier channel);
+    void setPlayRegistered(ResourceLocation channel);
 
     /**
      * Send your HANDLER a global reset() event, such as when the client is shutting down, or logging out.
      * @param channel (Your Channel ID)
      */
-    void reset(Identifier channel);
+    void reset(ResourceLocation channel);
 
     /**
      * Register your Payload with Fabric API.
@@ -64,7 +64,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * @param codec (Your Payload's CODEC)
      * @param direction (Payload Direction)
      */
-    default void registerPlayPayload(@Nonnull CustomPayload.Id<T> id, @Nonnull PacketCodec<? super RegistryByteBuf,T> codec, int direction)
+    default void registerPlayPayload(@Nonnull CustomPacketPayload.Type<T> id, @Nonnull StreamCodec<? super RegistryFriendlyByteBuf,T> codec, int direction)
     {
         if (this.isPlayRegistered(this.getPayloadChannel()) == false)
         {
@@ -103,7 +103,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * @param receiver (Your Packet Receiver // if null, uses this::receivePlayPayload)
      * @return (True / False)
      */
-    default boolean registerPlayReceiver(@Nonnull CustomPayload.Id<T> id, @Nullable ClientPlayNetworking.PlayPayloadHandler<T> receiver)
+    default boolean registerPlayReceiver(@Nonnull CustomPacketPayload.Type<T> id, @Nullable ClientPlayNetworking.PlayPayloadHandler<T> receiver)
     {
         if (this.isPlayRegistered(this.getPayloadChannel()))
         {
@@ -148,7 +148,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * @param handler (Network Handler that received the data)
      * @param ci (Callbackinfo for sending ci.cancel(), if wanted)
      */
-    default void receivePlayPayload(T payload, ClientPlayNetworkHandler handler, CallbackInfo ci) {}
+    default void receivePlayPayload(T payload, ClientPacketListener handler, CallbackInfo ci) {}
 
     /**
      * Payload Decoder wrapper function.
@@ -159,9 +159,9 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * @param channel (Channel)
      * @param data (Data Codec)
      */
-    default void decodeNbtCompound(Identifier channel, NbtCompound data) {}
-    default <D> void decodeObject(Identifier channel, D data1) {}
-    default <P extends IClientPayloadData> void decodeClientData(Identifier channel, P data) {}
+    default void decodeNbtCompound(ResourceLocation channel, CompoundTag data) {}
+    default <D> void decodeObject(ResourceLocation channel, D data1) {}
+    default <P extends IClientPayloadData> void decodeClientData(ResourceLocation channel, P data) {}
 
     /**
      * Payload Encoder wrapper function.
@@ -169,7 +169,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * -
      * @param data (Data Codec)
      */
-    default void encodeNbtCompound(NbtCompound data) {}
+    default void encodeNbtCompound(CompoundTag data) {}
     default <D> void encodeObject(D data1) {}
     default <P extends IClientPayloadData> void encodeClientData(P data) {}
 
@@ -178,7 +178,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * @param buf (Sliced Buffer to send)
      * @param handler (Network Handler as a fail-over option)
      */
-    void encodeWithSplitter(PacketByteBuf buf, ClientPlayNetworkHandler handler);
+    void encodeWithSplitter(FriendlyByteBuf buf, ClientPacketListener handler);
 
     /**
      * Sends the Payload to the server using the Fabric-API interface.
@@ -188,9 +188,9 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      */
     default boolean sendPlayPayload(@Nonnull T payload)
     {
-        if (payload.getId().id().equals(this.getPayloadChannel()) && this.isPlayRegistered(this.getPayloadChannel()))
+        if (payload.type().id().equals(this.getPayloadChannel()) && this.isPlayRegistered(this.getPayloadChannel()))
         {
-            if (ClientPlayNetworking.canSend(payload.getId()))
+            if (ClientPlayNetworking.canSend(payload.type()))
             {
                 ClientPlayNetworking.send(payload);
                 return true;
@@ -198,7 +198,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
         }
         else
         {
-            MaLiLib.LOGGER.warn("sendPlayPayload: [Fabric-API] error sending payload for channel: {}, check if channel is registered", payload.getId().id().toString());
+            MaLiLib.LOGGER.warn("sendPlayPayload: [Fabric-API] error sending payload for channel: {}, check if channel is registered", payload.type().id().toString());
         }
 
         return false;
@@ -210,21 +210,21 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * @param payload (The Payload to send)
      * @return (true/false --> for error control)
      */
-    default boolean sendPlayPayload(@Nonnull ClientPlayNetworkHandler handler, @Nonnull T payload)
+    default boolean sendPlayPayload(@Nonnull ClientPacketListener handler, @Nonnull T payload)
     {
-        if (payload.getId().id().equals(this.getPayloadChannel()) && this.isPlayRegistered(this.getPayloadChannel()))
+        if (payload.type().id().equals(this.getPayloadChannel()) && this.isPlayRegistered(this.getPayloadChannel()))
         {
-            Packet<?> packet = new CustomPayloadC2SPacket(payload);
+            Packet<?> packet = new ServerboundCustomPayloadPacket(payload);
 
-            if (handler.accepts(packet))
+            if (handler.shouldHandleMessage(packet))
             {
-                handler.sendPacket(packet);
+                handler.send(packet);
                 return true;
             }
         }
         else
         {
-            MaLiLib.LOGGER.warn("sendPlayPayload: [NetworkHandler] error sending payload for channel: {}, check if channel is registered", payload.getId().id().toString());
+            MaLiLib.LOGGER.warn("sendPlayPayload: [NetworkHandler] error sending payload for channel: {}, check if channel is registered", payload.type().id().toString());
         }
 
         return false;

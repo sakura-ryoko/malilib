@@ -1,10 +1,9 @@
 package fi.dy.masa.malilib.render.special;
 
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-
-import net.minecraft.block.BlockState;
-import net.minecraft.client.gui.ScreenRect;
-import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
 
 /**
  * DISABLED -- DOES NOT WORK, DO NOT USE
@@ -12,28 +11,28 @@ import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderStat
 @Deprecated
 public record MaLiLibBlockStateModelGuiElement(
         BlockState state,
-        int x1,
-        int y1,
+        int x0,
+        int y0,
         int size,
         float scale,
-        @Nullable ScreenRect scissorArea,
-        @Nullable ScreenRect bounds
-) implements SpecialGuiElementRenderState
+        @Nullable ScreenRectangle scissorArea,
+        @Nullable ScreenRectangle bounds
+) implements PictureInPictureRenderState
 {
-    public MaLiLibBlockStateModelGuiElement(BlockState state, int x1, int y1, int size, float scale, @Nullable ScreenRect scissorArea)
+    public MaLiLibBlockStateModelGuiElement(BlockState state, int x0, int y0, int size, float scale, @Nullable ScreenRectangle scissorArea)
     {
-        this(state, x1, y1, size, scale, scissorArea, SpecialGuiElementRenderState.createBounds(x1, y1, x1 + size, y1 + size, scissorArea));
+        this(state, x0, y0, size, scale, scissorArea, PictureInPictureRenderState.getBounds(x0, y0, x0 + size, y0 + size, scissorArea));
     }
 
-    @Override
-    public int x2()
+	@Override
+    public int x1()
     {
-        return this.x1() + this.size();
+        return this.x0() + this.size();
     }
 
-    @Override
-    public int y2()
+	@Override
+    public int y1()
     {
-        return this.y1() + this.size();
+        return this.y0() + this.size();
     }
 }

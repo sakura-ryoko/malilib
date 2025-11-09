@@ -1,12 +1,10 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -41,7 +39,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     {
         if (this.textField != null)
         {
-            return this.textField.getTextField().getText().equals(this.lastAppliedValue) == false;
+            return this.textField.getTextField().getValue().equals(this.lastAppliedValue) == false;
         }
 
         return false;
@@ -71,7 +69,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
         if (super.onMouseClickedImpl(click, doubleClick))
         {
@@ -97,7 +95,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    public boolean onKeyTypedImpl(KeyInput input)
+    public boolean onKeyTypedImpl(KeyEvent input)
     {
         if (this.textField != null && this.textField.isFocused())
         {
@@ -116,7 +114,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    protected boolean onCharTypedImpl(CharInput input)
+    protected boolean onCharTypedImpl(CharacterEvent input)
     {
         if (this.textField != null && this.textField.onCharTyped(input))
         {
@@ -127,12 +125,12 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    public boolean canSelectAt(Click click)
+    public boolean canSelectAt(MouseButtonEvent click)
     {
         return false;
     }
 
-    protected void drawTextFields(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawTextFields(GuiGraphics drawContext, int mouseX, int mouseY)
     {
         if (this.textField != null)
         {

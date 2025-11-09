@@ -1,9 +1,8 @@
 package fi.dy.masa.malilib.gui.widgets;
 
-import net.minecraft.client.gui.DrawContext;
-
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.RenderUtils;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class WidgetIcon extends WidgetBase
 {
@@ -16,7 +15,7 @@ public class WidgetIcon extends WidgetBase
         this.icon = icon;
     }
 
-    public void render(DrawContext drawContext, boolean enabled, boolean selected)
+    public void render(GuiGraphics drawContext, boolean enabled, boolean selected)
     {
         this.icon.renderAt(drawContext, this.x, this.y, this.zLevel, enabled, selected);
 

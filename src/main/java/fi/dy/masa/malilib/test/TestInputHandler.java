@@ -2,10 +2,6 @@ package fi.dy.masa.malilib.test;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.ApiStatus;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -13,6 +9,8 @@ import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.render.InventoryOverlayScreen;
 import fi.dy.masa.malilib.test.gui.GuiTestList;
 import fi.dy.masa.malilib.util.time.TimeTestExample;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 @ApiStatus.Experimental
 public class TestInputHandler implements IKeybindProvider
@@ -72,7 +70,7 @@ public class TestInputHandler implements IKeybindProvider
         @Override
         public boolean onKeyAction(KeyAction action, IKeybind key)
         {
-            MinecraftClient mc = MinecraftClient.getInstance();
+            Minecraft mc = Minecraft.getInstance();
 
             if (mc.player == null)
             {
@@ -86,7 +84,7 @@ public class TestInputHandler implements IKeybindProvider
             }
             else if (key == MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind())
             {
-                if (mc.currentScreen instanceof InventoryOverlayScreen)
+                if (mc.screen instanceof InventoryOverlayScreen)
                 {
                     mc.setScreen(null);
                 }
@@ -108,8 +106,8 @@ public class TestInputHandler implements IKeybindProvider
             }
             else if (key == MaLiLibConfigs.Test.TEST_RUN_DATETIME_TEST.getKeybind())
             {
-                mc.inGameHud.getChatHud().addMessage(Text.of(TimeTestExample.runTimeDateTest()));
-                mc.inGameHud.getChatHud().addMessage(Text.of(TimeTestExample.runDurationTest()));
+                mc.gui.getChat().addMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
+                mc.gui.getChat().addMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
                 return true;
             }
 

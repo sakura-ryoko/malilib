@@ -1,13 +1,6 @@
 package fi.dy.masa.malilib.util;
 
 import org.jetbrains.annotations.ApiStatus;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.world.World;
-
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
@@ -15,6 +8,11 @@ import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
 import fi.dy.masa.malilib.render.MessageRenderer;
 import fi.dy.masa.malilib.util.game.IGameHud;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.level.Level;
 
 public class InfoUtils
 {
@@ -25,9 +23,9 @@ public class InfoUtils
     /**
      * Adds the message to the current GUI's message handler, if there is currently
      * an IMessageConsumer GUI open.
-     * @param type
-     * @param translationKey
-     * @param args
+     * @param type ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showGuiMessage(MessageType type, String translationKey, Object... args)
     {
@@ -37,10 +35,10 @@ public class InfoUtils
     /**
      * Adds the message to the current GUI's message handler, if there is currently
      * an IMessageConsumer GUI open.
-     * @param type
-     * @param lifeTime
-     * @param translationKey
-     * @param args
+     * @param type ()
+     * @param lifeTime ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showGuiMessage(MessageType type, int lifeTime, String translationKey, Object... args)
     {
@@ -53,9 +51,9 @@ public class InfoUtils
     /**
      * Adds the message to the current GUI's message handler, if there is currently
      * an IMessageConsumer GUI open. Otherwise prints the message to the action bar.
-     * @param type
-     * @param translationKey
-     * @param args
+     * @param type ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showGuiOrActionBarMessage(MessageType type, String translationKey, Object... args)
     {
@@ -64,11 +62,11 @@ public class InfoUtils
 
     /**
      * Adds the message to the current GUI's message handler, if there is currently
-     * an IMessageConsumer GUI open. Otherwise prints the message to the action bar.
-     * @param type
-     * @param lifeTime
-     * @param translationKey
-     * @param args
+     * an IMessageConsumer GUI open. Otherwise, prints the message to the action bar.
+     * @param type ()
+     * @param lifeTime ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showGuiOrActionBarMessage(MessageType type, int lifeTime, String translationKey, Object... args)
     {
@@ -85,10 +83,10 @@ public class InfoUtils
 
     /**
      * Adds the message to the current GUI's message handler, if there is currently
-     * an IMessageConsumer GUI open. Otherwise adds the message to the in-game message handler.
-     * @param type
-     * @param translationKey
-     * @param args
+     * an IMessageConsumer GUI open. Otherwise, adds the message to the in-game message handler.
+     * @param type ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showGuiOrInGameMessage(MessageType type, String translationKey, Object... args)
     {
@@ -97,11 +95,11 @@ public class InfoUtils
 
     /**
      * Adds the message to the current GUI's message handler, if there is currently
-     * an IMessageConsumer GUI open. Otherwise adds the message to the in-game message handler.
-     * @param type
-     * @param lifeTime
-     * @param translationKey
-     * @param args
+     * an IMessageConsumer GUI open. Otherwise, adds the message to the in-game message handler.
+     * @param type ()
+     * @param lifeTime ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showGuiOrInGameMessage(MessageType type, int lifeTime, String translationKey, Object... args)
     {
@@ -119,9 +117,9 @@ public class InfoUtils
      * Adds the message to the current GUI's message handler, if there is currently
      * an IMessageConsumer GUI open.
      * Also shows the message in the in-game message box.
-     * @param type
-     * @param translationKey
-     * @param args
+     * @param type ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showGuiAndInGameMessage(MessageType type, String translationKey, Object... args)
     {
@@ -132,10 +130,10 @@ public class InfoUtils
      * Adds the message to the current GUI's message handler, if there is currently
      * an IMessageConsumer GUI open.
      * Also shows the message in the in-game message box.
-     * @param type
-     * @param lifeTime
-     * @param translationKey
-     * @param args
+     * @param type ()
+     * @param lifeTime ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showGuiAndInGameMessage(MessageType type, int lifeTime, String translationKey, Object... args)
     {
@@ -147,15 +145,15 @@ public class InfoUtils
     {
         if (MaLiLibConfigs.Generic.ENABLE_ACTIONBAR_MESSAGES.getBooleanValue())
         {
-            sendVanillaMessage(Text.translatable(key, args));
+            sendVanillaMessage(Component.translatable(key, args));
         }
     }
 
     /**
      * Adds the message to the in-game message handler
-     * @param type
-     * @param translationKey
-     * @param args
+     * @param type ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showInGameMessage(MessageType type, String translationKey, Object... args)
     {
@@ -169,10 +167,10 @@ public class InfoUtils
 
     /**
      * Adds the message to the in-game message handler
-     * @param type
-     * @param lifeTime
-     * @param translationKey
-     * @param args
+     * @param type ()
+     * @param lifeTime ()
+     * @param translationKey ()
+     * @param args ()
      */
     public static void showInGameMessage(MessageType type, long lifeTime, String translationKey, Object... args)
     {
@@ -189,7 +187,7 @@ public class InfoUtils
     }
 
     @ApiStatus.Internal
-    public static void renderInGameMessages(DrawContext drawContext)
+    public static void renderInGameMessages(GuiGraphics drawContext)
     {
         int x = GuiUtils.getScaledWindowWidth() / 2;
         int y = GuiUtils.getScaledWindowHeight() - 76;
@@ -197,18 +195,18 @@ public class InfoUtils
         IN_GAME_MESSAGES.drawMessages(drawContext, x, y);
     }
 
-    public static void sendVanillaMessage(MutableText message)
+    public static void sendVanillaMessage(MutableComponent message)
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        World world = mc.world;
+        Minecraft mc = Minecraft.getInstance();
+        Level world = mc.level;
 
         if (world != null)
         {
-            mc.inGameHud.setOverlayMessage(message, false);
+            mc.gui.setOverlayMessage(message, false);
 
             if (MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.isModified())
             {
-                ((IGameHud) mc.inGameHud).malilib$setOverlayRemaining(MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.getIntegerValue());
+                ((IGameHud) mc.gui).malilib$setOverlayRemaining(MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.getIntegerValue());
             }
         }
     }

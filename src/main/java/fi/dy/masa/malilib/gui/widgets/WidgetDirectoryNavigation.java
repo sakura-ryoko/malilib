@@ -3,10 +3,8 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.nio.file.Path;
 import java.util.Collections;
 import javax.annotation.Nullable;
-
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextInputFeedback;
 import fi.dy.masa.malilib.gui.LeftRight;
@@ -47,7 +45,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
         if (this.searchOpen == false)
         {
@@ -99,7 +97,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 
@@ -124,7 +122,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(drawContext, mouseX, mouseY, selected);
 

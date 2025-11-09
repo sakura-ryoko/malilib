@@ -6,30 +6,29 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.minecraft.client.Keyboard;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.input.KeyInput;
-
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.util.IF3KeyStateSetter;
+import net.minecraft.client.KeyboardHandler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
 
-@Mixin(Keyboard.class)
+@Mixin(KeyboardHandler.class)
 public abstract class MixinKeyboard implements IF3KeyStateSetter
 {
-    @Shadow private boolean switchF3State;
-    @Shadow @Final private MinecraftClient client;
+    @Shadow private boolean handledDebugKey;
+    @Shadow @Final private Minecraft minecraft;
 
     @Override
     public void malilib$setF3KeyState(boolean value)
     {
-        this.switchF3State = value;
+        this.handledDebugKey = value;
     }
 
-    @Inject(method = "onKey", cancellable = true,
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/Keyboard;debugCrashStartTime:J", ordinal = 0))
-    private void malilib_onKeyboardInput(long window, int key, KeyInput input, CallbackInfo ci)
+    @Inject(method = "keyPress", cancellable = true,
+            at = @At(value = "FIELD", target = "Lnet/minecraft/client/KeyboardHandler;debugCrashKeyTime:J", ordinal = 0))
+    private void malilib_onKeyboardInput(long window, int key, KeyEvent input, CallbackInfo ci)
     {
-        if (((InputEventHandler) InputEventHandler.getInputManager()).onKeyInput(input, key, this.client))
+        if (((InputEventHandler) InputEventHandler.getInputManager()).onKeyInput(input, key, this.minecraft))
         {
             ci.cancel();
         }

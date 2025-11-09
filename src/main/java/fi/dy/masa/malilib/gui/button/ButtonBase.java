@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import com.google.common.collect.ImmutableList;
-
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.MouseInput;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
-
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -20,9 +18,9 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public abstract class ButtonBase extends WidgetBase
 {
-    protected static final Identifier BUTTON_TEXTURE = Identifier.ofVanilla("widget/button");
-    protected static final Identifier BUTTON_DISABLE_TEXTURE = Identifier.ofVanilla("widget/button_disabled");
-    protected static final Identifier BUTTON_HOVER_TEXTURE = Identifier.ofVanilla("widget/button_highlighted");
+    protected static final ResourceLocation BUTTON_TEXTURE = ResourceLocation.withDefaultNamespace("widget/button");
+    protected static final ResourceLocation BUTTON_DISABLE_TEXTURE = ResourceLocation.withDefaultNamespace("widget/button_disabled");
+    protected static final ResourceLocation BUTTON_HOVER_TEXTURE = ResourceLocation.withDefaultNamespace("widget/button_highlighted");
 
     protected final List<String> hoverStrings = new ArrayList<>();
     protected final ImmutableList<String> hoverHelp;
@@ -78,13 +76,13 @@ public abstract class ButtonBase extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
-        this.mc.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        this.mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 
         if (this.actionListener != null)
         {
-            this.actionListener.actionPerformedWithButton(this, click.getKeycode());
+            this.actionListener.actionPerformedWithButton(this, click.input());
         }
 
         return true;
@@ -94,7 +92,7 @@ public abstract class ButtonBase extends WidgetBase
     public boolean onMouseScrolledImpl(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         int mouseButton = verticalAmount < 0 ? 1 : 0;
-        return this.onMouseClickedImpl(new Click(mouseX, mouseY, new MouseInput(mouseButton, -1)), false);
+        return this.onMouseClickedImpl(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(mouseButton, -1)), false);
     }
 
     @Override
@@ -159,13 +157,13 @@ public abstract class ButtonBase extends WidgetBase
         return (this.enabled == false) ? 0 : (isMouseOver ? 2 : 1);
     }
 
-    protected Identifier getTexture(boolean isMouseOver)
+    protected ResourceLocation getTexture(boolean isMouseOver)
     {
         return (this.enabled == false) ? BUTTON_DISABLE_TEXTURE : (isMouseOver ? BUTTON_HOVER_TEXTURE : BUTTON_TEXTURE);
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(drawContext, mouseX, mouseY, selected);
 

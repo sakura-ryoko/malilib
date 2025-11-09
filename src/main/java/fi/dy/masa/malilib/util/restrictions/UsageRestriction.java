@@ -3,10 +3,10 @@ package fi.dy.masa.malilib.util.restrictions;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
+
+import net.minecraft.util.StringRepresentable;
 import com.google.common.collect.ImmutableList;
-
-import net.minecraft.util.StringIdentifiable;
-
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -63,13 +63,13 @@ public abstract class UsageRestriction<TYPE>
         }
     }
 
-    public enum ListType implements IConfigOptionListEntry, StringIdentifiable
+    public enum ListType implements IConfigOptionListEntry, StringRepresentable
     {
         NONE        ("none",        "malilib.label.list_type.none"),
         BLACKLIST   ("blacklist",   "malilib.label.list_type.blacklist"),
         WHITELIST   ("whitelist",   "malilib.label.list_type.whitelist");
 
-        public static final StringIdentifiable.EnumCodec<ListType> CODEC = StringIdentifiable.createCodec(ListType::values);
+        public static final StringRepresentable.EnumCodec<ListType> CODEC = StringRepresentable.fromEnum(ListType::values);
         public static final ImmutableList<ListType> VALUES = ImmutableList.copyOf(values());
 
         private final String configString;
@@ -136,7 +136,7 @@ public abstract class UsageRestriction<TYPE>
         }
 
         @Override
-        public String asString()
+        public @Nonnull String getSerializedName()
         {
             return this.configString;
         }

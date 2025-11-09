@@ -1,8 +1,7 @@
 package fi.dy.masa.malilib.gui;
 
+import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.ApiStatus;
-
-import net.minecraft.client.gui.screen.Screen;
 
 /**
  * Wrapper class for Post-Rewrite Compatibility

@@ -1,8 +1,7 @@
 package fi.dy.masa.malilib.gui.widgets;
 
-import net.minecraft.client.gui.DrawContext;
-
 import fi.dy.masa.malilib.render.RenderUtils;
+import net.minecraft.client.gui.GuiGraphics;
 
 public class WidgetStringListEntry extends WidgetListEntryBase<String>
 {
@@ -16,7 +15,7 @@ public class WidgetStringListEntry extends WidgetListEntryBase<String>
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 //        RenderUtils.color(1f, 1f, 1f, 1f);

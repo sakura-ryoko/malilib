@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
-
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.resources.ResourceLocation;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiKeybindSettings;
@@ -21,7 +19,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public class WidgetKeybindSettings extends WidgetBase
 {
-    public static final Identifier TEXTURE = Identifier.of(MaLiLibReference.MOD_ID, "textures/gui/gui_widgets.png");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "textures/gui/gui_widgets.png");
 
     protected final String keybindName;
     protected final IKeybind keybind;
@@ -42,9 +40,9 @@ public class WidgetKeybindSettings extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
-        if (click.getKeycode() == 0)
+        if (click.input() == 0)
         {
             if (this.dialogHandler != null)
             {
@@ -58,7 +56,7 @@ public class WidgetKeybindSettings extends WidgetBase
             return true;
         }
         // Reset the settings to defaults on right click
-        else if (click.getKeycode() == 1)
+        else if (click.input() == 1)
         {
             this.keybind.resetSettingsToDefaults();
             this.widgetList.refreshEntries();
@@ -69,7 +67,7 @@ public class WidgetKeybindSettings extends WidgetBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 
@@ -99,7 +97,7 @@ public class WidgetKeybindSettings extends WidgetBase
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(drawContext, mouseX, mouseY, selected);
         List<String> text = new ArrayList<>();

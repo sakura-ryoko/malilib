@@ -5,11 +5,11 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.math.MathHelper;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.util.StringUtils;
+import net.minecraft.util.Mth;
 
 public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigInteger
 {
@@ -155,7 +155,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
 
     protected int getClampedValue(int value)
     {
-        return MathHelper.clamp(value, this.minValue, this.maxValue);
+        return Mth.clamp(value, this.minValue, this.maxValue);
     }
 
     @Override

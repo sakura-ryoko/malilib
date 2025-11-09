@@ -2,9 +2,7 @@ package fi.dy.masa.malilib.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.client.gui.DrawContext;
-
+import net.minecraft.client.gui.GuiGraphics;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class Message
@@ -45,7 +43,7 @@ public class Message
      * Renders the lines for this message
      * @return the y coordinate of the next message
      */
-    public int renderAt(int x, int y, int textColor, DrawContext drawContext)
+    public int renderAt(int x, int y, int textColor, GuiGraphics drawContext)
     {
         String format = this.getFormatCode();
 

@@ -3,9 +3,7 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import net.minecraft.client.gui.DrawContext;
-
+import net.minecraft.client.gui.GuiGraphics;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -58,7 +56,7 @@ public class WidgetLabel extends WidgetBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 
@@ -69,7 +67,7 @@ public class WidgetLabel extends WidgetBase
         }
     }
 
-    protected void drawText(DrawContext drawContext)
+    protected void drawText(GuiGraphics drawContext)
     {
         int fontHeight = this.fontHeight;
         int yCenter = this.y + this.height / 2 + this.borderSize / 2;
@@ -90,7 +88,7 @@ public class WidgetLabel extends WidgetBase
         }
     }
 
-    protected void drawLabelBackground(DrawContext drawContext)
+    protected void drawLabelBackground(GuiGraphics drawContext)
     {
         if (this.backgroundEnabled)
         {

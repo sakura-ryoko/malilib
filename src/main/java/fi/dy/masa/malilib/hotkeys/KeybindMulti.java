@@ -2,17 +2,15 @@ package fi.dy.masa.malilib.hotkeys;
 
 import java.util.*;
 import javax.annotation.Nullable;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.glfw.GLFW;
-
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.Message;
@@ -212,7 +210,7 @@ public class KeybindMulti implements IKeybind
             if (this.keyCodes.contains(KeyCodes.KEY_F3))
             {
                 // Prevent the debug GUI from opening after the F3 key is released
-                ((IF3KeyStateSetter) MinecraftClient.getInstance().keyboard).malilib$setF3KeyState(true);
+                ((IF3KeyStateSetter) Minecraft.getInstance().keyboardHandler).malilib$setF3KeyState(true);
             }
 
             KeyAction activateOn = this.settings.getActivateOn();
@@ -385,18 +383,18 @@ public class KeybindMulti implements IKeybind
         return this.keyCodes.size() == 1 && this.keyCodes.get(0) == keyCode;
     }
 
-    public static int getKeyCode(KeyBinding keybind)
+    public static int getKeyCode(KeyMapping keybind)
     {
 		if (!InputUtils.isBound(keybind))
 		{
 			return KeyCodes.KEY_NONE;
 		}
 
-	    InputUtil.Key input = InputUtils.getBoundKey(keybind);
-        return input.getCategory() == InputUtil.Type.MOUSE ? input.getCode() - 100 : input.getCode();
+	    InputConstants.Key input = InputUtils.getBoundKey(keybind);
+        return input.getType() == InputConstants.Type.MOUSE ? input.getValue() - 100 : input.getValue();
     }
 
-    public static boolean hotkeyMatchesKeybind(IHotkey hotkey, KeyBinding keybind)
+    public static boolean hotkeyMatchesKeybind(IHotkey hotkey, KeyMapping keybind)
     {
         int keyCode = getKeyCode(keybind);
         return hotkey.getKeybind().matches(keyCode);
@@ -480,7 +478,7 @@ public class KeybindMulti implements IKeybind
             return false;
         }
 
-        long window = MinecraftClient.getInstance().getWindow().getHandle();
+        long window = Minecraft.getInstance().getWindow().handle();
 
         if (keyCode >= 0)
         {
@@ -493,7 +491,7 @@ public class KeybindMulti implements IKeybind
     }
 
     @ApiStatus.Internal
-    public static void onKeyInputPre(KeyInput input, int action)
+    public static void onKeyInputPre(KeyEvent input, int action)
     {
         if (input.key() != -1)
         {

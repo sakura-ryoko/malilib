@@ -1,13 +1,13 @@
 package fi.dy.masa.malilib.mixin.entity;
 
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.inventory.SimpleInventory;
 
-@Mixin(AbstractHorseEntity.class)
+@Mixin(AbstractHorse.class)
 public interface IMixinAbstractHorseEntity
 {
-    @Accessor("items")
-    SimpleInventory malilib_getHorseInventory();
+    @Accessor("inventory")
+    SimpleContainer malilib_getHorseInventory();
 }

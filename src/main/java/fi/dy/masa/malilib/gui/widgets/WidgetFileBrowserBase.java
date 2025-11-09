@@ -9,10 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
-
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.KeyInput;
-
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.KeyEvent;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
@@ -56,7 +54,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         if (super.onKeyTyped(input))
         {
@@ -79,7 +77,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     }
 
     @Override
-    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         // Draw an outline around the entire file browser
         RenderUtils.drawOutlinedBox(drawContext, this.posX, this.posY, this.browserWidth, this.browserHeight, 0xB0000000, COLOR_HORIZONTAL_BAR);
@@ -89,7 +87,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
         this.drawAdditionalContents(drawContext, mouseX, mouseY);
     }
 
-    protected void drawAdditionalContents(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawAdditionalContents(GuiGraphics drawContext, int mouseX, int mouseY)
     {
     }
 

@@ -3,12 +3,10 @@ package fi.dy.masa.malilib.util.restrictions;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import net.minecraft.block.Block;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -19,15 +17,16 @@ public class BlockRestriction extends UsageRestriction<Block>
     {
         for (String name : names)
         {
-            Identifier rl = null;
+            ResourceLocation rl = null;
 
             try
             {
-                rl = Identifier.tryParse(name);
+                rl = ResourceLocation.tryParse(name);
             }
             catch (Exception ignore) {}
 
-            Optional<RegistryEntry.Reference<Block>> opt = Registries.BLOCK.getEntry(rl);
+			if (rl == null) continue;
+            Optional<Holder.Reference<Block>> opt = BuiltInRegistries.BLOCK.get(rl);
 
             if (opt.isPresent())
             {
