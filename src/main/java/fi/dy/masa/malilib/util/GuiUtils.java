@@ -63,7 +63,7 @@ public class GuiUtils
     }
 
     public static void createBlockPosInputsVertical(int x, int y, int textFieldWidth, BlockPos pos,
-            ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
+                                                    ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
         createBlockPosInput(x, y     , textFieldWidth, CoordinateType.X, pos, modifier, addButton, gui);
         createBlockPosInput(x, y + 17, textFieldWidth, CoordinateType.Y, pos, modifier, addButton, gui);
@@ -71,7 +71,7 @@ public class GuiUtils
     }
 
     public static void createVec3dInputsVertical(int x, int y, int textFieldWidth, Vec3d pos,
-            ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
+                                                 ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
         createVec3dInput(x, y     , textFieldWidth, CoordinateType.X, pos, modifier, addButton, gui);
         createVec3dInput(x, y + 17, textFieldWidth, CoordinateType.Y, pos, modifier, addButton, gui);
@@ -79,7 +79,7 @@ public class GuiUtils
     }
 
     public static void createBlockPosInput(int x, int y, int textFieldWidth, CoordinateType type, BlockPos pos,
-            ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
+                                           ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
         x = addLabel(x, y, type, gui);
 
@@ -90,7 +90,7 @@ public class GuiUtils
     }
 
     public static void createVec3dInput(int x, int y, int textFieldWidth, CoordinateType type, Vec3d pos,
-            ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
+                                        ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
         x = addLabel(x, y, type, gui);
 
@@ -101,7 +101,7 @@ public class GuiUtils
     }
 
     protected static void addTextFieldAndButton(int x, int y, CoordinateType type, ICoordinateValueModifier modifier,
-            GuiTextFieldGeneric textField, boolean addButton, GuiBase gui)
+                                                GuiTextFieldGeneric textField, boolean addButton, GuiBase gui)
     {
         gui.addTextField(textField, new TextFieldListenerCoordinateInput(type, modifier));
 
@@ -135,49 +135,6 @@ public class GuiUtils
         };
 
     }
-
-//    @Override
-//    protected String getValueStringForTextfield()
-//    {
-//        String val = super.getValueStringForTextfield();
-//
-//        if (MaLiLibConfigs.Generic.COORDINATE_DECIMAL_CLAMPING.getBooleanValue())
-//        {
-//            int decimals = MaLiLibConfigs.Generic.COORDINATE_DECIMAL_CLAMPING.getIntegerValue();
-//            int expIndex = val.indexOf('E');
-//            int dotIndex = val.indexOf('.');
-//
-//            if (dotIndex > 0)
-//            {
-//                // Scientific notation, yeet the decimals from the middle
-//                if (expIndex > dotIndex && val.length() > expIndex + 1)
-//                {
-//                    // 123.456789E12 => 123.45E12
-//
-//                    try
-//                    {
-//                        int expValue = Integer.parseInt(val.substring(expIndex + 1));
-//                        decimals += expValue;
-//                    }
-//                    catch (Exception ignore)
-//                    {
-//                        return val;
-//                    }
-//
-//                    int last = Math.min(val.length(), dotIndex + decimals + 1);
-//                    val = val.substring(0, last) + val.substring(expIndex);
-//                }
-//                // Normal decimal format
-//                else
-//                {
-//                    int last = Math.min(val.length(), dotIndex + decimals + 1);
-//                    val = val.substring(0, last);
-//                }
-//            }
-//        }
-//
-//        return val;
-//    }
 
     protected static int addLabel(int x, int y, CoordinateType type, GuiBase gui)
     {
