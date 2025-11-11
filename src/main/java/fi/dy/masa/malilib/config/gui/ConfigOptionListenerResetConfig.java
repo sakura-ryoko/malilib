@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.config.gui;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.config.IStringRepresentable;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
@@ -65,9 +65,9 @@ public class ConfigOptionListenerResetConfig implements IButtonActionListener
     public static class ConfigResetterTextField extends ConfigResetterBase
     {
         private final IStringRepresentable config;
-        private final EditBox textField;
+        private final TextFieldWidget textField;
 
-        public ConfigResetterTextField(IStringRepresentable config, EditBox textField)
+        public ConfigResetterTextField(IStringRepresentable config, TextFieldWidget textField)
         {
             this.config = config;
             this.textField = textField;
@@ -76,7 +76,7 @@ public class ConfigOptionListenerResetConfig implements IButtonActionListener
         @Override
         public void resetConfigOption()
         {
-            this.textField.setValue(this.config.getStringValue());
+            this.textField.setText(this.config.getStringValue());
         }
     }
 }

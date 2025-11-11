@@ -1,11 +1,11 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
@@ -90,7 +90,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
         if (super.onMouseClicked(click, doubleClick))
         {
@@ -101,7 +101,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onMouseReleased(MouseButtonEvent click)
+    public boolean onMouseReleased(Click click)
     {
         if (super.onMouseReleased(click))
         {
@@ -123,7 +123,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onKeyTyped(KeyEvent input)
+    public boolean onKeyTyped(KeyInput input)
     {
         // Try to handle everything except ESC in the parent first
         if (input.key() != KeyCodes.KEY_ESCAPE && super.onKeyTyped(input))
@@ -146,7 +146,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onCharTyped(CharacterEvent input)
+    public boolean onCharTyped(CharInput input)
     {
         // Try to handle everything except ESC in the parent first
         if (super.onCharTyped(input))
@@ -163,7 +163,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public void resize(Minecraft mc, int width, int height)
+    public void resize(MinecraftClient mc, int width, int height)
     {
         super.resize(mc, width, height);
 
@@ -174,7 +174,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public void drawContents(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getListWidget() != null)
         {
@@ -183,7 +183,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    protected void drawHoveredWidget(GuiGraphics drawContext, int mouseX, int mouseY)
+    protected void drawHoveredWidget(DrawContext drawContext, int mouseX, int mouseY)
     {
         super.drawHoveredWidget(drawContext, mouseX, mouseY);
 

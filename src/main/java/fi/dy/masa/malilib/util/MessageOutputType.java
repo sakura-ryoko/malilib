@@ -1,21 +1,21 @@
 package fi.dy.masa.malilib.util;
 
 import javax.annotation.Nonnull;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.StringIdentifiable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.StringRepresentable;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
-public enum MessageOutputType implements IConfigOptionListEntry, StringRepresentable
+public enum MessageOutputType implements IConfigOptionListEntry, StringIdentifiable
 {
     NONE      ("none",      "malilib.label.message_output_type.none"),
     ACTIONBAR ("actionbar", "malilib.label.message_output_type.actionbar"),
     MESSAGE   ("message",   "malilib.label.message_output_type.message");
 
-    public static final StringRepresentable.EnumCodec<MessageOutputType> CODEC = StringRepresentable.fromEnum(MessageOutputType::values);
-    public static final StreamCodec<ByteBuf, MessageOutputType> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(MessageOutputType::fromStringStatic, MessageOutputType::getSerializedName);
+    public static final StringIdentifiable.EnumCodec<MessageOutputType> CODEC = StringIdentifiable.createCodec(MessageOutputType::values);
+    public static final PacketCodec<ByteBuf, MessageOutputType> PACKET_CODEC = PacketCodecs.STRING.xmap(MessageOutputType::fromStringStatic, MessageOutputType::asString);
     public static final ImmutableList<MessageOutputType> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
@@ -40,7 +40,7 @@ public enum MessageOutputType implements IConfigOptionListEntry, StringRepresent
     }
 
     @Override
-    public @Nonnull String getSerializedName()
+    public @Nonnull String asString()
     {
         return this.configString;
     }

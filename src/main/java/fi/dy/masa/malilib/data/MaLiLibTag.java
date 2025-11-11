@@ -3,12 +3,12 @@ package fi.dy.masa.malilib.data;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 
 // TODO (Migrate to CachedBlockTags)
 @Deprecated(forRemoval = true)
@@ -77,7 +77,7 @@ public class MaLiLibTag
 
         private static TagKey<Block> createBlockTag(String name)
         {
-            return TagKey.create(Registries.BLOCK, buildIdentifier(name));
+            return TagKey.of(RegistryKeys.BLOCK, buildIdentifier(name));
         }
     }
 
@@ -85,13 +85,13 @@ public class MaLiLibTag
     {
         private static TagKey<Item> createItemTag(String name)
         {
-            return TagKey.create(Registries.ITEM, buildIdentifier(name));
+            return TagKey.of(RegistryKeys.ITEM, buildIdentifier(name));
         }
     }
 
-    private static ResourceLocation buildIdentifier(String name)
+    private static Identifier buildIdentifier(String name)
     {
-        return ResourceLocation.fromNamespaceAndPath(MaLiLibReference.MOD_ID, name);
+        return Identifier.of(MaLiLibReference.MOD_ID, name);
     }
 
     public static void register()

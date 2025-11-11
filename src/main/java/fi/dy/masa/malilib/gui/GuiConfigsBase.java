@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
@@ -92,7 +92,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
 
                     if (selectedEntry != null && selectedEntry.getConfigScreenSupplier() != null)
                     {
-                        minecraft.setScreen(selectedEntry.getConfigScreenSupplier().get());
+                        client.setScreen(selectedEntry.getConfigScreenSupplier().get());
                     }
                 }
 
@@ -195,7 +195,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public boolean onKeyTyped(KeyEvent input)
+    public boolean onKeyTyped(KeyInput input)
     {
         if (this.activeKeybindButton != null)
         {
@@ -220,7 +220,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public boolean onCharTyped(CharacterEvent input)
+    public boolean onCharTyped(CharInput input)
     {
         if (this.activeKeybindButton != null)
         {
@@ -237,7 +237,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
         if (super.onMouseClicked(click, doubleClick))
         {

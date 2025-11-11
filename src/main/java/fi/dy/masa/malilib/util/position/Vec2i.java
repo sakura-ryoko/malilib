@@ -1,9 +1,9 @@
 package fi.dy.masa.malilib.util.position;
 
 import javax.annotation.Nonnull;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import org.joml.Vector2i;
 
 import com.mojang.serialization.Codec;
@@ -21,21 +21,21 @@ public class Vec2i
                     PrimitiveCodec.INT.fieldOf("y").forGetter(get -> get.y)
             ).apply(inst, Vec2i::new)
     );
-    public static final StreamCodec<ByteBuf, Vec2i> PACKET_CODEC = new StreamCodec<>()
+    public static final PacketCodec<ByteBuf, Vec2i> PACKET_CODEC = new PacketCodec<>()
     {
         @Override
         public void encode(@Nonnull ByteBuf buf, Vec2i value)
         {
-            ByteBufCodecs.INT.encode(buf, value.x);
-            ByteBufCodecs.INT.encode(buf, value.y);
+            PacketCodecs.INTEGER.encode(buf, value.x);
+            PacketCodecs.INTEGER.encode(buf, value.y);
         }
 
         @Override
         public @Nonnull Vec2i decode(@Nonnull ByteBuf buf)
         {
             return new Vec2i(
-                    ByteBufCodecs.INT.decode(buf),
-                    ByteBufCodecs.INT.decode(buf)
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf)
             );
         }
     };

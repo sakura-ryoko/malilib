@@ -7,8 +7,8 @@ import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntry;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntryType;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.FileNameUtils;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
 
 public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
 {
@@ -34,7 +34,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     }
 
     @Override
-    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         if (this.entry.getType() == DirectoryEntryType.DIRECTORY)
         {
@@ -49,7 +49,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 

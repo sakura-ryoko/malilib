@@ -1,14 +1,14 @@
 package fi.dy.masa.malilib.util;
 
 import javax.annotation.Nullable;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.nbt.NbtIntArray;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
 import io.netty.buffer.ByteBuf;
 
 import com.mojang.serialization.Codec;
@@ -27,29 +27,29 @@ public class IntBoundingBox
                     PrimitiveCodec.INT.fieldOf("maxZ").forGetter(get -> get.maxZ)
             ).apply(inst, IntBoundingBox::new)
     );
-    public static final StreamCodec<ByteBuf, IntBoundingBox> PACKET_CODEC = new StreamCodec<>()
+    public static final PacketCodec<ByteBuf, IntBoundingBox> PACKET_CODEC = new PacketCodec<>()
     {
         @Override
         public void encode(ByteBuf buf, IntBoundingBox value)
         {
-            ByteBufCodecs.INT.encode(buf, value.minX);
-            ByteBufCodecs.INT.encode(buf, value.minY);
-            ByteBufCodecs.INT.encode(buf, value.minZ);
-            ByteBufCodecs.INT.encode(buf, value.maxX);
-            ByteBufCodecs.INT.encode(buf, value.maxY);
-            ByteBufCodecs.INT.encode(buf, value.maxZ);
+            PacketCodecs.INTEGER.encode(buf, value.minX);
+            PacketCodecs.INTEGER.encode(buf, value.minY);
+            PacketCodecs.INTEGER.encode(buf, value.minZ);
+            PacketCodecs.INTEGER.encode(buf, value.maxX);
+            PacketCodecs.INTEGER.encode(buf, value.maxY);
+            PacketCodecs.INTEGER.encode(buf, value.maxZ);
         }
 
         @Override
         public IntBoundingBox decode(ByteBuf buf)
         {
             return new IntBoundingBox(
-                    ByteBufCodecs.INT.decode(buf),
-                    ByteBufCodecs.INT.decode(buf),
-                    ByteBufCodecs.INT.decode(buf),
-                    ByteBufCodecs.INT.decode(buf),
-                    ByteBufCodecs.INT.decode(buf),
-                    ByteBufCodecs.INT.decode(buf)
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf),
+                    PacketCodecs.INTEGER.decode(buf)
             );
         }
     };
@@ -82,9 +82,9 @@ public class IntBoundingBox
 
     public boolean containsPos(long pos)
     {
-        int x = BlockPos.getX(pos);
-        int y = BlockPos.getY(pos);
-        int z = BlockPos.getZ(pos);
+        int x = BlockPos.unpackLongX(pos);
+        int y = BlockPos.unpackLongY(pos);
+        int z = BlockPos.unpackLongZ(pos);
 
         return x >= this.minX && y >= this.minY && z >= this.minZ &&
                x <= this.maxX && y <= this.maxY && z <= this.maxZ;
@@ -124,19 +124,19 @@ public class IntBoundingBox
         return 0;
     }
 
-    public BoundingBox toVanillaBox()
+    public BlockBox toVanillaBox()
     {
-        return new BoundingBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
+        return new BlockBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
     }
 
-    public IntArrayTag toNBTIntArray()
+    public NbtIntArray toNBTIntArray()
     {
-        return new IntArrayTag(new int[] { this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ });
+        return new NbtIntArray(new int[] { this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ });
     }
 
-    public static IntBoundingBox fromVanillaBox(BoundingBox box)
+    public static IntBoundingBox fromVanillaBox(BlockBox box)
     {
-        return createProper(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
+        return createProper(box.getMinX(), box.getMinY(), box.getMinZ(), box.getMaxX(), box.getMaxY(), box.getMaxZ());
     }
 
     public static IntBoundingBox createProper(int x1, int y1, int z1, int x2, int y2, int z2)
@@ -150,12 +150,12 @@ public class IntBoundingBox
                 Math.max(z1, z2));
     }
 
-    public static IntBoundingBox createForWorldBounds(@Nullable Level world)
+    public static IntBoundingBox createForWorldBounds(@Nullable World world)
     {
         int worldMinH = -30000000;
         int worldMaxH =  30000000;
-        int worldMinY = world != null ? world.getMinY() : -64;
-        int worldMaxY = world != null ? world.getMaxY() : 319;
+        int worldMinY = world != null ? world.getBottomY() : -64;
+        int worldMaxY = world != null ? world.getTopYInclusive() : 319;
 
         return new IntBoundingBox(worldMinH, worldMinY, worldMinH, worldMaxH, worldMaxY, worldMaxH);
     }

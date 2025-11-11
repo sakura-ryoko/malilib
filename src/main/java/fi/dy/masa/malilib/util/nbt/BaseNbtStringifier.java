@@ -68,17 +68,17 @@ public abstract class BaseNbtStringifier
     }
 
     @Nullable
-    protected String getPrimitiveValue(Tag tag)
+    protected String getPrimitiveValue(NbtElement tag)
     {
-        switch (tag.getId())
+        switch (tag.getType())
         {
-            case Constants.NBT.TAG_BYTE:    return String.valueOf(((ByteTag) tag).byteValue());
-            case Constants.NBT.TAG_SHORT:   return String.valueOf(((ShortTag) tag).shortValue());
-            case Constants.NBT.TAG_INT:     return String.valueOf(((IntTag) tag).intValue());
-            case Constants.NBT.TAG_LONG:    return String.valueOf(((LongTag) tag).longValue());
-            case Constants.NBT.TAG_FLOAT:   return String.valueOf(((FloatTag) tag).floatValue());
-            case Constants.NBT.TAG_DOUBLE:  return String.valueOf(((DoubleTag) tag).doubleValue());
-            case Constants.NBT.TAG_STRING:  return ((StringTag) tag).value();
+            case Constants.NBT.TAG_BYTE:    return String.valueOf(((NbtByte) tag).byteValue());
+            case Constants.NBT.TAG_SHORT:   return String.valueOf(((NbtShort) tag).shortValue());
+            case Constants.NBT.TAG_INT:     return String.valueOf(((NbtInt) tag).intValue());
+            case Constants.NBT.TAG_LONG:    return String.valueOf(((NbtLong) tag).longValue());
+            case Constants.NBT.TAG_FLOAT:   return String.valueOf(((NbtFloat) tag).floatValue());
+            case Constants.NBT.TAG_DOUBLE:  return String.valueOf(((NbtDouble) tag).doubleValue());
+            case Constants.NBT.TAG_STRING:  return ((NbtString) tag).value();
         }
 
         return null;
@@ -119,9 +119,9 @@ public abstract class BaseNbtStringifier
         return null;
     }
 
-    protected String getFormattedPrimitiveString(Tag tag)
+    protected String getFormattedPrimitiveString(NbtElement tag)
     {
-        int typeId = tag.getId();
+        int typeId = tag.getType();
         String valueStr = this.getPrimitiveValue(tag);
         String valueColorStr = this.colored ? this.getPrimitiveColorCode(typeId) : null;
         String numberSuffixStr = this.useNumberSuffix ? this.getNumberSuffix(typeId) : null;
@@ -174,28 +174,28 @@ public abstract class BaseNbtStringifier
         return sb.toString();
     }
 
-    protected void appendTag(String tagName, Tag tag)
+    protected void appendTag(String tagName, NbtElement tag)
     {
-        switch (tag.getId())
+        switch (tag.getType())
         {
             case Constants.NBT.TAG_COMPOUND:
-                this.appendCompound(tagName, (CompoundTag) tag);
+                this.appendCompound(tagName, (NbtCompound) tag);
                 break;
 
             case Constants.NBT.TAG_LIST:
-                this.appendList(tagName, (ListTag) tag);
+                this.appendList(tagName, (NbtList) tag);
                 break;
 
             case Constants.NBT.TAG_BYTE_ARRAY:
-                this.appendByteArray(tagName, ((ByteArrayTag) tag).getAsByteArray());
+                this.appendByteArray(tagName, ((NbtByteArray) tag).getByteArray());
                 break;
 
             case Constants.NBT.TAG_INT_ARRAY:
-                this.appendIntArray(tagName, ((IntArrayTag) tag).getAsIntArray());
+                this.appendIntArray(tagName, ((NbtIntArray) tag).getIntArray());
                 break;
 
             case Constants.NBT.TAG_LONG_ARRAY:
-                this.appendLongArray(tagName, ((LongArrayTag) tag).getAsLongArray());
+                this.appendLongArray(tagName, ((NbtLongArray) tag).getLongArray());
                 break;
 
             default:
@@ -203,9 +203,9 @@ public abstract class BaseNbtStringifier
         }
     }
 
-    protected abstract void appendPrimitive(String tagName, Tag tag);
-    protected abstract void appendCompound(String tagName, CompoundTag tag);
-    protected abstract void appendList(String tagName, ListTag list);
+    protected abstract void appendPrimitive(String tagName, NbtElement tag);
+    protected abstract void appendCompound(String tagName, NbtCompound tag);
+    protected abstract void appendList(String tagName, NbtList list);
     protected abstract void appendByteArray(String tagName, byte[] arr);
     protected abstract void appendIntArray(String tagName, int[] arr);
     protected abstract void appendLongArray(String tagName, long[] arr);

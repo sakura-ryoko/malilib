@@ -1,13 +1,13 @@
 package fi.dy.masa.malilib.mixin.entity;
 
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.PlayerEnderChestContainer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.EnderChestInventory;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(Player.class)
+@Mixin(PlayerEntity.class)
 public interface IMixinPlayerEntity
 {
     @Accessor("enderChestInventory")
-    PlayerEnderChestContainer malilib_getEnderItems();
+    EnderChestInventory malilib_getEnderItems();
 }

@@ -4,8 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
-
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.StringIdentifiable;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -63,13 +62,13 @@ public abstract class UsageRestriction<TYPE>
         }
     }
 
-    public enum ListType implements IConfigOptionListEntry, StringRepresentable
+    public enum ListType implements IConfigOptionListEntry, StringIdentifiable
     {
         NONE        ("none",        "malilib.label.list_type.none"),
         BLACKLIST   ("blacklist",   "malilib.label.list_type.blacklist"),
         WHITELIST   ("whitelist",   "malilib.label.list_type.whitelist");
 
-        public static final StringRepresentable.EnumCodec<ListType> CODEC = StringRepresentable.fromEnum(ListType::values);
+        public static final StringIdentifiable.EnumCodec<ListType> CODEC = StringIdentifiable.createCodec(ListType::values);
         public static final ImmutableList<ListType> VALUES = ImmutableList.copyOf(values());
 
         private final String configString;
@@ -136,7 +135,7 @@ public abstract class UsageRestriction<TYPE>
         }
 
         @Override
-        public @Nonnull String getSerializedName()
+        public @Nonnull String asString()
         {
             return this.configString;
         }

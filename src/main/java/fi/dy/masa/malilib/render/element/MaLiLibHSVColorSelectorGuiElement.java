@@ -1,14 +1,14 @@
 package fi.dy.masa.malilib.render.element;
 
 import java.awt.*;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.gui.render.state.GuiElementRenderState;
+import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.texture.TextureSetup;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 
 public record MaLiLibHSVColorSelectorGuiElement(
         RenderPipeline pipeline,
@@ -19,17 +19,17 @@ public record MaLiLibHSVColorSelectorGuiElement(
         int w,
         int h,
         float hue,
-        @Nullable ScreenRectangle scissorArea,
-        @Nullable ScreenRectangle bounds
-) implements GuiElementRenderState
+        @Nullable ScreenRect scissorArea,
+        @Nullable ScreenRect bounds
+) implements SimpleGuiElementRenderState
 {
-    public MaLiLibHSVColorSelectorGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int xs, int ys, int w, int h, float hue, @Nullable ScreenRectangle scissorArea)
+    public MaLiLibHSVColorSelectorGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int xs, int ys, int w, int h, float hue, @Nullable ScreenRect scissorArea)
     {
         this(pipeline, textureSetup, pose, xs, ys, w, h, hue, scissorArea, createBounds(xs, ys, xs + w, ys + h, pose, scissorArea));
     }
 
     @Override
-    public void buildVertices(VertexConsumer vertices)
+    public void setupVertices(VertexConsumer vertices)
     {
         int x2 = this.xs() + this.w();
 
@@ -46,15 +46,15 @@ public record MaLiLibHSVColorSelectorGuiElement(
             int b2 = ( color2         & 0xFF);
             int a = 255;
 
-            vertices.addVertexWith2DPose(this.pose(), this.xs(), y).setColor(r1, g1, b1, a);
-            vertices.addVertexWith2DPose(this.pose(), x2, y).setColor(r2, g2, b2, a);
+            vertices.vertex(this.pose(), this.xs(), y).color(r1, g1, b1, a);
+            vertices.vertex(this.pose(), x2, y).color(r2, g2, b2, a);
         }
     }
 
     @Nullable
-    private static ScreenRectangle createBounds(int x0, int y0, int x1, int y1, Matrix3x2f pose, @Nullable ScreenRectangle scissorArea)
+    private static ScreenRect createBounds(int x0, int y0, int x1, int y1, Matrix3x2f pose, @Nullable ScreenRect scissorArea)
     {
-        ScreenRectangle screenRect = new ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformMaxBounds(pose);
+        ScreenRect screenRect = new ScreenRect(x0, y0, x1 - x0, y1 - y0).transformEachVertex(pose);
         return scissorArea != null ? scissorArea.intersection(screenRect) : screenRect;
     }
 }

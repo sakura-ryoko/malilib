@@ -1,11 +1,11 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import org.joml.Matrix3x2fStack;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -30,10 +30,10 @@ public abstract class GuiTextInputBase extends GuiDialogBase
         this.centerOnScreen();
 
         int width = Math.min(maxTextLength * 10, 240);
-        this.textField = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 40, width, 20, this.font);
+        this.textField = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 40, width, 20, this.textRenderer);
         this.textField.setMaxLength(maxTextLength);
         this.textField.setFocused(true);
-        this.textField.setValue(this.originalText);
+        this.textField.setText(this.originalText);
     }
 
     @Override
@@ -55,20 +55,20 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     }
 
     @Override
-    public boolean isPauseScreen()
+    public boolean shouldPause()
     {
-        return this.getParent() != null && this.getParent().isPauseScreen();
+        return this.getParent() != null && this.getParent().shouldPause();
     }
 
     @Override
-    public void drawContents(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
             this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
         }
 
-        Matrix3x2fStack matrixStack = drawContext.pose();
+        Matrix3x2fStack matrixStack = drawContext.getMatrices();
         matrixStack.pushMatrix();
         // 1.f
         matrixStack.translate(0, 0);
@@ -86,12 +86,12 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     }
 
     @Override
-    public boolean onKeyTyped(KeyEvent input)
+    public boolean onKeyTyped(KeyInput input)
     {
         if (input.key() == KeyCodes.KEY_ENTER)
         {
             // Only close the GUI if the value was successfully applied
-            if (this.applyValue(this.textField.getValue()))
+            if (this.applyValue(this.textField.getText()))
             {
                 GuiBase.openGui(this.getParent());
             }
@@ -113,7 +113,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     }
 
     @Override
-    public boolean onCharTyped(CharacterEvent input)
+    public boolean onCharTyped(CharInput input)
     {
         if (this.textField.isFocused())
         {
@@ -124,7 +124,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     }
 
     @Override
-    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
         if (this.textField.mouseClicked(click, doubleClick))
         {
@@ -158,7 +158,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
             if (this.type == ButtonType.OK)
             {
                 // Only close the GUI if the value was successfully applied
-                if (this.gui.applyValue(this.gui.textField.getValue()))
+                if (this.gui.applyValue(this.gui.textField.getText()))
                 {
                     GuiBase.openGui(this.gui.getParent());
                 }
@@ -169,7 +169,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
             }
             else if (this.type == ButtonType.RESET)
             {
-                this.gui.textField.setValue(this.gui.originalText);
+                this.gui.textField.setText(this.gui.originalText);
                 this.gui.textField.setFocused(true);
             }
         }

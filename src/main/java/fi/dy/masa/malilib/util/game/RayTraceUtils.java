@@ -3,21 +3,21 @@ package fi.dy.masa.malilib.util.game;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.state.property.Properties;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.RaycastContext;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 import fi.dy.masa.malilib.util.LayerRange;
 import fi.dy.masa.malilib.util.MathUtils;
@@ -27,12 +27,12 @@ import fi.dy.masa.malilib.util.MathUtils;
  */
 public class RayTraceUtils
 {
-    public static final BlockState BLOCK_STATE_AIR = Blocks.AIR.defaultBlockState();
+    public static final BlockState BLOCK_STATE_AIR = Blocks.AIR.getDefaultState();
 
     @Nullable
-    public static HitResult getRayTraceFromEntity(Level world, Entity entity, ClipContext.Fluid fluidHandling)
+    public static HitResult getRayTraceFromEntity(World world, Entity entity, RaycastContext.FluidHandling fluidHandling)
     {
-        return getRayTraceFromEntity(world, entity, fluidHandling, true, entity instanceof Player pe ? pe.blockInteractionRange() + 1.0d : 5.0d);
+        return getRayTraceFromEntity(world, entity, fluidHandling, true, entity instanceof PlayerEntity pe ? pe.getBlockInteractionRange() + 1.0d : 5.0d);
     }
 
     /**
@@ -45,30 +45,30 @@ public class RayTraceUtils
      * @return the trace result, with type = MISS if the trace didn't hit anything
      */
     @Nullable
-    public static HitResult getRayTraceFromEntity(Level world, Entity entity,
-                                                  ClipContext.Fluid fluidHandling,
+    public static HitResult getRayTraceFromEntity(World world, Entity entity,
+                                                  RaycastContext.FluidHandling fluidHandling,
                                                   boolean includeEntities, double maxRange)
     {
         //Vec3d eyesPos = EntityWrap.getEntityEyePos(entity);
         //Vec3d rangedLook = EntityWrap.getScaledLookVector(entity, maxRange);
         //Vec3d lookEndPos = eyesPos.add(rangedLook);
-        Vec3 eyesPos = entity.getEyePosition();
-        Vec3 rangedLook = MathUtils.scale(MathUtils.getRotationVector(entity.getYRot(), entity.getXRot()), maxRange);
-        Vec3 lookEndPos = eyesPos.add(rangedLook);
+        Vec3d eyesPos = entity.getEyePos();
+        Vec3d rangedLook = MathUtils.scale(MathUtils.getRotationVector(entity.getYaw(), entity.getPitch()), maxRange);
+        Vec3d lookEndPos = eyesPos.add(rangedLook);
 
         // Something broke with the Block Collider code.
 //        HitResult result = rayTraceBlocks(world, eyesPos, lookEndPos, fluidHandling, false, false, null, 1000);
-        ClipContext context = new ClipContext(eyesPos, lookEndPos, ClipContext.Block.COLLIDER, fluidHandling, entity);
-        HitResult result = world.clip(context);
+        RaycastContext context = new RaycastContext(eyesPos, lookEndPos, RaycastContext.ShapeType.COLLIDER, fluidHandling, entity);
+        HitResult result = world.raycast(context);
 
         if (includeEntities)
         {
-            AABB bb = entity.getBoundingBox()
-                           .inflate(rangedLook.x, rangedLook.y, rangedLook.z).inflate(1d, 1d, 1d);
-            List<Entity> list = world.getEntities(entity, bb);
+            Box bb = entity.getBoundingBox()
+                           .expand(rangedLook.x, rangedLook.y, rangedLook.z).expand(1d, 1d, 1d);
+            List<Entity> list = world.getOtherEntities(entity, bb);
 
             double closest = result != null && result.getType() == HitResult.Type.BLOCK ?
-                             eyesPos.distanceToSqr(result.getLocation()) : Double.MAX_VALUE;
+                             eyesPos.squaredDistanceTo(result.getPos()) : Double.MAX_VALUE;
             HitResult entityTrace = null;
             Entity targetEntity = null;
 
@@ -76,12 +76,12 @@ public class RayTraceUtils
             {
                 bb = entityTmp.getBoundingBox();
                 //HitResult traceTmp = bb.calculateIntercept(eyesPos, lookEndPos);
-                Optional<net.minecraft.world.phys.Vec3> opt = bb.clip(eyesPos, lookEndPos);
+                Optional<net.minecraft.util.math.Vec3d> opt = bb.raycast(eyesPos, lookEndPos);
 
                 if (opt.isPresent())
                 {
                     HitResult traceTmp = new EntityHitResult(entityTmp, opt.get());
-                    double distance = eyesPos.distanceToSqr(traceTmp.getLocation());
+                    double distance = eyesPos.squaredDistanceTo(traceTmp.getPos());
 
                     if (distance < closest)
                     {
@@ -95,11 +95,11 @@ public class RayTraceUtils
             if (targetEntity != null)
             {
                 //result = HitResult.entity(targetEntity, Vec3d.of(entityTrace.hitVec));
-                result = new EntityHitResult(targetEntity, entityTrace.getLocation());
+                result = new EntityHitResult(targetEntity, entityTrace.getPos());
             }
         }
 
-        if (result == null || eyesPos.distanceTo(result.getLocation()) > maxRange)
+        if (result == null || eyesPos.distanceTo(result.getPos()) > maxRange)
         {
             result = null;
         }
@@ -124,7 +124,7 @@ public class RayTraceUtils
      */
     @ApiStatus.Experimental
     @Nullable
-    public static HitResult rayTraceBlocks(Level world, Vec3 start, Vec3 end, RayTraceFluidHandling fluidMode,
+    public static HitResult rayTraceBlocks(World world, Vec3d start, Vec3d end, RayTraceFluidHandling fluidMode,
                                            boolean ignoreNonCollidable, boolean returnLastUncollidableBlock,
                                            @Nullable LayerRange layerRange, int maxSteps)
     {
@@ -147,7 +147,7 @@ public class RayTraceUtils
      */
     @ApiStatus.Experimental
     @Nullable
-    public static HitResult rayTraceBlocks(Level world, Vec3 start, Vec3 end, IRayPositionHandler handler,
+    public static HitResult rayTraceBlocks(World world, Vec3d start, Vec3d end, IRayPositionHandler handler,
                                            RayTraceFluidHandling fluidMode, BlockStatePredicate blockFilter,
                                            boolean ignoreNonCollidable, boolean returnLastUncollidableBlock,
                                            @Nullable LayerRange layerRange, int maxSteps)
@@ -178,33 +178,33 @@ public class RayTraceUtils
 
         if (returnLastUncollidableBlock)
         {
-            Vec3 pos = new Vec3(data.currentX, data.currentY, data.currentZ);
+            Vec3d pos = new Vec3d(data.currentX, data.currentY, data.currentZ);
             //return new HitResult(HitResult.Type.MISS, data.mutablePos.toImmutable(), data.facing, pos, null);
-            return BlockHitResult.miss(pos, data.facing, data.mutablePos.immutable());
+            return BlockHitResult.createMissed(pos, data.facing, data.mutablePos.toImmutable());
         }
 
         return null;
     }
 
     @ApiStatus.Experimental
-    public static boolean checkRayCollision(RayTraceCalculationData data, Level world, boolean ignoreNonCollidable)
+    public static boolean checkRayCollision(RayTraceCalculationData data, World world, boolean ignoreNonCollidable)
     {
         if (data.isPositionWithinRange())
         {
             BlockState state = world.getBlockState(data.mutablePos);
 
             if (data.isValidBlock(state) &&
-                ((!ignoreNonCollidable && state.getBlock().defaultBlockState() != BLOCK_STATE_AIR) ||
+                ((!ignoreNonCollidable && state.getBlock().getDefaultState() != BLOCK_STATE_AIR) ||
                         //|| state.getCollisionBoundingBox(world, data.mutablePos) != Block.NULL_AABB))
-                (state.getCollisionShape(world, data.mutablePos) != Shapes.empty())))
+                (state.getCollisionShape(world, data.mutablePos) != VoxelShapes.empty())))
             {
                 //if (state.getBlock().canCollideCheck(state, false) || data.fluidMode.handled(state))
-                if (state.getProperties().contains(BlockStateProperties.WATERLOGGED) || data.fluidMode.handled(state))
+                if (state.getProperties().contains(Properties.WATERLOGGED) || data.fluidMode.handled(state))
                 {
                     //HitResult traceTmp = state.collisionRayTrace(world, data.mutablePos.toImmutable(),
                                                                       //data.start, data.end);
 
-                    HitResult traceTmp = state.getInteractionShape(world, data.mutablePos.immutable()).clip(data.start, data.end, data.mutablePos.immutable());
+                    HitResult traceTmp = state.getRaycastShape(world, data.mutablePos.toImmutable()).raycast(data.start, data.end, data.mutablePos.toImmutable());
 
                     if (traceTmp != null)
                     {
@@ -352,9 +352,9 @@ public class RayTraceUtils
         protected final LayerRange range;
         public final RayTraceFluidHandling fluidMode;
         public final BlockStatePredicate blockFilter;
-        public final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
-        public final Vec3 start;
-        public final Vec3 end;
+        public final BlockPos.Mutable mutablePos = new BlockPos.Mutable();
+        public final Vec3d start;
+        public final Vec3d end;
         public final int endBlockX;
         public final int endBlockY;
         public final int endBlockZ;
@@ -368,7 +368,7 @@ public class RayTraceUtils
         @Nullable
         public HitResult trace;
 
-        public RayTraceCalculationData(Vec3 start, Vec3 end, RayTraceFluidHandling fluidMode,
+        public RayTraceCalculationData(Vec3d start, Vec3d end, RayTraceFluidHandling fluidMode,
                                        BlockStatePredicate blockFilter, @Nullable LayerRange range)
         {
             this.start = start;
@@ -403,7 +403,7 @@ public class RayTraceUtils
             return this.range == null || this.range.isPositionWithinRange(this.blockX, this.blockY, this.blockZ);
         }
 
-        public boolean checkRayCollision(Level world, boolean ignoreNonCollidable)
+        public boolean checkRayCollision(World world, boolean ignoreNonCollidable)
         {
             if (!this.isPositionWithinRange())
             {
@@ -415,19 +415,19 @@ public class RayTraceUtils
             if (state == BLOCK_STATE_AIR ||
                 !this.isValidBlock(state) ||
                 // (ignoreNonCollidable == false && state.getCollisionBoundingBox(world, this.mutablePos) == Block.NULL_AABB))
-                (!ignoreNonCollidable && state.getCollisionShape(world, this.mutablePos) == Shapes.empty()))
+                (!ignoreNonCollidable && state.getCollisionShape(world, this.mutablePos) == VoxelShapes.empty()))
             {
                 return false;
             }
 
             //if (state.getBlock().canCollideCheck(state, false) || this.fluidMode.handled(state))
-            if (state.getProperties().contains(BlockStateProperties.WATERLOGGED) || this.fluidMode.handled(state))
+            if (state.getProperties().contains(Properties.WATERLOGGED) || this.fluidMode.handled(state))
             {
                 //HitResult traceTmp = state.collisionRayTrace(world, this.mutablePos,
                                                              //this.start, this.end);
 
                 // ? state.getFluidState().getShape(world, this.mutablePos);
-                HitResult traceTmp = state.getInteractionShape(world, this.mutablePos).clip(this.start, this.end, this.mutablePos);
+                HitResult traceTmp = state.getRaycastShape(world, this.mutablePos).raycast(this.start, this.end, this.mutablePos);
 
                 if (traceTmp != null)
                 {
@@ -441,7 +441,7 @@ public class RayTraceUtils
     }
 
     public static final BlockStatePredicate BLOCK_FILTER_ANY = (state) -> true;
-    public static final BlockStatePredicate BLOCK_FILTER_NON_AIR = (state) -> state.getBlock().defaultBlockState() != BLOCK_STATE_AIR;
+    public static final BlockStatePredicate BLOCK_FILTER_NON_AIR = (state) -> state.getBlock().getDefaultState() != BLOCK_STATE_AIR;
 
     @ApiStatus.Experimental
     public enum RayTraceFluidHandling
@@ -470,7 +470,7 @@ public class RayTraceUtils
          * A handler method, usually for checking for a collision at the given position along the ray trace
          * @return true if the ray should stop here and the current trace result from the RayTraceCalcsData should be returned
          */
-        boolean handleRayTracePosition(RayTraceCalculationData data, Level world, boolean ignoreNonCollidable);
+        boolean handleRayTracePosition(RayTraceCalculationData data, World world, boolean ignoreNonCollidable);
     }
 
     @ApiStatus.Experimental

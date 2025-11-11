@@ -1,9 +1,9 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
@@ -118,7 +118,7 @@ public class GuiColorListEdit extends GuiListBase<Color4f, WidgetColorListEditEn
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
@@ -129,7 +129,7 @@ public class GuiColorListEdit extends GuiListBase<Color4f, WidgetColorListEditEn
     }
 
     @Override
-    protected void drawScreenBackground(GuiGraphics drawContext, int mouseX, int mouseY)
+    protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
     {
 //        super.drawTexturedBG(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, true);
 //        RenderUtils.applyLayer(drawContext, GuiLayer.BLUR);
@@ -137,13 +137,13 @@ public class GuiColorListEdit extends GuiListBase<Color4f, WidgetColorListEditEn
     }
 
     @Override
-    protected void drawTitle(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
         this.drawStringWithShadow(drawContext, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
     }
 
     @Override
-    public boolean onKeyTyped(KeyEvent input)
+    public boolean onKeyTyped(KeyInput input)
     {
         if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
         {

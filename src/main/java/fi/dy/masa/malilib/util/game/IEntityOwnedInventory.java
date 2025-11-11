@@ -1,6 +1,6 @@
 package fi.dy.masa.malilib.util.game;
 
-import net.minecraft.world.entity.Entity;
+import net.minecraft.entity.Entity;
 
 public interface IEntityOwnedInventory
 {

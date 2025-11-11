@@ -4,10 +4,10 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.gui.render.state.GuiElementRenderState;
+import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.texture.TextureSetup;
 
 public record MaLiLibBasicRectGuiElement(
         RenderPipeline pipeline,
@@ -19,33 +19,33 @@ public record MaLiLibBasicRectGuiElement(
         int height,
         float scale,
         int color,
-        @Nullable ScreenRectangle scissorArea,
-        @Nullable ScreenRectangle bounds
-) implements GuiElementRenderState
+        @Nullable ScreenRect scissorArea,
+        @Nullable ScreenRect bounds
+) implements SimpleGuiElementRenderState
 {
-    public MaLiLibBasicRectGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int x, int y, int width, int height, float scale, int color, @Nullable ScreenRectangle scissorArea)
+    public MaLiLibBasicRectGuiElement(RenderPipeline pipeline, TextureSetup textureSetup, Matrix3x2f pose, int x, int y, int width, int height, float scale, int color, @Nullable ScreenRect scissorArea)
     {
         this(pipeline, textureSetup, pose, x, y, width, height, scale, color, scissorArea, createBounds(x, y, (x + width), (y + height), scale, pose, scissorArea));
     }
 
     @Override
-    public void buildVertices(VertexConsumer vertices)
+    public void setupVertices(VertexConsumer vertices)
     {
         float a = (float) (this.color() >> 24 & 255) / 255.0F;
         float r = (float) (this.color() >> 16 & 255) / 255.0F;
         float g = (float) (this.color() >> 8 & 255) / 255.0F;
         float b = (float) (this.color() & 255) / 255.0F;
 
-        vertices.addVertexWith2DPose(this.pose(), this.x() * this.scale(), this.y() * this.scale()).setColor(r, g, b, a);
-        vertices.addVertexWith2DPose(this.pose(), this.x() * this.scale(), (this.y() + this.height()) * this.scale()).setColor(r, g, b, a);
-        vertices.addVertexWith2DPose(this.pose(), (this.x() + this.width()) * this.scale(), (this.y() + this.height()) * this.scale()).setColor(r, g, b, a);
-        vertices.addVertexWith2DPose(this.pose(), (this.x() + this.width()) * this.scale(), this.y() * this.scale()).setColor(r, g, b, a);
+        vertices.vertex(this.pose(), this.x() * this.scale(), this.y() * this.scale()).color(r, g, b, a);
+        vertices.vertex(this.pose(), this.x() * this.scale(), (this.y() + this.height()) * this.scale()).color(r, g, b, a);
+        vertices.vertex(this.pose(), (this.x() + this.width()) * this.scale(), (this.y() + this.height()) * this.scale()).color(r, g, b, a);
+        vertices.vertex(this.pose(), (this.x() + this.width()) * this.scale(), this.y() * this.scale()).color(r, g, b, a);
     }
 
     @Nullable
-    private static ScreenRectangle createBounds(int x0, int y0, int x1, int y1, float scale, Matrix3x2f pose, @Nullable ScreenRectangle scissorArea)
+    private static ScreenRect createBounds(int x0, int y0, int x1, int y1, float scale, Matrix3x2f pose, @Nullable ScreenRect scissorArea)
     {
-        ScreenRectangle screenRect = new ScreenRectangle(x0, y0, (int) (x1 * scale) - x0, (int) (y1 * scale) - y0).transformMaxBounds(pose);
+        ScreenRect screenRect = new ScreenRect(x0, y0, (int) (x1 * scale) - x0, (int) (y1 * scale) - y0).transformEachVertex(pose);
         return scissorArea != null ? scissorArea.intersection(screenRect) : screenRect;
     }
 }

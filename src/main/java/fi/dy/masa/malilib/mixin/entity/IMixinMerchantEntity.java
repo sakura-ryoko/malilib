@@ -1,13 +1,13 @@
 package fi.dy.masa.malilib.mixin.entity;
 
-import net.minecraft.world.entity.npc.AbstractVillager;
-import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.entity.passive.MerchantEntity;
+import net.minecraft.village.TradeOfferList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(AbstractVillager.class)
+@Mixin(MerchantEntity.class)
 public interface IMixinMerchantEntity
 {
     @Accessor("offers")
-    MerchantOffers malilib_offers();
+    TradeOfferList malilib_offers();
 }

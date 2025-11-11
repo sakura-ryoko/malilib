@@ -3,11 +3,11 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4fStack;
 
@@ -86,7 +86,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         this.searchBar.getTextField().setY(y - 18);
     }
 
-    protected int getRequiredWidth(int width, List<T> entries, Minecraft mc)
+    protected int getRequiredWidth(int width, List<T> entries, MinecraftClient mc)
     {
         if (width == -1)
         {
@@ -133,7 +133,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
 		int mouseX = (int) click.x();
 		int mouseY = (int) click.y();
@@ -167,7 +167,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
             if (this.isOpen == false)
             {
-                this.searchBar.getTextField().setValue("");
+                this.searchBar.getTextField().setText("");
                 this.updateFilteredEntries();
             }
         }
@@ -176,7 +176,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    public void onMouseReleasedImpl(MouseButtonEvent click)
+    public void onMouseReleasedImpl(Click click)
     {
         this.scrollBar.setIsDragging(false);
     }
@@ -194,7 +194,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onKeyTypedImpl(KeyEvent input)
+    protected boolean onKeyTypedImpl(KeyInput input)
     {
         if (this.isOpen)
         {
@@ -205,7 +205,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onCharTypedImpl(CharacterEvent input)
+    protected boolean onCharTypedImpl(CharInput input)
     {
         if (this.isOpen)
         {
@@ -218,7 +218,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     protected void updateFilteredEntries()
     {
         this.filteredEntries.clear();
-        String filterText = this.searchBar.getTextField().getValue();
+        String filterText = this.searchBar.getTextField().getText();
 
         if (this.isOpen && filterText.isEmpty() == false)
         {
@@ -263,7 +263,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 //        RenderUtils.color(1f, 1f, 1f, 1f);
@@ -271,7 +271,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.pushMatrix();
         matrixStack.translate(0, 0, 10);
-        Matrix3x2fStack matrixStackIn = drawContext.pose();
+        Matrix3x2fStack matrixStackIn = drawContext.getMatrices();
         matrixStackIn.pushMatrix();
         // 10
         matrixStackIn.translate(0, 0);
@@ -295,7 +295,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         if (this.isOpen)
         {
-            if (this.searchBar.getTextField().getValue().isEmpty() == false)
+            if (this.searchBar.getTextField().getText().isEmpty() == false)
             {
                 this.searchBar.draw(drawContext, mouseX, mouseY);
             }
@@ -358,7 +358,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    public void postRenderHovered(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(drawContext, mouseX, mouseY, selected);
 

@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import net.minecraft.client.MinecraftClient;
 import org.jetbrains.annotations.ApiStatus;
-
-import net.minecraft.client.Minecraft;
-
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.interfaces.IClientCommandListener;
 import fi.dy.masa.malilib.interfaces.ICommandDispatcher;
@@ -52,7 +50,7 @@ public class ClientCommandHandler implements ICommandDispatcher
     }
 
     @ApiStatus.Internal
-    public boolean onSendClientMessage(String message, Minecraft mc)
+    public boolean onSendClientMessage(String message, MinecraftClient mc)
     {
         if (!this.commands.isEmpty())
         {

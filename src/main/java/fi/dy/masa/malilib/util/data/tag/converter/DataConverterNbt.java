@@ -15,32 +15,32 @@ public class DataConverterNbt
 //	private static final AnsiLogger LOGGER = new AnsiLogger(DataConverterNbt.class, true, true);
 
     @Nullable
-    public static BaseData fromVanillaNbt(Tag vanillaTag)
+    public static BaseData fromVanillaNbt(NbtElement vanillaTag)
     {
 //		LOGGER.debug("fromVanillaNbt: type: [{}]", vanillaTag.getType());
 
-        switch (vanillaTag.getId())
+        switch (vanillaTag.getType())
         {
-            case Constants.NBT.TAG_BYTE:        return new ByteData(((ByteTag) vanillaTag).value());
-            case Constants.NBT.TAG_SHORT:       return new ShortData(((ShortTag) vanillaTag).value());
-            case Constants.NBT.TAG_INT:         return new IntData(((IntTag) vanillaTag).value());
-            case Constants.NBT.TAG_LONG:        return new LongData(((LongTag) vanillaTag).value());
-            case Constants.NBT.TAG_FLOAT:       return new FloatData(((FloatTag) vanillaTag).value());
-            case Constants.NBT.TAG_DOUBLE:      return new DoubleData(((DoubleTag) vanillaTag).value());
-            case Constants.NBT.TAG_STRING:      return new StringData(((StringTag) vanillaTag).value());
-            case Constants.NBT.TAG_BYTE_ARRAY:  return new ByteArrayData(((ByteArrayTag) vanillaTag).getAsByteArray());
-            case Constants.NBT.TAG_INT_ARRAY:   return new IntArrayData(((IntArrayTag) vanillaTag).getAsIntArray());
-            case Constants.NBT.TAG_LONG_ARRAY:  return new LongArrayData(((LongArrayTag) vanillaTag).getAsLongArray());
-            case Constants.NBT.TAG_COMPOUND:    return fromVanillaCompound(vanillaTag.asCompound().orElse(new CompoundTag()));
-            case Constants.NBT.TAG_LIST:        return fromVanillaList(vanillaTag.asList().orElse(new ListTag()));
+            case Constants.NBT.TAG_BYTE:        return new ByteData(((NbtByte) vanillaTag).value());
+            case Constants.NBT.TAG_SHORT:       return new ShortData(((NbtShort) vanillaTag).value());
+            case Constants.NBT.TAG_INT:         return new IntData(((NbtInt) vanillaTag).value());
+            case Constants.NBT.TAG_LONG:        return new LongData(((NbtLong) vanillaTag).value());
+            case Constants.NBT.TAG_FLOAT:       return new FloatData(((NbtFloat) vanillaTag).value());
+            case Constants.NBT.TAG_DOUBLE:      return new DoubleData(((NbtDouble) vanillaTag).value());
+            case Constants.NBT.TAG_STRING:      return new StringData(((NbtString) vanillaTag).value());
+            case Constants.NBT.TAG_BYTE_ARRAY:  return new ByteArrayData(((NbtByteArray) vanillaTag).getByteArray());
+            case Constants.NBT.TAG_INT_ARRAY:   return new IntArrayData(((NbtIntArray) vanillaTag).getIntArray());
+            case Constants.NBT.TAG_LONG_ARRAY:  return new LongArrayData(((NbtLongArray) vanillaTag).getLongArray());
+            case Constants.NBT.TAG_COMPOUND:    return fromVanillaCompound(vanillaTag.asCompound().orElse(new NbtCompound()));
+            case Constants.NBT.TAG_LIST:        return fromVanillaList(vanillaTag.asNbtList().orElse(new NbtList()));
             default:
-                MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaCompound: Unknown NBT tag id {}", vanillaTag.getId());
+                MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaCompound: Unknown NBT tag id {}", vanillaTag.getType());
         }
 
         return null;
     }
 
-    public static ListData fromVanillaList(ListTag vanillaList)
+    public static ListData fromVanillaList(NbtList vanillaList)
     {
         ListData list = new ListData();
 
@@ -51,11 +51,11 @@ public class DataConverterNbt
 
         for (int index = 0; index < vanillaList.size(); index++)
         {
-            Tag entry = vanillaList.get(index);
+            NbtElement entry = vanillaList.get(index);
 
 			if (entry != null)
 			{
-				if (entry.getId() == Constants.NBT.TAG_END)
+				if (entry.getType() == Constants.NBT.TAG_END)
 				{
 					MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaList: Got TAG_End in a list at index {}", index);
 					return list;
@@ -73,7 +73,7 @@ public class DataConverterNbt
         return list;
     }
 
-    public static CompoundData fromVanillaCompound(CompoundTag vanillaCompound)
+    public static CompoundData fromVanillaCompound(NbtCompound vanillaCompound)
     {
 	    CompoundData data = new CompoundData();
 
@@ -82,9 +82,9 @@ public class DataConverterNbt
 			return data;
 		}
 
-        for (String key : vanillaCompound.keySet())
+        for (String key : vanillaCompound.getKeys())
         {
-			Tag ele = vanillaCompound.get(key);
+			NbtElement ele = vanillaCompound.get(key);
 
 			if (ele != null)
 			{
@@ -102,20 +102,20 @@ public class DataConverterNbt
     }
 
     @Nullable
-    public static Tag toVanillaNbt(BaseData data)
+    public static NbtElement toVanillaNbt(BaseData data)
     {
         switch (data.getType())
         {
-            case Constants.NBT.TAG_BYTE:        return ByteTag.valueOf(((ByteData) data).value);
-            case Constants.NBT.TAG_SHORT:       return ShortTag.valueOf(((ShortData) data).value);
-            case Constants.NBT.TAG_INT:         return IntTag.valueOf(((IntData) data).value);
-            case Constants.NBT.TAG_LONG:        return LongTag.valueOf(((LongData) data).value);
-            case Constants.NBT.TAG_FLOAT:       return FloatTag.valueOf(((FloatData) data).value);
-            case Constants.NBT.TAG_DOUBLE:      return DoubleTag.valueOf(((DoubleData) data).value);
-            case Constants.NBT.TAG_STRING:      return StringTag.valueOf(((StringData) data).value);
-            case Constants.NBT.TAG_BYTE_ARRAY:  return new ByteArrayTag(((ByteArrayData) data).value);
-            case Constants.NBT.TAG_INT_ARRAY:   return new IntArrayTag(((IntArrayData) data).value);
-            case Constants.NBT.TAG_LONG_ARRAY:  return new LongArrayTag(((LongArrayData) data).value);
+            case Constants.NBT.TAG_BYTE:        return NbtByte.of(((ByteData) data).value);
+            case Constants.NBT.TAG_SHORT:       return NbtShort.of(((ShortData) data).value);
+            case Constants.NBT.TAG_INT:         return NbtInt.of(((IntData) data).value);
+            case Constants.NBT.TAG_LONG:        return NbtLong.of(((LongData) data).value);
+            case Constants.NBT.TAG_FLOAT:       return NbtFloat.of(((FloatData) data).value);
+            case Constants.NBT.TAG_DOUBLE:      return NbtDouble.of(((DoubleData) data).value);
+            case Constants.NBT.TAG_STRING:      return NbtString.of(((StringData) data).value);
+            case Constants.NBT.TAG_BYTE_ARRAY:  return new NbtByteArray(((ByteArrayData) data).value);
+            case Constants.NBT.TAG_INT_ARRAY:   return new NbtIntArray(((IntArrayData) data).value);
+            case Constants.NBT.TAG_LONG_ARRAY:  return new NbtLongArray(((LongArrayData) data).value);
             case Constants.NBT.TAG_COMPOUND:    return toVanillaCompound((CompoundData) data);
             case Constants.NBT.TAG_LIST:        return toVanillaList((ListData) data);
             default:
@@ -125,9 +125,9 @@ public class DataConverterNbt
         return null;
     }
 
-    public static ListTag toVanillaList(ListData listData)
+    public static NbtList toVanillaList(ListData listData)
     {
-        ListTag list = new ListTag();
+        NbtList list = new NbtList();
 
 		if (listData == null || listData.isEmpty())
 		{
@@ -146,7 +146,7 @@ public class DataConverterNbt
 					return list;
 				}
 
-				Tag convertedTag = toVanillaNbt(entry);
+				NbtElement convertedTag = toVanillaNbt(entry);
 
 				if (convertedTag != null)
 				{
@@ -158,9 +158,9 @@ public class DataConverterNbt
         return list;
     }
 
-    public static CompoundTag toVanillaCompound(CompoundData compoundData)
+    public static NbtCompound toVanillaCompound(CompoundData compoundData)
     {
-        CompoundTag tag = new CompoundTag();
+        NbtCompound tag = new NbtCompound();
 
         for (String key : compoundData.getKeys())
         {
@@ -168,7 +168,7 @@ public class DataConverterNbt
 
 	        if (data != null)
 	        {
-		        Tag convertedTag = toVanillaNbt(data);
+		        NbtElement convertedTag = toVanillaNbt(data);
 
 		        if (convertedTag == null)
 		        {

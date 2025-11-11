@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 
 public class WidgetInfoIcon extends WidgetHoverInfo
 {
@@ -15,7 +15,7 @@ public class WidgetInfoIcon extends WidgetHoverInfo
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
         this.icon.renderAt(drawContext, this.x, this.y, this.zLevel, false, selected);

@@ -14,21 +14,21 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.resources.language.I18n;
-import net.minecraft.client.server.IntegratedServer;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.Connection;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.ComponentSerialization;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.server.integrated.IntegratedServer;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -48,11 +48,11 @@ import fi.dy.masa.malilib.util.time.DurationFormat;
 public class StringUtils
 {
     @Nullable
-    public static ResourceLocation identifier(String fullPath)
+    public static Identifier identifier(String fullPath)
     {
         try
         {
-            return ResourceLocation.parse(fullPath);
+            return Identifier.of(fullPath);
         }
         catch (Exception e)
         {
@@ -62,11 +62,11 @@ public class StringUtils
     }
 
     @Nullable
-    public static ResourceLocation identifier(String nameSpace, String path)
+    public static Identifier identifier(String nameSpace, String path)
     {
         try
         {
-            return ResourceLocation.fromNamespaceAndPath(nameSpace, path);
+            return Identifier.of(nameSpace, path);
         }
         catch (Exception e)
         {
@@ -189,22 +189,22 @@ public class StringUtils
         return true;
     }
 
-    public static void sendOpenFileChatMessage(Player sender, String messageKey, File file)
+    public static void sendOpenFileChatMessage(PlayerEntity sender, String messageKey, File file)
     {
-        Component name = Component.literal(file.getName())
-            .withStyle(net.minecraft.ChatFormatting.UNDERLINE)
-            .withStyle((style) -> style.withClickEvent(new ClickEvent.OpenFile(file.getAbsolutePath())));
+        Text name = Text.literal(file.getName())
+            .formatted(net.minecraft.util.Formatting.UNDERLINE)
+            .styled((style) -> style.withClickEvent(new ClickEvent.OpenFile(file.getAbsolutePath())));
 
-        sender.displayClientMessage(Component.translatable(messageKey, name), false);
+        sender.sendMessage(Text.translatable(messageKey, name), false);
     }
 
-    public static void sendOpenFileChatMessage(Player sender, String messageKey, Path file)
+    public static void sendOpenFileChatMessage(PlayerEntity sender, String messageKey, Path file)
     {
-        Component name = Component.literal(file.getFileName().toString())
-                        .withStyle(net.minecraft.ChatFormatting.UNDERLINE)
-                        .withStyle((style) -> style.withClickEvent(new ClickEvent.OpenFile(file.toAbsolutePath())));
+        Text name = Text.literal(file.getFileName().toString())
+                        .formatted(net.minecraft.util.Formatting.UNDERLINE)
+                        .styled((style) -> style.withClickEvent(new ClickEvent.OpenFile(file.toAbsolutePath())));
 
-        sender.displayClientMessage(Component.translatable(messageKey, name), false);
+        sender.sendMessage(Text.translatable(messageKey, name), false);
     }
 
     public static int getMaxStringRenderWidth(String... strings)
@@ -586,17 +586,17 @@ public class StringUtils
     @Nullable
     public static String getWorldOrServerName()
     {
-        Minecraft mc = Minecraft.getInstance();
+        MinecraftClient mc = MinecraftClient.getInstance();
 
-        if (mc.hasSingleplayerServer())
+        if (mc.isIntegratedServerRunning())
         {
-            IntegratedServer server = mc.getSingleplayerServer();
+            IntegratedServer server = mc.getServer();
 
             if (server != null)
             {
                 // This used to be just MinecraftServer::getLevelName().
                 // Getting the name would now require an @Accessor for MinecraftServer.field_23784
-                String name = server.getWorldData().getLevelName();
+                String name = server.getSaveProperties().getLevelName();
                 // this was breaking non-US Locale file names
                 //return FileUtils.generateSimpleSafeFileName(name);
                 return FileNameUtils.generateSafeFileName(name);
@@ -604,7 +604,7 @@ public class StringUtils
         }
         else
         {
-            if (mc.getCurrentServer() != null && mc.getCurrentServer().isRealm())
+            if (mc.getCurrentServerEntry() != null && mc.getCurrentServerEntry().isRealm())
             {
                 if (MaLiLibConfigs.Generic.REALMS_COMMON_CONFIG.getBooleanValue())
                 {
@@ -612,21 +612,21 @@ public class StringUtils
                 }
                 else
                 {
-                    ClientPacketListener handler = mc.getConnection();
-                    Connection connection = handler != null ? handler.getConnection() : null;
+                    ClientPlayNetworkHandler handler = mc.getNetworkHandler();
+                    ClientConnection connection = handler != null ? handler.getConnection() : null;
 
                     if (connection != null)
                     {
-                        return "realms_" + stringifyAddress(connection.getRemoteAddress());
+                        return "realms_" + stringifyAddress(connection.getAddress());
                     }
                 }
             }
 
-            ServerData server = mc.getCurrentServer();
+            ServerInfo server = mc.getCurrentServerEntry();
 
             if (server != null)
             {
-                return server.ip.replace(':', '_');
+                return server.address.replace(':', '_');
             }
 
             return "multiplayer_fallback";
@@ -656,7 +656,7 @@ public class StringUtils
             }
             else
             {
-                Level world = Minecraft.getInstance().level;
+                World world = MinecraftClient.getInstance().world;
 
                 if (world != null)
                 {
@@ -735,16 +735,16 @@ public class StringUtils
         return fallback;
     }
 
-    public static Component getTranslatedAsTextOrFallback(String key, @Nullable String fallback)
+    public static Text getTranslatedAsTextOrFallback(String key, @Nullable String fallback)
     {
         String result = getTranslatedOrFallback(key, fallback);
 
         if (result == null)
         {
-            return Component.empty();
+            return Text.empty();
         }
 
-        return Component.nullToEmpty(result);
+        return Text.of(result);
     }
 
     // Some MCP vs. Yarn vs. MC versions compatibility/wrapper stuff below this
@@ -777,7 +777,7 @@ public class StringUtils
             }
              */
 
-            return I18n.get(translationKey, args);
+            return I18n.translate(translationKey, args);
         }
         catch (Exception e)
         {
@@ -785,19 +785,19 @@ public class StringUtils
         }
     }
 
-    public static Component translateAsText(String translationKey, Object... args)
+    public static Text translateAsText(String translationKey, Object... args)
     {
-        return Component.nullToEmpty(translate(translationKey, args));
+        return Text.of(translate(translationKey, args));
     }
 
-    public static MutableComponent translateable(String translationKey)
+    public static MutableText translateable(String translationKey)
     {
-        return Component.translatable(translationKey);
+        return Text.translatable(translationKey);
     }
 
-    public static MutableComponent translateable(String translationKey, Object... args)
+    public static MutableText translateable(String translationKey, Object... args)
     {
-        return Component.translatable(translationKey, args);
+        return Text.translatable(translationKey, args);
     }
 
     /**
@@ -807,7 +807,7 @@ public class StringUtils
      */
     public static boolean hasTranslation(String translationKey)
     {
-        return I18n.exists(translationKey);
+        return I18n.hasTranslation(translationKey);
     }
 
     /**
@@ -826,17 +826,17 @@ public class StringUtils
      */
     public static int getFontHeight()
     {
-        return Minecraft.getInstance().font.lineHeight;
+        return MinecraftClient.getInstance().textRenderer.fontHeight;
     }
 
     public static int getStringWidth(String text)
     {
-        return Minecraft.getInstance().font.width(text);
+        return MinecraftClient.getInstance().textRenderer.getWidth(text);
     }
 
-    public static void drawString(int x, int y, int color, String text, GuiGraphics drawContext)
+    public static void drawString(int x, int y, int color, String text, DrawContext drawContext)
     {
-        drawContext.drawString(Minecraft.getInstance().font, text, x, y, color, false);
+        drawContext.drawText(MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
     }
 
     /**
@@ -849,11 +849,11 @@ public class StringUtils
         return DurationFormat.PRETTY.format(durationMs);
     }
 
-    public static @Nullable String legacyTextDeserializer(MutableComponent oldText, @Nonnull RegistryAccess registry)
+    public static @Nullable String legacyTextDeserializer(MutableText oldText, @Nonnull DynamicRegistryManager registry)
     {
         try
         {
-            JsonElement element = ComponentSerialization.CODEC.encodeStart(registry.createSerializationContext(JsonOps.INSTANCE), oldText).getPartialOrThrow(JsonParseException::new);
+            JsonElement element = TextCodecs.CODEC.encodeStart(registry.getOps(JsonOps.INSTANCE), oldText).getPartialOrThrow(JsonParseException::new);
             return new GsonBuilder().disableHtmlEscaping().create().toJson(element);
         }
         catch (Exception err)
@@ -863,11 +863,11 @@ public class StringUtils
         }
     }
 
-    public static @Nullable MutableComponent legacyTextSerializer(String json, @Nonnull RegistryAccess registry)
+    public static @Nullable MutableText legacyTextSerializer(String json, @Nonnull DynamicRegistryManager registry)
     {
         try
         {
-            return (MutableComponent) ComponentSerialization.CODEC.parse(registry.createSerializationContext(JsonOps.INSTANCE), JsonParser.parseString(json)).getOrThrow(JsonParseException::new);
+            return (MutableText) TextCodecs.CODEC.parse(registry.getOps(JsonOps.INSTANCE), JsonParser.parseString(json)).getOrThrow(JsonParseException::new);
         }
         catch (Exception err)
         {

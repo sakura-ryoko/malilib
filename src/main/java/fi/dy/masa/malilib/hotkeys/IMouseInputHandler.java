@@ -1,6 +1,6 @@
 package fi.dy.masa.malilib.hotkeys;
 
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
 
 public interface IMouseInputHandler
 {
@@ -10,7 +10,7 @@ public interface IMouseInputHandler
      * @param eventButtonState ()
      * @return true if further processing of this mouse button event should be cancelled
      */
-    default boolean onMouseClick(MouseButtonEvent click, boolean eventButtonState)
+    default boolean onMouseClick(Click click, boolean eventButtonState)
     {
         return false;
     }

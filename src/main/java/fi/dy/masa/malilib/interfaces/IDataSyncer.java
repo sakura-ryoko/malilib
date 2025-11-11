@@ -1,28 +1,28 @@
 package fi.dy.masa.malilib.interfaces;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.world.CompoundContainer;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.minecraft.world.entity.monster.piglin.Piglin;
-import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.EntityBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.enums.ChestType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.DoubleInventory;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
@@ -48,14 +48,14 @@ public interface IDataSyncer
      * @return ()
      */
     @Nullable
-    default Level getWorld()
+    default World getWorld()
     {
-        if (Minecraft.getInstance() == null)
+        if (MinecraftClient.getInstance() == null)
         {
             return null;
         }
 
-        return WorldUtils.getBestWorld(Minecraft.getInstance());
+        return WorldUtils.getBestWorld(MinecraftClient.getInstance());
     }
 
     /**
@@ -63,14 +63,14 @@ public interface IDataSyncer
      * @return ()
      */
     @Nullable
-    default ClientLevel getClientWorld()
+    default ClientWorld getClientWorld()
     {
-        if (Minecraft.getInstance().level == null)
+        if (MinecraftClient.getInstance().world == null)
         {
             return null;
         }
 
-        return Minecraft.getInstance().level;
+        return MinecraftClient.getInstance().world;
     }
 
     /**
@@ -106,7 +106,7 @@ public interface IDataSyncer
      * @return ()
      */
     @Nullable
-    default CompoundTag getFromBlockEntityCacheNbt(BlockPos pos) { return null; }
+    default NbtCompound getFromBlockEntityCacheNbt(BlockPos pos) { return null; }
 
 	/**
 	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
@@ -136,7 +136,7 @@ public interface IDataSyncer
      * @return ()
      */
     @Nullable
-    default CompoundTag getFromEntityCacheNbt(int entityId) { return null; }
+    default NbtCompound getFromEntityCacheNbt(int entityId) { return null; }
 
 	/**
 	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
@@ -166,7 +166,7 @@ public interface IDataSyncer
      * @return (The Data Pair|Null)
      */
     @Nullable
-    default Pair<BlockEntity, CompoundTag> requestBlockEntity(Level world, BlockPos pos)
+    default Pair<BlockEntity, NbtCompound> requestBlockEntity(World world, BlockPos pos)
     {
         if (world == null)
         {
@@ -175,13 +175,13 @@ public interface IDataSyncer
 
         if (world == null) return null;
 
-        if (world.getBlockState(pos).getBlock() instanceof EntityBlock)
+        if (world.getBlockState(pos).getBlock() instanceof BlockEntityProvider)
         {
-            BlockEntity be = world.getChunkAt(pos).getBlockEntity(pos);
+            BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
 
             if (be != null)
             {
-                CompoundTag nbt = be.saveWithFullMetadata(world.registryAccess());
+                NbtCompound nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
 
                 return Pair.of(be, nbt);
             }
@@ -198,7 +198,7 @@ public interface IDataSyncer
 	 * @return (The Data Pair|Null)
 	 */
 	@Nullable
-	default Pair<BlockEntity, CompoundData> requestBlockEntityNew(Level world, BlockPos pos)
+	default Pair<BlockEntity, CompoundData> requestBlockEntityNew(World world, BlockPos pos)
 	{
 		if (world == null)
 		{
@@ -207,13 +207,13 @@ public interface IDataSyncer
 
 		if (world == null) return null;
 
-		if (world.getBlockState(pos).getBlock() instanceof EntityBlock)
+		if (world.getBlockState(pos).getBlock() instanceof BlockEntityProvider)
 		{
-			BlockEntity be = world.getChunkAt(pos).getBlockEntity(pos);
+			BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
 
 			if (be != null)
 			{
-				return Pair.of(be, DataConverterNbt.fromVanillaCompound(be.saveWithFullMetadata(world.registryAccess())));
+				return Pair.of(be, DataConverterNbt.fromVanillaCompound(be.createNbtWithIdentifyingData(world.getRegistryManager())));
 			}
 		}
 
@@ -227,7 +227,7 @@ public interface IDataSyncer
      * @return (The Data Pair|Null)
      */
     @Nullable
-    default Pair<Entity, CompoundTag> requestEntity(Level world, int entityId)
+    default Pair<Entity, NbtCompound> requestEntity(World world, int entityId)
     {
         if (world == null)
         {
@@ -236,7 +236,7 @@ public interface IDataSyncer
 
         if (world == null) return null;
 
-        Entity entity = world.getEntity(entityId);
+        Entity entity = world.getEntityById(entityId);
 
         if (entity != null)
         {
@@ -253,7 +253,7 @@ public interface IDataSyncer
 	 * @return (The Data Pair|Null)
 	 */
 	@Nullable
-	default Pair<Entity, CompoundData> requestEntityNew(Level world, int entityId)
+	default Pair<Entity, CompoundData> requestEntityNew(World world, int entityId)
 	{
 		if (world == null)
 		{
@@ -262,7 +262,7 @@ public interface IDataSyncer
 
 		if (world == null) return null;
 
-		Entity entity = world.getEntity(entityId);
+		Entity entity = world.getEntityById(entityId);
 
 		if (entity != null)
 		{
@@ -282,7 +282,7 @@ public interface IDataSyncer
      */
     @Nullable
     @SuppressWarnings("deprecation")
-    default Container getBlockInventory(Level world, BlockPos pos, boolean useNbt)
+    default Inventory getBlockInventory(World world, BlockPos pos, boolean useNbt)
     {
         if (world == null)
         {
@@ -291,40 +291,40 @@ public interface IDataSyncer
 
         if (world == null) return null;
 
-        Pair<BlockEntity, CompoundTag> pair = this.requestBlockEntity(world, pos);
-        Container inv = null;
+        Pair<BlockEntity, NbtCompound> pair = this.requestBlockEntity(world, pos);
+        Inventory inv = null;
 
         if (pair == null) return null;
 
         if (useNbt)
         {
-            inv = InventoryUtils.getNbtInventory(pair.getRight(), -1, world.registryAccess());
+            inv = InventoryUtils.getNbtInventory(pair.getRight(), -1, world.getRegistryManager());
         }
         else
         {
             BlockEntity be = pair.getLeft();
             BlockState state = world.getBlockState(pos);
 
-            if (state.is(BlockTags.AIR) || !state.hasBlockEntity())
+            if (state.isIn(BlockTags.AIR) || !state.hasBlockEntity())
             {
                 // Don't keep requesting if we're tick warping or something.
                 return null;
             }
 
-            if (be instanceof Container inv1)
+            if (be instanceof Inventory inv1)
             {
-                if (be instanceof ChestBlockEntity && state.hasProperty(ChestBlock.TYPE))
+                if (be instanceof ChestBlockEntity && state.contains(ChestBlock.CHEST_TYPE))
                 {
-                    ChestType type = state.getValue(ChestBlock.TYPE);
+                    ChestType type = state.get(ChestBlock.CHEST_TYPE);
 
                     if (type != ChestType.SINGLE)
                     {
-                        BlockPos posAdj = pos.relative(ChestBlock.getConnectedDirection(state));
+                        BlockPos posAdj = pos.offset(ChestBlock.getFacing(state));
 
-                        if (!world.hasChunkAt(posAdj)) return null;
+                        if (!world.isChunkLoaded(posAdj)) return null;
                         BlockState stateAdj = world.getBlockState(posAdj);
 
-                        Pair<BlockEntity, CompoundTag> pairAdj = this.requestBlockEntity(world, posAdj);
+                        Pair<BlockEntity, NbtCompound> pairAdj = this.requestBlockEntity(world, posAdj);
 
                         if (pairAdj == null)
                         {
@@ -333,13 +333,13 @@ public interface IDataSyncer
 
                         if (stateAdj.getBlock() == state.getBlock() &&
                             pairAdj.getLeft() instanceof ChestBlockEntity inv2 &&
-                            stateAdj.getValue(ChestBlock.TYPE) != ChestType.SINGLE &&
-                            stateAdj.getValue(ChestBlock.FACING) == state.getValue(ChestBlock.FACING))
+                            stateAdj.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE &&
+                            stateAdj.get(ChestBlock.FACING) == state.get(ChestBlock.FACING))
                         {
-                            Container invRight = type == ChestType.RIGHT ? inv1 : inv2;
-                            Container invLeft = type == ChestType.RIGHT ? inv2 : inv1;
+                            Inventory invRight = type == ChestType.RIGHT ? inv1 : inv2;
+                            Inventory invLeft = type == ChestType.RIGHT ? inv2 : inv1;
 
-                            inv = new CompoundContainer(invRight, invLeft);
+                            inv = new DoubleInventory(invRight, invLeft);
                         }
                     }
                     else
@@ -367,7 +367,7 @@ public interface IDataSyncer
 	 */
 	@Nullable
 	@SuppressWarnings("deprecation")
-	default Container getBlockInventoryNew(Level world, BlockPos pos, boolean useNbt)
+	default Inventory getBlockInventoryNew(World world, BlockPos pos, boolean useNbt)
 	{
 		if (world == null)
 		{
@@ -377,36 +377,36 @@ public interface IDataSyncer
 		if (world == null) return null;
 
 		Pair<BlockEntity, CompoundData> pair = this.requestBlockEntityNew(world, pos);
-		Container inv = null;
+		Inventory inv = null;
 
 		if (pair == null) return null;
 
 		if (useNbt)
 		{
-			inv = InventoryUtils.getDataInventory(pair.getRight(), -1, world.registryAccess());
+			inv = InventoryUtils.getDataInventory(pair.getRight(), -1, world.getRegistryManager());
 		}
 		else
 		{
 			BlockEntity be = pair.getLeft();
 			BlockState state = world.getBlockState(pos);
 
-			if (state.is(BlockTags.AIR) || !state.hasBlockEntity())
+			if (state.isIn(BlockTags.AIR) || !state.hasBlockEntity())
 			{
 				// Don't keep requesting if we're tick warping or something.
 				return null;
 			}
 
-			if (be instanceof Container inv1)
+			if (be instanceof Inventory inv1)
 			{
-				if (be instanceof ChestBlockEntity && state.hasProperty(ChestBlock.TYPE))
+				if (be instanceof ChestBlockEntity && state.contains(ChestBlock.CHEST_TYPE))
 				{
-					ChestType type = state.getValue(ChestBlock.TYPE);
+					ChestType type = state.get(ChestBlock.CHEST_TYPE);
 
 					if (type != ChestType.SINGLE)
 					{
-						BlockPos posAdj = pos.relative(ChestBlock.getConnectedDirection(state));
+						BlockPos posAdj = pos.offset(ChestBlock.getFacing(state));
 
-						if (!world.hasChunkAt(posAdj)) return null;
+						if (!world.isChunkLoaded(posAdj)) return null;
 						BlockState stateAdj = world.getBlockState(posAdj);
 
 						Pair<BlockEntity, CompoundData> pairAdj = this.requestBlockEntityNew(world, posAdj);
@@ -418,13 +418,13 @@ public interface IDataSyncer
 
 						if (stateAdj.getBlock() == state.getBlock() &&
 							pairAdj.getLeft() instanceof ChestBlockEntity inv2 &&
-							stateAdj.getValue(ChestBlock.TYPE) != ChestType.SINGLE &&
-							stateAdj.getValue(ChestBlock.FACING) == state.getValue(ChestBlock.FACING))
+							stateAdj.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE &&
+							stateAdj.get(ChestBlock.FACING) == state.get(ChestBlock.FACING))
 						{
-							Container invRight = type == ChestType.RIGHT ? inv1 : inv2;
-							Container invLeft = type == ChestType.RIGHT ? inv2 : inv1;
+							Inventory invRight = type == ChestType.RIGHT ? inv1 : inv2;
+							Inventory invLeft = type == ChestType.RIGHT ? inv2 : inv1;
 
-							inv = new CompoundContainer(invRight, invLeft);
+							inv = new DoubleInventory(invRight, invLeft);
 						}
 					}
 					else
@@ -450,7 +450,7 @@ public interface IDataSyncer
      * @return (Inventory|Null)
      */
     @Nullable
-    default Container getEntityInventory(Level world, int entityId, boolean useNbt)
+    default Inventory getEntityInventory(World world, int entityId, boolean useNbt)
     {
         if (world == null)
         {
@@ -459,36 +459,36 @@ public interface IDataSyncer
 
         if (world == null) return null;
 
-        Pair<Entity, CompoundTag> pair = this.requestEntity(world, entityId);
-        Container inv = null;
+        Pair<Entity, NbtCompound> pair = this.requestEntity(world, entityId);
+        Inventory inv = null;
 
         if (pair == null) return null;
 
         if (useNbt)
         {
-            inv = InventoryUtils.getNbtInventory(pair.getRight(), -1, world.registryAccess());
+            inv = InventoryUtils.getNbtInventory(pair.getRight(), -1, world.getRegistryManager());
         }
         else
         {
             Entity entity = pair.getLeft();
 
-            if (entity instanceof Container)
+            if (entity instanceof Inventory)
             {
-                inv = (Container) entity;
+                inv = (Inventory) entity;
             }
-            else if (entity instanceof Player player)
+            else if (entity instanceof PlayerEntity player)
             {
-                inv = new SimpleContainer(player.getInventory().getNonEquipmentItems().toArray(new ItemStack[36]));
+                inv = new SimpleInventory(player.getInventory().getMainStacks().toArray(new ItemStack[36]));
             }
-            else if (entity instanceof Villager)
+            else if (entity instanceof VillagerEntity)
             {
-                inv = ((Villager) entity).getInventory();
+                inv = ((VillagerEntity) entity).getInventory();
             }
-            else if (entity instanceof AbstractHorse)
+            else if (entity instanceof AbstractHorseEntity)
             {
                 inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
             }
-            else if (entity instanceof Piglin)
+            else if (entity instanceof PiglinEntity)
             {
                 inv = ((IMixinPiglinEntity) entity).malilib_getInventory();
             }
@@ -507,7 +507,7 @@ public interface IDataSyncer
 	 * @return (Inventory|Null)
 	 */
 	@Nullable
-	default Container getEntityInventoryNew(Level world, int entityId, boolean useData)
+	default Inventory getEntityInventoryNew(World world, int entityId, boolean useData)
 	{
 		if (world == null)
 		{
@@ -517,35 +517,35 @@ public interface IDataSyncer
 		if (world == null) return null;
 
 		Pair<Entity, CompoundData> pair = this.requestEntityNew(world, entityId);
-		Container inv = null;
+		Inventory inv = null;
 
 		if (pair == null) return null;
 
 		if (useData)
 		{
-			inv = InventoryUtils.getDataInventory(pair.getRight(), -1, world.registryAccess());
+			inv = InventoryUtils.getDataInventory(pair.getRight(), -1, world.getRegistryManager());
 		}
 		else
 		{
 			Entity entity = pair.getLeft();
 
-			if (entity instanceof Container)
+			if (entity instanceof Inventory)
 			{
-				inv = (Container) entity;
+				inv = (Inventory) entity;
 			}
-			else if (entity instanceof Player player)
+			else if (entity instanceof PlayerEntity player)
 			{
-				inv = new SimpleContainer(player.getInventory().getNonEquipmentItems().toArray(new ItemStack[36]));
+				inv = new SimpleInventory(player.getInventory().getMainStacks().toArray(new ItemStack[36]));
 			}
-			else if (entity instanceof Villager)
+			else if (entity instanceof VillagerEntity)
 			{
-				inv = ((Villager) entity).getInventory();
+				inv = ((VillagerEntity) entity).getInventory();
 			}
-			else if (entity instanceof AbstractHorse)
+			else if (entity instanceof AbstractHorseEntity)
 			{
 				inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
 			}
-			else if (entity instanceof Piglin)
+			else if (entity instanceof PiglinEntity)
 			{
 				inv = ((IMixinPiglinEntity) entity).malilib_getInventory();
 			}
@@ -563,14 +563,14 @@ public interface IDataSyncer
      * @param type (Optional)
      * @return (BlockEntity|Null)
      */
-    default BlockEntity handleBlockEntityData(BlockPos pos, CompoundTag nbt, @Nullable ResourceLocation type) { return null; }
+    default BlockEntity handleBlockEntityData(BlockPos pos, NbtCompound nbt, @Nullable Identifier type) { return null; }
 
     /**
      * Used by your Packet Receiver to hande incoming data from the entityId and the Server Side NBT tags.
      * @param nbt ()
      * @return (Entity|Null)
      */
-    default Entity handleEntityData(int entityId, CompoundTag nbt) { return null; }
+    default Entity handleEntityData(int entityId, NbtCompound nbt) { return null; }
 
     /**
      * Used by your Packet Receiver if any Bulk handling of NBT Tags for multiple Entities is required.
@@ -578,14 +578,14 @@ public interface IDataSyncer
      * @param transactionId ()
      * @param nbt ()
      */
-    default void handleBulkEntityData(int transactionId, CompoundTag nbt) {}
+    default void handleBulkEntityData(int transactionId, NbtCompound nbt) {}
 
     /**
      * Vanilla QueryNbt Packet Receiver & Handling
      * @param transactionId (QueryNbt Transaction Id)
      * @param nbt (The NBT Data returned by the server)
      */
-    default void handleVanillaQueryNbt(int transactionId, CompoundTag nbt) {}
+    default void handleVanillaQueryNbt(int transactionId, NbtCompound nbt) {}
 
 	/**
 	 * Used by your Packet Receiver to hande incoming data from BlockPos and the Server Side NBT tags.
@@ -595,7 +595,7 @@ public interface IDataSyncer
 	 * @return (BlockEntity|Null)
 	 */
 	@ApiStatus.Experimental
-	default BlockEntity handleBlockEntityData(BlockPos pos, CompoundData data, @Nullable ResourceLocation type) { return null; }
+	default BlockEntity handleBlockEntityData(BlockPos pos, CompoundData data, @Nullable Identifier type) { return null; }
 
 	/**
 	 * Used by your Packet Receiver to hande incoming data from the entityId and the Server Side NBT tags.

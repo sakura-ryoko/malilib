@@ -1,6 +1,6 @@
 package fi.dy.masa.malilib.gui;
 
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import org.jetbrains.annotations.ApiStatus;
 
 /**

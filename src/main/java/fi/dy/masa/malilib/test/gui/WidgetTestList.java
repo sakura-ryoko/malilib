@@ -2,8 +2,8 @@ package fi.dy.masa.malilib.test.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 
@@ -47,7 +47,7 @@ public class WidgetTestList extends WidgetListBase<GuiTestList.Entry, WidgetTest
 
         for (Block block : blocks)
         {
-            this.listContents.add(new GuiTestList.Entry(block.getName().getString(), block.defaultBlockState()));
+            this.listContents.add(new GuiTestList.Entry(block.getName().getString(), block.getDefaultState()));
         }
 
         this.reCreateListEntryWidgets();

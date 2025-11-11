@@ -3,15 +3,15 @@ package fi.dy.masa.malilib.data;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -94,7 +94,7 @@ public class CachedItemTags
         return list;
     }
 
-    public List<CachedTagKey> matchAny(Holder<Item> item)
+    public List<CachedTagKey> matchAny(RegistryEntry<Item> item)
     {
         List<CachedTagKey> list = new ArrayList<>();
 
@@ -127,7 +127,7 @@ public class CachedItemTags
         return false;
     }
 
-    public boolean match(CachedTagKey key, Holder<Item> item)
+    public boolean match(CachedTagKey key, RegistryEntry<Item> item)
     {
         Entry entry = this.get(key);
 
@@ -143,13 +143,13 @@ public class CachedItemTags
         return false;
     }
 
-    public Optional<Pair<HolderSet<Item>, Holder<Item>>> matchPair(CachedTagKey key, Item item)
+    public Optional<Pair<RegistryEntryList<Item>, RegistryEntry<Item>>> matchPair(CachedTagKey key, Item item)
     {
         Entry entry = this.get(key);
 
         if (entry != null)
         {
-            Pair <HolderSet<Item>, Holder<Item>> pair = entry.matchPair(item);
+            Pair <RegistryEntryList<Item>, RegistryEntry<Item>> pair = entry.matchPair(item);
 
             if (pair.getLeft() == null && pair.getRight() == null)
             {
@@ -166,13 +166,13 @@ public class CachedItemTags
         return Optional.empty();
     }
 
-    public Optional<Pair<HolderSet<Item>, Holder<Item>>> matchPair(CachedTagKey key, Holder<Item> item)
+    public Optional<Pair<RegistryEntryList<Item>, RegistryEntry<Item>>> matchPair(CachedTagKey key, RegistryEntry<Item> item)
     {
         Entry entry = this.get(key);
 
         if (entry != null)
         {
-            Pair <HolderSet<Item>, Holder<Item>> pair = entry.matchPair(item);
+            Pair <RegistryEntryList<Item>, RegistryEntry<Item>> pair = entry.matchPair(item);
 
             if (pair.getLeft() == null && pair.getRight() == null)
             {
@@ -222,8 +222,8 @@ public class CachedItemTags
 
     public static class Entry
     {
-        private final HashSet<Holder<Item>> items;
-        private final HashSet<HolderSet<Item>> tags;
+        private final HashSet<RegistryEntry<Item>> items;
+        private final HashSet<RegistryEntryList<Item>> tags;
 
         public Entry()
         {
@@ -239,20 +239,20 @@ public class CachedItemTags
 
         public void insertItem(Item item)
         {
-            this.items.add(BuiltInRegistries.ITEM.wrapAsHolder(item));
+            this.items.add(Registries.ITEM.getEntry(item));
         }
 
-        public void insertItem(Holder<Item> item)
+        public void insertItem(RegistryEntry<Item> item)
         {
             this.items.add(item);
         }
 
         public void insertTag(TagKey<Item> tag)
         {
-            if (Minecraft.getInstance().level != null)
+            if (MinecraftClient.getInstance().world != null)
             {
-                HolderLookup<Item> wrapper = Minecraft.getInstance().level.registryAccess().lookupOrThrow(BuiltInRegistries.ITEM.key());
-                wrapper.get(tag).ifPresent(this.tags::add);
+                RegistryWrapper<Item> wrapper = MinecraftClient.getInstance().world.getRegistryManager().getOrThrow(Registries.ITEM.getKey());
+                wrapper.getOptional(tag).ifPresent(this.tags::add);
             }
         }
 
@@ -260,11 +260,11 @@ public class CachedItemTags
         {
             if (entry.startsWith("#"))
             {
-                ResourceLocation id = ResourceLocation.tryParse(entry.substring(1));
+                Identifier id = Identifier.tryParse(entry.substring(1));
 
                 if (id != null)
                 {
-                    TagKey<Item> tag = TagKey.create(Registries.ITEM, id);
+                    TagKey<Item> tag = TagKey.of(RegistryKeys.ITEM, id);
 
                     if (tag != null)
                     {
@@ -282,11 +282,11 @@ public class CachedItemTags
             }
             else
             {
-                ResourceLocation id = ResourceLocation.tryParse(entry);
+                Identifier id = Identifier.tryParse(entry);
 
                 if (id != null)
                 {
-                    Item item = BuiltInRegistries.ITEM.getValue(id);
+                    Item item = Registries.ITEM.get(id);
 
                     if (item != null)
                     {
@@ -320,9 +320,9 @@ public class CachedItemTags
 
         public boolean contains(Item item)
         {
-            Holder<Item> entry = BuiltInRegistries.ITEM.wrapAsHolder(item);
+            RegistryEntry<Item> entry = Registries.ITEM.getEntry(item);
 
-            for (HolderSet<Item> listEntry : this.tags)
+            for (RegistryEntryList<Item> listEntry : this.tags)
             {
                 if (listEntry.contains(entry))
                 {
@@ -333,7 +333,7 @@ public class CachedItemTags
             return this.items.contains(entry);
         }
 
-        public boolean contains(Holder<Item> item)
+        public boolean contains(RegistryEntry<Item> item)
         {
             return this.contains(item.value());
         }
@@ -344,19 +344,19 @@ public class CachedItemTags
 
             this.items.forEach(
                     (entry) ->
-                            list.add(entry.getRegisteredName())
+                            list.add(entry.getIdAsString())
             );
             this.tags.forEach(
                     (entry) ->
-                            list.add("#" + entry.unwrapKey().toString())
+                            list.add("#" + entry.getTagKey().toString())
             );
 
             return list;
         }
 
-        public Pair<HolderSet<Item>, Holder<Item>> matchPair(Holder<Item> entry)
+        public Pair<RegistryEntryList<Item>, RegistryEntry<Item>> matchPair(RegistryEntry<Item> entry)
         {
-            for (HolderSet<Item> listEntry : this.tags)
+            for (RegistryEntryList<Item> listEntry : this.tags)
             {
                 if (listEntry.contains(entry))
                 {
@@ -372,9 +372,9 @@ public class CachedItemTags
             return Pair.of(null, null);
         }
 
-        public Pair<HolderSet<Item>, Holder<Item>> matchPair(Item item)
+        public Pair<RegistryEntryList<Item>, RegistryEntry<Item>> matchPair(Item item)
         {
-            return this.matchPair(BuiltInRegistries.ITEM.wrapAsHolder(item));
+            return this.matchPair(Registries.ITEM.getEntry(item));
         }
 
         public JsonElement toJson()
@@ -383,11 +383,11 @@ public class CachedItemTags
 
             this.items.forEach(
                     (entry) ->
-                            arr.add(new JsonPrimitive(entry.getRegisteredName()))
+                            arr.add(new JsonPrimitive(entry.getIdAsString()))
             );
             this.tags.forEach(
                     (entry) ->
-                            arr.add(new JsonPrimitive("#" + entry.unwrapKey().toString()))
+                            arr.add(new JsonPrimitive("#" + entry.getTagKey().toString()))
             );
 
             return arr;

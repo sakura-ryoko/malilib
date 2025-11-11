@@ -5,16 +5,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
-import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-import net.minecraft.client.Camera;
-import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.LevelTargetBundle;
-import net.minecraft.client.renderer.RenderBuffers;
-import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -23,13 +13,23 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.event.RenderEventHandler;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilderStorage;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.DefaultFramebufferSet;
+import net.minecraft.client.render.FrameGraphBuilder;
+import net.minecraft.client.render.Frustum;
+import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.ObjectAllocator;
+import net.minecraft.util.profiler.Profiler;
 
-@Mixin(value = LevelRenderer.class)
+@Mixin(value = WorldRenderer.class)
 public abstract class MixinWorldRenderer
 {
-    @Shadow @Final private Minecraft minecraft;
-    @Shadow @Final private LevelTargetBundle targets;
-    @Shadow @Final private RenderBuffers renderBuffers;
+    @Shadow @Final private MinecraftClient client;
+    @Shadow @Final private DefaultFramebufferSet framebufferSet;
+    @Shadow @Final private BufferBuilderStorage bufferBuilders;
 
 //    @Inject(method = "render",
 //            at = @At(value = "INVOKE",
@@ -45,31 +45,31 @@ public abstract class MixinWorldRenderer
 //        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreParticles(positionMatrix, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
 //    }
 
-    @Inject(method = "renderLevel",
+    @Inject(method = "render",
             at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/client/renderer/LevelRenderer;addWeatherPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/world/phys/Vec3;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
+                     target = "Lnet/minecraft/client/render/WorldRenderer;renderWeather(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
                      shift = At.Shift.BEFORE))
-    private void malilib_onRenderWorldPreWeather(GraphicsResourceAllocator allocator, DeltaTracker tickCounter, boolean renderBlockOutline, Camera camera,
+    private void malilib_onRenderWorldPreWeather(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera,
 												 Matrix4f positionMatrix, Matrix4f matrix4f, Matrix4f projectionMatrix,
 												 GpuBufferSlice fogBuffer, Vector4f fogColor, boolean renderSky, CallbackInfo ci,
-												 @Local ProfilerFiller profiler,
+												 @Local Profiler profiler,
 												 @Local Frustum frustum,
 												 @Local FrameGraphBuilder frameGraphBuilder)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(matrix4f, projectionMatrix, this.minecraft, frameGraphBuilder, this.targets, frustum, camera, this.renderBuffers, profiler);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(matrix4f, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
     }
 
-    @Inject(method = "renderLevel",
+    @Inject(method = "render",
             at = @At(value = "INVOKE",
-                    target = "Lnet/minecraft/client/renderer/LevelRenderer;addLateDebugPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/world/phys/Vec3;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lnet/minecraft/client/renderer/culling/Frustum;)V",
+                    target = "Lnet/minecraft/client/render/WorldRenderer;renderLateDebug(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lnet/minecraft/client/render/Frustum;)V",
                     shift = At.Shift.BEFORE))
-    private void malilib_onRenderWorldLast(GraphicsResourceAllocator allocator, DeltaTracker tickCounter, boolean renderBlockOutline, Camera camera,
+    private void malilib_onRenderWorldLast(ObjectAllocator allocator, RenderTickCounter tickCounter, boolean renderBlockOutline, Camera camera,
 										   Matrix4f positionMatrix, Matrix4f matrix4f, Matrix4f projectionMatrix,
 										   GpuBufferSlice fogBuffer, Vector4f fogColor, boolean renderSky, CallbackInfo ci,
-										   @Local ProfilerFiller profiler,
+										   @Local Profiler profiler,
 										   @Local Frustum frustum,
 										   @Local FrameGraphBuilder frameGraphBuilder)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(matrix4f, projectionMatrix, this.minecraft, frameGraphBuilder, this.targets, frustum, camera, this.renderBuffers, profiler);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(matrix4f, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
     }
 }

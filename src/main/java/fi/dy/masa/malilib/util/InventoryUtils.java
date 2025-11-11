@@ -14,43 +14,43 @@ import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.client.Minecraft;
-import net.minecraft.commands.arguments.item.ItemParser;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.core.component.DataComponentMap;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.ShulkerBoxBlock;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.enums.ChestType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.command.argument.ItemStringReader;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.BundleContentsComponent;
+import net.minecraft.component.type.ContainerComponent;
+import net.minecraft.entity.TypedEntityData;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.*;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.CompoundContainer;
-import net.minecraft.world.Container;
-import net.minecraft.world.ItemStackWithSlot;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.BundleContents;
-import net.minecraft.world.item.component.ItemContainerContents;
-import net.minecraft.world.item.component.TypedEntityData;
-import net.minecraft.world.item.trading.MerchantOffer;
-import net.minecraft.world.item.trading.MerchantOffers;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.ChestBlock;
-import net.minecraft.world.level.block.ShulkerBoxBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.ChestType;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOfferList;
+import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
@@ -86,7 +86,7 @@ public class InventoryUtils
      */
     public static boolean areStacksAndNbtEqual(ItemStack stack1, ItemStack stack2)
     {
-        return ItemStack.isSameItemSameComponents(stack1, stack2);
+        return ItemStack.areItemsAndComponentsEqual(stack1, stack2);
     }
 
     /**
@@ -94,7 +94,7 @@ public class InventoryUtils
      */
     public static boolean areStacksEqualIgnoreNbt(ItemStack stack1, ItemStack stack2)
     {
-        return ItemStack.isSameItem(stack1, stack2);
+        return ItemStack.areItemsEqual(stack1, stack2);
     }
 
     /**
@@ -110,16 +110,16 @@ public class InventoryUtils
         ref.setCount(1);
         check.setCount(1);
 
-        if (ref.isDamageableItem() && ref.isDamaged())
+        if (ref.isDamageable() && ref.isDamaged())
         {
-            ref.setDamageValue(0);
+            ref.setDamage(0);
         }
-        if (check.isDamageableItem() && check.isDamaged())
+        if (check.isDamageable() && check.isDamaged())
         {
-            check.setDamageValue(0);
+            check.setDamage(0);
         }
 
-        return ItemStack.isSameItemSameComponents(ref, check);
+        return ItemStack.areItemsAndComponentsEqual(ref, check);
     }
 
     /**
@@ -132,13 +132,13 @@ public class InventoryUtils
      * @param <T>         DataComponentType extendable
      * @return (return value)
      */
-    public static <T> boolean areNbtEqualIgnoreKeys(@Nonnull DataComponentMap tag1, @Nonnull DataComponentMap tag2, @Nullable DataComponentType<T> type, @Nullable Set<DataComponentType<T>> ignoredKeys)
+    public static <T> boolean areNbtEqualIgnoreKeys(@Nonnull ComponentMap tag1, @Nonnull ComponentMap tag2, @Nullable ComponentType<T> type, @Nullable Set<ComponentType<T>> ignoredKeys)
     {
-        Set<DataComponentType<?>> keys1;
-        Set<DataComponentType<?>> keys2;
+        Set<ComponentType<?>> keys1;
+        Set<ComponentType<?>> keys2;
 
-        keys1 = tag1.keySet();
-        keys2 = tag2.keySet();
+        keys1 = tag1.getTypes();
+        keys2 = tag2.getTypes();
 
         if (ignoredKeys != null)
         {
@@ -153,7 +153,7 @@ public class InventoryUtils
 
         if (type == null)
         {
-            for (DataComponentType<?> key : keys1)
+            for (ComponentType<?> key : keys1)
             {
                 if (Objects.equals(tag1.get(key), tag2.get(key)) == false)
                 {
@@ -177,13 +177,13 @@ public class InventoryUtils
      * @param ignoredKeys (Keys to ignore) [OPTIONAL]
      * @return (result)
      */
-    public static boolean areNbtEqualIgnoreKeys(@Nonnull CompoundTag tag1, @Nonnull CompoundTag tag2, @Nullable Set<String> ignoredKeys)
+    public static boolean areNbtEqualIgnoreKeys(@Nonnull NbtCompound tag1, @Nonnull NbtCompound tag2, @Nullable Set<String> ignoredKeys)
     {
         Set<String> keys1;
         Set<String> keys2;
 
-        keys1 = tag1.keySet();
-        keys2 = tag2.keySet();
+        keys1 = tag1.getKeys();
+        keys2 = tag2.getKeys();
 
         if (ignoredKeys != null)
         {
@@ -260,10 +260,10 @@ public class InventoryUtils
      * @param slotNum ()
      * @param hotbarSlot ()
      */
-    public static void swapSlots(AbstractContainerMenu container, int slotNum, int hotbarSlot)
+    public static void swapSlots(ScreenHandler container, int slotNum, int hotbarSlot)
     {
-        Minecraft mc = Minecraft.getInstance();
-        mc.gameMode.handleInventoryMouseClick(container.containerId, slotNum, hotbarSlot, ClickType.SWAP, mc.player);
+        MinecraftClient mc = MinecraftClient.getInstance();
+        mc.interactionManager.clickSlot(container.syncId, slotNum, hotbarSlot, SlotActionType.SWAP, mc.player);
     }
 
     /**
@@ -289,7 +289,7 @@ public class InventoryUtils
      * @param reverse ()
      * @return the slot number, or -1 if none were found
      */
-    public static int findEmptySlotInPlayerInventory(AbstractContainerMenu containerPlayer, boolean allowOffhand, boolean reverse)
+    public static int findEmptySlotInPlayerInventory(ScreenHandler containerPlayer, boolean allowOffhand, boolean reverse)
     {
         final int startSlot = reverse ? containerPlayer.slots.size() - 1 : 0;
         final int endSlot = reverse ? -1 : containerPlayer.slots.size();
@@ -298,12 +298,12 @@ public class InventoryUtils
         for (int slotNum = startSlot; slotNum != endSlot; slotNum += increment)
         {
             Slot slot = containerPlayer.slots.get(slotNum);
-            ItemStack stackSlot = slot.getItem();
+            ItemStack stackSlot = slot.getStack();
 
             // Inventory crafting, armor and offhand slots are not valid
-            if (stackSlot.isEmpty() && isRegularInventorySlot(slot.index, allowOffhand))
+            if (stackSlot.isEmpty() && isRegularInventorySlot(slot.id, allowOffhand))
             {
-                return slot.index;
+                return slot.id;
             }
         }
 
@@ -320,21 +320,21 @@ public class InventoryUtils
      * @param reverse ()
      * @return the slot number, or -1 if none were found
      */
-    public static int findSlotWithItem(AbstractContainerMenu container, ItemStack stackReference, boolean reverse)
+    public static int findSlotWithItem(ScreenHandler container, ItemStack stackReference, boolean reverse)
     {
         final int startSlot = reverse ? container.slots.size() - 1 : 0;
         final int endSlot = reverse ? -1 : container.slots.size();
         final int increment = reverse ? -1 : 1;
-        final boolean isPlayerInv = container instanceof InventoryMenu;
+        final boolean isPlayerInv = container instanceof PlayerScreenHandler;
 
         for (int slotNum = startSlot; slotNum != endSlot; slotNum += increment)
         {
             Slot slot = container.slots.get(slotNum);
 
-            if ((isPlayerInv == false || isRegularInventorySlot(slot.index, false)) &&
-                areStacksEqualIgnoreDurability(slot.getItem(), stackReference))
+            if ((isPlayerInv == false || isRegularInventorySlot(slot.id, false)) &&
+                areStacksEqualIgnoreDurability(slot.getStack(), stackReference))
             {
-                return slot.index;
+                return slot.id;
             }
         }
 
@@ -349,31 +349,31 @@ public class InventoryUtils
      * @param mc ()
      * @return true if an item was swapped to the main hand, false if it was already in the hand, or was not found in the inventory
      */
-    public static boolean swapItemToMainHand(ItemStack stackReference, Minecraft mc)
+    public static boolean swapItemToMainHand(ItemStack stackReference, MinecraftClient mc)
     {
-        Player player = mc.player;
-        boolean isCreative = player.hasInfiniteMaterials();
+        PlayerEntity player = mc.player;
+        boolean isCreative = player.isInCreativeMode();
 
         // Already holding the requested item
-        if (areStacksEqualIgnoreNbt(stackReference, player.getMainHandItem()))
+        if (areStacksEqualIgnoreNbt(stackReference, player.getMainHandStack()))
         {
             return false;
         }
 
         if (isCreative)
         {
-            player.getInventory().addAndPickItem(stackReference);
-            mc.gameMode.handleCreativeModeItemAdd(player.getMainHandItem(), 36 + player.getInventory().getSelectedSlot()); // sendSlotPacket
+            player.getInventory().swapStackWithHotbar(stackReference);
+            mc.interactionManager.clickCreativeStack(player.getMainHandStack(), 36 + player.getInventory().getSelectedSlot()); // sendSlotPacket
             return true;
         }
         else
         {
-            int slot = findSlotWithItem(player.inventoryMenu, stackReference, true);
+            int slot = findSlotWithItem(player.playerScreenHandler, stackReference, true);
 
             if (slot != -1)
             {
                 int currentHotbarSlot = player.getInventory().getSelectedSlot();
-                mc.gameMode.handleInventoryMouseClick(player.inventoryMenu.containerId, slot, currentHotbarSlot, ClickType.SWAP, mc.player);
+                mc.interactionManager.clickSlot(player.playerScreenHandler.syncId, slot, currentHotbarSlot, SlotActionType.SWAP, mc.player);
                 return true;
             }
         }
@@ -390,10 +390,10 @@ public class InventoryUtils
      * @return ()
      */
     @Nullable
-    public static Container getInventory(Level world, BlockPos pos)
+    public static Inventory getInventory(World world, BlockPos pos)
     {
         @SuppressWarnings("deprecation")
-        boolean isLoaded = world.hasChunkAt(pos);
+        boolean isLoaded = world.isChunkLoaded(pos);
 
         if (isLoaded == false)
         {
@@ -401,36 +401,36 @@ public class InventoryUtils
         }
 
         // The method in World now checks that the caller is from the same thread...
-        BlockEntity te = world.getChunkAt(pos).getBlockEntity(pos);
+        BlockEntity te = world.getWorldChunk(pos).getBlockEntity(pos);
 
-        if (te instanceof Container inv)
+        if (te instanceof Inventory inv)
         {
             BlockState state = world.getBlockState(pos);
 
             if (state.getBlock() instanceof ChestBlock && te instanceof ChestBlockEntity)
             {
-                ChestType type = state.getValue(ChestBlock.TYPE);
+                ChestType type = state.get(ChestBlock.CHEST_TYPE);
 
                 if (type != ChestType.SINGLE)
                 {
-                    BlockPos posAdj = pos.relative(ChestBlock.getConnectedDirection(state));
+                    BlockPos posAdj = pos.offset(ChestBlock.getFacing(state));
                     @SuppressWarnings("deprecation")
-                    boolean isLoadedAdj = world.hasChunkAt(posAdj);
+                    boolean isLoadedAdj = world.isChunkLoaded(posAdj);
 
                     if (isLoadedAdj)
                     {
                         BlockState stateAdj = world.getBlockState(posAdj);
                         // The method in World now checks that the caller is from the same thread...
-                        BlockEntity te2 = world.getChunkAt(posAdj).getBlockEntity(posAdj);
+                        BlockEntity te2 = world.getWorldChunk(posAdj).getBlockEntity(posAdj);
 
                         if (stateAdj.getBlock() == state.getBlock() &&
                             te2 instanceof ChestBlockEntity &&
-                            stateAdj.getValue(ChestBlock.TYPE) != ChestType.SINGLE &&
-                            stateAdj.getValue(ChestBlock.FACING) == state.getValue(ChestBlock.FACING))
+                            stateAdj.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE &&
+                            stateAdj.get(ChestBlock.FACING) == state.get(ChestBlock.FACING))
                         {
-                            Container invRight = type == ChestType.RIGHT ? inv : (Container) te2;
-                            Container invLeft = type == ChestType.RIGHT ? (Container) te2 : inv;
-                            inv = new CompoundContainer(invRight, invLeft);
+                            Inventory invRight = type == ChestType.RIGHT ? inv : (Inventory) te2;
+                            Inventory invLeft = type == ChestType.RIGHT ? (Inventory) te2 : inv;
+                            inv = new DoubleInventory(invRight, invLeft);
                         }
                     }
                 }
@@ -451,11 +451,11 @@ public class InventoryUtils
      */
     public static boolean shulkerBoxHasItems(ItemStack stack)
     {
-        ItemContainerContents container = stack.getComponents().get(DataComponents.CONTAINER);
+        ContainerComponent container = stack.getComponents().get(DataComponentTypes.CONTAINER);
 
         if (container != null)
         {
-            return container.nonEmptyItems().iterator().hasNext();
+            return container.iterateNonEmpty().iterator().hasNext();
         }
 
         return false;
@@ -468,11 +468,11 @@ public class InventoryUtils
      * @param registry ()
      * @return ()
      */
-    public static @Nullable CompoundTag stackHasNbtItems(ItemStack stack, @Nonnull RegistryAccess registry)
+    public static @Nullable NbtCompound stackHasNbtItems(ItemStack stack, @Nonnull DynamicRegistryManager registry)
     {
         if (stack.isEmpty() == false)
         {
-            CompoundTag nbt = (CompoundTag) ItemStack.CODEC.encodeStart(registry.createSerializationContext(NbtOps.INSTANCE), stack).getOrThrow();
+            NbtCompound nbt = (NbtCompound) ItemStack.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), stack).getOrThrow();
 
             if (hasNbtItems(nbt))
             {
@@ -490,11 +490,11 @@ public class InventoryUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static @Nullable CompoundData stackHasDataItems(ItemStack stack, @Nonnull RegistryAccess registry)
+	public static @Nullable CompoundData stackHasDataItems(ItemStack stack, @Nonnull DynamicRegistryManager registry)
 	{
 		if (!stack.isEmpty())
 		{
-			CompoundData data = DataConverterNbt.fromVanillaCompound((CompoundTag) ItemStack.CODEC.encodeStart(registry.createSerializationContext(NbtOps.INSTANCE), stack).getOrThrow());
+			CompoundData data = DataConverterNbt.fromVanillaCompound((NbtCompound) ItemStack.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), stack).getOrThrow());
 
 			if (hasDataItems(data))
 			{
@@ -511,21 +511,21 @@ public class InventoryUtils
      * @param nbt ()
      * @return ()
      */
-    public static boolean hasNbtItems(CompoundTag nbt)
+    public static boolean hasNbtItems(NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.ITEMS))
         {
-            ListTag tagList = nbt.getListOrEmpty(NbtKeys.ITEMS);
+            NbtList tagList = nbt.getListOrEmpty(NbtKeys.ITEMS);
             return !tagList.isEmpty();
         }
         else if (nbt.contains(NbtKeys.INVENTORY))
         {
-            ListTag tagList = nbt.getListOrEmpty(NbtKeys.INVENTORY);
+            NbtList tagList = nbt.getListOrEmpty(NbtKeys.INVENTORY);
             return !tagList.isEmpty();
         }
         else if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
-            ListTag tagList = nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS);
+            NbtList tagList = nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS);
             return !tagList.isEmpty();
         }
         else if (nbt.contains(NbtKeys.ITEM))
@@ -589,16 +589,16 @@ public class InventoryUtils
      * @param nbt The item holding the inventory contents
      * @return ()
      */
-    public static NonNullList<ItemStack> getNbtItems(@Nonnull CompoundTag nbt)
+    public static DefaultedList<ItemStack> getNbtItems(@Nonnull NbtCompound nbt)
     {
-        Minecraft mc = Minecraft.getInstance();
+        MinecraftClient mc = MinecraftClient.getInstance();
 
-        if (mc.level == null)
+        if (mc.world == null)
         {
-            return NonNullList.create();
+            return DefaultedList.of();
         }
 
-        return getNbtItems(nbt, -1, mc.level.registryAccess());
+        return getNbtItems(nbt, -1, mc.world.getRegistryManager());
     }
 
     /**
@@ -610,7 +610,7 @@ public class InventoryUtils
      * @param registry  the Dynamic Registry object
      * @return ()
      */
-    public static NonNullList<ItemStack> getNbtItems(@Nonnull CompoundTag nbt, int slotCount, @Nonnull RegistryAccess registry)
+    public static DefaultedList<ItemStack> getNbtItems(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
         if (slotCount > NbtInventory.MAX_SIZE)
         {
@@ -620,7 +620,7 @@ public class InventoryUtils
         // Most Common Tag --> NbtElement.LIST_TYPE ???
         if (nbt.contains(NbtKeys.ITEMS))
         {
-            ListTag list = nbt.getListOrEmpty(NbtKeys.ITEMS);
+            NbtList list = nbt.getListOrEmpty(NbtKeys.ITEMS);
 
             if (slotCount < 0)
             {
@@ -634,7 +634,7 @@ public class InventoryUtils
 
             if (nbtInv == null || nbtInv.isEmpty())
             {
-                return NonNullList.create();
+                return DefaultedList.of();
             }
 
             return nbtInv.toVanillaList(slotCount);
@@ -645,7 +645,7 @@ public class InventoryUtils
             InventoryOverlay.InventoryRenderType type = InventoryOverlay.getInventoryType(nbt);
             boolean isPlayer = type == InventoryOverlay.InventoryRenderType.PLAYER;
 
-            ListTag list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
+            NbtList list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
             if (slotCount < 0)
             {
                 // Doesn't use slots
@@ -658,7 +658,7 @@ public class InventoryUtils
 
             if (nbtInv == null || nbtInv.isEmpty())
             {
-                return NonNullList.create();
+                return DefaultedList.of();
             }
             
             return nbtInv.toVanillaList(slotCount);
@@ -666,7 +666,7 @@ public class InventoryUtils
         // Ender Chest
         else if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
-            ListTag list = nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS);
+            NbtList list = nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS);
 
             if (slotCount < 0)
             {
@@ -680,7 +680,7 @@ public class InventoryUtils
 
             if (nbtInv == null || nbtInv.isEmpty())
             {
-                return NonNullList.create();
+                return DefaultedList.of();
             }
 
             return nbtInv.toVanillaList(slotCount);
@@ -689,7 +689,7 @@ public class InventoryUtils
         {
             // item (DecoratedPot, ItemEntity)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.ITEM));
-            NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
             items.addFirst(entry);
 
             return items;
@@ -698,7 +698,7 @@ public class InventoryUtils
         {
             // Item (ItemFrame)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.ITEM_2));
-            NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
             items.addFirst(entry);
 
             return items;
@@ -707,7 +707,7 @@ public class InventoryUtils
         {
             // Book (Lectern)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.BOOK));
-            NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
             items.addFirst(entry);
 
             return items;
@@ -716,13 +716,13 @@ public class InventoryUtils
         {
             // RecordItem (Jukebox)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.RECORD));
-            NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
             items.addFirst(entry);
 
             return items;
         }
 
-        return NonNullList.create();
+        return DefaultedList.of();
     }
 
 	/**
@@ -733,16 +733,16 @@ public class InventoryUtils
 	 * @return ()
 	 */
 	@ApiStatus.Experimental
-	public static NonNullList<ItemStack> getDataItems(@Nonnull CompoundData data)
+	public static DefaultedList<ItemStack> getDataItems(@Nonnull CompoundData data)
 	{
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 
-		if (mc.level == null)
+		if (mc.world == null)
 		{
-			return NonNullList.create();
+			return DefaultedList.of();
 		}
 
-		return getDataItems(data, -1, mc.level.registryAccess());
+		return getDataItems(data, -1, mc.world.getRegistryManager());
 	}
 
 	/**
@@ -755,7 +755,7 @@ public class InventoryUtils
 	 * @return ()
 	 */
 	@ApiStatus.Experimental
-	public static NonNullList<ItemStack> getDataItems(@Nonnull CompoundData data, int slotCount, @Nonnull RegistryAccess registry)
+	public static DefaultedList<ItemStack> getDataItems(@Nonnull CompoundData data, int slotCount, @Nonnull DynamicRegistryManager registry)
 	{
 		if (slotCount > NbtInventory.MAX_SIZE)
 		{
@@ -779,7 +779,7 @@ public class InventoryUtils
 
 			if (nbtInv == null || nbtInv.isEmpty())
 			{
-				return NonNullList.create();
+				return DefaultedList.of();
 			}
 
 			return nbtInv.toVanillaList(slotCount);
@@ -803,7 +803,7 @@ public class InventoryUtils
 
 			if (nbtInv == null || nbtInv.isEmpty())
 			{
-				return NonNullList.create();
+				return DefaultedList.of();
 			}
 
 			return nbtInv.toVanillaList(slotCount);
@@ -825,7 +825,7 @@ public class InventoryUtils
 
 			if (nbtInv == null || nbtInv.isEmpty())
 			{
-				return NonNullList.create();
+				return DefaultedList.of();
 			}
 
 			return nbtInv.toVanillaList(slotCount);
@@ -834,7 +834,7 @@ public class InventoryUtils
 		{
 			// item (DecoratedPot, ItemEntity)
 			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM));
-			NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+			DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
 			items.addFirst(entry);
 
 			return items;
@@ -843,7 +843,7 @@ public class InventoryUtils
 		{
 			// Item (ItemFrame)
 			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM_2));
-			NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+			DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
 			items.addFirst(entry);
 
 			return items;
@@ -852,7 +852,7 @@ public class InventoryUtils
 		{
 			// Book (Lectern)
 			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.BOOK));
-			NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+			DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
 			items.addFirst(entry);
 
 			return items;
@@ -861,13 +861,13 @@ public class InventoryUtils
 		{
 			// RecordItem (Jukebox)
 			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.RECORD));
-			NonNullList<ItemStack> items = NonNullList.withSize(1, ItemStack.EMPTY);
+			DefaultedList<ItemStack> items = DefaultedList.ofSize(1, ItemStack.EMPTY);
 			items.addFirst(entry);
 
 			return items;
 		}
 
-		return NonNullList.create();
+		return DefaultedList.of();
 	}
 
 	/**
@@ -877,14 +877,14 @@ public class InventoryUtils
      * @param nbt     The tag holding the inventory contents
      * @return ()
      */
-    public static Container getNbtInventory(@Nonnull CompoundTag nbt)
+    public static Inventory getNbtInventory(@Nonnull NbtCompound nbt)
     {
-        if (Minecraft.getInstance().level == null)
+        if (MinecraftClient.getInstance().world == null)
         {
             return null;
         }
 
-        return getNbtInventory(nbt, -1, Minecraft.getInstance().level.registryAccess());
+        return getNbtInventory(nbt, -1, MinecraftClient.getInstance().world.getRegistryManager());
     }
 
 	/**
@@ -895,14 +895,14 @@ public class InventoryUtils
 	 * @return ()
 	 */
 	@ApiStatus.Experimental
-	public static Container getDataInventory(@Nonnull CompoundData data)
+	public static Inventory getDataInventory(@Nonnull CompoundData data)
 	{
-		if (Minecraft.getInstance().level == null)
+		if (MinecraftClient.getInstance().world == null)
 		{
 			return null;
 		}
 
-		return getDataInventory(data, -1, Minecraft.getInstance().level.registryAccess());
+		return getDataInventory(data, -1, MinecraftClient.getInstance().world.getRegistryManager());
 	}
 
 	/**
@@ -914,7 +914,7 @@ public class InventoryUtils
      * @param registry  The Dynamic Registry object
      * @return ()
      */
-    public static Container getNbtInventory(@Nonnull CompoundTag nbt, int slotCount, @Nonnull RegistryAccess registry)
+    public static Inventory getNbtInventory(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
         if (slotCount > NbtInventory.MAX_SIZE)
         {
@@ -928,7 +928,7 @@ public class InventoryUtils
             if (slotCount < 0)
             {
                 // Uses slots
-                ListTag list = nbt.getListOrEmpty(NbtKeys.ITEMS);
+                NbtList list = nbt.getListOrEmpty(NbtKeys.ITEMS);
                 slotCount = list.size();
             }
 
@@ -951,7 +951,7 @@ public class InventoryUtils
             // Entities use this (Piglin, Villager, a few others)
             if (slotCount < 0)
             {
-                ListTag list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
+                NbtList list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
                 // Doesn't use slots
                 slotCount = list.size();
             }
@@ -971,7 +971,7 @@ public class InventoryUtils
         else if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
             // Ender Chest
-            ListTag list = nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS);
+            NbtList list = nbt.getListOrEmpty(NbtKeys.ENDER_ITEMS);
 
             if (slotCount < 0)
             {
@@ -993,8 +993,8 @@ public class InventoryUtils
         {
             // item (DecoratedPot, ItemEntity)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.ITEM));
-            SimpleContainer inv = new SimpleContainer(1);
-            inv.setItem(0, entry.copy());
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry.copy());
 
             return inv;
         }
@@ -1002,8 +1002,8 @@ public class InventoryUtils
         {
             // Item (Item Frame)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.ITEM_2));
-            SimpleContainer inv = new SimpleContainer(1);
-            inv.setItem(0, entry.copy());
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry.copy());
 
             return inv;
         }
@@ -1011,8 +1011,8 @@ public class InventoryUtils
         {
             // Book (Lectern)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.BOOK));
-            SimpleContainer inv = new SimpleContainer(1);
-            inv.setItem(0, entry.copy());
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry.copy());
 
             return inv;
         }
@@ -1020,8 +1020,8 @@ public class InventoryUtils
         {
             // RecordItem (Jukebox)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.RECORD));
-            SimpleContainer inv = new SimpleContainer(1);
-            inv.setItem(0, entry.copy());
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry.copy());
 
             return inv;
         }
@@ -1039,7 +1039,7 @@ public class InventoryUtils
 	 * @return ()
 	 */
 	@ApiStatus.Experimental
-	public static Container getDataInventory(@Nonnull CompoundData data, int slotCount, @Nonnull RegistryAccess registry)
+	public static Inventory getDataInventory(@Nonnull CompoundData data, int slotCount, @Nonnull DynamicRegistryManager registry)
 	{
 		if (slotCount > NbtInventory.MAX_SIZE)
 		{
@@ -1118,8 +1118,8 @@ public class InventoryUtils
 		{
 			// item (DecoratedPot, ItemEntity)
 			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM));
-			SimpleContainer inv = new SimpleContainer(1);
-			inv.setItem(0, entry.copy());
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
 
 			return inv;
 		}
@@ -1127,8 +1127,8 @@ public class InventoryUtils
 		{
 			// Item (Item Frame)
 			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM_2));
-			SimpleContainer inv = new SimpleContainer(1);
-			inv.setItem(0, entry.copy());
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
 
 			return inv;
 		}
@@ -1136,8 +1136,8 @@ public class InventoryUtils
 		{
 			// Book (Lectern)
 			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.BOOK));
-			SimpleContainer inv = new SimpleContainer(1);
-			inv.setItem(0, entry.copy());
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
 
 			return inv;
 		}
@@ -1145,8 +1145,8 @@ public class InventoryUtils
 		{
 			// RecordItem (Jukebox)
 			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.RECORD));
-			SimpleContainer inv = new SimpleContainer(1);
-			inv.setItem(0, entry.copy());
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
 
 			return inv;
 		}
@@ -1162,9 +1162,9 @@ public class InventoryUtils
      * @param registry ()
      * @return ()
      */
-    public static Container getNbtInventoryHorseFix(@Nonnull CompoundTag nbt, int slotCount, @Nonnull RegistryAccess registry)
+    public static Inventory getNbtInventoryHorseFix(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
-        NonNullList<ItemStack> horseEquipment = NbtEntityUtils.getHorseEquipmentFromNbt(nbt, registry);
+        DefaultedList<ItemStack> horseEquipment = NbtEntityUtils.getHorseEquipmentFromNbt(nbt, registry);
 
         if (slotCount > NbtInventory.MAX_SIZE)
         {
@@ -1176,24 +1176,24 @@ public class InventoryUtils
         {
             if (slotCount < 0)
             {
-                ListTag list = nbt.getListOrEmpty(NbtKeys.ITEMS);
+                NbtList list = nbt.getListOrEmpty(NbtKeys.ITEMS);
                 slotCount = list.size();
             }
 
-            SimpleContainer inv = new SimpleContainer(slotCount + 1);
+            SimpleInventory inv = new SimpleInventory(slotCount + 1);
 
-            inv.setItem(0, horseEquipment.getLast());
+            inv.setStack(0, horseEquipment.getLast());
 
             NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.ITEMS, false, registry);
 
             // Chested Horse
             if (nbtInv != null && !nbtInv.isEmpty())
             {
-                NonNullList<ItemStack> items = nbtInv.toVanillaList(slotCount + 1);
+                DefaultedList<ItemStack> items = nbtInv.toVanillaList(slotCount + 1);
 
                 for (int i = 0; i < slotCount; i++)
                 {
-                    inv.setItem(i + 1, items.get(i));
+                    inv.setStack(i + 1, items.get(i));
                 }
             }
 
@@ -1202,8 +1202,8 @@ public class InventoryUtils
         // Saddled only fix
         else if (!horseEquipment.getLast().isEmpty())
         {
-            SimpleContainer inv = new SimpleContainer(1);
-            inv.setItem(0, horseEquipment.getLast().copy());
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, horseEquipment.getLast().copy());
 
             return inv;
         }
@@ -1211,8 +1211,8 @@ public class InventoryUtils
         {
             // item (DecoratedPot, ItemEntity)
             ItemStack entry = fromNbtOrEmpty(registry, nbt.get(NbtKeys.ITEM));
-            SimpleContainer inv = new SimpleContainer(1);
-            inv.setItem(0, entry.copy());
+            SimpleInventory inv = new SimpleInventory(1);
+            inv.setStack(0, entry.copy());
 
             return inv;
         }
@@ -1229,9 +1229,9 @@ public class InventoryUtils
 	 * @return ()
 	 */
 	@ApiStatus.Experimental
-	public static Container getDataInventoryHorseFix(@Nonnull CompoundData data, int slotCount, @Nonnull RegistryAccess registry)
+	public static Inventory getDataInventoryHorseFix(@Nonnull CompoundData data, int slotCount, @Nonnull DynamicRegistryManager registry)
 	{
-		NonNullList<ItemStack> horseEquipment = DataEntityUtils.getHorseEquipment(data, registry);
+		DefaultedList<ItemStack> horseEquipment = DataEntityUtils.getHorseEquipment(data, registry);
 
 		if (slotCount > NbtInventory.MAX_SIZE)
 		{
@@ -1247,20 +1247,20 @@ public class InventoryUtils
 				slotCount = list.size();
 			}
 
-			SimpleContainer inv = new SimpleContainer(slotCount + 1);
+			SimpleInventory inv = new SimpleInventory(slotCount + 1);
 
-			inv.setItem(0, horseEquipment.getLast());
+			inv.setStack(0, horseEquipment.getLast());
 
 			NbtInventory nbtInv = NbtInventory.fromData(data, NbtKeys.ITEMS, false, registry);
 
 			// Chested Horse
 			if (nbtInv != null && !nbtInv.isEmpty())
 			{
-				NonNullList<ItemStack> items = nbtInv.toVanillaList(slotCount + 1);
+				DefaultedList<ItemStack> items = nbtInv.toVanillaList(slotCount + 1);
 
 				for (int i = 0; i < slotCount; i++)
 				{
-					inv.setItem(i + 1, items.get(i));
+					inv.setStack(i + 1, items.get(i));
 				}
 			}
 
@@ -1269,8 +1269,8 @@ public class InventoryUtils
 		// Saddled only fix
 		else if (!horseEquipment.getLast().isEmpty())
 		{
-			SimpleContainer inv = new SimpleContainer(1);
-			inv.setItem(0, horseEquipment.getLast().copy());
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, horseEquipment.getLast().copy());
 
 			return inv;
 		}
@@ -1278,8 +1278,8 @@ public class InventoryUtils
 		{
 			// item (DecoratedPot, ItemEntity)
 			ItemStack entry = fromDataOrEmpty(registry, data.getCompound(NbtKeys.ITEM));
-			SimpleContainer inv = new SimpleContainer(1);
-			inv.setItem(0, entry.copy());
+			SimpleInventory inv = new SimpleInventory(1);
+			inv.setStack(0, entry.copy());
 
 			return inv;
 		}
@@ -1288,7 +1288,7 @@ public class InventoryUtils
 	}
 
     @Nullable
-    public static PlayerEnderChestContainer getPlayerEnderItems(Player player)
+    public static EnderChestInventory getPlayerEnderItems(PlayerEntity player)
     {
         if (player != null)
         {
@@ -1299,14 +1299,14 @@ public class InventoryUtils
     }
 
     @Nullable
-    public static PlayerEnderChestContainer getPlayerEnderItemsFromNbt(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry)
+    public static EnderChestInventory getPlayerEnderItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains(NbtKeys.ENDER_ITEMS))
         {
-            PlayerEnderChestContainer inv = new PlayerEnderChestContainer();
+            EnderChestInventory inv = new EnderChestInventory();
             NbtView view = NbtView.getReader(nbt, registry);
 
-            inv.fromSlots(view.getReader().listOrEmpty(NbtKeys.ENDER_ITEMS, ItemStackWithSlot.CODEC));
+            inv.readData(view.getReader().getTypedListView(NbtKeys.ENDER_ITEMS, StackWithSlot.CODEC));
 
             return inv;
         }
@@ -1316,17 +1316,17 @@ public class InventoryUtils
 
 	@Nullable
 	@ApiStatus.Experimental
-	public static PlayerEnderChestContainer getPlayerEnderItemsFromData(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
+	public static EnderChestInventory getPlayerEnderItemsFromData(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
 	{
 		LOGGER.debug("getPlayerEnderItemsFromData: containsList({}) : containsLeinient({})", data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST), data.containsLenient(NbtKeys.ENDER_ITEMS));
 		if (data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
 		{
-			PlayerEnderChestContainer inv = new PlayerEnderChestContainer();
+			EnderChestInventory inv = new EnderChestInventory();
 			NbtView view = NbtView.getReader(data, registry);
 
-			inv.fromSlots(view.getReader().listOrEmpty(NbtKeys.ENDER_ITEMS, ItemStackWithSlot.CODEC));
+			inv.readData(view.getReader().getTypedListView(NbtKeys.ENDER_ITEMS, StackWithSlot.CODEC));
 
-			LOGGER.debug("getPlayerEnderItemsFromData: inv [{}]", inv.getContainerSize());
+			LOGGER.debug("getPlayerEnderItemsFromData: inv [{}]", inv.size());
 			return inv;
 		}
 
@@ -1334,42 +1334,42 @@ public class InventoryUtils
 		return null;
 	}
 
-    public static NonNullList<ItemStack> getSellingItemsFromNbt(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry)
+    public static DefaultedList<ItemStack> getSellingItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
-        MerchantOffers offers = NbtEntityUtils.getTradeOffersFromNbt(nbt, registry);
+        TradeOfferList offers = NbtEntityUtils.getTradeOffersFromNbt(nbt, registry);
 
         if (offers != null)
         {
             return getSellingItems(offers);
         }
 
-        return NonNullList.create();
+        return DefaultedList.of();
     }
 
 	@ApiStatus.Experimental
-	public static NonNullList<ItemStack> getSellingItemsFromData(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
+	public static DefaultedList<ItemStack> getSellingItemsFromData(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
 	{
-		MerchantOffers offers = DataEntityUtils.getTradeOffers(data, registry);
+		TradeOfferList offers = DataEntityUtils.getTradeOffers(data, registry);
 
 		if (offers != null)
 		{
 			return getSellingItems(offers);
 		}
 
-		return NonNullList.create();
+		return DefaultedList.of();
 	}
 
-	public static NonNullList<ItemStack> getSellingItems(@Nonnull MerchantOffers offers)
+	public static DefaultedList<ItemStack> getSellingItems(@Nonnull TradeOfferList offers)
     {
         if (!offers.isEmpty())
         {
-            NonNullList<ItemStack> result = NonNullList.create();
+            DefaultedList<ItemStack> result = DefaultedList.of();
 
-			for (MerchantOffer entry : offers)
+			for (TradeOffer entry : offers)
 			{
 				if (entry != null)
 				{
-					ItemStack sellItem = entry.getResult();
+					ItemStack sellItem = entry.getSellItem();
 					result.add(sellItem.copy());
 				}
 			}
@@ -1377,7 +1377,7 @@ public class InventoryUtils
             return result;
         }
 
-        return NonNullList.create();
+        return DefaultedList.of();
     }
 
     /**
@@ -1388,14 +1388,14 @@ public class InventoryUtils
      * @param stackIn The item holding the inventory contents
      * @return ()
      */
-    public static NonNullList<ItemStack> getStoredItems(ItemStack stackIn)
+    public static DefaultedList<ItemStack> getStoredItems(ItemStack stackIn)
     {
-        ItemContainerContents container = stackIn.getComponents().get(DataComponents.CONTAINER);
+        ContainerComponent container = stackIn.getComponents().get(DataComponentTypes.CONTAINER);
 
         if (container != null)
         {
-            Iterator<ItemStack> iter = container.nonEmptyStream().iterator();
-            NonNullList<ItemStack> items = NonNullList.createWithCapacity((int) container.nonEmptyStream().count());
+            Iterator<ItemStack> iter = container.streamNonEmpty().iterator();
+            DefaultedList<ItemStack> items = DefaultedList.ofSize((int) container.streamNonEmpty().count());
             int i = 0;
 
             // Using 'container.copyTo(items)' will break Litematica's Material List
@@ -1408,7 +1408,7 @@ public class InventoryUtils
             return items;
         }
 
-        return NonNullList.create();
+        return DefaultedList.of();
     }
 
     /**
@@ -1420,9 +1420,9 @@ public class InventoryUtils
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
      * @return ()
      */
-    public static NonNullList<ItemStack> getStoredItems(ItemStack stackIn, int slotCount)
+    public static DefaultedList<ItemStack> getStoredItems(ItemStack stackIn, int slotCount)
     {
-        ItemContainerContents itemContainer = stackIn.getComponents().get(DataComponents.CONTAINER);
+        ContainerComponent itemContainer = stackIn.getComponents().get(DataComponentTypes.CONTAINER);
 
         // Using itemContainer.copyTo() does not preserve empty stacks.
         if (itemContainer != null)
@@ -1439,7 +1439,7 @@ public class InventoryUtils
                 slotCount = Math.min(slotCount, 256);
             }
 
-            NonNullList<ItemStack> items = NonNullList.createWithCapacity(slotCount);
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(slotCount);
             Iterator<ItemStack> iter = itemContainer.stream().iterator();
 
             for (int i = 0; i < slotCount; i++)
@@ -1463,7 +1463,7 @@ public class InventoryUtils
         }
         else
         {
-            return NonNullList.create();
+            return DefaultedList.of();
         }
     }
 
@@ -1474,7 +1474,7 @@ public class InventoryUtils
 	 */
     public static boolean bundleHasItems(ItemStack stack)
     {
-        BundleContents bundleContainer = stack.getComponents().get(DataComponents.BUNDLE_CONTENTS);
+        BundleContentsComponent bundleContainer = stack.getComponents().get(DataComponentTypes.BUNDLE_CONTENTS);
 
         if (bundleContainer != null)
         {
@@ -1492,11 +1492,11 @@ public class InventoryUtils
      */
     public static Fraction bundleOccupancy(ItemStack stack)
     {
-        BundleContents bundleContainer = stack.getComponents().get(DataComponents.BUNDLE_CONTENTS);
+        BundleContentsComponent bundleContainer = stack.getComponents().get(DataComponentTypes.BUNDLE_CONTENTS);
 
         if (bundleContainer != null)
         {
-            return bundleContainer.weight();
+            return bundleContainer.getOccupancy();
         }
 
         return Fraction.ZERO;
@@ -1510,7 +1510,7 @@ public class InventoryUtils
      */
     public static int bundleCountItems(ItemStack stack)
     {
-        BundleContents bundleContainer = stack.getComponents().get(DataComponents.BUNDLE_CONTENTS);
+        BundleContentsComponent bundleContainer = stack.getComponents().get(DataComponentTypes.BUNDLE_CONTENTS);
 
         if (bundleContainer != null)
         {
@@ -1526,15 +1526,15 @@ public class InventoryUtils
      * @param stackIn ()
      * @return ()
      */
-    public static NonNullList<ItemStack> getBundleItems(ItemStack stackIn)
+    public static DefaultedList<ItemStack> getBundleItems(ItemStack stackIn)
     {
-        BundleContents bundleContainer = stackIn.getComponents().getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+        BundleContentsComponent bundleContainer = stackIn.getComponents().getOrDefault(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
 
-        if (bundleContainer != null && bundleContainer.equals(BundleContents.EMPTY) == false)
+        if (bundleContainer != null && bundleContainer.equals(BundleContentsComponent.DEFAULT) == false)
         {
             int maxSlots = bundleContainer.size();
-            NonNullList<ItemStack> items = NonNullList.createWithCapacity(maxSlots);
-            Iterator<ItemStack> iter = bundleContainer.itemCopyStream().iterator();
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(maxSlots);
+            Iterator<ItemStack> iter = bundleContainer.stream().iterator();
 
             while (iter.hasNext())
             {
@@ -1549,7 +1549,7 @@ public class InventoryUtils
             return items;
         }
 
-        return NonNullList.create();
+        return DefaultedList.of();
     }
 
     /**
@@ -1559,11 +1559,11 @@ public class InventoryUtils
      * @param maxSlots ()
      * @return ()
      */
-    public static NonNullList<ItemStack> getBundleItems(ItemStack stackIn, int maxSlots)
+    public static DefaultedList<ItemStack> getBundleItems(ItemStack stackIn, int maxSlots)
     {
-        BundleContents bundleContainer = stackIn.getComponents().getOrDefault(DataComponents.BUNDLE_CONTENTS, BundleContents.EMPTY);
+        BundleContentsComponent bundleContainer = stackIn.getComponents().getOrDefault(DataComponentTypes.BUNDLE_CONTENTS, BundleContentsComponent.DEFAULT);
 
-        if (bundleContainer != null && bundleContainer.equals(BundleContents.EMPTY) == false)
+        if (bundleContainer != null && bundleContainer.equals(BundleContentsComponent.DEFAULT) == false)
         {
             int defMaxSlots = bundleContainer.size();
 
@@ -1576,8 +1576,8 @@ public class InventoryUtils
                 maxSlots = maxSlots < 64 ? maxSlots : defMaxSlots;
             }
 
-            NonNullList<ItemStack> items = NonNullList.createWithCapacity(maxSlots);
-            Iterator<ItemStack> iter = bundleContainer.itemCopyStream().iterator();
+            DefaultedList<ItemStack> items = DefaultedList.ofSize(maxSlots);
+            Iterator<ItemStack> iter = bundleContainer.stream().iterator();
             int limit = 0;
 
             while (iter.hasNext() && limit < maxSlots)
@@ -1589,7 +1589,7 @@ public class InventoryUtils
             return items;
         }
 
-        return NonNullList.create();
+        return DefaultedList.of();
     }
 
     /**
@@ -1602,7 +1602,7 @@ public class InventoryUtils
     public static Object2IntOpenHashMap<ItemType> getStoredItemCounts(ItemStack stackShulkerBox)
     {
         Object2IntOpenHashMap<ItemType> map = new Object2IntOpenHashMap<>();
-        NonNullList<ItemStack> items = getStoredItems(stackShulkerBox);
+        DefaultedList<ItemStack> items = getStoredItems(stackShulkerBox);
 
         for (ItemStack stack : items)
         {
@@ -1623,14 +1623,14 @@ public class InventoryUtils
      * @param inv ()
      * @return ()
      */
-    public static Object2IntOpenHashMap<ItemType> getInventoryItemCounts(Container inv)
+    public static Object2IntOpenHashMap<ItemType> getInventoryItemCounts(Inventory inv)
     {
         Object2IntOpenHashMap<ItemType> map = new Object2IntOpenHashMap<>();
-        final int slots = inv.getContainerSize();
+        final int slots = inv.size();
 
         for (int slot = 0; slot < slots; ++slot)
         {
-            ItemStack stack = inv.getItem(slot);
+            ItemStack stack = inv.getStack(slot);
 
             if (stack.isEmpty() == false)
             {
@@ -1658,19 +1658,19 @@ public class InventoryUtils
      * @param inv ()
      * @return ()
      */
-    public static NonNullList<ItemStack> getAsItemList(Container inv)
+    public static DefaultedList<ItemStack> getAsItemList(Inventory inv)
     {
         if (inv == null || inv.isEmpty())
         {
-            return NonNullList.create();
+            return DefaultedList.of();
         }
 
-        int size = inv.getContainerSize();
-        NonNullList<ItemStack> list = NonNullList.withSize(size, ItemStack.EMPTY);
+        int size = inv.size();
+        DefaultedList<ItemStack> list = DefaultedList.ofSize(size, ItemStack.EMPTY);
 
         for (int i = 0; i < size; i++)
         {
-            ItemStack entry = inv.getItem(i);
+            ItemStack entry = inv.getStack(i);
 
             if (!entry.isEmpty())
             {
@@ -1687,18 +1687,18 @@ public class InventoryUtils
      * @param items ()
      * @return ()
      */
-    public static @Nullable Container getAsInventory(NonNullList<ItemStack> items)
+    public static @Nullable Inventory getAsInventory(DefaultedList<ItemStack> items)
     {
         if (items == null || items.isEmpty())
         {
             return null;
         }
 
-        SimpleContainer inv = new SimpleContainer(items.size());
+        SimpleInventory inv = new SimpleInventory(items.size());
 
         for (int slot = 0; slot < items.size(); ++slot)
         {
-            inv.setItem(slot, items.get(slot).copy());
+            inv.setStack(slot, items.get(slot).copy());
 //            LOGGER.debug("getAsInventory()[{}] inv [{}], items [{}]", slot, inv.getStack(slot).toString(), items.get(slot).toString());
         }
 
@@ -1714,7 +1714,7 @@ public class InventoryUtils
     @Nullable
     public static ItemStack getItemStackFromString(String itemNameIn)
     {
-        return getItemStackFromString(itemNameIn, -1, DataComponentMap.EMPTY);
+        return getItemStackFromString(itemNameIn, -1, ComponentMap.EMPTY);
     }
 
     /**
@@ -1725,7 +1725,7 @@ public class InventoryUtils
      * @return (The ItemStack object or ItemStack.EMPTY, aka Air)
      */
     @Nullable
-    public static ItemStack getItemStackFromString(String itemNameIn, DataComponentMap data)
+    public static ItemStack getItemStackFromString(String itemNameIn, ComponentMap data)
     {
         return getItemStackFromString(itemNameIn, -1, data);
     }
@@ -1740,7 +1740,7 @@ public class InventoryUtils
     @Nullable
     public static ItemStack getItemStackFromString(String itemNameIn, int count)
     {
-        return getItemStackFromString(itemNameIn, count, DataComponentMap.EMPTY);
+        return getItemStackFromString(itemNameIn, count, ComponentMap.EMPTY);
     }
 
     /**
@@ -1752,7 +1752,7 @@ public class InventoryUtils
      * @return (The ItemStack object or ItemStack.EMPTY, aka Air)
      */
     @Nullable
-    public static ItemStack getItemStackFromString(String itemNameIn, int count, @Nonnull DataComponentMap data)
+    public static ItemStack getItemStackFromString(String itemNameIn, int count, @Nonnull ComponentMap data)
     {
         if (itemNameIn.isEmpty() || itemNameIn.equals("empty") || itemNameIn.equals("minecraft:air") || itemNameIn.equals("air"))
         {
@@ -1768,10 +1768,10 @@ public class InventoryUtils
 
             if (itemName != null)
             {
-                ResourceLocation itemId = ResourceLocation.tryParse(itemName);
-                Holder<Item> itemEntry = BuiltInRegistries.ITEM.get(itemId).orElse(null);
+                Identifier itemId = Identifier.tryParse(itemName);
+                RegistryEntry<Item> itemEntry = Registries.ITEM.getEntry(itemId).orElse(null);
 
-                if (itemEntry != null && itemEntry.isBound())
+                if (itemEntry != null && itemEntry.hasKeyAndValue())
                 {
                     if (count < 0)
                     {
@@ -1781,9 +1781,9 @@ public class InventoryUtils
                     {
                         stackOut = new ItemStack(itemEntry, count);
                     }
-                    if (data.isEmpty() == false && data.equals(DataComponentMap.EMPTY) == false)
+                    if (data.isEmpty() == false && data.equals(ComponentMap.EMPTY) == false)
                     {
-                        stackOut.applyComponents(data);
+                        stackOut.applyComponentsFrom(data);
                     }
 
                     return stackOut;
@@ -1806,14 +1806,14 @@ public class InventoryUtils
      * @return (The item stack with components, or null)
      */
     @Nullable
-    public static ItemStack getItemStackFromString(String stringIn, @Nonnull RegistryAccess registry)
+    public static ItemStack getItemStackFromString(String stringIn, @Nonnull DynamicRegistryManager registry)
     {
-        ItemParser itemStringReader = new ItemParser(registry);
-        ItemParser.ItemResult results;
+        ItemStringReader itemStringReader = new ItemStringReader(registry);
+        ItemStringReader.ItemResult results;
 
         try
         {
-            results = itemStringReader.parse(new StringReader(stringIn));
+            results = itemStringReader.consume(new StringReader(stringIn));
         }
         catch (CommandSyntaxException e)
         {
@@ -1822,7 +1822,7 @@ public class InventoryUtils
         }
 
         ItemStack stackOut = new ItemStack(results.item());
-        stackOut.applyComponentsAndValidate(results.components());
+        stackOut.applyChanges(results.components());
 
         return stackOut;
     }
@@ -1834,11 +1834,11 @@ public class InventoryUtils
      * @param registry ()
      * @return ()
      */
-    public static Holder<Item> getItemEntry(ResourceLocation id, @Nonnull RegistryAccess registry)
+    public static RegistryEntry<Item> getItemEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
     {
         try
         {
-            return registry.lookupOrThrow(BuiltInRegistries.ITEM.key()).get(id).orElseThrow();
+            return registry.getOrThrow(Registries.ITEM.getKey()).getEntry(id).orElseThrow();
         }
         catch (Exception e)
         {
@@ -1854,7 +1854,7 @@ public class InventoryUtils
      */
     public static boolean hasStoredBlockEntityData(ItemStack stack)
     {
-        return stack.has(DataComponents.BLOCK_ENTITY_DATA);
+        return stack.contains(DataComponentTypes.BLOCK_ENTITY_DATA);
     }
 
     /**
@@ -1863,19 +1863,19 @@ public class InventoryUtils
      * @param stack ()
      * @return ()
      */
-    public static CompoundTag getStoredBlockEntityNbt(ItemStack stack)
+    public static NbtCompound getStoredBlockEntityNbt(ItemStack stack)
     {
-        if (stack.has(DataComponents.BLOCK_ENTITY_DATA))
+        if (stack.contains(DataComponentTypes.BLOCK_ENTITY_DATA))
         {
-            TypedEntityData<BlockEntityType<?>> component = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+            TypedEntityData<BlockEntityType<?>> component = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
 
             if (component != null)
             {
-                return component.copyTagWithoutId();
+                return component.copyNbtWithoutId();
             }
         }
 
-        return new CompoundTag();
+        return new NbtCompound();
     }
 
 	/**
@@ -1887,13 +1887,13 @@ public class InventoryUtils
 	@ApiStatus.Experimental
 	public static CompoundData getStoredBlockEntityDataTag(ItemStack stack)
 	{
-		if (stack.has(DataComponents.BLOCK_ENTITY_DATA))
+		if (stack.contains(DataComponentTypes.BLOCK_ENTITY_DATA))
 		{
-			TypedEntityData<BlockEntityType<?>> component = stack.get(DataComponents.BLOCK_ENTITY_DATA);
+			TypedEntityData<BlockEntityType<?>> component = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
 
 			if (component != null)
 			{
-				return DataConverterNbt.fromVanillaCompound(component.copyTagWithoutId());
+				return DataConverterNbt.fromVanillaCompound(component.copyNbtWithoutId());
 			}
 		}
 
@@ -1905,13 +1905,13 @@ public class InventoryUtils
 	 * @param tag ()
 	 * @return ()
 	 */
-    public static ItemStack fromNbtOrEmpty(@Nullable Tag tag)
+    public static ItemStack fromNbtOrEmpty(@Nullable NbtElement tag)
     {
-        Minecraft mc = Minecraft.getInstance();
+        MinecraftClient mc = MinecraftClient.getInstance();
 
-        if (mc.level != null)
+        if (mc.world != null)
         {
-            return fromNbtOrEmpty(mc.level.registryAccess(), tag);
+            return fromNbtOrEmpty(mc.world.getRegistryManager(), tag);
         }
 
         return ItemStack.EMPTY;
@@ -1925,11 +1925,11 @@ public class InventoryUtils
 	@ApiStatus.Experimental
 	public static ItemStack fromDataOrEmpty(@Nullable CompoundData data)
 	{
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 
-		if (mc.level != null)
+		if (mc.world != null)
 		{
-			return fromDataOrEmpty(mc.level.registryAccess(), data);
+			return fromDataOrEmpty(mc.world.getRegistryManager(), data);
 		}
 
 		return ItemStack.EMPTY;
@@ -1941,13 +1941,13 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
-    public static ItemStack getStackCodec(@Nonnull CompoundTag nbt, String key)
+    public static ItemStack getStackCodec(@Nonnull NbtCompound nbt, String key)
     {
-        Minecraft mc = Minecraft.getInstance();
+        MinecraftClient mc = MinecraftClient.getInstance();
 
-        if (mc.level != null)
+        if (mc.world != null)
         {
-            return getStackCodec(nbt, mc.level.registryAccess(), key);
+            return getStackCodec(nbt, mc.world.getRegistryManager(), key);
         }
 
         return ItemStack.EMPTY;
@@ -1962,11 +1962,11 @@ public class InventoryUtils
 	@ApiStatus.Experimental
 	public static ItemStack getStackCodec(@Nonnull CompoundData data, String key)
 	{
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 
-		if (mc.level != null)
+		if (mc.world != null)
 		{
-			return getStackCodec(data, mc.level.registryAccess(), key);
+			return getStackCodec(data, mc.world.getRegistryManager(), key);
 		}
 
 		return ItemStack.EMPTY;
@@ -1979,16 +1979,16 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
-    public static CompoundTag putStackCodec(@Nonnull CompoundTag nbt, @Nonnull ItemStack stack, String key)
+    public static NbtCompound putStackCodec(@Nonnull NbtCompound nbt, @Nonnull ItemStack stack, String key)
     {
-        Minecraft mc = Minecraft.getInstance();
+        MinecraftClient mc = MinecraftClient.getInstance();
 
-        if (mc.level != null)
+        if (mc.world != null)
         {
-            return putStackCodec(nbt, mc.level.registryAccess(), stack, key);
+            return putStackCodec(nbt, mc.world.getRegistryManager(), stack, key);
         }
 
-        return new CompoundTag();
+        return new NbtCompound();
     }
 
 	/**
@@ -2001,11 +2001,11 @@ public class InventoryUtils
 	@ApiStatus.Experimental
 	public static CompoundData putStackCodec(@Nonnull CompoundData data, @Nonnull ItemStack stack, String key)
 	{
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 
-		if (mc.level != null)
+		if (mc.world != null)
 		{
-			return putStackCodec(data, mc.level.registryAccess(), stack, key);
+			return putStackCodec(data, mc.world.getRegistryManager(), stack, key);
 		}
 
 		return new CompoundData();
@@ -2017,14 +2017,14 @@ public class InventoryUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-    public static ItemStack fromNbtOrEmpty(@Nonnull RegistryAccess registry, @Nullable Tag tag)
+    public static ItemStack fromNbtOrEmpty(@Nonnull DynamicRegistryManager registry, @Nullable NbtElement tag)
     {
         if (tag == null)
         {
             return ItemStack.EMPTY;
         }
 
-        return ItemStack.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), tag).resultOrPartial().orElse(ItemStack.EMPTY);
+        return ItemStack.CODEC.parse(registry.getOps(NbtOps.INSTANCE), tag).resultOrPartial().orElse(ItemStack.EMPTY);
     }
 
 	/**
@@ -2034,14 +2034,14 @@ public class InventoryUtils
 	 * @return ()
 	 */
 	@ApiStatus.Experimental
-	public static ItemStack fromDataOrEmpty(@Nonnull RegistryAccess registry, @Nullable CompoundData tag)
+	public static ItemStack fromDataOrEmpty(@Nonnull DynamicRegistryManager registry, @Nullable CompoundData tag)
 	{
 		if (tag == null)
 		{
 			return ItemStack.EMPTY;
 		}
 
-		return ItemStack.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(tag)).resultOrPartial().orElse(ItemStack.EMPTY);
+		return ItemStack.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(tag)).resultOrPartial().orElse(ItemStack.EMPTY);
 	}
 
 	/**
@@ -2051,9 +2051,9 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
-    public static ItemStack getStackCodec(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry, String key)
+    public static ItemStack getStackCodec(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry, String key)
     {
-        return nbt.read(key, ItemStack.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
+        return nbt.get(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
     }
 
 	/**
@@ -2064,9 +2064,9 @@ public class InventoryUtils
 	 * @return ()
 	 */
 	@ApiStatus.Experimental
-	public static ItemStack getStackCodec(@Nonnull CompoundData data, @Nonnull RegistryAccess registry, String key)
+	public static ItemStack getStackCodec(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, String key)
 	{
-		return data.getCodec(key, ItemStack.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
+		return data.getCodec(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
 	}
 
 	/**
@@ -2077,9 +2077,9 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
-    public static CompoundTag putStackCodec(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry, @Nonnull ItemStack stack, String key)
+    public static NbtCompound putStackCodec(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry, @Nonnull ItemStack stack, String key)
     {
-        nbt.store(key, ItemStack.CODEC, registry.createSerializationContext(NbtOps.INSTANCE), stack);
+        nbt.put(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE), stack);
         return nbt;
     }
 
@@ -2092,8 +2092,8 @@ public class InventoryUtils
 	 * @return ()
 	 */
 	@ApiStatus.Experimental
-	public static CompoundData putStackCodec(@Nonnull CompoundData data, @Nonnull RegistryAccess registry, @Nonnull ItemStack stack, String key)
+	public static CompoundData putStackCodec(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, @Nonnull ItemStack stack, String key)
 	{
-		return data.putCodec(key, ItemStack.CODEC, registry.createSerializationContext(NbtOps.INSTANCE), stack);
+		return data.putCodec(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE), stack);
 	}
 }

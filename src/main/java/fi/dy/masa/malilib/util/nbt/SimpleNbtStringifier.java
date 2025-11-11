@@ -3,9 +3,9 @@ package fi.dy.masa.malilib.util.nbt;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.ApiStatus;
 import fi.dy.masa.malilib.util.data.Constants;
@@ -28,7 +28,7 @@ public class SimpleNbtStringifier extends BaseNbtStringifier
         super(true, true, baseColor);
     }
 
-    public String getNbtString(CompoundTag tag)
+    public String getNbtString(NbtCompound tag)
     {
         this.stringBuilder = new StringBuilder();
 
@@ -43,15 +43,15 @@ public class SimpleNbtStringifier extends BaseNbtStringifier
     }
 
     @Override
-    protected void appendPrimitive(String tagName, Tag tag)
+    protected void appendPrimitive(String tagName, NbtElement tag)
     {
         this.stringBuilder.append(this.getFormattedPrimitiveString(tag));
     }
 
     @Override
-    protected void appendCompound(String tagName, CompoundTag tag)
+    protected void appendCompound(String tagName, NbtCompound tag)
     {
-        List<String> keys = Lists.newArrayList(tag.keySet());
+        List<String> keys = Lists.newArrayList(tag.getKeys());
         Collections.sort(keys);
         boolean first = true;
 
@@ -74,7 +74,7 @@ public class SimpleNbtStringifier extends BaseNbtStringifier
     }
 
     @Override
-    protected void appendList(String tagName, ListTag list)
+    protected void appendList(String tagName, NbtList list)
     {
         final int size = list.size();
 

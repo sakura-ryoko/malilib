@@ -1,8 +1,8 @@
 package fi.dy.masa.malilib.test.gui;
 
 import java.util.List;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.block.Block;
+import net.minecraft.client.gui.DrawContext;
 import org.jetbrains.annotations.Nullable;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntrySortable;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -89,7 +89,7 @@ public class WidgetTestListEntry extends WidgetListEntrySortable<GuiTestList.Ent
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         // Default color for even entries
         int color = 0xA0303030;

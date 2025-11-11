@@ -2,7 +2,7 @@ package fi.dy.masa.malilib.config.options;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.dynamic.Codecs;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -21,8 +21,8 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
     public static final Codec<ConfigStringList> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
-                    ExtraCodecs.compactListCodec(PrimitiveCodec.STRING).fieldOf("defaultValue").forGetter(get -> get.defaultValue.stream().toList()),
-                    ExtraCodecs.compactListCodec(PrimitiveCodec.STRING).fieldOf("values").forGetter(get -> get.strings),
+                    Codecs.listOrSingle(PrimitiveCodec.STRING).fieldOf("defaultValue").forGetter(get -> get.defaultValue.stream().toList()),
+                    Codecs.listOrSingle(PrimitiveCodec.STRING).fieldOf("values").forGetter(get -> get.strings),
                     PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
                     PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
                     PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)

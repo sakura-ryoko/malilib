@@ -1,11 +1,11 @@
 package fi.dy.masa.malilib.mixin.entity;
 
 import fi.dy.masa.malilib.util.game.IEntityOwnedInventory;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.monster.piglin.Piglin;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.mob.PiglinEntity;
+import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,12 +13,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Piglin.class)
+@Mixin(PiglinEntity.class)
 public abstract class MixinPiglinEntity extends Entity
 {
-    @Shadow @Final private SimpleContainer inventory;
+    @Shadow @Final private SimpleInventory inventory;
 
-    public MixinPiglinEntity(EntityType<?> type, Level world)
+    public MixinPiglinEntity(EntityType<?> type, World world)
     {
         super(type, world);
     }
@@ -27,7 +27,7 @@ public abstract class MixinPiglinEntity extends Entity
             method = "<init>",
             at = @At("RETURN")
     )
-    private void onNewInventory(EntityType<?> entityType, Level world, CallbackInfo ci)
+    private void onNewInventory(EntityType<?> entityType, World world, CallbackInfo ci)
     {
         ((IEntityOwnedInventory) inventory).malilib$setEntityOwner(this);
     }

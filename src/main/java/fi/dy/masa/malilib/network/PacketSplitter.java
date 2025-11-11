@@ -1,10 +1,10 @@
 package fi.dy.masa.malilib.network;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.util.Identifier;
 import java.util.HashMap;
 import java.util.Map;
 import io.netty.buffer.Unpooled;
@@ -27,12 +27,12 @@ public class PacketSplitter
 
     private static final Map<Long, ReadingSession> READING_SESSIONS = new HashMap<>();
 
-    public static <T extends CustomPacketPayload> boolean send(IPluginClientPlayHandler<T> handler, FriendlyByteBuf packet, ClientPacketListener networkHandler)
+    public static <T extends CustomPayload> boolean send(IPluginClientPlayHandler<T> handler, PacketByteBuf packet, ClientPlayNetworkHandler networkHandler)
     {
         return send(handler, packet, MAX_PAYLOAD_PER_PACKET_C2S, networkHandler);
     }
 
-    private static <T extends CustomPacketPayload> boolean send(IPluginClientPlayHandler<T> handler, FriendlyByteBuf packet, int payloadLimit, ClientPacketListener networkHandler)
+    private static <T extends CustomPayload> boolean send(IPluginClientPlayHandler<T> handler, PacketByteBuf packet, int payloadLimit, ClientPlayNetworkHandler networkHandler)
     {
         int len = packet.writerIndex();
 
@@ -41,7 +41,7 @@ public class PacketSplitter
         for (int offset = 0; offset < len; offset += payloadLimit)
         {
             int thisLen = Math.min(len - offset, payloadLimit);
-            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer(thisLen));
+            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer(thisLen));
 
             buf.resetWriterIndex();
 
@@ -59,17 +59,17 @@ public class PacketSplitter
         return true;
     }
 
-    public static <T extends CustomPacketPayload> FriendlyByteBuf receive(IPluginClientPlayHandler<T> handler,
+    public static <T extends CustomPayload> PacketByteBuf receive(IPluginClientPlayHandler<T> handler,
                                                                   long key,
-                                                                  FriendlyByteBuf buf)
+                                                                  PacketByteBuf buf)
     {
         return receive(handler.getPayloadChannel(), key, buf, DEFAULT_MAX_RECEIVE_SIZE_S2C);
     }
 
     @Nullable
-    private static FriendlyByteBuf receive(ResourceLocation channel,
+    private static PacketByteBuf receive(Identifier channel,
                                          long key,
-                                         FriendlyByteBuf buf,
+                                         PacketByteBuf buf,
                                          int maxLength)
     {
         return READING_SESSIONS.computeIfAbsent(key, ReadingSession::new).receive(buf, maxLength);
@@ -111,7 +111,7 @@ public class PacketSplitter
     {
         private final long key;
         private int expectedSize = -1;
-        private FriendlyByteBuf received;
+        private PacketByteBuf received;
 
         private ReadingSession(long key)
         {
@@ -119,7 +119,7 @@ public class PacketSplitter
         }
 
         @Nullable
-        private FriendlyByteBuf receive(FriendlyByteBuf data, int maxLength)
+        private PacketByteBuf receive(PacketByteBuf data, int maxLength)
         {
             data.readerIndex(0);
             //data = PacketUtils.slice(data);
@@ -133,7 +133,7 @@ public class PacketSplitter
                     throw new IllegalArgumentException("Payload too large");
                 }
 
-                this.received = new FriendlyByteBuf(Unpooled.buffer(this.expectedSize));
+                this.received = new PacketByteBuf(Unpooled.buffer(this.expectedSize));
             }
 
             if (this.received == null)

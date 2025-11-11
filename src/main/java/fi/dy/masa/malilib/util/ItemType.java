@@ -1,9 +1,9 @@
 package fi.dy.masa.malilib.util;
 
 import java.util.Objects;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -107,12 +107,12 @@ public class ItemType
     {
         if (this.checkNBT())
         {
-            ResourceLocation rl = BuiltInRegistries.ITEM.getKey(this.stack.getItem());
+            Identifier rl = Registries.ITEM.getId(this.stack.getItem());
             return rl + " " + this.stack.getComponents();
         }
         else
         {
-            return BuiltInRegistries.ITEM.getKey(this.stack.getItem()).toString();
+            return Registries.ITEM.getId(this.stack.getItem()).toString();
         }
     }
 }

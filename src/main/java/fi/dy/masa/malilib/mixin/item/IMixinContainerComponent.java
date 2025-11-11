@@ -1,14 +1,14 @@
 package fi.dy.masa.malilib.mixin.item;
 
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.ItemContainerContents;
+import net.minecraft.component.type.ContainerComponent;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ItemContainerContents.class)
+@Mixin(ContainerComponent.class)
 public interface IMixinContainerComponent
 {
-    @Accessor("items")
-    NonNullList<ItemStack> malilib_getStacks();
+    @Accessor("stacks")
+    DefaultedList<ItemStack> malilib_getStacks();
 }

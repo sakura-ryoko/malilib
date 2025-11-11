@@ -2,16 +2,15 @@ package fi.dy.masa.malilib.util;
 
 import java.util.function.IntFunction;
 import javax.annotation.Nonnull;
-
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ByIdMap;
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
-public enum LayerMode implements IConfigOptionListEntry, StringRepresentable
+public enum LayerMode implements IConfigOptionListEntry, StringIdentifiable
 {
     ALL             (0, "all",             "malilib.gui.label.layer_mode.all"),
     SINGLE_LAYER    (1, "single_layer",    "malilib.gui.label.layer_mode.single_layer"),
@@ -19,9 +18,9 @@ public enum LayerMode implements IConfigOptionListEntry, StringRepresentable
     ALL_BELOW       (3, "all_below",       "malilib.gui.label.layer_mode.all_below"),
     ALL_ABOVE       (4, "all_above",       "malilib.gui.label.layer_mode.all_above");
 
-    public static final StringRepresentable.EnumCodec<LayerMode> CODEC = StringRepresentable.fromEnum(LayerMode::values);
-    public static final IntFunction<LayerMode> INDEX_TO_VALUE = ByIdMap.continuous(LayerMode::getIndex, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
-    public static final StreamCodec<ByteBuf, LayerMode> PACKET_CODEC = ByteBufCodecs.idMapper(INDEX_TO_VALUE, LayerMode::getIndex);
+    public static final StringIdentifiable.EnumCodec<LayerMode> CODEC = StringIdentifiable.createCodec(LayerMode::values);
+    public static final IntFunction<LayerMode> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(LayerMode::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
+    public static final PacketCodec<ByteBuf, LayerMode> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, LayerMode::getIndex);
     public static final ImmutableList<LayerMode> VALUES = ImmutableList.copyOf(values());
 
     private final int index;
@@ -53,7 +52,7 @@ public enum LayerMode implements IConfigOptionListEntry, StringRepresentable
     }
 
     @Override
-    public @Nonnull String getSerializedName()
+    public @Nonnull String asString()
     {
         return this.configString;
     }

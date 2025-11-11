@@ -10,7 +10,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigDouble;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.util.Mth;
+import net.minecraft.util.math.MathHelper;
 
 public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDouble
 {
@@ -156,7 +156,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
 
     protected double getClampedValue(double value)
     {
-        return Mth.clamp(value, this.minValue, this.maxValue);
+        return MathHelper.clamp(value, this.minValue, this.maxValue);
     }
 
     @Override

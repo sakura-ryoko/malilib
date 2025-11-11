@@ -3,73 +3,71 @@ package fi.dy.masa.malilib.util.game;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.debug.DebugScreenEntries;
-import net.minecraft.client.gui.components.debug.DebugScreenEntry;
-import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
-import net.minecraft.resources.ResourceLocation;
-
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.hud.debug.DebugHudEntries;
+import net.minecraft.client.gui.hud.debug.DebugHudEntry;
+import net.minecraft.client.gui.hud.debug.DebugHudEntryVisibility;
+import net.minecraft.util.Identifier;
 import fi.dy.masa.malilib.MaLiLib;
 
 public class DebugHudUtils
 {
-	public static void register(ResourceLocation id, @Nonnull DebugScreenEntry entry)
+	public static void register(Identifier id, @Nonnull DebugHudEntry entry)
 	{
 		if (Objects.equals(id.getNamespace(), "minecraft")) return;
-		if (!DebugScreenEntries.ENTRIES_BY_LOCATION.containsKey(id))
+		if (!DebugHudEntries.ENTRIES.containsKey(id))
 		{
-			Minecraft mc = Minecraft.getInstance();
+			MinecraftClient mc = MinecraftClient.getInstance();
 
-			DebugScreenEntries.ENTRIES_BY_LOCATION.put(id, entry);
+			DebugHudEntries.ENTRIES.put(id, entry);
 			MaLiLib.debugLog("DebugHudUtils#register(): Registered [{}]", id.toString());
 
-			if (mc.debugEntries == null) return;
-			if (!mc.debugEntries.allStatuses.containsKey(id))
+			if (mc.debugHudEntryList == null) return;
+			if (!mc.debugHudEntryList.visibilityMap.containsKey(id))
 			{
-				mc.debugEntries.allStatuses.put(id, DebugScreenEntryStatus.NEVER);
-				mc.debugEntries.save();
+				mc.debugHudEntryList.visibilityMap.put(id, DebugHudEntryVisibility.NEVER);
+				mc.debugHudEntryList.saveProfileFile();
 			}
 		}
 	}
 
-	public static void unregister(ResourceLocation id)
+	public static void unregister(Identifier id)
 	{
 		if (Objects.equals(id.getNamespace(), "minecraft")) return;
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 
-		DebugScreenEntries.ENTRIES_BY_LOCATION.remove(id);
+		DebugHudEntries.ENTRIES.remove(id);
 
-		if (mc.debugEntries != null)
+		if (mc.debugHudEntryList != null)
 		{
-			mc.debugEntries.allStatuses.remove(id);
-			mc.debugEntries.currentlyEnabled.remove(id);
-			mc.debugEntries.save();
+			mc.debugHudEntryList.visibilityMap.remove(id);
+			mc.debugHudEntryList.visibleEntries.remove(id);
+			mc.debugHudEntryList.saveProfileFile();
 		}
 	}
 
-	public static @Nullable DebugScreenEntryStatus getVisibility(ResourceLocation id)
+	public static @Nullable DebugHudEntryVisibility getVisibility(Identifier id)
 	{
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 
-		if (DebugScreenEntries.ENTRIES_BY_LOCATION.containsKey(id) &&
-			mc.debugEntries != null &&
-			mc.debugEntries.allStatuses.containsKey(id))
+		if (DebugHudEntries.ENTRIES.containsKey(id) &&
+			mc.debugHudEntryList != null &&
+			mc.debugHudEntryList.visibilityMap.containsKey(id))
 		{
-			return mc.debugEntries.allStatuses.get(id);
+			return mc.debugHudEntryList.visibilityMap.get(id);
 		}
 
 		return null;
 	}
 
-	public static void setVisibility(ResourceLocation id, DebugScreenEntryStatus visibility)
+	public static void setVisibility(Identifier id, DebugHudEntryVisibility visibility)
 	{
-		Minecraft mc = Minecraft.getInstance();
+		MinecraftClient mc = MinecraftClient.getInstance();
 
-		if (DebugScreenEntries.ENTRIES_BY_LOCATION.containsKey(id) &&
-			mc.debugEntries != null)
+		if (DebugHudEntries.ENTRIES.containsKey(id) &&
+			mc.debugHudEntryList != null)
 		{
-			mc.debugEntries.allStatuses.put(id, visibility);
+			mc.debugHudEntryList.visibilityMap.put(id, visibility);
 		}
 	}
 }

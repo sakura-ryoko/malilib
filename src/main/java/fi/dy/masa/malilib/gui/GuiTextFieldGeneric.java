@@ -1,15 +1,15 @@
 package fi.dy.masa.malilib.gui;
 
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.screen.ScreenTexts;
 import org.joml.Matrix3x2fStack;
 
-public class GuiTextFieldGeneric extends EditBox
+public class GuiTextFieldGeneric extends TextFieldWidget
 {
     protected int x;
     protected int y;
@@ -17,9 +17,9 @@ public class GuiTextFieldGeneric extends EditBox
     protected int height;
     protected int zLevel;
 
-    public GuiTextFieldGeneric(int x, int y, int width, int height, Font textRenderer)
+    public GuiTextFieldGeneric(int x, int y, int width, int height, TextRenderer textRenderer)
     {
-        super(textRenderer, x, y, width, height, CommonComponents.EMPTY);
+        super(textRenderer, x, y, width, height, ScreenTexts.EMPTY);
 
         this.x = x;
         this.y = y;
@@ -30,15 +30,15 @@ public class GuiTextFieldGeneric extends EditBox
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent click, boolean doubleClick)
+    public boolean mouseClicked(Click click, boolean doubleClick)
     {
         boolean ret = super.mouseClicked(click, doubleClick);
 
         if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
-            if (click.input() == 1)
+            if (click.getKeycode() == 1)
             {
-                this.setValue("");
+                this.setText("");
             }
 
             this.setFocused(true);
@@ -90,11 +90,11 @@ public class GuiTextFieldGeneric extends EditBox
     }
 
     @Override
-    public void renderWidget(GuiGraphics context, int mouseX, int mouseY, float delta)
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta)
     {
         if (this.zLevel != 0)
         {
-            Matrix3x2fStack matrixStack = context.pose();
+            Matrix3x2fStack matrixStack = context.getMatrices();
             matrixStack.pushMatrix();
             // this.zLevel
             matrixStack.translate(0, 0);
@@ -115,7 +115,7 @@ public class GuiTextFieldGeneric extends EditBox
      */
     public void setTextWrapper(String text)
     {
-        this.setValue(text);
+        this.setText(text);
     }
 
     /**
@@ -124,7 +124,7 @@ public class GuiTextFieldGeneric extends EditBox
      */
     public String getTextWrapper()
     {
-        return this.getValue();
+        return this.getText();
     }
 
     /**
@@ -142,7 +142,7 @@ public class GuiTextFieldGeneric extends EditBox
      */
     public int getCursorWrapper()
     {
-        return this.getCursorPosition();
+        return this.getCursor();
     }
 
     /**
@@ -215,7 +215,7 @@ public class GuiTextFieldGeneric extends EditBox
      * @param mouseY ()
      * @param delta ()
      */
-    public void renderWrapper(GuiGraphics context, int mouseX, int mouseY, float delta)
+    public void renderWrapper(DrawContext context, int mouseX, int mouseY, float delta)
     {
         this.render(context, mouseX, mouseY, delta);
     }
@@ -225,7 +225,7 @@ public class GuiTextFieldGeneric extends EditBox
      * @param input ()
      * @return ()
      */
-    public boolean keyPressedWrapper(KeyEvent input)
+    public boolean keyPressedWrapper(KeyInput input)
     {
         return this.keyPressed(input);
     }
@@ -235,7 +235,7 @@ public class GuiTextFieldGeneric extends EditBox
      * @param input ()
      * @return ()
      */
-    public boolean charTypedWrapper(CharacterEvent input)
+    public boolean charTypedWrapper(CharInput input)
     {
         return this.charTyped(input);
     }
@@ -245,7 +245,7 @@ public class GuiTextFieldGeneric extends EditBox
      * @param click ()
      * @return ()
      */
-    public boolean mouseClickedWrapper(MouseButtonEvent click, boolean doubleClick)
+    public boolean mouseClickedWrapper(Click click, boolean doubleClick)
     {
         return this.mouseClicked(click, doubleClick);
     }

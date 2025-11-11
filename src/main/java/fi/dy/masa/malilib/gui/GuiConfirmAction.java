@@ -3,8 +3,8 @@ package fi.dy.masa.malilib.gui;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import org.joml.Matrix3x2fStack;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
@@ -77,20 +77,20 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
     }
 
     @Override
-    public boolean isPauseScreen()
+    public boolean shouldPause()
     {
-        return this.getParent() != null && this.getParent().isPauseScreen();
+        return this.getParent() != null && this.getParent().shouldPause();
     }
 
     @Override
-    public void drawContents(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
             this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
         }
 
-        Matrix3x2fStack matrixStack = drawContext.pose();
+        Matrix3x2fStack matrixStack = drawContext.getMatrices();
         matrixStack.pushMatrix();
         matrixStack.translate(0, 0);
 

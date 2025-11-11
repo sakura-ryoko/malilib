@@ -5,14 +5,20 @@ import java.util.OptionalInt;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.client.Camera;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.client.renderer.texture.TextureContents;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ARGB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.gl.Framebuffer;
+import net.minecraft.client.gl.ScissorState;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BuiltBuffer;
+import net.minecraft.client.render.Camera;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.ResourceTexture;
+import net.minecraft.client.texture.TextureContents;
+import net.minecraft.client.util.BufferAllocator;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.Vec3d;
 import com.mojang.blaze3d.systems.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -21,14 +27,8 @@ import org.joml.Vector4f;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.blaze3d.vertex.VertexSorting;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
@@ -42,15 +42,15 @@ public class RenderContext implements AutoCloseable
     private RenderPipeline shader;
     private GpuBuffer vertexBuffer;
     @Nullable private GpuBuffer indexBuffer;
-    private RenderSystem.AutoStorageIndexBuffer shapeIndex;
+    private RenderSystem.ShapeIndexBuffer shapeIndex;
     private VertexFormat.IndexType indexType;
-    private ByteBufferBuilder alloc;
+    private BufferAllocator alloc;
     private BufferBuilder builder;
     private VertexFormat format;
-    private VertexFormat.Mode drawMode;
-    private SimpleTexture texture;
+    private VertexFormat.DrawMode drawMode;
+    private ResourceTexture texture;
     private AbstractTexture directTexture;
-    @Nullable private MeshData.SortState sortState;
+    @Nullable private BuiltBuffer.SortState sortState;
     private int textureId;
     private float[] offset;
     private float lineWidth;
@@ -62,10 +62,10 @@ public class RenderContext implements AutoCloseable
     public RenderContext(Supplier<String> name, RenderPipeline shader)
     {
         this.name = name;
-        this.alloc = new ByteBufferBuilder(shader.getVertexFormat().getVertexSize() * 4);
+        this.alloc = new BufferAllocator(shader.getVertexFormat().getVertexSize() * 4);
         this.builder = new BufferBuilder(this.alloc, shader.getVertexFormatMode(), shader.getVertexFormat());
         this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getVertexFormatMode());
-        this.indexType = this.shapeIndex.type();
+        this.indexType = this.shapeIndex.getIndexType();
         this.format = shader.getVertexFormat();
         this.drawMode = shader.getVertexFormatMode();
         this.shader = shader;
@@ -87,10 +87,10 @@ public class RenderContext implements AutoCloseable
     {
         this.reset();
         this.name = name;
-        this.alloc = new ByteBufferBuilder(shader.getVertexFormat().getVertexSize() * 4);
+        this.alloc = new BufferAllocator(shader.getVertexFormat().getVertexSize() * 4);
         this.builder = new BufferBuilder(this.alloc, shader.getVertexFormatMode(), shader.getVertexFormat());
         this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getVertexFormatMode());
-        this.indexType = this.shapeIndex.type();
+        this.indexType = this.shapeIndex.getIndexType();
         this.format = shader.getVertexFormat();
         this.drawMode = shader.getVertexFormatMode();
         this.shader = shader;
@@ -128,7 +128,7 @@ public class RenderContext implements AutoCloseable
         return this.format;
     }
 
-    public VertexFormat.Mode getDrawMode()
+    public VertexFormat.DrawMode getDrawMode()
     {
         return this.drawMode;
     }
@@ -143,7 +143,7 @@ public class RenderContext implements AutoCloseable
         return this.format;
     }
 
-    public VertexFormat.Mode getShaderDrawMode()
+    public VertexFormat.DrawMode getShaderDrawMode()
     {
         if (this.shader != null)
         {
@@ -208,7 +208,7 @@ public class RenderContext implements AutoCloseable
         this.ensureSafeNoShader();
         this.ensureBuilding(this.builder);
 
-        try (MeshData meshData = this.builder.build())
+        try (BuiltBuffer meshData = this.builder.endNullable())
         {
             if (meshData != null)
             {
@@ -232,7 +232,7 @@ public class RenderContext implements AutoCloseable
         this.ensureBuilding(builder);
         this.builder = builder;
 
-        try (MeshData meshData = this.builder.build())
+        try (BuiltBuffer meshData = this.builder.endNullable())
         {
             if (meshData != null)
             {
@@ -245,13 +245,13 @@ public class RenderContext implements AutoCloseable
         }
     }
 
-    public void upload(MeshData meshData, boolean shouldResort) throws RuntimeException
+    public void upload(BuiltBuffer meshData, boolean shouldResort) throws RuntimeException
     {
         this.ensureSafeNoShader();
 
         if (RenderSystem.isOnRenderThread() && meshData != null)
         {
-            int expectedSize = meshData.vertexBuffer().remaining();
+            int expectedSize = meshData.getBuffer().remaining();
 
             if (this.vertexBuffer != null)
             {
@@ -287,7 +287,7 @@ public class RenderContext implements AutoCloseable
 
             if (!this.vertexBuffer.isClosed())
             {
-                encoder.writeToBuffer(this.vertexBuffer.slice(), meshData.vertexBuffer());
+                encoder.writeToBuffer(this.vertexBuffer.slice(), meshData.getBuffer());
             }
             else
             {
@@ -295,13 +295,13 @@ public class RenderContext implements AutoCloseable
             }
 
             // Resorting
-            if (shouldResort && meshData.indexBuffer() != null)
+            if (shouldResort && meshData.getSortedBuffer() != null)
             {
-                if (this.indexBuffer != null && this.indexBuffer.size() >= meshData.indexBuffer().remaining())
+                if (this.indexBuffer != null && this.indexBuffer.size() >= meshData.getSortedBuffer().remaining())
                 {
                     if (!this.indexBuffer.isClosed())
                     {
-                        encoder.writeToBuffer(this.indexBuffer.slice(), meshData.indexBuffer());
+                        encoder.writeToBuffer(this.indexBuffer.slice(), meshData.getSortedBuffer());
                     }
                 }
                 else
@@ -312,7 +312,7 @@ public class RenderContext implements AutoCloseable
                     }
 
                     // BufferType.INDICES --> 72
-                    this.indexBuffer = device.createBuffer(() -> this.name.get()+" IndexBuffer", 72, meshData.indexBuffer());
+                    this.indexBuffer = device.createBuffer(() -> this.name.get()+" IndexBuffer", 72, meshData.getSortedBuffer());
                 }
             }
             else if (this.indexBuffer != null)
@@ -321,8 +321,8 @@ public class RenderContext implements AutoCloseable
                 this.indexBuffer = null;
             }
 
-            this.indexCount = meshData.drawState().indexCount();
-            this.indexType = meshData.drawState().indexType();
+            this.indexCount = meshData.getDrawParameters().indexCount();
+            this.indexType = meshData.getDrawParameters().indexType();
             this.uploaded = true;
 //            meshData.close();
         }
@@ -333,32 +333,32 @@ public class RenderContext implements AutoCloseable
      * -
      * Performs the Index Buffer Resorting
      */
-    protected VertexSorting createVertexSorter(float x, float y, float z)
+    protected VertexSorter createVertexSorter(float x, float y, float z)
     {
-        return VertexSorting.byDistance(x, y, z);
+        return VertexSorter.byDistance(x, y, z);
     }
 
-    public VertexSorting createVertexSorter(Vec3 pos)
+    public VertexSorter createVertexSorter(Vec3d pos)
     {
-        return this.createVertexSorter(pos, BlockPos.ZERO);
+        return this.createVertexSorter(pos, BlockPos.ORIGIN);
     }
 
-    public VertexSorting createVertexSorter(Camera camera)
+    public VertexSorter createVertexSorter(Camera camera)
     {
-        return this.createVertexSorter(camera.getPosition(), BlockPos.ZERO);
+        return this.createVertexSorter(camera.getPos(), BlockPos.ORIGIN);
     }
 
-    public VertexSorting createVertexSorter(Camera camera, BlockPos origin)
+    public VertexSorter createVertexSorter(Camera camera, BlockPos origin)
     {
-        return this.createVertexSorter(camera.getPosition(), origin);
+        return this.createVertexSorter(camera.getPos(), origin);
     }
 
-    public VertexSorting createVertexSorter(Vec3 pos, BlockPos origin)
+    public VertexSorter createVertexSorter(Vec3d pos, BlockPos origin)
     {
-        return VertexSorting.byDistance((float)(pos.x - (double)origin.getX()), (float)(pos.y - (double) origin.getY()), (float)(pos.z - (double) origin.getZ()));
+        return VertexSorter.byDistance((float)(pos.x - (double)origin.getX()), (float)(pos.y - (double) origin.getY()), (float)(pos.z - (double) origin.getZ()));
     }
 
-    public void startResorting(@Nonnull MeshData meshData, @Nonnull VertexSorting sorter) throws RuntimeException
+    public void startResorting(@Nonnull BuiltBuffer meshData, @Nonnull VertexSorter sorter) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
 
@@ -374,7 +374,7 @@ public class RenderContext implements AutoCloseable
         return this.sortState != null;
     }
 
-    public void resortTranslucent(@Nonnull VertexSorting sorter) throws RuntimeException
+    public void resortTranslucent(@Nonnull VertexSorter sorter) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
 
@@ -385,7 +385,7 @@ public class RenderContext implements AutoCloseable
                 throw new RuntimeException("Sort State is empty!");
             }
 
-            ByteBufferBuilder.Result result = this.sortState.buildSortedIndexBuffer(this.alloc, sorter);
+            BufferAllocator.CloseableBuffer result = this.sortState.sortAndStore(this.alloc, sorter);
 
             if (result != null)
             {
@@ -399,7 +399,7 @@ public class RenderContext implements AutoCloseable
         }
     }
 
-    public void uploadIndex(@Nonnull ByteBufferBuilder.Result buffer) throws RuntimeException
+    public void uploadIndex(@Nonnull BufferAllocator.CloseableBuffer buffer) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
 
@@ -415,13 +415,13 @@ public class RenderContext implements AutoCloseable
 
             if (this.indexBuffer == null)
             {
-                this.indexBuffer = device.createBuffer(() -> this.name.get()+" IndexBuffer", 72, buffer.byteBuffer());
+                this.indexBuffer = device.createBuffer(() -> this.name.get()+" IndexBuffer", 72, buffer.getBuffer());
             }
             else
             {
                 if (!this.indexBuffer.isClosed())
                 {
-                    device.createCommandEncoder().writeToBuffer(this.indexBuffer.slice(), buffer.byteBuffer());
+                    device.createCommandEncoder().writeToBuffer(this.indexBuffer.slice(), buffer.getBuffer());
                 }
                 else
                 {
@@ -436,7 +436,7 @@ public class RenderContext implements AutoCloseable
      * -
      * Performs the Texture Binding/Unbind for the "Shader Texture" layer
      */
-    public void bindTexture(ResourceLocation id, int textureId, int width, int height) throws RuntimeException
+    public void bindTexture(Identifier id, int textureId, int width, int height) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
 
@@ -450,7 +450,7 @@ public class RenderContext implements AutoCloseable
             // Verify that we potentially have the correct texture by checking various values
             while (!this.isTextureValid(width, height))
             {
-                this.texture = (SimpleTexture) RenderUtils.tex().getTexture(id);
+                this.texture = (ResourceTexture) RenderUtils.tex().getTexture(id);
 
                 if (this.isTextureValid(width, height))
                 {
@@ -458,7 +458,7 @@ public class RenderContext implements AutoCloseable
                     {
                         // TriState.DEFAULT
                         this.texture.setFilter(false, false);
-                        RenderSystem.setShaderTexture(textureId, this.texture.getTextureView());
+                        RenderSystem.setShaderTexture(textureId, this.texture.getGlTextureView());
                     }
 
                     break;
@@ -475,7 +475,7 @@ public class RenderContext implements AutoCloseable
         {
             // Simple texture rebind since we already have a valid texture
             this.textureId = textureId;
-            RenderSystem.setShaderTexture(this.textureId, this.texture.getTextureView());
+            RenderSystem.setShaderTexture(this.textureId, this.texture.getGlTextureView());
             return;
         }
 
@@ -516,7 +516,7 @@ public class RenderContext implements AutoCloseable
         }
 
         if (((IMixinAbstractTexture) this.texture).malilib_getGlTextureView() == null ||
-            this.texture.getTextureView().isClosed())
+            this.texture.getGlTextureView().isClosed())
         {
             this.texture.close();
             this.texture = null;
@@ -539,27 +539,27 @@ public class RenderContext implements AutoCloseable
         this.textureId = textureId;
 
         if (((IMixinAbstractTexture) this.directTexture).malilib_getGlTextureView() == null ||
-            this.directTexture.getTextureView().isClosed())
+            this.directTexture.getGlTextureView().isClosed())
         {
             this.directTexture.close();
             this.directTexture = null;
             return false;
         }
 
-        RenderSystem.setShaderTexture(this.textureId, this.directTexture.getTextureView());
+        RenderSystem.setShaderTexture(this.textureId, this.directTexture.getGlTextureView());
         return true;
     }
 
-    public void unbindTexture(@Nullable ResourceLocation id)
+    public void unbindTexture(@Nullable Identifier id)
     {
         if (id != null)
         {
-            RenderUtils.tex().release(id);
+            RenderUtils.tex().destroyTexture(id);
         }
 
         if (this.texture != null)
         {
-            RenderUtils.tex().release(this.texture.resourceId());
+            RenderUtils.tex().destroyTexture(this.texture.getId());
         }
 
         RenderSystem.setShaderTexture(0, null);
@@ -579,7 +579,7 @@ public class RenderContext implements AutoCloseable
     {
         this.ensureSafeNoBuffer();
         this.ensureBuilding(this.builder);
-        MeshData meshData = this.builder.build();
+        BuiltBuffer meshData = this.builder.endNullable();
 
         if (meshData != null)
         {
@@ -588,55 +588,55 @@ public class RenderContext implements AutoCloseable
         }
     }
 
-    public void draw(MeshData meshData) throws RuntimeException
+    public void draw(BuiltBuffer meshData) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
         this.draw(null, meshData, false, false, false, false, false);
     }
 
-    public void draw(MeshData meshData, boolean shouldResort) throws RuntimeException
+    public void draw(BuiltBuffer meshData, boolean shouldResort) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
         this.draw(null, meshData, shouldResort, false, false, false, false);
     }
 
-    public void draw(MeshData meshData, boolean shouldResort, boolean setLineWidth) throws RuntimeException
+    public void draw(BuiltBuffer meshData, boolean shouldResort, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
         this.draw(null, meshData, shouldResort, false, setLineWidth, false, false);
     }
 
-    public void draw(MeshData meshData, boolean shouldResort, boolean setColor, boolean setLineWidth) throws RuntimeException
+    public void draw(BuiltBuffer meshData, boolean shouldResort, boolean setColor, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
         this.draw(null, meshData, shouldResort, setColor, setLineWidth, false, false);
     }
 
-    public void draw(MeshData meshData, boolean shouldResort, boolean setColor, boolean setLineWidth, boolean useOffset) throws RuntimeException
+    public void draw(BuiltBuffer meshData, boolean shouldResort, boolean setColor, boolean setLineWidth, boolean useOffset) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
         this.draw(null, meshData, shouldResort, setColor, setLineWidth, useOffset, false);
     }
 
-    public void draw(MeshData meshData, boolean shouldResort, boolean setColor, boolean setLineWidth, boolean useOffset, boolean useLightmapTex) throws RuntimeException
+    public void draw(BuiltBuffer meshData, boolean shouldResort, boolean setColor, boolean setLineWidth, boolean useOffset, boolean useLightmapTex) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
         this.draw(null, meshData, shouldResort, setColor, setLineWidth, useOffset, useLightmapTex);
     }
 
-    public void draw(@Nullable RenderTarget otherFb, MeshData meshData, boolean shouldResort) throws RuntimeException
+    public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, boolean shouldResort) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
         this.draw(otherFb, meshData, shouldResort, false, false, false, false);
     }
 
-    public void draw(@Nullable RenderTarget otherFb, MeshData meshData, boolean shouldResort, boolean setLineWidth) throws RuntimeException
+    public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, boolean shouldResort, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
         this.draw(otherFb, meshData, shouldResort, false, setLineWidth, false, false);
     }
 
-    public void draw(@Nullable RenderTarget otherFb, MeshData meshData, boolean shouldResort,
+    public void draw(@Nullable Framebuffer otherFb, BuiltBuffer meshData, boolean shouldResort,
                      boolean setColor, boolean setLineWidth, boolean useOffset, boolean useLightmapTex) throws RuntimeException
     {
         this.ensureSafeNoBuffer();
@@ -660,7 +660,7 @@ public class RenderContext implements AutoCloseable
             // Draw
             if (this.indexCount > 0)
             {
-                float[] rgba = {ARGB.redFloat(this.color), ARGB.greenFloat(this.color), ARGB.blueFloat(this.color), ARGB.alphaFloat(this.color)};
+                float[] rgba = {ColorHelper.getRedFloat(this.color), ColorHelper.getGreenFloat(this.color), ColorHelper.getBlueFloat(this.color), ColorHelper.getAlphaFloat(this.color)};
 
                 //MaLiLib.LOGGER.warn("RenderContext#drawPost() [{}] --> drawInternal()", this.name.get());
 //                RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
@@ -688,25 +688,25 @@ public class RenderContext implements AutoCloseable
         this.drawPost(null, setColor, setLineWidth, false, false);
     }
 
-    public void drawPost(@Nullable RenderTarget otherFb, boolean setLineWidth) throws RuntimeException
+    public void drawPost(@Nullable Framebuffer otherFb, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoTexture();
         this.drawPost(otherFb, false, setLineWidth, false, false);
     }
 
-    public void drawPost(@Nullable RenderTarget otherFb, boolean setColor, boolean setLineWidth) throws RuntimeException
+    public void drawPost(@Nullable Framebuffer otherFb, boolean setColor, boolean setLineWidth) throws RuntimeException
     {
         this.ensureSafeNoTexture();
         this.drawPost(otherFb, setColor, setLineWidth, false, false);
     }
 
-    public void drawPost(@Nullable RenderTarget otherFb, boolean setColor, boolean setLineWidth, boolean useOffset, boolean useLightmapTex) throws RuntimeException
+    public void drawPost(@Nullable Framebuffer otherFb, boolean setColor, boolean setLineWidth, boolean useOffset, boolean useLightmapTex) throws RuntimeException
     {
         this.ensureSafeNoTexture();
 
         if (this.indexCount > 0)
         {
-            float[] rgba = new float[]{ARGB.redFloat(this.color), ARGB.greenFloat(this.color), ARGB.blueFloat(this.color), ARGB.alphaFloat(this.color)};
+            float[] rgba = new float[]{ColorHelper.getRedFloat(this.color), ColorHelper.getGreenFloat(this.color), ColorHelper.getBlueFloat(this.color), ColorHelper.getAlphaFloat(this.color)};
 
 //            RenderSystem.setShaderColor(rgba[0], rgba[1], rgba[2], rgba[3]);
             this.drawInternal(otherFb, rgba, setColor, useOffset, setLineWidth, useLightmapTex);
@@ -714,7 +714,7 @@ public class RenderContext implements AutoCloseable
         }
     }
 
-    private void drawInternal(@Nullable RenderTarget otherFb, float[] rgba, boolean setColor, boolean setLineWidth, boolean useOffset, boolean useLightmapTex) throws RuntimeException
+    private void drawInternal(@Nullable Framebuffer otherFb, float[] rgba, boolean setColor, boolean setLineWidth, boolean useOffset, boolean useLightmapTex) throws RuntimeException
     {
         this.ensureSafeNoTexture();
 
@@ -749,29 +749,29 @@ public class RenderContext implements AutoCloseable
                 return;
             }
 
-            RenderTarget mainFb = RenderUtils.fb();
+            Framebuffer mainFb = RenderUtils.fb();
             GpuTextureView texture1;
             GpuTextureView texture2;
 
             if (otherFb != null)
             {
-                texture1 = otherFb.getColorTextureView();
-                texture2 = otherFb.useDepth ? otherFb.getDepthTextureView() : null;
+                texture1 = otherFb.getColorAttachmentView();
+                texture2 = otherFb.useDepthAttachment ? otherFb.getDepthAttachmentView() : null;
             }
             else
             {
-                texture1 = mainFb.getColorTextureView();
-                texture2 = mainFb.useDepth ? mainFb.getDepthTextureView() : null;
+                texture1 = mainFb.getColorAttachmentView();
+                texture2 = mainFb.useDepthAttachment ? mainFb.getDepthAttachmentView() : null;
             }
 
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());
-            GpuBuffer indexBuffer = this.shapeIndex.getBuffer(this.indexCount);
+            GpuBuffer indexBuffer = this.shapeIndex.getIndexBuffer(this.indexCount);
 
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setUniform() // lineWidth [{}]", this.name.get(), width);
 //                pass.setUniform("LineWidth", width);
 
             GpuBufferSlice gpuSlice = RenderSystem.getDynamicUniforms()
-                                                        .writeTransform(
+                                                        .write(
                                                                 RenderSystem.getModelViewMatrix(),
                                                                 colorMod,
                                                                 modelOffset,
@@ -790,9 +790,9 @@ public class RenderContext implements AutoCloseable
 
                 ScissorState scissorState = RenderSystem.getScissorStateForRenderTypeDraws();
 
-                if (scissorState.enabled())
+                if (scissorState.isEnabled())
                 {
-                    pass.enableScissor(scissorState.x(), scissorState.y(), scissorState.width(), scissorState.height());
+                    pass.enableScissor(scissorState.getX(), scissorState.getY(), scissorState.getWidth(), scissorState.getHeight());
                 }
 
                 RenderSystem.bindDefaultUniforms(pass);
@@ -801,7 +801,7 @@ public class RenderContext implements AutoCloseable
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setIndexBuffer() [{}]", this.name.get(), this.bufferIndex);
                 if (this.indexBuffer == null)
                 {
-                    pass.setIndexBuffer(indexBuffer, this.shapeIndex.type());
+                    pass.setIndexBuffer(indexBuffer, this.shapeIndex.getIndexType());
                 }
                 else
                 {
@@ -816,18 +816,18 @@ public class RenderContext implements AutoCloseable
                     if (this.texture != null)
                     {
 //                        MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler({}) [{}]", this.name.get(), this.textureId, this.texture.getGlTexture().getLabel());
-                        pass.bindSampler("Sampler" + this.textureId, this.texture.getTextureView());
+                        pass.bindSampler("Sampler" + this.textureId, this.texture.getGlTextureView());
                     }
                     else if (this.directTexture != null)
                     {
 //                        MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler({}) [{}]", this.name.get(), this.textureId, this.directTexture.getGlTexture().getLabel());
-                        pass.bindSampler("Sampler" + this.textureId, this.directTexture.getTextureView());
+                        pass.bindSampler("Sampler" + this.textureId, this.directTexture.getGlTextureView());
                     }
                 }
 
                 if (useLightmapTex)
                 {
-                    pass.bindSampler("Sampler2", RenderUtils.lightmap().getTextureView());
+                    pass.bindSampler("Sampler2", RenderUtils.lightmap().getGlTextureView());
                 }
 
 //                for (int i = 0; i < 12; i++)
@@ -952,7 +952,7 @@ public class RenderContext implements AutoCloseable
             {
                 try
                 {
-                    MeshData meshData = this.builder.build();
+                    BuiltBuffer meshData = this.builder.endNullable();
 
                     if (meshData != null)
                     {
@@ -986,7 +986,7 @@ public class RenderContext implements AutoCloseable
     {
         if (this.texture != null)
         {
-            this.unbindTexture(this.texture.resourceId());
+            this.unbindTexture(this.texture.getId());
             this.texture.close();
             this.texture = null;
         }

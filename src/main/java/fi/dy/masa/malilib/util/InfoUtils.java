@@ -8,11 +8,11 @@ import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
 import fi.dy.masa.malilib.render.MessageRenderer;
 import fi.dy.masa.malilib.util.game.IGameHud;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.world.level.Level;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.world.World;
 
 public class InfoUtils
 {
@@ -145,7 +145,7 @@ public class InfoUtils
     {
         if (MaLiLibConfigs.Generic.ENABLE_ACTIONBAR_MESSAGES.getBooleanValue())
         {
-            sendVanillaMessage(Component.translatable(key, args));
+            sendVanillaMessage(Text.translatable(key, args));
         }
     }
 
@@ -187,7 +187,7 @@ public class InfoUtils
     }
 
     @ApiStatus.Internal
-    public static void renderInGameMessages(GuiGraphics drawContext)
+    public static void renderInGameMessages(DrawContext drawContext)
     {
         int x = GuiUtils.getScaledWindowWidth() / 2;
         int y = GuiUtils.getScaledWindowHeight() - 76;
@@ -195,18 +195,18 @@ public class InfoUtils
         IN_GAME_MESSAGES.drawMessages(drawContext, x, y);
     }
 
-    public static void sendVanillaMessage(MutableComponent message)
+    public static void sendVanillaMessage(MutableText message)
     {
-        Minecraft mc = Minecraft.getInstance();
-        Level world = mc.level;
+        MinecraftClient mc = MinecraftClient.getInstance();
+        World world = mc.world;
 
         if (world != null)
         {
-            mc.gui.setOverlayMessage(message, false);
+            mc.inGameHud.setOverlayMessage(message, false);
 
             if (MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.isModified())
             {
-                ((IGameHud) mc.gui).malilib$setOverlayRemaining(MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.getIntegerValue());
+                ((IGameHud) mc.inGameHud).malilib$setOverlayRemaining(MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.getIntegerValue());
             }
         }
     }

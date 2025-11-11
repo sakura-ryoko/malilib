@@ -1,8 +1,8 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.*;
 import fi.dy.masa.malilib.config.gui.*;
@@ -259,7 +259,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             {
                 if (this.textField != null)
                 {
-                    modified |= this.initialStringValue.equals(this.textField.getTextField().getValue()) == false;
+                    modified |= this.initialStringValue.equals(this.textField.getTextField().getText()) == false;
                 }
 
                 if (this.initialKeybindSettings != null && this.initialKeybindSettings.equals(((IHotkey) config).getKeybind().getSettings()) == false)
@@ -286,7 +286,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         {
             if (this.textField != null && this.hasPendingModifications())
             {
-                config.setValueFromString(this.textField.getTextField().getValue());
+                config.setValueFromString(this.textField.getTextField().getText());
             }
 
             this.lastAppliedValue = config.getStringValue();
@@ -354,7 +354,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
-        field.setValue(config.getStringValue());
+        field.setText(config.getStringValue());
 
         ButtonGeneric resetButton = this.createResetButton(resetX, y, config);
         ConfigOptionChangeListenerTextField listenerChange = new ConfigOptionChangeListenerTextField(config, field, resetButton);
@@ -397,7 +397,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 //        RenderUtils.color(1f, 1f, 1f, 1f);

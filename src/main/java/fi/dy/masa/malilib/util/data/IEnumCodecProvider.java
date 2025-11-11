@@ -1,10 +1,10 @@
 package fi.dy.masa.malilib.util.data;
 
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.StringIdentifiable;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Experimental
-public interface IEnumCodecProvider extends StringRepresentable
+public interface IEnumCodecProvider extends StringIdentifiable
 {
     int getIndex();
 

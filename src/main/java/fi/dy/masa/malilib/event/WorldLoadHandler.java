@@ -3,9 +3,9 @@ package fi.dy.masa.malilib.event;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.registry.DynamicRegistryManager;
 import fi.dy.masa.malilib.data.CachedTagManager;
 import org.jetbrains.annotations.ApiStatus;
 import fi.dy.masa.malilib.config.ConfigManager;
@@ -55,7 +55,7 @@ public class WorldLoadHandler implements IWorldLoadManager
     }
 
     @ApiStatus.Internal
-    public void onWorldLoadImmutable(RegistryAccess.Frozen immutable)
+    public void onWorldLoadImmutable(DynamicRegistryManager.Immutable immutable)
     {
         if (this.worldLoadPreHandlers.isEmpty() == false)
         {
@@ -67,7 +67,7 @@ public class WorldLoadHandler implements IWorldLoadManager
     }
 
     @ApiStatus.Internal
-    public void onWorldLoadPre(@Nullable ClientLevel worldBefore, @Nullable ClientLevel worldAfter, Minecraft mc)
+    public void onWorldLoadPre(@Nullable ClientWorld worldBefore, @Nullable ClientWorld worldAfter, MinecraftClient mc)
     {
         if (this.worldLoadPreHandlers.isEmpty() == false)
         {
@@ -79,7 +79,7 @@ public class WorldLoadHandler implements IWorldLoadManager
     }
 
     @ApiStatus.Internal
-    public void onWorldLoadPost(@Nullable ClientLevel worldBefore, @Nullable ClientLevel worldAfter, Minecraft mc)
+    public void onWorldLoadPost(@Nullable ClientWorld worldBefore, @Nullable ClientWorld worldAfter, MinecraftClient mc)
     {
         // Save all the configs when exiting a world
         if (worldBefore != null && worldAfter == null)

@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.gui.button;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
 import fi.dy.masa.malilib.config.IConfigOptionList;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -25,9 +25,9 @@ public class ConfigButtonOptionList extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-        this.config.setOptionListValue(this.config.getOptionListValue().cycle(click.input() == 0));
+        this.config.setOptionListValue(this.config.getOptionListValue().cycle(click.getKeycode() == 0));
         this.updateDisplayString();
 
         return super.onMouseClickedImpl(click, doubleClick);

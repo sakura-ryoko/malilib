@@ -1,17 +1,17 @@
 package fi.dy.masa.malilib.mixin.nbt;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.storage.TagValueInput;
-import net.minecraft.world.level.storage.ValueInputContextHelper;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.storage.ReadContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(TagValueInput.class)
+@Mixin(NbtReadView.class)
 public interface IMixinNbtReadView
 {
     @Accessor("context")
-    ValueInputContextHelper malilib_getContext();
+    ReadContext malilib_getContext();
 
-    @Accessor("input")
-    CompoundTag malilib_getNbt();
+    @Accessor("nbt")
+    NbtCompound malilib_getNbt();
 }

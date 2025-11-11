@@ -3,16 +3,16 @@ package fi.dy.masa.malilib.data;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -78,7 +78,7 @@ public class CachedBlockTags
         MaLiLib.debugLog("CachedBlockTags#clear: Clear all");
     }
 
-    public List<CachedTagKey> matchAny(Holder<Block> block)
+    public List<CachedTagKey> matchAny(RegistryEntry<Block> block)
     {
         List<CachedTagKey> list = new ArrayList<>();
 
@@ -129,7 +129,7 @@ public class CachedBlockTags
         return list;
     }
 
-    public boolean match(CachedTagKey key, Holder<Block> block)
+    public boolean match(CachedTagKey key, RegistryEntry<Block> block)
     {
         Entry entry = this.get(key);
 
@@ -177,13 +177,13 @@ public class CachedBlockTags
         return false;
     }
 
-    public Optional<Pair<HolderSet<Block>, Holder<Block>>> matchPair(CachedTagKey key, Holder<Block> block)
+    public Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> matchPair(CachedTagKey key, RegistryEntry<Block> block)
     {
         Entry entry = this.get(key);
 
         if (entry != null)
         {
-            Pair <HolderSet<Block>, Holder<Block>> pair = entry.matchPair(block);
+            Pair <RegistryEntryList<Block>, RegistryEntry<Block>> pair = entry.matchPair(block);
 
             if (pair.getLeft() == null && pair.getRight() == null)
             {
@@ -200,13 +200,13 @@ public class CachedBlockTags
         return Optional.empty();
     }
 
-    public Optional<Pair<HolderSet<Block>, Holder<Block>>> matchPair(CachedTagKey key, Block block)
+    public Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> matchPair(CachedTagKey key, Block block)
     {
         Entry entry = this.get(key);
 
         if (entry != null)
         {
-            Pair <HolderSet<Block>, Holder<Block>> pair = entry.matchPair(block);
+            Pair <RegistryEntryList<Block>, RegistryEntry<Block>> pair = entry.matchPair(block);
 
             if (pair.getLeft() == null && pair.getRight() == null)
             {
@@ -223,13 +223,13 @@ public class CachedBlockTags
         return Optional.empty();
     }
 
-    public Optional<Pair<HolderSet<Block>, Holder<Block>>> matchPair(CachedTagKey key, BlockState state)
+    public Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> matchPair(CachedTagKey key, BlockState state)
     {
         Entry entry = this.get(key);
 
         if (entry != null)
         {
-            Pair <HolderSet<Block>, Holder<Block>> pair = entry.matchPair(state);
+            Pair <RegistryEntryList<Block>, RegistryEntry<Block>> pair = entry.matchPair(state);
 
             if (pair.getLeft() == null && pair.getRight() == null)
             {
@@ -279,8 +279,8 @@ public class CachedBlockTags
 
     public static class Entry
     {
-        private final HashSet<Holder<Block>> blocks;
-        private final HashSet<HolderSet<Block>> tags;
+        private final HashSet<RegistryEntry<Block>> blocks;
+        private final HashSet<RegistryEntryList<Block>> tags;
 
         public Entry()
         {
@@ -294,22 +294,22 @@ public class CachedBlockTags
             this.insertFromList(list);
         }
 
-        public void insertBlock(Holder<Block> block)
+        public void insertBlock(RegistryEntry<Block> block)
         {
             this.blocks.add(block);
         }
 
         public void insertBlock(Block block)
         {
-            this.insertBlock(BuiltInRegistries.BLOCK.wrapAsHolder(block));
+            this.insertBlock(Registries.BLOCK.getEntry(block));
         }
 
         public void insertTag(TagKey<Block> tag)
         {
-            if (Minecraft.getInstance().level != null)
+            if (MinecraftClient.getInstance().world != null)
             {
-                HolderLookup<Block> wrapper = Minecraft.getInstance().level.registryAccess().lookupOrThrow(BuiltInRegistries.BLOCK.key());
-                wrapper.get(tag).ifPresent(this.tags::add);
+                RegistryWrapper<Block> wrapper = MinecraftClient.getInstance().world.getRegistryManager().getOrThrow(Registries.BLOCK.getKey());
+                wrapper.getOptional(tag).ifPresent(this.tags::add);
             }
         }
 
@@ -317,11 +317,11 @@ public class CachedBlockTags
         {
             if (entry.startsWith("#"))
             {
-                ResourceLocation id = ResourceLocation.tryParse(entry.substring(1));
+                Identifier id = Identifier.tryParse(entry.substring(1));
 
                 if (id != null)
                 {
-                    TagKey<Block> tag = TagKey.create(Registries.BLOCK, id);
+                    TagKey<Block> tag = TagKey.of(RegistryKeys.BLOCK, id);
 
                     if (tag != null)
                     {
@@ -339,11 +339,11 @@ public class CachedBlockTags
             }
             else
             {
-                ResourceLocation id = ResourceLocation.tryParse(entry);
+                Identifier id = Identifier.tryParse(entry);
 
                 if (id != null)
                 {
-                    Block block = BuiltInRegistries.BLOCK.getValue(id);
+                    Block block = Registries.BLOCK.get(id);
 
                     if (block != null)
                     {
@@ -375,9 +375,9 @@ public class CachedBlockTags
             }
         }
 
-        public boolean contains(Holder<Block> entry)
+        public boolean contains(RegistryEntry<Block> entry)
         {
-            for (HolderSet<Block> listEntry : this.tags)
+            for (RegistryEntryList<Block> listEntry : this.tags)
             {
                 if (listEntry.contains(entry))
                 {
@@ -390,7 +390,7 @@ public class CachedBlockTags
 
         public boolean contains(Block block)
         {
-            return this.contains(BuiltInRegistries.BLOCK.wrapAsHolder(block));
+            return this.contains(Registries.BLOCK.getEntry(block));
         }
 
         public boolean contains(BlockState state)
@@ -398,9 +398,9 @@ public class CachedBlockTags
             return this.contains(state.getBlock());
         }
 
-        public Pair<HolderSet<Block>, Holder<Block>> matchPair(Holder<Block> entry)
+        public Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchPair(RegistryEntry<Block> entry)
         {
-            for (HolderSet<Block> listEntry : this.tags)
+            for (RegistryEntryList<Block> listEntry : this.tags)
             {
                 if (listEntry.contains(entry))
                 {
@@ -416,12 +416,12 @@ public class CachedBlockTags
             return Pair.of(null, null);
         }
 
-        public Pair<HolderSet<Block>, Holder<Block>> matchPair(Block block)
+        public Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchPair(Block block)
         {
-            return this.matchPair(BuiltInRegistries.BLOCK.wrapAsHolder(block));
+            return this.matchPair(Registries.BLOCK.getEntry(block));
         }
 
-        public Pair<HolderSet<Block>, Holder<Block>> matchPair(BlockState state)
+        public Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchPair(BlockState state)
         {
             return this.matchPair(state.getBlock());
         }
@@ -432,11 +432,11 @@ public class CachedBlockTags
 
             this.blocks.forEach(
                     (entry) ->
-                            list.add(entry.getRegisteredName())
+                            list.add(entry.getIdAsString())
             );
             this.tags.forEach(
                     (entry) ->
-                            list.add("#" + entry.unwrapKey().toString())
+                            list.add("#" + entry.getTagKey().toString())
             );
 
             return list;
@@ -448,11 +448,11 @@ public class CachedBlockTags
 
             this.blocks.forEach(
                     (entry) ->
-                            arr.add(new JsonPrimitive(entry.getRegisteredName()))
+                            arr.add(new JsonPrimitive(entry.getIdAsString()))
             );
             this.tags.forEach(
                     (entry) ->
-                            arr.add(new JsonPrimitive("#" + entry.unwrapKey().toString()))
+                            arr.add(new JsonPrimitive("#" + entry.getTagKey().toString()))
             );
 
             return arr;

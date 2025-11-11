@@ -1,8 +1,8 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.function.IntConsumer;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.config.options.ConfigColor;
@@ -34,7 +34,7 @@ public class WidgetColorIndicator extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         GuiColorEditorHSV gui = new GuiColorEditorHSV(this.config, null, GuiUtils.getCurrentScreen());
         GuiBase.openGui(gui);
@@ -42,14 +42,14 @@ public class WidgetColorIndicator extends WidgetBase
     }
 
     @Override
-    public void postRenderHovered(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(drawContext, mouseX, mouseY, selected);
         RenderUtils.drawHoverText(drawContext, mouseX, mouseY, this.hoverText);
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
         int x = this.getX();

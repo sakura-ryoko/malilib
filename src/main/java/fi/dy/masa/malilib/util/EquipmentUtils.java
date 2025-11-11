@@ -6,24 +6,19 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.EquipmentSlotGroup;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.item.component.Tool;
-import net.minecraft.world.item.component.Weapon;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
-import net.minecraft.world.item.equipment.Equippable;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.*;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
 
 public class EquipmentUtils
 {
@@ -50,25 +45,25 @@ public class EquipmentUtils
 		{
 			return true;
 		}
-		else if (item instanceof ProjectileWeaponItem)
+		else if (item instanceof RangedWeaponItem)
 		{
 			return false;
 		}
 
-		return (stack.is(ItemTags.WEAPON_ENCHANTABLE) ||
+		return (stack.isIn(ItemTags.WEAPON_ENCHANTABLE) ||
 			   isSword(stack) || isAxe(stack)) &&
-			   stack.has(DataComponents.WEAPON);
+			   stack.contains(DataComponentTypes.WEAPON);
 	}
 
 	public static boolean isSword(ItemStack stack)
 	{
-		String itemType = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
         return itemType.contains("_sword");
     }
 
 	public static boolean isAxe(ItemStack stack)
 	{
-		String itemType = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
 		return itemType.contains("_axe");
 	}
 
@@ -85,7 +80,7 @@ public class EquipmentUtils
 		{
 			return false;
 		}
-		else return item instanceof ProjectileWeaponItem;
+		else return item instanceof RangedWeaponItem;
 	}
 
 	public static boolean isAnyTool(ItemStack stack)
@@ -105,27 +100,27 @@ public class EquipmentUtils
 			return false;
 		}
 
-		return (stack.is(ItemTags.MINING_ENCHANTABLE) ||
+		return (stack.isIn(ItemTags.MINING_ENCHANTABLE) ||
 			   isPickAxe(stack) || isAxe(stack) ||
 			   isHoe(stack) || isShovel(stack)) &&
-			   stack.has(DataComponents.TOOL);
+			   stack.contains(DataComponentTypes.TOOL);
 	}
 
 	public static boolean isPickAxe(ItemStack stack)
 	{
-		String itemType = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
 		return itemType.contains("_pickaxe");
 	}
 
 	public static boolean isShovel(ItemStack stack)
 	{
-		String itemType = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
 		return itemType.contains("_shovel");
 	}
 
 	public static boolean isHoe(ItemStack stack)
 	{
-		String itemType = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+		String itemType = Registries.ITEM.getId(stack.getItem()).getPath();
 		return itemType.contains("_hoe");
 	}
 
@@ -151,9 +146,9 @@ public class EquipmentUtils
 			return Pair.of(-1, 0.0f);
 		}
 
-		if (stack.has(DataComponents.WEAPON))
+		if (stack.contains(DataComponentTypes.WEAPON))
 		{
-			Weapon weaponComponent = stack.get(DataComponents.WEAPON);
+			WeaponComponent weaponComponent = stack.get(DataComponentTypes.WEAPON);
 
 			if (weaponComponent != null)
 			{
@@ -174,21 +169,21 @@ public class EquipmentUtils
 			return Pair.of(damage, speed);
 		}
 
-		if (stack.has(DataComponents.ATTRIBUTE_MODIFIERS))
+		if (stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
-			ItemAttributeModifiers attrib = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
 
 			if (attrib != null)
 			{
-				for (ItemAttributeModifiers.Entry entry : attrib.modifiers())
+				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-					if (entry.attribute().equals(Attributes.ATTACK_DAMAGE))
+					if (entry.attribute().equals(EntityAttributes.ATTACK_DAMAGE))
 					{
-						damage = entry.modifier().amount();
+						damage = entry.modifier().value();
 					}
-					else if (entry.attribute().equals(Attributes.ATTACK_SPEED))
+					else if (entry.attribute().equals(EntityAttributes.ATTACK_SPEED))
 					{
-						speed = entry.modifier().amount();
+						speed = entry.modifier().value();
 					}
 				}
 			}
@@ -204,9 +199,9 @@ public class EquipmentUtils
 			return false;
 		}
 
-		if (stack.has(DataComponents.TOOL))
+		if (stack.contains(DataComponentTypes.TOOL))
 		{
-			Tool toolComponent = stack.get(DataComponents.TOOL);
+			ToolComponent toolComponent = stack.get(DataComponentTypes.TOOL);
 
 			return (toolComponent != null && toolComponent.isCorrectForDrops(state));
 		}
@@ -221,15 +216,15 @@ public class EquipmentUtils
 			return -1;
 		}
 
-		if (stack.has(DataComponents.TOOL))
+		if (stack.contains(DataComponentTypes.TOOL))
 		{
-			Tool toolComponent = stack.get(DataComponents.TOOL);
+			ToolComponent toolComponent = stack.get(DataComponentTypes.TOOL);
 
 			if (toolComponent != null)
 			{
 				if (state != null)
 				{
-					return toolComponent.getMiningSpeed(state);
+					return toolComponent.getSpeed(state);
 				}
 
 				return toolComponent.defaultMiningSpeed();
@@ -256,18 +251,18 @@ public class EquipmentUtils
 			return false;
 		}
 
-		if (stack.has(DataComponents.EQUIPPABLE) &&
-			stack.has(DataComponents.ATTRIBUTE_MODIFIERS))
+		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
-			ItemAttributeModifiers attrib = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
 
 			if (attrib != null)
 			{
-				for (ItemAttributeModifiers.Entry entry : attrib.modifiers())
+				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-					if (entry.attribute().equals(Attributes.ARMOR) &&
-						(entry.slot() != EquipmentSlotGroup.MAINHAND &&
-						 entry.slot() != EquipmentSlotGroup.OFFHAND))
+					if (entry.attribute().equals(EntityAttributes.ARMOR) &&
+						(entry.slot() != AttributeModifierSlot.MAINHAND &&
+						 entry.slot() != AttributeModifierSlot.OFFHAND))
 					{
 						return true;
 					}
@@ -275,7 +270,7 @@ public class EquipmentUtils
 			}
 		}
 
-		return stack.is(ItemTags.EQUIPPABLE_ENCHANTABLE);
+		return stack.isIn(ItemTags.EQUIPPABLE_ENCHANTABLE);
 	}
 
 	public static boolean matchArmorSlot(ItemStack stack, @Nonnull EquipmentSlot slot)
@@ -285,17 +280,17 @@ public class EquipmentUtils
 			return false;
 		}
 
-		if (stack.has(DataComponents.EQUIPPABLE) &&
-			stack.has(DataComponents.ATTRIBUTE_MODIFIERS))
+		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
-			ItemAttributeModifiers attrib = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
-			EquipmentSlotGroup attributeSlot = EquipmentSlotGroup.bySlot(slot);
+			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+			AttributeModifierSlot attributeSlot = AttributeModifierSlot.forEquipmentSlot(slot);
 
 			if (attrib != null)
 			{
-				for (ItemAttributeModifiers.Entry entry : attrib.modifiers())
+				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-					if (entry.attribute().equals(Attributes.ARMOR) &&
+					if (entry.attribute().equals(EntityAttributes.ARMOR) &&
 						entry.slot() == attributeSlot)
 					{
 						return true;
@@ -314,7 +309,7 @@ public class EquipmentUtils
 			return false;
 		}
 
-		return Objects.equals(getEquipmentSlot(stack), EquipmentSlotGroup.BODY);
+		return Objects.equals(getEquipmentSlot(stack), AttributeModifierSlot.BODY);
 	}
 
 	public static boolean isHorseArmor(ItemStack stack)
@@ -324,26 +319,26 @@ public class EquipmentUtils
 			return false;
 		}
 
-		if (stack.has(DataComponents.EQUIPPABLE) &&
-			stack.has(DataComponents.ATTRIBUTE_MODIFIERS))
+		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
-			ItemAttributeModifiers attrib = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
-			Equippable equip = stack.get(DataComponents.EQUIPPABLE);
+			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+			EquippableComponent equip = stack.get(DataComponentTypes.EQUIPPABLE);
 
 			if (attrib != null && equip != null)
 			{
 				boolean bodySlot = false;
 
-				for (ItemAttributeModifiers.Entry entry : attrib.modifiers())
+				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-					if (entry.attribute().equals(Attributes.ARMOR) && entry.slot().equals(EquipmentSlotGroup.BODY))
+					if (entry.attribute().equals(EntityAttributes.ARMOR) && entry.slot().equals(AttributeModifierSlot.BODY))
 					{
 						bodySlot = true;
 						break;
 					}
 				}
 
-				return bodySlot && equip.canBeEquippedBy(EntityType.HORSE);
+				return bodySlot && equip.allows(EntityType.HORSE);
 			}
 		}
 
@@ -357,49 +352,49 @@ public class EquipmentUtils
 			return false;
 		}
 
-		if (stack.has(DataComponents.EQUIPPABLE) &&
-			stack.has(DataComponents.ATTRIBUTE_MODIFIERS))
+		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
-			ItemAttributeModifiers attrib = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
-			Equippable equip = stack.get(DataComponents.EQUIPPABLE);
+			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
+			EquippableComponent equip = stack.get(DataComponentTypes.EQUIPPABLE);
 
 			if (attrib != null && equip != null)
 			{
 				boolean bodySlot = false;
 
-				for (ItemAttributeModifiers.Entry entry : attrib.modifiers())
+				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-                    if (entry.attribute().equals(Attributes.ARMOR) && entry.slot().equals(EquipmentSlotGroup.BODY))
+                    if (entry.attribute().equals(EntityAttributes.ARMOR) && entry.slot().equals(AttributeModifierSlot.BODY))
                     {
                         bodySlot = true;
                         break;
                     }
 				}
 
-				return bodySlot && equip.canBeEquippedBy(EntityType.WOLF);
+				return bodySlot && equip.allows(EntityType.WOLF);
 			}
 		}
 
 		return false;
 	}
 
-	public static @Nullable EquipmentSlotGroup getEquipmentSlot(ItemStack stack)
+	public static @Nullable AttributeModifierSlot getEquipmentSlot(ItemStack stack)
 	{
 		if (stack == null || stack.isEmpty())
 		{
 			return null;
 		}
 
-		if (stack.has(DataComponents.EQUIPPABLE) &&
-			stack.has(DataComponents.ATTRIBUTE_MODIFIERS))
+		if (stack.contains(DataComponentTypes.EQUIPPABLE) &&
+			stack.contains(DataComponentTypes.ATTRIBUTE_MODIFIERS))
 		{
-			ItemAttributeModifiers attrib = stack.get(DataComponents.ATTRIBUTE_MODIFIERS);
+			AttributeModifiersComponent attrib = stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS);
 
 			if (attrib != null)
 			{
-				for (ItemAttributeModifiers.Entry entry : attrib.modifiers())
+				for (AttributeModifiersComponent.Entry entry : attrib.modifiers())
 				{
-					if (entry.attribute().equals(Attributes.ARMOR))
+					if (entry.attribute().equals(EntityAttributes.ARMOR))
 					{
 						return entry.slot();
 					}
@@ -410,17 +405,17 @@ public class EquipmentUtils
 		return null;
 	}
 
-	public static int getEnchantmentLevel(ItemStack stack, @Nonnull ResourceKey<Enchantment> enchantment)
+	public static int getEnchantmentLevel(ItemStack stack, @Nonnull RegistryKey<Enchantment> enchantment)
 	{
-		ItemEnchantments enchants = stack.getEnchantments();
+		ItemEnchantmentsComponent enchants = stack.getEnchantments();
 
-		if (!enchants.equals(ItemEnchantments.EMPTY))
+		if (!enchants.equals(ItemEnchantmentsComponent.DEFAULT))
 		{
-			Set<Holder<Enchantment>> enchantList = enchants.keySet();
+			Set<RegistryEntry<Enchantment>> enchantList = enchants.getEnchantments();
 
-			for (Holder<Enchantment> entry : enchantList)
+			for (RegistryEntry<Enchantment> entry : enchantList)
 			{
-				if (entry.is(enchantment))
+				if (entry.matchesKey(enchantment))
 				{
 					return enchants.getLevel(entry);
 				}
@@ -430,7 +425,7 @@ public class EquipmentUtils
 		return -1;
 	}
 
-	public static int hasSameOrBetterEnchantment(ItemStack testedStack, ItemStack previous, ResourceKey<Enchantment> enchantment)
+	public static int hasSameOrBetterEnchantment(ItemStack testedStack, ItemStack previous, RegistryKey<Enchantment> enchantment)
 	{
 		return getEnchantmentLevel(testedStack, enchantment) - getEnchantmentLevel(previous, enchantment);
 	}

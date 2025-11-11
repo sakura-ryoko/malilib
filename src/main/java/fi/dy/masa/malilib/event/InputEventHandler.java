@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nonnull;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.KeyInput;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.ApiStatus;
@@ -134,7 +134,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onKeyInput(KeyEvent input, int action, @Nonnull Minecraft mc)
+    public boolean onKeyInput(KeyInput input, int action, @Nonnull MinecraftClient mc)
     {
         boolean eventKeyState = action != GLFW.GLFW_RELEASE;
 
@@ -159,19 +159,19 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onMouseClick(MouseButtonEvent click, int action, @Nonnull Minecraft mc)
+    public boolean onMouseClick(Click click, int action, @Nonnull MinecraftClient mc)
     {
         boolean cancel = false;
 
-        if (click.input() != -1)
+        if (click.getKeycode() != -1)
         {
             boolean eventButtonState = action == GLFW.GLFW_PRESS;
 
             // Update the cached pressed keys status
 //            KeybindMulti.onKeyInputPre(eventButton - 100, 0, 0, action);
-			KeybindMulti.onKeyInputPre(new KeyEvent(click.input() - 100, 0, 0), action);
+			KeybindMulti.onKeyInputPre(new KeyInput(click.getKeycode() - 100, 0, 0), action);
 
-            cancel = this.checkKeyBindsForChanges(click.input() - 100);
+            cancel = this.checkKeyBindsForChanges(click.getKeycode() - 100);
 
             if (this.mouseHandlers.isEmpty() == false)
             {
@@ -200,16 +200,16 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onMouseScroll(final double mouseX, final double mouseY, final double xOffset, final double yOffset, @Nonnull Minecraft mc)
+    public boolean onMouseScroll(final double mouseX, final double mouseY, final double xOffset, final double yOffset, @Nonnull MinecraftClient mc)
     {
-        boolean discrete = mc.options.discreteMouseScroll().get();
-        double sensitivity = mc.options.mouseWheelSensitivity().get();
+        boolean discrete = mc.options.getDiscreteMouseScroll().getValue();
+        double sensitivity = mc.options.getMouseWheelSensitivity().getValue();
         double amount = (discrete ? Math.signum(yOffset) : yOffset) * sensitivity;
 
         if (MaLiLibConfigs.Debug.MOUSE_SCROLL_DEBUG.getBooleanValue())
         {
             int time = (int) (System.currentTimeMillis() & 0xFFFF);
-            int tick = mc.level != null ? (int) (mc.level.getGameTime() & 0xFFFF) : 0;
+            int tick = mc.world != null ? (int) (mc.world.getTime() & 0xFFFF) : 0;
             String timeStr = String.format("time: %04X, tick: %04X", time, tick);
             MaLiLib.LOGGER.info("{} - xOffset: {}, yOffset: {}, discrete: {}, sensitivity: {}, amount: {}",
                                 timeStr, xOffset, yOffset, discrete, sensitivity, amount);
@@ -244,7 +244,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public void onMouseMove(final double mouseX, final double mouseY, @Nonnull Minecraft mc)
+    public void onMouseMove(final double mouseX, final double mouseY, @Nonnull MinecraftClient mc)
     {
         if (this.mouseHandlers.isEmpty() == false)
         {

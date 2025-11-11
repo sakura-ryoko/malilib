@@ -2,8 +2,8 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
@@ -81,14 +81,14 @@ public class WidgetCheckBox extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         this.setChecked(! this.checked);
         return true;
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
         IGuiIcon icon = this.checked ? this.widgetChecked : this.widgetUnchecked;
@@ -103,7 +103,7 @@ public class WidgetCheckBox extends WidgetBase
     }
 
     @Override
-    public void postRenderHovered(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(drawContext, mouseX, mouseY, selected);
 

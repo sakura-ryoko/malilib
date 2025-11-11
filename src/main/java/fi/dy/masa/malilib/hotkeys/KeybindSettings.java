@@ -13,7 +13,7 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.StringIdentifiable;
 
 public class KeybindSettings
 {
@@ -218,13 +218,13 @@ public class KeybindSettings
         return true;
     }
 
-    public enum Context implements IConfigOptionListEntry, StringRepresentable
+    public enum Context implements IConfigOptionListEntry, StringIdentifiable
     {
         INGAME  ("ingame",  "malilib.label.key_context.ingame"),
         GUI     ("gui",     "malilib.label.key_context.gui"),
         ANY     ("any",     "malilib.label.key_context.any");
 
-        public static final StringRepresentable.EnumCodec<Context> CODEC = StringRepresentable.fromEnum(Context::values);
+        public static final StringIdentifiable.EnumCodec<Context> CODEC = StringIdentifiable.createCodec(Context::values);
         public static final ImmutableList<Context> VALUES = ImmutableList.copyOf(values());
 
         private final String configString;
@@ -237,7 +237,7 @@ public class KeybindSettings
         }
 
         @Override
-        public @Nonnull String getSerializedName()
+        public @Nonnull String asString()
         {
             return this.configString;
         }

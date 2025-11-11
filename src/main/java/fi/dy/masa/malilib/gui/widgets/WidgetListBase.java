@@ -2,11 +2,11 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.*;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.util.Mth;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
+import net.minecraft.util.math.MathHelper;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
@@ -66,9 +66,9 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
-        if (click.input() == 0 && this.scrollBar.wasMouseOver())
+        if (click.getKeycode() == 0 && this.scrollBar.wasMouseOver())
         {
             this.scrollBar.setIsDragging(true);
             return true;
@@ -110,9 +110,9 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onMouseReleased(MouseButtonEvent click)
+    public boolean onMouseReleased(Click click)
     {
-        if (click.input() == 0)
+        if (click.getKeycode() == 0)
         {
             this.scrollBar.setIsDragging(false);
         }
@@ -146,7 +146,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         return false;
     }
 
-    protected boolean onMouseClickedSearchBar(MouseButtonEvent click, boolean doubleClick)
+    protected boolean onMouseClickedSearchBar(Click click, boolean doubleClick)
     {
         if (this.widgetSearchBar != null)
         {
@@ -170,7 +170,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onKeyTyped(KeyEvent input)
+    public boolean onKeyTyped(KeyInput input)
     {
         if (this.onKeyTypedSearchBar(input))
         {
@@ -193,7 +193,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean onCharTyped(CharacterEvent input)
+    public boolean onCharTyped(CharInput input)
     {
         if (this.onCharTypedSearchBar(input))
         {
@@ -211,7 +211,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         return super.onCharTyped(input);
     }
 
-    protected boolean onKeyTypedSearchBar(KeyEvent input)
+    protected boolean onKeyTypedSearchBar(KeyInput input)
     {
         if (this.widgetSearchBar != null && this.widgetSearchBar.onKeyTyped(input))
         {
@@ -224,7 +224,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         return false;
     }
 
-    protected boolean onCharTypedSearchBar(CharacterEvent input)
+    protected boolean onCharTypedSearchBar(CharInput input)
     {
         if (this.widgetSearchBar != null && this.widgetSearchBar.onCharTyped(input))
         {
@@ -380,7 +380,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public void drawContents(GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
     {
 //        RenderUtils.color(1f, 1f, 1f, 1f);
 
@@ -589,7 +589,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         }
         else if (this.lastSelectedEntryIndex >= 0 && this.listContents.size() > 0)
         {
-            int index = Mth.clamp(this.lastSelectedEntryIndex + amount, 0, this.listContents.size() - 1);
+            int index = MathHelper.clamp(this.lastSelectedEntryIndex + amount, 0, this.listContents.size() - 1);
 
             if (index != this.lastSelectedEntryIndex)
             {

@@ -3,10 +3,10 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 
@@ -53,7 +53,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
+    public boolean onMouseClicked(Click click, boolean doubleClick)
     {
         boolean handled = false;
 
@@ -81,7 +81,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public void onMouseReleased(MouseButtonEvent click)
+    public void onMouseReleased(Click click)
     {
         if (this.subWidgets.isEmpty() == false)
         {
@@ -117,7 +117,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onKeyTyped(KeyEvent input)
+    public boolean onKeyTyped(KeyInput input)
     {
         boolean handled = false;
 
@@ -142,7 +142,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onCharTyped(CharacterEvent input)
+    public boolean onCharTyped(CharInput input)
     {
         boolean handled = false;
 
@@ -167,20 +167,20 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
         this.drawSubWidgets(drawContext, mouseX, mouseY);
     }
 
     @Override
-    public void postRenderHovered(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(drawContext, mouseX, mouseY, selected);
         this.drawHoveredSubWidget(drawContext, mouseX, mouseY);
     }
 
-    protected void drawSubWidgets(GuiGraphics drawContext, int mouseX, int mouseY)
+    protected void drawSubWidgets(DrawContext drawContext, int mouseX, int mouseY)
     {
         this.hoveredSubWidget = null;
 
@@ -198,7 +198,7 @@ public abstract class WidgetContainer extends WidgetBase
         }
     }
 
-    protected void drawHoveredSubWidget(GuiGraphics drawContext, int mouseX, int mouseY)
+    protected void drawHoveredSubWidget(DrawContext drawContext, int mouseX, int mouseY)
     {
         if (this.hoveredSubWidget != null)
         {

@@ -3,8 +3,8 @@ package fi.dy.masa.malilib.event;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.ApiStatus;
-import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.integrated.IntegratedServer;
 import fi.dy.masa.malilib.interfaces.IServerListener;
 
 /**

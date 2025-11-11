@@ -9,9 +9,9 @@ import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings.Context;
 import fi.dy.masa.malilib.util.KeyCodes;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.KeyInput;
 
 public class WidgetSearchBarConfigs extends WidgetSearchBar
 {
@@ -40,7 +40,7 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
     }
 
     @Override
-    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         if (this.searchOpen)
         {
@@ -67,7 +67,7 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
     }
 
     @Override
-    protected boolean onKeyTypedImpl(KeyEvent input)
+    protected boolean onKeyTypedImpl(KeyInput input)
     {
         if (this.searchOpen && this.button.isSelected())
         {
@@ -85,7 +85,7 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 

@@ -1,8 +1,8 @@
 package fi.dy.masa.malilib.util.game;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -18,11 +18,11 @@ public class PlacementUtils
      * based on the replaceability of the material instead. If <b>checkMaterial</b> is true, then the
      * replaceability of the material can override the non-replaceability of the block for the return value.
      */
-    public static boolean isReplaceable(Level world, BlockPos pos, boolean checkMaterial)
+    public static boolean isReplaceable(World world, BlockPos pos, boolean checkMaterial)
     {
         BlockState state = world.getBlockState(pos);
 
-        return state.canSurvive(world, pos) ||
-                (checkMaterial && state.canBeReplaced());
+        return state.canPlaceAt(world, pos) ||
+                (checkMaterial && state.isReplaceable());
     }
 }

@@ -1,12 +1,12 @@
 package fi.dy.masa.malilib.mixin.network;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.protocol.game.ClientboundLoginPacket;
-import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
-import net.minecraft.network.protocol.game.ClientboundTickingStatePacket;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateTickRateS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,48 +17,48 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.WorldLoadHandler;
 import fi.dy.masa.malilib.util.time.TickUtils;
 
-@Mixin(ClientPacketListener.class)
+@Mixin(ClientPlayNetworkHandler.class)
 public abstract class MixinClientPlayNetworkHandler
 {
-    @Shadow private ClientLevel level;
-    @Unique @Nullable private ClientLevel worldBefore;
+    @Shadow private ClientWorld world;
+    @Unique @Nullable private ClientWorld worldBefore;
 
-    @Inject(method = "handleLogin", at = @At("HEAD"))
-    private void malilib_onPreJoinGameHead(ClientboundLoginPacket packet, CallbackInfo ci)
+    @Inject(method = "onGameJoin", at = @At("HEAD"))
+    private void malilib_onPreJoinGameHead(GameJoinS2CPacket packet, CallbackInfo ci)
     {
         // Need to grab the old world reference at the start of the method,
         // because the next injection point is right after the world has been assigned,
         // since we need the new world reference for the callback.
         //MaLiLib.logger.error("CP#onPreJoinGameHead(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
-        this.worldBefore = this.level;
+        this.worldBefore = this.world;
     }
 
-    @Inject(method = "handleLogin",
+    @Inject(method = "onGameJoin",
 			at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/Minecraft;setLevel(Lnet/minecraft/client/multiplayer/ClientLevel;)V",
+            target = "Lnet/minecraft/client/MinecraftClient;joinWorld(Lnet/minecraft/client/world/ClientWorld;)V",
             shift = At.Shift.BEFORE))
-    private void malilib_onPreGameJoin(ClientboundLoginPacket packet, CallbackInfo ci)
+    private void malilib_onPreGameJoin(GameJoinS2CPacket packet, CallbackInfo ci)
     {
         //MaLiLib.logger.error("CP#onPreGameJoin(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
-        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.worldBefore, this.level, Minecraft.getInstance());
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.worldBefore, this.world, MinecraftClient.getInstance());
     }
 
-    @Inject(method = "handleLogin", at = @At("RETURN"))
-    private void malilib_onPostGameJoin(ClientboundLoginPacket packet, CallbackInfo ci)
+    @Inject(method = "onGameJoin", at = @At("RETURN"))
+    private void malilib_onPostGameJoin(GameJoinS2CPacket packet, CallbackInfo ci)
     {
         //MaLiLib.logger.error("CP#onPostGameJoin(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
-        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, this.level, Minecraft.getInstance());
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, this.world, MinecraftClient.getInstance());
         this.worldBefore = null;
     }
 
-    @Inject(method = "handleSetTime", at = @At("RETURN"))
-    private void malilib_onTimeUpdate(ClientboundSetTimePacket packet, CallbackInfo ci)
+    @Inject(method = "onWorldTimeUpdate", at = @At("RETURN"))
+    private void malilib_onTimeUpdate(WorldTimeUpdateS2CPacket packet, CallbackInfo ci)
     {
-        TickUtils.getInstance().updateNanoTick(packet.gameTime());
+        TickUtils.getInstance().updateNanoTick(packet.time());
     }
 
-    @Inject(method = "handleTickingState", at = @At("RETURN"))
-    private void malilib_onUpdateTickRate(ClientboundTickingStatePacket packet, CallbackInfo ci)
+    @Inject(method = "onUpdateTickRate", at = @At("RETURN"))
+    private void malilib_onUpdateTickRate(UpdateTickRateS2CPacket packet, CallbackInfo ci)
     {
         TickUtils.getInstance().updateTickRate(packet.tickRate());
     }

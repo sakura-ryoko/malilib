@@ -9,8 +9,8 @@ import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.render.InventoryOverlayScreen;
 import fi.dy.masa.malilib.test.gui.GuiTestList;
 import fi.dy.masa.malilib.util.time.TimeTestExample;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
 
 @ApiStatus.Experimental
 public class TestInputHandler implements IKeybindProvider
@@ -70,7 +70,7 @@ public class TestInputHandler implements IKeybindProvider
         @Override
         public boolean onKeyAction(KeyAction action, IKeybind key)
         {
-            Minecraft mc = Minecraft.getInstance();
+            MinecraftClient mc = MinecraftClient.getInstance();
 
             if (mc.player == null)
             {
@@ -84,7 +84,7 @@ public class TestInputHandler implements IKeybindProvider
             }
             else if (key == MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind())
             {
-                if (mc.screen instanceof InventoryOverlayScreen)
+                if (mc.currentScreen instanceof InventoryOverlayScreen)
                 {
                     mc.setScreen(null);
                 }
@@ -106,8 +106,8 @@ public class TestInputHandler implements IKeybindProvider
             }
             else if (key == MaLiLibConfigs.Test.TEST_RUN_DATETIME_TEST.getKeybind())
             {
-                mc.gui.getChat().addMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
-                mc.gui.getChat().addMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
+                mc.inGameHud.getChatHud().addMessage(Text.of(TimeTestExample.runTimeDateTest()));
+                mc.inGameHud.getChatHud().addMessage(Text.of(TimeTestExample.runDurationTest()));
                 return true;
             }
 

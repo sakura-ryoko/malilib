@@ -9,7 +9,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigInteger;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.util.Mth;
+import net.minecraft.util.math.MathHelper;
 
 public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigInteger
 {
@@ -155,7 +155,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
 
     protected int getClampedValue(int value)
     {
-        return Mth.clamp(value, this.minValue, this.maxValue);
+        return MathHelper.clamp(value, this.minValue, this.maxValue);
     }
 
     @Override

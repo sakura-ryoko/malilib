@@ -26,12 +26,12 @@ public class FileUtils
 
     public static Path getConfigDirectoryAsPath()
     {
-        return GameWrap.getClient().gameDirectory.toPath().resolve("config");
+        return GameWrap.getClient().runDirectory.toPath().resolve("config");
     }
 
     public static Path getMinecraftDirectoryAsPath()
     {
-        return GameWrap.getClient().gameDirectory.toPath();
+        return GameWrap.getClient().runDirectory.toPath();
     }
 
     public static Path getRootDirectory()

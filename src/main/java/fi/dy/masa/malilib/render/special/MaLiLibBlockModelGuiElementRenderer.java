@@ -5,14 +5,14 @@ import org.joml.Matrix4fStack;
 import org.joml.Quaternionf;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.block.BlockRenderType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.client.util.math.MatrixStack;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 
@@ -20,36 +20,36 @@ import fi.dy.masa.malilib.MaLiLibReference;
  * DISABLED -- DOES NOT WORK, DO NOT USE
  */
 @Deprecated
-public class MaLiLibBlockModelGuiElementRenderer extends PictureInPictureRenderer<MaLiLibBlockStateModelGuiElement>
+public class MaLiLibBlockModelGuiElementRenderer extends SpecialGuiElementRenderer<MaLiLibBlockStateModelGuiElement>
 {
-    BlockRenderDispatcher blockRenderManager;
-    Minecraft mc = Minecraft.getInstance();
+    BlockRenderManager blockRenderManager;
+    MinecraftClient mc = MinecraftClient.getInstance();
 
-    public MaLiLibBlockModelGuiElementRenderer(MultiBufferSource.BufferSource immediate, BlockRenderDispatcher blockRenderManager)
+    public MaLiLibBlockModelGuiElementRenderer(VertexConsumerProvider.Immediate immediate, BlockRenderManager blockRenderManager)
     {
         super(immediate);
         this.blockRenderManager = blockRenderManager;
     }
 
     @Override
-    public @Nonnull Class<MaLiLibBlockStateModelGuiElement> getRenderStateClass()
+    public @Nonnull Class<MaLiLibBlockStateModelGuiElement> getElementClass()
     {
         return MaLiLibBlockStateModelGuiElement.class;
     }
 
 	@Override
-    protected void renderToTexture(MaLiLibBlockStateModelGuiElement state, PoseStack matrices)
+    protected void render(MaLiLibBlockStateModelGuiElement state, MatrixStack matrices)
     {
-        if (state.state().getRenderShape() == RenderShape.MODEL)
+        if (state.state().getRenderType() == BlockRenderType.MODEL)
         {
 	        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
-	        int light = LightTexture.pack(15, 15);
+	        int light = LightmapTextureManager.pack(15, 15);
 			float zLevel = 0f;
 			float halfSize = (float) (state.size() / 2);
 
 //	        this.vertexConsumers.draw();
 	        matrix4fStack.pushMatrix();
-	        matrix4fStack.translate(state.x0() + halfSize, state.y0() + halfSize,  zLevel + 100f);
+	        matrix4fStack.translate(state.x1() + halfSize, state.y1() + halfSize,  zLevel + 100f);
 //	        matrix4fStack.scale((float) state.size(), (float) -state.size(), (float) state.size());
 //	        matrices.scale((float) state.size(), (float) -state.size(), (float) state.size());
 //	        matrix4fStack.translate(halfSize, halfSize, zLevel);
@@ -57,18 +57,18 @@ public class MaLiLibBlockModelGuiElementRenderer extends PictureInPictureRendere
 
 //			matrices.scale(1f, -1f, 1f);
 //			matrices.translate(0.5f, 0.5f, 0.5f);
-	        matrices.mulPose(new Quaternionf().rotationXYZ(30 * (float) (Math.PI / 180.0), 225 * (float) (Math.PI / 180.0), 0.0F));
+	        matrices.multiply(new Quaternionf().rotationXYZ(30 * (float) (Math.PI / 180.0), 225 * (float) (Math.PI / 180.0), 0.0F));
 	        matrices.scale(state.scale(), state.scale(), state.scale());
 	        matrices.translate(-0.5f, -0.5f, -0.5f);
 
-	        this.blockRenderManager.renderSingleBlock(state.state(), matrices, this.bufferSource, light, OverlayTexture.NO_OVERLAY);
-			this.bufferSource.endBatch();
+	        this.blockRenderManager.renderBlockAsEntity(state.state(), matrices, this.vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+			this.vertexConsumers.draw();
 	        matrix4fStack.popMatrix();
         }
     }
 
     @Override
-    protected @Nonnull String getTextureLabel()
+    protected @Nonnull String getName()
     {
         return MaLiLibReference.MOD_ID+ ":block_model";
     }

@@ -2,21 +2,21 @@ package fi.dy.masa.malilib.test;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BuiltBuffer;
+import net.minecraft.client.render.Camera;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
@@ -33,10 +33,10 @@ public class TestWalls implements AutoCloseable
     protected boolean useCulling;
     protected float glLineWidth;
 
-    private List<AABB> boxes;
+    private List<Box> boxes;
     private BlockPos center;
     protected BlockPos lastUpdatePos;
-    private Vec3 updateCameraPos;
+    private Vec3d updateCameraPos;
     private boolean hasData;
     private final boolean shouldResort;
     private final boolean needsUpdate;
@@ -48,7 +48,7 @@ public class TestWalls implements AutoCloseable
         this.useCulling = false;
         this.glLineWidth = 3.0f;
         this.lastUpdatePos = null;
-        this.updateCameraPos = Vec3.ZERO;
+        this.updateCameraPos = Vec3d.ZERO;
         this.hasData = false;
         this.shouldResort = false;
         this.needsUpdate = true;
@@ -56,17 +56,17 @@ public class TestWalls implements AutoCloseable
         this.center = null;
     }
 
-    public Vec3 getUpdatePosition()
+    public Vec3d getUpdatePosition()
     {
         return updateCameraPos;
     }
 
-    public void setUpdatePosition(Vec3 cameraPosition)
+    public void setUpdatePosition(Vec3d cameraPosition)
     {
         this.updateCameraPos = cameraPosition;
     }
 
-    public boolean needsUpdate(Entity cameraEntity, Minecraft mc)
+    public boolean needsUpdate(Entity cameraEntity, MinecraftClient mc)
     {
         return this.needsUpdate || this.lastUpdatePos == null ||
                 Math.abs(cameraEntity.getX() - this.lastUpdatePos.getX()) > this.updateDistance ||
@@ -74,18 +74,18 @@ public class TestWalls implements AutoCloseable
                 Math.abs(cameraEntity.getY() - this.lastUpdatePos.getY()) > this.updateDistance;
     }
 
-    public void update(Camera camera, Entity entity, Minecraft mc)
+    public void update(Camera camera, Entity entity, MinecraftClient mc)
     {
-        if (mc.level == null || mc.player == null)
+        if (mc.world == null || mc.player == null)
         {
             return;
         }
 
         int radius = MaLiLibConfigs.Test.TEST_CONFIG_INTEGER.getIntegerValue();
-        Vec3 vec = camera.getPosition();
-        BlockPos pos = entity.blockPosition();
-        BlockPos testPos = pos.offset(2, 0, 2);
-        Pair<BlockPos, BlockPos> corners = TestUtils.getSpawnChunkCorners(testPos, radius, mc.level);
+        Vec3d vec = camera.getPos();
+        BlockPos pos = entity.getBlockPos();
+        BlockPos testPos = pos.add(2, 0, 2);
+        Pair<BlockPos, BlockPos> corners = TestUtils.getSpawnChunkCorners(testPos, radius, mc.world);
         this.boxes = TestUtils.calculateBoxes(corners.getLeft(), corners.getRight());
 
         if (!this.boxes.isEmpty())
@@ -102,7 +102,7 @@ public class TestWalls implements AutoCloseable
         setUpdatePosition(vec);
     }
 
-    public void render(Camera camera, Matrix4f matrix4f, Matrix4f projMatrix, Minecraft mc, ProfilerFiller profiler)
+    public void render(Camera camera, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc, Profiler profiler)
     {
         profiler.push("render_test_walls");
 
@@ -118,9 +118,9 @@ public class TestWalls implements AutoCloseable
         profiler.pop();
     }
 
-    private void renderQuads(Camera camera, Minecraft mc, ProfilerFiller profiler)
+    private void renderQuads(Camera camera, MinecraftClient mc, Profiler profiler)
     {
-        if (mc.level == null || mc.player == null ||
+        if (mc.world == null || mc.player == null ||
             !this.hasData || this.boxes.isEmpty())
         {
             return;
@@ -128,27 +128,27 @@ public class TestWalls implements AutoCloseable
 
         profiler.push("quads");
         Color4f quadsColor = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
-        Vec3 cameraPos = camera.getPosition();
+        Vec3d cameraPos = camera.getPos();
 
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL
         RenderContext ctx = new RenderContext(() -> "malilib:TestWalls/quads", MaLiLibPipelines.MINIHUD_SHAPE_OFFSET_NO_CULL);
         BufferBuilder builder = ctx.getBuilder();
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
-        Vec3 updatePos = this.getUpdatePosition();
+        Vec3d updatePos = this.getUpdatePosition();
 
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
 
         RenderUtils.drawBlockBoundingBoxSidesBatchedQuads(this.center, cameraPos, quadsColor, 0.001, builder);
 
-        for (AABB entry : this.boxes)
+        for (Box entry : this.boxes)
         {
             TestUtils.renderWallQuads(entry, cameraPos, quadsColor, builder);
         }
 
         try
         {
-            MeshData meshData = builder.build();
+            BuiltBuffer meshData = builder.endNullable();
 
             if (meshData != null)
             {
@@ -177,29 +177,29 @@ public class TestWalls implements AutoCloseable
         profiler.pop();
     }
 
-    private void renderOutlines(Camera camera, Minecraft mc, ProfilerFiller profiler)
+    private void renderOutlines(Camera camera, MinecraftClient mc, Profiler profiler)
     {
-        if (mc.level == null || mc.player == null)
+        if (mc.world == null || mc.player == null)
         {
             return;
         }
 
         profiler.push("outlines");
         Color4f linesColor = Color4f.WHITE;
-        Vec3 cameraPos = camera.getPosition();
+        Vec3d cameraPos = camera.getPos();
 
         // RenderPipelines.LINES
         RenderContext ctx = new RenderContext(() -> "malilib:TestWalls/lines", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH);
         BufferBuilder builder = ctx.getBuilder();
         Matrix4fStack matrix4fstack = RenderSystem.getModelViewStack();
-        Vec3 updatePos = this.getUpdatePosition();
+        Vec3d updatePos = this.getUpdatePosition();
 
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
 
         RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(this.center, cameraPos, linesColor, 0.001, builder);
 
-        for (AABB entry : this.boxes)
+        for (Box entry : this.boxes)
         {
             TestUtils.renderWallOutlines(entry, 16, 16, true, cameraPos, linesColor, builder);
         }
@@ -208,7 +208,7 @@ public class TestWalls implements AutoCloseable
 
         try
         {
-            MeshData meshData = builder.build();
+            BuiltBuffer meshData = builder.endNullable();
 
             if (meshData != null)
             {
@@ -229,7 +229,7 @@ public class TestWalls implements AutoCloseable
 
     public void clear()
     {
-        this.lastUpdatePos = BlockPos.ZERO;
+        this.lastUpdatePos = BlockPos.ORIGIN;
         this.hasData = false;
         this.boxes.clear();
     }

@@ -6,16 +6,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.event.RenderEventHandler;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.item.ItemStack;
 
-@Mixin(GuiGraphics.class)
+@Mixin(DrawContext.class)
 public abstract class MixinDrawContext
 {
-    @Inject(method = "setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;II)V", at = @At(value = "TAIL"))
-    private void malilib_onRenderTooltip(Font textRenderer, ItemStack stack, int x, int y, CallbackInfo ci)
+    @Inject(method = "drawItemTooltip(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V", at = @At(value = "TAIL"))
+    private void malilib_onRenderTooltip(TextRenderer textRenderer, ItemStack stack, int x, int y, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast((GuiGraphics) (Object) this, stack, x, y);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast((DrawContext) (Object) this, stack, x, y);
     }
 }

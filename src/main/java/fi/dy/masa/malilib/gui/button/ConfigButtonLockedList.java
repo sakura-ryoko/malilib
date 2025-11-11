@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.gui.button;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
 import fi.dy.masa.malilib.config.IConfigLockedList;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiLockedListEdit;
@@ -28,7 +28,7 @@ public class ConfigButtonLockedList extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
         super.onMouseClickedImpl(click, doubleClick);
 

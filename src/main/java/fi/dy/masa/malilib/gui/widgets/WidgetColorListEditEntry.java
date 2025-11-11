@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.List;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.DrawContext;
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -86,7 +86,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
-        field.setValue(initialValue);
+        field.setText(initialValue);
 
         ButtonGeneric resetButton = this.createResetButton(resetX, y, field);
         ChangeListenerTextField listenerChange = new ChangeListenerTextField(field, resetButton, this.defaultValue.toString());
@@ -102,7 +102,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     {
         String labelReset = StringUtils.translate("malilib.gui.button.reset.caps");
         ButtonGeneric resetButton = new ButtonGeneric(x, y, -1, 20, labelReset);
-        resetButton.setEnabled(!textField.getValue().equals(this.defaultValue));
+        resetButton.setEnabled(!textField.getText().equals(this.defaultValue));
 
         return resetButton;
     }
@@ -110,13 +110,13 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     @Override
     public boolean wasConfigModified()
     {
-        return !this.isDummy() && !this.textField.getTextField().getValue().equals(this.initialStringValue);
+        return !this.isDummy() && !this.textField.getTextField().getText().equals(this.initialStringValue);
     }
 
     @Override
     public void applyNewValueToConfig()
     {
-        applyNewValueToConfig(StringUtils.getColor(this.textField.getTextField().getValue(), Color4f.ZERO.intValue));
+        applyNewValueToConfig(StringUtils.getColor(this.textField.getTextField().getText(), Color4f.ZERO.intValue));
     }
 
     protected void applyNewValueToConfig(int color)
@@ -204,7 +204,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 //        RenderUtils.color(1f, 1f, 1f, 1f);
@@ -238,7 +238,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         @Override
         public boolean onTextChange(GuiTextFieldGeneric textField)
         {
-            this.buttonReset.setEnabled(!this.textField.getValue().equals(this.defaultValue));
+            this.buttonReset.setEnabled(!this.textField.getText().equals(this.defaultValue));
             return false;
         }
     }
@@ -257,9 +257,9 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         @Override
         public void actionPerformedWithButton(ButtonBase button, int mouseButton)
         {
-            this.parent.textField.getTextField().setValue(this.parent.defaultValue.toString());
+            this.parent.textField.getTextField().setText(this.parent.defaultValue.toString());
             this.parent.parent.applyPendingModifications();
-            this.buttonReset.setEnabled(!this.parent.textField.getTextField().getValue().equals(this.parent.defaultValue.toString()));
+            this.buttonReset.setEnabled(!this.parent.textField.getTextField().getText().equals(this.parent.defaultValue.toString()));
             this.parent.parent.refreshEntries();
         }
     }

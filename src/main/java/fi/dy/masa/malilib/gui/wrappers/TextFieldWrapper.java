@@ -3,10 +3,10 @@ package fi.dy.masa.malilib.gui.wrappers;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.util.KeyCodes;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 
 public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 {
@@ -47,7 +47,7 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
         }
     }
 
-    public void draw(GuiGraphics drawContext, int mouseX, int mouseY)
+    public void draw(DrawContext drawContext, int mouseX, int mouseY)
     {
         this.textField.render(drawContext, mouseX, mouseY, 0f);
     }
@@ -66,7 +66,7 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 //        }
 //    }
 
-    public boolean mouseClicked(MouseButtonEvent click, boolean doubleClick)
+    public boolean mouseClicked(Click click, boolean doubleClick)
     {
         if (this.textField.mouseClicked(click, doubleClick))
         {
@@ -81,15 +81,15 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
         return false;
     }
 
-    public boolean onKeyTyped(KeyEvent input)
+    public boolean onKeyTyped(KeyInput input)
     {
-        String textPre = this.textField.getValue();
+        String textPre = this.textField.getText();
 
         if (this.textField.isFocused() && this.textField.keyPressed(input))
         {
             if (this.listener != null &&
                 (input.key() == KeyCodes.KEY_ENTER || input.key() == KeyCodes.KEY_TAB ||
-                 this.textField.getValue().equals(textPre) == false))
+                 this.textField.getText().equals(textPre) == false))
             {
                 this.listener.onTextChange(this.textField);
             }
@@ -100,13 +100,13 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
         return false;
     }
 
-    public boolean onCharTyped(CharacterEvent input)
+    public boolean onCharTyped(CharInput input)
     {
-        String textPre = this.textField.getValue();
+        String textPre = this.textField.getText();
 
         if (this.textField.isFocused() && this.textField.charTyped(input))
         {
-            if (this.listener != null && this.textField.getValue().equals(textPre) == false)
+            if (this.listener != null && this.textField.getText().equals(textPre) == false)
             {
                 this.listener.onTextChange(this.textField);
             }

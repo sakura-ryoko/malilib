@@ -1,8 +1,8 @@
 package fi.dy.masa.malilib.gui.button;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gl.RenderPipelines;
+import net.minecraft.client.gui.DrawContext;
 import org.apache.commons.lang3.StringUtils;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
@@ -88,7 +88,7 @@ public class ButtonGeneric extends ButtonBase
     }
 
     @Override
-    public void render(GuiGraphics drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
         super.render(drawContext, mouseX, mouseY, selected);
 
@@ -102,15 +102,15 @@ public class ButtonGeneric extends ButtonBase
         }
     }
 
-    private void drawBackground(GuiGraphics drawContext)
+    private void drawBackground(DrawContext drawContext)
     {
         if (this.renderDefaultBackground)
         {
-            drawContext.blitSprite(RenderPipelines.GUI_TEXTURED, this.getTexture(this.hovered), this.x, this.y, this.width, this.height);
+            drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, this.getTexture(this.hovered), this.x, this.y, this.width, this.height);
         }
     }
 
-    private void drawIcon(GuiGraphics drawContext)
+    private void drawIcon(DrawContext drawContext)
     {
         if (this.icon != null)
         {
@@ -124,7 +124,7 @@ public class ButtonGeneric extends ButtonBase
         }
     }
 
-    private void drawText(GuiGraphics drawContext)
+    private void drawText(DrawContext drawContext)
     {
         if (StringUtils.isBlank(this.displayString) == false)
         {

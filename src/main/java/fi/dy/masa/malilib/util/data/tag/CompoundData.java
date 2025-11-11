@@ -19,8 +19,8 @@ import javax.annotation.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 
 public class CompoundData extends BaseData implements DataView
 {
@@ -291,7 +291,7 @@ public class CompoundData extends BaseData implements DataView
     }
 
 	@Override
-	public <T> Optional<T> getCodec(String key, Codec<T> codec, DynamicOps<Tag> ops)
+	public <T> Optional<T> getCodec(String key, Codec<T> codec, DynamicOps<NbtElement> ops)
 	{
 		BaseData data = this.values.get(key);
 
@@ -380,7 +380,7 @@ public class CompoundData extends BaseData implements DataView
 		return this.putCodec(key, codec, NbtOps.INSTANCE, value);
 	}
 
-	public <T> CompoundData putCodec(String key, Codec<T> codec, DynamicOps<Tag> ops, @Nullable T value)
+	public <T> CompoundData putCodec(String key, Codec<T> codec, DynamicOps<NbtElement> ops, @Nullable T value)
 	{
 		if (value != null)
 		{
