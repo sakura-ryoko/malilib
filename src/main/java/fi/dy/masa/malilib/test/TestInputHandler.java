@@ -7,6 +7,7 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.render.InventoryOverlayScreen;
+import fi.dy.masa.malilib.test.gui.GuiTestFileBrowser;
 import fi.dy.masa.malilib.test.gui.GuiTestList;
 import fi.dy.masa.malilib.test.gui.GuiTestPosEditor;
 import fi.dy.masa.malilib.util.time.TimeTestExample;
@@ -43,6 +44,7 @@ public class TestInputHandler implements IKeybindProvider
         MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind().setCallback(this.callback);
         MaLiLibConfigs.Test.TEST_GUI_KEYBIND.getKeybind().setCallback(this.callback);
 	    MaLiLibConfigs.Test.TEST_GUI_EDITOR_KEYBIND.getKeybind().setCallback(this.callback);
+	    MaLiLibConfigs.Test.TEST_GUI_FILE_BROWSER_KEYBIND.getKeybind().setCallback(this.callback);
         MaLiLibConfigs.Test.TEST_RUN_DATETIME_TEST.getKeybind().setCallback(this.callback);
     }
 
@@ -110,6 +112,11 @@ public class TestInputHandler implements IKeybindProvider
             {
 	            System.out.printf("testGuiEditorKeybind Callback Action: [%s] (Cancel = false)\n", action.getStringValue());
 	            GuiBase.openGui(new GuiTestPosEditor());
+            }
+            else if (key == MaLiLibConfigs.Test.TEST_GUI_FILE_BROWSER_KEYBIND.getKeybind())
+            {
+	            System.out.printf("testGuiFileBrowserKeybind Callback Action: [%s] (Cancel = false)\n", action.getStringValue());
+	            GuiBase.openGui(new GuiTestFileBrowser());
             }
             else if (key == MaLiLibConfigs.Test.TEST_RUN_DATETIME_TEST.getKeybind())
             {

@@ -11,15 +11,10 @@ import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.DirectoryCreator;
-import fi.dy.masa.malilib.util.FileUtils;
-import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.*;
 
 public class WidgetDirectoryNavigation extends WidgetSearchBar
 {
-    //protected final File currentDir;
-    //protected final File rootDir;
     protected final Path currentDir;
     protected final Path rootDir;
     protected final IDirectoryNavigator navigator;
@@ -28,7 +23,8 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
     protected final WidgetIcon iconCreateDir;
 
     public WidgetDirectoryNavigation(int x, int y, int width, int height,
-                                     Path currentDir, Path rootDir, IDirectoryNavigator navigator, IFileBrowserIconProvider iconProvider)
+                                     Path currentDir, Path rootDir,
+                                     IDirectoryNavigator navigator, IFileBrowserIconProvider iconProvider)
     {
         super(x, y, width, height, 0, iconProvider.getIconSearch(), LeftRight.RIGHT);
 
@@ -42,6 +38,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
         x += this.iconUp.getWidth() + 2;
 
         this.iconCreateDir = new WidgetIcon(x, y + 1, iconProvider.getIconCreateDirectory());
+//	    x += this.iconCreateDir.getWidth() + 2;
     }
 
     @Override

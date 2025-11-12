@@ -4,7 +4,7 @@ public interface IStringConsumerFeedback
 {
     /**
      * 
-     * @param string
+     * @param string ()
      * @return true if the operation succeeded, false if there was some kind of an error
      */
     boolean setString(String string);
