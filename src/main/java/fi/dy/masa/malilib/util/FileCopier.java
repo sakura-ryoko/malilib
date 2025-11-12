@@ -1,16 +1,16 @@
 package fi.dy.masa.malilib.util;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import javax.annotation.Nullable;
-
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.interfaces.IStringConsumerFeedback;
 
-public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, boolean feedback) implements IStringConsumerFeedback
+import javax.annotation.Nullable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public record FileCopier(Path file, @Nullable IDirectoryNavigator navigator, boolean feedback) implements IStringConsumerFeedback
 {
 	@Override
 	public boolean setString(String string)
@@ -28,7 +28,7 @@ public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, bo
 
 		if (this.file().getFileName().equals(newFile.getFileName()))
 		{
-			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.file_rename.same_name", newFile.toAbsolutePath());
+			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_copy_file.destination_exists", this.file().toAbsolutePath(), newFile.toAbsolutePath());
 			return true;        // Closes Dialog box
 		}
 
@@ -51,13 +51,13 @@ public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, bo
 				catch (Exception err)
 				{
 					InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.error.failed_to_delete_file", this.file().toAbsolutePath());
-					MaLiLib.debugLog("FileRenamer: Failed to delete file '{}'; {}", this.file().toAbsolutePath(), err.getLocalizedMessage());
+					MaLiLib.debugLog("FileCopier: Failed to delete file '{}'; {}", this.file().toAbsolutePath(), err.getLocalizedMessage());
 					return false;
 				}
 			}
 			else
 			{
-				InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_rename_file.exists",
+				InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_copy_file.destination_exists",
 				                                    this.file().toAbsolutePath(), newFile.toAbsolutePath());
 				return false;
 			}
@@ -65,19 +65,19 @@ public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, bo
 
 		try
 		{
-			Files.move(this.file(), newFile);
+			Files.copy(this.file(), newFile);
 		}
 		catch (Exception err)
 		{
-			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_rename_file.exception",
+			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_copy_file.exception",
 			                                    this.file().toAbsolutePath(), newFile.toAbsolutePath(), err.getLocalizedMessage());
 			return false;
 		}
 
 		if (feedback())
 		{
-			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_or_directory_renamed", newFile.getFileName());
-			MaLiLib.debugLog("FileRenamer: Renamed file '{}' -> '{}'", this.file().toAbsolutePath(), newFile.toAbsolutePath());
+			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_copied", this.file().getFileName(), newFile.getFileName());
+			MaLiLib.debugLog("FileCopier: Copied file '{}' -> '{}'", this.file().toAbsolutePath(), newFile.toAbsolutePath());
 		}
 
 		return true;

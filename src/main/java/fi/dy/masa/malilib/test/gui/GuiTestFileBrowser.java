@@ -12,10 +12,7 @@ import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetDirectoryEntry;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase;
 import fi.dy.masa.malilib.test.gui.widgets.WidgetTestBrowser;
-import fi.dy.masa.malilib.util.FileDeleter;
-import fi.dy.masa.malilib.util.FileNameUtils;
-import fi.dy.masa.malilib.util.FileRenamer;
-import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.*;
 
 public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.DirectoryEntry, WidgetDirectoryEntry, WidgetTestBrowser>
 	implements ISelectionListener<WidgetFileBrowserBase.DirectoryEntry>
@@ -78,6 +75,7 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 		int x = 10;
 		int y = this.getScreenHeight() - 26;
 
+		x += this.createButton(x, y, ButtonType.COPY);
 		x += this.createButton(x, y, ButtonType.RENAME);
 		x += this.createButton(x, y, ButtonType.DELETE);
 	}
@@ -120,41 +118,44 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 		@Override
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
 		{
-			if (this.type == ButtonType.RENAME)
-			{
-				WidgetFileBrowserBase.DirectoryEntry entry = this.gui.getListWidget().getLastSelectedEntry();
+			WidgetFileBrowserBase.DirectoryEntry entry = this.gui.getListWidget().getLastSelectedEntry();
 
-				if (entry != null && entry.getType() != WidgetFileBrowserBase.DirectoryEntryType.INVALID)
-				{
-//					MaLiLib.LOGGER.error("RENAME-ENTRY: [{}] // [{}]", entry.getName(), entry.getFullPath().toString());
-					String title = "malilib.gui.title.rename_file_or_directory";
-					Path target = entry.getFullPath();
-					FileRenamer renamer = new FileRenamer(target, this.gui.getListWidget());
-					GuiTextInputFeedback textInputFeedback = new GuiTextInputFeedback(256, title, entry.getName(), this.gui, renamer);
-					GuiBase.openGui(textInputFeedback);
-				}
-			}
-			else if (this.type == ButtonType.DELETE)
+			if (entry == null)
 			{
-				WidgetFileBrowserBase.DirectoryEntry entry = this.gui.getListWidget().getLastSelectedEntry();
-				String title = "malilib.gui.title.delete_confirm";
-				String message = "malilib.message.delete_confirm";
-
-				if (entry != null && entry.getType() != WidgetFileBrowserBase.DirectoryEntryType.INVALID)
-				{
-//					MaLiLib.LOGGER.error("DELETE-ENTRY: [{}] // [{}]", entry.getName(), entry.getFullPath().toString());
-					Path target = entry.getFullPath();
-					FileDeleter deleter = new FileDeleter(target, this.gui.getListWidget());
-					GuiConfirmAction confirmAction = new GuiConfirmAction(180, title, deleter, this.gui, message, target.getFileName().toString());
-					GuiBase.openGui(confirmAction);
-				}
-				else if (this.gui.getListWidget().getCurrentDirectory() != null)
+				if (this.gui.getListWidget().getCurrentDirectory() != null)
 				{
 					Path target = this.gui.getListWidget().getCurrentDirectory();
-//					MaLiLib.LOGGER.error("DELETE-CD: [{}]", target.toAbsolutePath());
-					FileDeleter deleter = new FileDeleter(target, this.gui.getListWidget());
-					GuiConfirmAction confirmAction = new GuiConfirmAction(180, title, deleter, this.gui, message, target.getFileName().toString());
-					GuiBase.openGui(confirmAction);
+	//					MaLiLib.LOGGER.error("DELETE-CD: [{}]", target.toAbsolutePath());
+					FileDeleter deleter = new FileDeleter(target, this.gui.getListWidget(), true);
+					GuiBase.openGui(new GuiConfirmAction(180, "malilib.gui.title.delete_confirm", deleter, this.gui, "malilib.message.delete_confirm", target.getFileName().toString()));
+				}
+			}
+			else if (entry.getType() == WidgetFileBrowserBase.DirectoryEntryType.INVALID)
+			{
+				// Ignored
+				return;
+			}
+			else
+			{
+				Path target = entry.getFullPath();
+
+				if (this.type == ButtonType.COPY)
+				{
+//					MaLiLib.LOGGER.error("COPY-ENTRY: [{}] // [{}]", entry.getName(), entry.getFullPath().toString());
+					FileCopier copier = new FileCopier(target, this.gui.getListWidget(), true);
+					GuiBase.openGui(new GuiTextInputFeedback(256, "malilib.gui.title.copy_file", entry.getName(), this.gui, copier));
+				}
+				else if (this.type == ButtonType.RENAME)
+				{
+//					MaLiLib.LOGGER.error("RENAME-ENTRY: [{}] // [{}]", entry.getName(), entry.getFullPath().toString());
+					FileRenamer renamer = new FileRenamer(target, this.gui.getListWidget(), true);
+					GuiBase.openGui(new GuiTextInputFeedback(256, "malilib.gui.title.rename_file_or_directory", entry.getName(), this.gui, renamer));
+				}
+				else if (this.type == ButtonType.DELETE)
+				{
+//					MaLiLib.LOGGER.error("DELETE-ENTRY: [{}] // [{}]", entry.getName(), entry.getFullPath().toString());
+					FileDeleter deleter = new FileDeleter(target, this.gui.getListWidget(), true);
+					GuiBase.openGui(new GuiConfirmAction(180, "malilib.gui.title.delete_confirm", deleter, this.gui, "malilib.message.delete_confirm", target.getFileName().toString()));
 				}
 			}
 		}
@@ -162,6 +163,7 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 
 	protected enum ButtonType
 	{
+		COPY		("malilib.gui.button.copy"),
 		RENAME      ("malilib.gui.button.rename"),
 		DELETE      ("malilib.gui.button.delete"),
 		;

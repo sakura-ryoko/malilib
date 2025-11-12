@@ -9,26 +9,26 @@ import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.interfaces.IConfirmationListener;
 
-public record FileDeleter(Path file, @Nullable IDirectoryNavigator navigator) implements IConfirmationListener
+public record FileDeleter(Path file, @Nullable IDirectoryNavigator navigator, boolean feedback) implements IConfirmationListener
 {
 	@Override
 	public boolean onActionConfirmed()
 	{
-		if (this.file == null)
+		if (this.file() == null)
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.invalid_file_or_directory");
 			return false;
 		}
 
-		if (!Files.exists(this.file))
+		if (!Files.exists(this.file()))
 		{
-			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.file_or_directory_does_not_exist", this.file.toAbsolutePath());
+			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.file_or_directory_does_not_exist", this.file().toAbsolutePath());
 			return false;
 		}
 
-		if (this.navigator != null && this.navigator.getCurrentDirectory().equals(this.file))
+		if (this.navigator() != null && this.navigator().getCurrentDirectory().equals(this.file))
 		{
-			this.navigator.switchToParentDirectory();
+			this.navigator().switchToParentDirectory();
 		}
 
 		try
@@ -37,12 +37,16 @@ public record FileDeleter(Path file, @Nullable IDirectoryNavigator navigator) im
 		}
 		catch (Exception err)
 		{
-			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_delete_file", this.file.toAbsolutePath());
-			MaLiLib.debugLog("FileDeleter: Failed to delete file '{}'; {}", this.file.toAbsolutePath(), err.getLocalizedMessage());
+			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_delete_file", this.file().toAbsolutePath());
+			MaLiLib.debugLog("FileDeleter: Failed to delete file '{}'; {}", this.file().toAbsolutePath(), err.getLocalizedMessage());
 			return false;
 		}
 
-		InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_or_directory_deleted", this.file.toAbsolutePath());
+		if (feedback())
+		{
+			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_or_directory_deleted", this.file().getFileName());
+		}
+
 		return true;
 	}
 

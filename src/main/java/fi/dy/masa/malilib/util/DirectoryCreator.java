@@ -19,7 +19,7 @@ public record DirectoryCreator(Path dir, @Nullable IDirectoryNavigator navigator
 			return false;
 		}
 
-		Path file = this.dir.resolve(string);
+		Path file = this.dir().resolve(string);
 
 		if (Files.exists(file))
 		{
@@ -37,12 +37,17 @@ public record DirectoryCreator(Path dir, @Nullable IDirectoryNavigator navigator
 			return false;
 		}
 
-		if (this.navigator != null)
+		if (this.navigator() != null)
 		{
-			this.navigator.switchToDirectory(file);
+			this.navigator().switchToDirectory(file);
 		}
 
-		InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.directory_created", string);
+		// todo
+//		if (this.feedback())
+//		{
+			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.directory_created", string);
+//		}
+
 		return true;
 	}
 }
