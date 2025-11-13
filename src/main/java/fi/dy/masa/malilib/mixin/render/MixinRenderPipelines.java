@@ -1264,7 +1264,7 @@ public abstract class MixinRenderPipelines
 
         // MINIHUD_SHAPE
         MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH_OFFSET =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/no_depth/offset"))
                               .withDepthBias(-3.0f, -3.0f)
                               .withCull(false)
@@ -1274,7 +1274,7 @@ public abstract class MixinRenderPipelines
                               .build();
 
         MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/no_depth"))
                               .withCull(false)
                               .withDepthWrite(false)
@@ -1283,7 +1283,7 @@ public abstract class MixinRenderPipelines
                               .build();
 
         MaLiLibPipelines.MINIHUD_SHAPE_OFFSET_NO_CULL =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/offset_no_cull"))
                               .withDepthBias(-3.0f, -3.0f)
                               .withCull(false)
@@ -1293,7 +1293,7 @@ public abstract class MixinRenderPipelines
                               .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE_OFFSET =
-			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
 			                  .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/offset"))
 			                  .withDepthBias(-3.0f, -3.0f)
 			                  .withDepthWrite(false)
@@ -1302,7 +1302,7 @@ public abstract class MixinRenderPipelines
 			                  .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE_DEPTH_MASK =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/depth_mask"))
                               .withDepthWrite(true)
                               .withColorWrite(true)
@@ -1310,7 +1310,7 @@ public abstract class MixinRenderPipelines
                               .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE_NO_CULL =
-			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
 			                  .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape"))
 			                  .withCull(false)
 			                  .withDepthWrite(false)
@@ -1319,7 +1319,7 @@ public abstract class MixinRenderPipelines
 			                  .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE =
-                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+                RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape"))
                               .withDepthWrite(false)
                               .withColorWrite(true)
