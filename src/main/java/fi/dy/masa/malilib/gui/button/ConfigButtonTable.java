@@ -68,8 +68,8 @@ public class ConfigButtonTable extends ButtonGeneric {
                     sb.append(((DoubleEntry) entryPart).getValue());
                 } else if (entryPart.getType() == EntryTypes.BOOLEAN) {
                     sb.append(((BooleanEntry) entryPart).getValue());
-                } else if (entryPart.getType() == EntryTypes.KEYBIND) {
-                    sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
+//                } else if (entryPart.getType() == EntryTypes.KEYBIND) {
+//                    sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
                 } else {
                     throw new IllegalStateException();
                 }

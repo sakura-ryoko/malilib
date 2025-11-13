@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.config.options.table;
 
 import fi.dy.masa.malilib.config.options.table.type.*;
-import fi.dy.masa.malilib.hotkeys.IKeybind;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -39,7 +38,7 @@ public class TableRow {
                 case Integer i -> tableRow.add(new IntegerEntry(i));
                 case Double v -> tableRow.add(new DoubleEntry(v));
                 case Boolean b -> tableRow.add(new BooleanEntry(b));
-                case IKeybind k -> tableRow.add(new KeybindEntry(k));
+//                case IKeybind k -> tableRow.add(new KeybindEntry(k));
                 case Entry e -> tableRow.add(e);
                 default -> throw new IllegalArgumentException("Unsupported entry type: " + entry.getClass().getName());
             }
@@ -67,9 +66,9 @@ public class TableRow {
         return (BooleanEntry) this.list.get(index);
     }
 
-    public KeybindEntry getKeybindEntry(int index) {
-        return (KeybindEntry) this.list.get(index);
-    }
+//    public KeybindEntry getKeybindEntry(int index) {
+//        return (KeybindEntry) this.list.get(index);
+//    }
 
     public StringEntry getStringEntry(int index) {
         return (StringEntry) this.list.get(index);
@@ -91,9 +90,9 @@ public class TableRow {
         return ((StringEntry) this.list.get(index)).getValue();
     }
 
-    public IKeybind getKeybind(int index) {
-        return ((KeybindEntry) this.list.get(index)).getKeybind();
-    }
+//    public IKeybind getKeybind(int index) {
+//        return ((KeybindEntry) this.list.get(index)).getKeybind();
+//    }
 
     @Override
     public boolean equals(Object other) {

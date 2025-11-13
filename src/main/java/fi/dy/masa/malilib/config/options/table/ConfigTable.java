@@ -37,7 +37,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                                     case IntegerEntry integer -> temp.add("int" + integer.getValue());
                                     case DoubleEntry dbl -> temp.add("dbl" + dbl.getValue());
                                     case BooleanEntry bln -> temp.add("bln" + bln.getValue());
-                                    case KeybindEntry kbe -> temp.add("key" + kbe.getStringValue());
+//                                    case KeybindEntry kbe -> temp.add("key" + kbe.getStringValue());
                                     default ->
                                             throw new IllegalStateException("Unsupported type: " + entry.getType());
                                 }
@@ -56,7 +56,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                                     case IntegerEntry integer -> temp.add("int" + integer.getValue());
                                     case DoubleEntry dbl -> temp.add("dbl" + dbl.getValue());
                                     case BooleanEntry bln -> temp.add("bln" + bln.getValue());
-                                    case KeybindEntry kbe -> temp.add("key" + kbe.getStringValue());
+//                                    case KeybindEntry kbe -> temp.add("key" + kbe.getStringValue());
                                     default ->
                                             throw new IllegalStateException("Unsupported type: " + entry.getType());
                                 }
@@ -74,7 +74,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                             switch (type) {
                                 case EntryTypes.STRING -> typeNames.add("str");
                                 case EntryTypes.INTEGER -> typeNames.add("int");
-                                case EntryTypes.DOUBLE -> typeNames.add("dbl");
+                                case EntryTypes.DOUBLE -> typeNames.add("dbl"); // TODO: add the others?
                                 default -> throw new IllegalStateException("Unsupported type: " + type.name());
                             }
                         }
@@ -108,7 +108,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                     case "int" -> entryList.add(IntegerEntry.of(Integer.parseInt(valueString)));
                     case "dbl" -> entryList.add(DoubleEntry.of(Double.parseDouble(valueString)));
                     case "bln" -> entryList.add(BooleanEntry.of(Boolean.parseBoolean(valueString)));
-                    case "key" -> entryList.add(KeybindEntry.from(valueString));
+//                    case "key" -> entryList.add(KeybindEntry.from(valueString));
                     default -> throw new IllegalStateException("Unsupported type name: " + typeName);
                 }
             }
@@ -125,7 +125,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                 case "int" -> temp.add(EntryTypes.INTEGER);
                 case "dbl" -> temp.add(EntryTypes.DOUBLE);
                 case "bln" -> temp.add(EntryTypes.BOOLEAN);
-                case "key" -> temp.add(EntryTypes.KEYBIND);
+//                case "key" -> temp.add(EntryTypes.KEYBIND);
                 default -> throw new IllegalStateException("Unsupported type name: " + typeName);
             }
         }
@@ -258,7 +258,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                         JsonObject obj = el2.getAsJsonObject();
                         if (obj.has("type")) {
                             switch (obj.get("type").getAsString()) {
-                                case "keybind" -> tempList.add(KeybindEntry.getFromJsonObject(obj));
+//                                case "keybind" -> tempList.add(KeybindEntry.getFromJsonObject(obj));
                                 case "string"  -> tempList.add(StringEntry.getFromJsonObject(obj));
                                 case "integer" -> tempList.add(IntegerEntry.getFromJsonObject(obj));
                                 case "double"  -> tempList.add(DoubleEntry.getFromJsonObject(obj));
@@ -321,8 +321,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                 dummy.add(DoubleEntry.of(0.0));
             } else if (type == EntryTypes.BOOLEAN) {
                 dummy.add(BooleanEntry.of(false));
-            } else if (type == EntryTypes.KEYBIND) {
-                dummy.add(KeybindEntry.of(""));
+//            } else if (type == EntryTypes.KEYBIND) {
+//                dummy.add(KeybindEntry.of(""));
             } else {
                 throw new IllegalStateException("Unsupported type: " + type.name());
             }

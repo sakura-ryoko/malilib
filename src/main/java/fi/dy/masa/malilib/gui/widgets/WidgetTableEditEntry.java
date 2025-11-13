@@ -139,31 +139,31 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                 this.textFields.add(wrapper);
                 this.keybindWidgets.add(null);
                 this.booleanWidgets.add(null);
-            } else if (type == EntryTypes.KEYBIND) {
-                KeybindEntry keybindEntry = (KeybindEntry) value;
-                ConfigButtonKeybind keybindButton = new ConfigButtonKeybind(
-                        x + i * (configWidth / types.size()) + 2,
-                        y,
-                        configWidth / types.size() - 10 - (configHeight - 6),
-                        configHeight -3,
-                        keybindEntry.getKeybind(),
-                        null);
-
-                WidgetKeybindSettings settingsWidget = new WidgetKeybindSettings(
-                        x + (i + 1) * (configWidth / types.size()) - 22,
-                        y,
-                        20,
-                        20,
-                        keybindEntry.getKeybind(),
-                        "",
-                        null,
-                        null);
-                keybindButton.updateDisplayString();
-                this.keybindWidgets.add(new Pair<>(keybindButton, settingsWidget));
-                this.subWidgets.add(keybindButton);
-                this.subWidgets.add(settingsWidget);
-                this.textFields.add(null);
-                this.booleanWidgets.add(null);
+//            } else if (type == EntryTypes.KEYBIND) {
+//                KeybindEntry keybindEntry = (KeybindEntry) value;
+//                ConfigButtonKeybind keybindButton = new ConfigButtonKeybind(
+//                        x + i * (configWidth / types.size()) + 2,
+//                        y,
+//                        configWidth / types.size() - 10 - (configHeight - 6),
+//                        configHeight -3,
+//                        keybindEntry.getKeybind(),
+//                        null);
+//
+//                WidgetKeybindSettings settingsWidget = new WidgetKeybindSettings(
+//                        x + (i + 1) * (configWidth / types.size()) - 22,
+//                        y,
+//                        20,
+//                        20,
+//                        keybindEntry.getKeybind(),
+//                        "",
+//                        null,
+//                        null);
+//                keybindButton.updateDisplayString();
+//                this.keybindWidgets.add(new Pair<>(keybindButton, settingsWidget));
+//                this.subWidgets.add(keybindButton);
+//                this.subWidgets.add(settingsWidget);
+//                this.textFields.add(null);
+//                this.booleanWidgets.add(null);
             } else if (type == EntryTypes.BOOLEAN) {
                 ConfigButtonBoolean booleanButton = new ConfigButtonBoolean(
                         x + i * (configWidth / types.size()) + 2,
@@ -239,11 +239,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                         } else if (type == EntryTypes.DOUBLE) {
                             temp.list.add(DoubleEntry.of(Double.parseDouble(text)));
                         }
-                    } else if (type == EntryTypes.KEYBIND) {
-                        assert this.entries.get(i) instanceof KeybindEntry;
-                        KeybindEntry keybindEntry = (KeybindEntry) this.entries.get(i);
-                        temp.list.add(keybindEntry);
-                        lastAppliedValues.add(keybindEntry.getStringValue());
+//                    } else if (type == EntryTypes.KEYBIND) {
+//                        assert this.entries.get(i) instanceof KeybindEntry;
+//                        KeybindEntry keybindEntry = (KeybindEntry) this.entries.get(i);
+//                        temp.list.add(keybindEntry);
+//                        lastAppliedValues.add(keybindEntry.getStringValue());
                     } else if (type == EntryTypes.BOOLEAN) {
                         assert this.entries.get(i) instanceof BooleanEntry;
                         BooleanEntry booleanEntry = (BooleanEntry) this.entries.get(i);
@@ -420,13 +420,13 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                         return true;
                     }
                 }
-            } else if (type == EntryTypes.KEYBIND) {
-                assert this.entries.get(i) instanceof KeybindEntry;
-                KeybindEntry entry = (KeybindEntry) this.entries.get(i);
-                if (entry.getKeybind().isModified()) {
-                    this.buttonReset.setEnabled(true);
-                    return true;
-                }
+//            } else if (type == EntryTypes.KEYBIND) {
+//                assert this.entries.get(i) instanceof KeybindEntry;
+//                KeybindEntry entry = (KeybindEntry) this.entries.get(i);
+//                if (entry.getKeybind().isModified()) {
+//                    this.buttonReset.setEnabled(true);
+//                    return true;
+//                }
             } else if (type == EntryTypes.BOOLEAN) {
                 assert this.entries.get(i) instanceof BooleanEntry;
                 BooleanEntry entry = (BooleanEntry) this.entries.get(i);
@@ -449,12 +449,12 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                     String defaultText = Entry.getString(this.defaultValue.list.get(i));
                     wrapper.getTextField().setText(defaultText);
                 }
-            } else if (type == EntryTypes.KEYBIND) {
-                assert this.entries.get(i) instanceof KeybindEntry;
-                KeybindEntry entry = (KeybindEntry) this.entries.get(i);
-                entry.getKeybind().resetToDefault();
-                this.keybindWidgets.get(i).getLeft().updateDisplayString();
-
+//            } else if (type == EntryTypes.KEYBIND) {
+//                assert this.entries.get(i) instanceof KeybindEntry;
+//                KeybindEntry entry = (KeybindEntry) this.entries.get(i);
+//                entry.getKeybind().resetToDefault();
+//                this.keybindWidgets.get(i).getLeft().updateDisplayString();
+//
             } else if (type == EntryTypes.BOOLEAN) {
                 assert this.entries.get(i) instanceof BooleanEntry;
                 BooleanEntry entry = (BooleanEntry) this.entries.get(i);
@@ -519,14 +519,15 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
             Entry entry = this.entries.get(i);
             String lastApplied = i < this.lastAppliedValues.size() ? this.lastAppliedValues.get(i) : null;
 
-            if (entry.getType() == EntryTypes.KEYBIND) {
-                assert this.entries.get(i) instanceof KeybindEntry;
-                KeybindEntry entry1 = (KeybindEntry) this.entries.get(i);
-
-                if (!entry1.getStringValue().equals(lastApplied)) {
-                    return true;
-                }
-            } else if (entry.getType() == EntryTypes.BOOLEAN) {
+//            if (entry.getType() == EntryTypes.KEYBIND) {
+//                assert this.entries.get(i) instanceof KeybindEntry;
+//                KeybindEntry entry1 = (KeybindEntry) this.entries.get(i);
+//
+//                if (!entry1.getStringValue().equals(lastApplied)) {
+//                    return true;
+//                }
+//            } else
+            if (entry.getType() == EntryTypes.BOOLEAN) {
                 assert this.entries.get(i) instanceof BooleanEntry;
                 BooleanEntry entry1 = (BooleanEntry) this.entries.get(i);
                 String boolStr = Boolean.toString(entry1.getValue());
