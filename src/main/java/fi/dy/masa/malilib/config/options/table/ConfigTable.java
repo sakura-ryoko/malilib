@@ -74,7 +74,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                             switch (type) {
                                 case EntryTypes.STRING -> typeNames.add("str");
                                 case EntryTypes.INTEGER -> typeNames.add("int");
-                                case EntryTypes.DOUBLE -> typeNames.add("dbl"); // TODO: add the others?
+                                case EntryTypes.DOUBLE -> typeNames.add("dbl");
+                                case EntryTypes.BOOLEAN -> typeNames.add("bln");
                                 default -> throw new IllegalStateException("Unsupported type: " + type.name());
                             }
                         }
