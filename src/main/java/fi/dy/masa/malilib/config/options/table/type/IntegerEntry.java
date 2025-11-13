@@ -2,32 +2,39 @@ package fi.dy.masa.malilib.config.options.table.type;
 
 import com.google.gson.JsonObject;
 
-public class IntegerEntry extends Entry {
+public class IntegerEntry extends Entry
+{
     private int value;
 
-    public IntegerEntry(int value) {
+    public IntegerEntry(int value)
+    {
         this.value = value;
     }
 
-    public static IntegerEntry of(int val) {
+    public static IntegerEntry of(int val)
+    {
         return new IntegerEntry(val);
     }
 
-    public int getValue() {
+    public int getValue()
+    {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(int value)
+    {
         this.value = value;
     }
 
     @Override
-    public EntryTypes getType() {
+    public EntryTypes getType()
+    {
         return EntryTypes.INTEGER;
     }
 
     @Override
-    public JsonObject getAsJsonObject() {
+    public JsonObject getAsJsonObject()
+    {
         JsonObject obj = new JsonObject();
         obj.addProperty("type", "integer");
         obj.addProperty("value", String.valueOf(this.value));
@@ -35,23 +42,29 @@ public class IntegerEntry extends Entry {
     }
 
     @Override
-    public Entry copy() {
+    public Entry copy()
+    {
         return new IntegerEntry(value);
     }
 
     @Override
-    public boolean wasConfigModified(Entry entry) {
-        if (!(entry instanceof IntegerEntry other)) {
+    public boolean wasConfigModified(Entry entry)
+    {
+        if (!(entry instanceof IntegerEntry other))
+        {
             return true;
         }
         return this.value != other.value;
     }
 
-    public static IntegerEntry getFromJsonObject(JsonObject obj) {
-        try {
+    public static IntegerEntry getFromJsonObject(JsonObject obj)
+    {
+        try
+        {
             int val = Integer.parseInt(obj.get("value").getAsString());
             return IntegerEntry.of(val);
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException e)
+        {
             e.printStackTrace();
             System.out.println("Failed to parse integer from JSON object: " + obj);
             return IntegerEntry.of(0);
@@ -59,7 +72,8 @@ public class IntegerEntry extends Entry {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(Object o)
+    {
         if (!(o instanceof IntegerEntry other)) return false;
         return other.getValue() == this.getValue();
     }

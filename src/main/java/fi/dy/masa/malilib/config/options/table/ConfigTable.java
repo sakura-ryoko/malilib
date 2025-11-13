@@ -19,7 +19,8 @@ import org.jetbrains.annotations.Range;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable {
+public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
+{
     public static final Codec<ConfigTable> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
@@ -27,12 +28,16 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                     PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(ConfigBase::getPrettyName),
                     PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(ConfigBase::getTranslatedName),
                     PrimitiveCodec.STRING.fieldOf("displayString").forGetter(get -> get.displayString == null ? "n" : "s" + get.displayString),
-                    Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("defaultTable").forGetter(get -> {
+                    Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("defaultTable").forGetter(get ->
+                    {
                         List<List<String>> table = new ArrayList<>();
-                        for (TableRow row : get.getDefaultTable()) {
+                        for (TableRow row : get.getDefaultTable())
+                        {
                             List<String> temp = new ArrayList<>();
-                            for (Entry entry : row.list) {
-                                switch (entry) {
+                            for (Entry entry : row.list)
+                            {
+                                switch (entry)
+                                {
                                     case StringEntry str -> temp.add("str" + str.getValue());
                                     case IntegerEntry integer -> temp.add("int" + integer.getValue());
                                     case DoubleEntry dbl -> temp.add("dbl" + dbl.getValue());
@@ -46,12 +51,16 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                         }
                         return table;
                     }),
-                    Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("table").forGetter(get -> {
+                    Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("table").forGetter(get ->
+                    {
                         List<List<String>> table = new ArrayList<>();
-                        for (TableRow row : get.getTable()) {
+                        for (TableRow row : get.getTable())
+                        {
                             List<String> temp = new ArrayList<>();
-                            for (Entry entry : row.list) {
-                                switch (entry) {
+                            for (Entry entry : row.list)
+                            {
+                                switch (entry)
+                                {
                                     case StringEntry str -> temp.add("str" + str.getValue());
                                     case IntegerEntry integer -> temp.add("int" + integer.getValue());
                                     case DoubleEntry dbl -> temp.add("dbl" + dbl.getValue());
@@ -68,10 +77,13 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                     Codecs.listOrSingle(PrimitiveCodec.STRING).fieldOf("labels").forGetter(ConfigTable::getLabels),
                     PrimitiveCodec.BOOL.fieldOf("showEntryNumbers").forGetter(ConfigTable::showEntryNumbers),
                     PrimitiveCodec.BOOL.fieldOf("allowNewEntry").forGetter(ConfigTable::allowNewEntry),
-                    PrimitiveCodec.STRING.listOf().fieldOf("types").forGetter(get -> {
+                    PrimitiveCodec.STRING.listOf().fieldOf("types").forGetter(get ->
+                    {
                         List<String> typeNames = new ArrayList<>();
-                        for (EntryTypes type : get.types) {
-                            switch (type) {
+                        for (EntryTypes type : get.types)
+                        {
+                            switch (type)
+                            {
                                 case EntryTypes.STRING -> typeNames.add("str");
                                 case EntryTypes.INTEGER -> typeNames.add("int");
                                 case EntryTypes.DOUBLE -> typeNames.add("dbl");
@@ -92,19 +104,24 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     private final boolean allowNewEntry;
     private final boolean showEntryNumbers;
 
-    private ConfigTable(String name, String comment, String prettyName, String translatedName, String displayString, List<List<String>> defaultValue, List<List<String>> value, List<String> labels, Boolean showEntryNumbers, Boolean allowAddNewEntry, List<String> types) {
+    private ConfigTable(String name, String comment, String prettyName, String translatedName, String displayString, List<List<String>> defaultValue, List<List<String>> value, List<String> labels, Boolean showEntryNumbers, Boolean allowAddNewEntry, List<String> types)
+    {
         this(name, comment, prettyName, translatedName, strip(displayString), parse(defaultValue), labels, showEntryNumbers, allowAddNewEntry, parseTypes(types));
         this.table.addAll(parse(value));
     }
 
-    private static List<TableRow> parse(List<List<String>> defaultValue) {
+    private static List<TableRow> parse(List<List<String>> defaultValue)
+    {
         List<TableRow> temp = new ArrayList<>();
-        for (List<String> list : defaultValue) {
+        for (List<String> list : defaultValue)
+        {
             TableRow entryList = new TableRow();
-            for (String entry : list) {
+            for (String entry : list)
+            {
                 String typeName = entry.substring(0, 3);
                 String valueString = entry.substring(3);
-                switch (typeName) {
+                switch (typeName)
+                {
                     case "str" -> entryList.add(StringEntry.of(valueString));
                     case "int" -> entryList.add(IntegerEntry.of(Integer.parseInt(valueString)));
                     case "dbl" -> entryList.add(DoubleEntry.of(Double.parseDouble(valueString)));
@@ -118,10 +135,13 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
         return temp;
     }
 
-    private static EntryTypes[] parseTypes(List<String> types) {
+    private static EntryTypes[] parseTypes(List<String> types)
+    {
         List<EntryTypes> temp = new ArrayList<>();
-        for (String typeName : types) {
-            switch (typeName) {
+        for (String typeName : types)
+        {
+            switch (typeName)
+            {
                 case "str" -> temp.add(EntryTypes.STRING);
                 case "int" -> temp.add(EntryTypes.INTEGER);
                 case "dbl" -> temp.add(EntryTypes.DOUBLE);
@@ -133,12 +153,16 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
         return temp.toArray(new EntryTypes[0]);
     }
 
-    private static @Nullable String strip(String displayString) {
-        if (displayString.equals("n")) {
+    private static @Nullable String strip(String displayString)
+    {
+        if (displayString.equals("n"))
+        {
             return null;
-        } else if (displayString.startsWith("s")) {
+        } else if (displayString.startsWith("s"))
+        {
             return displayString.substring(1);
-        } else {
+        } else
+        {
             throw new IllegalStateException("Unsupported display string: " + displayString);
         }
     }
@@ -146,21 +170,24 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     private ConfigTable(String name, String comment, String prettyName, String translatedName,
                        @Nullable String displayString, List<TableRow> defaultValue,
                        List<String> labels, boolean showEntryNumbers, boolean allowAddNewEntry,
-                        EntryTypes... types) {
+                        EntryTypes... types)
+    {
         super(null, name, comment, prettyName, translatedName);
         this.labels = labels;
         this.allowNewEntry = allowAddNewEntry;
         this.showEntryNumbers = showEntryNumbers;
 
         ImmutableList.Builder<EntryTypes> ilb = ImmutableList.builder();
-        for (EntryTypes type : types) {
+        for (EntryTypes type : types)
+        {
             ilb.add(type);
         }
 
         this.types = ilb.build();
         this.displayString = displayString;
         ImmutableList.Builder<TableRow> ilb2 = ImmutableList.builder();
-        for (TableRow list : defaultValue) {
+        for (TableRow list : defaultValue)
+        {
             TableRow newEntry = new TableRow();
             newEntry.list.addAll(List.copyOf(list.list));
             ilb2.add(newEntry);
@@ -170,14 +197,17 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     }
 
     @Override
-    public List<TableRow> getTable() {
+    public List<TableRow> getTable()
+    {
         return table;
     }
 
     @Override
-    public List<List<Object>> getRawTable() {
+    public List<List<Object>> getRawTable()
+    {
         List<List<Object>> rawTable = new ArrayList<>();
-        for (TableRow entry : table) {
+        for (TableRow entry : table)
+        {
             List<Object> rawEntry = new ArrayList<>(entry.list);
             rawTable.add(rawEntry);
         }
@@ -185,14 +215,17 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     }
 
     @Override
-    public ImmutableList<TableRow> getDefaultTable() {
+    public ImmutableList<TableRow> getDefaultTable()
+    {
         return defaultTable;
     }
 
     @Override
-    public ImmutableList<List<Object>> getDefaultRawTable() {
+    public ImmutableList<List<Object>> getDefaultRawTable()
+    {
         ImmutableList.Builder<List<Object>> ilb = new ImmutableList.Builder<>();
-        for (TableRow entry : defaultTable) {
+        for (TableRow entry : defaultTable)
+        {
             List<Object> rawEntry = new ArrayList<>(entry.list);
             ilb.add(rawEntry);
         }
@@ -200,8 +233,10 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     }
 
     @Override
-    public void setTable(List<TableRow> newTable) {
-        if (!this.table.equals(newTable)) {
+    public void setTable(List<TableRow> newTable)
+    {
+        if (!this.table.equals(newTable))
+        {
             this.table.clear();
             this.table.addAll(newTable);
             this.onValueChanged();
@@ -209,29 +244,36 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     }
 
     @Override
-    public void setModified() {
+    public void setModified()
+{
         this.onValueChanged();
     }
 
     @Override
-    public @Nullable String getDisplayString() {
+    public @Nullable String getDisplayString()
+    {
         return this.displayString;
     }
 
     @Override
-    public List<EntryTypes> getTypes() {
+    public List<EntryTypes> getTypes()
+    {
         return types;
     }
 
     @Override
-    public void resetToDefault() {
+    public void resetToDefault()
+    {
         setTable(defaultTable);
     }
 
     @Override
-    public boolean isModified() {
-        for (int i = 0; i < table.size() && i < defaultTable.size(); i++) {
-            if (!table.get(i).equals(defaultTable.get(i))) {
+    public boolean isModified()
+    {
+        for (int i = 0; i < table.size() && i < defaultTable.size(); i++)
+        {
+            if (!table.get(i).equals(defaultTable.get(i)))
+            {
                 return true;
             }
         }
@@ -239,26 +281,34 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     }
 
     @Override
-    public void setValueFromJsonElement(JsonElement element) {
+    public void setValueFromJsonElement(JsonElement element)
+    {
         List<TableRow> oldTable = new ArrayList<>();
-        for (TableRow entry : table) {
+        for (TableRow entry : table)
+        {
             oldTable.add(new TableRow(entry.list));
         }
         table.clear();
         try {
             JsonArray arr = element.getAsJsonArray();
 
-            for (JsonElement el : arr) {
-                if (!(el instanceof JsonArray jarr)) {
+            for (JsonElement el : arr)
+            {
+                if (!(el instanceof JsonArray jarr))
+                {
                     throw new Exception();
 
                 }
                 List<Entry> tempList = new ArrayList<>();
-                for (JsonElement el2 : jarr) {
-                    if (el2.isJsonObject()) {
+                for (JsonElement el2 : jarr)
+                {
+                    if (el2.isJsonObject())
+                    {
                         JsonObject obj = el2.getAsJsonObject();
-                        if (obj.has("type")) {
-                            switch (obj.get("type").getAsString()) {
+                        if (obj.has("type"))
+                        {
+                            switch (obj.get("type").getAsString())
+                            {
 //                                case "keybind" -> tempList.add(KeybindEntry.getFromJsonObject(obj));
                                 case "string"  -> tempList.add(StringEntry.getFromJsonObject(obj));
                                 case "integer" -> tempList.add(IntegerEntry.getFromJsonObject(obj));
@@ -273,21 +323,26 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                 table.add(new TableRow(tempList));
             }
 
-            if (!table.equals(oldTable)) {
+            if (!table.equals(oldTable))
+            {
                 onValueChanged();
             }
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
         }
     }
 
     @Override
-    public JsonElement getAsJsonElement() {
+    public JsonElement getAsJsonElement()
+    {
         JsonArray tableArr = new JsonArray();
 
-        for (var row : table) {
+        for (var row : table)
+        {
             JsonArray entryArr = new JsonArray();
-            for (Entry entry : row.list) {
+            for (Entry entry : row.list)
+            {
                 entryArr.add(entry.getAsJsonObject());
             }
             tableArr.add(entryArr);
@@ -297,30 +352,39 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
     }
 
     @Override
-    public List<String> getLabels() {
+    public List<String> getLabels()
+    {
         return labels;
     }
 
     @Override
-    public boolean allowNewEntry() {
+    public boolean allowNewEntry()
+    {
         return allowNewEntry;
     }
 
     @Override
-    public boolean showEntryNumbers() {
+    public boolean showEntryNumbers()
+    {
         return showEntryNumbers;
     }
 
-    public static @NotNull TableRow getDummy(List<EntryTypes> types) {
+    public static @NotNull TableRow getDummy(List<EntryTypes> types)
+    {
         TableRow dummy = new TableRow();
-        for (EntryTypes type : types) {
-            if (type == EntryTypes.STRING) {
+        for (EntryTypes type : types)
+        {
+            if (type == EntryTypes.STRING)
+            {
                 dummy.add(StringEntry.of(""));
-            } else if (type == EntryTypes.INTEGER) {
+            } else if (type == EntryTypes.INTEGER)
+            {
                 dummy.add(IntegerEntry.of(0));
-            } else if (type == EntryTypes.DOUBLE) {
+            } else if (type == EntryTypes.DOUBLE)
+            {
                 dummy.add(DoubleEntry.of(0.0));
-            } else if (type == EntryTypes.BOOLEAN) {
+            } else if (type == EntryTypes.BOOLEAN)
+            {
                 dummy.add(BooleanEntry.of(false));
 //            } else if (type == EntryTypes.KEYBIND) {
 //                dummy.add(KeybindEntry.of(""));
@@ -345,97 +409,118 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
         private int entryCount = -1;
 
-        public Builder(String name, EntryTypes... types) {
+        public Builder(String name, EntryTypes... types)
+        {
             this.name = name;
             this.types = types;
         }
 
-        public Builder setName(String name) {
+        public Builder setName(String name)
+        {
             this.name = name;
             return this;
         }
 
-        public Builder setComment(String comment) {
+        public Builder setComment(String comment)
+        {
             this.comment = comment;
             return this;
         }
 
-        public Builder setPrettyName(String prettyName) {
+        public Builder setPrettyName(String prettyName)
+        {
             this.prettyName = prettyName;
             return this;
         }
 
-        public Builder setTranslatedName(String translatedName) {
+        public Builder setTranslatedName(String translatedName)
+        {
             this.translatedName = translatedName;
             return this;
         }
 
-        public Builder setDisplayString(@Nullable String displayString) {
+        public Builder setDisplayString(@Nullable String displayString)
+        {
             this.displayString = displayString;
             return this;
         }
 
-        public Builder setDefaultValue(List<TableRow> defaultValue) {
+        public Builder setDefaultValue(List<TableRow> defaultValue)
+        {
             this.defaultValue = defaultValue;
             return this;
         }
 
-        public Builder setDefaultValue(TableRow... defaultValue) {
+        public Builder setDefaultValue(TableRow... defaultValue)
+        {
             this.defaultValue = List.of(defaultValue);
             return this;
         }
 
-        public Builder setLabels(List<String> labels) {
+        public Builder setLabels(List<String> labels)
+        {
             this.labels = labels;
             return this;
         }
 
-        public Builder setLabels(String... labels) {
+        public Builder setLabels(String... labels)
+        {
             this.labels = List.of(labels);
             return this;
         }
 
-        public Builder setShowEntryNumbers(boolean showEntryNumbers) {
+        public Builder setShowEntryNumbers(boolean showEntryNumbers)
+        {
             this.showEntryNumbers = showEntryNumbers;
             return this;
         }
 
-        public Builder setAllowAddNewEntry(boolean allowAddNewEntry) {
+        public Builder setAllowAddNewEntry(boolean allowAddNewEntry)
+        {
             this.allowAddNewEntry = allowAddNewEntry;
             return this;
         }
 
-        public Builder setTypes(EntryTypes... types) {
+        public Builder setTypes(EntryTypes... types)
+        {
             this.types = types;
             return this;
         }
 
-        public Builder setEntryCount(@Range(from = 1, to = Integer.MAX_VALUE) int count) {
+        public Builder setEntryCount(@Range(from = 1, to = Integer.MAX_VALUE) int count)
+        {
             this.entryCount = count;
             return this;
         }
 
-        public ConfigTable build() {
+        public ConfigTable build()
+        {
             if (defaultValue == null){
                 defaultValue = new ArrayList<>();
             } else {
                 defaultValue = new ArrayList<>(defaultValue);
             }
-            if (defaultValue.size() == 1 && entryCount > 0) {
-                for (int i = 0; i < entryCount; i++) {
+            if (defaultValue.size() == 1 && entryCount > 0)
+            {
+                for (int i = 0; i < entryCount; i++)
+                {
                     defaultValue.add(new TableRow(defaultValue.getFirst().list));
                 }
             } else if (entryCount > 0){
-                for (int i = 0; i < entryCount; i++) {
+                for (int i = 0; i < entryCount; i++)
+                {
                     defaultValue.add(getDummy(List.of(types)));
                 }
             }
             if (comment == null) comment = name + " Comment?";
             if (prettyName == null) prettyName = name;
             if (translatedName == null) translatedName = name;
-            for (TableRow v : defaultValue) {
-                for (int j = 0; j < types.length; j++) {
-                    if (v.list.get(j).getType() != types[j]) {
+            for (TableRow v : defaultValue)
+            {
+                for (int j = 0; j < types.length; j++)
+                {
+                    if (v.list.get(j).getType() != types[j])
+                    {
                         throw new IllegalArgumentException("Type mismatch: expected " + types[j] + " but got " + v.list.get(j).getType().name());
                     }
                 }

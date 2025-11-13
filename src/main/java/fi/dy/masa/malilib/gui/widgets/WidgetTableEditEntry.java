@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.config.IConfigTable;
-import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.config.options.table.ConfigTable;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.config.options.table.type.*;
@@ -11,7 +10,6 @@ import fi.dy.masa.malilib.gui.GuiTextFieldInteger;
 import fi.dy.masa.malilib.gui.MaLiLibIcons;
 import fi.dy.masa.malilib.gui.button.*;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
-import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -25,7 +23,8 @@ import net.minecraft.util.Pair;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
+public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
+{
     protected final WidgetListTableEdit parent;
     protected final TableRow defaultValue;
     protected final int listIndex;
@@ -46,7 +45,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
 
     public WidgetTableEditEntry(int x, int y, int width, int height,
                                 int listIndex, boolean isOdd, TableRow initialValue, TableRow defaultValue,
-                                WidgetListTableEdit parent, List<EntryTypes> types) {
+                                WidgetListTableEdit parent, List<EntryTypes> types)
+    {
         super(x, y, width, height, parent, initialValue, listIndex);
 
         this.listIndex = listIndex;
@@ -62,15 +62,18 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         int by = y + 4;
         int bOff = 18;
 
-        if (!this.isDummy()) {
+        if (!this.isDummy())
+        {
             int offset = 0;
             int bx = x + width - 30;
-            if (this.parent.config.showEntryNumbers()) {
+            if (this.parent.config.showEntryNumbers())
+            {
                 this.addLabel(x + 2, y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", listIndex + 1));
                 textFieldX += 15;
             }
 
-            if (this.parent.getConfig().allowNewEntry()) {
+            if (this.parent.getConfig().allowNewEntry())
+            {
                 this.addListActionButton(bx - offset, by, ButtonType.ADD);
                 offset += bOff;
 
@@ -78,44 +81,54 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                 offset += bOff;
             }
 
-            if (this.canBeMoved(true)) {
+            if (this.canBeMoved(true))
+            {
                 this.addListActionButton(bx - offset, by, ButtonType.MOVE_DOWN);
             }
 
             offset += bOff;
 
-            if (this.canBeMoved(false)) {
+            if (this.canBeMoved(false))
+            {
                 this.addListActionButton(bx - offset, by, ButtonType.MOVE_UP);
             }
             offset += bOff;
             int totalTextFieldWidth = (bx - offset + 9) - textFieldX;
             bx = this.addWidgets(textFieldX, y + 2, bx - offset + 10, totalTextFieldWidth, 22, initialValue, types);
-        } else {
+        }
+        else
+        {
             this.addListActionButton(textFieldX, by, ButtonType.ADD);
         }
     }
 
-    protected boolean isDummy() {
+    protected boolean isDummy()
+    {
         return this.listIndex < 0;
     }
 
-    protected void addListActionButton(int x, int y, ButtonType type) {
+    protected void addListActionButton(int x, int y, ButtonType type)
+    {
         ButtonGeneric button = new ButtonGeneric(x, y, type.getIcon(), type.getDisplayName());
         ListenerListActions listener = new ListenerListActions(type, this);
         this.addButton(button, listener);
     }
 
-    protected int addWidgets(int x, int y, int resetX, int configWidth, int configHeight, TableRow initialValue, List<EntryTypes> types) {
+    protected int addWidgets(int x, int y, int resetX, int configWidth, int configHeight, TableRow initialValue, List<EntryTypes> types)
+    {
         this.buttonReset = this.createResetButton(resetX, y);
         boolean resetEnabled = false;
         configWidth -= buttonReset.getWidth();
 
-        for (int i = 0; i < types.size(); i++) {
+        for (int i = 0; i < types.size(); i++)
+        {
             EntryTypes type = types.get(i);
             Entry value = initialValue.list.get(i);
 
-            if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE) {
-                GuiTextFieldGeneric tf = switch (value) {
+            if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE)
+            {
+                GuiTextFieldGeneric tf = switch (value)
+                {
                     // why the hell is either the reset button or the text widgets Y/height off by half a pixel???
                     case StringEntry ignored when type == EntryTypes.STRING ->
                             new GuiTextFieldGeneric(x + i * (configWidth / types.size()) + 2, y, configWidth / types.size() - 4, configHeight - 3, this.textRenderer);
@@ -128,12 +141,10 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                 };
                 tf.setMaxLength(this.maxTextfieldTextLength);
                 tf.setText(Entry.getString(value));
-                TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = new TextFieldWrapper<>(tf, new ITextFieldListener<GuiTextFieldGeneric>() {
-                    @Override
-                    public boolean onTextChange(GuiTextFieldGeneric textField) {
-                        checkResetButtonState();
-                        return false;
-                    }
+                TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = new TextFieldWrapper<>(tf, textField ->
+                {
+                    checkResetButtonState();
+                    return false;
                 });
                 this.parent.addTextField(wrapper);
                 this.textFields.add(wrapper);
@@ -164,7 +175,9 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
 //                this.subWidgets.add(settingsWidget);
 //                this.textFields.add(null);
 //                this.booleanWidgets.add(null);
-            } else if (type == EntryTypes.BOOLEAN) {
+            }
+            else if (type == EntryTypes.BOOLEAN)
+            {
                 ConfigButtonBoolean booleanButton = new ConfigButtonBoolean(
                         x + i * (configWidth / types.size()) + 2,
                         y,
@@ -178,7 +191,9 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
                 this.booleanWidgets.add(booleanButton);
                 this.textFields.add(null);
                 this.keybindWidgets.add(null);
-            } else {
+            }
+            else
+            {
                 throw new IllegalStateException("Unsupported type: " + type.name());
             }
 
@@ -192,7 +207,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         return buttonReset.getX() + buttonReset.getWidth() + 4;
     }
 
-    protected ButtonGeneric createResetButton(int x, int y) {
+    protected ButtonGeneric createResetButton(int x, int y)
+    {
         String labelReset = StringUtils.translate("malilib.gui.button.reset.caps");
         ButtonGeneric resetButton = new ButtonGeneric(x, y, -1, 20, labelReset);
 
@@ -201,14 +217,18 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
     }
 
     @Override
-    public boolean wasConfigModified() {
-        if (this.isDummy()) {
+    public boolean wasConfigModified()
+    {
+        if (this.isDummy())
+        {
             return false;
         }
 
-        for (int i = 0; i < this.entries.size(); i++) {
+        for (int i = 0; i < this.entries.size(); i++)
+        {
             Entry entry = this.entries.get(i);
-            if (entry.wasConfigModified(this.initialValue.list.get(i))) {
+            if (entry.wasConfigModified(this.initialValue.list.get(i)))
+            {
                 return true;
             }
         }
@@ -216,27 +236,37 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
     }
 
     @Override
-    public void applyNewValueToConfig() {
-        if (!this.isDummy()) {
+    public void applyNewValueToConfig()
+    {
+        if (!this.isDummy())
+        {
             IConfigTable config = this.parent.getConfig();
             List<TableRow> list = config.getTable();
 
-            if (list.size() > this.listIndex) {
+            if (list.size() > this.listIndex)
+            {
                 TableRow temp = new TableRow();
                 lastAppliedValues.clear();
 
-                for (int i = 0; i < this.entries.size(); i++) {
+                for (int i = 0; i < this.entries.size(); i++)
+                {
                     Entry entry = this.entries.get(i);
                     EntryTypes type = entry.getType();
-                    if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE) {
+                    if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE)
+                    {
                         TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
                         String text = tfw.getTextField().getText();
                         lastAppliedValues.add(text);
-                        if (type == EntryTypes.STRING) {
+                        if (type == EntryTypes.STRING)
+                        {
                             temp.list.add(StringEntry.of(text));
-                        } else if (type == EntryTypes.INTEGER) {
+                        }
+                        else if (type == EntryTypes.INTEGER)
+                        {
                             temp.list.add(IntegerEntry.of(Integer.parseInt(text)));
-                        } else if (type == EntryTypes.DOUBLE) {
+                        }
+                        else if (type == EntryTypes.DOUBLE)
+                        {
                             temp.list.add(DoubleEntry.of(Double.parseDouble(text)));
                         }
 //                    } else if (type == EntryTypes.KEYBIND) {
@@ -244,7 +274,9 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
 //                        KeybindEntry keybindEntry = (KeybindEntry) this.entries.get(i);
 //                        temp.list.add(keybindEntry);
 //                        lastAppliedValues.add(keybindEntry.getStringValue());
-                    } else if (type == EntryTypes.BOOLEAN) {
+                    }
+                    else if (type == EntryTypes.BOOLEAN)
+                    {
                         assert this.entries.get(i) instanceof BooleanEntry;
                         BooleanEntry booleanEntry = (BooleanEntry) this.entries.get(i);
                         temp.list.add(booleanEntry);
@@ -258,7 +290,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         }
     }
 
-    private void insertEntryBefore() {
+    private void insertEntryBefore()
+    {
         List<TableRow> list = this.parent.getConfig().getTable();
         final int size = list.size();
         int index = this.listIndex < 0 ? size : (Math.min(this.listIndex, size));
@@ -268,11 +301,13 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         this.parent.markConfigsModified();
     }
 
-    private void removeEntry() {
+    private void removeEntry()
+    {
         List<TableRow> list = this.parent.getConfig().getTable();
         final int size = list.size();
 
-        if (this.listIndex >= 0 && this.listIndex < size) {
+        if (this.listIndex >= 0 && this.listIndex < size)
+        {
             list.remove(this.listIndex);
             this.parent.getConfig().setModified();
             this.parent.refreshEntries();
@@ -280,22 +315,28 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         }
     }
 
-    private void moveEntry(boolean down) {
+    private void moveEntry(boolean down)
+    {
         List<TableRow> list = this.parent.getConfig().getTable();
         final int size = list.size();
 
-        if (this.listIndex >= 0 && this.listIndex < size) {
+        if (this.listIndex >= 0 && this.listIndex < size)
+        {
             TableRow tmp;
             int index1 = this.listIndex;
             int index2 = -1;
 
-            if (down && this.listIndex < (size - 1)) {
+            if (down && this.listIndex < (size - 1))
+            {
                 index2 = index1 + 1;
-            } else if (!down && this.listIndex > 0) {
+            }
+            else if (!down && this.listIndex > 0)
+            {
                 index2 = index1 - 1;
             }
 
-            if (index2 >= 0) {
+            if (index2 >= 0)
+            {
                 this.parent.getConfig().setModified();
                 this.parent.markConfigsModified();
                 this.parent.applyPendingModifications();
@@ -308,55 +349,77 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         }
     }
 
-    private boolean canBeMoved(boolean down) {
+    private boolean canBeMoved(boolean down)
+    {
         final int size = this.parent.getConfig().getTable().size();
         return (this.listIndex >= 0 && this.listIndex < size) &&
                 ((down && this.listIndex < (size - 1)) || (!down && this.listIndex > 0));
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected) {
+    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    {
         super.render(drawContext, mouseX, mouseY, selected);
 
-        if (this.isOdd) {
+        if (this.isOdd)
+        {
             RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x20FFFFFF);
-        } else {
+        }
+        else
+        {
             RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x30FFFFFF);
         }
 
         this.drawSubWidgets(drawContext, mouseX, mouseY);
 
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper : this.textFields) {
+        for (TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper : this.textFields)
+        {
             if (wrapper != null) wrapper.getTextField().render(drawContext, mouseX, mouseY, 0f);
         }
-        for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets) {
-            if (pair != null) {
+        for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets)
+        {
+            if (pair != null)
+            {
                 ConfigButtonKeybind button = pair.getLeft();
                 WidgetKeybindSettings settings = pair.getRight();
-                if (button != null) button.render(drawContext, mouseX, mouseY, selected);
-                if (settings != null) settings.render(drawContext, mouseX, mouseY, selected);
+                if (button != null)
+                {
+                    button.render(drawContext, mouseX, mouseY, selected);
+                }
+                if (settings != null)
+                {
+                    settings.render(drawContext, mouseX, mouseY, selected);
+                }
             }
         }
         super.render(drawContext, mouseX, mouseY, selected);
     }
 
     @Override
-    public boolean onMouseClicked(Click click, boolean doubleClick) {
-        for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets) {
-            if (pair != null) {
+    public boolean onMouseClicked(Click click, boolean doubleClick)
+    {
+        for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets)
+        {
+            if (pair != null)
+            {
                 ConfigButtonKeybind button = pair.getLeft();
-                if (button != null) {
-                    if (button.isMouseOver((int) click.x(), (int) click.y())) {
+                if (button != null)
+                {
+                    if (button.isMouseOver((int) click.x(), (int) click.y()))
+                    {
                         boolean selectedPre = button.isSelected();
                         button.onMouseClicked(click, doubleClick);
 
-                        if (!selectedPre) {
+                        if (!selectedPre)
+                        {
                             button.onSelected();
                         }
 
                         this.checkResetButtonState();
                         return true;
-                    } else if (button.isSelected()) {
+                    }
+                    else if (button.isSelected())
+                    {
                         button.onClearSelection();
                         this.checkResetButtonState();
                         return true;
@@ -368,15 +431,21 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input) {
-        for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets) {
-            if (pair != null) {
+    public boolean onKeyTyped(KeyInput input)
+    {
+        for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets)
+        {
+            if (pair != null)
+            {
                 ConfigButtonKeybind button = pair.getLeft();
-                if (button != null) {
-                    if (button.isSelected()) {
+                if (button != null)
+                {
+                    if (button.isSelected())
+                    {
                         button.onKeyPressed(input.key());
 
-                        if (input.key() == KeyCodes.KEY_ESCAPE) {
+                        if (input.key() == KeyCodes.KEY_ESCAPE)
+                        {
                             button.onClearSelection();
                         }
                         this.parent.getConfig().setModified();
@@ -392,30 +461,19 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         return super.onKeyTyped(input);
     }
 
-    public static class ChangeListenerTextField extends ConfigOptionChangeListenerTextField {
-        private final WidgetTableEditEntry parent;
-
-        public ChangeListenerTextField(ButtonBase buttonReset, WidgetTableEditEntry parent) {
-            super(null, null, buttonReset);
-
-            this.parent = parent;
-        }
-
-        @Override
-        public boolean onTextChange(GuiTextFieldGeneric ignored) {
-            this.parent.checkResetButtonState();
-            return false;
-        }
-    }
-
-    private boolean checkResetButtonState() {
-        for (int i = 0; i < this.types.size(); i++) {
+    private boolean checkResetButtonState()
+    {
+        for (int i = 0; i < this.types.size(); i++)
+        {
             EntryTypes type = this.types.get(i);
-            if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE) {
+            if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE)
+            {
                 TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = this.textFields.get(i);
-                if (wrapper != null) {
+                if (wrapper != null)
+                {
                     String defaultText = Entry.getString(this.defaultValue.list.get(i));
-                    if (!wrapper.getTextField().getText().equals(defaultText)) {
+                    if (!wrapper.getTextField().getText().equals(defaultText))
+                    {
                         this.buttonReset.setEnabled(true);
                         return true;
                     }
@@ -427,10 +485,13 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
 //                    this.buttonReset.setEnabled(true);
 //                    return true;
 //                }
-            } else if (type == EntryTypes.BOOLEAN) {
+            }
+            else if (type == EntryTypes.BOOLEAN)
+            {
                 assert this.entries.get(i) instanceof BooleanEntry;
                 BooleanEntry entry = (BooleanEntry) this.entries.get(i);
-                if (entry.getBooleanValue().isModified()) {
+                if (entry.getBooleanValue().isModified())
+                {
                     this.buttonReset.setEnabled(true);
                     return true;
                 }
@@ -440,12 +501,16 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         return false;
     }
 
-    private void reset() {
-        for (int i = 0; i < this.types.size(); i++) {
+    private void reset()
+    {
+        for (int i = 0; i < this.types.size(); i++)
+        {
             EntryTypes type = this.types.get(i);
-            if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE) {
+            if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE)
+            {
                 TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = this.textFields.get(i);
-                if (wrapper != null) {
+                if (wrapper != null)
+                {
                     String defaultText = Entry.getString(this.defaultValue.list.get(i));
                     wrapper.getTextField().setText(defaultText);
                 }
@@ -455,7 +520,9 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
 //                entry.getKeybind().resetToDefault();
 //                this.keybindWidgets.get(i).getLeft().updateDisplayString();
 //
-            } else if (type == EntryTypes.BOOLEAN) {
+            }
+            else if (type == EntryTypes.BOOLEAN)
+            {
                 assert this.entries.get(i) instanceof BooleanEntry;
                 BooleanEntry entry = (BooleanEntry) this.entries.get(i);
                 entry.getBooleanValue().resetToDefault();
@@ -465,28 +532,37 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         this.checkResetButtonState();
     }
 
-    private static class ListenerListActions implements IButtonActionListener {
+    private static class ListenerListActions implements IButtonActionListener
+    {
         private final ButtonType type;
         private final WidgetTableEditEntry parent;
 
-        public ListenerListActions(ButtonType type, WidgetTableEditEntry parent) {
+        public ListenerListActions(ButtonType type, WidgetTableEditEntry parent)
+        {
             this.type = type;
             this.parent = parent;
         }
 
         @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton) {
-            if (this.type == ButtonType.ADD) {
+        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+        {
+            if (this.type == ButtonType.ADD)
+            {
                 this.parent.insertEntryBefore();
-            } else if (this.type == ButtonType.REMOVE) {
+            }
+            else if (this.type == ButtonType.REMOVE)
+            {
                 this.parent.removeEntry();
-            } else {
+            }
+            else
+            {
                 this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
             }
         }
     }
 
-    private enum ButtonType {
+    private enum ButtonType
+    {
         ADD(MaLiLibIcons.PLUS, "malilib.gui.button.hovertext.add"),
         REMOVE(MaLiLibIcons.MINUS, "malilib.gui.button.hovertext.remove"),
         MOVE_UP(MaLiLibIcons.ARROW_UP, "malilib.gui.button.hovertext.move_up"),
@@ -495,27 +571,33 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
         private final MaLiLibIcons icon;
         private final String hoverTextkey;
 
-        ButtonType(MaLiLibIcons icon, String hoverTextkey) {
+        ButtonType(MaLiLibIcons icon, String hoverTextkey)
+        {
             this.icon = icon;
             this.hoverTextkey = hoverTextkey;
         }
 
-        public IGuiIcon getIcon() {
+        public IGuiIcon getIcon()
+        {
             return this.icon;
         }
 
-        public String getDisplayName() {
+        public String getDisplayName()
+        {
             return StringUtils.translate(this.hoverTextkey);
         }
     }
 
     @Override
-    public boolean hasPendingModifications() {
-        if (this.textFields.isEmpty()) {
+    public boolean hasPendingModifications()
+    {
+        if (this.textFields.isEmpty())
+        {
             assert this.isDummy();
             return false;
         }
-        for (int i = 0; i < this.entries.size(); i++) {
+        for (int i = 0; i < this.entries.size(); i++)
+        {
             Entry entry = this.entries.get(i);
             String lastApplied = i < this.lastAppliedValues.size() ? this.lastAppliedValues.get(i) : null;
 
@@ -527,20 +609,25 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
 //                    return true;
 //                }
 //            } else
-            if (entry.getType() == EntryTypes.BOOLEAN) {
+            if (entry.getType() == EntryTypes.BOOLEAN)
+            {
                 assert this.entries.get(i) instanceof BooleanEntry;
                 BooleanEntry entry1 = (BooleanEntry) this.entries.get(i);
                 String boolStr = Boolean.toString(entry1.getValue());
 
-                if (!boolStr.equals(lastApplied)) {
+                if (!boolStr.equals(lastApplied))
+                {
                     return true;
                 }
 
-            } else {
+            }
+            else
+            {
                 TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
                 String text = tfw.getTextField().getText();
 
-                if (!text.equals(lastApplied)) {
+                if (!text.equals(lastApplied))
+                {
                     return true;
                 }
             }
@@ -550,15 +637,19 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
 
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick) {
-        if (super.onMouseClickedImpl(click, doubleClick)) {
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    {
+        if (super.onMouseClickedImpl(click, doubleClick))
+        {
             return true;
         }
 
         boolean ret = false;
 
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields) {
-            if (tfw != null) {
+        for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields)
+        {
+            if (tfw != null)
+            {
                 ret |= tfw.getTextField().mouseClicked(click, doubleClick);
             }
         }
@@ -566,13 +657,19 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
     }
 
     @Override
-    public boolean onKeyTypedImpl(KeyInput input) {
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields) {
-            if (tfw != null && tfw.getTextField().isFocused()) {
-                if (input.key() == KeyCodes.KEY_ENTER) {
+    public boolean onKeyTypedImpl(KeyInput input)
+    {
+        for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields)
+        {
+            if (tfw != null && tfw.getTextField().isFocused())
+            {
+                if (input.key() == KeyCodes.KEY_ENTER)
+                {
                     this.applyNewValueToConfig();
                     return true;
-                } else {
+                }
+                else
+                {
                     return tfw.onKeyTyped(input);
                 }
             }
@@ -581,9 +678,12 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow> {
     }
 
     @Override
-    protected boolean onCharTypedImpl(CharInput input) {
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields) {
-            if (tfw != null && tfw.onCharTyped(input)) {
+    protected boolean onCharTypedImpl(CharInput input)
+    {
+        for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields)
+        {
+            if (tfw != null && tfw.onCharTyped(input))
+            {
                 return true;
             }
         }

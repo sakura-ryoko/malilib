@@ -11,13 +11,15 @@ import fi.dy.masa.malilib.util.GuiUtils;
 import net.minecraft.client.gui.Click;
 import org.jetbrains.annotations.Nullable;
 
-public class ConfigButtonTable extends ButtonGeneric {
+public class ConfigButtonTable extends ButtonGeneric
+{
     private final IConfigTable config;
     private final IConfigGui configGui;
     @Nullable
     private final IDialogHandler dialogHandler;
 
-    public ConfigButtonTable(int x, int y, int width, int height, IConfigTable config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler) {
+    public ConfigButtonTable(int x, int y, int width, int height, IConfigTable config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler)
+    {
         super(x, y, width, height, "");
 
         this.config = config;
@@ -28,12 +30,16 @@ public class ConfigButtonTable extends ButtonGeneric {
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick) {
+    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    {
         super.onMouseClickedImpl(click, doubleClick);
 
-        if (this.dialogHandler != null) {
+        if (this.dialogHandler != null)
+        {
             this.dialogHandler.openDialog(new GuiTableEdit(this.config, this.configGui, this.dialogHandler, null));
-        } else {
+        }
+        else
+        {
             GuiBase.openGui(new GuiTableEdit(this.config, this.configGui, null, GuiUtils.getCurrentScreen()));
         }
 
@@ -41,8 +47,10 @@ public class ConfigButtonTable extends ButtonGeneric {
     }
 
     @Override
-    public void updateDisplayString() {
-        if (this.config.getDisplayString() != null) {
+    public void updateDisplayString()
+    {
+        if (this.config.getDisplayString() != null)
+        {
             this.displayString = this.config.getDisplayString();
             return;
         }
@@ -50,27 +58,40 @@ public class ConfigButtonTable extends ButtonGeneric {
 
         sb.append("{");
         boolean addDivider = false;
-        for (TableRow row : this.config.getTable()) {
-            if (addDivider) {
+        for (TableRow row : this.config.getTable())
+        {
+            if (addDivider)
+            {
                 sb.append("; ");
             }
             boolean addDividerEntry = false;
-            for (Entry entryPart : row.list) {
-                if (addDividerEntry) {
+            for (Entry entryPart : row.list)
+            {
+                if (addDividerEntry)
+                {
                     sb.append(", ");
                 }
                 // honestly this is starting to become impossible :sob:
-                if (entryPart.getType() == EntryTypes.STRING) {
+                if (entryPart.getType() == EntryTypes.STRING)
+                {
                     sb.append(((StringEntry) entryPart).getValue());
-                } else if (entryPart.getType() == EntryTypes.INTEGER) {
+                }
+                else if (entryPart.getType() == EntryTypes.INTEGER)
+                {
                     sb.append(((IntegerEntry) entryPart).getValue());
-                } else if (entryPart.getType() == EntryTypes.DOUBLE) {
+                }
+                else if (entryPart.getType() == EntryTypes.DOUBLE)
+                {
                     sb.append(((DoubleEntry) entryPart).getValue());
-                } else if (entryPart.getType() == EntryTypes.BOOLEAN) {
+                }
+                else if (entryPart.getType() == EntryTypes.BOOLEAN)
+                {
                     sb.append(((BooleanEntry) entryPart).getValue());
 //                } else if (entryPart.getType() == EntryTypes.KEYBIND) {
 //                    sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
-                } else {
+                }
+                else
+                {
                     throw new IllegalStateException();
                 }
                 addDividerEntry = true;

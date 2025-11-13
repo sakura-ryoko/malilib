@@ -6,34 +6,43 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TableRow {
+public class TableRow
+{
     public final List<Entry> list;
 
-    public TableRow() {
+    public TableRow()
+    {
         this.list = new ArrayList<>();
     }
 
-    public TableRow(List<Entry> list) {
+    public TableRow(List<Entry> list)
+    {
         this.list = list;
     }
 
-    public TableRow(Entry... objs) {
+    public TableRow(Entry... objs)
+    {
         this.list = new ArrayList<>();
         Collections.addAll(this.list, objs);
     }
 
-    public static TableRow of(Entry... entries) {
+    public static TableRow of(Entry... entries)
+    {
         TableRow tableRow = new TableRow();
-        for (Entry entry : entries) {
+        for (Entry entry : entries)
+        {
             tableRow.add(entry);
         }
         return tableRow;
     }
 
-    public static TableRow of(Object... entries) {
+    public static TableRow of(Object... entries)
+    {
         TableRow tableRow = new TableRow();
-        for (Object entry : entries) {
-            switch (entry) {
+        for (Object entry : entries)
+        {
+            switch (entry)
+            {
                 case String s -> tableRow.add(new StringEntry(s));
                 case Integer i -> tableRow.add(new IntegerEntry(i));
                 case Double v -> tableRow.add(new DoubleEntry(v));
@@ -46,23 +55,28 @@ public class TableRow {
         return tableRow;
     }
 
-    public void add(Entry entry) {
+    public void add(Entry entry)
+    {
         this.list.add(entry);
     }
 
-    public Entry get(int index) {
+    public Entry get(int index)
+    {
         return this.list.get(index);
     }
 
-    public IntegerEntry getIntEntry(int index) {
+    public IntegerEntry getIntEntry(int index)
+    {
         return (IntegerEntry) this.list.get(index);
     }
 
-    public DoubleEntry getDoubleEntry(int index) {
+    public DoubleEntry getDoubleEntry(int index)
+    {
         return (DoubleEntry) this.list.get(index);
     }
 
-    public BooleanEntry getBooleanEntry(int index) {
+    public BooleanEntry getBooleanEntry(int index)
+    {
         return (BooleanEntry) this.list.get(index);
     }
 
@@ -70,23 +84,28 @@ public class TableRow {
 //        return (KeybindEntry) this.list.get(index);
 //    }
 
-    public StringEntry getStringEntry(int index) {
+    public StringEntry getStringEntry(int index)
+    {
         return (StringEntry) this.list.get(index);
     }
 
-    public Integer getInt(int index) {
+    public Integer getInt(int index)
+    {
         return ((IntegerEntry) this.list.get(index)).getValue();
     }
 
-    public Double getDouble(int index) {
+    public Double getDouble(int index)
+    {
         return ((DoubleEntry) this.list.get(index)).getValue();
     }
 
-    public Boolean getBoolean(int index) {
+    public Boolean getBoolean(int index)
+    {
         return ((BooleanEntry) this.list.get(index)).getValue();
     }
 
-    public String getString(int index) {
+    public String getString(int index)
+    {
         return ((StringEntry) this.list.get(index)).getValue();
     }
 
@@ -95,15 +114,20 @@ public class TableRow {
 //    }
 
     @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof TableRow entry)) {
+    public boolean equals(Object other)
+    {
+        if (!(other instanceof TableRow entry))
+        {
             return false;
         }
-        if (this.list.size() != entry.list.size()) {
+        if (this.list.size() != entry.list.size())
+        {
             return false;
         }
-        for (int i = 0; i < this.list.size(); i++) {
-            if (!this.list.get(i).equals(entry.list.get(i))) {
+        for (int i = 0; i < this.list.size(); i++)
+        {
+            if (!this.list.get(i).equals(entry.list.get(i)))
+            {
                 return false;
             }
         }

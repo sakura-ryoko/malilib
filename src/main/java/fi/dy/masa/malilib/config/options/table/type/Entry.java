@@ -2,21 +2,31 @@ package fi.dy.masa.malilib.config.options.table.type;
 
 import com.google.gson.JsonObject;
 
-public abstract class Entry {
+public abstract class Entry
+{
     @Override
-    public String toString() {
+    public String toString()
+    {
         throw new UnsupportedOperationException();
 //        return super.toString();
     }
 
-    public static String getString(Entry entry) {
-        if (entry.getType() == EntryTypes.STRING) {
+    public static String getString(Entry entry)
+    {
+        if (entry.getType() == EntryTypes.STRING)
+        {
             return ((StringEntry) entry).getValue();
-        } else if (entry.getType() == EntryTypes.INTEGER) {
+        }
+        else if (entry.getType() == EntryTypes.INTEGER)
+        {
             return Integer.toString(((IntegerEntry) entry).getValue());
-        } else if (entry.getType() == EntryTypes.DOUBLE) {
+        }
+        else if (entry.getType() == EntryTypes.DOUBLE)
+        {
             return Double.toString(((DoubleEntry) entry).getValue());
-        } else if (entry.getType() == EntryTypes.BOOLEAN) {
+        }
+        else if (entry.getType() == EntryTypes.BOOLEAN)
+        {
             return Boolean.toString(((BooleanEntry) entry).getValue());
 //        } else if (entry.getType() == EntryTypes.KEYBIND) {
 //            return ((KeybindEntry) entry).getKeybind().getStringValue();

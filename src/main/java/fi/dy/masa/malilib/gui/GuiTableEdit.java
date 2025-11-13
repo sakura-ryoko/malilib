@@ -15,7 +15,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.KeyInput;
 import org.jetbrains.annotations.Nullable;
 
-public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, WidgetListTableEdit> {
+public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, WidgetListTableEdit>
+{
     protected final IConfigTable config;
     protected final IConfigGui configGui;
     protected int dialogWidth;
@@ -25,7 +26,8 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
     @Nullable
     protected final IDialogHandler dialogHandler;
 
-    public GuiTableEdit(IConfigTable config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler, Screen parent) {
+    public GuiTableEdit(IConfigTable config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler, Screen parent)
+    {
         super(0, 0);
 
         this.config = config;
@@ -33,28 +35,35 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
         this.dialogHandler = dialogHandler;
         this.title = "Edit table for '" + config.getName() + "'";
 
-        if (this.dialogHandler == null) {
+        if (this.dialogHandler == null)
+        {
             this.setParent(parent);
         }
     }
 
-    protected void setWidthAndHeight() {
+    protected void setWidthAndHeight()
+    {
         this.dialogWidth = GuiUtils.getScaledWindowWidth() - 100;
         this.dialogHeight = GuiUtils.getScaledWindowHeight() - 90;
     }
 
-    protected void centerOnScreen() {
-        if (this.getParent() != null) {
+    protected void centerOnScreen()
+    {
+        if (this.getParent() != null)
+        {
             this.dialogLeft = this.getParent().width / 2 - this.dialogWidth / 2;
             this.dialogTop = this.getParent().height / 2 - this.dialogHeight / 2;
-        } else {
+        }
+        else
+        {
             this.dialogLeft = 20;
             this.dialogTop = 20;
         }
     }
 
     @Override
-    public void initGui() {
+    public void initGui()
+    {
         this.setWidthAndHeight();
         this.centerOnScreen();
         this.reCreateListWidget();
@@ -62,28 +71,33 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
         super.initGui();
     }
 
-    public IConfigTable getConfig() {
+    public IConfigTable getConfig()
+    {
         return this.config;
     }
 
     @Override
-    protected int getBrowserWidth() {
+    protected int getBrowserWidth()
+    {
         return this.dialogWidth - 14;
     }
 
     @Override
-    protected int getBrowserHeight() {
+    protected int getBrowserHeight()
+    {
         return this.dialogHeight - 40;
     }
 
     @Override
-    protected WidgetListTableEdit createListWidget(int listX, int listY) {
+    protected WidgetListTableEdit createListWidget(int listX, int listY)
+    {
         return new WidgetListTableEdit(this.dialogLeft + 10, this.dialogTop + 30, this.getBrowserWidth(), this.getBrowserHeight(), this.dialogWidth - 100, this);
     }
 
     @Override
     public void removed() {
-        if (this.getListWidget().wereConfigsModified()) {
+        if (this.getListWidget().wereConfigsModified())
+        {
             this.getListWidget().applyPendingModifications();
             ConfigManager.getInstance().onConfigsChanged(this.configGui.getModId());
         }
@@ -92,7 +106,8 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks) {
+    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    {
         if (this.getParent() != null) {
             this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
         }
@@ -101,23 +116,29 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
     }
 
     @Override
-    protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY) {
+    protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
+    {
         RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
     }
 
     @Override
-    protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks) {
+    protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    {
         this.drawStringWithShadow(drawContext, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
-        for (int i = 0; i < this.config.getLabels().size(); i++) {
+        for (int i = 0; i < this.config.getLabels().size(); i++)
+        {
             String str = this.config.getLabels().get(i);
 
             int x = dialogLeft + 18;
-            if (this.config.showEntryNumbers()) {
+            if (this.config.showEntryNumbers())
+            {
                 x += 15;
             }
-            if (this.config.allowNewEntry()) {
+            if (this.config.allowNewEntry())
+            {
                 x = x + i * ((dialogWidth - 170) / this.config.getTypes().size()) + 2;
-            } else {
+            } else
+            {
                 x = x + i * ((dialogWidth - 130) / this.config.getTypes().size()) + 2;
             }
 
@@ -126,11 +147,15 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input) {
-        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null) {
+    public boolean onKeyTyped(KeyInput input)
+    {
+        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+        {
             this.dialogHandler.closeDialog();
             return true;
-        } else {
+        }
+        else
+        {
             return super.onKeyTyped(input);
         }
     }

@@ -7,7 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface IConfigTable extends IConfigBase {
+public interface IConfigTable extends IConfigBase
+{
     List<TableRow> getTable();
     List<List<Object>> getRawTable();
 

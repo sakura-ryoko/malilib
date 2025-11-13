@@ -7,29 +7,35 @@ import fi.dy.masa.malilib.gui.GuiTableEdit;
 
 import java.util.Collection;
 
-public class WidgetListTableEdit extends WidgetListConfigOptionsBase<TableRow, WidgetTableEditEntry> {
+public class WidgetListTableEdit extends WidgetListConfigOptionsBase<TableRow, WidgetTableEditEntry>
+{
 
     protected final IConfigTable config;
 
-    public WidgetListTableEdit(int x, int y, int width, int height, int configWidth, GuiTableEdit parent) {
+    public WidgetListTableEdit(int x, int y, int width, int height, int configWidth, GuiTableEdit parent)
+    {
         super(x, y, width, height, configWidth);
 
         this.config = parent.getConfig();
         this.browserEntryHeight = 24;
     }
 
-    public IConfigTable getConfig() {
+    public IConfigTable getConfig()
+    {
         return this.config;
     }
 
     @Override
-    protected Collection<TableRow> getAllEntries() {
+    protected Collection<TableRow> getAllEntries()
+    {
         return this.config.getTable();
     }
 
     @Override
-    protected void reCreateListEntryWidgets() {
-        if (this.listContents.isEmpty()) {
+    protected void reCreateListEntryWidgets()
+    {
+        if (this.listContents.isEmpty())
+        {
             this.listWidgets.clear();
             this.maxVisibleBrowserEntries = 1;
 
@@ -38,21 +44,27 @@ public class WidgetListTableEdit extends WidgetListConfigOptionsBase<TableRow, W
 
             this.listWidgets.add(this.createListEntryWidget(x, y, -1, false, ConfigTable.getDummy(config.getTypes())));
             this.scrollBar.setMaxValue(0);
-        } else {
+        }
+        else
+        {
             super.reCreateListEntryWidgets();
         }
     }
 
     @Override
-    protected WidgetTableEditEntry createListEntryWidget(int x, int y, int listIndex, boolean isOdd, TableRow entry) {
+    protected WidgetTableEditEntry createListEntryWidget(int x, int y, int listIndex, boolean isOdd, TableRow entry)
+    {
         IConfigTable config = this.config;
 
-        if (listIndex >= 0 && listIndex < config.getTable().size()) {
+        if (listIndex >= 0 && listIndex < config.getTable().size())
+        {
             TableRow defaultValue = listIndex < config.getDefaultTable().size() ? config.getDefaultTable().get(listIndex) : ConfigTable.getDummy(config.getTypes());
 
             return new WidgetTableEditEntry(x, y, this.browserEntryWidth, this.browserEntryHeight,
                     listIndex, isOdd, config.getTable().get(listIndex), defaultValue, this, config.getTypes());
-        } else {
+        }
+        else
+        {
             return new WidgetTableEditEntry(x, y, this.browserEntryWidth, this.browserEntryHeight,
                     listIndex, isOdd, ConfigTable.getDummy(config.getTypes()), ConfigTable.getDummy(config.getTypes()), this, config.getTypes());
         }
