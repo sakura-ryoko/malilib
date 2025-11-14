@@ -279,7 +279,7 @@
     "malilib.message.error.failed_to_delete_file": "ファイルを削除できませんでした:\n  §e'%s'§r",
     "malilib.message.error.failed_to_delete_file_is_dir": "  §e'%s'§r\nはディレクトリのため削除できません",
     "malilib.message.error.failed_to_move_file": "  §e'%s'§r\nを\n  §e'%s'§r\nに移動できませんでした",
-    "malilib.message.error.failed_to_move_file.destination_exists": "  §e'%s'§r\nを\n  §e'%s'§r\nに移動できません\n同名のファイルが既に存在します FOO",
+    "malilib.message.error.failed_to_move_file.destination_exists": "  §e'%s'§r\nを\n  §e'%s'§r\nに移動できません\n同名のファイルが既に存在します",
     "malilib.message.error.failed_to_parse_string_as_json": "文字列をJSONに変換できませんでした",
     "malilib.message.error.failed_to_rename_file.exception": "  §e'%s'§r\nを\n  §e'%s'§r\nに変更できませんでした\n例外: %s",
     "malilib.message.error.failed_to_rename_file.exists": "  §e'%s'§r\nを\n  §e'%s'§r\nに変更できませんでした\n同名のファイルが既に存在します",

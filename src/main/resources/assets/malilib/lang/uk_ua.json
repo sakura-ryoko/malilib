@@ -279,7 +279,7 @@
     "malilib.message.error.failed_to_delete_file": "Не вдалося видалити\n §e«%s»§r.",
     "malilib.message.error.failed_to_delete_file_is_dir": "Не буде видалено\n §e«%s»§r\na, оскільки це каталог.",
     "malilib.message.error.failed_to_move_file": "Не вдалося перемістити файл\n §e«%s»§r\nдо\n §e«%s»§r.",
-    "malilib.message.error.failed_to_move_file.destination_exists": "Не буде переміщено файл\n §e«%s»§r\nдо\n §e«%s»§r,\naоскільки файл призначення вже існує FOO.",
+    "malilib.message.error.failed_to_move_file.destination_exists": "Не буде переміщено файл\n §e«%s»§r\nдо\n §e«%s»§r,\naоскільки файл призначення вже існує.",
     "malilib.message.error.failed_to_parse_string_as_json": "Не вдалося проаналізувати рядок як JSON.",
     "malilib.message.error.failed_to_rename_file.exception": "Не вдалося перейменувати файл\n §e«%s»§r\nна\n §e«%s»§r,\nвиняток: %s.",
     "malilib.message.error.failed_to_rename_file.exists": "Не вдалося перейменувати файл\n §e«%s»§r\nна\n §e«%s»§r\nцільовий файл уже існує.",

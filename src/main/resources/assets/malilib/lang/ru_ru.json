@@ -279,7 +279,7 @@
     "malilib.message.error.failed_to_delete_file": "Failed to delete file\n  §e'%s'§r",
     "malilib.message.error.failed_to_delete_file_is_dir": "Won't delete\n  §e'%s'§r\nas it's a directory",
     "malilib.message.error.failed_to_move_file": "Failed to move file\n  §e'%s'§r\nto\n  §e'%s'§r",
-    "malilib.message.error.failed_to_move_file.destination_exists": "Won't move file\n  §e'%s'§r\nto\n  §e'%s'§r,\nas the destination file already exists FOO",
+    "malilib.message.error.failed_to_move_file.destination_exists": "Won't move file\n  §e'%s'§r\nto\n  §e'%s'§r,\nas the destination file already exists",
     "malilib.message.error.failed_to_parse_string_as_json": "Failed to parse the string as JSON",
     "malilib.message.error.failed_to_rename_file.exception": "Failed to rename file\n  §e'%s'§r\nto\n  §e'%s'§r,\nexception: %s",
     "malilib.message.error.failed_to_rename_file.exists": "Failed to rename the file\n  §e'%s'§r\nto\n  §e'%s'§r\nthe target file already exists",
