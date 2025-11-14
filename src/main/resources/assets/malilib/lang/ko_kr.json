@@ -279,7 +279,7 @@
     "malilib.message.error.failed_to_delete_file": "파일 삭제 실패\n  §e'%s'§r",
     "malilib.message.error.failed_to_delete_file_is_dir": "삭제 불가\n  §e'%s'§r\n이것은 디렉터리입니다.",
     "malilib.message.error.failed_to_move_file": "파일 이동 실패\n  §e'%s'§r\nto\n  §e'%s'§r",
-    "malilib.message.error.failed_to_move_file.destination_exists": "파일 이동 불가\n  §e'%s'§r\nto\n  §e'%s'§r,\n대상 파일이 이미 존재합니다. FOO",
+    "malilib.message.error.failed_to_move_file.destination_exists": "파일 이동 불가\n  §e'%s'§r\nto\n  §e'%s'§r,\n대상 파일이 이미 존재합니다.",
     "malilib.message.error.failed_to_parse_string_as_json": "문자열을 JSON으로 구문 분석하는 데 실패",
     "malilib.message.error.failed_to_rename_file.exception": "파일 이름을\n  §e'%s'§r에서\n  §e'%s'§r(으)로,\n수정하는 데 실패했습니다.\n예외: %s",
     "malilib.message.error.failed_to_rename_file.exists": "파일 이름 수정 실패\n  §e'%s'§r\nto\n  §e'%s'§r\n목표 파일이 이미 존재합니다.",
