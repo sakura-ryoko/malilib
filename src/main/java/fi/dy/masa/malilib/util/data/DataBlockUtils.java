@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.block.entity.*;
@@ -28,11 +27,11 @@ import net.minecraft.world.event.Vibrations;
 
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
 
-@ApiStatus.Experimental
 public class DataBlockUtils
 {
 	/**
@@ -167,7 +166,7 @@ public class DataBlockUtils
 
 		if (data.contains(NbtKeys.LISTENER, Constants.NBT.TAG_COMPOUND))
 		{
-			listener = data.getCodec(NbtKeys.LISTENER, Vibrations.ListenerData.CODEC, registry.getOps(NbtOps.INSTANCE)).orElseGet(Vibrations.ListenerData::new);
+			listener = data.getCodec(NbtKeys.LISTENER, Vibrations.ListenerData.CODEC, registry.getOps(DataOps.INSTANCE)).orElseGet(Vibrations.ListenerData::new);
 		}
 
 		return Pair.of(lastFreq, listener);
@@ -243,7 +242,7 @@ public class DataBlockUtils
 
 		if (data.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
 		{
-			book = data.getCodec(NbtKeys.BOOK, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
+			book = data.getCodec(NbtKeys.BOOK, ItemStack.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(ItemStack.EMPTY);
 		}
 
 		if (data.contains(NbtKeys.PAGE, Constants.NBT.TAG_INT))

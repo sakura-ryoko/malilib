@@ -13,7 +13,7 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.test.ConfigTestEnum;
 
 @Mixin(ClientPlayerInteractionManager.class)
-public class MixinClientPlayInteractionManager
+public class MixinClientPlayInteractionManager_testSelector
 {
     @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
     private void handleBreakingRestriction1(BlockPos pos, Direction side, CallbackInfoReturnable<Boolean> cir)

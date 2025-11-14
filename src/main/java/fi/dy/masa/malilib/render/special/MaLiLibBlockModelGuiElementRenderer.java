@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.render.special;
 
 import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Quaternionf;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -29,6 +30,7 @@ import fi.dy.masa.malilib.render.RenderUtils;
  * DISABLED -- DOES NOT WORK, DO NOT USE
  */
 @Deprecated
+@ApiStatus.Experimental
 public class MaLiLibBlockModelGuiElementRenderer extends SpecialGuiElementRenderer<MaLiLibBlockStateModelGuiElement>
 {
     BlockRenderManager blockRenderManager;

@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.render.special;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.BlockState;
@@ -10,6 +11,7 @@ import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderStat
  * DISABLED -- DOES NOT WORK, DO NOT USE
  */
 @Deprecated
+@ApiStatus.Experimental
 public record MaLiLibBlockStateModelGuiElement(
         BlockState state,
         int x1,

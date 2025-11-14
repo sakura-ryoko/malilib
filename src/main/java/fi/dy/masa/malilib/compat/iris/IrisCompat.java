@@ -41,11 +41,36 @@ public class IrisCompat
         MaLiLib.LOGGER.info("Sodium: [{}], Iris: [{}]", isSodiumLoaded ? sodiumVersion : "N/F", isIrisLoaded ? irisVersion : "N/F");
     }
 
-    public static boolean hasIris()
+	public static boolean hasSodium()
+	{
+		return isSodiumLoaded;
+	}
+
+	public static boolean hasIris()
     {
         return isSodiumLoaded && isIrisLoaded;
     }
-    
+
+    public static boolean isShaderActive()
+    {
+        if (hasIris())
+        {
+            return IrisApi.getInstance().isShaderPackInUse();
+        }
+
+        return false;
+    }
+
+    public static boolean isShadowPassActive()
+    {
+        if (hasIris())
+        {
+            return IrisApi.getInstance().isRenderingShadowPass();
+        }
+
+        return false;
+    }
+
     public static void registerPipelines()
     {
         if (hasIris())

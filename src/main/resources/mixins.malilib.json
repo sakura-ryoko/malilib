@@ -23,7 +23,7 @@
         "test.MixinSharedConstants"
     ],
     "client": [
-        "MixinMinecraftClient",
+        "client.MixinMinecraftClient",
         "hud.MixinInGameHud",
         "input.MixinKeyboard",
         "input.MixinMouse",
@@ -48,9 +48,10 @@
         "screen.MixinHandledScreen",
         "screen.MixinInventoryScreen",
         "server.MixinIntegratedServer",
-        "test.MixinClientPlayInteractionManager"
+        "test.MixinClientPlayInteractionManager_testSelector",
+        "test.MixinMinecraftClient_testSelector"
     ],
-    "server": [ ],
+    "server": [],
     "injectors": {
         "defaultRequire": 1
     }

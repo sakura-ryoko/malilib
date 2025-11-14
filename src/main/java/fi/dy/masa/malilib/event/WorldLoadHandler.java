@@ -10,6 +10,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.registry.DynamicRegistryManager;
 
 import fi.dy.masa.malilib.config.ConfigManager;
+import fi.dy.masa.malilib.data.CachedTagManager;
 import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
 import fi.dy.masa.malilib.util.game.RecipeBookUtils;
 
@@ -94,6 +95,7 @@ public class WorldLoadHandler implements IWorldLoadManager
         {
             ((ConfigManager) ConfigManager.getInstance()).loadAllConfigs();
             InputEventHandler.getKeybindManager().updateUsedKeys();
+            CachedTagManager.startCache();
             //SyncHandler.getInstance().onStartServices(worldAfter);
         }
 

@@ -9,9 +9,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.jetbrains.annotations.ApiStatus;
 
-import net.minecraft.block.Oxidizable;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
@@ -45,12 +43,12 @@ import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.INbtEntityInvoker;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
 
-@ApiStatus.Experimental
 public class DataEntityUtils
 {
 	/**
@@ -238,7 +236,7 @@ public class DataEntityUtils
 	{
 		if (data.contains(NbtKeys.CUSTOM_NAME, Constants.NBT.TAG_COMPOUND))
 		{
-			return data.getCodec(NbtKeys.CUSTOM_NAME, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.CUSTOM_NAME, TextCodecs.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -262,7 +260,7 @@ public class DataEntityUtils
 			key = NbtKeys.CUSTOM_NAME;
 		}
 
-		return data.putCodec(key, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE), name);
+		return data.putCodec(key, TextCodecs.CODEC, registry.getOps(DataOps.INSTANCE), name);
 	}
 
 	/**
@@ -277,7 +275,7 @@ public class DataEntityUtils
 
 		if (data.contains(NbtKeys.EFFECTS, Constants.NBT.TAG_LIST))
 		{
-			List<StatusEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(NbtOps.INSTANCE)).orElse(List.of());
+			List<StatusEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(DataOps.INSTANCE)).orElse(List.of());
 
 			for (StatusEffectInstance instance : list)
 			{
@@ -570,9 +568,9 @@ public class DataEntityUtils
 	 */
 	public static @Nullable TradeOfferList getTradeOffers(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
 	{
-		if (data.contains(NbtKeys.OFFERS, Constants.NBT.TAG_LIST))
+		if (data.containsLenient(NbtKeys.OFFERS))
 		{
-			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -774,9 +772,19 @@ public class DataEntityUtils
 
 			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
 		}
-		if (data.contains(NbtKeys.COLLAR, Constants.NBT.TAG_INT))
+		if (data.containsLenient(NbtKeys.COLLAR))
 		{
 			collar = data.getCodec(NbtKeys.COLLAR, DyeColor.INDEX_CODEC).orElse(DyeColor.RED);
+		}
+
+		if (variantKey == null)
+		{
+			variantKey = CatVariants.BLACK;
+		}
+
+		if (collar == null)
+		{
+			collar = DyeColor.RED;
 		}
 
 		return Pair.of(variantKey, collar);
@@ -958,7 +966,7 @@ public class DataEntityUtils
 
 			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(WolfVariants.DEFAULT);
 		}
-		if (data.contains(NbtKeys.COLLAR, Constants.NBT.TAG_INT))
+		if (data.containsLenient(NbtKeys.COLLAR))
 		{
 			collar = data.getCodec(NbtKeys.COLLAR, DyeColor.INDEX_CODEC).orElse(DyeColor.RED);
 		}

@@ -5,11 +5,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import fi.dy.masa.malilib.mixin.item.IMixinContainerComponent;
-import net.minecraft.component.type.ContainerComponent;
 import org.joml.Matrix3x2fStack;
-import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.textures.GpuTextureView;
 import net.minecraft.block.*;
@@ -17,10 +13,8 @@ import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BuiltBuffer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -50,9 +44,9 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.mixin.item.IMixinContainerComponent;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.game.IEntityOwnedInventory;
@@ -435,9 +429,12 @@ public class InventoryOverlay
         catch (Exception ignored) { }
          */
 
+        if (entity.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty())
+        {
+            renderBackgroundSlotAt(context, TEXTURE_EMPTY_SLOT_SWORD, x + 28 + 1, y + 2 * 18 + 7 + 1);
+        }
         if (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
         {
-            //RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, TEXTURE_EMPTY_SHIELD, drawContext);
             renderBackgroundSlotAt(context, TEXTURE_EMPTY_SHIELD, x + 28 + 1, y + 3 * 18 + 7 + 1);
         }
 

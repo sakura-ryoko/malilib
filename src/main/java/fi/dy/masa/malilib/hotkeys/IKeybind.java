@@ -33,7 +33,7 @@ public interface IKeybind extends IConfigResettable, IStringRepresentable
      * Returns true if further processing of the just pressed key should be cancelled.
      * This return value can be determined by the callback, if one has been set.
      * Without a callback, the return value will be false to not cancel further processing.
-     * @return
+     * @return ()
      */
     boolean updateIsPressed();
 
@@ -41,7 +41,7 @@ public interface IKeybind extends IConfigResettable, IStringRepresentable
 
     /**
      * Set the settings for this keybind.
-     * @param settings
+     * @param settings ()
      */
     void setSettings(KeybindSettings settings);
 
@@ -54,8 +54,8 @@ public interface IKeybind extends IConfigResettable, IStringRepresentable
     /**
      * Check if this keybind is only a single key, matching the given key code.
      * This is mainly meant for checking equality against vanilla keybinds.
-     * @param keyCode
-     * @return
+     * @param keyCode ()
+     * @return ()
      */
     boolean matches(int keyCode);
 

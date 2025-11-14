@@ -1,16 +1,13 @@
 package fi.dy.masa.malilib.util.data.tag.converter;
 
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.util.data.Constants;
-import fi.dy.masa.malilib.util.data.tag.*;
-import fi.dy.masa.malilib.util.log.AnsiLogger;
+import javax.annotation.Nullable;
 
 import net.minecraft.nbt.*;
 
-import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.*;
 
-@ApiStatus.Experimental
 public class DataConverterNbt
 {
 //	private static final AnsiLogger LOGGER = new AnsiLogger(DataConverterNbt.class, true, true);
@@ -35,10 +32,8 @@ public class DataConverterNbt
             case Constants.NBT.TAG_COMPOUND:    return fromVanillaCompound(vanillaTag.asCompound().orElse(new NbtCompound()));
             case Constants.NBT.TAG_LIST:        return fromVanillaList(vanillaTag.asNbtList().orElse(new NbtList()));
             default:
-                MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaCompound: Unknown NBT tag id {}", vanillaTag.getType());
+                return EmptyData.INSTANCE;
         }
-
-        return null;
     }
 
     public static ListData fromVanillaList(NbtList vanillaList)
@@ -120,10 +115,8 @@ public class DataConverterNbt
             case Constants.NBT.TAG_COMPOUND:    return toVanillaCompound((CompoundData) data);
             case Constants.NBT.TAG_LIST:        return toVanillaList((ListData) data);
             default:
-                MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaNbt: Unknown NBT tag id {}", data.getType());
+				return NbtEnd.INSTANCE;
         }
-
-        return null;
     }
 
     public static NbtList toVanillaList(ListData listData)

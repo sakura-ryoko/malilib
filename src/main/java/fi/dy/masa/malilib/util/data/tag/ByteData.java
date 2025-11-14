@@ -6,8 +6,10 @@ import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Optional;
 
 public class ByteData extends BaseData
+        implements NumberData
 {
     public static final String TAG_NAME = "TAG_Byte";
 
@@ -35,6 +37,12 @@ public class ByteData extends BaseData
     public String toString()
     {
         return this.value + "b";
+    }
+
+    @Override
+    public Optional<Number> asNumber()
+    {
+        return Optional.of(this.value);
     }
 
     @Override

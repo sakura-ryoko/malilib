@@ -10,6 +10,13 @@ import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.interfaces.IStringConsumerFeedback;
 
+/**
+ * Used to Rename / Move files via the GUI
+ *
+ * @param file
+ * @param navigator
+ * @param feedback
+ */
 public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, boolean feedback) implements IStringConsumerFeedback
 {
 	@Override
@@ -18,6 +25,7 @@ public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, bo
 		if (string.isEmpty() || this.file() == null)
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.invalid_file_or_directory");
+			MaLiLib.debugLog("FileRenamer: Failed to rename file; File is invalid/empty.");
 			return false;
 		}
 
@@ -29,6 +37,7 @@ public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, bo
 		if (this.file().getFileName().equals(newFile.getFileName()))
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.file_rename.same_name", newFile.toAbsolutePath());
+			MaLiLib.debugLog("FileRenamer: Failed to rename file '{}'; Destination is the same.", this.file().toAbsolutePath());
 			return true;        // Closes Dialog box
 		}
 
@@ -36,6 +45,7 @@ public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, bo
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.file_or_directory_does_not_exist",
 			                                    this.file().toAbsolutePath());
+			MaLiLib.debugLog("FileRenamer: Failed to rename file '{}'; Source does not exist.", this.file().toAbsolutePath());
 			return false;
 		}
 
@@ -59,6 +69,7 @@ public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, bo
 			{
 				InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_rename_file.exists",
 				                                    this.file().toAbsolutePath(), newFile.toAbsolutePath());
+				MaLiLib.debugLog("FileRenamer: Failed to rename file '{}'; Destination file exists.", this.file().toAbsolutePath());
 				return false;
 			}
 		}
@@ -71,15 +82,16 @@ public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, bo
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_rename_file.exception",
 			                                    this.file().toAbsolutePath(), newFile.toAbsolutePath(), err.getLocalizedMessage());
+			MaLiLib.debugLog("FileRenamer: Exception renaming file '{}'; {}", this.file().toAbsolutePath(), err.getLocalizedMessage());
 			return false;
 		}
 
 		if (feedback())
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_or_directory_renamed", newFile.getFileName());
-			MaLiLib.debugLog("FileRenamer: Renamed file '{}' -> '{}'", this.file().toAbsolutePath(), newFile.toAbsolutePath());
 		}
 
+		MaLiLib.debugLog("FileRenamer: Renamed file '{}' -> '{}'", this.file().toAbsolutePath(), newFile.toAbsolutePath());
 		return true;
 	}
 }

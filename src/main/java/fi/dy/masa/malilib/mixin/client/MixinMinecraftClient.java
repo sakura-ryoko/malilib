@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin;
+package fi.dy.masa.malilib.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.MinecraftClient;
@@ -15,16 +15,11 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.event.InitializationHandler;
 import fi.dy.masa.malilib.event.TickHandler;
 import fi.dy.masa.malilib.event.WorldLoadHandler;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
-import fi.dy.masa.malilib.test.ConfigTestEnum;
-import fi.dy.masa.malilib.test.TestSelector;
 
 import java.nio.file.Path;
 
@@ -121,31 +116,5 @@ public abstract class MixinMinecraftClient
         //MaLiLib.logger.error("MC#onDisconnectPost(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
         ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, null, (MinecraftClient)(Object) this);
         this.worldBefore = null;
-    }
-
-    @Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
-    private void onLeftClickMouse(CallbackInfoReturnable<Boolean> cir)
-    {
-        if (MaLiLibReference.DEBUG_MODE &&
-            MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
-            ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-        {
-            TestSelector.INSTANCE.select(false);
-            cir.cancel();
-            return;
-        }
-    }
-
-    @Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
-    private void onRightClickMouse(CallbackInfo ci)
-    {
-        if (MaLiLibReference.DEBUG_MODE &&
-            MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
-            ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-        {
-            TestSelector.INSTANCE.select(true);
-            ci.cancel();
-            return;
-        }
     }
 }

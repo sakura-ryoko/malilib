@@ -840,6 +840,13 @@ public class StringUtils
         //return DurationFormatUtils.formatDurationWords(durationMs, true, true);
     }
 
+    /**
+     * A copy of the Legacy Text.Deserializer that was removed from Vanilla.
+     * We need this for backwards compatibility with things like Litematica and NBT tags.
+     * @param oldText ()
+     * @param registry ()
+     * @return ()
+     */
     public static @Nullable String legacyTextDeserializer(MutableText oldText, @Nonnull DynamicRegistryManager registry)
     {
         try
@@ -854,6 +861,13 @@ public class StringUtils
         }
     }
 
+    /**
+     * A copy of the Legacy Text.Serializer that was removed from Vanilla.
+     * We need this for backwards compatibility with things like Litematica and NBT tags.
+     * @param json ()
+     * @param registry ()
+     * @return ()
+     */
     public static @Nullable MutableText legacyTextSerializer(String json, @Nonnull DynamicRegistryManager registry)
     {
         try

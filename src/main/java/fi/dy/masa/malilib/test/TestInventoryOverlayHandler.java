@@ -239,6 +239,11 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
         {
             Entity entity = ((EntityHitResult) trace).getEntity();
 
+            if (entity.getUuid().equals(cameraEntity.getUuid()))
+            {
+                return null;
+            }
+
             if (mc.targetedEntity != null && entity.getId() != mc.targetedEntity.getId())
             {
                 MaLiLib.LOGGER.error("getTargetInventory(): entityId Not Equal: [{} != {}]", entity.getId(), mc.targetedEntity.getId());
