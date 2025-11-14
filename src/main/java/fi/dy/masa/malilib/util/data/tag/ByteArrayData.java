@@ -1,17 +1,21 @@
 package fi.dy.masa.malilib.util.data.tag;
 
-import fi.dy.masa.malilib.util.data.Constants;
-import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Optional;
+import javax.annotation.Nullable;
+import org.apache.commons.lang3.ArrayUtils;
+
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
 public class ByteArrayData extends BaseData
+        implements ArrayData
 {
     public static final String TAG_NAME = "TAG_ByteArray";
 
-    public final byte[] value;
+    public byte[] value;
 
     public ByteArrayData(byte[] value)
     {
@@ -49,6 +53,74 @@ public class ByteArrayData extends BaseData
         }
 
         return sb.append(']').toString();
+    }
+
+    @Override
+    public void clear()
+    {
+        this.value = new byte[0];
+    }
+
+    @Override
+    public boolean set(int index, BaseData value)
+    {
+        Optional<Number> opt = value.asNumber();
+
+        if (index < this.size() && index >= 0
+            && opt.isPresent())
+        {
+            this.value[index] = opt.get().byteValue();
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean add(int index, BaseData value)
+    {
+        Optional<Number> opt = value.asNumber();
+
+        if (index < this.size() && index >= 0
+            && opt.isPresent())
+        {
+            this.value = ArrayUtils.add(this.value, index, opt.get().byteValue());
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    @Nullable
+    public ByteData remove(int index)
+    {
+        if (index < this.size() && index >= 0)
+        {
+            byte entry = this.value[index];
+            this.value = ArrayUtils.remove(this.value, index);
+            return new ByteData(entry);
+        }
+
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public ByteData get(int index)
+    {
+        if (index < this.size() && index >= 0)
+        {
+            return new ByteData(this.value[index]);
+        }
+
+        return null;
+    }
+
+    @Override
+    public int size()
+    {
+        return this.value.length;
     }
 
     @Override

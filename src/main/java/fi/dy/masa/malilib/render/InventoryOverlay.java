@@ -382,6 +382,10 @@ public class InventoryOverlay
 
         RenderUtils.bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
 
+        if (entity.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty())
+        {
+            RenderUtils.renderSprite(x + 28 + 1, y + 2 * 18 + 7 + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, TEXTURE_EMPTY_SLOT_SWORD, drawContext);
+        }
         if (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
         {
             RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, TEXTURE_EMPTY_SHIELD, drawContext);

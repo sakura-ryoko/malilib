@@ -12,6 +12,10 @@ import net.minecraft.util.Identifier;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 
+/**
+ * Replaced in future builds by the {@link CachedTagManager} system
+ */
+@Deprecated
 public class MaLiLibTag
 {
     public static class Blocks

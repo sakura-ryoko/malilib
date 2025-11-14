@@ -652,15 +652,20 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
         {
             variantKey = RegistryKey.of(RegistryKeys.CAT_VARIANT, Identifier.tryParse(nbt.getString(NbtKeys.VARIANT)));
-
-            if (variantKey == null)
-            {
-                variantKey = CatVariant.ALL_BLACK;
-            }
         }
         if (nbt.contains(NbtKeys.COLLAR, Constants.NBT.TAG_ANY_NUMERIC))
         {
             collar = DyeColor.byId(nbt.getInt(NbtKeys.COLLAR));
+        }
+
+        if (variantKey == null)
+        {
+            variantKey = CatVariant.ALL_BLACK;
+        }
+
+        if (collar == null)
+        {
+            collar = DyeColor.RED;
         }
 
         return Pair.of(variantKey, collar);

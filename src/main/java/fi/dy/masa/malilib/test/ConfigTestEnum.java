@@ -25,6 +25,8 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
 {
     TEST_ENUM_CONFIG                ("testEnumConfig",              false,""),
     TEST_ENUM_SINGLE_PLAYER         ("testEnumSinglePlayer",        false,true, ""),
+    TEST_SELECTOR_HOTKEY            ("testSelectorHotkey",          false,""),
+    TEST_TEXT_LINES                 ("testTestLines",               false,""),
     TEST_WALLS_HOTKEY               ("testWallsHotkey",             false,"");
 
     private final static String TEST_ENUM_KEY = MaLiLibReference.MOD_ID + ".config.test_enum";

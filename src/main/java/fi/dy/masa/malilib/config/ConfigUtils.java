@@ -70,6 +70,11 @@ public class ConfigUtils
     {
         JsonObject obj = JsonUtils.getNestedObject(root, category, true);
 
+		if (obj == null)
+		{
+			obj = new JsonObject();
+		}
+
         for (IConfigBase option : options)
         {
             obj.add(option.getName(), option.getAsJsonElement());
@@ -84,6 +89,11 @@ public class ConfigUtils
 
         JsonObject objHotkeys = JsonUtils.getNestedObject(root, category, true);
 
+		if (objHotkeys == null)
+		{
+			objHotkeys = new JsonObject();
+		}
+
         for (IHotkey hotkey : hotkeys)
         {
             IKeybind keybind = hotkey.getKeybind();
@@ -96,7 +106,7 @@ public class ConfigUtils
                 obj.add("settings", keybind.getSettings().toJson());
             }
 
-            objHotkeys.add(hotkey.getName(), obj);
+			objHotkeys.add(hotkey.getName(), obj);
         }
     }
 
@@ -110,19 +120,26 @@ public class ConfigUtils
      * Creates a wrapper for the provided configs that pretends to be another type.<br>
      * This is useful for example for enum configs, which may contain two values per entry.<br>
      * <b>** WARNING **</b>: The configs in toWrap are assumed to actually implement the
-     * interface that the wrapped type is of!! Otherwise things will crash!
-     * @param wrappedType
-     * @param toWrap
-     * @return
+     * interface that the wrapped type is of!! Otherwise, things will crash!
+     * -
+     * @param wrappedType ()
+     * @param toWrap ()
+     * @return ()
      */
     public static List<ConfigTypeWrapper> createConfigWrapperForType(ConfigType wrappedType, List<? extends IConfigValue> toWrap)
     {
+		// Do not use Config Table.
+		if (wrappedType == ConfigType.TABLE)
+		{
+			return List.of();
+		}
+
         ImmutableList.Builder<ConfigTypeWrapper> builder = ImmutableList.builder();
 
-        for (int i = 0; i < toWrap.size(); ++i)
-        {
-            builder.add(new ConfigTypeWrapper(wrappedType, toWrap.get(i)));
-        }
+	    for (IConfigValue iConfigValue : toWrap)
+	    {
+		    builder.add(new ConfigTypeWrapper(wrappedType, iConfigValue));
+	    }
 
         return builder.build();
     }
