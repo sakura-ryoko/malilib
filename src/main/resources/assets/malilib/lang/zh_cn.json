@@ -279,7 +279,7 @@
     "malilib.message.error.failed_to_delete_file": "文件删除失败\n  §e'%s'§r",
     "malilib.message.error.failed_to_delete_file_is_dir": "无法删除\n  §e'%s'§r\n因为这是一个目录",
     "malilib.message.error.failed_to_move_file": "文件移动失败\n从：§e'%s'§r\n到：§e'%s'§r",
-    "malilib.message.error.failed_to_move_file.destination_exists": "无法移动文件，因为目标文件已存在FOO\n从：§e'%s'§r\n到：§e'%s'§r",
+    "malilib.message.error.failed_to_move_file.destination_exists": "无法移动文件，因为目标文件已存在\n从：§e'%s'§r\n到：§e'%s'§r",
     "malilib.message.error.failed_to_parse_string_as_json": "JSON解析失败",
     "malilib.message.error.failed_to_rename_file.exception": "重命名失败：\n原名：§e'%s'§r\n新名：§e'%s'§r\n意外错误：%s",
     "malilib.message.error.failed_to_rename_file.exists": "重命名失败，因为目标名称已存在\n原名：§e'%s'§r\n新名：§e'%s'§r",
