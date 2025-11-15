@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.util;
 
+import fi.dy.masa.malilib.mixin.input.IMixinKeyBinding;
 import fi.dy.masa.malilib.util.game.wrap.GameWrap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
@@ -48,21 +49,33 @@ public class InputUtils
 
 	public static InputUtil.Key getDefaultKey(KeyBinding key)
 	{
-		return key.defaultKey;
+		return ((IMixinKeyBinding) key).malilib$getDefaultKey();
 	}
 
 	public static InputUtil.Key getBoundKey(KeyBinding key)
 	{
-		return key.boundKey;
+		return ((IMixinKeyBinding) key).malilib$getBoundKey();
 	}
 
 	public static KeyBinding.Category getCategory(KeyBinding key)
 	{
-		return key.category;
+		return ((IMixinKeyBinding) key).malilib$getCategory();
 	}
 
 	public static boolean isBound(KeyBinding key)
 	{
-		return key.boundKey != null && !key.boundKey.equals(InputUtil.UNKNOWN_KEY);
+		return ((IMixinKeyBinding) key).malilib$getBoundKey() != null && !((IMixinKeyBinding) key).malilib$getBoundKey().equals(InputUtil.UNKNOWN_KEY);
+	}
+
+	public static void bindKey(KeyBinding key, InputUtil.Key binding)
+	{
+		key.setBoundKey(binding);
+		KeyBinding.updateKeysByCode();
+	}
+
+	public static void resetKeybind(KeyBinding key)
+	{
+		key.setBoundKey(((IMixinKeyBinding) key).malilib$getDefaultKey());
+		KeyBinding.updateKeysByCode();
 	}
 }

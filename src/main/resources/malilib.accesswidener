@@ -24,10 +24,5 @@ accessible field net/minecraft/client/gl/RenderPipelines RENDERTYPE_OUTLINE_SNIP
 accessible field net/minecraft/client/gl/RenderPipelines POST_EFFECT_PROCESSOR_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
 accessible class net/minecraft/client/gui/DrawContext$ScissorStack
 accessible field net/minecraft/client/gui/DrawContext scissorStack Lnet/minecraft/client/gui/DrawContext$ScissorStack;
-accessible field net/minecraft/client/option/KeyBinding defaultKey Lnet/minecraft/client/util/InputUtil$Key;
-accessible field net/minecraft/client/option/KeyBinding boundKey Lnet/minecraft/client/util/InputUtil$Key;
-accessible field net/minecraft/client/option/KeyBinding category Lnet/minecraft/client/option/KeyBinding$Category;
-accessible field net/minecraft/client/gui/hud/debug/DebugHudEntries ENTRIES Ljava/util/Map;
 accessible method net/minecraft/client/gui/hud/debug/DebugHudEntries register (Lnet/minecraft/util/Identifier;Lnet/minecraft/client/gui/hud/debug/DebugHudEntry;)Lnet/minecraft/util/Identifier;
-accessible field net/minecraft/client/gui/hud/debug/DebugHudProfile visibilityMap Ljava/util/Map;
-accessible field net/minecraft/client/gui/hud/debug/DebugHudProfile visibleEntries Ljava/util/List;
+accessible field net/minecraft/client/gui/hud/debug/DebugHudEntries ENTRIES Ljava/util/Map;

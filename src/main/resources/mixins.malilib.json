@@ -12,6 +12,7 @@
         "entity.MixinEntity",
         "entity.MixinPiglinEntity",
         "entity.MixinSimpleInventory",
+        "hud.IMixinDebugHudProfile",
         "item.IMixinContainerComponent",
         "item.MixinItemStack",
         "nbt.IMixinNbtReadView",
@@ -25,6 +26,7 @@
     "client": [
         "MixinMinecraftClient",
         "hud.MixinInGameHud",
+        "input.IMixinKeyBinding",
         "input.MixinKeyboard",
         "input.MixinMouse",
         "network.IMixinDataQueryHandler",
@@ -50,7 +52,7 @@
         "server.MixinIntegratedServer",
         "test.MixinClientPlayInteractionManager"
     ],
-    "server": [ ],
+    "server": [],
     "injectors": {
         "defaultRequire": 1
     }

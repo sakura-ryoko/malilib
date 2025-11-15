@@ -9,13 +9,19 @@ import net.minecraft.client.gui.hud.debug.DebugHudEntry;
 import net.minecraft.client.gui.hud.debug.DebugHudEntryVisibility;
 import net.minecraft.util.Identifier;
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.mixin.hud.IMixinDebugHudProfile;
 
+/**
+ * You need to add the AW for the "ENTRIES" in the downstream mod.
+ * There really is no other more "elegant" method for this to be able
+ * to reliably register / unregister them.
+ */
 public class DebugHudUtils
 {
 	public static void register(Identifier id, @Nonnull DebugHudEntry entry)
 	{
 		if (Objects.equals(id.getNamespace(), "minecraft")) return;
-		if (!DebugHudEntries.ENTRIES.containsKey(id))
+		if (!DebugHudEntries.getEntries().containsKey(id))
 		{
 			MinecraftClient mc = MinecraftClient.getInstance();
 
@@ -23,9 +29,10 @@ public class DebugHudUtils
 			MaLiLib.debugLog("DebugHudUtils#register(): Registered [{}]", id.toString());
 
 			if (mc.debugHudEntryList == null) return;
-			if (!mc.debugHudEntryList.visibilityMap.containsKey(id))
+
+			if (!((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().containsKey(id))
 			{
-				mc.debugHudEntryList.visibilityMap.put(id, DebugHudEntryVisibility.NEVER);
+				((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().put(id, DebugHudEntryVisibility.NEVER);
 				mc.debugHudEntryList.saveProfileFile();
 			}
 		}
@@ -40,8 +47,8 @@ public class DebugHudUtils
 
 		if (mc.debugHudEntryList != null)
 		{
-			mc.debugHudEntryList.visibilityMap.remove(id);
-			mc.debugHudEntryList.visibleEntries.remove(id);
+			((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().remove(id);
+			mc.debugHudEntryList.getVisibleEntries().remove(id);
 			mc.debugHudEntryList.saveProfileFile();
 		}
 	}
@@ -50,11 +57,11 @@ public class DebugHudUtils
 	{
 		MinecraftClient mc = MinecraftClient.getInstance();
 
-		if (DebugHudEntries.ENTRIES.containsKey(id) &&
+		if (DebugHudEntries.getEntries().containsKey(id) &&
 			mc.debugHudEntryList != null &&
-			mc.debugHudEntryList.visibilityMap.containsKey(id))
+			((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().containsKey(id))
 		{
-			return mc.debugHudEntryList.visibilityMap.get(id);
+			return ((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().get(id);
 		}
 
 		return null;
@@ -64,10 +71,10 @@ public class DebugHudUtils
 	{
 		MinecraftClient mc = MinecraftClient.getInstance();
 
-		if (DebugHudEntries.ENTRIES.containsKey(id) &&
+		if (DebugHudEntries.getEntries().containsKey(id) &&
 			mc.debugHudEntryList != null)
 		{
-			mc.debugHudEntryList.visibilityMap.put(id, visibility);
+			((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().put(id, visibility);
 		}
 	}
 }
