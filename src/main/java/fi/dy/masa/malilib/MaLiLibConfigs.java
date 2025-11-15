@@ -12,6 +12,8 @@ import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.IConfigValue;
 import fi.dy.masa.malilib.config.options.*;
+import fi.dy.masa.malilib.config.options.table.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
@@ -23,6 +25,8 @@ import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
+
+import static fi.dy.masa.malilib.config.options.table.type.EntryTypes.*;
 
 public class MaLiLibConfigs implements IConfigHandler
 {
@@ -104,6 +108,34 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "testString", "Test String").apply(TEST_KEY);
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_1             =
+                new ConfigTable.Builder("testTable1", STRING, INTEGER, BOOLEAN, DOUBLE, BOOLEAN, BOOLEAN)
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_2             =
+                new ConfigTable.Builder("testTable2", INTEGER, INTEGER)
+                        .setEntryCount(1)
+                        .setAllowAddNewEntry(false)
+                        .setDisplayString("Display string")
+                        .setLabels("Label 1", "Label 2")
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_3             =
+                new ConfigTable.Builder("testTable3", STRING, INTEGER, INTEGER)
+                        .setShowEntryNumbers(false)
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_4             =
+                new ConfigTable.Builder("testTable4", DOUBLE, INTEGER, STRING, BOOLEAN)
+                        .setDefaultValue(TableRow.of(0.0, 1, "2", true), TableRow.of(1.0, 3, "5", false))
+                        .setLabels(List.of("Label 1", "Label 2"))
+                        .setComment("Comment")
+                        .build().apply(TEST_KEY);
+        public static final ConfigTable             TEST_CONFIG_TABLE_5             =
+                new ConfigTable.Builder("testTable5", DOUBLE, INTEGER, STRING)
+                        .setComment("Another comment")
+                        .setDefaultValue(TableRow.of(213.0, 43, "22"))
+                        .setEntryCount(5)
+                        .setAllowAddNewEntry(false)
+                        .setLabels(List.of("Label 1", "Label 2"))
+                        .build().apply(TEST_KEY);
         public static final ConfigInteger           TEST_BUNDLE_PREVIEW_WIDTH       = new ConfigInteger("testBundlePreviewWidth", 9, 6, 9, "Test Bundle Preview Width").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY          = new ConfigBooleanHotkeyed("testInventoryOverlay", false, "LEFT_ALT").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY_OG       = new ConfigBooleanHotkeyed("testInventoryOverlayOG", false, "").apply(TEST_KEY);
@@ -128,6 +160,11 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_STRING,
                 TEST_CONFIG_STRING_LIST,
                 TEST_CONFIG_LOCKED_LIST,
+                TEST_CONFIG_TABLE_1,
+                TEST_CONFIG_TABLE_2,
+                TEST_CONFIG_TABLE_3,
+                TEST_CONFIG_TABLE_4,
+                TEST_CONFIG_TABLE_5,
                 TEST_BUNDLE_PREVIEW_WIDTH,
                 TEST_INVENTORY_OVERLAY,
                 TEST_INVENTORY_OVERLAY_OG,
