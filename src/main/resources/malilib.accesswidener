@@ -1,28 +1,5 @@
 accessWidener v1 named
-accessible method net/minecraft/client/gl/RenderPipelines register (Lcom/mojang/blaze3d/pipeline/RenderPipeline;)Lcom/mojang/blaze3d/pipeline/RenderPipeline;
-accessible field net/minecraft/client/gl/RenderPipelines PIPELINES Ljava/util/Map;
-accessible field net/minecraft/client/gl/RenderPipelines TRANSFORMS_AND_PROJECTION_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines FOG_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines GLOBALS_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines TRANSFORMS_PROJECTION_FOG_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines TRANSFORMS_PROJECTION_FOG_LIGHTING_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines TERRAIN_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines ENTITY_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines ENTITY_EMISSIVE_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines RENDERTYPE_BEACON_BEAM_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines TEXT_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines RENDERTYPE_END_PORTAL_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines RENDERTYPE_CLOUDS_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines RENDERTYPE_LINES_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines POSITION_COLOR_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines PARTICLE_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines WEATHER_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines GUI_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines POSITION_TEX_COLOR_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines GUI_TEXT_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines RENDERTYPE_OUTLINE_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible field net/minecraft/client/gl/RenderPipelines POST_EFFECT_PROCESSOR_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-accessible class net/minecraft/client/gui/DrawContext$ScissorStack
-accessible field net/minecraft/client/gui/DrawContext scissorStack Lnet/minecraft/client/gui/DrawContext$ScissorStack;
 accessible method net/minecraft/client/gui/hud/debug/DebugHudEntries register (Lnet/minecraft/util/Identifier;Lnet/minecraft/client/gui/hud/debug/DebugHudEntry;)Lnet/minecraft/util/Identifier;
 accessible field net/minecraft/client/gui/hud/debug/DebugHudEntries ENTRIES Ljava/util/Map;
+accessible class net/minecraft/client/gui/DrawContext$ScissorStack
+accessible field net/minecraft/client/gui/DrawContext scissorStack Lnet/minecraft/client/gui/DrawContext$ScissorStack;

@@ -26,35 +26,35 @@ import fi.dy.masa.malilib.render.MaLiLibPipelines;
 @Mixin(RenderPipelines.class)
 public abstract class MixinRenderPipelines
 {
-    @Shadow @Final public static Map<Identifier, RenderPipeline> PIPELINES;
+    @Shadow @Final private static Map<Identifier, RenderPipeline> PIPELINES;
 
-    @Shadow @Final public static RenderPipeline.Snippet TRANSFORMS_AND_PROJECTION_SNIPPET;          // TRANSFORMS_AND_PROJECTION_SNIPPET
-	@Shadow @Final public static RenderPipeline.Snippet FOG_SNIPPET;                                // FOG
-    @Shadow @Final public static RenderPipeline.Snippet GLOBALS_SNIPPET;                            // GLOBALS_SNIPPET
-    @Shadow @Final public static RenderPipeline.Snippet TRANSFORMS_PROJECTION_FOG_SNIPPET;          // TRANSFORMS_PROJECTION_FOG_SNIPPET
-    @Shadow @Final public static RenderPipeline.Snippet TRANSFORMS_PROJECTION_FOG_LIGHTING_SNIPPET; // TRANSFORMS_PROJECTION_FOG_LIGHTING_SNIPPET
-    @Shadow @Final public static RenderPipeline.Snippet TERRAIN_SNIPPET;                            // TERRAIN
-    @Shadow @Final public static RenderPipeline.Snippet ENTITY_SNIPPET;                             // ENTITY
-    @Shadow @Final public static RenderPipeline.Snippet ENTITY_EMISSIVE_SNIPPET;                    // ENTITY_EMISSIVE_SNIPPET
-    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_BEACON_BEAM_SNIPPET;             // RENDERTYPE_BEACON_BEAM
-    @Shadow @Final public static RenderPipeline.Snippet TEXT_SNIPPET;                               // TEXT
-    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_END_PORTAL_SNIPPET;              // RENDERTYPE_END_PORTAL
-    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_CLOUDS_SNIPPET;                  // RENDERTYPE_CLOUDS
-    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_LINES_SNIPPET;                   // RENDERTYPE_LINES
-    @Shadow @Final public static RenderPipeline.Snippet POSITION_COLOR_SNIPPET;                     // DEBUG_FILLED
-    @Shadow @Final public static RenderPipeline.Snippet PARTICLE_SNIPPET;                           // PARTICLE_TEX
-    @Shadow @Final public static RenderPipeline.Snippet WEATHER_SNIPPET;                            // WEATHER
-    @Shadow @Final public static RenderPipeline.Snippet GUI_SNIPPET;                                // GUI
-    @Shadow @Final public static RenderPipeline.Snippet POSITION_TEX_COLOR_SNIPPET;                 // GUI_TEXTURED
-	@Shadow @Final public static RenderPipeline.Snippet GUI_TEXT_SNIPPET;            				// GUI_TEXT
-    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_OUTLINE_SNIPPET;                 // RENDERTYPE_OUTLINE
-    @Shadow @Final public static RenderPipeline.Snippet POST_EFFECT_PROCESSOR_SNIPPET;              // POST_PROCESSOR
+    @Shadow @Final private static RenderPipeline.Snippet TRANSFORMS_AND_PROJECTION_SNIPPET;          // TRANSFORMS_AND_PROJECTION_SNIPPET
+	@Shadow @Final private static RenderPipeline.Snippet FOG_SNIPPET;                                // FOG
+    @Shadow @Final private static RenderPipeline.Snippet GLOBALS_SNIPPET;                            // GLOBALS_SNIPPET
+    @Shadow @Final private static RenderPipeline.Snippet TRANSFORMS_PROJECTION_FOG_SNIPPET;          // TRANSFORMS_PROJECTION_FOG_SNIPPET
+    @Shadow @Final private static RenderPipeline.Snippet TRANSFORMS_PROJECTION_FOG_LIGHTING_SNIPPET; // TRANSFORMS_PROJECTION_FOG_LIGHTING_SNIPPET
+    @Shadow @Final private static RenderPipeline.Snippet TERRAIN_SNIPPET;                            // TERRAIN
+    @Shadow @Final private static RenderPipeline.Snippet ENTITY_SNIPPET;                             // ENTITY
+    @Shadow @Final private static RenderPipeline.Snippet ENTITY_EMISSIVE_SNIPPET;                    // ENTITY_EMISSIVE_SNIPPET
+    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_BEACON_BEAM_SNIPPET;             // RENDERTYPE_BEACON_BEAM
+    @Shadow @Final private static RenderPipeline.Snippet TEXT_SNIPPET;                               // TEXT
+    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_END_PORTAL_SNIPPET;              // RENDERTYPE_END_PORTAL
+    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_CLOUDS_SNIPPET;                  // RENDERTYPE_CLOUDS
+    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_LINES_SNIPPET;                   // RENDERTYPE_LINES
+    @Shadow @Final private static RenderPipeline.Snippet POSITION_COLOR_SNIPPET;                     // DEBUG_FILLED
+    @Shadow @Final private static RenderPipeline.Snippet PARTICLE_SNIPPET;                           // PARTICLE_TEX
+    @Shadow @Final private static RenderPipeline.Snippet WEATHER_SNIPPET;                            // WEATHER
+    @Shadow @Final private static RenderPipeline.Snippet GUI_SNIPPET;                                // GUI
+    @Shadow @Final private static RenderPipeline.Snippet POSITION_TEX_COLOR_SNIPPET;                 // GUI_TEXTURED
+	@Shadow @Final private static RenderPipeline.Snippet GUI_TEXT_SNIPPET;            				 // GUI_TEXT
+    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_OUTLINE_SNIPPET;                 // RENDERTYPE_OUTLINE
+    @Shadow @Final public static RenderPipeline.Snippet POST_EFFECT_PROCESSOR_SNIPPET;               // POST_PROCESSOR
 
     @Unique private static final BlendFunction MASA_BLEND = new BlendFunction(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
     @Unique private static final BlendFunction MASA_BLEND_SIMPLE = new BlendFunction(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 
     @Shadow
-    public static RenderPipeline register(RenderPipeline renderPipeline)
+    private static RenderPipeline register(RenderPipeline renderPipeline)
     {
         PIPELINES.put(renderPipeline.getLocation(), renderPipeline);
         return renderPipeline;
