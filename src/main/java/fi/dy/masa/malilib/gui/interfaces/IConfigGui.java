@@ -9,7 +9,7 @@ public interface IConfigGui
 {
     /**
      * Returns the Mod ID of the mod to which the configs on this GUI belong to
-     * @return
+     * @return ()
      */
     String getModId();
 
@@ -22,20 +22,20 @@ public interface IConfigGui
     /**
      * Returns a list of all currently visible/available/selected/whatever config options
      * that the widget list can use.
-     * @return
+     * @return ()
      */
     List<ConfigOptionWrapper> getConfigs();
 
     /**
      * Returns a simple dirty listener for button presses. The configs will be interpreted
      * as dirty, if the listener saw even one button press.
-     * @return
+     * @return ()
      */
     ButtonPressDirtyListenerSimple getButtonPressListener();
 
     /**
      * Get the "dialog window" handler for this GUI, if any.
-     * @return
+     * @return ()
      */
     @Nullable
     default IDialogHandler getDialogHandler()
@@ -45,7 +45,7 @@ public interface IConfigGui
 
     /**
      * Returns an info provider to get customized hover tooltips for the configs
-     * @return
+     * @return ()
      */
     @Nullable
     IConfigInfoProvider getHoverInfoProvider();

@@ -408,9 +408,12 @@ public class InventoryOverlay
         catch (Exception ignored) { }
          */
 
+        if (entity.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty())
+        {
+            renderBackgroundSlotAt(x + 28 + 1, y + 2 * 18 + 7 + 1, TEXTURE_EMPTY_SLOT_SWORD, drawContext);
+        }
         if (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
         {
-            //RenderUtils.renderSprite(x + 28 + 1, y + 3 * 18 + 7 + 1, 16, 16, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, TEXTURE_EMPTY_SHIELD, drawContext);
             renderBackgroundSlotAt(x + 28 + 1, y + 3 * 18 + 7 + 1, TEXTURE_EMPTY_SHIELD, drawContext);
         }
 

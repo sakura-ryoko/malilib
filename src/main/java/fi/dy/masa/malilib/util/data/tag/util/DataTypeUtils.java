@@ -1,14 +1,5 @@
 package fi.dy.masa.malilib.util.data.tag.util;
 
-import fi.dy.masa.malilib.util.data.Constants;
-import fi.dy.masa.malilib.util.data.tag.*;
-import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
-import fi.dy.masa.malilib.util.nbt.NbtKeys;
-
-import net.minecraft.nbt.*;
-import net.minecraft.util.Uuids;
-import net.minecraft.util.math.*;
-
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,13 +7,20 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.util.Uuids;
+import net.minecraft.util.math.*;
 
-@ApiStatus.Experimental
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.*;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.nbt.NbtKeys;
+
 public class DataTypeUtils
 {
     @Nullable

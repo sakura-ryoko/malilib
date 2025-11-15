@@ -1,10 +1,18 @@
 plugins {
-	id 'fabric-loom' version '1.10-SNAPSHOT'
+	id 'fabric-loom' version '1.14-SNAPSHOT'
 	id 'maven-publish'
 }
 
 repositories {
-	maven { url = 'https://maven.terraformersmc.com/releases/' }
+//	maven {
+//		name = "Masa"
+//		url = "https://masa.dy.fi/maven"
+//		content {
+//			includeGroupAndSubgroups("fi.dy.masa")
+//		}
+//	}
+// 	maven { url = 'https://maven.fallenbreath.me/releases' }
+ 	maven { url = 'https://maven.terraformersmc.com/releases/' }
 	maven { url = 'https://maven.fallenbreath.me/releases' }
 	maven { url = 'https://api.modrinth.com/maven' }
 //	flatDir { dirs 'libs' }

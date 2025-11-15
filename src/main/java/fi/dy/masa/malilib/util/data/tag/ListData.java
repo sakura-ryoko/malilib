@@ -11,6 +11,7 @@ import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
 public class ListData extends BaseData
+        implements ArrayData
 {
     public static final String TAG_NAME = "TAG_List";
     protected final ArrayList<BaseData> list;
@@ -27,61 +28,94 @@ public class ListData extends BaseData
         this.list = list;
     }
 
-	// Fixes incompatibilities with Vanilla; since a Vanilla NbtList
-	// calculates the Contained Type based on the data added to it.
-	public int getContainedType()
-	{
-		int type = Constants.NBT.TAG_END;
+    // Fixes incompatibilities with Vanilla; since a Vanilla NbtList
+    // calculates the Contained Type based on the data added to it.
+    public int getContainedType()
+    {
+        int type = Constants.NBT.TAG_END;
 
-		for (BaseData entry : this.list)
-		{
-			int dataType = entry.type;
+        for (BaseData entry : this.list)
+        {
+            int dataType = entry.type;
 
-			if (type == Constants.NBT.TAG_END)
-			{
-				type = dataType;
-			}
-			else if (type != dataType)
-			{
-				return Constants.NBT.TAG_COMPOUND;
-			}
-		}
+            if (type == Constants.NBT.TAG_END)
+            {
+                type = dataType;
+            }
+            else if (type != dataType)
+            {
+                return Constants.NBT.TAG_COMPOUND;
+            }
+        }
 
-		return type;
-	}
+        return type;
+    }
 
-	public boolean isEmpty()
-	{
-		return this.list.isEmpty();
-	}
-
+    @Override
     public int size()
     {
         return this.list.size();
     }
 
+    @Override
     public void clear()
     {
         this.list.clear();
     }
 
-    public boolean remove(int index)
+    @Override
+    public boolean set(int index, BaseData value)
     {
-        if (index < this.list.size())
+        int type = this.getContainedType();
+
+        if (type == Constants.NBT.TAG_END || value.type != type)
         {
-            this.list.remove(index);
-            return true;
+            return false;
+        }
+
+        if (index < this.size() && index >= 0)
+        {
+            this.list.set(index, value);
         }
 
         return false;
     }
 
+    @Override
+    public boolean add(int index, BaseData value)
+    {
+        int type = this.getContainedType();
+
+        if (type == Constants.NBT.TAG_END || value.type != type)
+        {
+            return false;
+        }
+
+        if (index < this.size() && index >= 0)
+        {
+            this.list.add(index, value);
+        }
+
+        return false;
+    }
+
+    @Override
+    public BaseData remove(int index)
+    {
+        if (index < this.list.size())
+        {
+            return this.list.remove(index);
+        }
+
+        return EmptyData.INSTANCE;
+    }
+
     public boolean add(BaseData entry)
     {
-		int type =this.getContainedType();
+        int type = this.getContainedType();
 
         if (type != Constants.NBT.TAG_END &&
-	        entry.getType() != type)
+            entry.getType() != type)
         {
             return false;
         }
@@ -90,6 +124,17 @@ public class ListData extends BaseData
         return true;
     }
 
+    public boolean addAll(ListData listData)
+    {
+        for (BaseData entry : listData.list)
+        {
+            this.add(entry);
+        }
+
+        return true;
+    }
+
+    @Override
     public BaseData get(int index)
     {
         return this.list.get(index);
@@ -196,7 +241,7 @@ public class ListData extends BaseData
         return sb.append(']').toString();
     }
 
-	@Override
+    @Override
     public void write(DataOutput output) throws IOException
     {
         int containedType = this.list.isEmpty() ? Constants.NBT.TAG_END : this.getContainedType();
@@ -233,15 +278,15 @@ public class ListData extends BaseData
         {
             BaseData data;
 
-			try
-			{
-				data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
-			}
-			catch (IOException e)
-			{
-				MaLiLib.LOGGER.warn("Failed to read data for list member at index {}", i);
-				throw e;
-			}
+            try
+            {
+                data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
+            }
+            catch (IOException e)
+            {
+                MaLiLib.LOGGER.warn("Failed to read data for list member at index {}", i);
+                throw e;
+            }
 
             if (data == null)
             {

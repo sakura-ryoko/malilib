@@ -10,13 +10,13 @@ public class ButtonOnOff extends ButtonGeneric
      * Pass -1 as the <b>width</b> to automatically set the width
      * to a value where the ON and OFF buttons are the same width,
      * using the given translation key.
-     * @param x
-     * @param y
-     * @param width
-     * @param rightAlign
-     * @param translationKey
-     * @param isCurrentlyOn
-     * @param hoverStrings
+     * @param x ()
+     * @param y ()
+     * @param width ()
+     * @param rightAlign ()
+     * @param translationKey ()
+     * @param isCurrentlyOn ()
+     * @param hoverStrings ()
      */
     public ButtonOnOff(int x, int y, int width, boolean rightAlign, String translationKey, boolean isCurrentlyOn, String... hoverStrings)
     {

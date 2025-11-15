@@ -20,9 +20,7 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.ResourceTexture;
-import net.minecraft.client.texture.TextureContents;
+import net.minecraft.client.texture.*;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TriState;
@@ -47,7 +45,7 @@ public class RenderContext implements AutoCloseable
     private BufferBuilder builder;
     private VertexFormat format;
     private VertexFormat.DrawMode drawMode;
-    private ResourceTexture texture;
+    private AbstractTexture texture;
     @Nullable private BuiltBuffer.SortState sortState;
     private int textureId;
     private float[] offset;
@@ -449,7 +447,7 @@ public class RenderContext implements AutoCloseable
             // Verify that we potentially have the correct texture by checking various values
             while (!this.isTextureValid(width, height))
             {
-                this.texture = (ResourceTexture) RenderUtils.tex().getTexture(id);
+                this.texture = RenderUtils.tex().getTexture(id);
 
                 if (this.isTextureValid(width, height))
                 {
@@ -495,7 +493,9 @@ public class RenderContext implements AutoCloseable
             return false;
         }
 
-        try (TextureContents content = this.texture.loadContents(RenderUtils.mc().getResourceManager()))
+        ReloadableTexture texture = (ReloadableTexture) this.texture;
+
+        try (TextureContents content = texture.loadContents(RenderUtils.mc().getResourceManager()))
         {
             NativeImage image = content.image();
 
@@ -514,13 +514,14 @@ public class RenderContext implements AutoCloseable
         }
 
         if (((IMixinAbstractTexture) this.texture).malilib_getGlTexture() == null ||
-                this.texture.getGlTexture().isClosed())
+            this.texture.getGlTexture().isClosed())
         {
             this.texture.close();
             this.texture = null;
             return false;
         }
 
+        this.texture = texture;
         return true;
     }
 
@@ -590,6 +591,37 @@ public class RenderContext implements AutoCloseable
         }
 
         RenderSystem.setShaderTexture(0, null);
+    }
+
+    public boolean directBindTexture(@Nonnull Identifier id, int textureId, @Nonnull AbstractTexture texture)
+            throws RuntimeException
+    {
+        this.ensureSafeNoBuffer();
+
+        if (textureId < 0 || textureId > 12)
+        {
+            throw new RuntimeException("Invalid textureId of: " + textureId + " for texture: " + id.toString());
+        }
+
+        if (this.texture != null)
+        {
+            this.texture.close();
+        }
+
+        this.texture = texture;
+        this.textureId = textureId;
+
+        if (((IMixinAbstractTexture) this.texture).malilib_getGlTexture() == null ||
+            this.texture.getGlTexture().isClosed())
+        {
+            this.texture.close();
+            this.texture = null;
+            return false;
+        }
+
+        this.texture.setFilter(TriState.DEFAULT, false);
+        RenderSystem.setShaderTexture(textureId, this.texture.getGlTexture());
+        return true;
     }
 
     /**
@@ -751,7 +783,7 @@ public class RenderContext implements AutoCloseable
 
                 if (this.textureId > -1 && this.textureId < 12 && this.texture != null)
                 {
-                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler({}) [{}]", this.name.get(), this.textureId, this.texture.getGlTexture().getLabel());
+//                    MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> bindSampler({}) [{}]", this.name.get(), this.textureId, this.texture.getGlTexture().getLabel());
                     pass.bindSampler("Sampler"+this.textureId, this.texture.getGlTexture());
                 }
 
@@ -930,7 +962,10 @@ public class RenderContext implements AutoCloseable
     {
         if (this.texture != null)
         {
-            this.unbindTexture(this.texture.getId());
+            if (this.texture instanceof ReloadableTexture)
+            {
+                this.unbindTexture(((ReloadableTexture) this.texture).getId());
+            }
             this.texture.close();
             this.texture = null;
         }

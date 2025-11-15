@@ -11,9 +11,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.ApiStatus;
 
-import net.minecraft.block.Oxidizable;
 import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.DefaultAttributeRegistry;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -35,7 +37,6 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.VillagerData;
@@ -43,8 +44,8 @@ import net.minecraft.village.VillagerData;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
-import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
@@ -238,7 +239,7 @@ public class DataEntityUtils
 	{
 		if (data.contains(NbtKeys.CUSTOM_NAME, Constants.NBT.TAG_COMPOUND))
 		{
-			return data.getCodec(NbtKeys.CUSTOM_NAME, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.CUSTOM_NAME, TextCodecs.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -262,7 +263,7 @@ public class DataEntityUtils
 			key = NbtKeys.CUSTOM_NAME;
 		}
 
-		return data.putCodec(key, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE), name);
+		return data.putCodec(key, TextCodecs.CODEC, registry.getOps(DataOps.INSTANCE), name);
 	}
 
 	/**
@@ -277,7 +278,7 @@ public class DataEntityUtils
 
 		if (data.contains(NbtKeys.EFFECTS, Constants.NBT.TAG_LIST))
 		{
-			List<StatusEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(NbtOps.INSTANCE)).orElse(List.of());
+			List<StatusEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(DataOps.INSTANCE)).orElse(List.of());
 
 			for (StatusEffectInstance instance : list)
 			{
@@ -572,7 +573,7 @@ public class DataEntityUtils
 	{
 		if (data.contains(NbtKeys.OFFERS, Constants.NBT.TAG_LIST))
 		{
-			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -769,7 +770,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<CatVariant>> variant = CatVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
@@ -795,7 +796,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<ChickenVariant>> variant = ChickenVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(ChickenVariants.DEFAULT);
@@ -817,7 +818,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<CowVariant>> variant = CowVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(CowVariants.DEFAULT);
@@ -855,7 +856,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<FrogVariant>> variant = FrogVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
@@ -953,7 +954,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<WolfVariant>> variant = WolfVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(WolfVariants.DEFAULT);
