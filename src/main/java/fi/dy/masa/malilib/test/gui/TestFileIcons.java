@@ -10,6 +10,7 @@ import net.minecraft.util.Identifier;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public enum TestFileIcons implements IGuiIcon, IFileBrowserIconProvider
@@ -63,9 +64,9 @@ public enum TestFileIcons implements IGuiIcon, IFileBrowserIconProvider
 	}
 
 	@Override
-	public void renderAt(DrawContext drawContext, int x, int y, float zLevel, boolean enabled, boolean selected)
+	public void renderAt(GuiContext ctx, int x, int y, float zLevel, boolean enabled, boolean selected)
 	{
-		RenderUtils.drawTexturedRect(drawContext, this.getTexture(), x, y, this.u, this.v, this.w, this.h, zLevel);
+		RenderUtils.drawTexturedRect(ctx, this.getTexture(), x, y, this.u, this.v, this.w, this.h, zLevel);
 	}
 
 	@Override

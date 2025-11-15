@@ -3,9 +3,9 @@ package fi.dy.masa.malilib.gui;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.DrawContext;
+
 import net.minecraft.client.gui.screen.Screen;
-import org.joml.Matrix3x2fStack;
+
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.ICompletionListener;
 import fi.dy.masa.malilib.interfaces.IConfirmationListener;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -83,31 +84,30 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
     }
 
     @Override
-    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
-            this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
+            this.getParent().render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
         }
 
-        Matrix3x2fStack matrixStack = drawContext.getMatrices();
-        matrixStack.pushMatrix();
-        matrixStack.translate(0, 0);
+	    ctx.getMatrices().pushMatrix();
+	    ctx.getMatrices().translate(0, 0);
 
-        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xF0000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xF0000000, COLOR_HORIZONTAL_BAR);
 
         // Draw the title
-        this.drawStringWithShadow(drawContext, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
+        this.drawStringWithShadow(ctx, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
         int y = this.dialogTop + 20;
 
         for (String text : this.messageLines)
         {
-            this.drawString(drawContext, text, this.dialogLeft + 10, y, this.textColor);
+            this.drawString(ctx, text, this.dialogLeft + 10, y, this.textColor);
             y += this.fontHeight + 1;
         }
 
-        this.drawButtons(drawContext, mouseX, mouseY, partialTicks);
-        matrixStack.popMatrix();
+        this.drawButtons(ctx, mouseX, mouseY, partialTicks);
+	    ctx.getMatrices().popMatrix();
     }
 
     protected ButtonListener createActionListener(ButtonType type)
@@ -146,32 +146,23 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
         }
     }
 
-    protected static class ButtonListener implements IButtonActionListener
-    {
-        private final GuiConfirmAction gui;
-        private final ButtonType type;
+	protected record ButtonListener(ButtonType type, GuiConfirmAction gui) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			if (this.type == ButtonType.OK)
+			{
+				this.gui.listener.onActionConfirmed();
+			}
+			else if (this.type == ButtonType.CANCEL)
+			{
+				this.gui.listener.onActionCancelled();
+			}
 
-        public ButtonListener(ButtonType type, GuiConfirmAction gui)
-        {
-            this.type = type;
-            this.gui = gui;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            if (this.type == ButtonType.OK)
-            {
-                this.gui.listener.onActionConfirmed();
-            }
-            else if (this.type == ButtonType.CANCEL)
-            {
-                this.gui.listener.onActionCancelled();
-            }
-
-            GuiBase.openGui(this.gui.getParent());
-        }
-    }
+			GuiBase.openGui(this.gui.getParent());
+		}
+	}
 
     protected enum ButtonType
     {

@@ -75,6 +75,7 @@ public class GuiTextFieldDouble extends GuiTextFieldGeneric
 		}
 	}
 
+	// todo from Masa
 //    @Override
 //    protected String getValueStringForTextfield()
 //    {

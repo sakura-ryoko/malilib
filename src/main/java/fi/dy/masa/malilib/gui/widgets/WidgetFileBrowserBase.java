@@ -9,13 +9,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.DrawContext;
+
 import net.minecraft.client.input.KeyInput;
+
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntry;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -67,9 +69,9 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
             return true;
         }
         else if ((input.key() == KeyCodes.KEY_RIGHT || input.key() == KeyCodes.KEY_ENTER) &&
-                  this.getLastSelectedEntry() != null && this.getLastSelectedEntry().getType() == DirectoryEntryType.DIRECTORY)
+                  this.getLastSelectedEntry() != null && this.getLastSelectedEntry().type() == DirectoryEntryType.DIRECTORY)
         {
-            this.switchToDirectory(this.getLastSelectedEntry().getDirectory().resolve(this.getLastSelectedEntry().getName()));
+            this.switchToDirectory(this.getLastSelectedEntry().getDirectory().resolve(this.getLastSelectedEntry().name()));
             return true;
         }
 
@@ -77,17 +79,17 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
     }
 
     @Override
-    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         // Draw an outline around the entire file browser
-        RenderUtils.drawOutlinedBox(drawContext, this.posX, this.posY, this.browserWidth, this.browserHeight, 0xB0000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(ctx, this.posX, this.posY, this.browserWidth, this.browserHeight, 0xB0000000, COLOR_HORIZONTAL_BAR);
 
-        super.drawContents(drawContext, mouseX, mouseY, partialTicks);
+        super.drawContents(ctx, mouseX, mouseY, partialTicks);
 
-        this.drawAdditionalContents(drawContext, mouseX, mouseY);
+        this.drawAdditionalContents(ctx, mouseX, mouseY);
     }
 
-    protected void drawAdditionalContents(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawAdditionalContents(GuiContext ctx, int mouseX, int mouseY)
     {
     }
 
@@ -313,60 +315,39 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
         }
     }
 
-    public static class DirectoryEntry implements Comparable<DirectoryEntry>
-    {
-        private final DirectoryEntryType type;
-        //private final File dir;
-        private final Path dir;
-        private final String name;
-        @Nullable private final String displaynamePrefix;
+	/**
+	 * @param dir private final File dir;
+	 */
+	public record DirectoryEntry(DirectoryEntryType type, Path dir, String name,
+	                             @Nullable String displayNamePrefix) implements Comparable<DirectoryEntry>
+	{
+		public Path getDirectory()
+		{
+			return this.dir;
+		}
 
-        public DirectoryEntry(DirectoryEntryType type, Path dir, String name, @Nullable String displaynamePrefix)
-        {
-            this.type = type;
-            this.dir = dir;
-            this.name = name;
-            this.displaynamePrefix = displaynamePrefix;
-        }
+		@Nullable
+		public String getDisplayNamePrefix()
+		{
+			return this.displayNamePrefix;
+		}
 
-        public DirectoryEntryType getType()
-        {
-            return this.type;
-        }
+		public String getDisplayName()
+		{
+			return this.displayNamePrefix != null ? this.displayNamePrefix + this.name : this.name;
+		}
 
-        public Path getDirectory()
-        {
-            return this.dir;
-        }
+		public Path getFullPath()
+		{
+			return this.dir.resolve(this.name);
+		}
 
-        public String getName()
-        {
-            return this.name;
-        }
-
-        @Nullable
-        public String getDisplayNamePrefix()
-        {
-            return this.displaynamePrefix;
-        }
-
-        public String getDisplayName()
-        {
-            return this.displaynamePrefix != null ? this.displaynamePrefix + this.name : this.name;
-        }
-
-        public Path getFullPath()
-        {
-            return this.dir.resolve(this.name);
-        }
-
-        @Override
-        public int compareTo(DirectoryEntry other)
-        {
-            //return this.name.toLowerCase(Locale.US).compareTo(other.getName().toLowerCase(Locale.US));
-            return this.name.toLowerCase().compareTo(other.getName().toLowerCase());
-        }
-    }
+		@Override
+		public int compareTo(DirectoryEntry other)
+		{
+			return this.name.toLowerCase().compareTo(other.name().toLowerCase());
+		}
+	}
 
     public enum DirectoryEntryType
     {

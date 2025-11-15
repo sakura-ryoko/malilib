@@ -134,200 +134,160 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         this.addButton(button, listener);
     }
 
-    protected static class ButtonListenerLayerEdit implements IButtonActionListener
-    {
-        protected final GuiRenderLayerEditBase parent;
-        protected final LayerRange layerRange;
-        protected final Type type;
+	protected record ButtonListenerLayerEdit(Type type, LayerRange layerRange,
+	                                         GuiRenderLayerEditBase parent) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			if (this.type == Type.MODE)
+			{
+				this.layerRange.setLayerMode((LayerMode) this.layerRange.getLayerMode().cycle(mouseButton == 0));
+			}
+			else if (this.type == Type.AXIS)
+			{
+				Direction.Axis axis = this.layerRange.getAxis();
+				int next = mouseButton == 0 ? ((axis.ordinal() + 1) % 3) : (axis.ordinal() == 0 ? 2 : axis.ordinal() - 1);
+				axis = Direction.Axis.values()[next % 3];
+				this.layerRange.setAxis(axis);
+			}
+			else if (this.type == Type.SET_HERE && this.parent.mc.player != null)
+			{
+				this.layerRange.setToPosition(EntityUtils.getCameraEntity());
+			}
 
-        public ButtonListenerLayerEdit(Type type, LayerRange layerRange, GuiRenderLayerEditBase parent)
-        {
-            this.type = type;
-            this.layerRange = layerRange;
-            this.parent = parent;
-        }
+			this.parent.initGui();
+		}
 
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            if (this.type == Type.MODE)
-            {
-                this.layerRange.setLayerMode((LayerMode) this.layerRange.getLayerMode().cycle(mouseButton == 0));
-            }
-            else if (this.type == Type.AXIS)
-            {
-                Direction.Axis axis = this.layerRange.getAxis();
-                int next = mouseButton == 0 ? ((axis.ordinal() + 1) % 3) : (axis.ordinal() == 0 ? 2 : axis.ordinal() - 1);
-                axis = Direction.Axis.values()[next % 3];
-                this.layerRange.setAxis(axis);
-            }
-            else if (this.type == Type.SET_HERE && this.parent.mc.player != null)
-            {
-                this.layerRange.setToPosition(EntityUtils.getCameraEntity());
-            }
+		public enum Type
+		{
+			MODE("malilib.gui.button.render_layers_gui.layers"),
+			AXIS("malilib.gui.button.render_layers_gui.axis"),
+			SET_HERE("malilib.gui.button.render_layers_gui.set_here");
 
-            this.parent.initGui();
-        }
+			private final String translationKey;
 
-        public enum Type
-        {
-            MODE        ("malilib.gui.button.render_layers_gui.layers"),
-            AXIS        ("malilib.gui.button.render_layers_gui.axis"),
-            SET_HERE    ("malilib.gui.button.render_layers_gui.set_here");
+			Type(String translationKey)
+			{
+				this.translationKey = translationKey;
+			}
 
-            private final String translationKey;
+			public String getDisplayName(LayerRange layerRange)
+			{
+				if (this == SET_HERE)
+				{
+					return StringUtils.translate(this.translationKey);
+				}
+				else
+				{
+					String valueStr = this == MODE ? layerRange.getLayerMode().getDisplayName() : layerRange.getAxis().name();
+					return StringUtils.translate(this.translationKey, valueStr);
+				}
+			}
+		}
+	}
 
-            Type(String translationKey)
-            {
-                this.translationKey = translationKey;
-            }
+	protected record ButtonListenerChangeValue(LayerMode mode, LayerRange layerRange, boolean isSecondLimit,
+	                                           GuiRenderLayerEditBase parent) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			int change = mouseButton == 1 ? -1 : 1;
 
-            public String getDisplayName(LayerRange layerRange)
-            {
-                if (this == SET_HERE)
-                {
-                    return StringUtils.translate(this.translationKey);
-                }
-                else
-                {
-                    String valueStr = this == MODE ? layerRange.getLayerMode().getDisplayName() : layerRange.getAxis().name();
-                    return StringUtils.translate(this.translationKey, valueStr);
-                }
-            }
-        }
-    }
+			if (GuiBase.isShiftDown())
+			{
+				change *= 16;
+			}
 
-    protected static class ButtonListenerChangeValue implements IButtonActionListener
-    {
-        protected final GuiRenderLayerEditBase parent;
-        protected final LayerRange layerRange;
-        protected final LayerMode mode;
-        protected final boolean isSecondLimit;
+			if (GuiBase.isCtrlDown())
+			{
+				change *= 64;
+			}
 
-        protected ButtonListenerChangeValue(LayerMode mode, LayerRange layerRange, boolean isSecondLimit, GuiRenderLayerEditBase parent)
-        {
-            this.mode = mode;
-            this.layerRange = layerRange;
-            this.isSecondLimit = isSecondLimit;
-            this.parent = parent;
-        }
+			if (this.mode == LayerMode.LAYER_RANGE)
+			{
+				if (this.isSecondLimit)
+				{
+					this.layerRange.setLayerRangeMax(this.layerRange.getLayerRangeMax() + change);
+				}
+				else
+				{
+					this.layerRange.setLayerRangeMin(this.layerRange.getLayerRangeMin() + change);
+				}
+			}
+			else
+			{
+				this.layerRange.moveLayer(change);
+			}
 
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            int change = mouseButton == 1 ? -1 : 1;
+			this.parent.updateTextFieldValues(this.layerRange);
+		}
+	}
 
-            if (GuiBase.isShiftDown())
-            {
-                change *= 16;
-            }
+	protected record TextFieldListener(LayerMode mode, LayerRange layerRange,
+	                                   boolean isSecondLimit) implements ITextFieldListener<GuiTextFieldGeneric>
+	{
+		@Override
+		public boolean onTextChange(GuiTextFieldGeneric textField)
+		{
+			int value = 0;
 
-            if (GuiBase.isCtrlDown())
-            {
-                change *= 64;
-            }
+			try
+			{
+				value = Integer.parseInt(textField.getText());
+			}
+			catch (NumberFormatException e)
+			{
+				return false;
+			}
 
-            if (this.mode == LayerMode.LAYER_RANGE)
-            {
-                if (this.isSecondLimit)
-                {
-                    this.layerRange.setLayerRangeMax(this.layerRange.getLayerRangeMax() + change);
-                }
-                else
-                {
-                    this.layerRange.setLayerRangeMin(this.layerRange.getLayerRangeMin() + change);
-                }
-            }
-            else
-            {
-                this.layerRange.moveLayer(change);
-            }
+			switch (this.mode)
+			{
+				case ALL_ABOVE:
+					this.layerRange.setLayerAbove(value);
+					break;
 
-            this.parent.updateTextFieldValues(this.layerRange);
-        }
-    }
+				case ALL_BELOW:
+					this.layerRange.setLayerBelow(value);
+					break;
 
-    protected static class TextFieldListener implements ITextFieldListener<GuiTextFieldGeneric>
-    {
-        protected final LayerRange layerRange;
-        protected final LayerMode mode;
-        protected final boolean isSecondLimit;
+				case SINGLE_LAYER:
+					this.layerRange.setLayerSingle(value);
+					break;
 
-        protected TextFieldListener(LayerMode mode, LayerRange layerRange, boolean isSecondLimit)
-        {
-            this.mode = mode;
-            this.layerRange = layerRange;
-            this.isSecondLimit = isSecondLimit;
-        }
+				case LAYER_RANGE:
+					if (this.isSecondLimit)
+					{
+						this.layerRange.setLayerRangeMax(value);
+					}
+					else
+					{
+						this.layerRange.setLayerRangeMin(value);
+					}
+					break;
 
-        @Override
-        public boolean onTextChange(GuiTextFieldGeneric textField)
-        {
-            int value = 0;
+				default:
+			}
 
-            try
-            {
-                value = Integer.parseInt(textField.getText());
-            }
-            catch (NumberFormatException e)
-            {
-                return false;
-            }
+			return true;
+		}
+	}
 
-            switch (this.mode)
-            {
-                case ALL_ABOVE:
-                    this.layerRange.setLayerAbove(value);
-                    break;
-
-                case ALL_BELOW:
-                    this.layerRange.setLayerBelow(value);
-                    break;
-
-                case SINGLE_LAYER:
-                    this.layerRange.setLayerSingle(value);
-                    break;
-
-                case LAYER_RANGE:
-                    if (this.isSecondLimit)
-                    {
-                        this.layerRange.setLayerRangeMax(value);
-                    }
-                    else
-                    {
-                        this.layerRange.setLayerRangeMin(value);
-                    }
-                    break;
-
-                default:
-            }
-
-            return true;
-        }
-    }
-
-    public static class RangeHotkeyListener implements ISelectionListener<WidgetCheckBox>
-    {
-        protected final LayerRange layerRange;
-        protected final boolean isMax;
-
-        public RangeHotkeyListener(LayerRange layerRange, boolean isMax)
-        {
-            this.layerRange = layerRange;
-            this.isMax = isMax;
-        }
-
-        @Override
-        public void onSelectionChange(WidgetCheckBox entry)
-        {
-            if (this.isMax)
-            {
-                this.layerRange.toggleHotkeyMoveRangeMax();
-            }
-            else
-            {
-                this.layerRange.toggleHotkeyMoveRangeMin();
-            }
-        }
-    }
+	public record RangeHotkeyListener(LayerRange layerRange,
+	                                  boolean isMax) implements ISelectionListener<WidgetCheckBox>
+	{
+		@Override
+		public void onSelectionChange(WidgetCheckBox entry)
+		{
+			if (this.isMax)
+			{
+				this.layerRange.toggleHotkeyMoveRangeMax();
+			}
+			else
+			{
+				this.layerRange.toggleHotkeyMoveRangeMin();
+			}
+		}
+	}
 }

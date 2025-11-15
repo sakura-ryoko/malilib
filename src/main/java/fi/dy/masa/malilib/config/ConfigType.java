@@ -9,6 +9,7 @@ import io.netty.buffer.ByteBuf;
 
 import com.mojang.serialization.Codec;
 import fi.dy.masa.malilib.config.options.*;
+import fi.dy.masa.malilib.config.options.table.ConfigTable;
 
 public enum ConfigType implements StringIdentifiable
 {
@@ -23,6 +24,7 @@ public enum ConfigType implements StringIdentifiable
     COLOR_LIST  ("color_list",      ConfigColorList.CODEC),
     OPTION_LIST ("option_list",     null),
     HOTKEY      ("hotkey",          ConfigHotkey.CODEC),
+	TABLE       ("table",           ConfigTable.CODEC),
     ;
 
     public static final StringIdentifiable.EnumCodec<ConfigType> CODEC = StringIdentifiable.createCodec(ConfigType::values);

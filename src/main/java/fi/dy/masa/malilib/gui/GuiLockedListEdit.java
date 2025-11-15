@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.widgets.WidgetListLockedListEdit;
 import fi.dy.masa.malilib.gui.widgets.WidgetLockedListEditEntry;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -107,7 +108,7 @@ public class GuiLockedListEdit extends GuiListBase<String, WidgetLockedListEditE
     @Override
     public void removed()
     {
-        if (this.getListWidget().wereConfigsModified())
+        if (this.getListWidget() != null && this.getListWidget().wereConfigsModified())
         {
             this.getListWidget().applyPendingModifications();
             ConfigManager.getInstance().onConfigsChanged(this.configGui.getModId());
@@ -128,17 +129,15 @@ public class GuiLockedListEdit extends GuiListBase<String, WidgetLockedListEditE
     }
 
     @Override
-    protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
-//        super.drawTexturedBG(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, true);
-//        RenderUtils.applyLayer(drawContext, GuiLayer.BLUR);
-        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
     }
 
     @Override
-    protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawTitle(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
-        this.drawStringWithShadow(drawContext, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
+        this.drawStringWithShadow(ctx, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
     }
 
     @Override
@@ -151,7 +150,6 @@ public class GuiLockedListEdit extends GuiListBase<String, WidgetLockedListEditE
         }
         else if (input.key() == KeyCodes.KEY_ESCAPE)
         {
-//            return super.onKeyTyped(KeyCodes.KEY_ESCAPE, KeyCodes.KEY_NONE, KeyCodes.KEY_NONE);
 			return super.onKeyTyped(new KeyInput(KeyCodes.KEY_ESCAPE, KeyCodes.KEY_NONE, KeyCodes.KEY_NONE));
         }
 

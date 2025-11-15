@@ -10,6 +10,7 @@ import net.minecraft.util.math.MathHelper;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
 
 public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>> extends GuiBase
@@ -52,7 +53,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         this.setSize(width, height);
     }
 
-    protected void setSelectionListener(ISelectionListener<TYPE> listener)
+    protected void setSelectionListener(@Nullable ISelectionListener<TYPE> listener)
     {
         this.selectionListener = listener;
     }
@@ -285,7 +286,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
 
         if (this.getShouldSortList())
         {
-            Collections.sort(this.listContents, this.getComparator());
+            this.listContents.sort(this.getComparator());
         }
 
         this.reCreateListEntryWidgets();
@@ -380,10 +381,8 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
-//        RenderUtils.color(1f, 1f, 1f, 1f);
-
         WidgetBase hovered = null;
         int scrollbarHeight = this.browserHeight - this.browserEntriesOffsetY - 8;
         int totalHeight = 0;
@@ -397,7 +396,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
 
         int scrollBarX = this.posX + this.browserWidth - 9;
         int scrollBarY = this.browserEntriesStartY + this.browserEntriesOffsetY;
-        this.scrollBar.render(drawContext, mouseX, mouseY, partialTicks, scrollBarX, scrollBarY, 8, scrollbarHeight, totalHeight);
+        this.scrollBar.render(ctx, mouseX, mouseY, partialTicks, scrollBarX, scrollBarY, 8, scrollbarHeight, totalHeight);
 
         // The value gets updated in the drawScrollBar() method above, if dragging
         if (this.scrollBar.getValue() != this.lastScrollbarPosition)
@@ -411,7 +410,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         {
             TYPE entry = widget.getEntry();
             boolean isSelected = this.allowMultiSelection ? this.selectedEntries.contains(entry) : entry != null && entry.equals(this.getLastSelectedEntry());
-            widget.render(drawContext, mouseX, mouseY, isSelected);
+            widget.render(ctx, mouseX, mouseY, isSelected);
 
             if (widget.isMouseOver(mouseX, mouseY))
             {
@@ -421,7 +420,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
 
         if (this.widgetSearchBar != null)
         {
-            this.widgetSearchBar.render(drawContext, mouseX, mouseY, false);
+            this.widgetSearchBar.render(ctx, mouseX, mouseY, false);
         }
 
         if (hovered == null && this.widgetSearchBar != null && this.widgetSearchBar.isMouseOver(mouseX, mouseY))
@@ -430,8 +429,6 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         }
 
         this.hoveredWidget = hovered;
-
-//        RenderUtils.color(1f, 1f, 1f, 1f);
     }
 
     public void setSize(int width, int height)

@@ -8,6 +8,7 @@ import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings.Context;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -85,13 +86,13 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
+        super.render(ctx, mouseX, mouseY, selected);
 
         if (this.searchOpen)
         {
-            this.button.render(drawContext, mouseX, mouseY, false);
+            this.button.render(ctx, mouseX, mouseY, false);
         }
     }
 }

@@ -8,6 +8,7 @@ import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.config.options.ConfigColor;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiColorEditorHSV;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -42,24 +43,24 @@ public class WidgetColorIndicator extends WidgetBase
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
-        RenderUtils.drawHoverText(drawContext, mouseX, mouseY, this.hoverText);
+        super.postRenderHovered(ctx, mouseX, mouseY, selected);
+        RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.hoverText);
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
+        super.render(ctx, mouseX, mouseY, selected);
         int x = this.getX();
         int y = this.getY();
         int z = this.zLevel;
         int width = this.getWidth();
         int height = this.getHeight();
 
-        RenderUtils.drawRect(drawContext, x    , y    , width    , height    , 0xFFFFFFFF);
-        RenderUtils.drawRect(drawContext, x + 1, y + 1, width - 2, height - 2, 0xFF000000);
-        RenderUtils.drawRect(drawContext, x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue());
+        RenderUtils.drawRect(ctx, x    , y    , width    , height    , 0xFFFFFFFF);
+        RenderUtils.drawRect(ctx, x + 1, y + 1, width - 2, height - 2, 0xFF000000);
+        RenderUtils.drawRect(ctx, x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue());
     }
 }

@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
@@ -110,13 +111,21 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     @Override
     public boolean wasConfigModified()
     {
-        return !this.isDummy() && !this.textField.getTextField().getText().equals(this.initialStringValue);
+	    if (this.textField != null)
+	    {
+		    return !this.isDummy() && !this.textField.textField().getText().equals(this.initialStringValue);
+	    }
+
+		return false;
     }
 
     @Override
     public void applyNewValueToConfig()
     {
-        applyNewValueToConfig(StringUtils.getColor(this.textField.getTextField().getText(), Color4f.ZERO.intValue));
+		if (this.textField != null)
+		{
+			applyNewValueToConfig(StringUtils.getColor(this.textField.textField().getText(), Color4f.ZERO.intValue));
+		}
     }
 
     protected void applyNewValueToConfig(int color)
@@ -204,24 +213,23 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
+        super.render(ctx, mouseX, mouseY, selected);
 
         if (this.isOdd)
         {
-            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x20FFFFFF);
+            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x20FFFFFF);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x30FFFFFF);
+            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x30FFFFFF);
         }
 
-        this.drawSubWidgets(drawContext, mouseX, mouseY);
-        this.drawTextFields(drawContext, mouseX, mouseY);
-        super.render(drawContext, mouseX, mouseY, selected);
+        this.drawSubWidgets(ctx, mouseX, mouseY);
+        this.drawTextFields(ctx, mouseX, mouseY);
+        super.render(ctx, mouseX, mouseY, selected);
     }
 
     public static class ChangeListenerTextField extends ConfigOptionChangeListenerTextField
@@ -243,57 +251,45 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         }
     }
 
-    private static class ListenerResetConfig implements IButtonActionListener
-    {
-        private final WidgetColorListEditEntry parent;
-        private final ButtonGeneric buttonReset;
+	private record ListenerResetConfig(ButtonGeneric buttonReset,
+	                                   WidgetColorListEditEntry parent) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			if (this.parent.textField != null)
+			{
+				this.parent.textField.textField().setText(this.parent.defaultValue.toString());
+				this.parent.parent.applyPendingModifications();
+				this.buttonReset.setEnabled(!this.parent.textField.textField().getText().equals(this.parent.defaultValue.toString()));
+			}
 
-        public ListenerResetConfig(ButtonGeneric buttonReset, WidgetColorListEditEntry parent)
-        {
-            this.buttonReset = buttonReset;
-            this.parent = parent;
-        }
+			this.parent.parent.refreshEntries();
+		}
+	}
 
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            this.parent.textField.getTextField().setText(this.parent.defaultValue.toString());
-            this.parent.parent.applyPendingModifications();
-            this.buttonReset.setEnabled(!this.parent.textField.getTextField().getText().equals(this.parent.defaultValue.toString()));
-            this.parent.parent.refreshEntries();
-        }
-    }
+	private record ListenerListActions(ButtonType type,
+	                                   WidgetColorListEditEntry parent) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			if (this.type == ButtonType.ADD)
+			{
+				this.parent.insertEntryBefore();
+			}
+			else if (this.type == ButtonType.REMOVE)
+			{
+				this.parent.removeEntry();
+			}
+			else
+			{
+				this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
+			}
+		}
+	}
 
-    private static class ListenerListActions implements IButtonActionListener
-    {
-        private final ButtonType type;
-        private final WidgetColorListEditEntry parent;
-
-        public ListenerListActions(ButtonType type, WidgetColorListEditEntry parent)
-        {
-            this.type = type;
-            this.parent = parent;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            if (this.type == ButtonType.ADD)
-            {
-                this.parent.insertEntryBefore();
-            }
-            else if (this.type == ButtonType.REMOVE)
-            {
-                this.parent.removeEntry();
-            }
-            else
-            {
-                this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
-            }
-        }
-    }
-
-    private enum ButtonType
+    protected enum ButtonType
     {
         ADD(MaLiLibIcons.PLUS, "malilib.gui.button.hovertext.add"),
         REMOVE(MaLiLibIcons.MINUS, "malilib.gui.button.hovertext.remove"),

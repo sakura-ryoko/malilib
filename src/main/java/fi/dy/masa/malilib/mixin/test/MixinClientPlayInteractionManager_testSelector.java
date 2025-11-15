@@ -13,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 @Mixin(ClientPlayerInteractionManager.class)
-public class MixinClientPlayInteractionManager
+public class MixinClientPlayInteractionManager_testSelector
 {
     @Inject(method = "attackBlock", at = @At("HEAD"), cancellable = true)
     private void malilib_handleBreakingRestriction1(BlockPos pos, Direction side, CallbackInfoReturnable<Boolean> cir)

@@ -23,8 +23,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.profiler.Profilers;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.rule.GameRules;
 
 /**
  * Post-ReWrite code
@@ -124,7 +124,7 @@ public class GameWrap
         {
             if (getClient().getServer() != null)
             {
-                return getClient().getServer().getGameRules();
+                getClient().getServer().getSpawnWorld().getGameRules();
             }
         }
         else

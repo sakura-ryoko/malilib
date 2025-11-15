@@ -225,6 +225,7 @@
     "malilib.gui.title.copy_file": "Copy a file",
     "malilib.gui.title.string_list_edit": "Edit string list for '%s'",
     "malilib.gui.title.test": "Test",
+    "malilib.gui.title.table_edit": "Edit table for '%s'",
     "malilib.gui.title.test_enum": "Test Enum",
     "malilib.gui.title.test_file_browser": "Test File Browser",
     "malilib.gui.title.test_pos_editor": "Test Pos Editor",

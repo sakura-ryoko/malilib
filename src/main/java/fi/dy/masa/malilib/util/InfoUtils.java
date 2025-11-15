@@ -6,6 +6,7 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.MessageRenderer;
 import fi.dy.masa.malilib.util.game.IGameHud;
 import net.minecraft.client.MinecraftClient;
@@ -187,12 +188,12 @@ public class InfoUtils
     }
 
     @ApiStatus.Internal
-    public static void renderInGameMessages(DrawContext drawContext)
+    public static void renderInGameMessages(GuiContext ctx)
     {
         int x = GuiUtils.getScaledWindowWidth() / 2;
         int y = GuiUtils.getScaledWindowHeight() - 76;
 
-        IN_GAME_MESSAGES.drawMessages(drawContext, x, y);
+        IN_GAME_MESSAGES.drawMessages(ctx, x, y);
     }
 
     public static void sendVanillaMessage(MutableText message)

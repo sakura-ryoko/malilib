@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.render;
 
 import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Experimental
 public enum InventoryOverlayType
 {
 	BREWING_STAND,

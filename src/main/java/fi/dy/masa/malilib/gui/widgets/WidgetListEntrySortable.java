@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.gui.widgets;
 import javax.annotation.Nullable;
 import net.minecraft.client.gui.DrawContext;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<TYPE>
@@ -45,7 +46,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
         return -1;
     }
 
-    protected void renderColumnHeader(DrawContext drawContext, int mouseX, int mouseY, IGuiIcon iconNatural, IGuiIcon iconReverse)
+    protected void renderColumnHeader(GuiContext ctx, int mouseX, int mouseY, IGuiIcon iconNatural, IGuiIcon iconReverse)
     {
         int mouseOverColumn = this.getMouseOverColumn(mouseX, mouseY);
         int sortColumn = this.getCurrentSortColumn();
@@ -53,7 +54,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
         int iconX = this.getColumnPosX(sortColumn + 1) - 21; // align to the right edge
 
         IGuiIcon icon = reverse ? iconReverse : iconNatural;
-        icon.renderAt(drawContext, iconX, this.y + 3, this.zLevel, true, sortColumn == mouseOverColumn);
+        icon.renderAt(ctx, iconX, this.y + 3, this.zLevel, true, sortColumn == mouseOverColumn);
 
         for (int i = 0; i < this.getColumnCount(); ++i)
         {
@@ -61,7 +62,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
             int xStart = this.getColumnPosX(i);
             int xEnd = this.getColumnPosX(i + 1);
 
-            RenderUtils.drawOutline(drawContext, xStart - 3, this.y + 1, xEnd - xStart - 2, this.height - 2, outlineColor);
+            RenderUtils.drawOutline(ctx, xStart - 3, this.y + 1, xEnd - xStart - 2, this.height - 2, outlineColor);
         }
     }
 }

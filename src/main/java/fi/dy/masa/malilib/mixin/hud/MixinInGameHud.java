@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.event.RenderEventHandler;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.game.IGameHud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -23,7 +24,7 @@ public abstract class MixinInGameHud implements IGameHud
     @Inject(method = "render", at = @At("TAIL"))
     private void malilib_onGameOverlayPost(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(context, this.client, tickCounter.getTickProgress(false));
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(GuiContext.fromGuiGraphics(context), tickCounter.getTickProgress(false));
     }
 
     @Override

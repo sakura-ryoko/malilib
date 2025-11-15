@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -163,13 +164,13 @@ public abstract class ButtonBase extends WidgetBase
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
+        super.postRenderHovered(ctx, mouseX, mouseY, selected);
 
         if (this.hasHoverText() && this.isMouseOver())
         {
-            RenderUtils.drawHoverText(drawContext, mouseX, mouseY, this.getHoverStrings());
+            RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.getHoverStrings());
         }
     }
 }

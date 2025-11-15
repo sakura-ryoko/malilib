@@ -35,6 +35,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IRenderDispatcher;
 import fi.dy.masa.malilib.interfaces.IRenderer;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.InfoUtils;
 
 public class RenderEventHandler implements IRenderDispatcher
@@ -43,10 +44,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
     private final List<IRenderer> overlayRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
-//    private final List<IRenderer> worldPreMainRenderers = new ArrayList<>();
     private final List<IRenderer> worldPostDebugRenderers = new ArrayList<>();
-//    private final List<IRenderer> worldLayerPassRenderers = new ArrayList<>();
-//    private final List<IRenderer> worldPreParticleRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
     private final List<IRenderer> specialGuiRenderers = new ArrayList<>();
@@ -74,15 +72,6 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
-//    @Override
-//    public void registerWorldPreMainRenderer(IRenderer renderer)
-//    {
-//        if (this.worldPreMainRenderers.contains(renderer) == false)
-//        {
-//            this.worldPreMainRenderers.add(renderer);
-//        }
-//    }
-
     @Override
     public void registerWorldPostDebugRenderer(IRenderer renderer)
     {
@@ -91,24 +80,6 @@ public class RenderEventHandler implements IRenderDispatcher
             this.worldPostDebugRenderers.add(renderer);
         }
     }
-
-//    @Override
-//    public void registerWorldLayerPassRenderer(IRenderer renderer)
-//    {
-//        if (this.worldLayerPassRenderers.contains(renderer) == false)
-//        {
-//            this.worldLayerPassRenderers.add(renderer);
-//        }
-//    }
-
-//    @Override
-//    public void registerWorldPreParticleRenderer(IRenderer renderer)
-//    {
-//        if (this.worldPreParticleRenderers.contains(renderer) == false)
-//        {
-//            this.worldPreParticleRenderers.add(renderer);
-//        }
-//    }
 
     @Override
     public void registerWorldPreWeatherRenderer(IRenderer renderer)
@@ -137,28 +108,8 @@ public class RenderEventHandler implements IRenderDispatcher
         }
     }
 
-//    @ApiStatus.Internal
-//    public void onRenderGameOverlayLastDrawer(DrawContext drawContext, MinecraftClient mc, float partialTicks)
-//    {
-//        Profiler profiler = Profilers.get();
-//
-//        profiler.push(MaLiLibReference.MOD_ID+"_overlay_last_drawer");
-//
-//        if (this.overlayRenderers.isEmpty() == false)
-//        {
-//            for (IRenderer renderer : this.overlayRenderers)
-//            {
-//                profiler.push(renderer.getProfilerSectionSupplier());
-//                renderer.onRenderGameOverlayLastDrawer(drawContext, partialTicks, profiler, mc);
-//                profiler.pop();
-//            }
-//        }
-//
-//        profiler.pop();
-//    }
-
     @ApiStatus.Internal
-    public void onRenderGameOverlayPost(DrawContext drawContext, MinecraftClient mc, float partialTicks)
+    public void onRenderGameOverlayPost(GuiContext ctx, float partialTicks)
     {
         Profiler profiler = Profilers.get();
 
@@ -169,14 +120,14 @@ public class RenderEventHandler implements IRenderDispatcher
             for (IRenderer renderer : this.overlayRenderers)
             {
                 profiler.push(renderer.getProfilerSectionSupplier());
-                renderer.onRenderGameOverlayPostAdvanced(drawContext, partialTicks, profiler, mc);
-                renderer.onRenderGameOverlayPost(drawContext);
+                renderer.onRenderGameOverlayPostAdvanced(ctx, partialTicks, profiler);
+                renderer.onRenderGameOverlayPost(ctx);
                 profiler.pop();
             }
         }
 
         profiler.swap(MaLiLibReference.MOD_ID+"_game_messages");
-        InfoUtils.renderInGameMessages(drawContext);
+        InfoUtils.renderInGameMessages(ctx);
         profiler.pop();
     }
 
@@ -217,7 +168,7 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void onRenderTooltipLast(DrawContext drawContext, ItemStack stack, int x, int y)
+    public void onRenderTooltipLast(GuiContext ctx, ItemStack stack, int x, int y)
     {
         Profiler profiler = Profilers.get();
 
@@ -228,7 +179,7 @@ public class RenderEventHandler implements IRenderDispatcher
             for (IRenderer renderer : this.tooltipLastRenderers)
             {
                 profiler.swap(renderer.getProfilerSectionSupplier());
-                renderer.onRenderTooltipLast(drawContext ,stack, x, y);
+                renderer.onRenderTooltipLast(ctx ,stack, x, y);
             }
         }
 
@@ -236,151 +187,19 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
 //    @ApiStatus.Internal
-//    public void runRenderWorldPreMain(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-//                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
-//                                           Frustum frustum, Camera camera, BufferBuilderStorage buffers,
-//                                           Profiler profiler)
-//    {
-//        profiler.push(MaLiLibReference.MOD_ID+"_pre_main");
-//
-//        if (this.worldPreMainRenderers.isEmpty() == false)
-//        {
-//            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_main");
-//
-//            fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
-//            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
-//
-//            pass.setRenderer(() ->
-//                             {
-//                                 Fog fog = RenderSystem.getShaderFog();
-//                                 RenderSystem.setShaderFog(Fog.DUMMY);
-//
-//                                 //handleMain.get().beginWrite(false);
-//                                 // RenderUtils.fbStartDrawing();
-//
-//                                 for (IRenderer renderer : this.worldPreMainRenderers)
-//                                 {
-//                                     profiler.push(renderer.getProfilerSectionSupplier());
-//                                     renderer.onRenderWorldPreMain(handleMain.get(), posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
-//                                     profiler.pop();
-//                                 }
-//
-//                                 if (!this.worldPreMainRenderers.isEmpty())
-//                                 {
-//                                     handleMain.get().blitToScreen();
-//                                 }
-//
-//                                 RenderSystem.setShaderFog(fog);
-//                             });
-//
-//            if (!this.worldPreMainRenderers.isEmpty())
-//            {
-//                pass.markToBeVisited();
-//            }
-//        }
-//
-//        profiler.pop();
-//    }
-
-//    @ApiStatus.Internal
-//    public void runRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, MinecraftClient mc,
-//                                        ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
-//                                        ArrayList<RenderPass.RenderObject> renderObjects)
+//    public void runRenderWorldPostDebug(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera)
 //    {
 //        Profiler profiler = Profilers.get();
 //
-//        profiler.push(MaLiLibReference.MOD_ID+"_render_layer");
+//        profiler.push(MaLiLibReference.MOD_ID+"_post_debug");
 //
-//        if (this.worldLayerPassRenderers.isEmpty() == false)
+//        if (this.worldPostDebugRenderers.isEmpty() == false)
 //        {
-//            for (IRenderer renderer : this.worldLayerPassRenderers)
+//            for (IRenderer renderer : this.worldPostDebugRenderers)
 //            {
 //                profiler.push(renderer.getProfilerSectionSupplier());
-//                renderer.onRenderWorldLayerPass(layer, posMatrix, projMatrix, camera, profiler, chunkIterator, renderObjects);
+//                renderer.onRenderWorldPostDebugRender(matrices, frustum, immediate, camera, profiler);
 //                profiler.pop();
-//            }
-//        }
-//
-//        profiler.pop();
-//    }
-
-    @ApiStatus.Internal
-    public void runRenderWorldPostDebug(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera)
-    {
-        Profiler profiler = Profilers.get();
-
-        profiler.push(MaLiLibReference.MOD_ID+"_post_debug");
-
-        if (this.worldPostDebugRenderers.isEmpty() == false)
-        {
-            for (IRenderer renderer : this.worldPostDebugRenderers)
-            {
-                profiler.push(renderer.getProfilerSectionSupplier());
-                renderer.onRenderWorldPostDebugRender(matrices, frustum, immediate, camera, profiler);
-                profiler.pop();
-            }
-        }
-
-        profiler.pop();
-    }
-
-//    @ApiStatus.Internal
-//    public void runRenderWorldPreParticles(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-//                                           FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
-//                                           Frustum frustum, Camera camera, BufferBuilderStorage buffers,
-//                                           Profiler profiler)
-//    {
-//        profiler.push(MaLiLibReference.MOD_ID+"_pre_particles");
-//
-//        if (this.worldPreParticleRenderers.isEmpty() == false)
-//        {
-//            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_particles");
-//
-//            if (fbSet.particlesFramebuffer != null)
-//            {
-//                fbSet.particlesFramebuffer = pass.transfer(fbSet.particlesFramebuffer);
-//                pass.dependsOn(fbSet.mainFramebuffer);
-//            }
-//            else
-//            {
-//                fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
-//            }
-//
-//            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
-//            Handle<Framebuffer> handleParticles = fbSet.particlesFramebuffer;
-//
-//            pass.setRenderer(() ->
-//            {
-//                Fog fog = RenderSystem.getShaderFog();
-//                RenderSystem.setShaderFog(Fog.DUMMY);
-//
-//                if (handleParticles != null)
-//                {
-//                    handleParticles.get().copyDepthFrom(handleMain.get());
-//                }
-//
-//                Framebuffer fb = handleParticles != null ? handleParticles.get() : handleMain.get();
-//                //handleMain.get().beginWrite(false);
-//                // RenderUtils.fbStartDrawing();
-//
-//                for (IRenderer renderer : this.worldPreParticleRenderers)
-//                {
-//                    profiler.push(renderer.getProfilerSectionSupplier());
-//                    renderer.onRenderWorldPreParticles(fb, posMatrix, projMatrix, frustum, camera, fog, buffers, profiler);
-//                    profiler.pop();
-//                }
-//
-//                if (!this.worldPreParticleRenderers.isEmpty())
-//                {
-//                    fb.blitToScreen();
-//                }
-//
-//                RenderSystem.setShaderFog(fog);
-//            });
-//
-//            if (!this.worldPreParticleRenderers.isEmpty())
-//            {
-//                pass.markToBeVisited();
 //            }
 //        }
 //
@@ -517,9 +336,10 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
+    @ApiStatus.Experimental
     public void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc, ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder)
     {
-        MaLiLib.LOGGER.warn("onRegisterSpecialGuiRenderer():");
+//        MaLiLib.LOGGER.warn("onRegisterSpecialGuiRenderer():");
 
         if (this.specialGuiRenderers.isEmpty() == false)
         {

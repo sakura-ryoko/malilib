@@ -177,6 +177,7 @@ public class InventoryUtils
      * @param ignoredKeys (Keys to ignore) [OPTIONAL]
      * @return (result)
      */
+    @Deprecated
     public static boolean areNbtEqualIgnoreKeys(@Nonnull NbtCompound tag1, @Nonnull NbtCompound tag2, @Nullable Set<String> ignoredKeys)
     {
         Set<String> keys1;
@@ -215,7 +216,6 @@ public class InventoryUtils
 	 * @param ignoredKeys (Keys to ignore) [OPTIONAL]
 	 * @return (result)
 	 */
-	@ApiStatus.Experimental
 	public static boolean areDataEqualIgnoreKeys(@Nonnull CompoundData tag1, @Nonnull CompoundData tag2, @Nullable Set<String> ignoredKeys)
 	{
 		Set<String> keys1;
@@ -468,6 +468,7 @@ public class InventoryUtils
      * @param registry ()
      * @return ()
      */
+    @Deprecated
     public static @Nullable NbtCompound stackHasNbtItems(ItemStack stack, @Nonnull DynamicRegistryManager registry)
     {
         if (stack.isEmpty() == false)
@@ -511,6 +512,7 @@ public class InventoryUtils
      * @param nbt ()
      * @return ()
      */
+	@Deprecated
     public static boolean hasNbtItems(NbtCompound nbt)
     {
         if (nbt.contains(NbtKeys.ITEMS))
@@ -549,7 +551,6 @@ public class InventoryUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static boolean hasDataItems(CompoundData data)
 	{
 		if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
@@ -589,6 +590,7 @@ public class InventoryUtils
      * @param nbt The item holding the inventory contents
      * @return ()
      */
+	@Deprecated
     public static DefaultedList<ItemStack> getNbtItems(@Nonnull NbtCompound nbt)
     {
         MinecraftClient mc = MinecraftClient.getInstance();
@@ -610,6 +612,7 @@ public class InventoryUtils
      * @param registry  the Dynamic Registry object
      * @return ()
      */
+	@Deprecated
     public static DefaultedList<ItemStack> getNbtItems(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
         if (slotCount > NbtInventory.MAX_SIZE)
@@ -642,8 +645,8 @@ public class InventoryUtils
         // A few Entities use this
         else if (nbt.contains(NbtKeys.INVENTORY))
         {
-            InventoryOverlay.InventoryRenderType type = InventoryOverlay.getInventoryType(nbt);
-            boolean isPlayer = type == InventoryOverlay.InventoryRenderType.PLAYER;
+	        InventoryOverlayType type = InventoryOverlay.getInventoryType(DataConverterNbt.fromVanillaCompound(nbt));
+	        boolean isPlayer = type == InventoryOverlayType.PLAYER;
 
             NbtList list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
             if (slotCount < 0)
@@ -732,7 +735,6 @@ public class InventoryUtils
 	 * @param data The item holding the inventory contents
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static DefaultedList<ItemStack> getDataItems(@Nonnull CompoundData data)
 	{
 		MinecraftClient mc = MinecraftClient.getInstance();
@@ -754,7 +756,6 @@ public class InventoryUtils
 	 * @param registry  the Dynamic Registry object
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static DefaultedList<ItemStack> getDataItems(@Nonnull CompoundData data, int slotCount, @Nonnull DynamicRegistryManager registry)
 	{
 		if (slotCount > NbtInventory.MAX_SIZE)
@@ -787,7 +788,7 @@ public class InventoryUtils
 		// A few Entities use this
 		else if (data.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST))
 		{
-			InventoryOverlayType type = InventoryOverlay.getInventoryTypeNew(data);
+			InventoryOverlayType type = InventoryOverlay.getInventoryType(data);
 			boolean isPlayer = type == InventoryOverlayType.PLAYER;
 
 			ListData list = data.getList(NbtKeys.INVENTORY);
@@ -877,6 +878,7 @@ public class InventoryUtils
      * @param nbt     The tag holding the inventory contents
      * @return ()
      */
+	@Deprecated
     public static Inventory getNbtInventory(@Nonnull NbtCompound nbt)
     {
         if (MinecraftClient.getInstance().world == null)
@@ -894,7 +896,6 @@ public class InventoryUtils
 	 * @param data     The tag holding the inventory contents
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static Inventory getDataInventory(@Nonnull CompoundData data)
 	{
 		if (MinecraftClient.getInstance().world == null)
@@ -914,6 +915,7 @@ public class InventoryUtils
      * @param registry  The Dynamic Registry object
      * @return ()
      */
+	@Deprecated
     public static Inventory getNbtInventory(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
         if (slotCount > NbtInventory.MAX_SIZE)
@@ -945,8 +947,8 @@ public class InventoryUtils
         }
         else if (nbt.contains(NbtKeys.INVENTORY))
         {
-            InventoryOverlay.InventoryRenderType type = InventoryOverlay.getInventoryType(nbt);
-            boolean isPlayer = type == InventoryOverlay.InventoryRenderType.PLAYER;
+	        InventoryOverlayType type = InventoryOverlay.getInventoryType(DataConverterNbt.fromVanillaCompound(nbt));
+	        boolean isPlayer = type == InventoryOverlayType.PLAYER;
 
             // Entities use this (Piglin, Villager, a few others)
             if (slotCount < 0)
@@ -1038,7 +1040,6 @@ public class InventoryUtils
 	 * @param registry  The Dynamic Registry object
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static Inventory getDataInventory(@Nonnull CompoundData data, int slotCount, @Nonnull DynamicRegistryManager registry)
 	{
 		if (slotCount > NbtInventory.MAX_SIZE)
@@ -1070,7 +1071,7 @@ public class InventoryUtils
 		}
 		else if (data.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST))
 		{
-			InventoryOverlayType type = InventoryOverlay.getInventoryTypeNew(data);
+			InventoryOverlayType type = InventoryOverlay.getInventoryType(data);
 			boolean isPlayer = type == InventoryOverlayType.PLAYER;
 
 			// Entities use this (Piglin, Villager, a few others)
@@ -1162,7 +1163,8 @@ public class InventoryUtils
      * @param registry ()
      * @return ()
      */
-    public static Inventory getNbtInventoryHorseFix(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
+	@Deprecated
+	public static Inventory getNbtInventoryHorseFix(@Nonnull NbtCompound nbt, int slotCount, @Nonnull DynamicRegistryManager registry)
     {
         DefaultedList<ItemStack> horseEquipment = NbtEntityUtils.getHorseEquipmentFromNbt(nbt, registry);
 
@@ -1228,7 +1230,6 @@ public class InventoryUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static Inventory getDataInventoryHorseFix(@Nonnull CompoundData data, int slotCount, @Nonnull DynamicRegistryManager registry)
 	{
 		DefaultedList<ItemStack> horseEquipment = DataEntityUtils.getHorseEquipment(data, registry);
@@ -1299,6 +1300,7 @@ public class InventoryUtils
     }
 
     @Nullable
+    @Deprecated
     public static EnderChestInventory getPlayerEnderItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         if (nbt.contains(NbtKeys.ENDER_ITEMS))
@@ -1315,10 +1317,9 @@ public class InventoryUtils
     }
 
 	@Nullable
-	@ApiStatus.Experimental
 	public static EnderChestInventory getPlayerEnderItemsFromData(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
 	{
-		LOGGER.debug("getPlayerEnderItemsFromData: containsList({}) : containsLeinient({})", data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST), data.containsLenient(NbtKeys.ENDER_ITEMS));
+//		LOGGER.debug("getPlayerEnderItemsFromData: containsList({}) : containsLeinient({})", data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST), data.containsLenient(NbtKeys.ENDER_ITEMS));
 		if (data.contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
 		{
 			EnderChestInventory inv = new EnderChestInventory();
@@ -1326,14 +1327,15 @@ public class InventoryUtils
 
 			inv.readData(view.getReader().getTypedListView(NbtKeys.ENDER_ITEMS, StackWithSlot.CODEC));
 
-			LOGGER.debug("getPlayerEnderItemsFromData: inv [{}]", inv.size());
+//			LOGGER.debug("getPlayerEnderItemsFromData: inv [{}]", inv.size());
 			return inv;
 		}
 
-		LOGGER.debug("getPlayerEnderItemsFromData: inv: [NULL]");
+//		LOGGER.debug("getPlayerEnderItemsFromData: inv: [NULL]");
 		return null;
 	}
 
+	@Deprecated
     public static DefaultedList<ItemStack> getSellingItemsFromNbt(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry)
     {
         TradeOfferList offers = NbtEntityUtils.getTradeOffersFromNbt(nbt, registry);
@@ -1346,7 +1348,6 @@ public class InventoryUtils
         return DefaultedList.of();
     }
 
-	@ApiStatus.Experimental
 	public static DefaultedList<ItemStack> getSellingItemsFromData(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
 	{
 		TradeOfferList offers = DataEntityUtils.getTradeOffers(data, registry);
@@ -1863,6 +1864,7 @@ public class InventoryUtils
      * @param stack ()
      * @return ()
      */
+    @Deprecated
     public static NbtCompound getStoredBlockEntityNbt(ItemStack stack)
     {
         if (stack.contains(DataComponentTypes.BLOCK_ENTITY_DATA))
@@ -1884,7 +1886,6 @@ public class InventoryUtils
 	 * @param stack ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static CompoundData getStoredBlockEntityDataTag(ItemStack stack)
 	{
 		if (stack.contains(DataComponentTypes.BLOCK_ENTITY_DATA))
@@ -1905,6 +1906,7 @@ public class InventoryUtils
 	 * @param tag ()
 	 * @return ()
 	 */
+	@Deprecated
     public static ItemStack fromNbtOrEmpty(@Nullable NbtElement tag)
     {
         MinecraftClient mc = MinecraftClient.getInstance();
@@ -1922,7 +1924,6 @@ public class InventoryUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static ItemStack fromDataOrEmpty(@Nullable CompoundData data)
 	{
 		MinecraftClient mc = MinecraftClient.getInstance();
@@ -1941,6 +1942,7 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
+	@Deprecated
     public static ItemStack getStackCodec(@Nonnull NbtCompound nbt, String key)
     {
         MinecraftClient mc = MinecraftClient.getInstance();
@@ -1959,7 +1961,6 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static ItemStack getStackCodec(@Nonnull CompoundData data, String key)
 	{
 		MinecraftClient mc = MinecraftClient.getInstance();
@@ -1979,6 +1980,7 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
+	@Deprecated
     public static NbtCompound putStackCodec(@Nonnull NbtCompound nbt, @Nonnull ItemStack stack, String key)
     {
         MinecraftClient mc = MinecraftClient.getInstance();
@@ -1998,7 +2000,6 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static CompoundData putStackCodec(@Nonnull CompoundData data, @Nonnull ItemStack stack, String key)
 	{
 		MinecraftClient mc = MinecraftClient.getInstance();
@@ -2017,6 +2018,7 @@ public class InventoryUtils
 	 * @param registry ()
 	 * @return ()
 	 */
+	@Deprecated
     public static ItemStack fromNbtOrEmpty(@Nonnull DynamicRegistryManager registry, @Nullable NbtElement tag)
     {
         if (tag == null)
@@ -2033,7 +2035,6 @@ public class InventoryUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static ItemStack fromDataOrEmpty(@Nonnull DynamicRegistryManager registry, @Nullable CompoundData tag)
 	{
 		if (tag == null)
@@ -2051,6 +2052,7 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
+	@Deprecated
     public static ItemStack getStackCodec(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry, String key)
     {
         return nbt.get(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
@@ -2063,7 +2065,6 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static ItemStack getStackCodec(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, String key)
 	{
 		return data.getCodec(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
@@ -2077,6 +2078,7 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
+	@Deprecated
     public static NbtCompound putStackCodec(@Nonnull NbtCompound nbt, @Nonnull DynamicRegistryManager registry, @Nonnull ItemStack stack, String key)
     {
         nbt.put(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE), stack);
@@ -2091,7 +2093,6 @@ public class InventoryUtils
 	 * @param key ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public static CompoundData putStackCodec(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, @Nonnull ItemStack stack, String key)
 	{
 		return data.putCodec(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE), stack);

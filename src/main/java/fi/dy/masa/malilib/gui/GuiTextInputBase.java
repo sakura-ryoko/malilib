@@ -1,15 +1,16 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import org.joml.Matrix3x2fStack;
+
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -61,28 +62,27 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     }
 
     @Override
-    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
-            this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
+            this.getParent().render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
         }
 
-        Matrix3x2fStack matrixStack = drawContext.getMatrices();
-        matrixStack.pushMatrix();
+	    ctx.getMatrices().pushMatrix();
         // 1.f
-        matrixStack.translate(0, 0);
+	    ctx.getMatrices().translate(0, 0);
 
-        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xE0000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xE0000000, COLOR_HORIZONTAL_BAR);
 
         // Draw the title
-        this.drawStringWithShadow(drawContext, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
+        this.drawStringWithShadow(ctx, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
 
         //super.drawScreen(mouseX, mouseY, partialTicks);
-        this.textField.render(drawContext, mouseX, mouseY, partialTicks);
+        this.textField.render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
 
-        this.drawButtons(drawContext, mouseX, mouseY, partialTicks);
-        matrixStack.popMatrix();
+        this.drawButtons(ctx, mouseX, mouseY, partialTicks);
+	    ctx.getMatrices().popMatrix();
     }
 
     @Override

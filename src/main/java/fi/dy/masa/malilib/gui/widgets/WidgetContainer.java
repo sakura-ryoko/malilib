@@ -9,6 +9,7 @@ import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.render.GuiContext;
 
 public abstract class WidgetContainer extends WidgetBase
 {
@@ -167,20 +168,20 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
-        this.drawSubWidgets(drawContext, mouseX, mouseY);
+        super.render(ctx, mouseX, mouseY, selected);
+        this.drawSubWidgets(ctx, mouseX, mouseY);
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
-        this.drawHoveredSubWidget(drawContext, mouseX, mouseY);
+        super.postRenderHovered(ctx, mouseX, mouseY, selected);
+        this.drawHoveredSubWidget(ctx, mouseX, mouseY);
     }
 
-    protected void drawSubWidgets(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawSubWidgets(GuiContext ctx, int mouseX, int mouseY)
     {
         this.hoveredSubWidget = null;
 
@@ -188,7 +189,7 @@ public abstract class WidgetContainer extends WidgetBase
         {
             for (WidgetBase widget : this.subWidgets)
             {
-                widget.render(drawContext, mouseX, mouseY, false);
+                widget.render(ctx, mouseX, mouseY, false);
 
                 if (widget.isMouseOver(mouseX, mouseY))
                 {
@@ -198,11 +199,11 @@ public abstract class WidgetContainer extends WidgetBase
         }
     }
 
-    protected void drawHoveredSubWidget(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawHoveredSubWidget(GuiContext ctx, int mouseX, int mouseY)
     {
         if (this.hoveredSubWidget != null)
         {
-            this.hoveredSubWidget.postRenderHovered(drawContext, mouseX, mouseY, false);
+            this.hoveredSubWidget.postRenderHovered(ctx, mouseX, mouseY, false);
         }
     }
 }

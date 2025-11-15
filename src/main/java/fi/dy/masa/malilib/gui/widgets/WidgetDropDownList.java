@@ -18,6 +18,7 @@ import fi.dy.masa.malilib.gui.MaLiLibIcons;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringRetriever;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 
@@ -72,7 +73,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         TextFieldListener listener = new TextFieldListener(this);
         this.searchBar = new TextFieldWrapper<>(new GuiTextFieldGeneric(x + 1, y - 18, this.width - 2, 16, this.textRenderer), listener);
-        this.searchBar.getTextField().setFocused(true);
+        this.searchBar.textField().setFocused(true);
 
         this.updateFilteredEntries();
     }
@@ -82,8 +83,8 @@ public class WidgetDropDownList<T> extends WidgetBase
     {
         super.setPosition(x, y);
 
-        this.searchBar.getTextField().setX(x + 1);
-        this.searchBar.getTextField().setY(y - 18);
+        this.searchBar.textField().setX(x + 1);
+        this.searchBar.textField().setY(y - 18);
     }
 
     protected int getRequiredWidth(int width, List<T> entries, MinecraftClient mc)
@@ -167,7 +168,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
             if (this.isOpen == false)
             {
-                this.searchBar.getTextField().setText("");
+                this.searchBar.textField().setText("");
                 this.updateFilteredEntries();
             }
         }
@@ -218,7 +219,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     protected void updateFilteredEntries()
     {
         this.filteredEntries.clear();
-        String filterText = this.searchBar.getTextField().getText();
+        String filterText = this.searchBar.textField().getText();
 
         if (this.isOpen && filterText.isEmpty() == false)
         {
@@ -263,15 +264,14 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
+        super.render(ctx, mouseX, mouseY, selected);
 
         Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.pushMatrix();
         matrixStack.translate(0, 0, 10);
-        Matrix3x2fStack matrixStackIn = drawContext.getMatrices();
+        Matrix3x2fStack matrixStackIn = ctx.getMatrices();
         matrixStackIn.pushMatrix();
         // 10
         matrixStackIn.translate(0, 0);
@@ -280,29 +280,25 @@ public class WidgetDropDownList<T> extends WidgetBase
         List<T> list = this.filteredEntries;
         int visibleEntries = Math.min(this.maxVisibleEntries, list.size());
 
-//        RenderUtils.depthMask(true);
-//        RenderUtils.depthTest(true);
-        RenderUtils.drawOutlinedBox(drawContext, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
+        RenderUtils.drawOutlinedBox(ctx, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
 
         String str = this.getDisplayString(this.getSelectedEntry());
         int txtX = this.x + 4;
         int txtY = this.y + this.height / 2 - this.fontHeight / 2;
         // 100
         matrixStackIn.translate(0, 0);
-        this.drawString(drawContext, txtX, txtY, 0xFFE0E0E0, str);
+        this.drawString(ctx, txtX, txtY, 0xFFE0E0E0, str);
         txtY += this.height + 1;
         int scrollWidth = 10;
 
         if (this.isOpen)
         {
-            if (this.searchBar.getTextField().getText().isEmpty() == false)
+            if (this.searchBar.textField().getText().isEmpty() == false)
             {
-                this.searchBar.draw(drawContext, mouseX, mouseY);
+                this.searchBar.draw(ctx, mouseX, mouseY);
             }
 
-//            RenderUtils.depthMask(true);
-//            RenderUtils.depthTest(true);
-            RenderUtils.drawOutline(drawContext, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
+            RenderUtils.drawOutline(ctx, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
 
             int y = this.y + this.height + 1;
             int startIndex = Math.max(0, this.scrollBar.getValue());
@@ -318,11 +314,9 @@ public class WidgetDropDownList<T> extends WidgetBase
                     bg = 0x60FFFFFF;
                 }
 
-//                RenderUtils.depthMask(true);
-//                RenderUtils.depthTest(true);
-                RenderUtils.drawRect(drawContext, this.x, y, this.width - scrollWidth, this.height, bg);
+                RenderUtils.drawRect(ctx, this.x, y, this.width - scrollWidth, this.height, bg);
                 str = this.getDisplayString(list.get(i));
-                this.drawString(drawContext, txtX, txtY, 0xFFE0E0E0, str);
+                this.drawString(ctx, txtX, txtY, 0xFFE0E0E0, str);
                 y += this.height;
                 txtY += this.height;
             }
@@ -332,58 +326,40 @@ public class WidgetDropDownList<T> extends WidgetBase
             int h = visibleEntries * this.height;
             int totalHeight = Math.max(h, list.size() * this.height);
 
-//            RenderUtils.depthMask(true);
-//            RenderUtils.depthTest(true);
-            this.scrollBar.render(drawContext, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
-
-//            VertexConsumer buffer = this.bindTexture(MaLiLibIcons.TEXTURE, drawContext);
-//            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
+            this.scrollBar.render(ctx, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
 
             MaLiLibIcons i = MaLiLibIcons.ARROW_UP;
-            RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            RenderUtils.drawTexturedRect(ctx, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
         else
         {
-//            VertexConsumer buffer = this.bindTexture(MaLiLibIcons.TEXTURE, drawContext);
-//            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
-
             MaLiLibIcons i = MaLiLibIcons.ARROW_DOWN;
-            RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            RenderUtils.drawTexturedRect(ctx, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
 
-//        RenderUtils.depthMask(false);
-//        RenderUtils.depthTest(false);
         matrixStack.popMatrix();
         matrixStackIn.popMatrix();
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
+        super.postRenderHovered(ctx, mouseX, mouseY, selected);
 
         // Draw it again to cover up other elements, when open
         if (this.isOpen)
         {
-            this.render(drawContext, mouseX, mouseY, selected);
-            //RenderUtils.forceDraw(drawContext);
+            this.render(ctx, mouseX, mouseY, selected);
         }
     }
 
-    protected static class TextFieldListener implements ITextFieldListener<GuiTextFieldGeneric>
-    {
-        protected final WidgetDropDownList<?> widget;
-
-        protected TextFieldListener(WidgetDropDownList<?> widget)
-        {
-            this.widget = widget;
-        }
-
-        @Override
-        public boolean onTextChange(GuiTextFieldGeneric textField)
-        {
-            this.widget.updateFilteredEntries();
-            return true;
-        }
-    }
+	protected record TextFieldListener(WidgetDropDownList<?> widget) implements ITextFieldListener<GuiTextFieldGeneric>
+	{
+		@Override
+		public boolean onTextChange(GuiTextFieldGeneric textField)
+		{
+			this.widget.updateFilteredEntries();
+			return true;
+		}
+	}
 }

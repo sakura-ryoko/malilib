@@ -112,7 +112,7 @@ public class MessageRenderer
         return height;
     }
 
-    public void drawMessages(DrawContext drawContext, int x, int y)
+    public void drawMessages(GuiContext ctx, int x, int y)
     {
         if (!this.messages.isEmpty())
         {
@@ -137,14 +137,14 @@ public class MessageRenderer
             {
                 // this.zLevel
                 int bw = this.useBorder ? 1 : 0;
-                RenderUtils.drawTexturedRect(drawContext, BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw);
-                RenderUtils.drawRect(drawContext, x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor);
+                RenderUtils.drawTexturedRect(ctx, BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw);
+                RenderUtils.drawRect(ctx, x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor);
             }
 
             if (this.useBorder)
             {
                 // this.zLevel
-                RenderUtils.drawOutline(drawContext, x, y, boxWidth, boxHeight, this.borderColor);
+                RenderUtils.drawOutline(ctx, x, y, boxWidth, boxHeight, this.borderColor);
             }
 
             x += 10;
@@ -154,7 +154,7 @@ public class MessageRenderer
             for (int i = 0; i < this.messages.size(); ++i)
             {
                 Message message = this.messages.get(i);
-                y = message.renderAt(x, y, 0xFFFFFFFF, drawContext);
+                y = message.renderAt(ctx, x, y, 0xFFFFFFFF);
 
                 if (message.hasExpired(currentTime))
                 {

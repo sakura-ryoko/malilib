@@ -13,6 +13,7 @@ import org.joml.Matrix3x2f;
 import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.render.element.*;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -75,7 +76,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.setWidthAndHeight(300, 180);
         this.centerOnScreen();
 
-        this.init(this.mc, this.dialogWidth, this.dialogHeight);
+        this.init(this.dialogWidth, this.dialogHeight);
     }
 
     @Override
@@ -172,22 +173,21 @@ public class GuiColorEditorHSV extends GuiDialogBase
             }
         }
 
-        //RenderUtils.forceDraw(drawContext);
-        this.drawColorSelector(drawContext, mouseX, mouseY);
+        this.drawColorSelector(GuiContext.fromGuiGraphics(drawContext), mouseX, mouseY);
     }
 
     @Override
-    protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
 //        super.drawTexturedBG(drawContext, GuiLayer.NONE, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, true);
 //        RenderUtils.applyLayer(drawContext, GuiLayer.BLUR);
-        RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
+        RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
     }
 
     @Override
-    protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawTitle(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
-        this.drawStringWithShadow(drawContext, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
+        this.drawStringWithShadow(ctx, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
     }
 
     @Override
@@ -468,7 +468,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
     }
 
-    protected void drawColorSelector(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawColorSelector(GuiContext ctx, int mouseX, int mouseY)
     {
         if (this.client == null) return;
 
@@ -484,28 +484,28 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int cw = 32;
         int ch = 32;
 
-        RenderUtils.drawOutline(drawContext, x, y, w, h, 0xC0FFFFFF); // H
+        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // H
         y += yd;
-        RenderUtils.drawOutline(drawContext, x, y, w, h, 0xC0FFFFFF); // S
+        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // S
         y += yd;
-        RenderUtils.drawOutline(drawContext, x, y, w, h, 0xC0FFFFFF); // V
+        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // V
         y += yd;
-        RenderUtils.drawOutline(drawContext, x, y, w, h, 0xC0FFFFFF); // R
+        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // R
         y += yd;
-        RenderUtils.drawOutline(drawContext, x, y, w, h, 0xC0FFFFFF); // G
+        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // G
         y += yd;
-        RenderUtils.drawOutline(drawContext, x, y, w, h, 0xC0FFFFFF); // B
+        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // B
         y += yd;
-        RenderUtils.drawOutline(drawContext, x, y, w, h, 0xC0FFFFFF); // A
+        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // A
 
         x = this.xHS;
         y = this.yHS;
         w = this.sizeHS;
         h = this.sizeHS;
 
-        RenderUtils.drawOutline(drawContext, x - 1, y - 1, w + 2, h + 2, 0xC0FFFFFF);                      // main color selector
-        RenderUtils.drawOutline(drawContext, cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF);                  // current color indicator
-        RenderUtils.drawOutline(drawContext, this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
+        RenderUtils.drawOutline(ctx, x - 1, y - 1, w + 2, h + 2, 0xC0FFFFFF);                      // main color selector
+        RenderUtils.drawOutline(ctx, cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF);                  // current color indicator
+        RenderUtils.drawOutline(ctx, this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
         // Full SV Square --
         int r = (int) (this.relR * 255f);
@@ -521,57 +521,53 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         final int[] colorPair = this.getColorPairForSelector();
 
-        RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSV4ColorGradientGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             x, x + w, y, y + h,
-                                             colorPair,
-                                             RenderUtils.peekLastScissor(drawContext))
-                                     );
+	    ctx.addSimpleElement(new MaLiLibHSV4ColorGradientGuiElement(
+				RenderPipelines.GUI,
+				TextureSetup.empty(),
+				new Matrix3x2f(ctx.getMatrices()),
+				x, x + w, y, y + h,
+				colorPair,
+				ctx.peekLastScissor())
+	    );
 
         // Element Selectors --
         // Current color indicator
-        RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSV1ColorIndicatorGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             cx, cx + cw,
-                                             cy, cy + ch,
-                                             r, g, b, a,
-                                             RenderUtils.peekLastScissor(drawContext))
+	    ctx.addSimpleElement(new MaLiLibHSV1ColorIndicatorGuiElement(
+				RenderPipelines.GUI,
+				TextureSetup.empty(),
+				new Matrix3x2f(ctx.getMatrices()),
+				cx, cx + cw,
+				cy, cy + ch,
+				r, g, b, a,
+				ctx.peekLastScissor())
         );
 
         // SV selection marker for saturation, horizontal marker, vertical range
         int yt = y + (int) ((1 - this.relS) * h);
 
         // SV selection marker for saturation, horizontal marker, vertical range
-        RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSV1ColorIndicatorGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             x - 1, x + w + 1,
-                                             yt, yt + 1,
-                                             c, c, c, a,
-                                             RenderUtils.peekLastScissor(drawContext))
+	    ctx.addSimpleElement(new MaLiLibHSV1ColorIndicatorGuiElement(
+				RenderPipelines.GUI,
+				TextureSetup.empty(),
+				new Matrix3x2f(ctx.getMatrices()),
+				x - 1, x + w + 1,
+				yt, yt + 1,
+				c, c, c, a,
+				ctx.peekLastScissor())
         );
 
         // SV selection marker for value, vertical marker, horizontal range
         int xt = x + (int) (this.relV * w);
 
         // SV selection marker for value, vertical marker, horizontal range
-        RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSV1ColorIndicatorGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             xt, xt + 1,
-                                             y - 1, y + h + 1,
-                                             c, c, c, a,
-                                             RenderUtils.peekLastScissor(drawContext))
+	    ctx.addSimpleElement(new MaLiLibHSV1ColorIndicatorGuiElement(
+				RenderPipelines.GUI,
+				TextureSetup.empty(),
+				new Matrix3x2f(ctx.getMatrices()),
+				xt, xt + 1,
+				y - 1, y + h + 1,
+				c, c, c, a,
+				ctx.peekLastScissor())
         );
 
         x = this.xH;
@@ -580,55 +576,55 @@ public class GuiColorEditorHSV extends GuiDialogBase
         yd = this.heightSlider + this.gapSlider;
 
         // Full value Saturation & Value, Hue slider
-        renderHueBarVertical(drawContext, this.xHFullSV + 1, this.yHS, z, this.widthHFullSV - 2, this.sizeHS, 1f, 1f);
-        renderBarMarkerVerticalBar(drawContext, this.xHFullSV, this.yHS, z, this.widthHFullSV, this.sizeHS, this.relH);
+        renderHueBarVertical(ctx, this.xHFullSV + 1, this.yHS, z, this.widthHFullSV - 2, this.sizeHS, 1f, 1f);
+        renderBarMarkerVerticalBar(ctx, this.xHFullSV, this.yHS, z, this.widthHFullSV, this.sizeHS, this.relH);
 
         // Hue slider
-        renderHueBarHorizontal(drawContext, x, y, z, w, h, this.relS, this.relV);
-        renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, this.relH);
+        renderHueBarHorizontal(ctx, x, y, z, w, h, this.relS, this.relV);
+        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, this.relH);
         y += yd;
 
         // Saturation slider
         int color1 = Color.HSBtoRGB(this.relH, 0, this.relV);
         int color2 = Color.HSBtoRGB(this.relH, 1, this.relV);
-        renderGradientColorBar(drawContext, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, this.relS);
+        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, this.relS);
         y += yd;
 
         // Value/Brightness slider
         color1 = Color.HSBtoRGB(this.relH, this.relS, 0);
         color2 = Color.HSBtoRGB(this.relH, this.relS, 1);
-        renderGradientColorBar(drawContext, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, this.relV);
+        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, this.relV);
         y += yd;
 
         // Red slider
         color1 = (this.color & 0xFF00FFFF) | 0xFF000000;
         color2 = this.color | 0xFFFF0000;
-        renderGradientColorBar(drawContext, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, (float) r / 255f);
+        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, (float) r / 255f);
         y += yd;
 
         // Green slider
         color1 = (this.color & 0xFFFF00FF) | 0xFF000000;
         color2 = this.color | 0xFF00FF00;
-        renderGradientColorBar(drawContext, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, (float) g / 255f);
+        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, (float) g / 255f);
         y += yd;
 
         // Blue slider
         color1 = (this.color & 0xFFFFFF00) | 0xFF000000;
         color2 = this.color | 0xFF0000FF;
-        renderGradientColorBar(drawContext, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, (float) b / 255f);
+        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, (float) b / 255f);
         y += yd;
 
         // Alpha slider
         a = (int) (this.relA * 255f);
         color1 = this.color & 0x00FFFFFF;
         color2 = this.color | 0xFF000000;
-        renderGradientColorBar(drawContext, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, (float) a / 255f);
+        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, (float) a / 255f);
         y += yd;
     }
 
@@ -642,123 +638,118 @@ public class GuiColorEditorHSV extends GuiDialogBase
         return new int[]{ color1, color2, color3, color4 };
     }
 
-    public static void renderGradientColorBar(DrawContext drawContext, int x, int y, float z, int width, int height, int colorStart, int colorEnd)
+    public static void renderGradientColorBar(GuiContext ctx, int x, int y, float z, int width, int height, int colorStart, int colorEnd)
     {
-        RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSV2ColorGradientGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             x, x + width,
-                                             y, y + height,
-                                             colorStart, colorEnd,
-                                             RenderUtils.peekLastScissor(drawContext))
+	    ctx.addSimpleElement(new MaLiLibHSV2ColorGradientGuiElement(
+				RenderPipelines.GUI,
+				TextureSetup.empty(),
+				new Matrix3x2f(ctx.getMatrices()),
+				x, x + width,
+				y, y + height,
+				colorStart, colorEnd,
+				ctx.peekLastScissor())
         );
     }
 
-    public static void renderHueBarHorizontal(DrawContext drawContext, int x, int y, float z, int width, int height, float saturation, float value)
+    public static void renderHueBarHorizontal(GuiContext ctx, int x, int y, float z, int width, int height, float saturation, float value)
     {
-        renderHueBar(drawContext, x, y, z, 0, height, width / 6, 0, saturation, value);
+        renderHueBar(ctx, x, y, z, 0, height, width / 6, 0, saturation, value);
     }
 
-    public static void renderHueBarVertical(DrawContext drawContext, int x, int y, float z, int width, int height, float saturation, float value)
+    public static void renderHueBarVertical(GuiContext ctx, int x, int y, float z, int width, int height, float saturation, float value)
     {
         y = y + height - height / 6;
-        renderHueBar(drawContext, x, y, z, width, 0, 0, height / 6, saturation, value);
+        renderHueBar(ctx, x, y, z, width, 0, 0, height / 6, saturation, value);
     }
 
-    public static void renderHueBar(DrawContext drawContext, int x, int y, float z, int width, int height, int segmentWidth, int segmentHeight, float saturation, float value)
+    public static void renderHueBar(GuiContext ctx, int x, int y, float z, int width, int height, int segmentWidth, int segmentHeight, float saturation, float value)
     {
         int color1 = Color.HSBtoRGB(0f   , saturation, value);
         int color2 = Color.HSBtoRGB(1f/6f, saturation, value);
-        renderHueBarSegment(drawContext, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(1f/6f, saturation, value);
         color2 = Color.HSBtoRGB(2f/6f, saturation, value);
-        renderHueBarSegment(drawContext, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(2f/6f, saturation, value);
         color2 = Color.HSBtoRGB(3f/6f, saturation, value);
-        renderHueBarSegment(drawContext, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(3f/6f, saturation, value);
         color2 = Color.HSBtoRGB(4f/6f, saturation, value);
-        renderHueBarSegment(drawContext, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(4f/6f, saturation, value);
         color2 = Color.HSBtoRGB(5f/6f, saturation, value);
-        renderHueBarSegment(drawContext, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(5f/6f, saturation, value);
         color2 = Color.HSBtoRGB(6f/6f, saturation, value);
-        renderHueBarSegment(drawContext, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
     }
 
-    public static void renderHueBarSegment(DrawContext drawContext, int x, int y, float z, int width, int height,
+    public static void renderHueBarSegment(GuiContext ctx, int x, int y, float z, int width, int height,
             int segmentWidth, int segmentHeight, int color1, int color2)
     {
-        RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSV2ColorSegmentedHueGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             x, y,
-                                             width, height,
-                                             segmentWidth, segmentHeight,
-                                             color1, color2,
-                                             RenderUtils.peekLastScissor(drawContext))
+	    ctx.addSimpleElement(new MaLiLibHSV2ColorSegmentedHueGuiElement(
+				RenderPipelines.GUI,
+				TextureSetup.empty(),
+				new Matrix3x2f(ctx.getMatrices()),
+				x, y,
+				width, height,
+				segmentWidth, segmentHeight,
+				color1, color2,
+				ctx.peekLastScissor())
         );
     }
 
-    public static void renderHSSelector(DrawContext drawContext, int xStart, int yStart, float z, int width, int height, float hue)
+    public static void renderHSSelector(GuiContext ctx, int xStart, int yStart, float z, int width, int height, float hue)
     {
-        RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSVColorSelectorGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             xStart, yStart,
-                                             width, height,
-                                             hue,
-                                             RenderUtils.peekLastScissor(drawContext))
+	    ctx.addSimpleElement(new MaLiLibHSVColorSelectorGuiElement(
+				RenderPipelines.GUI,
+				TextureSetup.empty(),
+				new Matrix3x2f(ctx.getMatrices()),
+				xStart, yStart,
+				width, height,
+				hue,
+				ctx.peekLastScissor())
         );
     }
 
-    public static void renderBarMarkerHorizontalBar(DrawContext drawContext, int x, int y, float z, int barWidth, int barHeight, float value)
+    public static void renderBarMarkerHorizontalBar(GuiContext ctx, int x, int y, float z, int barWidth, int barHeight, float value)
     {
-        RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSVColorHorizontalBarMarkerGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             x, y,
-                                             barWidth, barHeight,
-                                             value,
-                                             RenderUtils.peekLastScissor(drawContext))
+	    ctx.addSimpleElement(new MaLiLibHSVColorHorizontalBarMarkerGuiElement(
+				RenderPipelines.GUI,
+				TextureSetup.empty(),
+				new Matrix3x2f(ctx.getMatrices()),
+				x, y,
+				barWidth, barHeight,
+				value,
+				ctx.peekLastScissor())
         );
     }
 
-    public static void renderBarMarkerVerticalBar(DrawContext drawContext, int x, int y, float z, int barWidth, int barHeight, float value)
+    public static void renderBarMarkerVerticalBar(GuiContext ctx, int x, int y, float z, int barWidth, int barHeight, float value)
     {
-        RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSVColorVerticalBarMarkerGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             x, y,
-                                             barWidth, barHeight,
-                                             value,
-                                             RenderUtils.peekLastScissor(drawContext))
+	    ctx.addSimpleElement(new MaLiLibHSVColorVerticalBarMarkerGuiElement(
+				RenderPipelines.GUI,
+				TextureSetup.empty(),
+				new Matrix3x2f(ctx.getMatrices()),
+				x, y,
+				barWidth, barHeight,
+				value,
+				ctx.peekLastScissor())
         );
     }
 
@@ -794,87 +785,81 @@ public class GuiColorEditorHSV extends GuiDialogBase
         return null;
     }
 
-    protected static class TextFieldListener implements ITextFieldListener<GuiTextFieldGeneric>
-    {
-        protected final GuiColorEditorHSV gui;
-        @Nullable protected final Element type;
+	protected record TextFieldListener(@Nullable Element type,
+	                                   GuiColorEditorHSV gui) implements ITextFieldListener<GuiTextFieldGeneric>
+	{
+		@Override
+		public boolean onTextChange(GuiTextFieldGeneric textField)
+		{
+			int colorOld = this.gui.color;
 
-        protected TextFieldListener(@Nullable Element type, GuiColorEditorHSV gui)
-        {
-            this.gui = gui;
-            this.type = type;
-        }
+			// Entire color code
+			if (this.type == null)
+			{
+				this.gui.currentTextInputElement = Element.HEX;
+				this.gui.setColor(StringUtils.getColor(textField.getText(), colorOld));
+			}
+			else
+			{
+				try
+				{
+					int val = Integer.parseInt(textField.getText());
+					float[] hsv = this.gui.getCurrentColorHSV();
+					int colorNew = colorOld;
 
-        @Override
-        public boolean onTextChange(GuiTextFieldGeneric textField)
-        {
-            int colorOld = this.gui.color;
+					switch (this.type)
+					{
+						case H:
+							val = MathHelper.clamp(val, 0, 360);
+							float h = (float) val / 360f;
+							colorNew = Color.HSBtoRGB(h, hsv[1], hsv[2]);
+							break;
+						case S:
+							val = MathHelper.clamp(val, 0, 100);
+							float s = (float) val / 100f;
+							colorNew = Color.HSBtoRGB(hsv[0], s, hsv[2]);
+							break;
+						case V:
+							val = MathHelper.clamp(val, 0, 100);
+							float v = (float) val / 100f;
+							colorNew = Color.HSBtoRGB(hsv[0], hsv[1], v);
+							break;
+						case R:
+							val = MathHelper.clamp(val, 0, 255);
+							colorNew = (colorOld & 0x00FFFF) | (val << 16);
+							break;
+						case G:
+							val = MathHelper.clamp(val, 0, 255);
+							colorNew = (colorOld & 0xFF00FF) | (val << 8);
+							break;
+						case B:
+							val = MathHelper.clamp(val, 0, 255);
+							colorNew = (colorOld & 0xFFFF00) | val;
+							break;
+						case A:
+							val = MathHelper.clamp(val, 0, 255);
+							colorNew = (colorOld & 0x00FFFFFF) | (val << 24);
+							break;
+						default:
+							return false;
+					}
 
-            // Entire color code
-            if (this.type == null)
-            {
-                this.gui.currentTextInputElement = Element.HEX;
-                this.gui.setColor(StringUtils.getColor(textField.getText(), colorOld));
-            }
-            else
-            {
-                try
-                {
-                    int val = Integer.parseInt(textField.getText());
-                    float[] hsv = this.gui.getCurrentColorHSV();
-                    int colorNew = colorOld;
+					if (colorNew != colorOld)
+					{
+						this.gui.currentTextInputElement = this.type;
+						this.gui.setColor(colorNew);
+					}
 
-                    switch (this.type)
-                    {
-                        case H:
-                            val = MathHelper.clamp(val, 0, 360);
-                            float h = (float) val / 360f;
-                            colorNew = Color.HSBtoRGB(h, hsv[1], hsv[2]);
-                            break;
-                        case S:
-                            val = MathHelper.clamp(val, 0, 100);
-                            float s = (float) val / 100f;
-                            colorNew = Color.HSBtoRGB(hsv[0], s, hsv[2]);
-                            break;
-                        case V:
-                            val = MathHelper.clamp(val, 0, 100);
-                            float v = (float) val / 100f;
-                            colorNew = Color.HSBtoRGB(hsv[0], hsv[1], v);
-                            break;
-                        case R:
-                            val = MathHelper.clamp(val, 0, 255);
-                            colorNew = (colorOld & 0x00FFFF) | (val << 16);
-                            break;
-                        case G:
-                            val = MathHelper.clamp(val, 0, 255);
-                            colorNew = (colorOld & 0xFF00FF) | (val <<  8);
-                            break;
-                        case B:
-                            val = MathHelper.clamp(val, 0, 255);
-                            colorNew = (colorOld & 0xFFFF00) | val;
-                            break;
-                        case A:
-                            val = MathHelper.clamp(val, 0, 255);
-                            colorNew = (colorOld & 0x00FFFFFF) | (val << 24);
-                            break;
-                        default:
-                            return false;
-                    }
+					return true;
+				}
+				catch (Exception ignored)
+				{
+				}
+			}
 
-                    if (colorNew != colorOld)
-                    {
-                        this.gui.currentTextInputElement = this.type;
-                        this.gui.setColor(colorNew);
-                    }
-
-                    return true;
-                }
-                catch (Exception ignored) {}
-            }
-
-            return false;
-        }
-    }
+			return false;
+		}
+	}
 
     protected enum Element
     {

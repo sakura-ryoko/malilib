@@ -3,10 +3,13 @@ package fi.dy.masa.malilib.config;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.config.options.table.type.EntryTypes;
+
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@ApiStatus.Experimental
 public interface IConfigTable extends IConfigBase
 {
     List<TableRow> getTable();

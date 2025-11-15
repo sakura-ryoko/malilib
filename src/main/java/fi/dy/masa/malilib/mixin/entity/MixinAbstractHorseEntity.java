@@ -26,8 +26,8 @@ public abstract class MixinAbstractHorseEntity extends Entity
             method = "onChestedStatusChanged",
             at = @At("RETURN")
     )
-    private void onNewInventory(CallbackInfo ci)
+    private void malilib$onNewInventory(CallbackInfo ci)
     {
-        ((IEntityOwnedInventory) items).malilib$setEntityOwner(this);
+        ((IEntityOwnedInventory) this.items).malilib$setEntityOwner(this);
     }
 }

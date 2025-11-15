@@ -31,7 +31,7 @@ public class KeybindMulti implements IKeybind
 
     private final String defaultStorageString;
     private final KeybindSettings defaultSettings;
-    private List<Integer> keyCodes = new ArrayList<>(4);
+    private final List<Integer> keyCodes = new ArrayList<>(4);
     private KeybindSettings settings;
     private boolean pressed;
     private boolean pressedLast;
@@ -605,7 +605,7 @@ public class KeybindMulti implements IKeybind
         return triggeredCount;
     }
 
-    public IHotkeyCallback getCallback() {
+    public @Nullable IHotkeyCallback getCallback() {
         return callback;
     }
 }

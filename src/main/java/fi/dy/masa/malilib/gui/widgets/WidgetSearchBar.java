@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.gui.widgets;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -83,7 +84,7 @@ public class WidgetSearchBar extends WidgetBase
             }
             else if (input.key() == KeyCodes.KEY_ESCAPE)
             {
-                if (input.hasShift())
+                if (input.hasShift() && this.mc.currentScreen != null)
                 {
                     this.mc.currentScreen.close();
                 }
@@ -121,14 +122,14 @@ public class WidgetSearchBar extends WidgetBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
-        this.iconSearch.render(drawContext, false, this.iconSearch.isMouseOver(mouseX, mouseY));
+        super.render(ctx, mouseX, mouseY, selected);
+        this.iconSearch.render(ctx, false, this.iconSearch.isMouseOver(mouseX, mouseY));
 
         if (this.searchOpen)
         {
-            this.searchBox.render(drawContext, mouseX, mouseY, 0);
+            this.searchBox.render(ctx.getGuiGraphics(), mouseX, mouseY, 0);
         }
     }
 }

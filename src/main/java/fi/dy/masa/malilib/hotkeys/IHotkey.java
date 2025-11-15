@@ -6,7 +6,7 @@ public interface IHotkey extends IConfigValue
 {
     /**
      * Returns the keybind used by this hotkey
-     * @return
+     * @return ()
      */
     IKeybind getKeybind();
 
@@ -29,8 +29,8 @@ public interface IHotkey extends IConfigValue
 
     /**
      * Parses the value of this config from a String. Used for example to get the new value from
-     * the config GUI textfield.
-     * @param value
+     * the config GUI text field.
+     * @param value ()
      */
     @Override
     default void setValueFromString(String value)
@@ -40,7 +40,7 @@ public interface IHotkey extends IConfigValue
 
     /**
      * Returns true if the value has been changed from the default value
-     * @return
+     * @return ()
      */
     @Override
     default boolean isModified()
@@ -49,9 +49,9 @@ public interface IHotkey extends IConfigValue
     }
 
     /**
-     * Checks whether or not the given value would be modified from the default value.
-     * @param newValue
-     * @return
+     * Checks whether the given value would be modified from the default value.
+     * @param newValue ()
+     * @return ()
      */
     @Override
     default boolean isModified(String newValue)

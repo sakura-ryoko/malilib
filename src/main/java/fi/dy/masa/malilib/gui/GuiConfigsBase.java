@@ -82,7 +82,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
             this.modSwitchWidget = new WidgetDropDownList<>(GuiUtils.getScaledWindowWidth() - 155, 6, 130, 18, 200, 10, Registry.CONFIG_SCREEN.getAllModsWithConfigScreens())
             {
                 {
-                    selectedEntry = thisMod;
+                    this.selectedEntry = thisMod;
                 }
 
                 @Override
@@ -90,9 +90,10 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                 {
                     super.setSelectedEntry(index);
 
-                    if (selectedEntry != null && selectedEntry.getConfigScreenSupplier() != null)
+                    if (this.selectedEntry != null && client != null &&
+	                    this.selectedEntry.getConfigScreenSupplier() != null)
                     {
-                        client.setScreen(selectedEntry.getConfigScreenSupplier().get());
+                        client.setScreen(this.selectedEntry.getConfigScreenSupplier().get());
                     }
                 }
 
@@ -176,6 +177,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     @Override
     public void removed()
     {
+		if (this.getListWidget() == null) return;
         if (this.getListWidget().wereConfigsModified())
         {
             this.getListWidget().applyPendingModifications();
@@ -204,7 +206,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
         }
         else
         {
-            if (this.getListWidget().onKeyTyped(input))
+            if (this.getListWidget() != null && this.getListWidget().onKeyTyped(input))
             {
                 return true;
             }
@@ -228,7 +230,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
             return true;
         }
 
-        if (this.getListWidget().onCharTyped(input))
+        if (this.getListWidget() != null && this.getListWidget().onCharTyped(input))
         {
             return true;
         }
@@ -305,14 +307,14 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
         @Nullable private final IConfigBase config;
         @Nullable private final String label;
 
-        public ConfigOptionWrapper(IConfigBase config)
+        public ConfigOptionWrapper(@Nullable IConfigBase config)
         {
             this.type = Type.CONFIG;
             this.config = config;
             this.label = null;
         }
 
-        public ConfigOptionWrapper(String label)
+        public ConfigOptionWrapper(@Nullable String label)
         {
             this.type = Type.LABEL;
             this.config = null;

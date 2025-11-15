@@ -9,6 +9,7 @@ import net.minecraft.client.input.KeyInput;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
 
 public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>, WIDGETLIST extends WidgetListBase<TYPE, WIDGET>> extends GuiBase
@@ -163,34 +164,34 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public void resize(MinecraftClient mc, int width, int height)
+    public void resize(int width, int height)
     {
-        super.resize(mc, width, height);
+        super.resize(width, height);
 
         if (this.getListWidget() != null)
         {
-            this.getListWidget().resize(mc, width, height);
+            this.getListWidget().resize(width, height);
         }
     }
 
     @Override
-    public void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getListWidget() != null)
         {
-            this.getListWidget().drawContents(drawContext, mouseX, mouseY, partialTicks);
+            this.getListWidget().drawContents(ctx, mouseX, mouseY, partialTicks);
         }
     }
 
     @Override
-    protected void drawHoveredWidget(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawHoveredWidget(GuiContext ctx, int mouseX, int mouseY)
     {
-        super.drawHoveredWidget(drawContext, mouseX, mouseY);
+        super.drawHoveredWidget(ctx, mouseX, mouseY);
 
         if (this.getListWidget() != null && this.shouldRenderHoverStuff())
         {
-            this.getListWidget().drawHoveredWidget(drawContext, mouseX, mouseY);
-            this.getListWidget().drawButtonHoverTexts(drawContext, mouseX, mouseY, 0f);
+            this.getListWidget().drawHoveredWidget(ctx, mouseX, mouseY);
+            this.getListWidget().drawButtonHoverTexts(ctx, mouseX, mouseY, 0f);
         }
     }
 }

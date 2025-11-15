@@ -127,7 +127,7 @@ public class WidgetListConfigOptions extends WidgetListConfigOptionsBase<ConfigO
 
         for (ConfigOptionWrapper wrapper : wrappers)
         {
-            if (wrapper.getType() == ConfigOptionWrapper.Type.CONFIG)
+            if (wrapper.getType() == ConfigOptionWrapper.Type.CONFIG && wrapper.getConfig() != null)
             {
                 width = Math.max(width, this.getStringWidth(wrapper.getConfig().getConfigGuiDisplayName()));
             }
@@ -141,6 +141,7 @@ public class WidgetListConfigOptions extends WidgetListConfigOptionsBase<ConfigO
         @Override
         public int compare(ConfigOptionWrapper config1, ConfigOptionWrapper config2)
         {
+			if (config1.getConfig() == null || config2.getConfig() == null) return 0;
             return this.compare(config1.getConfig().getName(), config2.getConfig().getName());
         }
     }

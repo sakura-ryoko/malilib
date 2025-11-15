@@ -6,6 +6,7 @@ import net.minecraft.client.gui.DrawContext;
 import org.apache.commons.lang3.StringUtils;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 public class ButtonGeneric extends ButtonBase
@@ -88,29 +89,29 @@ public class ButtonGeneric extends ButtonBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
+        super.render(ctx, mouseX, mouseY, selected);
 
         if (this.visible)
         {
             this.hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
 
-            this.drawBackground(drawContext);
-            this.drawIcon(drawContext);
-            this.drawText(drawContext);
+            this.drawBackground(ctx);
+            this.drawIcon(ctx);
+            this.drawText(ctx);
         }
     }
 
-    private void drawBackground(DrawContext drawContext)
+    private void drawBackground(GuiContext ctx)
     {
         if (this.renderDefaultBackground)
         {
-            drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, this.getTexture(this.hovered), this.x, this.y, this.width, this.height);
+	        ctx.drawGuiTexture(RenderPipelines.GUI_TEXTURED, this.getTexture(this.hovered), this.x, this.y, this.width, this.height);
         }
     }
 
-    private void drawIcon(DrawContext drawContext)
+    private void drawIcon(GuiContext ctx)
     {
         if (this.icon != null)
         {
@@ -120,11 +121,11 @@ public class ButtonGeneric extends ButtonBase
             int y = this.y + (this.height - this.icon.getHeight()) / 2;
             int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
-            RenderUtils.drawTexturedRect(drawContext, this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
+            RenderUtils.drawTexturedRect(ctx, this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
         }
     }
 
-    private void drawText(DrawContext drawContext)
+    private void drawText(GuiContext ctx)
     {
         if (StringUtils.isBlank(this.displayString) == false)
         {
@@ -144,7 +145,7 @@ public class ButtonGeneric extends ButtonBase
             {
                 int x = this.x + this.width / 2;
 
-                this.drawCenteredStringWithShadow(drawContext, x, y, color, this.displayString);
+                this.drawCenteredStringWithShadow(ctx, x, y, color, this.displayString);
             }
             else
             {
@@ -155,7 +156,7 @@ public class ButtonGeneric extends ButtonBase
                     x += this.icon.getWidth() + 2;
                 }
 
-                this.drawStringWithShadow(drawContext, x, y, color, this.displayString);
+                this.drawStringWithShadow(ctx, x, y, color, this.displayString);
             }
         }
     }

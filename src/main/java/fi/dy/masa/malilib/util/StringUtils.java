@@ -37,9 +37,13 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.JsonOps;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.LeftRight;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 
 /**
@@ -77,7 +81,7 @@ public class StringUtils
 
     public static String getModVersionString(String modId)
     {
-        for (net.fabricmc.loader.api.ModContainer container : net.fabricmc.loader.api.FabricLoader.getInstance().getAllMods())
+        for (ModContainer container : FabricLoader.getInstance().getAllMods())
         {
             if (container.getMetadata().getId().equals(modId))
             {
@@ -834,9 +838,9 @@ public class StringUtils
         return MinecraftClient.getInstance().textRenderer.getWidth(text);
     }
 
-    public static void drawString(int x, int y, int color, String text, DrawContext drawContext)
+    public static void drawString(GuiContext ctx, int x, int y, int color, String text)
     {
-        drawContext.drawText(MinecraftClient.getInstance().textRenderer, text, x, y, color, false);
+	    ctx.drawText(ctx.textRenderer(), text, x, y, color, false);
     }
 
     /**
@@ -849,6 +853,13 @@ public class StringUtils
         return DurationFormat.PRETTY.format(durationMs);
     }
 
+	/**
+	 * A copy of the Legacy Text.Deserializer that was removed from Vanilla.
+	 * We need this for backwards compatibility with things like Litematica and NBT tags.
+	 * @param oldText ()
+	 * @param registry ()
+	 * @return ()
+	 */
     public static @Nullable String legacyTextDeserializer(MutableText oldText, @Nonnull DynamicRegistryManager registry)
     {
         try
@@ -863,6 +874,13 @@ public class StringUtils
         }
     }
 
+	/**
+	 * A copy of the Legacy Text.Serializer that was removed from Vanilla.
+	 * We need this for backwards compatibility with things like Litematica and NBT tags.
+	 * @param json ()
+	 * @param registry ()
+	 * @return ()
+	 */
     public static @Nullable MutableText legacyTextSerializer(String json, @Nonnull DynamicRegistryManager registry)
     {
         try

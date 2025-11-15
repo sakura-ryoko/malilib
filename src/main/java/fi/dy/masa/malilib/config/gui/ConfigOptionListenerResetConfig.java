@@ -8,75 +8,63 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 
-public class ConfigOptionListenerResetConfig implements IButtonActionListener
+public record ConfigOptionListenerResetConfig(IConfigResettable config, @Nullable ConfigResetterBase reset,
+                                              ButtonGeneric buttonReset,
+                                              @Nullable ButtonPressDirtyListenerSimple dirtyListener) implements IButtonActionListener
 {
-    private final IConfigResettable config;
-    private final ButtonGeneric buttonReset;
-    @Nullable private final ConfigResetterBase reset;
-    @Nullable private final ButtonPressDirtyListenerSimple dirtyListener;
+	@Override
+	public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+	{
+		this.config.resetToDefault();
+		this.buttonReset.setEnabled(this.config.isModified());
 
-    public ConfigOptionListenerResetConfig(IConfigResettable config, @Nullable ConfigResetterBase reset,
-            ButtonGeneric buttonReset, @Nullable ButtonPressDirtyListenerSimple dirtyListener)
-    {
-        this.config = config;
-        this.reset = reset;
-        this.buttonReset = buttonReset;
-        this.dirtyListener = dirtyListener;
-    }
+		if (this.reset != null)
+		{
+			this.reset.resetConfigOption();
+		}
 
-    @Override
-    public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-    {
-        this.config.resetToDefault();
-        this.buttonReset.setEnabled(this.config.isModified());
+		if (this.dirtyListener != null)
+		{
+			this.dirtyListener.actionPerformedWithButton(button, mouseButton);
+		}
+	}
 
-        if (this.reset != null)
-        {
-            this.reset.resetConfigOption();
-        }
+	public abstract static class ConfigResetterBase
+	{
+		public abstract void resetConfigOption();
+	}
 
-        if (this.dirtyListener != null)
-        {
-            this.dirtyListener.actionPerformedWithButton(button, mouseButton);
-        }
-    }
+	public static class ConfigResetterButton extends ConfigResetterBase
+	{
+		private final ButtonBase button;
 
-    public abstract static class ConfigResetterBase
-    {
-        public abstract void resetConfigOption();
-    }
+		public ConfigResetterButton(ButtonBase button)
+		{
+			this.button = button;
+		}
 
-    public static class ConfigResetterButton extends ConfigResetterBase
-    {
-        private final ButtonBase button;
+		@Override
+		public void resetConfigOption()
+		{
+			this.button.updateDisplayString();
+		}
+	}
 
-        public ConfigResetterButton(ButtonBase button)
-        {
-            this.button = button;
-        }
+	public static class ConfigResetterTextField extends ConfigResetterBase
+	{
+		private final IStringRepresentable config;
+		private final TextFieldWidget textField;
 
-        @Override
-        public void resetConfigOption()
-        {
-            this.button.updateDisplayString();
-        }
-    }
+		public ConfigResetterTextField(IStringRepresentable config, TextFieldWidget textField)
+		{
+			this.config = config;
+			this.textField = textField;
+		}
 
-    public static class ConfigResetterTextField extends ConfigResetterBase
-    {
-        private final IStringRepresentable config;
-        private final TextFieldWidget textField;
-
-        public ConfigResetterTextField(IStringRepresentable config, TextFieldWidget textField)
-        {
-            this.config = config;
-            this.textField = textField;
-        }
-
-        @Override
-        public void resetConfigOption()
-        {
-            this.textField.setText(this.config.getStringValue());
-        }
-    }
+		@Override
+		public void resetConfigOption()
+		{
+			this.textField.setText(this.config.getStringValue());
+		}
+	}
 }

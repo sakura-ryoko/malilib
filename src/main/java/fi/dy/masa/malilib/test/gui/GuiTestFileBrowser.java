@@ -106,10 +106,10 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 	@Override
 	public void onSelectionChange(@Nullable WidgetFileBrowserBase.DirectoryEntry entry)
 	{
-		if (entry != null && entry.getType() != WidgetFileBrowserBase.DirectoryEntryType.DIRECTORY &&
-			entry.getType() != WidgetFileBrowserBase.DirectoryEntryType.INVALID)
+		if (entry != null && entry.type() != WidgetFileBrowserBase.DirectoryEntryType.DIRECTORY &&
+			entry.type() != WidgetFileBrowserBase.DirectoryEntryType.INVALID)
 		{
-			this.setTextFieldText(FileNameUtils.getFileNameWithoutExtension(entry.getName()));
+			this.setTextFieldText(FileNameUtils.getFileNameWithoutExtension(entry.name()));
 		}
 	}
 
@@ -130,7 +130,7 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 					GuiBase.openGui(new GuiConfirmAction(180, "malilib.gui.title.delete_confirm", deleter, this.gui, "malilib.message.delete_confirm", target.getFileName().toString()));
 				}
 			}
-			else if (entry.getType() == WidgetFileBrowserBase.DirectoryEntryType.INVALID)
+			else if (entry.type() == WidgetFileBrowserBase.DirectoryEntryType.INVALID)
 			{
 				// Ignored
 				return;
@@ -143,13 +143,13 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 				{
 //					MaLiLib.LOGGER.error("COPY-ENTRY: [{}] // [{}]", entry.getName(), entry.getFullPath().toString());
 					FileCopier copier = new FileCopier(target, this.gui.getListWidget(), true);
-					GuiBase.openGui(new GuiTextInputFeedback(256, "malilib.gui.title.copy_file", entry.getName(), this.gui, copier));
+					GuiBase.openGui(new GuiTextInputFeedback(256, "malilib.gui.title.copy_file", entry.name(), this.gui, copier));
 				}
 				else if (this.type == ButtonType.RENAME)
 				{
 //					MaLiLib.LOGGER.error("RENAME-ENTRY: [{}] // [{}]", entry.getName(), entry.getFullPath().toString());
 					FileRenamer renamer = new FileRenamer(target, this.gui.getListWidget(), true);
-					GuiBase.openGui(new GuiTextInputFeedback(256, "malilib.gui.title.rename_file_or_directory", entry.getName(), this.gui, renamer));
+					GuiBase.openGui(new GuiTextInputFeedback(256, "malilib.gui.title.rename_file_or_directory", entry.name(), this.gui, renamer));
 				}
 				else if (this.type == ButtonType.DELETE)
 				{

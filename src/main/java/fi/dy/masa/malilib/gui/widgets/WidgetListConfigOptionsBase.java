@@ -99,7 +99,7 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
 
             for (int i = 0; i < size; ++i)
             {
-                GuiTextFieldGeneric textField = this.textFields.get(i).getTextField();
+                GuiTextFieldGeneric textField = this.textFields.get(i).textField();
 
                 if (textField.isFocused())
                 {
@@ -122,7 +122,7 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
                     newIndex = size - 1;
                 }
 
-                this.textFields.get(newIndex).getTextField().setFocused(true);
+                this.textFields.get(newIndex).textField().setFocused(true);
                 this.applyPendingModifications();
 
                 return true;
@@ -138,7 +138,7 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
 
         for (int i = 0; i < this.textFields.size(); ++i)
         {
-            GuiTextFieldGeneric textField = this.textFields.get(i).getTextField();
+            GuiTextFieldGeneric textField = this.textFields.get(i).textField();
 
             if (textField.isFocused())
             {

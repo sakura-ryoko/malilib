@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import net.minecraft.client.gui.DrawContext;
+
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -56,18 +58,18 @@ public class WidgetLabel extends WidgetBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
+        super.render(ctx, mouseX, mouseY, selected);
 
         if (this.visible)
         {
-            this.drawLabelBackground(drawContext);
-            this.drawText(drawContext);
+            this.drawLabelBackground(ctx);
+            this.drawText(ctx);
         }
     }
 
-    protected void drawText(DrawContext drawContext)
+    protected void drawText(GuiContext ctx)
     {
         int fontHeight = this.fontHeight;
         int yCenter = this.y + this.height / 2 + this.borderSize / 2;
@@ -79,16 +81,16 @@ public class WidgetLabel extends WidgetBase
 
             if (this.centered)
             {
-                this.drawCenteredStringWithShadow(drawContext, this.x + this.width / 2, yTextStart + i * fontHeight, this.textColor, text);
+                this.drawCenteredStringWithShadow(ctx, this.x + this.width / 2, yTextStart + i * fontHeight, this.textColor, text);
             }
             else
             {
-                this.drawStringWithShadow(drawContext, this.x, yTextStart + i * fontHeight, this.textColor, text);
+                this.drawStringWithShadow(ctx, this.x, yTextStart + i * fontHeight, this.textColor, text);
             }
         }
     }
 
-    protected void drawLabelBackground(DrawContext drawContext)
+    protected void drawLabelBackground(GuiContext ctx)
     {
         if (this.backgroundEnabled)
         {
@@ -97,12 +99,12 @@ public class WidgetLabel extends WidgetBase
             int xStart = this.x - this.borderSize;
             int yStart = this.y - this.borderSize;
 
-            RenderUtils.drawRect(drawContext, xStart, yStart, bgWidth, bgHeight, this.backgroundColor);
+            RenderUtils.drawRect(ctx, xStart, yStart, bgWidth, bgHeight, this.backgroundColor);
 
-            RenderUtils.drawHorizontalLine(drawContext, xStart, yStart           , bgWidth, this.borderULColor);
-            RenderUtils.drawHorizontalLine(drawContext, xStart, yStart + bgHeight, bgWidth, this.borderBRColor);
-            RenderUtils.drawVerticalLine(drawContext, xStart          , yStart, bgHeight, this.borderULColor);
-            RenderUtils.drawVerticalLine(drawContext, xStart + bgWidth, yStart, bgHeight, this.borderBRColor);
+            RenderUtils.drawHorizontalLine(ctx, xStart, yStart           , bgWidth, this.borderULColor);
+            RenderUtils.drawHorizontalLine(ctx, xStart, yStart + bgHeight, bgWidth, this.borderBRColor);
+            RenderUtils.drawVerticalLine(ctx, xStart          , yStart, bgHeight, this.borderULColor);
+            RenderUtils.drawVerticalLine(ctx, xStart + bgWidth, yStart, bgHeight, this.borderBRColor);
         }
     }
 }

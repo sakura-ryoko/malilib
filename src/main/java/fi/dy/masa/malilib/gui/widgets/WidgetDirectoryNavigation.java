@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.gui.GuiTextInputFeedback;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.*;
 
@@ -94,34 +95,34 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
+        super.render(ctx, mouseX, mouseY, selected);
 
         if (this.searchOpen == false)
         {
             WidgetIcon hoveredIcon = this.getHoveredIcon(mouseX, mouseY);
 
-            this.iconRoot.render(drawContext, false, hoveredIcon == this.iconRoot);
-            this.iconUp.render(drawContext, false, hoveredIcon == this.iconUp);
-            this.iconCreateDir.render(drawContext, false, hoveredIcon == this.iconCreateDir);
+            this.iconRoot.render(ctx, false, hoveredIcon == this.iconRoot);
+            this.iconUp.render(ctx, false, hoveredIcon == this.iconUp);
+            this.iconCreateDir.render(ctx, false, hoveredIcon == this.iconCreateDir);
 
             int pathStartX = this.iconCreateDir.x + this.iconCreateDir.getWidth() + 6;
 
             // Draw the directory path text background
-            RenderUtils.drawRect(drawContext, pathStartX, this.y, this.width - pathStartX - 2, this.height, 0x20FFFFFF);
+            RenderUtils.drawRect(ctx, pathStartX, this.y, this.width - pathStartX - 2, this.height, 0x20FFFFFF);
 
             int textColor = 0xC0C0C0C0;
             int maxLen = (this.width - 40) / this.getStringWidth("a") - 4; // FIXME
             String path = FileUtils.getJoinedTrailingPathElements(this.currentDir, this.rootDir, maxLen, " / ");
-            this.drawString(drawContext, pathStartX + 3, this.y + 3, textColor, path);
+            this.drawString(ctx, pathStartX + 3, this.y + 3, textColor, path);
         }
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
+        super.postRenderHovered(ctx, mouseX, mouseY, selected);
 
         if (this.searchOpen == false)
         {
@@ -129,15 +130,15 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
 
             if (hoveredIcon == this.iconRoot)
             {
-                RenderUtils.drawHoverText(drawContext, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.root")));
+                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.root")));
             }
             else if (hoveredIcon == this.iconUp)
             {
-                RenderUtils.drawHoverText(drawContext, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.up")));
+                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.up")));
             }
             else if (hoveredIcon == this.iconCreateDir)
             {
-                RenderUtils.drawHoverText(drawContext, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.create_directory")));
+                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.create_directory")));
             }
         }
     }

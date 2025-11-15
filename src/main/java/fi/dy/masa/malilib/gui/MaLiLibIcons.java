@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
@@ -66,7 +67,7 @@ public enum MaLiLibIcons implements IGuiIcon
     }
 
     @Override
-    public void renderAt(DrawContext drawContext, int x, int y, float zLevel, boolean enabled, boolean selected)
+    public void renderAt(GuiContext ctx, int x, int y, float zLevel, boolean enabled, boolean selected)
     {
         int u = this.u;
         int v = this.v;
@@ -83,7 +84,7 @@ public enum MaLiLibIcons implements IGuiIcon
             v += this.hoverOffV;
         }
 
-        RenderUtils.drawTexturedRect(drawContext, this.getTexture(), x, y, u, v, this.w, this.h, zLevel);
+        RenderUtils.drawTexturedRect(ctx, this.getTexture(), x, y, u, v, this.w, this.h, zLevel);
     }
 
     @Override

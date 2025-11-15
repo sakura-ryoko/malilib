@@ -2,11 +2,15 @@ package fi.dy.masa.malilib.render;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.mixin.item.IMixinContainerComponent;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4f;
@@ -38,8 +42,11 @@ import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.block.entity.ShelfBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.GpuSampler;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.ContainerComponent;
 import net.minecraft.entity.EntityType;
@@ -61,10 +68,12 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipData;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -149,392 +158,255 @@ public class InventoryOverlay
 
     private static ItemStack hoveredStack = null;
 
-    public static void renderInventoryBackground(DrawContext context, InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc)
-    {
-        renderInventoryBackground(context, type, x, y, slotsPerRow, totalSlots, -1, mc);
-    }
-
-    public static void renderInventoryBackground(DrawContext context, InventoryRenderType type, int x, int y, int slotsPerRow, int totalSlots, int color, MinecraftClient mc)
-    {
-        if (type == InventoryRenderType.FURNACE)
-        {
-            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_FURNACE);
-            if (gpuTextureView == null) return;
-            
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   4,  64, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  4, y     ,  84,   0,  92,   4, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 64,   0, 162,  92,   4, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 92, y +  4, 172, 102,   4,  64, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  4, y +  4,  52,  13,  88,  60, color); // middle
-        }
-        else if (type == InventoryRenderType.BREWING_STAND)
-        {
-            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_BREWING_STAND);
-            if (gpuTextureView == null) return;
-
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   4,  68, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   4, y     ,  63,   0, 113,   4, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 68,   0, 162, 113,   4, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 113, y +  4, 172,  98,   4,  68, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   4, y +  4,  13,  13, 109,  64, color); // middle
-        }
-        else if (type == InventoryRenderType.CRAFTER)
-        {
-            // We just hack in the Dispenser Texture, so it displays right.  Easy.
-            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
-            if (gpuTextureView == null) return;
-
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  61, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 115,   0,  61,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,  61,  16,  54,  54, color); // middle
-        }
-        else if (type == InventoryRenderType.DISPENSER)
-        {
-            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
-            if (gpuTextureView == null) return;
-
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  61, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 115,   0,  61,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,  61,  16,  54,  54, color); // middle
-        }
-        else if (type == InventoryRenderType.HOPPER)
-        {
-            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_HOPPER);
-            if (gpuTextureView == null) return;
-
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   7,  25, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y     ,  79,   0,  97,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 25,   0, 126,  97,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  97, y +  7, 169, 108,   7,  25, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y +  7,  43,  19,  90,  18, color); // middle
-        }
-        // Most likely a Villager, or possibly a Llama
-        else if (type == InventoryRenderType.VILLAGER)
-        {
-            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
-            if (gpuTextureView == null) return;
-
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  79, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 133,   0,  43,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 79,   0, 215,  43,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 43, y +  7, 169, 143,   7,  79, color); // right (bottom)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,   7,  17,  36,  72, color); // 2x4 slots
-        }
-        else if (type == InventoryRenderType.FIXED_27)
-        {
-            renderInventoryBackground27(x, y, color, mc, context);
-        }
-        else if (type == InventoryRenderType.FIXED_54)
-        {
-            renderInventoryBackground54(x, y, color, mc, context);
-        }
-        else
-        {
-            GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
-            if (gpuTextureView == null) return;
-
-            // Draw the slot backgrounds according to how many slots there actually are
-            int rows = (int) (Math.ceil((double) totalSlots / (double) slotsPerRow));
-            int bgw = Math.min(totalSlots, slotsPerRow) * 18 + 7;
-            int bgh = rows * 18 + 7;
-
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y      ,         0,         0,   7, bgh, color); // left (top)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y      , 176 - bgw,         0, bgw,   7, color); // top (right)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + bgh,         0,       215, bgw,   7, color); // bottom (left)
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + bgw, y +   7,       169, 222 - bgh,   7, bgh, color); // right (bottom)
-
-            for (int row = 0; row < rows; row++)
-            {
-                int rowLen = MathHelper.clamp(totalSlots - (row * slotsPerRow), 1, slotsPerRow);
-                RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, color);
-
-                // Render the background for the last non-existing slots on the last row,
-                // in two strips of the background texture from the double chest texture's top part.
-                if (rows > 1 && rowLen < slotsPerRow)
-                {
-                    RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
-                    RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
-                }
-            }
-        }
-    }
-
-	@ApiStatus.Experimental
-	public static void renderInventoryBackgroundNew(DrawContext context, InventoryOverlayType type, int x, int y, int slotsPerRow, int totalSlots, MinecraftClient mc)
+	public static void renderInventoryBackground(GuiContext ctx, InventoryOverlayType type, int x, int y, int slotsPerRow, int totalSlots)
 	{
-		renderInventoryBackgroundNew(context, type, x, y, slotsPerRow, totalSlots, -1, mc);
+		renderInventoryBackground(ctx, type, x, y, slotsPerRow, totalSlots, -1);
 	}
 
-	@ApiStatus.Experimental
-	public static void renderInventoryBackgroundNew(DrawContext context, InventoryOverlayType type, int x, int y, int slotsPerRow, int totalSlots, int color, MinecraftClient mc)
+	public static void renderInventoryBackground(GuiContext ctx, InventoryOverlayType type, int x, int y, int slotsPerRow, int totalSlots, int color)
 	{
 		if (type == InventoryOverlayType.FURNACE)
 		{
-			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_FURNACE);
-			if (gpuTextureView == null) return;
+			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_FURNACE);
+			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   4,  64, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  4, y     ,  84,   0,  92,   4, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 64,   0, 162,  92,   4, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 92, y +  4, 172, 102,   4,  64, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  4, y +  4,  52,  13,  88,  60, color); // middle
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0,   4,  64, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  4, y     ,  84,   0,  92,   4, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 64,   0, 162,  92,   4, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 92, y +  4, 172, 102,   4,  64, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  4, y +  4,  52,  13,  88,  60, color); // middle
 		}
 		else if (type == InventoryOverlayType.BREWING_STAND)
 		{
-			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_BREWING_STAND);
-			if (gpuTextureView == null) return;
+			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_BREWING_STAND);
+			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   4,  68, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   4, y     ,  63,   0, 113,   4, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 68,   0, 162, 113,   4, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 113, y +  4, 172,  98,   4,  68, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   4, y +  4,  13,  13, 109,  64, color); // middle
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y     ,   0,   0,   4,  68, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   4, y     ,  63,   0, 113,   4, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + 68,   0, 162, 113,   4, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 113, y +  4, 172,  98,   4,  68, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   4, y +  4,  13,  13, 109,  64, color); // middle
 		}
 		else if (type == InventoryOverlayType.CRAFTER)
 		{
 			// We just hack in the Dispenser Texture, so it displays right.  Easy.
-			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
-			if (gpuTextureView == null) return;
+			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DISPENSER);
+			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  61, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 115,   0,  61,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,  61,  16,  54,  54, color); // middle
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0,   7,  61, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y     , 115,   0,  61,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y +  7,  61,  16,  54,  54, color); // middle
 		}
 		else if (type == InventoryOverlayType.DISPENSER)
 		{
-			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
-			if (gpuTextureView == null) return;
+			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DISPENSER);
+			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  61, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 115,   0,  61,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,  61,  16,  54,  54, color); // middle
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0,   7,  61, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y     , 115,   0,  61,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y +  7,  61,  16,  54,  54, color); // middle
 		}
 		else if (type == InventoryOverlayType.HOPPER)
 		{
-			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_HOPPER);
-			if (gpuTextureView == null) return;
+			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_HOPPER);
+			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   7,  25, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y     ,  79,   0,  97,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 25,   0, 126,  97,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  97, y +  7, 169, 108,   7,  25, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y +  7,  43,  19,  90,  18, color); // middle
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y     ,   0,   0,   7,  25, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y     ,  79,   0,  97,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + 25,   0, 126,  97,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  97, y +  7, 169, 108,   7,  25, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y +  7,  43,  19,  90,  18, color); // middle
 		}
 		// Most likely a Villager, or possibly a Llama
 		else if (type == InventoryOverlayType.VILLAGER)
 		{
-			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
-			if (gpuTextureView == null) return;
+			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DOUBLE_CHEST);
+			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0,   7,  79, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y     , 133,   0,  43,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 79,   0, 215,  43,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 43, y +  7, 169, 143,   7,  79, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +  7, y +  7,   7,  17,  36,  72, color); // 2x4 slots
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0,   7,  79, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y     , 133,   0,  43,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 79,   0, 215,  43,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 43, y +  7, 169, 143,   7,  79, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y +  7,   7,  17,  36,  72, color); // 2x4 slots
 		}
 		else if (type == InventoryOverlayType.FIXED_27)
 		{
-			renderInventoryBackground27(x, y, color, mc, context);
+			renderInventoryBackground27(ctx, x, y, color);
 		}
 		else if (type == InventoryOverlayType.FIXED_54)
 		{
-			renderInventoryBackground54(x, y, color, mc, context);
+			renderInventoryBackground54(ctx, x, y, color);
 		}
 		else
 		{
-			GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
-			if (gpuTextureView == null) return;
+			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DOUBLE_CHEST);
+			if (pair == null) return;
 
 			// Draw the slot backgrounds according to how many slots there actually are
 			int rows = (int) (Math.ceil((double) totalSlots / (double) slotsPerRow));
 			int bgw = Math.min(totalSlots, slotsPerRow) * 18 + 7;
 			int bgh = rows * 18 + 7;
 
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y      ,         0,         0,   7, bgh, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y      , 176 - bgw,         0, bgw,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + bgh,         0,       215, bgw,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + bgw, y +   7,       169, 222 - bgh,   7, bgh, color); // right (bottom)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y      ,         0,         0,   7, bgh, color); // left (top)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y      , 176 - bgw,         0, bgw,   7, color); // top (right)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + bgh,         0,       215, bgw,   7, color); // bottom (left)
+			RenderUtils.drawTexturedRectBatched(ctx, pair, x + bgw, y +   7,       169, 222 - bgh,   7, bgh, color); // right (bottom)
 
 			for (int row = 0; row < rows; row++)
 			{
 				int rowLen = MathHelper.clamp(totalSlots - (row * slotsPerRow), 1, slotsPerRow);
-				RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, color);
+				RenderUtils.drawTexturedRectBatched(ctx, pair, x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, color);
 
 				// Render the background for the last non-existing slots on the last row,
 				// in two strips of the background texture from the double chest texture's top part.
 				if (rows > 1 && rowLen < slotsPerRow)
 				{
-					RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
-					RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
+					RenderUtils.drawTexturedRectBatched(ctx, pair, x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
+					RenderUtils.drawTexturedRectBatched(ctx, pair, x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
 				}
 			}
 		}
 	}
 
-    public static void renderInventoryBackground27(int x, int y, int color, MinecraftClient mc, DrawContext context)
+    public static void renderInventoryBackground27(GuiContext ctx, int x, int y, int color)
     {
-        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_SINGLE_CHEST);
-        if (gpuTextureView == null) return;
+	    Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_SINGLE_CHEST);
+	    if (pair == null) return;
 
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y     ,   0,   0,   7,  61, color); // left (top)
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y     ,   7,   0, 169,   7, color); // top (right)
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 61,   0, 159, 169,   7, color); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 169, y +  7, 169, 105,   7,  61, color); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y +  7,   7,  17, 162,  54, color); // middle
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y     ,   0,   0,   7,  61, color); // left (top)
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y     ,   7,   0, 169,   7, color); // top (right)
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + 61,   0, 159, 169,   7, color); // bottom (left)
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 169, y +  7, 169, 105,   7,  61, color); // right (bottom)
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y +  7,   7,  17, 162,  54, color); // middle
     }
 
-    public static void renderInventoryBackground54(int x, int y, int color, MinecraftClient mc, DrawContext context)
+    public static void renderInventoryBackground54(GuiContext ctx, int x, int y, int color)
     {
-        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DOUBLE_CHEST);
-        if (gpuTextureView == null) return;
+	    Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DOUBLE_CHEST);
+	    if (pair == null) return;
 
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y      ,   0,   0,   7, 115, color); // left (top)
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y      ,   7,   0, 169,   7, color); // top (right)
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x      , y + 115,   0, 215, 169,   7, color); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 169, y +   7, 169, 107,   7, 115, color); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x +   7, y +   7,   7,  17, 162, 108, color); // middle
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y      ,   0,   0,   7, 115, color); // left (top)
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y      ,   7,   0, 169,   7, color); // top (right)
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + 115,   0, 215, 169,   7, color); // bottom (left)
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 169, y +   7, 169, 107,   7, 115, color); // right (bottom)
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y +   7,   7,  17, 162, 108, color); // middle
     }
 
-    public static void renderInventoryBackgroundSlots(DrawContext drawContext, InventoryRenderType type, Inventory inv, int x, int y)
-    {
-        if (type == InventoryRenderType.BREWING_STAND)
-        {
-            renderBrewerBackgroundSlots(drawContext, inv, x, y);
-        }
-        else if (type == InventoryRenderType.HORSE)
-        {
-            renderHorseArmorBackgroundSlots(drawContext, inv, x, y);
-        }
-        else if (type == InventoryRenderType.LLAMA)
-        {
-            renderLlamaArmorBackgroundSlots(drawContext, inv, x, y);
-        }
-        else if (type == InventoryRenderType.WOLF || type == InventoryRenderType.HAPPY_GHAST || type == InventoryRenderType.COPPER_GOLEM)
-        {
-            renderWolfArmorBackgroundSlots(drawContext, inv, x, y);
-        }
-    }
-
-	@ApiStatus.Experimental
-	public static void renderInventoryBackgroundSlotsNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int x, int y)
+	public static void renderInventoryBackgroundSlots(GuiContext ctx, InventoryOverlayType type, Inventory inv, int x, int y)
 	{
 		if (type == InventoryOverlayType.BREWING_STAND)
 		{
-			renderBrewerBackgroundSlots(drawContext, inv, x, y);
+			renderBrewerBackgroundSlots(ctx, inv, x, y);
 		}
 		else if (type == InventoryOverlayType.HORSE)
 		{
-			renderHorseArmorBackgroundSlots(drawContext, inv, x, y);
+			renderHorseArmorBackgroundSlots(ctx, inv, x, y);
 		}
 		else if (type == InventoryOverlayType.LLAMA)
 		{
-			renderLlamaArmorBackgroundSlots(drawContext, inv, x, y);
+			renderLlamaArmorBackgroundSlots(ctx, inv, x, y);
 		}
 		else if (type == InventoryOverlayType.WOLF || type == InventoryOverlayType.HAPPY_GHAST || type == InventoryOverlayType.COPPER_GOLEM)
 		{
-			renderWolfArmorBackgroundSlots(drawContext, inv, x, y);
+			renderWolfArmorBackgroundSlots(ctx, inv, x, y);
 		}
 	}
 
-	public static void renderBrewerBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y)
+	public static void renderBrewerBackgroundSlots(GuiContext ctx, Inventory inv, int x, int y)
     {
-        renderBrewerBackgroundSlots(drawContext, inv, x, y, 0.9f, 0, 0);
+        renderBrewerBackgroundSlots(ctx, inv, x, y, 0.9f, 0, 0);
     }
 
-    public static void renderBrewerBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y, float scale, double mouseX, double mouseY)
+    public static void renderBrewerBackgroundSlots(GuiContext ctx, Inventory inv, int x, int y, float scale, double mouseX, double mouseY)
     {
         if (inv.getStack(0).isEmpty())
         {
-            renderBackgroundSlotAt(drawContext, TEXTURE_EMPTY_POTION, x + 47, y + 42, scale, mouseX, mouseY);
+            renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_POTION, x + 47, y + 42, scale, mouseX, mouseY);
         }
         if (inv.getStack(1).isEmpty())
         {
-            renderBackgroundSlotAt(drawContext, TEXTURE_EMPTY_POTION, x + 70, y + 49, scale, mouseX, mouseY);
+            renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_POTION, x + 70, y + 49, scale, mouseX, mouseY);
         }
         if (inv.getStack(2).isEmpty())
         {
-            renderBackgroundSlotAt(drawContext, TEXTURE_EMPTY_POTION, x + 93, y + 42, scale, mouseX, mouseY);
+            renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_POTION, x + 93, y + 42, scale, mouseX, mouseY);
         }
         if (inv.getStack(4).isEmpty())
         {
-            renderBackgroundSlotAt(drawContext, TEXTURE_EMPTY_BREWER_FUEL, x + 8, y + 8, scale, mouseX, mouseY);
+            renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_BREWER_FUEL, x + 8, y + 8, scale, mouseX, mouseY);
         }
     }
 
-    public static void renderHorseArmorBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y)
+    public static void renderHorseArmorBackgroundSlots(GuiContext ctx, Inventory inv, int x, int y)
     {
-        renderHorseArmorBackgroundSlots(drawContext, inv, x, y, 0.9f, 0, 0);
+        renderHorseArmorBackgroundSlots(ctx, inv, x, y, 0.9f, 0, 0);
     }
 
-    public static void renderHorseArmorBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y, float scale, double mouseX, double mouseY)
+    public static void renderHorseArmorBackgroundSlots(GuiContext ctx, Inventory inv, int x, int y, float scale, double mouseX, double mouseY)
     {
         if (inv.getStack(0).isEmpty())
         {
-            renderBackgroundSlotAt(drawContext, TEXTURE_EMPTY_HORSE_ARMOR, x, y, scale, mouseX, mouseY);
+            renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_HORSE_ARMOR, x, y, scale, mouseX, mouseY);
         }
 
         if (inv.getStack(1).isEmpty())
         {
-            renderBackgroundSlotAt(drawContext, TEXTURE_EMPTY_SADDLE, x, y + 18, scale, mouseX, mouseY);
+            renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_SADDLE, x, y + 18, scale, mouseX, mouseY);
         }
     }
 
-    public static void renderLlamaArmorBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y)
+    public static void renderLlamaArmorBackgroundSlots(GuiContext ctx, Inventory inv, int x, int y)
     {
-        renderLlamaArmorBackgroundSlots(drawContext, inv, x, y, 0.9f, 0, 0);
+        renderLlamaArmorBackgroundSlots(ctx, inv, x, y, 0.9f, 0, 0);
     }
 
-    public static void renderLlamaArmorBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y, float scale, double mouseX, double mouseY)
+    public static void renderLlamaArmorBackgroundSlots(GuiContext ctx, Inventory inv, int x, int y, float scale, double mouseX, double mouseY)
     {
         if (inv.getStack(0).isEmpty())
         {
-            renderBackgroundSlotAt(drawContext, TEXTURE_EMPTY_LLAMA_ARMOR, x, y, scale, mouseX, mouseY);
+            renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_LLAMA_ARMOR, x, y, scale, mouseX, mouseY);
         }
     }
 
-    public static void renderWolfArmorBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y)
+    public static void renderWolfArmorBackgroundSlots(GuiContext ctx, Inventory inv, int x, int y)
     {
-        renderWolfArmorBackgroundSlots(drawContext, inv, x, y, 0.9f, 0, 0);
+        renderWolfArmorBackgroundSlots(ctx, inv, x, y, 0.9f, 0, 0);
     }
 
-    public static void renderWolfArmorBackgroundSlots(DrawContext drawContext, Inventory inv, int x, int y, float scale, double mouseX, double mouseY)
+    public static void renderWolfArmorBackgroundSlots(GuiContext ctx, Inventory inv, int x, int y, float scale, double mouseX, double mouseY)
     {
         if (inv.getStack(0).isEmpty())
         {
-            renderBackgroundSlotAt(drawContext, TEXTURE_EMPTY_HORSE_ARMOR, x, y, scale, mouseX, mouseY);
+            renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_HORSE_ARMOR, x, y, scale, mouseX, mouseY);
         }
     }
 
-    public static void renderEquipmentOverlayBackground(DrawContext context, int x, int y, LivingEntity entity)
+    public static void renderEquipmentOverlayBackground(GuiContext ctx, int x, int y, LivingEntity entity)
     {
-        GpuTextureView gpuTextureView = RenderUtils.bindGpuTextureView(TEXTURE_DISPENSER);
-        if (gpuTextureView == null) return;
+	    Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DISPENSER);
+	    if (pair == null) return;
 
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y     ,   0,   0, 50, 83); // top-left (main part)
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 50, y     , 173,   0,  3, 83); // right edge top
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x     , y + 83,   0, 163, 50,  3); // bottom edge left
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 50, y + 83, 173, 163,  3,  3); // bottom right corner
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0, 50, 83); // top-left (main part)
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 50, y     , 173,   0,  3, 83); // right edge top
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 83,   0, 163, 50,  3); // bottom edge left
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 50, y + 83, 173, 163,  3,  3); // bottom right corner
 
         for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
         {
-            RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + xOff, y + yOff, 61, 16, 18, 18);
+            RenderUtils.drawTexturedRectBatched(ctx, pair, x + xOff, y + yOff, 61, 16, 18, 18);
         }
 
         // Main hand and offhand
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18);
-        RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18);
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18);
+        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18);
 
         if (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
         {
-            renderBackgroundSlotAt(context, TEXTURE_EMPTY_SHIELD, x + 28 + 1, y + 3 * 18 + 7 + 1);
+            renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_SHIELD, x + 28 + 1, y + 3 * 18 + 7 + 1);
         }
 
         for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
@@ -544,100 +416,12 @@ public class InventoryOverlay
             if (entity.getEquippedStack(eqSlot).isEmpty())
             {
                 Identifier texture = EMPTY_SLOT_TEXTURES[eqSlot.getEntitySlotId()];
-                renderBackgroundSlotAt(context, texture, x + xOff + 1, y + yOff + 1);
+                renderBackgroundSlotAt(ctx, texture, x + xOff + 1, y + yOff + 1);
             }
         }
     }
 
-    public static InventoryRenderType getInventoryType(@Nullable Inventory inv)
-    {
-        if (inv == null)
-        {
-            return InventoryRenderType.GENERIC;
-        }
-
-        if (inv instanceof ShulkerBoxBlockEntity)
-        {
-            return InventoryRenderType.FIXED_27;
-        }
-        else if (inv instanceof DoubleInventory)
-        {
-            return InventoryRenderType.FIXED_54;
-        }
-        else if (inv instanceof AbstractChestBoatEntity)
-        {
-            return InventoryRenderType.FIXED_27;
-        }
-        else if (inv instanceof ChestMinecartEntity)
-        {
-            return InventoryRenderType.FIXED_27;
-        }
-        else if (inv instanceof AbstractFurnaceBlockEntity)
-        {
-            return InventoryRenderType.FURNACE;
-        }
-        else if (inv instanceof BrewingStandBlockEntity)
-        {
-            return InventoryRenderType.BREWING_STAND;
-        }
-        else if (inv instanceof CrafterBlockEntity)
-        {
-            return InventoryRenderType.CRAFTER;
-        }
-        else if (inv instanceof DispenserBlockEntity)
-        {
-            // this includes the Dropper as a subclass
-            return InventoryRenderType.DISPENSER;
-        }
-        else if (inv instanceof HopperBlockEntity)
-        {
-            return InventoryRenderType.HOPPER;
-        }
-        else if (inv instanceof HopperMinecartEntity)
-        {
-            return InventoryRenderType.HOPPER;
-        }
-        else if (inv instanceof ChiseledBookshelfBlockEntity)
-        {
-            return InventoryRenderType.BOOKSHELF;
-        }
-        else if (inv instanceof ShelfBlockEntity)
-        {
-            return InventoryRenderType.WALL_SHELF;
-        }
-        else if (inv instanceof PlayerInventory)
-        {
-            return InventoryRenderType.PLAYER;
-        }
-        else if (inv instanceof IEntityOwnedInventory inventory)
-        {
-            if (inventory.malilib$getEntityOwner() instanceof LlamaEntity)
-            {
-                return InventoryRenderType.LLAMA;
-            }
-            else if (inventory.malilib$getEntityOwner() instanceof WolfEntity)
-            {
-                return InventoryRenderType.WOLF;
-            }
-			else if (inventory.malilib$getEntityOwner() instanceof CopperGolemEntity)
-			{
-				return InventoryRenderType.COPPER_GOLEM;
-			}
-            else if (inventory.malilib$getEntityOwner() instanceof AbstractHorseEntity)
-            {
-                return InventoryRenderType.HORSE;
-            }
-            else if (inventory.malilib$getEntityOwner() instanceof PiglinEntity)
-            {
-                return InventoryRenderType.VILLAGER;
-            }
-        }
-
-        return InventoryRenderType.GENERIC;
-    }
-
-	@ApiStatus.Experimental
-	public static InventoryOverlayType getInventoryTypeNew(@Nullable Inventory inv)
+	public static InventoryOverlayType getInventoryType(@Nullable Inventory inv)
 	{
 		if (inv == null)
 		{
@@ -724,80 +508,7 @@ public class InventoryOverlay
 		return InventoryOverlayType.GENERIC;
 	}
 
-	public static InventoryRenderType getInventoryType(ItemStack stack)
-    {
-        Item item = stack.getItem();
-        ContainerComponent container = stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT);
-
-        if (item instanceof BlockItem)
-        {
-            Block block = ((BlockItem) item).getBlock();
-
-            if (block instanceof ShulkerBoxBlock || block instanceof ChestBlock || block instanceof BarrelBlock)
-            {
-                final int size = ((IMixinContainerComponent) (Object) container).malilib_getStacks().size();
-
-                // For "Double Inventory" Barrels, etc.
-                if (size >= 0 && size <= 27)
-                {
-                    return InventoryRenderType.FIXED_27;
-                }
-                else if (size > 27 && size <= 54)
-                {
-                    return InventoryRenderType.FIXED_54;
-                }
-                else if (size > 54 && size < 256)
-                {
-                    return InventoryRenderType.GENERIC;
-                }
-            }
-            else if (block instanceof AbstractFurnaceBlock)
-            {
-                return InventoryRenderType.FURNACE;
-            }
-            else if (block instanceof DispenserBlock) // this includes the Dropper as a sub class
-            {
-                return InventoryRenderType.DISPENSER;
-            }
-            else if (block instanceof HopperBlock)
-            {
-                return InventoryRenderType.HOPPER;
-            }
-            else if (block instanceof BrewingStandBlock)
-            {
-                return InventoryRenderType.BREWING_STAND;
-            }
-            else if (block instanceof CrafterBlock)
-            {
-                return InventoryRenderType.CRAFTER;
-            }
-            else if (block instanceof DecoratedPotBlock || block instanceof JukeboxBlock || block instanceof LecternBlock)
-            {
-                return InventoryRenderType.SINGLE_ITEM;
-            }
-            else if (block instanceof ChiseledBookshelfBlock)
-            {
-                return InventoryRenderType.BOOKSHELF;
-            }
-            else if (block instanceof ShelfBlock)
-            {
-                return InventoryRenderType.WALL_SHELF;
-            }
-            else if (block instanceof EnderChestBlock)
-            {
-                return InventoryRenderType.ENDER_CHEST;
-            }
-        }
-        else if (item instanceof BundleItem)
-        {
-            return InventoryRenderType.BUNDLE;
-        }
-
-        return InventoryRenderType.GENERIC;
-    }
-
-	@ApiStatus.Experimental
-	public static InventoryOverlayType getInventoryTypeNew(ItemStack stack)
+	public static InventoryOverlayType getInventoryType(ItemStack stack)
 	{
 		Item item = stack.getItem();
 		ContainerComponent container = stack.getOrDefault(DataComponentTypes.CONTAINER, ContainerComponent.DEFAULT);
@@ -870,157 +581,11 @@ public class InventoryOverlay
 	}
 
 	/**
-     * Attempts to get the Inventory Type based on raw NBT tags.
-     * @param nbt
-     * @return
-     */
-    public static InventoryRenderType getInventoryType(@Nonnull NbtCompound nbt)
-    {
-        BlockEntityType<?> blockType = NbtBlockUtils.getBlockEntityTypeFromNbt(nbt);
-
-        if (blockType != null)
-        {
-            if (blockType.equals(BlockEntityType.SHULKER_BOX) ||
-                blockType.equals(BlockEntityType.BARREL) ||
-                blockType.equals(BlockEntityType.CHEST) ||
-                blockType.equals(BlockEntityType.TRAPPED_CHEST))
-            {
-                if (nbt.contains(NbtKeys.ITEMS))
-                {
-                    NbtList list = nbt.getList(NbtKeys.ITEMS).orElse(new NbtList());
-
-                    if (list.size() > 27)
-                    {
-                        return InventoryRenderType.FIXED_54;
-                    }
-                }
-
-                return InventoryRenderType.FIXED_27;
-            }
-            else if (blockType.equals(BlockEntityType.FURNACE) ||
-                blockType.equals(BlockEntityType.BLAST_FURNACE) ||
-                blockType.equals(BlockEntityType.SMOKER))
-            {
-                return InventoryRenderType.FURNACE;
-            }
-            else if (blockType.equals(BlockEntityType.DISPENSER) ||
-                    blockType.equals(BlockEntityType.DROPPER))
-            {
-                return InventoryRenderType.DISPENSER;
-            }
-            else if (blockType.equals(BlockEntityType.HOPPER))
-            {
-                return InventoryRenderType.HOPPER;
-            }
-            else if (blockType.equals(BlockEntityType.BREWING_STAND))
-            {
-                return InventoryRenderType.BREWING_STAND;
-            }
-            else if (blockType.equals(BlockEntityType.CRAFTER))
-            {
-                return InventoryRenderType.CRAFTER;
-            }
-            else if (blockType.equals(BlockEntityType.DECORATED_POT) ||
-                    blockType.equals(BlockEntityType.JUKEBOX) ||
-                    blockType.equals(BlockEntityType.LECTERN))
-            {
-                return InventoryRenderType.SINGLE_ITEM;
-            }
-            else if (blockType.equals(BlockEntityType.CHISELED_BOOKSHELF))
-            {
-                return InventoryRenderType.BOOKSHELF;
-            }
-            else if (blockType.equals(BlockEntityType.SHELF))
-            {
-                return InventoryRenderType.WALL_SHELF;
-            }
-            else if (blockType.equals(BlockEntityType.ENDER_CHEST))
-            {
-                return InventoryRenderType.ENDER_CHEST;
-            }
-        }
-
-        EntityType<?> entityType = NbtEntityUtils.getEntityTypeFromNbt(nbt);
-
-        if (entityType != null)
-        {
-            if (entityType.equals(EntityType.CHEST_MINECART) ||
-                entityType.equals(EntityType.ACACIA_CHEST_BOAT) ||
-                entityType.equals(EntityType.BAMBOO_CHEST_RAFT) ||
-                entityType.equals(EntityType.BIRCH_CHEST_BOAT) ||
-                entityType.equals(EntityType.CHERRY_CHEST_BOAT) ||
-                entityType.equals(EntityType.DARK_OAK_CHEST_BOAT) ||
-                entityType.equals(EntityType.JUNGLE_CHEST_BOAT) ||
-                entityType.equals(EntityType.MANGROVE_CHEST_BOAT) ||
-                entityType.equals(EntityType.OAK_CHEST_BOAT) ||
-                entityType.equals(EntityType.PALE_OAK_CHEST_BOAT) ||
-                entityType.equals(EntityType.SPRUCE_CHEST_BOAT))
-            {
-                return InventoryRenderType.FIXED_27;
-            }
-            else if (entityType.equals(EntityType.HOPPER_MINECART))
-            {
-                return InventoryRenderType.HOPPER;
-            }
-            else if (entityType.equals(EntityType.HORSE) ||
-                     entityType.equals(EntityType.DONKEY) ||
-                     entityType.equals(EntityType.MULE) ||
-                     entityType.equals(EntityType.CAMEL) ||
-                     entityType.equals(EntityType.SKELETON_HORSE) ||
-                     entityType.equals(EntityType.ZOMBIE_HORSE))
-            {
-                return InventoryRenderType.HORSE;
-            }
-            else if (entityType.equals(EntityType.LLAMA) ||
-                entityType.equals(EntityType.TRADER_LLAMA))
-            {
-                return InventoryRenderType.LLAMA;
-            }
-            else if (entityType.equals(EntityType.WOLF))
-            {
-                return InventoryRenderType.WOLF;
-            }
-            else if (entityType.equals(EntityType.HAPPY_GHAST))
-            {
-                return InventoryRenderType.HAPPY_GHAST;
-            }
-			else if (entityType.equals(EntityType.COPPER_GOLEM))
-			{
-				return InventoryRenderType.COPPER_GOLEM;
-			}
-            else if (entityType.equals(EntityType.VILLAGER) ||
-                     entityType.equals(EntityType.ALLAY) ||
-                     entityType.equals(EntityType.PILLAGER) ||
-                     entityType.equals(EntityType.PIGLIN) ||
-                     entityType.equals(EntityType.WANDERING_TRADER) ||
-                     entityType.equals(EntityType.ZOMBIE_VILLAGER))
-            {
-                return InventoryRenderType.VILLAGER;
-            }
-            else if (entityType.equals(EntityType.PLAYER))
-            {
-                return InventoryRenderType.PLAYER;
-            }
-            else if (entityType.equals(EntityType.ARMOR_STAND))
-            {
-                return InventoryRenderType.ARMOR_STAND;
-            }
-            else if (nbt.contains(NbtKeys.ATTRIB) || nbt.contains(NbtKeys.EFFECTS) || nbt.contains(NbtKeys.FALL_FLYING))
-            {
-                return InventoryRenderType.LIVING_ENTITY;
-            }
-        }
-
-        return InventoryRenderType.GENERIC;
-    }
-
-	/**
 	 * Attempts to get the Inventory Type based on raw NBT tags.
 	 * @param data
 	 * @return
 	 */
-	@ApiStatus.Experimental
-	public static InventoryOverlayType getInventoryTypeNew(@Nonnull CompoundData data)
+	public static InventoryOverlayType getInventoryType(@Nonnull CompoundData data)
 	{
 		BlockEntityType<?> blockType = DataBlockUtils.getBlockEntityType(data);
 
@@ -1160,63 +725,16 @@ public class InventoryOverlay
 		return InventoryOverlayType.GENERIC;
 	}
 
-    /**
-     * Two-Way match to try to get the Best Inventory Type based on the INV Object, or NBT Tags.
-     * @param inv
-     * @param nbt
-     * @return
-     */
-    public static InventoryRenderType getBestInventoryType(@Nonnull Inventory inv, @Nonnull NbtCompound nbt)
-    {
-        InventoryRenderType i = getInventoryType(inv);
-        InventoryRenderType n = getInventoryType(nbt);
-
-        // Don't use the NBT value if the INV result is FIXED_54.
-        if (i != n && i == InventoryRenderType.GENERIC)
-        {
-            return n;
-        }
-
-        return i;
-    }
-
-    /**
-     * Three-Way match to try to get the Best Inventory Type based on the INV Object, NBT tags, or an Overlay Context.
-     * @param inv
-     * @param nbt
-     * @param ctx
-     * @return
-     */
-    public static InventoryRenderType getBestInventoryType(@Nullable Inventory inv, @Nonnull NbtCompound nbt, Context ctx)
-    {
-        InventoryRenderType i = getInventoryType(inv);
-        InventoryRenderType n = getInventoryType(nbt);
-
-        // Don't use the NBT value if the INV result is FIXED_54.
-        if (i != n && i == InventoryRenderType.GENERIC)
-        {
-            if (n != ctx.type() && ctx.type() != InventoryRenderType.GENERIC)
-            {
-                return ctx.type();
-            }
-
-            return n;
-        }
-
-        return i;
-    }
-
 	/**
 	 * Two-Way match to try to get the Best Inventory Type based on the INV Object, or NBT Tags.
 	 * @param inv
 	 * @param data
 	 * @return
 	 */
-	@ApiStatus.Experimental
-	public static InventoryOverlayType getBestInventoryTypeNew(@Nonnull Inventory inv, @Nonnull CompoundData data)
+	public static InventoryOverlayType getBestInventoryType(@Nonnull Inventory inv, @Nonnull CompoundData data)
 	{
-		InventoryOverlayType i = getInventoryTypeNew(inv);
-		InventoryOverlayType n = getInventoryTypeNew(data);
+		InventoryOverlayType i = getInventoryType(inv);
+		InventoryOverlayType n = getInventoryType(data);
 
 		// Don't use the NBT value if the INV result is FIXED_54.
 		if (i != n && i == InventoryOverlayType.GENERIC)
@@ -1234,11 +752,10 @@ public class InventoryOverlay
 	 * @param ctx
 	 * @return
 	 */
-	@ApiStatus.Experimental
-	public static InventoryOverlayType getBestInventoryTypeNew(@Nullable Inventory inv, @Nonnull CompoundData data, InventoryOverlayContext ctx)
+	public static InventoryOverlayType getBestInventoryType(InventoryOverlayContext ctx, @Nullable Inventory inv, @Nonnull CompoundData data)
 	{
-		InventoryOverlayType i = getInventoryTypeNew(inv);
-		InventoryOverlayType n = getInventoryTypeNew(data);
+		InventoryOverlayType i = getInventoryType(inv);
+		InventoryOverlayType n = getInventoryType(data);
 
 		// Don't use the NBT value if the INV result is FIXED_54.
 		if (i != n && i == InventoryOverlayType.GENERIC)
@@ -1255,142 +772,6 @@ public class InventoryOverlay
 	}
 
 	/**
-     * Returns the instance of the shared/temporary properties instance,
-     * with the values set for the type of inventory provided.
-     * Don't hold on to the instance, as the values will mutate when this
-     * method is called again!
-     * @param type ()
-     * @param totalSlots ()
-     * @return ()
-     */
-    public static InventoryProperties getInventoryPropsTemp(InventoryRenderType type, int totalSlots)
-    {
-        // Default slotsPerARow is only used for Bundles
-        return getInventoryPropsTemp(type, totalSlots, 9);
-    }
-
-    /**
-     * Returns the instance of the shared/temporary properties instance,
-     * with the values set for the type of inventory provided.
-     * Don't hold on to the instance, as the values will mutate when this
-     * method is called again!
-     * @param type ()
-     * @param totalSlots ()
-     * @param slotsPerARow ()
-     * @return
-     */
-    public static InventoryProperties getInventoryPropsTemp(InventoryRenderType type, int totalSlots, int slotsPerARow)
-    {
-        INV_PROPS_TEMP.totalSlots = totalSlots;
-
-        if (type == InventoryRenderType.FURNACE)
-        {
-            INV_PROPS_TEMP.slotsPerRow = 1;
-            INV_PROPS_TEMP.slotOffsetX = 0;
-            INV_PROPS_TEMP.slotOffsetY = 0;
-            INV_PROPS_TEMP.width = 96;
-            INV_PROPS_TEMP.height = 68;
-        }
-        else if (type == InventoryRenderType.BREWING_STAND)
-        {
-            INV_PROPS_TEMP.slotsPerRow = 9;
-            INV_PROPS_TEMP.slotOffsetX = 0;
-            INV_PROPS_TEMP.slotOffsetY = 0;
-            //INV_PROPS_TEMP.width = 127;
-            INV_PROPS_TEMP.width = 109;
-            INV_PROPS_TEMP.height = 72;
-        }
-        else if (type == InventoryRenderType.CRAFTER || type == InventoryRenderType.DISPENSER)
-        {
-            INV_PROPS_TEMP.slotsPerRow = 3;
-            INV_PROPS_TEMP.slotOffsetX = 8;
-            INV_PROPS_TEMP.slotOffsetY = 8;
-            INV_PROPS_TEMP.width = 68;
-            INV_PROPS_TEMP.height = 68;
-        }
-        else if (type == InventoryRenderType.HORSE || type == InventoryRenderType.LLAMA || type == InventoryRenderType.WOLF || type == InventoryRenderType.COPPER_GOLEM)
-        {
-            INV_PROPS_TEMP.slotsPerRow = Math.max(1, totalSlots / 3);
-            INV_PROPS_TEMP.slotOffsetX = 8;
-            INV_PROPS_TEMP.slotOffsetY = 8;
-            INV_PROPS_TEMP.width = totalSlots * 18 / 3 + 14;
-            INV_PROPS_TEMP.height = 68;
-        }
-        else if (type == InventoryRenderType.HOPPER)
-        {
-            INV_PROPS_TEMP.slotsPerRow = 5;
-            INV_PROPS_TEMP.slotOffsetX = 8;
-            INV_PROPS_TEMP.slotOffsetY = 8;
-            INV_PROPS_TEMP.width = 105;
-            INV_PROPS_TEMP.height = 32;
-        }
-        else if (type == InventoryRenderType.VILLAGER)
-        {
-            INV_PROPS_TEMP.slotsPerRow = 2;
-            INV_PROPS_TEMP.slotOffsetX = 8;
-            INV_PROPS_TEMP.slotOffsetY = 8;
-            INV_PROPS_TEMP.width = 50;
-            INV_PROPS_TEMP.height = 86;
-        }
-        else if (type == InventoryRenderType.SINGLE_ITEM)
-        {
-            INV_PROPS_TEMP.slotsPerRow = 1;
-            INV_PROPS_TEMP.slotOffsetX = 8;
-            INV_PROPS_TEMP.slotOffsetY = 8;
-            INV_PROPS_TEMP.width = 32;
-            INV_PROPS_TEMP.height = 32;
-        }
-        else if (type == InventoryRenderType.BOOKSHELF)
-        {
-            INV_PROPS_TEMP.slotsPerRow = 3;
-            INV_PROPS_TEMP.slotOffsetX = 8;
-            INV_PROPS_TEMP.slotOffsetY = 8;
-            INV_PROPS_TEMP.width = 68;
-            INV_PROPS_TEMP.height = 50;
-            INV_PROPS_TEMP.totalSlots = 6;
-        }
-        else if (type == InventoryRenderType.WALL_SHELF)
-        {
-            INV_PROPS_TEMP.slotsPerRow = 3;
-            INV_PROPS_TEMP.slotOffsetX = 8;
-            INV_PROPS_TEMP.slotOffsetY = 8;
-            INV_PROPS_TEMP.width = 68;
-            INV_PROPS_TEMP.height = 50;
-            INV_PROPS_TEMP.totalSlots = 3;
-        }
-        else if (type == InventoryRenderType.BUNDLE)
-        {
-            INV_PROPS_TEMP.slotsPerRow = slotsPerARow != 9 ? MathUtils.clamp(slotsPerARow, 6, 9) : 9;
-            INV_PROPS_TEMP.slotOffsetX = 8;
-            INV_PROPS_TEMP.slotOffsetY = 8;
-            int rows = (int) (Math.ceil((double) totalSlots / (double) INV_PROPS_TEMP.slotsPerRow));
-            INV_PROPS_TEMP.width = Math.min(INV_PROPS_TEMP.slotsPerRow, totalSlots) * 18 + 14;
-            INV_PROPS_TEMP.height = rows * 18 + 14;
-            INV_PROPS_TEMP.totalSlots = rows * INV_PROPS_TEMP.slotsPerRow;
-        }
-        else
-        {
-            if (type == InventoryRenderType.FIXED_27 || type == InventoryRenderType.PLAYER || type == InventoryRenderType.ENDER_CHEST)
-            {
-                totalSlots = 27;
-            }
-            else if (type == InventoryRenderType.FIXED_54)
-            {
-                totalSlots = 54;
-            }
-
-            INV_PROPS_TEMP.slotsPerRow = 9;
-            INV_PROPS_TEMP.slotOffsetX = 8;
-            INV_PROPS_TEMP.slotOffsetY = 8;
-            int rows = (int) (Math.ceil((double) totalSlots / (double) INV_PROPS_TEMP.slotsPerRow));
-            INV_PROPS_TEMP.width = Math.min(INV_PROPS_TEMP.slotsPerRow, totalSlots) * 18 + 14;
-            INV_PROPS_TEMP.height = rows * 18 + 14;
-        }
-
-        return INV_PROPS_TEMP;
-    }
-
-	/**
 	 * Returns the instance of the shared/temporary properties instance,
 	 * with the values set for the type of inventory provided.
 	 * Don't hold on to the instance, as the values will mutate when this
@@ -1399,11 +780,10 @@ public class InventoryOverlay
 	 * @param totalSlots ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
-	public static InventoryProperties getInventoryPropsTempNew(InventoryOverlayType type, int totalSlots)
+	public static InventoryProperties getInventoryPropsTemp(InventoryOverlayType type, int totalSlots)
 	{
 		// Default slotsPerARow is only used for Bundles
-		return getInventoryPropsTempNew(type, totalSlots, 9);
+		return getInventoryPropsTemp(type, totalSlots, 9);
 	}
 
 	/**
@@ -1416,8 +796,7 @@ public class InventoryOverlay
 	 * @param slotsPerARow ()
 	 * @return
 	 */
-	@ApiStatus.Experimental
-	public static InventoryProperties getInventoryPropsTempNew(InventoryOverlayType type, int totalSlots, int slotsPerARow)
+	public static InventoryProperties getInventoryPropsTemp(InventoryOverlayType type, int totalSlots, int slotsPerARow)
 	{
 		INV_PROPS_TEMP.totalSlots = totalSlots;
 
@@ -1528,38 +907,9 @@ public class InventoryOverlay
 		return INV_PROPS_TEMP;
 	}
 
-    public static void renderInventoryStacks(DrawContext drawContext, InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc)
-    {
-        renderInventoryStacks(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, 0, 0);
-    }
-
-    /**
-     * Supports lockable Crafter Slots
-     * @param type
-     * @param inv
-     * @param startX
-     * @param startY
-     * @param slotsPerRow
-     * @param startSlot
-     * @param maxSlots
-     * @param disabledSlots (Locked Crafter Slots as a numbered Set)
-     * @param mc
-     * @param drawContext
-     */
-    public static void renderInventoryStacks(DrawContext drawContext, InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc)
-    {
-        renderInventoryStacks(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, disabledSlots, mc, 0, 0);
-    }
-
-    public static void renderInventoryStacks(DrawContext drawContext, InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc, double mouseX, double mouseY)
-    {
-        renderInventoryStacks(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, mouseX, mouseY);
-    }
-
-	@ApiStatus.Experimental
-	public static void renderInventoryStacksNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc)
+	public static void renderInventoryStacks(GuiContext ctx, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots)
 	{
-		renderInventoryStacksNew(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, 0, 0);
+		renderInventoryStacks(ctx, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), 0, 0);
 	}
 
 	/**
@@ -1575,107 +925,20 @@ public class InventoryOverlay
 	 * @param mc
 	 * @param drawContext
 	 */
-	@ApiStatus.Experimental
-	public static void renderInventoryStacksNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc)
+	public static void renderInventoryStacks(GuiContext ctx, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots)
 	{
-		renderInventoryStacksNew(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, disabledSlots, mc, 0, 0);
+		renderInventoryStacks(ctx, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, disabledSlots, 0, 0);
 	}
 
-	@ApiStatus.Experimental
-	public static void renderInventoryStacksNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc, double mouseX, double mouseY)
+	public static void renderInventoryStacks(GuiContext ctx, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, double mouseX, double mouseY)
 	{
-		renderInventoryStacksNew(drawContext, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc, mouseX, mouseY);
+		renderInventoryStacks(ctx, type, inv, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mouseX, mouseY);
 	}
-
-	/**
-     * Render the Inventory Stacks.  Now Supports Lockable Crafter Slots.
-     *
-     * @param type
-     * @param inv
-     * @param startX
-     * @param startY
-     * @param slotsPerRow
-     * @param startSlot
-     * @param maxSlots
-     * @param disabledSlots  (Locked Crafter Slots as a numbered Set)
-     * @param mc
-     * @param drawContext
-     * @param mouseX
-     * @param mouseY
-     */
-    public static void renderInventoryStacks(DrawContext drawContext, InventoryRenderType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc, double mouseX, double mouseY)
-    {
-        if (inv == null)
-        {
-            // Only so this doesn't crash if inv was set to null
-            inv = new SimpleInventory(maxSlots > 0 ? maxSlots : INV_PROPS_TEMP.totalSlots);
-        }
-
-        if (type == InventoryRenderType.FURNACE)
-        {
-            renderStackAt(drawContext, inv.getStack(0), startX + 8, startY + 8, 1, mc, mouseX, mouseY);
-            renderStackAt(drawContext, inv.getStack(1), startX + 8, startY + 44, 1, mc, mouseX, mouseY);
-            renderStackAt(drawContext, inv.getStack(2), startX + 68, startY + 26, 1, mc, mouseX, mouseY);
-        }
-        else if (type == InventoryRenderType.BREWING_STAND)
-        {
-            renderStackAt(drawContext, inv.getStack(0), startX + 47, startY + 42, 1, mc, mouseX, mouseY);
-            renderStackAt(drawContext, inv.getStack(1), startX + 70, startY + 49, 1, mc, mouseX, mouseY);
-            renderStackAt(drawContext, inv.getStack(2), startX + 93, startY + 42, 1, mc, mouseX, mouseY);
-            renderStackAt(drawContext, inv.getStack(3), startX + 70, startY + 8, 1, mc, mouseX, mouseY);
-            renderStackAt(drawContext, inv.getStack(4), startX + 8, startY + 8, 1, mc, mouseX, mouseY);
-        }
-        else
-        {
-            final int slots = inv.size();
-            int x = startX;
-            int y = startY;
-
-            if (maxSlots < 0)
-            {
-                maxSlots = slots;
-            }
-
-//            LOGGER.debug("renderInventoryStacks: slotsPerRow [{}], startSlot [{}], maxSlots [{}]", slotsPerRow, startSlot, maxSlots);
-
-            for (int slot = startSlot, i = 0; slot < slots && i < maxSlots; )
-            {
-                for (int column = 0; column < slotsPerRow && slot < slots && i < maxSlots; ++column, ++slot, ++i)
-                {
-                    ItemStack stack = inv.getStack(slot).copy();
-
-                    if (disabledSlots.contains(slot))
-                    {
-                        // Requires -1 offset, because locked texture is 18 x 18.
-                        renderLockedSlotAt(drawContext, x - 1, y - 1, 1, mouseX, mouseY);
-                    }
-                    else if (!stack.isEmpty())
-                    {
-//                        LOGGER.debug("renderInventoryStacks: slot[{}/{}]: [{}]", slot, slots, stack.toString());
-                        renderStackAt(drawContext, stack, x, y, 1, mc, mouseX, mouseY);
-                    }
-
-                    x += 18;
-                }
-
-                x = startX;
-                y += 18;
-            }
-        }
-
-        if (hoveredStack != null)
-        {
-            var stack = hoveredStack.copy();
-            hoveredStack = null;
-            // Some mixin / side effects can happen here
-            //drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
-            renderStackToolTipStyled(drawContext, (int) mouseX, (int) mouseY, stack, mc);
-        }
-    }
 
 	/**
 	 * Render the Inventory Stacks.  Now Supports Lockable Crafter Slots.
 	 *
+	 * @param ctx
 	 * @param type
 	 * @param inv
 	 * @param startX
@@ -1684,13 +947,10 @@ public class InventoryOverlay
 	 * @param startSlot
 	 * @param maxSlots
 	 * @param disabledSlots  (Locked Crafter Slots as a numbered Set)
-	 * @param mc
-	 * @param drawContext
 	 * @param mouseX
 	 * @param mouseY
 	 */
-	@ApiStatus.Experimental
-	public static void renderInventoryStacksNew(DrawContext drawContext, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc, double mouseX, double mouseY)
+	public static void renderInventoryStacks(GuiContext ctx, InventoryOverlayType type, Inventory inv, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, double mouseX, double mouseY)
 	{
 		if (inv == null)
 		{
@@ -1700,17 +960,17 @@ public class InventoryOverlay
 
 		if (type == InventoryOverlayType.FURNACE)
 		{
-			renderStackAt(drawContext, inv.getStack(0), startX + 8, startY + 8, 1, mc, mouseX, mouseY);
-			renderStackAt(drawContext, inv.getStack(1), startX + 8, startY + 44, 1, mc, mouseX, mouseY);
-			renderStackAt(drawContext, inv.getStack(2), startX + 68, startY + 26, 1, mc, mouseX, mouseY);
+			renderStackAt(ctx, inv.getStack(0), startX + 8, startY + 8, 1, mouseX, mouseY);
+			renderStackAt(ctx, inv.getStack(1), startX + 8, startY + 44, 1, mouseX, mouseY);
+			renderStackAt(ctx, inv.getStack(2), startX + 68, startY + 26, 1, mouseX, mouseY);
 		}
 		else if (type == InventoryOverlayType.BREWING_STAND)
 		{
-			renderStackAt(drawContext, inv.getStack(0), startX + 47, startY + 42, 1, mc, mouseX, mouseY);
-			renderStackAt(drawContext, inv.getStack(1), startX + 70, startY + 49, 1, mc, mouseX, mouseY);
-			renderStackAt(drawContext, inv.getStack(2), startX + 93, startY + 42, 1, mc, mouseX, mouseY);
-			renderStackAt(drawContext, inv.getStack(3), startX + 70, startY + 8, 1, mc, mouseX, mouseY);
-			renderStackAt(drawContext, inv.getStack(4), startX + 8, startY + 8, 1, mc, mouseX, mouseY);
+			renderStackAt(ctx, inv.getStack(0), startX + 47, startY + 42, 1, mouseX, mouseY);
+			renderStackAt(ctx, inv.getStack(1), startX + 70, startY + 49, 1, mouseX, mouseY);
+			renderStackAt(ctx, inv.getStack(2), startX + 93, startY + 42, 1, mouseX, mouseY);
+			renderStackAt(ctx, inv.getStack(3), startX + 70, startY + 8, 1, mouseX, mouseY);
+			renderStackAt(ctx, inv.getStack(4), startX + 8, startY + 8, 1, mouseX, mouseY);
 		}
 		else
 		{
@@ -1734,12 +994,12 @@ public class InventoryOverlay
 					if (disabledSlots.contains(slot))
 					{
 						// Requires -1 offset, because locked texture is 18 x 18.
-						renderLockedSlotAt(drawContext, x - 1, y - 1, 1, mouseX, mouseY);
+						renderLockedSlotAt(ctx, x - 1, y - 1, 1, mouseX, mouseY);
 					}
 					else if (!stack.isEmpty())
 					{
 //                        LOGGER.debug("renderInventoryStacks: slot[{}/{}]: [{}]", slot, slots, stack.toString());
-						renderStackAt(drawContext, stack, x, y, 1, mc, mouseX, mouseY);
+						renderStackAt(ctx, stack, x, y, 1, mouseX, mouseY);
 					}
 
 					x += 18;
@@ -1755,17 +1015,16 @@ public class InventoryOverlay
 			var stack = hoveredStack.copy();
 			hoveredStack = null;
 			// Some mixin / side effects can happen here
-			//drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
-			renderStackToolTipStyled(drawContext, (int) mouseX, (int) mouseY, stack, mc);
+			renderStackToolTipStyled(ctx, (int) mouseX, (int) mouseY, stack);
 		}
 	}
 
-	public static void renderEquipmentStacks(DrawContext drawContext, LivingEntity entity, int x, int y, MinecraftClient mc)
+	public static void renderEquipmentStacks(GuiContext ctx, LivingEntity entity, int x, int y)
     {
-        renderEquipmentStacks(drawContext, entity, x, y, mc, 0, 0);
+        renderEquipmentStacks(ctx, entity, x, y, 0, 0);
     }
 
-    public static void renderEquipmentStacks(DrawContext drawContext, LivingEntity entity, int x, int y, MinecraftClient mc, double mouseX, double mouseY)
+    public static void renderEquipmentStacks(GuiContext ctx, LivingEntity entity, int x, int y, double mouseX, double mouseY)
     {
         for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
         {
@@ -1774,7 +1033,7 @@ public class InventoryOverlay
 
             if (stack.isEmpty() == false)
             {
-                renderStackAt(drawContext, stack.copy(), x + xOff + 1, y + yOff + 1, 1, mc, mouseX, mouseY);
+                renderStackAt(ctx, stack.copy(), x + xOff + 1, y + yOff + 1, 1, mouseX, mouseY);
             }
         }
 
@@ -1782,14 +1041,14 @@ public class InventoryOverlay
 
         if (stack.isEmpty() == false)
         {
-            renderStackAt(drawContext, stack.copy(), x + 28, y + 2 * 18 + 7 + 1, 1, mc, mouseX, mouseY);
+            renderStackAt(ctx, stack.copy(), x + 28, y + 2 * 18 + 7 + 1, 1, mouseX, mouseY);
         }
 
         stack = entity.getEquippedStack(EquipmentSlot.OFFHAND);
 
         if (stack.isEmpty() == false)
         {
-            renderStackAt(drawContext, stack.copy(), x + 28, y + 3 * 18 + 7 + 1, 1, mc, mouseX, mouseY);
+            renderStackAt(ctx, stack.copy(), x + 28, y + 3 * 18 + 7 + 1, 1, mouseX, mouseY);
         }
 
         if (hoveredStack != null)
@@ -1797,14 +1056,13 @@ public class InventoryOverlay
             stack = hoveredStack.copy();
             hoveredStack = null;
             // Some mixin / side effects can happen here, so reset hoveredStack
-            //drawContext.drawItemTooltip(mc.textRenderer, stack, (int) mouseX, (int) mouseY);
-            renderStackToolTipStyled(drawContext, (int) mouseX, (int) mouseY, stack, mc);
+            renderStackToolTipStyled(ctx, (int) mouseX, (int) mouseY, stack);
         }
     }
 
-    public static void renderItemStacks(DrawContext drawContext, DefaultedList<ItemStack> items, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, MinecraftClient mc)
+    public static void renderItemStacks(GuiContext ctx, DefaultedList<ItemStack> items, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots)
     {
-        renderItemStacks(drawContext, items, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of(), mc);
+        renderItemStacks(ctx, items, startX, startY, slotsPerRow, startSlot, maxSlots, Set.of());
     }
 
     /**
@@ -1820,7 +1078,7 @@ public class InventoryOverlay
      * @param mc
      * @param drawContext
      */
-    public static void renderItemStacks(DrawContext drawContext, DefaultedList<ItemStack> items, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots, MinecraftClient mc)
+    public static void renderItemStacks(GuiContext ctx, DefaultedList<ItemStack> items, int startX, int startY, int slotsPerRow, int startSlot, int maxSlots, Set<Integer> disabledSlots)
     {
         final int slots = items.size();
         int x = startX;
@@ -1840,11 +1098,11 @@ public class InventoryOverlay
                 if (disabledSlots.contains(slot))
                 {
                     // Requires -1 offset, because locked texture is 18 x 18.
-                    renderLockedSlotAt(drawContext, x - 1, y - 1, 1, 0, 0);
+                    renderLockedSlotAt(ctx, x - 1, y - 1, 1, 0, 0);
                 }
                 else if (!stack.isEmpty())
                 {
-                    renderStackAt(drawContext, stack, x, y, 1, mc);
+                    renderStackAt(ctx, stack, x, y, 1);
                 }
 
                 x += 18;
@@ -1855,21 +1113,19 @@ public class InventoryOverlay
         }
     }
 
-    public static void renderStackAt(DrawContext drawContext, ItemStack stack, float x, float y, float scale, MinecraftClient mc)
+    public static void renderStackAt(GuiContext ctx, ItemStack stack, float x, float y, float scale)
     {
-        renderStackAt(drawContext, stack, x, y, scale, mc, 0, 0);
+        renderStackAt(ctx, stack, x, y, scale, 0, 0);
     }
 
-    public static void renderStackAt(DrawContext drawContext, ItemStack stack, float x, float y, float scale, MinecraftClient mc, double mouseX, double mouseY)
+    public static void renderStackAt(GuiContext ctx, ItemStack stack, float x, float y, float scale, double mouseX, double mouseY)
     {
-        Matrix3x2fStack matrixStack = drawContext.getMatrices();
-
-        matrixStack.pushMatrix();
-        matrixStack.translate(x, y);
-        matrixStack.scale(scale, scale);
-        drawContext.drawItem(stack.copy(), 0, 0);
-        drawContext.drawStackOverlay(mc.textRenderer, stack.copy(), 0, 0);
-        matrixStack.popMatrix();
+        ctx.getMatrices().pushMatrix();
+	    ctx.getMatrices().translate(x, y);
+	    ctx.getMatrices().scale(scale, scale);
+        ctx.drawItem(stack.copy(), 0, 0);
+	    ctx.drawStackOverlay(ctx.textRenderer(), stack.copy(), 0, 0);
+	    ctx.getMatrices().popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
@@ -1887,17 +1143,16 @@ public class InventoryOverlay
      * @param mouseX
      * @param mouseY
      */
-    public static void renderLockedSlotAt(DrawContext drawContext, float x, float y, float scale, double mouseX, double mouseY)
+    public static void renderLockedSlotAt(GuiContext ctx, float x, float y, float scale, double mouseX, double mouseY)
     {
-        Matrix3x2fStack matrixStack = drawContext.getMatrices();
         int color = -1;
 
-        matrixStack.pushMatrix();
-        matrixStack.translate(x, y);
-        matrixStack.scale(scale, scale);
+	    ctx.getMatrices().pushMatrix();
+	    ctx.getMatrices().translate(x, y);
+	    ctx.getMatrices().scale(scale, scale);
         color = Colors.WHITE;
-        drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_LOCKED_SLOT, 0, 0, 18, 18, color);
-        matrixStack.popMatrix();
+	    ctx.drawGuiTexture(RenderPipelines.GUI_TEXTURED, TEXTURE_LOCKED_SLOT, 0, 0, 18, 18, color);
+	    ctx.getMatrices().popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
@@ -1905,22 +1160,21 @@ public class InventoryOverlay
         }
     }
 
-    public static void renderBackgroundSlotAt(DrawContext drawContext, Identifier texture, float x, float y)
+    public static void renderBackgroundSlotAt(GuiContext ctx, Identifier texture, float x, float y)
     {
-        renderBackgroundSlotAt(drawContext, texture, x, y, 0.9f, 0, 0);
+        renderBackgroundSlotAt(ctx, texture, x, y, 0.9f, 0, 0);
     }
 
-    public static void renderBackgroundSlotAt(DrawContext drawContext, Identifier texture, float x, float y, float scale, double mouseX, double mouseY)
+    public static void renderBackgroundSlotAt(GuiContext ctx, Identifier texture, float x, float y, float scale, double mouseX, double mouseY)
     {
-        Matrix3x2fStack matrixStack = drawContext.getMatrices();
         int color = -1;
 
-        matrixStack.pushMatrix();
-        matrixStack.translate(x, y);
-        matrixStack.scale(scale, scale);
+	    ctx.getMatrices().pushMatrix();
+	    ctx.getMatrices().translate(x, y);
+	    ctx.getMatrices().scale(scale, scale);
         color = Colors.WHITE;
-        drawContext.drawGuiTexture(RenderPipelines.GUI_TEXTURED, texture, 0, 0, 18, 18, color);
-        matrixStack.popMatrix();
+	    ctx.drawGuiTexture(RenderPipelines.GUI_TEXTURED, texture, 0, 0, 18, 18, color);
+	    ctx.getMatrices().popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
         {
@@ -1936,28 +1190,32 @@ public class InventoryOverlay
      * @param mc
      * @param drawContext
      */
-    public static void renderStackToolTip(DrawContext drawContext, int x, int y, ItemStack stack, MinecraftClient mc)
+    public static void renderStackToolTip(GuiContext ctx, int x, int y, ItemStack stack)
     {
-        List<Text> list = stack.getTooltip(Item.TooltipContext.create(mc.world), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
-        List<String> lines = new ArrayList<>();
+		if (stack.isEmpty() == false)
+		{
+			List<Text> toolTips = ctx.itemTooltips(stack);
+			List<String> lines = new ArrayList<>();
 
-//        if (MaLiLibReference.DEBUG_MODE)
-//        {
-//            dumpStack(stack, list);
-//        }
-        for (int i = 0; i < list.size(); ++i)
-        {
-            if (i == 0)
-            {
-                lines.add(stack.getRarity().getFormatting() + list.get(i).getString());
-            }
-            else
-            {
-                lines.add(GuiBase.TXT_DARK_GRAY + list.get(i).getString());
-            }
-        }
+//	        if (MaLiLibReference.DEBUG_MODE)
+//	        {
+//	            dumpStack(stack, toolTips);
+//	        }
 
-        RenderUtils.drawHoverText(drawContext, x, y, lines);
+			for (int i = 0; i < toolTips.size(); ++i)
+			{
+				if (i == 0)
+				{
+					lines.add(stack.getRarity().getFormatting() + toolTips.get(i).getString());
+				}
+				else
+				{
+					lines.add(GuiBase.TXT_DARK_GRAY + toolTips.get(i).getString());
+				}
+			}
+
+			RenderUtils.drawHoverText(ctx, x, y, lines);
+		}
     }
 
     /**
@@ -1969,26 +1227,32 @@ public class InventoryOverlay
      * @param mc
      * @param drawContext
      */
-    public static void renderStackToolTipStyled(DrawContext drawContext, int x, int y, ItemStack stack, MinecraftClient mc)
+    public static void renderStackToolTipStyled(GuiContext ctx, int x, int y, ItemStack stack)
     {
-        if (stack.isEmpty() == false && mc.world != null && mc.player != null)
+        if (stack.isEmpty() == false)
         {
             // Not sure why getBestWorld() is required here,
             // it's also required when connected to a server;
             // or else not be able to see Enchantment tooltips. (>.>)
-            List<Text> toolTips = stack.getTooltip(Item.TooltipContext.create(WorldUtils.getBestWorld(mc)), mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
+            List<Text> toolTips = ctx.itemTooltips(stack);
+
 //            if (MaLiLibReference.DEBUG_MODE)
 //            {
 //                dumpStack(stack, toolTips);
 //            }
-            drawContext.drawTooltip(mc.textRenderer,
-                                    toolTips,
-                                    stack.getTooltipData(), // Bundle/Optional Data
-                                    x, y,
-                                    stack.get(DataComponentTypes.TOOLTIP_STYLE));
+
+			List<TooltipComponent> list = toolTips.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toUnmodifiableList());
+			Optional<TooltipData> data = stack.getTooltipData();
+
+			data.ifPresent(tooltipData -> list.add(list.isEmpty() ? 0 : 1, TooltipComponent.of(tooltipData)));
+			ctx.drawTooltipImmediately(
+					ctx.textRenderer(), list, x, y,
+					HoveredTooltipPositioner.INSTANCE,
+					stack.getOrDefault(DataComponentTypes.TOOLTIP_STYLE, null)
+			);
 
             // Extra Hook for this tooltip style
-            ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(drawContext, stack, x, y);
+            ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(ctx, stack, x, y);
         }
     }
 
@@ -2000,7 +1264,8 @@ public class InventoryOverlay
             return;
         }
 
-        LOGGER.info("dumpStack(): [{}}]", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).getPartialOrThrow());
+	    DynamicRegistryManager registry = WorldUtils.getBestWorld(MinecraftClient.getInstance()).getRegistryManager();
+        LOGGER.info("dumpStack(): [{}}]", ItemStack.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), stack).getPartialOrThrow());
 
         if (list != null && !list.isEmpty())
         {
@@ -2022,51 +1287,5 @@ public class InventoryOverlay
         public int slotsPerRow = 9;
         public int slotOffsetX = 8;
         public int slotOffsetY = 8;
-    }
-
-	@Deprecated
-    public enum InventoryRenderType
-    {
-        BREWING_STAND,
-        CRAFTER,
-        DISPENSER,
-        FURNACE,
-        HOPPER,
-        HORSE,
-        LLAMA,
-        WOLF,
-        HAPPY_GHAST,
-		COPPER_GOLEM,
-        FIXED_27,
-        FIXED_54,
-        VILLAGER,
-        PLAYER,
-        ENDER_CHEST,
-        BOOKSHELF,
-        WALL_SHELF,
-        SINGLE_ITEM,
-        BUNDLE,
-        ARMOR_STAND,
-        LIVING_ENTITY,
-        GENERIC;
-    }
-
-   /**
-     * New InventoryOverlay Context interface.
-     *
-     * @param type
-     * @param inv
-     * @param be
-     * @param entity
-     * @param nbt
-     * @param handler
-     */
-    @Deprecated
-    public record Context(InventoryRenderType type, @Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt, Refresher handler) {}
-
-	@Deprecated
-    public interface Refresher
-    {
-        Context onContextRefresh(Context data, World world);
     }
 }

@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -39,7 +40,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     {
         if (this.textField != null)
         {
-            return this.textField.getTextField().getText().equals(this.lastAppliedValue) == false;
+            return this.textField.textField().getText().equals(this.lastAppliedValue) == false;
         }
 
         return false;
@@ -80,7 +81,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
 
         if (this.textField != null)
         {
-            ret |= this.textField.getTextField().mouseClicked(click, doubleClick);
+            ret |= this.textField.textField().mouseClicked(click, doubleClick);
         }
 
         if (this.subWidgets.isEmpty() == false)
@@ -130,11 +131,11 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
         return false;
     }
 
-    protected void drawTextFields(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawTextFields(GuiContext ctx, int mouseX, int mouseY)
     {
         if (this.textField != null)
         {
-            this.textField.getTextField().render(drawContext, mouseX, mouseY, 0f);
+            this.textField.textField().render(ctx, mouseX, mouseY, 0f);
         }
     }
 }

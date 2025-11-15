@@ -72,11 +72,11 @@ public enum HudAlignment implements IConfigOptionListEntry, StringIdentifiable
 
     public static HudAlignment fromStringStatic(String name)
     {
-        for (HudAlignment aligment : HudAlignment.values())
+        for (HudAlignment alignment : HudAlignment.values())
         {
-            if (aligment.configString.equalsIgnoreCase(name))
+            if (alignment.configString.equalsIgnoreCase(name))
             {
-                return aligment;
+                return alignment;
             }
         }
 

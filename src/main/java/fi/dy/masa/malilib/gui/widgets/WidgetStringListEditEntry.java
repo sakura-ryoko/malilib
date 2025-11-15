@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -109,7 +110,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
     @Override
     public boolean wasConfigModified()
     {
-        return this.isDummy() == false && this.textField.getTextField().getText().equals(this.initialStringValue) == false;
+        return this.isDummy() == false && this.textField.textField().getText().equals(this.initialStringValue) == false;
     }
 
     @Override
@@ -119,7 +120,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         {
             IConfigStringList config = this.parent.getConfig();
             List<String> list = config.getStrings();
-            String value = this.textField.getTextField().getText();
+            String value = this.textField.textField().getText();
 
             if (list.size() > this.listIndex)
             {
@@ -197,24 +198,23 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
+        super.render(ctx, mouseX, mouseY, selected);
 
         if (this.isOdd)
         {
-            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x20FFFFFF);
+            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x20FFFFFF);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x30FFFFFF);
+            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x30FFFFFF);
         }
 
-        this.drawSubWidgets(drawContext, mouseX, mouseY);
-        this.drawTextFields(drawContext, mouseX, mouseY);
-        super.render(drawContext, mouseX, mouseY, selected);
+        this.drawSubWidgets(ctx, mouseX, mouseY);
+        this.drawTextFields(ctx, mouseX, mouseY);
+        super.render(ctx, mouseX, mouseY, selected);
     }
 
     public static class ChangeListenerTextField extends ConfigOptionChangeListenerTextField
@@ -236,55 +236,42 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         }
     }
 
-    private static class ListenerResetConfig implements IButtonActionListener
-    {
-        private final WidgetStringListEditEntry parent;
-        private final ButtonGeneric buttonReset;
+	private record ListenerResetConfig(ButtonGeneric buttonReset,
+	                                   WidgetStringListEditEntry parent) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			if (this.parent.textField != null)
+			{
+				this.parent.textField.textField().setText(this.parent.defaultValue);
+				this.buttonReset.setEnabled(this.parent.textField.textField().getText().equals(this.parent.defaultValue) == false);
+			}
+		}
+	}
 
-        public ListenerResetConfig(ButtonGeneric buttonReset, WidgetStringListEditEntry parent)
-        {
-            this.buttonReset = buttonReset;
-            this.parent = parent;
-        }
+	private record ListenerListActions(ButtonType type,
+	                                   WidgetStringListEditEntry parent) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			if (this.type == ButtonType.ADD)
+			{
+				this.parent.insertEntryBefore();
+			}
+			else if (this.type == ButtonType.REMOVE)
+			{
+				this.parent.removeEntry();
+			}
+			else
+			{
+				this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
+			}
+		}
+	}
 
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            this.parent.textField.getTextField().setText(this.parent.defaultValue);
-            this.buttonReset.setEnabled(this.parent.textField.getTextField().getText().equals(this.parent.defaultValue) == false);
-        }
-    }
-
-    private static class ListenerListActions implements IButtonActionListener
-    {
-        private final ButtonType type;
-        private final WidgetStringListEditEntry parent;
-
-        public ListenerListActions(ButtonType type, WidgetStringListEditEntry parent)
-        {
-            this.type = type;
-            this.parent = parent;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            if (this.type == ButtonType.ADD)
-            {
-                this.parent.insertEntryBefore();
-            }
-            else if (this.type == ButtonType.REMOVE)
-            {
-                this.parent.removeEntry();
-            }
-            else
-            {
-                this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
-            }
-        }
-    }
-
-    private enum ButtonType
+    protected enum ButtonType
     {
         ADD         (MaLiLibIcons.PLUS,         "malilib.gui.button.hovertext.add"),
         REMOVE      (MaLiLibIcons.MINUS,        "malilib.gui.button.hovertext.remove"),
@@ -292,12 +279,12 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         MOVE_DOWN   (MaLiLibIcons.ARROW_DOWN,   "malilib.gui.button.hovertext.move_down");
 
         private final MaLiLibIcons icon;
-        private final String hoverTextkey;
+        private final String hoverTextKey;
 
-        ButtonType(MaLiLibIcons icon, String hoverTextkey)
+        ButtonType(MaLiLibIcons icon, String hoverTextKey)
         {
             this.icon = icon;
-            this.hoverTextkey = hoverTextkey;
+            this.hoverTextKey = hoverTextKey;
         }
 
         public IGuiIcon getIcon()
@@ -307,7 +294,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
 
         public String getDisplayName()
         {
-            return StringUtils.translate(this.hoverTextkey);
+            return StringUtils.translate(this.hoverTextKey);
         }
     }
 }

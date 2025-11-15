@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -14,7 +15,7 @@ public abstract class WidgetBase
     protected final MinecraftClient mc;
     protected final TextRenderer textRenderer;
     protected final int fontHeight;
-    protected DrawContext drawContext;
+    protected GuiContext guiContext;
     protected int x;
     protected int y;
     protected int width;
@@ -161,53 +162,44 @@ public abstract class WidgetBase
         return this.textRenderer.getWidth(text);
     }
 
-    public void drawString(DrawContext drawContext, int x, int y, int color, String text)
+    public void drawString(GuiContext ctx, int x, int y, int color, String text)
     {
-        drawContext.drawText(this.textRenderer, text, x, y, color, false);
+	    ctx.drawText(this.textRenderer, text, x, y, color, false);
     }
 
-    public void drawCenteredString(DrawContext drawContext, int x, int y, int color, String text)
+    public void drawCenteredString(GuiContext ctx, int x, int y, int color, String text)
     {
-        drawContext.drawText(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
+	    ctx.drawText(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
     }
 
-    public void drawStringWithShadow(DrawContext drawContext, int x, int y, int color, String text)
+    public void drawStringWithShadow(GuiContext ctx, int x, int y, int color, String text)
     {
-        drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
+	    ctx.drawTextWithShadow(this.textRenderer, text, x, y, color);
     }
 
-    public void drawCenteredStringWithShadow(DrawContext drawContext, int x, int y, int color, String text)
+    public void drawCenteredStringWithShadow(GuiContext ctx, int x, int y, int color, String text)
     {
-//        final int startX = x + 2;
-//        final int endX = x + width - 2;
-//        final int endY = y + height;
-//        final int centerX = (startX + endX) / 2;
-//        final int textWidth = this.getStringWidth(text);
-////        final int xAdj = endX - startX;
-//        final int yAdj = (y + endY - 9) / 2 + 1;
-//        final int centerAdj = MathHelper.clamp(centerX, startX + textWidth / 2, endX - textWidth / 2);
-
-        drawContext.drawCenteredTextWithShadow(this.textRenderer, text, x, y, color);
+	    ctx.drawCenteredTextWithShadow(this.textRenderer, text, x, y, color);
     }
 
-    public void drawBackgroundMask(DrawContext drawContext)
+    public void drawBackgroundMask(GuiContext ctx)
     {
-        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2);
+        RenderUtils.drawTexturedRect(ctx, GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2);
     }
 
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        if (this.drawContext == null || !this.drawContext.equals(drawContext))
+        if (this.guiContext == null || !this.guiContext.equals(ctx))
         {
-            this.drawContext = drawContext;
+            this.guiContext = ctx;
         }
     }
 
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        if (this.drawContext == null || !this.drawContext.equals(drawContext))
+        if (this.guiContext == null || !this.guiContext.equals(ctx))
         {
-            this.drawContext = drawContext;
+            this.guiContext = ctx;
         }
     }
 }

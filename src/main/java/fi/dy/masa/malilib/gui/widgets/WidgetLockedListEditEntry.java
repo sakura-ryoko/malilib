@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -102,17 +103,17 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
     @Override
     public boolean wasConfigModified()
     {
-        return this.isDummy() == false && this.textField.getTextField().getText().equals(this.initialStringValue) == false;
+        return this.isDummy() == false && this.textField.textField().getText().equals(this.initialStringValue) == false;
     }
 
     @Override
     public void applyNewValueToConfig()
     {
-        if (this.isDummy() == false)
+        if (this.isDummy() == false && this.textField != null)
         {
             IConfigLockedList config = this.parent.getConfig();
             List<IConfigLockedListEntry> list = config.getEntries();
-            String value = this.textField.getTextField().getText();
+            String value = this.textField.textField().getText();
 
             if (list.size() > this.listIndex)
             {
@@ -165,24 +166,23 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
+        super.render(ctx, mouseX, mouseY, selected);
 
         if (this.isOdd)
         {
-            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x20FFFFFF);
+            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x20FFFFFF);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, 0x30FFFFFF);
+            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x30FFFFFF);
         }
 
-        this.drawSubWidgets(drawContext, mouseX, mouseY);
-        this.drawTextFields(drawContext, mouseX, mouseY);
-        super.render(drawContext, mouseX, mouseY, selected);
+        this.drawSubWidgets(ctx, mouseX, mouseY);
+        this.drawTextFields(ctx, mouseX, mouseY);
+        super.render(ctx, mouseX, mouseY, selected);
     }
 
     public static class ChangeListenerTextField extends ConfigOptionChangeListenerTextField
@@ -216,42 +216,26 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
         return false;
     }
 
-    private static class ListenerResetConfig implements IButtonActionListener
-    {
-        private final WidgetLockedListEditEntry parent;
-        private final ButtonGeneric buttonReset;
+	private record ListenerResetConfig(ButtonGeneric buttonReset,
+	                                   WidgetLockedListEditEntry parent) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			this.parent.textField.textField().setText(this.parent.defaultValue.getDisplayName());
+			this.buttonReset.setEnabled(this.parent.textField.textField().getText().equals(this.parent.defaultValue.getStringValue()) == false && this.parent.textField.textField().getText().equals(this.parent.defaultValue.getDisplayName()) == false);
+		}
+	}
 
-        public ListenerResetConfig(ButtonGeneric buttonReset, WidgetLockedListEditEntry parent)
-        {
-            this.buttonReset = buttonReset;
-            this.parent = parent;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            this.parent.textField.getTextField().setText(this.parent.defaultValue.getDisplayName());
-            this.buttonReset.setEnabled(this.parent.textField.getTextField().getText().equals(this.parent.defaultValue.getStringValue()) == false && this.parent.textField.getTextField().getText().equals(this.parent.defaultValue.getDisplayName()) == false);
-        }
-    }
-
-    private static class ListenerListActions implements IButtonActionListener
-    {
-        private final ButtonType type;
-        private final WidgetLockedListEditEntry parent;
-
-        public ListenerListActions(ButtonType type, WidgetLockedListEditEntry parent)
-        {
-            this.type = type;
-            this.parent = parent;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
-        }
-    }
+	private record ListenerListActions(ButtonType type,
+	                                   WidgetLockedListEditEntry parent) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
+		}
+	}
 
     private enum ButtonType
     {
@@ -259,12 +243,12 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
         MOVE_DOWN   (MaLiLibIcons.ARROW_DOWN,   "malilib.gui.button.hovertext.move_down");
 
         private final MaLiLibIcons icon;
-        private final String hoverTextkey;
+        private final String hoverTextKey;
 
-        ButtonType(MaLiLibIcons icon, String hoverTextkey)
+        ButtonType(MaLiLibIcons icon, String hoverTextKey)
         {
             this.icon = icon;
-            this.hoverTextkey = hoverTextkey;
+            this.hoverTextKey = hoverTextKey;
         }
 
         public IGuiIcon getIcon()
@@ -274,7 +258,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
 
         public String getDisplayName()
         {
-            return StringUtils.translate(this.hoverTextkey);
+            return StringUtils.translate(this.hoverTextKey);
         }
     }
 }

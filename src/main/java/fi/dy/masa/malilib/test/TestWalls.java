@@ -82,7 +82,7 @@ public class TestWalls implements AutoCloseable
         }
 
         int radius = MaLiLibConfigs.Test.TEST_CONFIG_INTEGER.getIntegerValue();
-        Vec3d vec = camera.getPos();
+        Vec3d vec = camera.getCameraPos();
         BlockPos pos = entity.getBlockPos();
         BlockPos testPos = pos.add(2, 0, 2);
         Pair<BlockPos, BlockPos> corners = TestUtils.getSpawnChunkCorners(testPos, radius, mc.world);
@@ -128,7 +128,7 @@ public class TestWalls implements AutoCloseable
 
         profiler.push("quads");
         Color4f quadsColor = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
-        Vec3d cameraPos = camera.getPos();
+        Vec3d cameraPos = camera.getCameraPos();
 
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL
         RenderContext ctx = new RenderContext(() -> "malilib:TestWalls/quads", MaLiLibPipelines.MINIHUD_SHAPE_OFFSET_NO_CULL);
@@ -186,7 +186,7 @@ public class TestWalls implements AutoCloseable
 
         profiler.push("outlines");
         Color4f linesColor = Color4f.WHITE;
-        Vec3d cameraPos = camera.getPos();
+        Vec3d cameraPos = camera.getCameraPos();
 
         // RenderPipelines.LINES
         RenderContext ctx = new RenderContext(() -> "malilib:TestWalls/lines", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH);
@@ -197,11 +197,11 @@ public class TestWalls implements AutoCloseable
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
 
-        RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(this.center, cameraPos, linesColor, 0.001, builder);
+        RenderUtils.drawBlockBoundingBoxOutlinesBatchedLines(this.center, cameraPos, linesColor, 0.001, this.glLineWidth, builder);
 
         for (Box entry : this.boxes)
         {
-            TestUtils.renderWallOutlines(entry, 16, 16, true, cameraPos, linesColor, builder);
+            TestUtils.renderWallOutlines(entry, 16, 16, true, cameraPos, linesColor, this.glLineWidth, builder);
         }
 
         matrix4fstack.popMatrix();
@@ -212,7 +212,7 @@ public class TestWalls implements AutoCloseable
 
             if (meshData != null)
             {
-                ctx.lineWidth(this.glLineWidth);
+//                ctx.lineWidth(this.glLineWidth);
                 ctx.draw(meshData, false, true);
                 meshData.close();
             }

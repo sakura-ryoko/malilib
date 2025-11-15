@@ -76,46 +76,37 @@ public class GuiStringListSelection extends GuiListBase<String, WidgetStringList
         return width;
     }
 
-    private static class ButtonListener implements IButtonActionListener
-    {
-        private final GuiStringListSelection parent;
-        private final Type type;
+	private record ButtonListener(Type type, GuiStringListSelection parent) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			if (this.type == Type.OK && this.parent.getListWidget() != null)
+			{
+				this.parent.consumer.consume(this.parent.getListWidget().getSelectedEntries());
+			}
+			else
+			{
+				GuiBase.openGui(this.parent.getParent());
+			}
+		}
 
-        public ButtonListener(Type type, GuiStringListSelection parent)
-        {
-            this.parent = parent;
-            this.type = type;
-        }
+		public enum Type
+		{
+			OK("malilib.gui.button.ok"),
+			CANCEL("malilib.gui.button.cancel");
 
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            if (this.type == Type.OK)
-            {
-                this.parent.consumer.consume(this.parent.getListWidget().getSelectedEntries());
-            }
-            else
-            {
-                GuiBase.openGui(this.parent.getParent());
-            }
-        }
+			private final String translationKey;
 
-        public enum Type
-        {
-            OK      ("malilib.gui.button.ok"),
-            CANCEL  ("malilib.gui.button.cancel");
+			private Type(String translationKey)
+			{
+				this.translationKey = translationKey;
+			}
 
-            private final String translationKey;
-
-            private Type(String translationKey)
-            {
-                this.translationKey = translationKey;
-            }
-
-            public String getDisplayName(Object... args)
-            {
-                return StringUtils.translate(this.translationKey, args);
-            }
-        }
-    }
+			public String getDisplayName(Object... args)
+			{
+				return StringUtils.translate(this.translationKey, args);
+			}
+		}
+	}
 }

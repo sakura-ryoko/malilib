@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.gui.DrawContext;
 import org.jetbrains.annotations.Nullable;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntrySortable;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.test.gui.GuiTestList;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -90,7 +91,7 @@ public class WidgetTestListEntry extends WidgetListEntrySortable<GuiTestList.Ent
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
         // Default color for even entries
         int color = 0xA0303030;
@@ -111,12 +112,12 @@ public class WidgetTestListEntry extends WidgetListEntrySortable<GuiTestList.Ent
         }
 
         // Background
-        RenderUtils.drawRect(drawContext, this.x, this.y, this.width, this.height, color);
+        RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, color);
 
         // Selected Indicator
         if (selected)
         {
-            RenderUtils.drawOutline(drawContext, this.x, this.y, this.width, this.height, 0xFFE0E0E0);
+            RenderUtils.drawOutline(ctx, this.x, this.y, this.width, this.height, 0xFFE0E0E0);
         }
 
         int x1 = this.getColumnPosX(0);
@@ -128,15 +129,15 @@ public class WidgetTestListEntry extends WidgetListEntrySortable<GuiTestList.Ent
 
         if (this.entry != null)
         {
-            this.drawString(drawContext, x1 + iconSize + 4, (y - (iconSize / 2)), color, this.entry.name());
+            this.drawString(ctx, x1 + iconSize + 4, (y - (iconSize / 2)), color, this.entry.name());
 //            this.drawString(drawContext, x2 + 24, y, color, this.entry.state().toString());
 
             y = this.y + 3;
-            RenderUtils.drawRect(drawContext, x1, y, iconSize, iconSize, 0x20FFFFFF); // light background for the item
+            RenderUtils.drawRect(ctx, x1, y, iconSize, iconSize, 0x20FFFFFF); // light background for the item
             // 0.625f
-            RenderUtils.renderModelInGui(drawContext, x1, y, iconSize, this.entry.state(), 0.625f);
+            RenderUtils.renderModelInGui(ctx, x1, y, iconSize, this.entry.state(), 0.625f);
         }
 
-        super.render(drawContext, mouseX, mouseY, selected);
+        super.render(ctx, mouseX, mouseY, selected);
     }
 }

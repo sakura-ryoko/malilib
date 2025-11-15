@@ -28,6 +28,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetLabel;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.MessageRenderer;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -90,7 +91,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected GuiBase()
     {
         super(ScreenTexts.EMPTY);
-        this.client = mc;
+//        this.client = mc;
     }
 
     public GuiBase setParent(@Nullable Screen parent)
@@ -133,14 +134,14 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public void resize(MinecraftClient mc, int width, int height)
+    public void resize(int width, int height)
     {
         if (this.getParent() != null)
         {
-            this.getParent().resize(mc, width, height);
+            this.getParent().resize(width, height);
         }
 
-        super.resize(mc, width, height);
+        super.resize(width, height);
     }
 
     @Override
@@ -195,26 +196,32 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.drawContext = drawContext;
         }
 
-        drawContext.createNewRootLayer();
+		GuiContext ctx = GuiContext.fromGuiGraphics(drawContext);
+	    ctx.createNewRootLayer();
 
         // Draw Background / Title
-        this.drawScreenBackground(drawContext, mouseX, mouseY);
-        this.drawTitle(drawContext, mouseX, mouseY, partialTicks);
+        this.drawScreenBackground(ctx, mouseX, mouseY);
+        this.drawTitle(ctx, mouseX, mouseY, partialTicks);
 
         // Draw base widgets
-        this.drawWidgets(drawContext, mouseX, mouseY);
-        this.drawButtons(drawContext, mouseX, mouseY, partialTicks);
-        this.drawContents(drawContext, mouseX, mouseY, partialTicks);
-        this.drawTextFields(drawContext, mouseX, mouseY);
-        this.drawHoveredWidget(drawContext, mouseX, mouseY);
-        this.drawButtonHoverTexts(drawContext, mouseX, mouseY, partialTicks);
-        this.drawGuiMessages(drawContext);
+        this.drawWidgets(ctx, mouseX, mouseY);
+        this.drawButtons(ctx, mouseX, mouseY, partialTicks);
+        this.drawContents(ctx, mouseX, mouseY, partialTicks);
+        this.drawTextFields(ctx, mouseX, mouseY);
+        this.drawHoveredWidget(ctx, mouseX, mouseY);
+        this.drawButtonHoverTexts(ctx, mouseX, mouseY, partialTicks);
+        this.drawGuiMessages(ctx);
     }
 
     public DrawContext getDrawContext()
     {
         return this.drawContext;
     }
+
+	public GuiContext getGuiContext()
+	{
+		return GuiContext.fromGuiGraphics(this.getDrawContext());
+	}
 
     @Override
     public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks)
@@ -508,9 +515,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.messageRenderer.setNextMessageType(type);
     }
 
-    protected void drawGuiMessages(DrawContext drawContext)
+    protected void drawGuiMessages(GuiContext ctx)
     {
-        this.messageRenderer.drawMessages(drawContext, this.width / 2, this.height / 2);
+        this.messageRenderer.drawMessages(ctx, this.width / 2, this.height / 2);
     }
 
     public <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)
@@ -593,10 +600,10 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
      * @param mouseX ()
      * @param mouseY ()
      */
-    protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
         // Draw the dark background
-        RenderUtils.drawRect(drawContext, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
+        RenderUtils.drawRect(ctx, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
     }
 
     /**
@@ -610,43 +617,43 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
      * @param height ()
      * @param blur ()
      */
-    protected void drawTexturedBG(DrawContext drawContext, int topX, int topY, int width, int height, boolean blur)
+    protected void drawTexturedBG(GuiContext ctx, int topX, int topY, int width, int height, boolean blur)
     {
         if (blur)
         {
-            super.applyBlur(drawContext);
+            super.applyBlur(ctx.getGuiGraphics());
         }
 
 //        RenderUtils.drawTexturedRect(drawContext, GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, true);
-        super.renderDarkening(drawContext, topX, topY, width, height);
+        super.renderDarkening(ctx.getGuiGraphics(), topX, topY, width, height);
     }
 
-    protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawTitle(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
-        this.drawString(drawContext, this.getTitleString(), LEFT, TOP, COLOR_WHITE);
+        this.drawString(ctx, this.getTitleString(), LEFT, TOP, COLOR_WHITE);
     }
 
-    protected void drawContents(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
     }
 
-    protected void drawButtons(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawButtons(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         for (ButtonBase button : this.buttons)
         {
-            button.render(drawContext, mouseX, mouseY, button.isMouseOver());
+            button.render(ctx, mouseX, mouseY, button.isMouseOver());
         }
     }
 
-    protected void drawTextFields(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawTextFields(GuiContext ctx, int mouseX, int mouseY)
     {
         for (TextFieldWrapper<?> entry : this.textFields)
         {
-            entry.draw(drawContext, mouseX, mouseY);
+            entry.draw(ctx, mouseX, mouseY);
         }
     }
 
-    protected void drawWidgets(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawWidgets(GuiContext ctx, int mouseX, int mouseY)
     {
         this.hoveredWidget = null;
 
@@ -654,7 +661,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
-                widget.render(drawContext, mouseX, mouseY, false);
+                widget.render(ctx, mouseX, mouseY, false);
 
                 if (widget.isMouseOver(mouseX, mouseY))
                 {
@@ -664,7 +671,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
     }
 
-    protected void drawButtonHoverTexts(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawButtonHoverTexts(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         if (this.shouldRenderHoverStuff() == false)
         {
@@ -675,7 +682,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             if (button.hasHoverText() && button.isMouseOver())
             {
-                RenderUtils.drawHoverText(drawContext, mouseX, mouseY, button.getHoverStrings());
+                RenderUtils.drawHoverText(ctx, mouseX, mouseY, button.getHoverStrings());
             }
         }
     }
@@ -685,7 +692,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return this.mc.currentScreen == this;
     }
 
-    protected void drawHoveredWidget(DrawContext drawContext, int mouseX, int mouseY)
+    protected void drawHoveredWidget(GuiContext ctx, int mouseX, int mouseY)
     {
         if (this.shouldRenderHoverStuff() == false)
         {
@@ -694,7 +701,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (this.hoveredWidget != null)
         {
-            this.hoveredWidget.postRenderHovered(drawContext, mouseX, mouseY, false);
+            this.hoveredWidget.postRenderHovered(ctx, mouseX, mouseY, false);
         }
     }
 
@@ -708,14 +715,14 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return this.textRenderer.getWidth(text);
     }
 
-    public void drawString(DrawContext drawContext, String text, int x, int y, int color)
+    public void drawString(GuiContext ctx, String text, int x, int y, int color)
     {
-        drawContext.drawText(this.textRenderer, text, x, y, color, false);
+	    ctx.drawText(ctx.textRenderer(), text, x, y, color, false);
     }
 
-    public void drawStringWithShadow(DrawContext drawContext, String text, int x, int y, int color)
+    public void drawStringWithShadow(GuiContext ctx, String text, int x, int y, int color)
     {
-        drawContext.drawTextWithShadow(this.textRenderer, text, x, y, color);
+        ctx.drawTextWithShadow(ctx.textRenderer(), text, x, y, color);
     }
 
     public int getMaxPrettyNameLength(List<? extends IConfigBase> configs)

@@ -4,6 +4,7 @@ import java.util.List;
 import net.minecraft.client.gui.DrawContext;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
+import fi.dy.masa.malilib.render.GuiContext;
 
 public class GuiModConfigs extends GuiConfigsBase
 {
@@ -34,7 +35,7 @@ public class GuiModConfigs extends GuiConfigsBase
     }
 
     @Override
-    protected void drawTitle(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    protected void drawTitle(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         // NO-OP
     }

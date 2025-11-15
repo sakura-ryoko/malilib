@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.gui.GuiKeybindSettings;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
+import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -67,9 +68,9 @@ public class WidgetKeybindSettings extends WidgetBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
+        super.render(ctx, mouseX, mouseY, selected);
 
         int w = 18;
         int v1 = this.settings.getActivateOn().ordinal() * w;
@@ -82,24 +83,24 @@ public class WidgetKeybindSettings extends WidgetBase
         int y = this.y;
 
         int edgeColor = this.keybind.areSettingsModified() ? 0xFFFFBB33 : 0xFFFFFFFF;
-        RenderUtils.drawRect(drawContext, x, y, 20, 20, edgeColor);
-        RenderUtils.drawRect(drawContext, x + 1, y + 1, 18, 18, 0xFF000000);
+        RenderUtils.drawRect(ctx, x, y, 20, 20, edgeColor);
+        RenderUtils.drawRect(ctx, x + 1, y + 1, 18, 18, 0xFF000000);
 
         x += 1;
         y += 1;
         float z = 0;
 
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  0,  v1, w, w, z);
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  18, v2, w, w, z);
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  36, v3, w, w, z);
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  54, v4, w, w, z);
-        RenderUtils.drawTexturedRect(drawContext, TEXTURE, x, y,  72, v5, w, w, z);
+        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  0,  v1, w, w, z);
+        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  18, v2, w, w, z);
+        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  36, v3, w, w, z);
+        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  54, v4, w, w, z);
+        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  72, v5, w, w, z);
     }
 
     @Override
-    public void postRenderHovered(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.postRenderHovered(drawContext, mouseX, mouseY, selected);
+        super.postRenderHovered(ctx, mouseX, mouseY, selected);
         List<String> text = new ArrayList<>();
         String name, val;
         String strYes = StringUtils.translate("malilib.gui.label.yes");
@@ -140,6 +141,6 @@ public class WidgetKeybindSettings extends WidgetBase
 
         text.addAll(Arrays.asList(parts));
 
-        RenderUtils.drawHoverText(drawContext, mouseX + 10, mouseY, text);
+        RenderUtils.drawHoverText(ctx, mouseX + 10, mouseY, text);
     }
 }
