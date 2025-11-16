@@ -15,6 +15,7 @@ import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.table.type.*;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.dynamic.Codecs;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -610,6 +611,11 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 					{
 						throw new IllegalArgumentException("Type mismatch: expected " + this.types[j] + " but got " + v.list().get(j).getType().name());
 					}
+
+                    if (this.allowAddNewEntry && this.types[j] == EntryTypes.LABEL && FabricLoader.getInstance().isDevelopmentEnvironment())
+                    {
+                        MaLiLib.LOGGER.warn("You probably shouldn't enable allowAddNewEntry if you are using labels.");
+                    }
 				}
 			}
 
