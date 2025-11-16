@@ -8,3 +8,6 @@ logs/
 .project
 build.number
 Task
+/.idea/
+/libs/
+/run/
