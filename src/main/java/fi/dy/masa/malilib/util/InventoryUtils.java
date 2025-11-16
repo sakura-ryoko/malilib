@@ -473,7 +473,7 @@ public class InventoryUtils
     {
         if (stack.isEmpty() == false)
         {
-            NbtCompound nbt = (NbtCompound) ItemStack.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), stack).getOrThrow();
+            NbtCompound nbt = toNbtOrEmpty(stack, registry);
 
             if (hasNbtItems(nbt))
             {
@@ -495,7 +495,7 @@ public class InventoryUtils
 	{
 		if (!stack.isEmpty())
 		{
-			CompoundData data = DataConverterNbt.fromVanillaCompound((NbtCompound) ItemStack.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), stack).getOrThrow());
+			CompoundData data = toDataOrEmpty(stack, registry);
 
 			if (hasDataItems(data))
 			{
@@ -2043,6 +2043,28 @@ public class InventoryUtils
 		}
 
 		return ItemStack.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(tag)).resultOrPartial().orElse(ItemStack.EMPTY);
+	}
+
+	/**
+	 * Return a new NBT from an item stack
+	 * @param stack ()
+	 * @param registry ()
+	 * @return ()
+	 */
+	public static NbtCompound toNbtOrEmpty(@Nonnull ItemStack stack, @Nonnull DynamicRegistryManager registry)
+	{
+		return (NbtCompound) ItemStack.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), stack).resultOrPartial().orElse(new NbtCompound());
+	}
+
+	/**
+	 * Return a new Data Tag from an item stack
+	 * @param stack ()
+	 * @param registry ()
+	 * @return ()
+	 */
+	public static CompoundData toDataOrEmpty(@Nonnull ItemStack stack, @Nonnull DynamicRegistryManager registry)
+	{
+		return DataConverterNbt.fromVanillaCompound((NbtCompound) ItemStack.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), stack).resultOrPartial().orElse(new NbtCompound()));
 	}
 
 	/**
