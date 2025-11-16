@@ -107,7 +107,8 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_1             =
-                new ConfigTable.Builder("testTable1", STRING, INTEGER, BOOLEAN, DOUBLE, BOOLEAN, BOOLEAN)
+                new ConfigTable.Builder("testTable1", STRING, INTEGER, DOUBLE, LABEL, BOOLEAN, BOOLEAN)
+                        .setDefaultValue(TableRow.of("", 0, 0.0, Label.of("Label"), false, false))
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_2             =
                 new ConfigTable.Builder("testTable2", INTEGER, INTEGER)
@@ -123,13 +124,13 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigTable             TEST_CONFIG_TABLE_4             =
                 new ConfigTable.Builder("testTable4", DOUBLE, INTEGER, STRING, BOOLEAN)
                         .setDefaultValue(TableRow.of(0.0, 1, "2", true), TableRow.of(1.0, 3, "5", false))
-                        .setLabels("Label 1", "Label 2", Label.of("Label 3", "With a comment!"))
+                        .setLabels("Label 1", Label.of("Label 2", "With a comment!"), Label.of("Label 3", "With a big\n\nand scary\n\ncomment >:3"))
                         .setComment("Comment")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_5             =
                 new ConfigTable.Builder("testTable5", LABEL, DOUBLE, INTEGER, STRING)
                         .setComment("Another comment")
-                        .setDefaultValue(TableRow.of(Label.of("Horizontal label!", "With comment too!"), 213.0, 43, "22"))
+                        .setDefaultValue(TableRow.of(Label.of("Horizontal label!", "With comments too!"), 213.0, 43, "22"))
                         .setEntryCount(5)
                         .setAllowAddNewEntry(false)
                         .setLabels(List.of("Label 1", "Label 2"))

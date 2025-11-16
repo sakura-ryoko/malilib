@@ -18,9 +18,10 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.KeyInput;
 
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 
 @ApiStatus.Experimental
 public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, WidgetListTableEdit>
@@ -157,13 +158,16 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
 
 			this.drawStringWithShadow(ctx, label.label(), x, this.dialogTop + 25, COLOR_WHITE);
             int labelWidth = ctx.textRenderer().getWidth(label.label());
-            int maxLabelX = x + labelWidth;
-            int minLabelY = this.dialogTop + 25;
-            int maxLabelY = minLabelY + ctx.textRenderer().fontHeight;
 
-            if (label.comment().isEmpty() == false && (mouseX >= x && mouseX <= maxLabelX && mouseY >= minLabelY && mouseY <= maxLabelY))
+            final int leniency = 2;
+            int minLabelX = x - leniency;
+            int maxLabelX = x + labelWidth + leniency;
+            int minLabelY = this.dialogTop + 25 - leniency;
+            int maxLabelY = minLabelY + ctx.textRenderer().fontHeight + leniency;
+
+            if (label.comment().isEmpty() == false && (mouseX >= minLabelX && mouseX <= maxLabelX && mouseY >= minLabelY && mouseY <= maxLabelY))
             {
-                ctx.drawTooltip(Text.literal(label.comment()), mouseX, mouseY);
+                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(label.comment()));
             }
 		}
 	}

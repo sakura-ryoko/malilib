@@ -130,35 +130,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 	);
 
 	private final ImmutableList<TableRow> defaultTable;
-	private final List<TableRow> table = new ArrayList<>() {
-        @Override
-        public TableRow get(int index) {
-            return super.get(index);
-        }
-        @Override
-        public TableRow set(int index, TableRow element) {
-            if (element.list().size() == 3) {
-                System.out.println("Uh oh");
-            }
-            return super.set(index, element);
-        }
-
-        @Override
-        public boolean add(TableRow tableRow) {
-            if (tableRow.list().size() == 3) {
-                System.out.println("Uh oh");
-            }
-            return super.add(tableRow);
-        }
-
-        @Override
-        public void add(int index, TableRow element) {
-            if (element.list().size() == 3) {
-                System.out.println("Uh oh");
-            }
-            super.add(index, element);
-        }
-    };
+	private final List<TableRow> table = new ArrayList<>();
 	private final @Nullable String displayString;
 	private final ImmutableList<EntryTypes> types;
 	private final List<Label> labels;

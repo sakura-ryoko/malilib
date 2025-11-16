@@ -1,6 +1,5 @@
 package fi.dy.masa.malilib.gui.widgets;
 
-import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.ConfigTable;
 import fi.dy.masa.malilib.config.options.table.Label;
@@ -21,13 +20,9 @@ import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.jetbrains.annotations.ApiStatus;
 
@@ -431,16 +426,19 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 			}
 		}
 
+        super.render(ctx, mouseX, mouseY, selected);
+
         if (this.hoveredSubWidget instanceof WidgetLabel widgetLabel)
         {
             Label correspondingLabel = labels.get(widgetLabel);
             if (correspondingLabel != null)
             {
-                ctx.drawTooltip(Text.literal(correspondingLabel.comment()), mouseX, mouseY);
+                if (correspondingLabel.comment().isEmpty() == false)
+                {
+                    RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(correspondingLabel.comment()));
+                }
             }
         }
-
-		super.render(ctx, mouseX, mouseY, selected);
 	}
 
 	@Override
