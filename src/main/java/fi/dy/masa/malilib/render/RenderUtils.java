@@ -1246,28 +1246,54 @@ public class RenderUtils
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, bufferQuads);
     }
 
-    /**
-     * Renders a text plate/billboard, similar to the player name plate.<br>
-     * The plate will always face towards the viewer.
-     *
-     * @param text
-     * @param x
-     * @param y
-     * @param z
-     * @param scale
-     */
-    public static void drawTextPlate(List<String> text, double x, double y, double z, float scale)
-    {
-        Entity entity = mc().getCameraEntity();
+	/**
+	 * Renders a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 * @deprecated (Use the Tick Progress version to remove the "jumpy" text problem)
+	 *
+	 * @param text  (Text)
+	 * @param x     ()
+	 * @param y     ()
+	 * @param z     ()
+	 * @param scale (Scale)
+	 */
+	@Deprecated
+	public static void drawTextPlate(List<String> text, double x, double y, double z, float scale)
+	{
+		Entity entity = mc().getCameraEntity();
 
-        if (entity != null)
-        {
-            drawTextPlate(text, x, y, z, entity.getYaw(), entity.getPitch(), scale, 0xFFFFFFFF, 0x40000000, true);
-        }
-    }
+		if (entity != null)
+		{
+			drawTextPlate(text, x, y, z, entity.getYaw(), entity.getPitch(), scale, 0xFFFFFFFF, 0x40000000, true);
+		}
+	}
 
-    public static void drawTextPlate(List<String> text, double x, double y, double z, float yaw, float pitch,
-                                     float scale, int textColor, int bgColor, boolean disableDepth)
+	/**
+	 * Renders a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text (Text)
+	 * @param x ()
+	 * @param y ()
+	 * @param z ()
+	 * @param scale (Scale)
+	 * @param delta (Tick Progress for Lerping the Camera Rotations)
+	 */
+	public static void drawTextPlate(List<String> text, double x, double y, double z, float scale, float delta)
+	{
+		Entity entity = mc().getCameraEntity();
+
+		if (entity != null)
+		{
+			drawTextPlate(text, x, y, z, entity.getYaw(delta), entity.getPitch(delta), scale, 0xFFFFFFFF, 0x40000000, true);
+		}
+	}
+
+	public static void drawTextPlate(List<String> text,
+                                     double x, double y, double z,
+                                     float yaw, float pitch,
+                                     float scale, int textColor, int bgColor,
+                                     boolean disableDepth)
     {
         Vec3d cameraPos = camPos();
         double cx = cameraPos.x;
@@ -2507,7 +2533,7 @@ public class RenderUtils
     {
 		boolean culling = shouldCull(pos1, pos2);
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2
-        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", culling ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", culling ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
@@ -2726,9 +2752,26 @@ public class RenderUtils
         }
     }
 
+    /**
+     * I really don't like this.
+     *
+     * @param pos1
+     * @param pos2
+     * @return
+     */
 	public static boolean shouldCull(BlockPos pos1, BlockPos pos2)
 	{
-		return shouldCull(new Box(pos1.getX(), pos1.getY(), pos1.getZ(), pos2.getX(), pos2.getY(), pos2.getZ()));
+        // Fix Bottom Y Border offset
+        if (pos1.getY() < pos2.getY())
+        {
+            pos1 = pos1.mutableCopy().setY(pos1.getY() - 1).toImmutable();
+        }
+        else if (pos2.getY() < pos1.getY())
+        {
+            pos2 = pos2.mutableCopy().setY(pos2.getY() - 1).toImmutable();
+        }
+
+        return shouldCull(Box.enclosing(pos1, pos2));
 	}
 
 	public static boolean shouldCull(Vec3d pos1, Vec3d pos2)
@@ -2748,34 +2791,10 @@ public class RenderUtils
 	 */
 	public static boolean shouldCull(Box bb)
 	{
-		Entity camera = mc().getCameraEntity();
-		final Vec3d minPos = bb.getMinPos();
-		final Vec3d maxPos = bb.getMaxPos();
-		Vec3d mid = bb.getCenter();
-		BlockPos pos;
+        Entity camera = mc().getCameraEntity();
+        Vec3d pos = camera.getEntityPos();
 
-		if (minPos.getY() < maxPos.getY())
-		{
-			pos = new BlockPos((int) mid.x, (int) minPos.y, (int) mid.z);
-		}
-		else
-		{
-			pos = new BlockPos((int) mid.x, (int) maxPos.y, (int) mid.z);
-		}
-
-		if (mc().world != null)
-		{
-			// Calculate only if the Down Direction is a Block, while above it is Air.
-			BlockState state = mc().world.getBlockState(pos);
-			BlockState stateDown = mc().world.getBlockState(pos.offset(Direction.DOWN));
-
-			if (camera != null && state.isAir() && !stateDown.isAir())
-			{
-				// Causes Z fighting on the floor (~24 Block distance)
-				return camera.getEntityPos().distanceTo(mid) >= 23;
-			}
-		}
-
-		return false;
+        // Mark culling if the camera is outside of the bounding box (Walls overlapping, etc)
+		return bb.contains(pos);
 	}
 }

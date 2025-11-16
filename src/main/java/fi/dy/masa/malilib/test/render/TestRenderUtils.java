@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.render;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 
 @ApiStatus.Experimental
-public class TestUtils
+public class TestRenderUtils
 {
     protected static Pair<BlockPos, BlockPos> getSpawnChunkCorners(BlockPos worldSpawn, int chunkRange, World world)
     {

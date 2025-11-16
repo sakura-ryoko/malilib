@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.config;
 
 import javax.annotation.Nonnull;
 import net.minecraft.util.StringIdentifiable;
@@ -19,6 +19,7 @@ import fi.dy.masa.malilib.hotkeys.KeyCallbackToggleBooleanConfigWithMessage;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
+import fi.dy.masa.malilib.test.render.TestRenderWalls;
 import fi.dy.masa.malilib.util.StringUtils;
 
 @ApiStatus.Experimental
@@ -28,7 +29,9 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     TEST_ENUM_SINGLE_PLAYER         ("testEnumSinglePlayer",        false,true, ""),
     TEST_SELECTOR_HOTKEY            ("testSelectorHotkey",          false,""),
     TEST_TEXT_LINES                 ("testTestLines",               false,""),
+    TEST_TEXT_PLATE                 ("testTextPlate",               false,""),
     TEST_WALLS_HOTKEY               ("testWallsHotkey",             false,""),
+    TEST_WALLS_USE_COLOR            ("testWallsUseColor",           false, ""),
     ;
 
     public static final StringIdentifiable.EnumCodec<ConfigTestEnum> CODEC = StringIdentifiable.createCodec(ConfigTestEnum::values);
@@ -168,6 +171,11 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     @Override
     public void onValueChanged()
     {
+        if (this.equals(TEST_WALLS_USE_COLOR))
+        {
+            TestRenderWalls.INSTANCE.setNeedsUpdate();
+        }
+
         if (this.callback != null)
         {
             this.callback.onValueChanged(this);

@@ -30,6 +30,12 @@ public class EmptyData extends BaseData
 	}
 
 	@Override
+	public boolean isEmpty()
+	{
+		return true;
+	}
+
+	@Override
 	public void write(DataOutput output) throws IOException
 	{
 	}
@@ -37,5 +43,21 @@ public class EmptyData extends BaseData
 	public static EmptyData read(DataInput input, int depth, SizeTracker sizeTracker) throws IOException
 	{
 		return new EmptyData();
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		return o != null && this.getClass() == o.getClass();
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return 0;
 	}
 }

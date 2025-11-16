@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.test.ConfigTestEnum;
-import fi.dy.masa.malilib.test.TestSelector;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
+import fi.dy.masa.malilib.test.misc.TestSelector;
 
 @Mixin(MinecraftClient.class)
 public class MixinMinecraftClient_testSelector

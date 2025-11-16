@@ -1,17 +1,6 @@
 package fi.dy.masa.malilib.util.data.tag.util;
 
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.util.data.Constants;
-import fi.dy.masa.malilib.util.data.tag.BaseData;
-import fi.dy.masa.malilib.util.data.tag.CompoundData;
-import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
@@ -19,8 +8,16 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtSizeTracker;
+
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.BaseData;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.EmptyData;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 
 public class DataFileUtils
 {
@@ -91,7 +88,7 @@ public class DataFileUtils
 
             if (tagType == Constants.NBT.TAG_END)
             {
-                return null;
+                return EmptyData.INSTANCE;
             }
 
             // Discard the name of the root tag
@@ -129,11 +126,13 @@ public class DataFileUtils
         return false;
     }
 
+	@Deprecated
 	public static CompoundData readFromFileUsingNbtIo(@Nonnull Path file)
 	{
 		return readFromFileUsingNbtIo(file, NbtSizeTracker.ofUnlimitedBytes());
 	}
 
+	@Deprecated
 	public static CompoundData readFromFileUsingNbtIo(@Nonnull Path file, NbtSizeTracker tracker)
 	{
 		if (!Files.exists(file) || !Files.isReadable(file))
@@ -153,6 +152,7 @@ public class DataFileUtils
 		return null;
 	}
 
+	@Deprecated
 	public static void writeToFileUsingNbtIo(@Nonnull CompoundData tag, @Nonnull Path file)
 	{
 		try

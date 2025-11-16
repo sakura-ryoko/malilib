@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.data;
 
 import org.jetbrains.annotations.ApiStatus;
 import fi.dy.masa.malilib.interfaces.IDataSyncer;

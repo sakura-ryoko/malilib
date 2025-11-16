@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.render;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,6 +54,9 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.test.misc.TestSelector;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
+import fi.dy.masa.malilib.test.data.TestDataSyncer;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -112,23 +115,39 @@ public class TestRenderHandler implements IRenderer
 
             if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
             {
-                List<String> list = new ArrayList<>();
-                list.add("Test Line 1");
-                list.add("Test Line 2");
-                list.add("Test Line 3");
-                list.add("Test Line 4");
-                list.add("Test Line 5");
-                
-                if (TickUtils.getInstance().isValid())
-                {
-                    String result = getMeasuredTPS();
-                    list.addFirst(result);
-                    list.removeLast();
-                }
-
+                List<String> list = getTestTextStrings();
                 RenderUtils.renderText(drawContext, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
             }
         }
+    }
+
+    private static List<String> getTestTextStrings()
+    {
+        List<String> list = new ArrayList<>();
+
+        list.add(
+                StringUtils.translate(
+                        "malilib.message.test_text.line.format_test",
+                        5, 25, 275686,
+                        5.237562732867557249862098375253F,
+                        25.8305702987592034547520957892058F,
+                        250.93287592837625876782019384230598F
+                ));
+        list.add(StringUtils.translate("malilib.message.test_text.line.1"));
+        list.add(StringUtils.translate("malilib.message.test_text.line.2"));
+        list.add(StringUtils.translate("malilib.message.test_text.line.3"));
+        list.add(StringUtils.translate("malilib.message.test_text.line.4"));
+        list.add(StringUtils.translate("malilib.message.test_text.line.5"));
+//        list.add("Test Line 5");
+
+        if (TickUtils.getInstance().isValid())
+        {
+            String result = getMeasuredTPS();
+            list.addFirst(result);
+            list.removeLast();
+        }
+
+        return list;
     }
 
     private static @Nonnull String getMeasuredTPS()
@@ -151,48 +170,30 @@ public class TestRenderHandler implements IRenderer
         else if (mspt <= 50) { preMspt = GuiBase.TXT_GOLD; }
         else                 { preMspt = GuiBase.TXT_RED; }
 
-        return isEstimated ?
-               String.format("Server TPS: %s%.1f%s (MSPT [est]: %s%.1f%s) (R: %s%.1f%s, avMS: %.2f, avTPS: %.2f, [actTPS: %.2f]) %s",
-                             preTps, clampedTps, rst, preMspt, mspt, rst,
-                             GuiBase.TXT_AQUA, tickRate, rst,
-                             avgMspt, avgTps, actualTps,
-                             sprintStr) :
-               String.format("Server TPS: %s%.1f%s MSPT: %s%.1f%s (R: %s%.1f%s, avMS: %.2f, avTPS: %.2f, [actTPS: %.2f]) %s",
-                             preTps, clampedTps, rst, preMspt, mspt, rst,
-                             GuiBase.TXT_AQUA, tickRate, rst,
-                             avgMspt, avgTps, actualTps,
-                             sprintStr)
+        return isEstimated
+               ? StringUtils.translate("malilib.message.test_text.line.tps_est",
+                                       preTps, clampedTps, rst, preMspt, mspt, rst,
+                                       GuiBase.TXT_AQUA, tickRate, rst,
+                                       avgMspt, avgTps, actualTps,
+                                       sprintStr)
+               : StringUtils.translate("malilib.message.test_text.line.tps",
+                                       preTps, clampedTps, rst, preMspt, mspt, rst,
+                                       GuiBase.TXT_AQUA, tickRate, rst,
+                                       avgMspt, avgTps, actualTps,
+                                       sprintStr)
                 ;
+
+//               ? String.format("Server TPS: %s%.1f%s (MSPT [est]: %s%.1f%s) (R: %s%.1f%s, avMS: %.2f, avTPS: %.2f, [actTPS: %.2f]) %s",
+//                               preTps, clampedTps, rst, preMspt, mspt, rst,
+//                               GuiBase.TXT_AQUA, tickRate, rst,
+//                               avgMspt, avgTps, actualTps,
+//                               sprintStr)
+//               : String.format("Server TPS: %s%.1f%s MSPT: %s%.1f%s (R: %s%.1f%s, avMS: %.2f, avTPS: %.2f, [actTPS: %.2f]) %s",
+//                               preTps, clampedTps, rst, preMspt, mspt, rst,
+//                               GuiBase.TXT_AQUA, tickRate, rst,
+//                               avgMspt, avgTps, actualTps,
+//                               sprintStr)
     }
-
-//    @Override
-//    public void onRenderWorldPreMain(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
-//    {
-//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-//        {
-//            MinecraftClient mc = MinecraftClient.getInstance();
-//
-//            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
-//
-//            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-//            {
-//                if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-//                {
-//                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
-//                }
-//
-//                TestWalls.INSTANCE.draw(camera, posMatrix, projMatrix, mc, profiler);
-//            }
-//
-//            profiler.pop();
-//        }
-//    }
-
-//    @Override
-//    public void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler, ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator, ArrayList<RenderPass.RenderObject> renderObjects)
-//    {
-//        // NO-OP
-//    }
 
     @Override
     public void onRenderWorldPostDebugRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera, Profiler profiler)
@@ -216,29 +217,6 @@ public class TestRenderHandler implements IRenderer
 //            profiler.pop();
 //        }
     }
-
-//    @Override
-//    public void onRenderWorldPreParticles(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler)
-//    {
-//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-//        {
-//            MinecraftClient mc = MinecraftClient.getInstance();
-//
-//            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
-//
-//            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-//            {
-//                if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-//                {
-//                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
-//                }
-//
-//                TestWalls.INSTANCE.draw(camera, posMatrix, projMatrix, mc, profiler);
-//            }
-//
-//            profiler.pop();
-//        }
-//    }
 
     @Override
     public void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, BufferBuilderStorage buffers, Profiler profiler)
@@ -274,7 +252,7 @@ public class TestRenderHandler implements IRenderer
             {
                 profiler.push(MaLiLibReference.MOD_ID + "_selector");
 
-                if (TestSelector.INSTANCE.shouldRender())
+                if (ConfigTestEnum.TEST_SELECTOR_HOTKEY.getBooleanValue() && TestSelector.INSTANCE.shouldRender())
                 {
                     TestSelector.INSTANCE.render(posMatrix, projMatrix, profiler, mc);
                 }
@@ -286,12 +264,27 @@ public class TestRenderHandler implements IRenderer
 
                 if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
                 {
-                    if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
+                    if (TestRenderWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
                     {
-                        TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+                        TestRenderWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
                     }
 
-                    TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+                    if (TestRenderWalls.INSTANCE.hasData())
+                    {
+                        TestRenderWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+                    }
+                }
+
+                profiler.swap(MaLiLibReference.MOD_ID + "_test_text_plate");
+
+                if (ConfigTestEnum.TEST_TEXT_PLATE.getBooleanValue())
+                {
+                    TestTextPlateRenderer.INSTANCE.update(mc);
+
+                    if (TestTextPlateRenderer.INSTANCE.shouldRender())
+                    {
+                        TestTextPlateRenderer.INSTANCE.render(camera.getCameraPos(), mc, profiler);
+                    }
                 }
 
                 profiler.pop();
@@ -402,7 +395,7 @@ public class TestRenderHandler implements IRenderer
                     {
                         try (NbtInventory nbtInv = NbtInventory.fromInventory(inv))
                         {
-                            NbtList list = nbtInv.toNbtList(world.getRegistryManager());
+                            NbtList list = nbtInv.sorted().toNbtList(world.getRegistryManager());
                             NbtCompound nbt = new NbtCompound();
 
                             nbt.put(NbtKeys.ENDER_ITEMS, list);

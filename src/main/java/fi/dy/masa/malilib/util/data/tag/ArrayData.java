@@ -4,15 +4,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public interface ArrayData extends Iterable<BaseData>
 {
 	void clear();
 
-	boolean set(int index, BaseData value);
+	boolean set(int index, BaseData entry);
 
-	boolean add(int index, BaseData value);
+	boolean add(int index, BaseData entry);
 
 	BaseData remove(int index);
 
@@ -25,7 +25,7 @@ public interface ArrayData extends Iterable<BaseData>
 		return size() == 0;
 	}
 
-	default @Nonnull Iterator<BaseData> iterator()
+	default @NotNull Iterator<BaseData> iterator()
 	{
 		return new Iterator<>()
 		{

@@ -59,6 +59,7 @@ public abstract class MixinWorldRenderer
         ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(matrix4f, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
     }
 
+	// 'addLateDebugPass' clears the Depth Texture
     @Inject(method = "render",
             at = @At(value = "INVOKE",
                     target = "Lnet/minecraft/client/render/WorldRenderer;renderLateDebug(Lnet/minecraft/client/render/FrameGraphBuilder;Lnet/minecraft/util/math/Vec3d;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lnet/minecraft/client/render/Frustum;)V",
@@ -72,14 +73,4 @@ public abstract class MixinWorldRenderer
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(matrix4f, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
     }
-
-//    @Inject(method = "reload()V", at = @At("HEAD"))
-//    private void malilib_verifyRenderTransparencyFix(CallbackInfo ci)
-//    {
-//        if (MaLiLibConfigs.Generic.RENDER_TRANSPARENCY_FIX.getBooleanValue() &&
-//            MinecraftClient.isFabulousGraphicsOrBetter())
-//        {
-//            this.client.options.getGraphicsMode().setValue(GraphicsMode.FANCY);
-//        }
-//    }
 }

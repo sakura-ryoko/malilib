@@ -19,6 +19,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -177,14 +178,17 @@ public interface IDataSyncer
 
         if (world.getBlockState(pos).getBlock() instanceof BlockEntityProvider)
         {
-            BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
+			if (this.requestBlockEntityFromLocalServer(MinecraftClient.getInstance(), world, pos))
+			{
+				BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
 
-            if (be != null)
-            {
-                NbtCompound nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
+				if (be != null)
+				{
+					NbtCompound nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
 
-                return Pair.of(be, nbt);
-            }
+					return Pair.of(be, nbt);
+				}
+			}
         }
 
         return null;
@@ -209,18 +213,77 @@ public interface IDataSyncer
 
 		if (world.getBlockState(pos).getBlock() instanceof BlockEntityProvider)
 		{
-			BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
-
-			if (be != null)
+			if (this.requestBlockEntityFromLocalServerNew(MinecraftClient.getInstance(), world, pos))
 			{
-				return Pair.of(be, DataConverterNbt.fromVanillaCompound(be.createNbtWithIdentifyingData(world.getRegistryManager())));
+				BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
+
+				if (be != null)
+				{
+					return Pair.of(be, DataConverterNbt.fromVanillaCompound(be.createNbtWithIdentifyingData(world.getRegistryManager())));
+				}
 			}
 		}
 
 		return null;
 	}
 
-    /**
+	/**
+	 * Request the Block Entity NBT data from a local server; via it's Thread Executor, and then have it call `handleBlockEntityData()`
+	 * @param mc -
+	 * @param world -
+	 * @param pos -
+	 * @return Return if the Request should proceed.
+	 */
+	default boolean requestBlockEntityFromLocalServer(MinecraftClient mc, World world, BlockPos pos)
+	{
+		if (mc.isIntegratedServerRunning() && mc.getServer() != null &&
+			!mc.getServer().isOnThread())
+		{
+			mc.getServer().execute(() ->
+                                   {
+	                                   Pair<BlockEntity, NbtCompound> pair = this.requestBlockEntity(world, pos);
+
+	                                   if (pair != null && !pair.getRight().isEmpty())
+	                                   {
+		                                   NbtCompound nbt = pair.getRight();
+		                                   mc.execute(() -> this.handleBlockEntityData(pos, nbt, Registries.BLOCK_ENTITY_TYPE.getId(pair.getLeft().getType())));
+	                                   }
+                                   });
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Request the Block Entity NBT data from a local server; via it's Thread Executor, and then have it call `handleBlockEntityData()`
+	 * @param mc -
+	 * @param world -
+	 * @param pos -
+	 * @return Return if the Request should proceed.
+	 */
+	default boolean requestBlockEntityFromLocalServerNew(MinecraftClient mc, World world, BlockPos pos)
+	{
+		if (mc.isIntegratedServerRunning() && mc.getServer() != null &&
+				!mc.getServer().isOnThread())
+		{
+			mc.getServer().execute(() ->
+			                       {
+				                       Pair<BlockEntity, CompoundData> pair = this.requestBlockEntityNew(world, pos);
+
+				                       if (pair != null && !pair.getRight().isEmpty())
+				                       {
+										   CompoundData data = pair.getRight();
+					                       mc.execute(() -> this.handleBlockEntityData(pos, data, Registries.BLOCK_ENTITY_TYPE.getId(pair.getLeft().getType())));
+				                       }
+			                       });
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
      * Request the Entity Pair from the server;
      * if the Cache contains the Data, return the data Pair.
      * @param entityId ()
@@ -236,12 +299,15 @@ public interface IDataSyncer
 
         if (world == null) return null;
 
-        Entity entity = world.getEntityById(entityId);
+		if (this.requestEntityFromLocalServer(MinecraftClient.getInstance(), world, entityId))
+		{
+			Entity entity = world.getEntityById(entityId);
 
-        if (entity != null)
-        {
-            return Pair.of(entity, NbtEntityUtils.invokeEntityNbtDataNoPassengers(entity, entityId));
-        }
+			if (entity != null)
+			{
+				return Pair.of(entity, NbtEntityUtils.invokeEntityNbtDataNoPassengers(entity, entityId));
+			}
+		}
 
         return null;
     }
@@ -262,17 +328,78 @@ public interface IDataSyncer
 
 		if (world == null) return null;
 
-		Entity entity = world.getEntityById(entityId);
-
-		if (entity != null)
+		if (this.requestEntityFromLocalServerNew(MinecraftClient.getInstance(), world, entityId))
 		{
-			return Pair.of(entity, DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entityId));
+			Entity entity = world.getEntityById(entityId);
+
+			if (entity != null)
+			{
+				return Pair.of(entity, DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entityId));
+			}
 		}
 
 		return null;
 	}
 
-    /**
+	/**
+	 * Request the Entity NBT data from a local server; via it's Thread Executor, and then have it call `handleEntityData()`
+	 * @param mc -
+	 * @param world -
+	 * @param entityId -
+	 * @return Return if the Request should proceed.
+	 */
+	default boolean requestEntityFromLocalServer(MinecraftClient mc, World world, int entityId)
+	{
+		if (mc.isIntegratedServerRunning() && mc.getServer() != null &&
+			!mc.getServer().isOnThread())
+		{
+			mc.getServer().execute(() ->
+                                   {
+	                                   Pair<Entity, NbtCompound> pair = this.requestEntity(world, entityId);
+
+	                                   if (pair != null && !pair.getRight().isEmpty())
+	                                   {
+										   NbtCompound nbt = pair.getRight();
+		                                   mc.execute(() -> this.handleEntityData(entityId, nbt));
+	                                   }
+                                   });
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Request the Entity NBT data from a local server; via it's Thread Executor, and then have it call `handleEntityData()`
+	 * @param mc -
+	 * @param world -
+	 * @param entityId -
+	 * @return Return if the Request should proceed.
+	 */
+	default boolean requestEntityFromLocalServerNew(MinecraftClient mc, World world, int entityId)
+	{
+		if (mc.isIntegratedServerRunning() && mc.getServer() != null &&
+				!mc.getServer().isOnThread())
+		{
+			mc.getServer().execute(() ->
+			                       {
+				                       Pair<Entity, CompoundData> pair = this.requestEntityNew(world, entityId);
+
+				                       if (pair != null && !pair.getRight().isEmpty())
+				                       {
+										   CompoundData data = pair.getRight();
+					                       mc.execute(() -> this.handleEntityData(entityId, data));
+				                       }
+			                       });
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
      * Used to Obtain the Inventory Object from the Specified BlockPos,
      * and handle if it is a Double Chest.  If the Data doesn't exist in the Cache, request it.
      * @param world (Provided for compatibility with other worlds)

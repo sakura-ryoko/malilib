@@ -10,7 +10,7 @@ import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
-import fi.dy.masa.malilib.test.ConfigTestEnum;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class MaLiLibConfigGui extends GuiConfigsBase
