@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.config.IConfigHandler;
 import fi.dy.masa.malilib.config.IConfigValue;
 import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.config.options.table.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.Label;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
@@ -122,13 +123,13 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigTable             TEST_CONFIG_TABLE_4             =
                 new ConfigTable.Builder("testTable4", DOUBLE, INTEGER, STRING, BOOLEAN)
                         .setDefaultValue(TableRow.of(0.0, 1, "2", true), TableRow.of(1.0, 3, "5", false))
-                        .setLabels(List.of("Label 1", "Label 2"))
+                        .setLabels("Label 1", "Label 2", Label.of("Label 3", "With a comment!"))
                         .setComment("Comment")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_5             =
-                new ConfigTable.Builder("testTable5", DOUBLE, INTEGER, STRING)
+                new ConfigTable.Builder("testTable5", LABEL, DOUBLE, INTEGER, STRING)
                         .setComment("Another comment")
-                        .setDefaultValue(TableRow.of(213.0, 43, "22"))
+                        .setDefaultValue(TableRow.of(Label.of("Horizontal label!", "With comment too!"), 213.0, 43, "22"))
                         .setEntryCount(5)
                         .setAllowAddNewEntry(false)
                         .setLabels(List.of("Label 1", "Label 2"))

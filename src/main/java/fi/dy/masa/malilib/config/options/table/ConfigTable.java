@@ -47,6 +47,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 								                                                                                      {
 									                                                                                      case StringEntry str ->
 											                                                                                      temp.add("str" + str.getValue());
+									                                                                                      case LabelEntry lbl ->
+											                                                                                      temp.add("lbl" + lbl.getValue().label());
 									                                                                                      case IntegerEntry integer ->
 											                                                                                      temp.add("int" + integer.getValue());
 									                                                                                      case DoubleEntry dbl ->
@@ -74,6 +76,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 								                                                                               {
 									                                                                               case StringEntry str ->
 											                                                                               temp.add("str" + str.getValue());
+									                                                                               case LabelEntry lbl ->
+											                                                                               temp.add("lbl" + lbl.getValue().label());
 									                                                                               case IntegerEntry integer ->
 											                                                                               temp.add("int" + integer.getValue());
 									                                                                               case DoubleEntry dbl ->
@@ -89,7 +93,14 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 						                                                                               }
 						                                                                               return table;
 					                                                                               }),
-					Codecs.listOrSingle(PrimitiveCodec.STRING).fieldOf("labels").forGetter(ConfigTable::getLabels),
+					Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("labels").forGetter(get ->
+                                                                                                   {
+                                                                                                       ArrayList<List<String>> labels = new ArrayList<>();
+                                                                                                       for (Label label : get.getLabels()) {
+                                                                                                           labels.add(List.of(label.label(), label.comment()));
+                                                                                                       }
+                                                                                                       return labels;
+                                                                                                   }),
 					PrimitiveCodec.BOOL.fieldOf("showEntryNumbers").forGetter(ConfigTable::showEntryNumbers),
 					PrimitiveCodec.BOOL.fieldOf("allowNewEntry").forGetter(ConfigTable::allowNewEntry),
 					PrimitiveCodec.STRING.listOf().fieldOf("types").forGetter(get ->
@@ -101,6 +112,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 							                                                          {
 								                                                          case EntryTypes.STRING ->
 										                                                          typeNames.add("str");
+								                                                          case EntryTypes.LABEL ->
+										                                                          typeNames.add("lbl");
 								                                                          case EntryTypes.INTEGER ->
 										                                                          typeNames.add("int");
 								                                                          case EntryTypes.DOUBLE ->
@@ -117,20 +130,56 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 	);
 
 	private final ImmutableList<TableRow> defaultTable;
-	private final List<TableRow> table = new ArrayList<>();
+	private final List<TableRow> table = new ArrayList<>() {
+        @Override
+        public TableRow get(int index) {
+            return super.get(index);
+        }
+        @Override
+        public TableRow set(int index, TableRow element) {
+            if (element.list().size() == 3) {
+                System.out.println("Uh oh");
+            }
+            return super.set(index, element);
+        }
+
+        @Override
+        public boolean add(TableRow tableRow) {
+            if (tableRow.list().size() == 3) {
+                System.out.println("Uh oh");
+            }
+            return super.add(tableRow);
+        }
+
+        @Override
+        public void add(int index, TableRow element) {
+            if (element.list().size() == 3) {
+                System.out.println("Uh oh");
+            }
+            super.add(index, element);
+        }
+    };
 	private final @Nullable String displayString;
 	private final ImmutableList<EntryTypes> types;
-	private final List<String> labels;
+	private final List<Label> labels;
 	private final boolean allowNewEntry;
 	private final boolean showEntryNumbers;
 
-	private ConfigTable(String name, String comment, String prettyName, String translatedName, String displayString, List<List<String>> defaultValue, List<List<String>> value, List<String> labels, Boolean showEntryNumbers, Boolean allowAddNewEntry, List<String> types)
+	private ConfigTable(String name, String comment, String prettyName, String translatedName, String displayString, List<List<String>> defaultValue, List<List<String>> value, List<List<String>> labels, Boolean showEntryNumbers, Boolean allowAddNewEntry, List<String> types)
 	{
-		this(name, comment, prettyName, translatedName, strip(displayString), parse(defaultValue), labels, showEntryNumbers, allowAddNewEntry, parseTypes(types));
+		this(name, comment, prettyName, translatedName, strip(displayString), parse(defaultValue), parseLabels(labels), showEntryNumbers, allowAddNewEntry, parseTypes(types));
 		this.table.addAll(parse(value));
 	}
 
-	private static List<TableRow> parse(List<List<String>> defaultValue)
+    private static List<Label> parseLabels(List<List<String>> labels) {
+        List<Label> labelList = new ArrayList<>();
+        for (List<String> label : labels) {
+            labelList.add(Label.of(label.getFirst(), label.get(1)));
+        }
+        return labelList;
+    }
+
+    private static List<TableRow> parse(List<List<String>> defaultValue)
 	{
 		List<TableRow> temp = new ArrayList<>();
 		for (List<String> list : defaultValue)
@@ -143,6 +192,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 				switch (typeName)
 				{
 					case "str" -> entryList.add(StringEntry.of(valueString));
+					case "lbl" -> entryList.add(LabelEntry.of(valueString));
 					case "int" -> entryList.add(IntegerEntry.of(Integer.parseInt(valueString)));
 					case "dbl" -> entryList.add(DoubleEntry.of(Double.parseDouble(valueString)));
 					case "bln" -> entryList.add(BooleanEntry.of(Boolean.parseBoolean(valueString)));
@@ -163,6 +213,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 			switch (typeName)
 			{
 				case "str" -> temp.add(EntryTypes.STRING);
+				case "lbl" -> temp.add(EntryTypes.LABEL);
 				case "int" -> temp.add(EntryTypes.INTEGER);
 				case "dbl" -> temp.add(EntryTypes.DOUBLE);
 				case "bln" -> temp.add(EntryTypes.BOOLEAN);
@@ -191,7 +242,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
 	private ConfigTable(String name, String comment, String prettyName, String translatedName,
 	                    @Nullable String displayString, List<TableRow> defaultValue,
-	                    List<String> labels, boolean showEntryNumbers, boolean allowAddNewEntry,
+	                    List<Label> labels, boolean showEntryNumbers, boolean allowAddNewEntry,
 	                    EntryTypes... types)
 	{
 		super(ConfigType.TABLE, name, comment, prettyName, translatedName);
@@ -341,6 +392,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 								case "integer" -> tempList.add(IntegerEntry.getFromJsonObject(obj));
 								case "double" -> tempList.add(DoubleEntry.getFromJsonObject(obj));
 								case "boolean" -> tempList.add(BooleanEntry.getFromJsonObject(obj));
+								case "label" -> tempList.add(LabelEntry.getFromJsonObject(obj));
 							}
 						}
 					}
@@ -383,7 +435,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 	}
 
 	@Override
-	public List<String> getLabels()
+	public List<Label> getLabels()
 	{
 		return this.labels;
 	}
@@ -408,6 +460,10 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 			if (type == EntryTypes.STRING)
 			{
 				dummy.add(StringEntry.of(""));
+			}
+			else if (type == EntryTypes.LABEL)
+			{
+				dummy.add(LabelEntry.of(""));
 			}
 			else if (type == EntryTypes.INTEGER)
 			{
@@ -439,7 +495,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 		private String translatedName = null;
 		private @Nullable String displayString = null;
 		private List<TableRow> defaultValue = null;
-		private List<String> labels = List.of();
+        private List<Label>  labelList = List.of();
 		private boolean showEntryNumbers = true;
 		private boolean allowAddNewEntry = true;
 		private EntryTypes[] types;
@@ -494,16 +550,24 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 			return this;
 		}
 
-		public Builder setLabels(List<String> labels)
+		public Builder setLabels(List<Object> labels)
 		{
-			this.labels = labels;
-			return this;
+            return setLabels(labels.toArray(new Object[]{}));
 		}
 
-		public Builder setLabels(String... labels)
+		public Builder setLabels(Object... labels)
 		{
-			this.labels = List.of(labels);
-			return this;
+            this.labelList = new ArrayList<>();
+            for (Object o : labels) {
+                if (o instanceof String str) {
+                    labelList.add(Label.of(str, ""));
+                } else if (o instanceof Label label) {
+                    labelList.add(label);
+                } else {
+                    throw new IllegalArgumentException("labels contains an instance of type " + o.getClass().getSimpleName() + " which is not String or Label");
+                }
+            }
+            return this;
 		}
 
 		public Builder setShowEntryNumbers(boolean showEntryNumbers)
@@ -577,7 +641,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 				}
 			}
 
-			return new ConfigTable(this.name, this.comment, this.prettyName, this.translatedName, this.displayString, this.defaultValue, this.labels, this.showEntryNumbers, this.allowAddNewEntry, this.types);
+			return new ConfigTable(this.name, this.comment, this.prettyName, this.translatedName, this.displayString, this.defaultValue, this.labelList, this.showEntryNumbers, this.allowAddNewEntry, this.types);
 		}
 	}
 }

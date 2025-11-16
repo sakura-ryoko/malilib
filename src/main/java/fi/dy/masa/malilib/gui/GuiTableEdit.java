@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui;
 
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigTable;
+import fi.dy.masa.malilib.config.options.table.Label;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
@@ -17,6 +18,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.KeyInput;
 
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -137,7 +139,7 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
 
 		for (int i = 0; i < this.config.getLabels().size(); i++)
 		{
-			String str = this.config.getLabels().get(i);
+			Label label = this.config.getLabels().get(i);
 
 			int x = dialogLeft + 18;
 			if (this.config.showEntryNumbers())
@@ -153,7 +155,16 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
 				x = x + i * ((dialogWidth - 130) / this.config.getTypes().size()) + 2;
 			}
 
-			this.drawStringWithShadow(ctx, str, x, this.dialogTop + 25, COLOR_WHITE);
+			this.drawStringWithShadow(ctx, label.label(), x, this.dialogTop + 25, COLOR_WHITE);
+            int labelWidth = ctx.textRenderer().getWidth(label.label());
+            int maxLabelX = x + labelWidth;
+            int minLabelY = this.dialogTop + 25;
+            int maxLabelY = minLabelY + ctx.textRenderer().fontHeight;
+
+            if (label.comment().isEmpty() == false && (mouseX >= x && mouseX <= maxLabelX && mouseY >= minLabelY && mouseY <= maxLabelY))
+            {
+                ctx.drawTooltip(Text.literal(label.comment()), mouseX, mouseY);
+            }
 		}
 	}
 

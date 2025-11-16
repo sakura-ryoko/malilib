@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.config.options.table.type.*;
@@ -86,26 +85,35 @@ public class ConfigButtonTable extends ButtonGeneric
 				// honestly this is starting to become impossible :sob:
 				if (entryPart.getType() == EntryTypes.STRING)
 				{
+                    assert entryPart instanceof StringEntry;
 					sb.append(((StringEntry) entryPart).getValue());
+				}
+				if (entryPart.getType() == EntryTypes.LABEL)
+				{
+                    assert entryPart instanceof LabelEntry;
+                    sb.append(((LabelEntry) entryPart).getValue().label());
 				}
 				else if (entryPart.getType() == EntryTypes.INTEGER)
 				{
-					sb.append(((IntegerEntry) entryPart).getValue());
+                    assert entryPart instanceof IntegerEntry;
+                    sb.append(((IntegerEntry) entryPart).getValue());
 				}
 				else if (entryPart.getType() == EntryTypes.DOUBLE)
 				{
-					sb.append(((DoubleEntry) entryPart).getValue());
+                    assert entryPart instanceof DoubleEntry;
+                    sb.append(((DoubleEntry) entryPart).getValue());
 				}
 				else if (entryPart.getType() == EntryTypes.BOOLEAN)
 				{
-					sb.append(((BooleanEntry) entryPart).getValue());
+                    assert entryPart instanceof BooleanEntry;
+                    sb.append(((BooleanEntry) entryPart).getValue());
 //                } else if (entryPart.getType() == EntryTypes.KEYBIND) {
 //                    sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
 				}
 				else
 				{
 //					throw new IllegalStateException();
-					MaLiLib.debugLog("ConfigButtonTable: entryType Exception.");
+					MaLiLib.debugLog("ConfigButtonTable: entryType Exception. " + entryPart.getAsJsonObject().toString());
 				}
 
 				addDividerEntry = true;
