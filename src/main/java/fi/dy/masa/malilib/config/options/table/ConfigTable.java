@@ -97,7 +97,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 					Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("labels").forGetter(get ->
                                                                                                    {
                                                                                                        ArrayList<List<String>> labels = new ArrayList<>();
-                                                                                                       for (Label label : get.getLabels()) {
+                                                                                                       for (Label label : get.getLabels())
+                                                                                                       {
                                                                                                            labels.add(List.of(label.label(), label.comment()));
                                                                                                        }
                                                                                                        return labels;
@@ -144,9 +145,11 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 		this.table.addAll(parse(value));
 	}
 
-    private static List<Label> parseLabels(List<List<String>> labels) {
+    private static List<Label> parseLabels(List<List<String>> labels)
+    {
         List<Label> labelList = new ArrayList<>();
-        for (List<String> label : labels) {
+        for (List<String> label : labels)
+        {
             labelList.add(Label.of(label.getFirst(), label.get(1)));
         }
         return labelList;
@@ -468,7 +471,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 		private String translatedName = null;
 		private @Nullable String displayString = null;
 		private List<TableRow> defaultValue = null;
-        private List<Label>  labelList = List.of();
+        private List<Label> labels = List.of();
 		private boolean showEntryNumbers = true;
 		private boolean allowAddNewEntry = true;
 		private EntryTypes[] types;
@@ -530,13 +533,19 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
 		public Builder setLabels(Object... labels)
 		{
-            this.labelList = new ArrayList<>();
-            for (Object o : labels) {
-                if (o instanceof String str) {
-                    labelList.add(Label.of(str, ""));
-                } else if (o instanceof Label label) {
-                    labelList.add(label);
-                } else {
+            this.labels = new ArrayList<>();
+            for (Object o : labels)
+            {
+                if (o instanceof String str)
+                {
+                    this.labels.add(Label.of(str, ""));
+                }
+                else if (o instanceof Label label)
+                {
+                    this.labels.add(label);
+                }
+                else
+                {
                     throw new IllegalArgumentException("labels contains an instance of type " + o.getClass().getSimpleName() + " which is not String or Label");
                 }
             }
@@ -619,7 +628,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 				}
 			}
 
-			return new ConfigTable(this.name, this.comment, this.prettyName, this.translatedName, this.displayString, this.defaultValue, this.labelList, this.showEntryNumbers, this.allowAddNewEntry, this.types);
+			return new ConfigTable(this.name, this.comment, this.prettyName, this.translatedName, this.displayString, this.defaultValue, this.labels, this.showEntryNumbers, this.allowAddNewEntry, this.types);
 		}
 	}
 }
