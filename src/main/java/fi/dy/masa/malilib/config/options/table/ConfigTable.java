@@ -24,8 +24,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 @ApiStatus.Experimental
 public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
@@ -347,15 +347,15 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
             JsonArray arr = element.getAsJsonArray();
             List<EntryTypes> inferredEntryTypes = new ArrayList<>();
 
-            boolean isFirst = true;
-            for (JsonElement el : arr)
+            for (int row = 0; row < arr.size(); row++)
             {
+                JsonElement el = arr.get(row);
                 if (!(el instanceof JsonArray jarr))
                 {
                     throw new IllegalArgumentException("Data for " + this.getName() + " is corrupted; row is not a JSON array");
                 }
 
-                if (!isFirst && jarr.size() != inferredEntryTypes.size())
+                if (row != 0 && jarr.size() != inferredEntryTypes.size())
                 {
                     throw new IllegalArgumentException("Data for " + this.getName() + " is corrupted; row length mismatch");
                 }
@@ -378,17 +378,9 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
                     String type = obj.get("type").getAsString();
 
-                    if (isFirst)
+                    if (row == 0)
                     {
-                        switch (type)
-                        {
-                            case "string"  -> inferredEntryTypes.add(EntryTypes.STRING);
-                            case "integer" -> inferredEntryTypes.add(EntryTypes.INTEGER);
-                            case "double"  -> inferredEntryTypes.add(EntryTypes.DOUBLE);
-                            case "boolean" -> inferredEntryTypes.add(EntryTypes.BOOLEAN);
-                            case "label"   -> inferredEntryTypes.add(EntryTypes.LABEL);
-                            default -> throw new IllegalArgumentException("Unknown entry type: " + type);
-                        }
+                        inferredEntryTypes.add(EntryTypes.valueOf(type.toUpperCase(Locale.ROOT)));
                     }
                     else
                     {
@@ -410,7 +402,6 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
                 }
 
                 tempTable.add(new TableRow(tempList));
-                isFirst = false;
             }
 
             if (!this.types.equals(inferredEntryTypes) && !inferredEntryTypes.isEmpty())
