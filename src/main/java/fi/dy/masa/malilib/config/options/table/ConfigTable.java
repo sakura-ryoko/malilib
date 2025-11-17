@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @ApiStatus.Experimental
@@ -331,66 +332,106 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 	}
 
 	@Override
-	public void setValueFromJsonElement(JsonElement element)
-	{
-		List<TableRow> oldTable = new ArrayList<>();
+    public void setValueFromJsonElement(JsonElement element)
+    {
+        List<TableRow> oldTable = new ArrayList<>();
+        List<TableRow> tempTable = new ArrayList<>();
 
-		for (TableRow entry : this.table)
-		{
-			oldTable.add(new TableRow(entry.list()));
-		}
+        for (TableRow entry : this.table)
+        {
+            oldTable.add(new TableRow(entry.list()));
+        }
 
-		this.table.clear();
+        try
+        {
+            JsonArray arr = element.getAsJsonArray();
+            List<EntryTypes> inferredEntryTypes = new ArrayList<>();
 
-		try
-		{
-			JsonArray arr = element.getAsJsonArray();
+            boolean isFirst = true;
+            for (JsonElement el : arr)
+            {
+                if (!(el instanceof JsonArray jarr))
+                {
+                    throw new IllegalArgumentException("Data for " + this.getName() + " is corrupted; row is not a JSON array");
+                }
 
-			for (JsonElement el : arr)
-			{
-				if (!(el instanceof JsonArray jarr))
-				{
-					throw new Exception();
+                if (!isFirst && jarr.size() != inferredEntryTypes.size())
+                {
+                    throw new IllegalArgumentException("Data for " + this.getName() + " is corrupted; row length mismatch");
+                }
 
-				}
-				List<Entry> tempList = new ArrayList<>();
-				for (JsonElement el2 : jarr)
-				{
-					if (el2.isJsonObject())
-					{
-						JsonObject obj = el2.getAsJsonObject();
-						if (obj.has("type"))
-						{
-							switch (obj.get("type").getAsString())
-							{
-//                                case "keybind" -> tempList.add(KeybindEntry.getFromJsonObject(obj));
-								case "string" -> tempList.add(StringEntry.getFromJsonObject(obj));
-								case "integer" -> tempList.add(IntegerEntry.getFromJsonObject(obj));
-								case "double" -> tempList.add(DoubleEntry.getFromJsonObject(obj));
-								case "boolean" -> tempList.add(BooleanEntry.getFromJsonObject(obj));
-								case "label" -> tempList.add(LabelEntry.getFromJsonObject(obj));
-							}
-						}
-					}
-					else
-					{
-						throw new Exception();
-					}
-				}
+                List<Entry> tempList = new ArrayList<>();
 
-				this.table.add(new TableRow(tempList));
-			}
+                for (int col = 0; col < jarr.size(); col++)
+                {
+                    JsonElement el2 = jarr.get(col);
+                    if (!el2.isJsonObject())
+                    {
+                        throw new IllegalArgumentException("Data for " + this.getName() + " is corrupted; entry in row is not a json object");
+                    }
 
-			if (!this.table.equals(oldTable))
-			{
-				onValueChanged();
-			}
-		}
-		catch (Exception e)
-		{
-			MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
-		}
-	}
+                    JsonObject obj = el2.getAsJsonObject();
+                    if (!obj.has("type"))
+                    {
+                        throw new IllegalArgumentException("Data for " + this.getName() + " is corrupted; entry missing 'type'");
+                    }
+
+                    String type = obj.get("type").getAsString();
+
+                    if (isFirst)
+                    {
+                        switch (type)
+                        {
+                            case "string"  -> inferredEntryTypes.add(EntryTypes.STRING);
+                            case "integer" -> inferredEntryTypes.add(EntryTypes.INTEGER);
+                            case "double"  -> inferredEntryTypes.add(EntryTypes.DOUBLE);
+                            case "boolean" -> inferredEntryTypes.add(EntryTypes.BOOLEAN);
+                            case "label"   -> inferredEntryTypes.add(EntryTypes.LABEL);
+                            default -> throw new IllegalArgumentException("Unknown entry type: " + type);
+                        }
+                    }
+                    else
+                    {
+                        EntryTypes expected = inferredEntryTypes.get(col);
+                        if (!expected.name().equalsIgnoreCase(type))
+                        {
+                            throw new IllegalArgumentException("Data for " + this.getName() + " is corrupted; not all stored rows have the same types (mismatch at column " + col + ")");
+                        }
+                    }
+
+                    switch (type)
+                    {
+                        case "string"  -> tempList.add(StringEntry.getFromJsonObject(obj));
+                        case "integer" -> tempList.add(IntegerEntry.getFromJsonObject(obj));
+                        case "double"  -> tempList.add(DoubleEntry.getFromJsonObject(obj));
+                        case "boolean" -> tempList.add(BooleanEntry.getFromJsonObject(obj));
+                        case "label"   -> tempList.add(LabelEntry.getFromJsonObject(obj));
+                    }
+                }
+
+                tempTable.add(new TableRow(tempList));
+                isFirst = false;
+            }
+
+            if (!this.types.equals(inferredEntryTypes) && !inferredEntryTypes.isEmpty())
+            {
+                throw new IllegalArgumentException("Data for " + this.getName() + " is corrupted; types in the config don't match the stored types, expected " + this.types + " but got " + inferredEntryTypes);
+            }
+
+            this.table.clear();
+            this.table.addAll(tempTable);
+
+            if (!this.table.equals(oldTable))
+            {
+                onValueChanged();
+            }
+        }
+        catch (Exception e)
+        {
+            // I believe this should be `error()` and not `warn()` considering the Entry classes also use error on failed parsing
+            MaLiLib.LOGGER.error("Failed to set config value for '{}' from the JSON element '{}': {}", this.getName(), element, e.getMessage(), e);
+        }
+    }
 
 	@Override
 	public JsonElement getAsJsonElement()
