@@ -287,11 +287,29 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						}
 						else if (type == EntryTypes.INTEGER)
 						{
-							temp.list().add(IntegerEntry.of(Integer.parseInt(text)));
+                            if (text.isEmpty())
+                            {
+                                tfw.textField().setText("0");
+                                temp.list().add(IntegerEntry.of(0));
+                                checkResetButtonState();
+                            }
+							else
+                            {
+                                temp.list().add(IntegerEntry.of(Integer.parseInt(text)));
+                            }
 						}
 						else if (type == EntryTypes.DOUBLE)
 						{
-							temp.list().add(DoubleEntry.of(Double.parseDouble(text)));
+                            if (text.isEmpty())
+                            {
+                                tfw.textField().setText("0.0");
+                                temp.list().add(DoubleEntry.of(0.0));
+                                checkResetButtonState();
+                            }
+                            else
+                            {
+                                temp.list().add(DoubleEntry.of(Double.parseDouble(text)));
+                            }
 						}
 //                    } else if (type == EntryTypes.KEYBIND) {
 //                        assert this.entries.get(i) instanceof KeybindEntry;
