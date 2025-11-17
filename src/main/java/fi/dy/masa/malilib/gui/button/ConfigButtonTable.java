@@ -82,40 +82,45 @@ public class ConfigButtonTable extends ButtonGeneric
 				{
 					sb.append(", ");
 				}
-				// honestly this is starting to become impossible :sob:
-				if (entryPart.getType() == EntryTypes.STRING)
-				{
-                    assert entryPart instanceof StringEntry;
-					sb.append(((StringEntry) entryPart).getValue());
-				}
-				if (entryPart.getType() == EntryTypes.LABEL)
-				{
-                    assert entryPart instanceof LabelEntry;
-                    sb.append(((LabelEntry) entryPart).getValue().label());
-				}
-				else if (entryPart.getType() == EntryTypes.INTEGER)
-				{
-                    assert entryPart instanceof IntegerEntry;
-                    sb.append(((IntegerEntry) entryPart).getValue());
-				}
-				else if (entryPart.getType() == EntryTypes.DOUBLE)
-				{
-                    assert entryPart instanceof DoubleEntry;
-                    sb.append(((DoubleEntry) entryPart).getValue());
-				}
-				else if (entryPart.getType() == EntryTypes.BOOLEAN)
-				{
-                    assert entryPart instanceof BooleanEntry;
-                    sb.append(((BooleanEntry) entryPart).getValue());
-//                } else if (entryPart.getType() == EntryTypes.KEYBIND) {
-//                    sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
-				}
-				else
-				{
-//					throw new IllegalStateException();
-					MaLiLib.debugLog("ConfigButtonTable: entryType Exception. " + entryPart.getAsJsonObject().toString());
-				}
 
+                switch (entryPart.getType())
+                {
+                    case STRING ->
+                    {
+                        assert entryPart instanceof StringEntry;
+                        sb.append(((StringEntry) entryPart).getValue());
+                    }
+                    case LABEL ->
+                    {
+                        assert entryPart instanceof LabelEntry;
+                        sb.append(((LabelEntry) entryPart).getValue().label());
+                    }
+                    case INTEGER ->
+                    {
+                        assert entryPart instanceof IntegerEntry;
+                        sb.append(((IntegerEntry) entryPart).getValue());
+                    }
+                    case DOUBLE ->
+                    {
+                        assert entryPart instanceof DoubleEntry;
+                        sb.append(((DoubleEntry) entryPart).getValue());
+                    }
+                    case BOOLEAN ->
+                    {
+                        assert entryPart instanceof BooleanEntry;
+                        sb.append(((BooleanEntry) entryPart).getValue());
+                    }
+//                    case KEYBIND ->
+//                    {
+//                        assert entryPart instanceof KeybindEntry
+//                        sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
+//                    }
+                    case null, default ->
+                    {
+//					      throw new IllegalStateException();
+                        MaLiLib.debugLog("ConfigButtonTable: entryType Exception. " + entryPart.getAsJsonObject().toString());
+                    }
+                }
 				addDividerEntry = true;
 			}
 
