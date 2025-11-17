@@ -70,6 +70,11 @@ public class LabelEntry extends Entry
         return false;
     }
 
+    @Override
+    public String asString() {
+        return this.getValue().label();
+    }
+
     public static LabelEntry getFromJsonObject(JsonObject obj)
     {
         String label = obj.get("label").getAsString();

@@ -2,8 +2,8 @@ package fi.dy.masa.malilib.gui.button;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.config.options.table.type.*;
@@ -63,69 +63,21 @@ public class ConfigButtonTable extends ButtonGeneric
 			this.displayString = this.config.getDisplayString();
 			return;
 		}
+        // alternative way I guess
+//        List<String> list = this.config.getTable().stream()
+//                .map(row -> row.list().stream()
+//                        .map(Entry::asString)
+//                        .collect(Collectors.joining(", ")))
+//                .toList();
+
 		List<String> list = new ArrayList<>();
 
-//		boolean addDivider = false;
 		for (TableRow row : this.config.getTable())
 		{
-			StringBuilder sb = new StringBuilder();
-			boolean addDividerEntry = false;
-
-//			if (addDivider)
-//			{
-//				sb.append("; ");
-//			}
-
-			for (Entry entryPart : row.list())
-			{
-				if (addDividerEntry)
-				{
-					sb.append(", ");
-				}
-
-                switch (entryPart.getType())
-                {
-                    case STRING ->
-                    {
-                        assert entryPart instanceof StringEntry;
-                        sb.append(((StringEntry) entryPart).getValue());
-                    }
-                    case LABEL ->
-                    {
-                        assert entryPart instanceof LabelEntry;
-                        sb.append(((LabelEntry) entryPart).getValue().label());
-                    }
-                    case INTEGER ->
-                    {
-                        assert entryPart instanceof IntegerEntry;
-                        sb.append(((IntegerEntry) entryPart).getValue());
-                    }
-                    case DOUBLE ->
-                    {
-                        assert entryPart instanceof DoubleEntry;
-                        sb.append(((DoubleEntry) entryPart).getValue());
-                    }
-                    case BOOLEAN ->
-                    {
-                        assert entryPart instanceof BooleanEntry;
-                        sb.append(((BooleanEntry) entryPart).getValue());
-                    }
-//                    case KEYBIND ->
-//                    {
-//                        assert entryPart instanceof KeybindEntry
-//                        sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
-//                    }
-                    case null, default ->
-                    {
-//					      throw new IllegalStateException();
-                        MaLiLib.debugLog("ConfigButtonTable: entryType Exception. " + entryPart.getAsJsonObject().toString());
-                    }
-                }
-				addDividerEntry = true;
-			}
-
-			list.add(sb.toString());
-//			addDivider = true;
+            String result = row.list().stream()
+                    .map(Entry::asString)
+                    .collect(Collectors.joining(", "));
+			list.add(result);
 		}
 
 		this.displayString = StringUtils.getClampedDisplayStringRenderlen(list, this.width - 10, "{", "}");

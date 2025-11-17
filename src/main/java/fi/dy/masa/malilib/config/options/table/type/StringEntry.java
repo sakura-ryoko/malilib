@@ -57,7 +57,12 @@ public class StringEntry extends Entry
 		return !this.value.equals(other.value);
 	}
 
-	public static StringEntry getFromJsonObject(JsonObject obj)
+    @Override
+    public String asString() {
+        return this.getValue();
+    }
+
+    public static StringEntry getFromJsonObject(JsonObject obj)
 	{
 		String val = obj.get("value").getAsString();
 		return StringEntry.of(val);

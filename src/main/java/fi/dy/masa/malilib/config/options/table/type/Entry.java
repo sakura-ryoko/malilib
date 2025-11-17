@@ -41,4 +41,6 @@ public abstract class Entry
     public abstract Entry copy();
 
     public abstract boolean wasConfigModified(Entry entry);
+
+    public abstract String asString();
 }
