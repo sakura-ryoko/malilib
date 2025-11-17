@@ -107,15 +107,20 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_1             =
-                new ConfigTable.Builder("testTable1", STRING, INTEGER, DOUBLE, LABEL, BOOLEAN, BOOLEAN)
-                        .setDefaultValue(TableRow.of("", 0, 0.0, Label.of("Label"), false, false))
+                new ConfigTable.Builder("testTable1", STRING, INTEGER, BOOLEAN, LABEL, DOUBLE)
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_2             =
-                new ConfigTable.Builder("testTable2", INTEGER, INTEGER)
-                        .setEntryCount(1)
+                new ConfigTable.Builder("testTable2", LABEL, DOUBLE, DOUBLE, DOUBLE)
+                        .setEntryCount(4)
+                        .setDefaultValue(
+                                TableRow.of(Label.of("cat"), 0.0, 0.0, 0.0),
+                                TableRow.of(Label.of("dog"), 0.0, 0.0, 0.0),
+                                TableRow.of(Label.of("cow"), 0.0, 0.0, 0.0),
+                                TableRow.of(Label.of("sheep"), 0.0, 0.0, 0.0)
+                        )
                         .setAllowAddNewEntry(false)
                         .setDisplayString("Display string")
-                        .setLabels("Label 1", "Label 2")
+                        .setLabels("X position", "Y position", "Z position")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_3             =
                 new ConfigTable.Builder("testTable3", STRING, INTEGER, INTEGER)
