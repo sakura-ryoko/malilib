@@ -80,6 +80,6 @@ public class ConfigButtonTable extends ButtonGeneric
 			list.add(result);
 		}
 
-		this.displayString = StringUtils.getClampedDisplayStringRenderlen(list, this.width - 10, "{", "}");
+		this.displayString = StringUtils.getClampedDisplayStringRenderlen(list, this.width - 20, "{", "}");
 	}
 }
