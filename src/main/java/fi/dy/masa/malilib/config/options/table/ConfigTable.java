@@ -480,6 +480,10 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
 		public Builder(String name, EntryTypes... types)
 		{
+            if (types.length == 0)
+            {
+                throw new IllegalStateException("There must be at least one type.");
+            }
 			this.name = name;
 			this.types = types;
 		}
@@ -566,6 +570,10 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
 		public Builder setTypes(EntryTypes... types)
 		{
+            if (types.length == 0)
+            {
+                throw new IllegalStateException("There must be at least one type.");
+            }
 			this.types = types;
 			return this;
 		}
