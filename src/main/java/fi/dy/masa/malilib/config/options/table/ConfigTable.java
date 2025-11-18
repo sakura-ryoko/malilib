@@ -550,12 +550,6 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 			return this;
 		}
 
-		public Builder setDefaultValue(List<TableRow> defaultValue)
-		{
-			this.defaultValue = defaultValue;
-			return this;
-		}
-
 		public Builder setDefaultValue(TableRow... defaultValue)
 		{
 			this.defaultValue = List.of(defaultValue);
@@ -616,8 +610,19 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 			return this;
 		}
 
-		public ConfigTable build()
+        public ConfigTable build()
+        {
+            return build(false);
+        }
+
+		public ConfigTable build(boolean ignoreWarning)
 		{
+            // argument checking
+            if (this.defaultValue != null && this.defaultValue.size() != this.entryCount && this.entryCount > 0 && this.defaultValue.size() > 1)
+            {
+                throw new IllegalArgumentException("Default value (" + this.defaultValue.size() + ") must have the same count as entryCount (" + this.entryCount + ")");
+            }
+
 			if (this.defaultValue == null)
 			{
 				this.defaultValue = new ArrayList<>();
@@ -633,7 +638,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 					this.defaultValue.add(new TableRow(this.defaultValue.getFirst().list()));
 				}
 			}
-			else if (this.entryCount > 0)
+			else if (this.entryCount > 0 && this.defaultValue.isEmpty())
 			{
 				for (int i = 0; i < this.entryCount; i++)
 				{
@@ -661,7 +666,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 						throw new IllegalArgumentException("Type mismatch: expected " + this.types[j] + " but got " + v.list().get(j).getType().name());
 					}
 
-                    if (this.allowAddNewEntry && this.types[j] == EntryTypes.LABEL && FabricLoader.getInstance().isDevelopmentEnvironment())
+                    if (this.allowAddNewEntry && this.types[j] == EntryTypes.LABEL && FabricLoader.getInstance().isDevelopmentEnvironment() && !ignoreWarning)
                     {
                         MaLiLib.LOGGER.warn("You probably shouldn't enable allowAddNewEntry if you are using labels.");
                     }

@@ -11,4 +11,9 @@ public record Label(String label, String comment)
     {
         return new Label(label, "");
     }
+
+    public static Label of()
+    {
+        return new Label("", "");
+    }
 }

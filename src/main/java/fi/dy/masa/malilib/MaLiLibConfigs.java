@@ -108,19 +108,19 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_1             =
                 new ConfigTable.Builder("testTable1", STRING, INTEGER, BOOLEAN, LABEL, DOUBLE)
-                        .build().apply(TEST_KEY);
+                        .build(true).apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_2             =
                 new ConfigTable.Builder("testTable2", LABEL, DOUBLE, DOUBLE, DOUBLE)
                         .setEntryCount(4)
                         .setDefaultValue(
-                                TableRow.of(Label.of("cat"), 0.0, 0.0, 0.0),
-                                TableRow.of(Label.of("dog"), 0.0, 0.0, 0.0),
-                                TableRow.of(Label.of("cow"), 0.0, 0.0, 0.0),
-                                TableRow.of(Label.of("sheep"), 0.0, 0.0, 0.0)
+                                T(L("cat:"), 0.0, 0.0, 0.0),
+                                T(L("dog:"), 0.0, 0.0, 0.0),
+                                T(L("cow:"), 0.0, 0.0, 0.0),
+                                T(L("fox:"), 0.0, 0.0, 0.0)
                         )
                         .setAllowAddNewEntry(false)
                         .setDisplayString("Display string")
-                        .setLabels("X position", "Y position", "Z position")
+                        .setLabels("", "X position", "Y position", "Z position")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_3             =
                 new ConfigTable.Builder("testTable3", STRING, INTEGER, INTEGER)
@@ -128,18 +128,35 @@ public class MaLiLibConfigs implements IConfigHandler
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_4             =
                 new ConfigTable.Builder("testTable4", DOUBLE, INTEGER, STRING, BOOLEAN)
-                        .setDefaultValue(TableRow.of(0.0, 1, "2", true), TableRow.of(1.0, 3, "5", false))
-                        .setLabels("Label 1", Label.of("Label 2", "With a comment!"), Label.of("Label 3", "With a big\n\nand scary\n\ncomment >:3"))
+                        .setDefaultValue(T(0.0, 1, "2", true), T(1.0, 3, "5", false))
+                        .setLabels("Label 1", L("Label 2", "With a comment!"), L("Label 3", "With a big\n\nand scary\n\ncomment >:3"))
                         .setComment("Comment")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_5             =
                 new ConfigTable.Builder("testTable5", LABEL, DOUBLE, INTEGER, STRING)
                         .setComment("Another comment")
-                        .setDefaultValue(TableRow.of(Label.of("Horizontal label!", "With comments too!"), 213.0, 43, "22"))
+                        .setDefaultValue(T(L("Horizontal label!", "With comments too!"), 213.0, 43, "22"))
                         .setEntryCount(5)
                         .setAllowAddNewEntry(false)
                         .setLabels(List.of("Label 1", "Label 2"))
                         .build().apply(TEST_KEY);
+
+        private static TableRow T(Object... objects)
+        {
+            return TableRow.of(objects);
+        }
+
+        private static Label L(String... strings)
+        {
+            return switch (strings.length)
+            {
+                case 0 -> Label.of();
+                case 1 -> Label.of(strings[0]);
+                case 2 -> Label.of(strings[0], strings[1]);
+                default -> throw new IllegalArgumentException("Must be < 2 entries");
+            };
+        }
+
         public static final ConfigInteger           TEST_BUNDLE_PREVIEW_WIDTH       = new ConfigInteger("testBundlePreviewWidth", 9, 6, 9, "Test Bundle Preview Width").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY          = new ConfigBooleanHotkeyed("testInventoryOverlay", false, "LEFT_ALT").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY_OG       = new ConfigBooleanHotkeyed("testInventoryOverlayOG", false, "").apply(TEST_KEY);

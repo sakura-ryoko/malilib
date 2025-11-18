@@ -12,19 +12,20 @@ public class LabelEntry extends Entry
         this.value = value;
     }
 
-    public LabelEntry(String label)
-    {
-        this.value = Label.of(label);
-    }
-
     public LabelEntry(String label, String comment)
     {
         this.value = Label.of(label, comment);
     }
 
+    public static LabelEntry of()
+    {
+        return new LabelEntry("", "");
+    }
+
+
     public static LabelEntry of(String label)
     {
-        return new LabelEntry(label);
+        return new LabelEntry(label, "");
     }
 
     public static LabelEntry of(String label, String comment)

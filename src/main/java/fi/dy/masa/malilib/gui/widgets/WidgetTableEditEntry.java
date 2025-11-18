@@ -308,7 +308,15 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
                             }
                             else
                             {
-                                temp.list().add(DoubleEntry.of(Double.parseDouble(text)));
+                                try
+                                {
+                                    temp.list().add(DoubleEntry.of(Double.parseDouble(text)));
+                                }
+                                // TODO: remove try/catch when GuiTextFieldDouble's predicate gets added back
+                                catch (NumberFormatException ignored)
+                                {
+                                    temp.list().add(DoubleEntry.of(0.0));
+                                }
                             }
 						}
 //                    } else if (type == EntryTypes.KEYBIND) {
