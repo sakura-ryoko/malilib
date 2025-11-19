@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.util.data.tag.converter;
 
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.nbt.*;
 
@@ -9,7 +8,6 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.*;
 
-@ApiStatus.Experimental
 public class DataConverterNbt
 {
 //	private static final AnsiLogger LOGGER = new AnsiLogger(DataConverterNbt.class, true, true);

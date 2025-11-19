@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.ApiStatus;
+
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.entity.IMixinPiglinEntity;
 import fi.dy.masa.malilib.util.InventoryUtils;
@@ -32,7 +32,6 @@ import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.data.DataEntityUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
-import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 
 /**
  * Used as a common Server Data Syncer interface used by the IInventoryOverlayHandler Interface.
@@ -106,7 +105,17 @@ public interface IDataSyncer
      * @return ()
      */
     @Nullable
-    default NbtCompound getFromBlockEntityCacheNbt(BlockPos pos) { return null; }
+    default NbtCompound getFromBlockEntityCacheNbt(BlockPos pos)
+    {
+		CompoundData data =this.getFromBlockEntityCacheData(pos);
+
+		if (data != null)
+		{
+			return DataConverterNbt.toVanillaCompound(data);
+		}
+
+		return new NbtCompound();
+	}
 
 	/**
 	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
@@ -136,7 +145,17 @@ public interface IDataSyncer
      * @return ()
      */
     @Nullable
-    default NbtCompound getFromEntityCacheNbt(int entityId) { return null; }
+    default NbtCompound getFromEntityCacheNbt(int entityId)
+    {
+	    CompoundData data =this.getFromEntityCacheData(entityId);
+
+	    if (data != null)
+	    {
+		    return DataConverterNbt.toVanillaCompound(data);
+	    }
+
+	    return new NbtCompound();
+    }
 
 	/**
 	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
@@ -157,6 +176,19 @@ public interface IDataSyncer
      */
     @Nullable
     default Entity getFromEntityCache(int entityId) { return null; }
+
+	@Nullable
+	default Pair<BlockEntity, NbtCompound> requestBlockEntityNbt(World world, BlockPos pos)
+	{
+		Pair<BlockEntity, CompoundData> pair = this.requestBlockEntity(world, pos);
+
+		if (pair != null)
+		{
+			return Pair.of(pair.getLeft(), DataConverterNbt.toVanillaCompound(pair.getRight()));
+		}
+
+		return null;
+	}
 
 	/**
 	 * Request the Block Entity Pair from the server;
@@ -183,6 +215,19 @@ public interface IDataSyncer
 			{
 				return Pair.of(be, DataConverterNbt.fromVanillaCompound(be.createNbtWithIdentifyingData(world.getRegistryManager())));
 			}
+		}
+
+		return null;
+	}
+
+	@Nullable
+	default Pair<Entity, NbtCompound> requestEntityNbt(World world, int entityId)
+	{
+		Pair<Entity, CompoundData> pair = this.requestEntity(world, entityId);
+
+		if (pair != null)
+		{
+			return Pair.of(pair.getLeft(), DataConverterNbt.toVanillaCompound(pair.getRight()));
 		}
 
 		return null;
@@ -363,14 +408,20 @@ public interface IDataSyncer
      * @param type (Optional)
      * @return (BlockEntity|Null)
      */
-    default BlockEntity handleBlockEntityData(BlockPos pos, NbtCompound nbt, @Nullable Identifier type) { return null; }
+    default BlockEntity handleBlockEntityData(BlockPos pos, NbtCompound nbt, @Nullable Identifier type)
+    {
+		return this.handleBlockEntityData(pos, DataConverterNbt.fromVanillaCompound(nbt), type);
+	}
 
     /**
      * Used by your Packet Receiver to hande incoming data from the entityId and the Server Side NBT tags.
      * @param nbt ()
      * @return (Entity|Null)
      */
-    default Entity handleEntityData(int entityId, NbtCompound nbt) { return null; }
+    default Entity handleEntityData(int entityId, NbtCompound nbt)
+    {
+		return handleEntityData(entityId, DataConverterNbt.fromVanillaCompound(nbt));
+	}
 
     /**
      * Used by your Packet Receiver if any Bulk handling of NBT Tags for multiple Entities is required.
@@ -378,14 +429,20 @@ public interface IDataSyncer
      * @param transactionId ()
      * @param nbt ()
      */
-    default void handleBulkEntityData(int transactionId, NbtCompound nbt) {}
+    default void handleBulkEntityData(int transactionId, NbtCompound nbt)
+    {
+		this.handleBulkEntityData(transactionId, DataConverterNbt.fromVanillaCompound(nbt));
+    }
 
     /**
      * Vanilla QueryNbt Packet Receiver & Handling
      * @param transactionId (QueryNbt Transaction Id)
      * @param nbt (The NBT Data returned by the server)
      */
-    default void handleVanillaQueryNbt(int transactionId, NbtCompound nbt) {}
+    default void handleVanillaQueryNbt(int transactionId, NbtCompound nbt)
+    {
+		this.handleVanillaQueryNbt(transactionId, DataConverterNbt.fromVanillaCompound(nbt));
+    }
 
 	/**
 	 * Used by your Packet Receiver to hande incoming data from BlockPos and the Server Side NBT tags.
