@@ -1,7 +1,8 @@
 package fi.dy.masa.malilib.render;
 
-import org.jetbrains.annotations.ApiStatus;
-
+/**
+ * Replaces the old / ugly method.
+ */
 public enum InventoryOverlayType
 {
 	BREWING_STAND,

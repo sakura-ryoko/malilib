@@ -7,6 +7,7 @@ import net.minecraft.util.StringIdentifiable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import org.jetbrains.annotations.NotNull;
 
 public enum MessageOutputType implements IConfigOptionListEntry, StringIdentifiable
 {
@@ -16,7 +17,7 @@ public enum MessageOutputType implements IConfigOptionListEntry, StringIdentifia
 
     public static final StringIdentifiable.EnumCodec<MessageOutputType> CODEC = StringIdentifiable.createCodec(MessageOutputType::values);
     public static final PacketCodec<ByteBuf, MessageOutputType> PACKET_CODEC = PacketCodecs.STRING.xmap(MessageOutputType::fromStringStatic, MessageOutputType::asString);
-    public static final ImmutableList<MessageOutputType> VALUES = ImmutableList.copyOf(values());
+    public static final ImmutableList<@NotNull MessageOutputType> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
     private final String translationKey;

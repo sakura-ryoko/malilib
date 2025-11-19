@@ -132,10 +132,10 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 			).apply(inst, ConfigTable::new)
 	);
 
-	private final ImmutableList<TableRow> defaultTable;
+	private final ImmutableList<@NotNull TableRow> defaultTable;
 	private final List<TableRow> table = new ArrayList<>();
 	private final @Nullable String displayString;
-	private final ImmutableList<EntryTypes> types;
+	private final ImmutableList<@NotNull EntryTypes> types;
 	private final List<Label> labels;
 	private final boolean allowNewEntry;
 	private final boolean showEntryNumbers;
@@ -227,7 +227,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 		this.allowNewEntry = allowAddNewEntry;
 		this.showEntryNumbers = showEntryNumbers;
 
-		ImmutableList.Builder<EntryTypes> ilb = ImmutableList.builder();
+		ImmutableList.Builder<@NotNull EntryTypes> ilb = ImmutableList.builder();
 		for (EntryTypes type : types)
 		{
 			ilb.add(type);
@@ -235,7 +235,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
 		this.types = ilb.build();
 		this.displayString = displayString;
-		ImmutableList.Builder<TableRow> ilb2 = ImmutableList.builder();
+		ImmutableList.Builder<@NotNull TableRow> ilb2 = ImmutableList.builder();
 		for (TableRow list : defaultValue)
 		{
 			TableRow newEntry = new TableRow();
@@ -265,15 +265,15 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 	}
 
 	@Override
-	public ImmutableList<TableRow> getDefaultTable()
+	public ImmutableList<@NotNull TableRow> getDefaultTable()
 	{
 		return this.defaultTable;
 	}
 
 	@Override
-	public ImmutableList<List<Object>> getDefaultRawTable()
+	public ImmutableList<@NotNull List<Object>> getDefaultRawTable()
 	{
-		ImmutableList.Builder<List<Object>> ilb = new ImmutableList.Builder<>();
+		ImmutableList.Builder<@NotNull List<Object>> ilb = new ImmutableList.Builder<>();
 		for (TableRow entry : this.defaultTable)
 		{
 			List<Object> rawEntry = new ArrayList<>(entry.list());

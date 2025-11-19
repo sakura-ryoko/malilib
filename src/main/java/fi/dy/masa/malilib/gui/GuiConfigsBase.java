@@ -91,16 +91,16 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                     super.setSelectedEntry(index);
 
                     if (this.selectedEntry != null && client != null &&
-	                    this.selectedEntry.getConfigScreenSupplier() != null)
+						this.selectedEntry.configScreenSupplier() != null)
                     {
-                        client.setScreen(this.selectedEntry.getConfigScreenSupplier().get());
+                        client.setScreen(this.selectedEntry.configScreenSupplier().get());
                     }
                 }
 
                 @Override
                 protected String getDisplayString(ModInfo entry)
                 {
-                    return entry.getModName();
+                    return entry.modName();
                 }
             };
 

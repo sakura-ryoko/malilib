@@ -28,7 +28,7 @@ public interface DataView
 
     boolean getBoolean(String key);
 
-    byte getByte(String key);
+	byte getByte(String key);
 
     short getShort(String key);
 

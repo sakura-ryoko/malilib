@@ -4,79 +4,80 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.gui.GuiBase;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Post-ReWrite code
  */
-public class ModInfo
+public record ModInfo(String modId, String modName, @Nullable Supplier<GuiBase> configScreenSupplier)
 {
-    public static final ModInfo NO_MOD = new ModInfo("-", "-");
+	public static final ModInfo NO_MOD = new ModInfo("-", "-");
 
-    protected final String modId;
-    protected final String modName;
-    protected final @Nullable Supplier<GuiBase> configScreenSupplier;
+	public ModInfo(String modId, String modName)
+	{
+		this(modId, modName, null);
+	}
 
-    public ModInfo(String modId, String modName)
-    {
-        this.modId = modId;
-        this.modName = modName;
-        this.configScreenSupplier = null;
-    }
+	/**
+	 * @return the mod ID of this mod
+	 */
+	@Override
+	public String modId()
+	{
+		return this.modId;
+	}
 
-    public ModInfo(String modId, String modName, @Nullable Supplier<GuiBase> configScreenSupplier)
-    {
-        this.modId = modId;
-        this.modName = modName;
-        this.configScreenSupplier = configScreenSupplier;
-    }
+	/**
+	 * @return the human-friendly mod name of this mod
+	 */
+	@Override
+	public String modName()
+	{
+		return this.modName;
+	}
 
-    /**
-     * @return the mod ID of this mod
-     */
-    public String getModId()
-    {
-        return this.modId;
-    }
+	/**
+	 * @return the supplier for the config screen for this mod, or null if there is none
+	 */
+	@Override
+	@Nullable
+	public Supplier<GuiBase> configScreenSupplier()
+	{
+		return configScreenSupplier;
+	}
 
-    /**
-     * @return the human-friendly mod name of this mod
-     */
-    public String getModName()
-    {
-        return this.modName;
-    }
+	@Override
+	public @NotNull String toString()
+	{
+		return "ModInfo{modId='" + this.modId + "', modName='" + this.modName + "'}";
+	}
 
-    /**
-     * @return the supplier for the config screen for this mod, or null if there is none
-     */
-    @Nullable
-    public Supplier<GuiBase> getConfigScreenSupplier() {
-        return configScreenSupplier;
-    }
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (o == null || this.getClass() != o.getClass())
+		{
+			return false;
+		}
 
-    @Override
-    public String toString()
-    {
-        return "ModInfo{modId='" + this.modId + "', modName='" + this.modName + "'}";
-    }
+		ModInfo modInfo = (ModInfo) o;
 
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) { return true; }
-        if (o == null || this.getClass() != o.getClass()) { return false; }
+		if (!this.modId.equals(modInfo.modId))
+		{
+			return false;
+		}
+		return this.modName.equals(modInfo.modName);
+	}
 
-        ModInfo modInfo = (ModInfo) o;
-
-        if (!this.modId.equals(modInfo.modId)) { return false; }
-        return this.modName.equals(modInfo.modName);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        int result = this.modId.hashCode();
-        result = 31 * result + this.modName.hashCode();
-        return result;
-    }
+	@Override
+	public int hashCode()
+	{
+		int result = this.modId.hashCode();
+		result = 31 * result + this.modName.hashCode();
+		return result;
+	}
 }

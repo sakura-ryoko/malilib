@@ -9,6 +9,7 @@ import net.minecraft.util.function.ValueLists;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import org.jetbrains.annotations.NotNull;
 
 public enum LayerMode implements IConfigOptionListEntry, StringIdentifiable
 {
@@ -21,7 +22,7 @@ public enum LayerMode implements IConfigOptionListEntry, StringIdentifiable
     public static final StringIdentifiable.EnumCodec<LayerMode> CODEC = StringIdentifiable.createCodec(LayerMode::values);
     public static final IntFunction<LayerMode> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(LayerMode::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
     public static final PacketCodec<ByteBuf, LayerMode> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, LayerMode::getIndex);
-    public static final ImmutableList<LayerMode> VALUES = ImmutableList.copyOf(values());
+    public static final ImmutableList<@NotNull LayerMode> VALUES = ImmutableList.copyOf(values());
 
     private final int index;
     private final String configString;

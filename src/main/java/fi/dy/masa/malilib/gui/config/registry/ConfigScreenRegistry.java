@@ -25,16 +25,16 @@ public class ConfigScreenRegistry
 
     public void registerConfigScreenFactory(ModInfo modInfo)
     {
-        this.modsMap.put(modInfo.getModId(), modInfo);
+        this.modsMap.put(modInfo.modId(), modInfo);
         ArrayList<ModInfo> list = new ArrayList<>(this.modsMap.values());
-        list.sort(Comparator.comparing(ModInfo::getModName));
+        list.sort(Comparator.comparing(ModInfo::modName));
         this.mods = ImmutableList.copyOf(list);
     }
 
     @Nullable
     public Supplier<GuiBase> getConfigScreenFactoryFor(ModInfo modInfo)
     {
-        return this.modsMap.get(modInfo.getModId()).getConfigScreenSupplier();
+        return this.modsMap.get(modInfo.modId()).configScreenSupplier();
     }
 
     public ImmutableList<ModInfo> getAllModsWithConfigScreens()
@@ -45,8 +45,8 @@ public class ConfigScreenRegistry
     public @Nullable ModInfo getModInfoFromConfigScreen(Class<? extends GuiBase> clazz)
     {
         return this.modsMap.values().stream()
-                .filter(mod -> mod.getConfigScreenSupplier() != null)
-                .filter(mod -> mod.getConfigScreenSupplier().get().getClass() == clazz)
+                .filter(mod -> mod.configScreenSupplier() != null)
+                .filter(mod -> mod.configScreenSupplier().get().getClass() == clazz)
                 .findFirst()
                 .orElse(null);
     }

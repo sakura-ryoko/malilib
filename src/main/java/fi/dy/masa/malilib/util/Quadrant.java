@@ -9,6 +9,7 @@ import net.minecraft.util.math.Vec3d;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import org.jetbrains.annotations.NotNull;
 
 public enum Quadrant implements IConfigOptionListEntry, StringIdentifiable
 {
@@ -19,7 +20,7 @@ public enum Quadrant implements IConfigOptionListEntry, StringIdentifiable
 
     public static final StringIdentifiable.EnumCodec<Quadrant> CODEC = StringIdentifiable.createCodec(Quadrant::values);
     public static final PacketCodec<ByteBuf, Quadrant> PACKET_CODEC = PacketCodecs.STRING.xmap(Quadrant::fromStringStatic, Quadrant::asString);
-    public static final ImmutableList<Quadrant> VALUES = ImmutableList.copyOf(values());
+    public static final ImmutableList<@NotNull Quadrant> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
 

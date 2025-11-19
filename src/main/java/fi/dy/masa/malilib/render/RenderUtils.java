@@ -80,6 +80,7 @@ import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.position.PositionUtils;
+import org.w3c.dom.Text;
 
 public class RenderUtils
 {
@@ -183,6 +184,8 @@ public class RenderUtils
     /**
      * Attempt a simple binding of a GpuTexture, returns null if failed to loadContents.
      *
+	 * Please Migrate to using {@link GuiContext}
+	 *
      * @param texture ()
      * @return ()
      */
@@ -203,7 +206,9 @@ public class RenderUtils
     /**
      * Attempt a simple binding of a GpuTextureView, returns null if failed to loadContents.
      *
-     * @param texture ()
+	 * Please Migrate to using {@link GuiContext}
+	 *
+	 * @param texture ()
      * @return ()
      */
 	@Deprecated
@@ -224,7 +229,9 @@ public class RenderUtils
      * Add a 'Simple' Element to the DrawContext.
      * Don't forget to manage the Layers / Checkpoints.
      *
-     * @param drawContext ()
+	 * Please Migrate to using {@link GuiContext}
+	 *
+	 * @param drawContext ()
      * @param simpleElement ()
      */
 	@Deprecated
@@ -237,7 +244,9 @@ public class RenderUtils
      * Add a 'Special' Element to the DrawContext
      * Don't forget to manage the Layers / Checkpoints.
      *
-     * @param drawContext ()
+	 * Please Migrate to using {@link GuiContext}
+	 *
+	 * @param drawContext ()
      * @param specialElement ()
      */
     @Deprecated
@@ -296,7 +305,9 @@ public class RenderUtils
      * Add a 'Item' Element to the DrawContext
      * Don't forget to manage the Layers / Checkpoints.
      *
-     * @param drawContext ()
+	 * Please Migrate to using {@link GuiContext}
+	 *
+	 * @param drawContext ()
      * @param itemElement ()
      */
     @Deprecated
@@ -309,7 +320,9 @@ public class RenderUtils
      * Add a 'Text' Element to the DrawContext.
      * Don't forget to manage the Layers / Checkpoints.
      *
-     * @param drawContext ()
+	 * Please Migrate to using {@link GuiContext}
+	 *
+	 * @param drawContext ()
      * @param textElement ()
      */
     @Deprecated
@@ -320,7 +333,10 @@ public class RenderUtils
 
     /**
      * Pushes the Scissor Stack using rect
-     * @param drawContext ()
+	 *
+	 * Please Migrate to using {@link GuiContext}
+	 *
+	 * @param drawContext ()
      * @param rect ()
      */
     @Deprecated
@@ -331,7 +347,10 @@ public class RenderUtils
 
     /**
      * Returns if the Scissor Stack contains the position x, y
-     * @param drawContext ()
+	 *
+	 * Please Migrate to using {@link GuiContext}
+	 *
+	 * @param drawContext ()
      * @param x ()
      * @param y ()
      * @return ()
@@ -344,7 +363,10 @@ public class RenderUtils
 
     /**
      * Peeks the Scissor Stack's Screen Rect
-     * @param drawContext ()
+	 *
+	 * Please Migrate to using {@link GuiContext}
+	 *
+	 * @param drawContext ()
      * @return ()
      */
     @Deprecated
@@ -355,7 +377,10 @@ public class RenderUtils
 
     /**
      * Pop's the Scissor Stack's Screen Rect
-     * @param drawContext ()
+	 *
+	 * Please Migrate to using {@link GuiContext}
+	 *
+	 * @param drawContext ()
      * @return ()
      */
     @Deprecated
@@ -408,30 +433,82 @@ public class RenderUtils
         drawRect(ctx, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, scale); // bottom edge
     }
 
+	/**
+	 * Old DrawRect.
+	 *
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color
+	 */
     @Deprecated
     public static void drawRect(int x, int y, int width, int height, int color)
     {
         drawRect(x, y, width, height, color, 0f);
     }
 
+	/**
+	 * Old DrawRect.
+	 *
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @param depthMask
+	 */
     @Deprecated
     public static void drawRect(int x, int y, int width, int height, int color, boolean depthMask)
     {
         drawRect(x, y, width, height, color, 0f, 1.0f, depthMask);
     }
 
+	/**
+	 * Old DrawRect.
+	 *
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @param zLevel
+	 */
     @Deprecated
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel)
     {
         drawRect(x, y, width, height, color, zLevel, 1.0f, false);
     }
 
+	/**
+	 * Old DrawRect.
+	 *
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @param zLevel
+	 * @param depthMask
+	 */
     @Deprecated
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel, boolean depthMask)
     {
         drawRect(x, y, width, height, color, zLevel, 1.0f, depthMask);
     }
 
+	/**
+	 * Old DrawRect.
+	 *
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @param zLevel
+	 * @param scale
+	 * @param depthMask
+	 */
     @Deprecated
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel, float scale, boolean depthMask)
     {
@@ -468,7 +545,8 @@ public class RenderUtils
     }
 
     /**
-     * New DrawContext based drawRect() for GUI Rendering.
+     * New drawRect() for GUI Rendering.
+	 *
      * @param drawContext
      * @param x
      * @param y
@@ -481,6 +559,17 @@ public class RenderUtils
         drawRect(ctx, x, y, width, height, color, 1.0f);
     }
 
+	/**
+	 * New drawRect() for GUI Rendering.
+	 *
+	 * @param ctx
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @param scale
+	 */
     public static void drawRect(GuiContext ctx, int x, int y, int width, int height, int color, float scale)
     {
         ctx.addSimpleElement(new MaLiLibBasicRectGuiElement(
@@ -504,18 +593,57 @@ public class RenderUtils
         mc.gameRenderer.renderBlur();
     }
 
+	/**
+	 * Old DrawTextuedRect
+	 *
+	 * @param posMatrix
+	 * @param x
+	 * @param y
+	 * @param u
+	 * @param v
+	 * @param width
+	 * @param height
+	 * @param buffer
+	 */
 	@Deprecated
     public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
     {
         drawTexturedRect(posMatrix, x, y, u, v, width, height, 0f, -1, buffer);
     }
 
+	/**
+	 * Old DrawTextuedRect
+	 *
+	 * @param posMatrix
+	 * @param x
+	 * @param y
+	 * @param u
+	 * @param v
+	 * @param width
+	 * @param height
+	 * @param color
+	 * @param buffer
+	 */
 	@Deprecated
     public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, int color, VertexConsumer buffer)
     {
         drawTexturedRect(posMatrix, x, y, u, v, width, height, 0f, color, buffer);
     }
 
+	/**
+	 * Old DrawTextuedRect
+	 *
+	 * @param posMatrix
+	 * @param x
+	 * @param y
+	 * @param u
+	 * @param v
+	 * @param width
+	 * @param height
+	 * @param zLevel
+	 * @param color
+	 * @param buffer
+	 */
 	@Deprecated
     public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, float zLevel, int color, VertexConsumer buffer)
     {
@@ -529,9 +657,9 @@ public class RenderUtils
     }
 
     /**
-     * New DrawContext-based Textured Rect method.  Use this when the original method fails.
+     * New GuiGraphics-based Textured Rect method.
      *
-     * @param drawContext
+     * @param ctx
      * @param texture
      * @param x
      * @param y
@@ -546,9 +674,9 @@ public class RenderUtils
     }
 
     /**
-     * New DrawContext-based Textured Rect method.  Use this when the original method fails.
+     * New GuiGraphics-based Textured Rect method.
      *
-     * @param drawContext
+     * @param ctx
      * @param texture
      * @param x
      * @param y
@@ -564,9 +692,9 @@ public class RenderUtils
     }
 
     /**
-     * New DrawContext-based Textured Rect method.  Use this when the original method fails.
+     * New GuiGraphics-based Textured Rect method.
      *
-     * @param drawContext
+     * @param ctx
      * @param texture
      * @param x
      * @param y
@@ -600,18 +728,54 @@ public class RenderUtils
         );
     }
 
+	/**
+	 * Old DrawTexturedRectBatched
+	 *
+	 * @param x
+	 * @param y
+	 * @param u
+	 * @param v
+	 * @param width
+	 * @param height
+	 * @param buffer
+	 */
 	@Deprecated
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
     {
         drawTexturedRectBatched(x, y, u, v, width, height, 0, -1, buffer);
     }
 
+	/**
+	 * Old DrawTexturedRectBatched
+	 *
+	 * @param x
+	 * @param y
+	 * @param u
+	 * @param v
+	 * @param width
+	 * @param height
+	 * @param argb
+	 * @param buffer
+	 */
 	@Deprecated
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, int argb, VertexConsumer buffer)
     {
         drawTexturedRectBatched(x, y, u, v, width, height, 0, argb, buffer);
     }
 
+	/**
+	 * Old DrawTexturedRectBatched
+	 *
+	 * @param x
+	 * @param y
+	 * @param u
+	 * @param v
+	 * @param width
+	 * @param height
+	 * @param zLevel
+	 * @param argb
+	 * @param buffer
+	 */
 	@Deprecated
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, float zLevel, int argb, VertexConsumer buffer)
     {
@@ -623,16 +787,55 @@ public class RenderUtils
         buffer.vertex(x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
     }
 
+	/**
+	 * New GuiGraphics-based DrawTexturedBatched
+	 *
+	 * @param ctx
+	 * @param pair
+	 * @param x
+	 * @param y
+	 * @param u
+	 * @param v
+	 * @param width
+	 * @param height
+	 */
     public static void drawTexturedRectBatched(GuiContext ctx, @Nonnull Pair<GpuTextureView, GpuSampler> pair, int x, int y, int u, int v, int width, int height)
     {
         drawTexturedRectBatched(ctx, pair, x, y, u, v, width, height, 0, -1);
     }
 
+	/**
+	 * New GuiGraphics-based DrawTexturedBatched
+	 *
+	 * @param ctx
+	 * @param pair
+	 * @param x
+	 * @param y
+	 * @param u
+	 * @param v
+	 * @param width
+	 * @param height
+	 * @param argb
+	 */
     public static void drawTexturedRectBatched(GuiContext ctx, @Nonnull Pair<GpuTextureView, GpuSampler> pair, int x, int y, int u, int v, int width, int height, int argb)
     {
         drawTexturedRectBatched(ctx, pair, x, y, u, v, width, height, 0, argb);
     }
 
+	/**
+	 * New GuiGraphics-based DrawTexturedBatched
+	 *
+	 * @param ctx
+	 * @param pair
+	 * @param x
+	 * @param y
+	 * @param u
+	 * @param v
+	 * @param width
+	 * @param height
+	 * @param zLevel
+	 * @param argb
+	 */
     public static void drawTexturedRectBatched(GuiContext ctx, @Nonnull Pair<GpuTextureView, GpuSampler> pair, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
     {
         ctx.addSimpleElement(new MaLiLibTexturedRectGuiElement(
@@ -645,6 +848,14 @@ public class RenderUtils
         );
     }
 
+	/**
+	 * Draw a 'Hover Text' Bubble object, simillar to Vanilla.
+	 *
+	 * @param ctx
+	 * @param x
+	 * @param y
+	 * @param textLines
+	 */
     public static void drawHoverText(GuiContext ctx, int x, int y, List<String> textLines)
     {
         if (textLines.isEmpty() == false && GuiUtils.getCurrentScreen() != null)
@@ -712,6 +923,17 @@ public class RenderUtils
         }
     }
 
+	/**
+	 * Draw a Gradient Rect Element
+	 *
+	 * @param ctx
+	 * @param left
+	 * @param top
+	 * @param right
+	 * @param bottom
+	 * @param startColor
+	 * @param endColor
+	 */
     public static void drawGradientRectBatched(GuiContext ctx, float left, float top, float right, float bottom, int startColor, int endColor)
     {
         ctx.addSimpleElement(new MaLiLibGradientRectGuiElement(
@@ -724,6 +946,17 @@ public class RenderUtils
         );
     }
 
+	/**
+	 * Old DrawGradientRect
+	 *
+	 * @param left
+	 * @param top
+	 * @param right
+	 * @param bottom
+	 * @param zLevel
+	 * @param startColor
+	 * @param endColor
+	 */
     @Deprecated
     public static void drawGradientRect(float left, float top, float right, float bottom, float zLevel, int startColor, int endColor)
     {
@@ -763,21 +996,59 @@ public class RenderUtils
         }
     }
 
+	/**
+	 * Render a Centered String (GUI)
+	 *
+	 * @param ctx
+	 * @param x
+	 * @param y
+	 * @param color
+	 * @param text
+	 */
     public static void drawCenteredString(GuiContext ctx, int x, int y, int color, String text)
     {
 	    ctx.drawCenteredTextWithShadow(mc().textRenderer, text, x, y, color);
     }
 
+	/**
+	 * Render a Horizontal Line (GUI)
+	 *
+	 * @param ctx
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param color
+	 */
     public static void drawHorizontalLine(GuiContext ctx, int x, int y, int width, int color)
     {
         drawRect(ctx, x, y, width, 1, color);
     }
 
+	/**
+	 * Render a Vertical Line (GUI)
+	 *
+	 * @param ctx
+	 * @param x
+	 * @param y
+	 * @param height
+	 * @param color
+	 */
     public static void drawVerticalLine(GuiContext ctx, int x, int y, int height, int color)
     {
         drawRect(ctx, x, y, 1, height, color);
     }
 
+	/**
+	 * Render a Texture Atlas Sprite (GUI)
+	 *
+	 * @param ctx
+	 * @param atlas
+	 * @param texture
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
     public static void renderSprite(GuiContext ctx, Identifier atlas, Identifier texture, int x, int y, int width, int height)
     {
         if (texture != null)
@@ -791,6 +1062,15 @@ public class RenderUtils
         }
     }
 
+	/**
+	 * Render Text (GUI)
+	 *
+	 * @param ctx
+	 * @param x
+	 * @param y
+	 * @param color
+	 * @param text
+	 */
     public static void renderText(GuiContext ctx, int x, int y, int color, String text)
     {
         String[] parts = text.split("\\\\n");
@@ -803,6 +1083,15 @@ public class RenderUtils
         }
     }
 
+	/**
+	 * Render Text (GUI)
+	 *
+	 * @param ctx
+	 * @param x
+	 * @param y
+	 * @param color
+	 * @param lines
+	 */
     public static void renderText(GuiContext ctx, int x, int y, int color, List<String> lines)
     {
         if (lines.isEmpty() == false)
@@ -817,6 +1106,21 @@ public class RenderUtils
         }
     }
 
+	/**
+	 * Render Scaled Text with a background (GUI)
+	 *
+	 * @param ctx
+	 * @param xOff
+	 * @param yOff
+	 * @param scale
+	 * @param textColor
+	 * @param bgColor
+	 * @param alignment
+	 * @param useBackground
+	 * @param useShadow
+	 * @param lines
+	 * @return
+	 */
     public static int renderText(GuiContext ctx, int xOff, int yOff, double scale,
                                  int textColor, int bgColor, HudAlignment alignment,
                                  boolean useBackground, boolean useShadow,
@@ -828,6 +1132,22 @@ public class RenderUtils
                           lines);
     }
 
+	/**
+	 * Render Scaled Text with a background (GUI)
+	 *
+	 * @param ctx
+	 * @param xOff
+	 * @param yOff
+	 * @param scale
+	 * @param textColor
+	 * @param bgColor
+	 * @param alignment
+	 * @param useBackground
+	 * @param useShadow
+	 * @param useStatusShift
+	 * @param lines
+	 * @return
+	 */
     public static int renderText(GuiContext ctx, int xOff, int yOff, double scale,
                                  int textColor, int bgColor, HudAlignment alignment,
                                  boolean useBackground, boolean useShadow, boolean useStatusShift,
@@ -907,6 +1227,14 @@ public class RenderUtils
         return contentHeight + bgMargin * 2;
     }
 
+	/**
+	 * Calculate HUD offest based on Active Effects
+	 *
+	 * @param alignment
+	 * @param scale
+	 * @param player
+	 * @return
+	 */
     public static int getHudOffsetForPotions(HudAlignment alignment, double scale, PlayerEntity player)
     {
         if (alignment == HudAlignment.TOP_RIGHT)
@@ -1078,6 +1406,8 @@ public class RenderUtils
      * Takes in buffers initialized for GL_QUADS and GL_LINES modes.
      * The cameraPos value will be subtracted from the absolute coordinate values of the passed in block positions.
      *
+	 * Requires a Pipeline with a LINE_WIDTH param.
+	 *
      * @param posMin
      * @param posMax
      * @param cameraPos
@@ -1159,6 +1489,8 @@ public class RenderUtils
 
     /**
      * Assumes a BufferBuilder in GL_LINES mode has been initialized
+	 *
+	 * Requires a Pipeline with a LINE_WIDTH param.
      */
     public static void drawBoxAllEdgesBatchedLines(float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
                                                    Color4f color, float lineWidth,
@@ -1205,7 +1537,7 @@ public class RenderUtils
         buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
     }
 
-    public static void drawBox(IntBoundingBox bb, Vec3d cameraPos, Color4f color,
+    public static void drawBox(IntBoundingBox bb, Vec3d cameraPos, Color4f color, float lineWidth,
                                BufferBuilder bufferQuads, BufferBuilder bufferLines)
     {
         float minX = (float) (bb.minX - cameraPos.x);
@@ -1216,7 +1548,7 @@ public class RenderUtils
         float maxZ = (float) (bb.maxZ + 1 - cameraPos.z);
 
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, bufferQuads);
-        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, 1.0f, bufferLines);
+        drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, lineWidth, bufferLines);
     }
 
     public static void drawBoxNoOutlines(IntBoundingBox bb, Vec3d cameraPos, Color4f color,
@@ -1450,17 +1782,18 @@ public class RenderUtils
         }
 
         int wireColor = -1;
+		float lineWidth = 1.6f;
 
         // Target "Center" -->
         // MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_NO_DEPTH_NO_CULL
         buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlay/center", MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_NO_DEPTH_NO_CULL);
 
         // Middle small rectangle
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(1.6f);
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
 
         try
         {
@@ -1486,20 +1819,20 @@ public class RenderUtils
         buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlay/edges", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL);
 
         // Bottom left
-        buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(1.6f);
+        buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
 
         // Top left
-        buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(1.6f);
+        buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
 
         // Bottom right
-        buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(1.6f);
+        buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
 
         // Top right
-        buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(1.6f);
+        buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
 
         try
         {
@@ -1570,14 +1903,16 @@ public class RenderUtils
             MaLiLib.LOGGER.error("renderBlockTargetingOverlaySimple():1: Draw Exception; {}", err.getMessage());
         }
 
+		float lineWidth = 1.6f;
+
         // MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_NO_DEPTH_NO_CULL
         buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlaySimple/lines", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL);
 
         // Middle rectangle
-        buffer.vertex((float) (x - 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x + 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x + 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c).lineWidth(1.6f);
-        buffer.vertex((float) (x - 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c).lineWidth(1.6f);
+        buffer.vertex((float) (x - 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x + 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x + 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.vertex((float) (x - 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c).lineWidth(lineWidth);
 
         try
         {
@@ -1680,7 +2015,6 @@ public class RenderUtils
                 y1 += 8;
 //                z = 310;
 
-//                ctx.enableScissor(x1, y1, x1 + z, y1 + z);
                 double scale = (double) (dimensions - 16) / 128.0D;
 
 	            ctx.getMatrices().pushMatrix();
@@ -1691,7 +2025,6 @@ public class RenderUtils
                 mc().getMapRenderer().update(mapId, mapState, mapRenderState);
 	            ctx.drawMap(mapRenderState);
 	            ctx.getMatrices().popMatrix();
-//                ctx.disableScissor();
             }
         }
     }
@@ -1856,7 +2189,60 @@ public class RenderUtils
         }
     }
 
-    /**
+	/**
+	 * Render's the Inventory Overlay using an NbtCompound Items[] List format instead of the Item Container Component,
+	 * Such as for a Crafter, etc.  This is meant to be simillar to the 1.20.4 behavior, minus the "BlockEntityTag";
+	 * since it no longer exists; but this can be used as such, if the "BlockEntityTag" or its eqivalent, is read in first.
+	 * -
+	 *
+	 * @param stackIn     (Stack of the Entity for selecting the right textures)
+	 * @param itemsTag    (Nbt Items[] list)
+	 * @param baseX
+	 * @param baseY
+	 * @param useBgColors
+	 * @param drawContext
+	 */
+	public static void renderDataItemsPreview(GuiContext ctx, ItemStack stackIn, @Nonnull CompoundData data, int baseX, int baseY, boolean useBgColors)
+	{
+		if (InventoryUtils.hasDataItems(data))
+		{
+			if (mc().world == null)
+			{
+				return;
+			}
+
+			DefaultedList<ItemStack> items = InventoryUtils.getDataItems(data, -1, mc().world.getRegistryManager());
+
+			if (items.size() == 0)
+			{
+				return;
+			}
+
+			InventoryOverlayType type = InventoryOverlay.getInventoryType(stackIn);
+			InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, items.size());
+
+			int screenWidth = GuiUtils.getScaledWindowWidth();
+			int screenHeight = GuiUtils.getScaledWindowHeight();
+			int height = props.height + 18;
+			int x = MathHelper.clamp(baseX + 8, 0, screenWidth - props.width);
+			int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
+
+			int color = Colors.WHITE;
+
+			Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+			matrix4fStack.pushMatrix();
+			matrix4fStack.translate(0, 0, 500);
+
+			InventoryOverlay.renderInventoryBackground(ctx, type, x, y, props.slotsPerRow, items.size(), color);
+
+			Inventory inv = InventoryUtils.getAsInventory(items);
+			InventoryOverlay.renderInventoryStacks(ctx, type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1);
+
+			matrix4fStack.popMatrix();
+		}
+	}
+
+	/**
      * Calls RenderUtils.color() with the dye color of the provided shulker box block's color
      *
      * @param block
@@ -1982,7 +2368,7 @@ public class RenderUtils
         }
         else
         {
-            return 0xFFA6572C;                                // #FFA6572C
+            return 0xFFA6572C;                          // #FFA6572C
         }
     }
 
@@ -2219,6 +2605,11 @@ public class RenderUtils
     {
         return mc().gameRenderer.getLightmapTextureManager();
     }
+
+	public static TextRenderer textRenderer()
+	{
+		return mc().textRenderer;
+	}
 
     /**
      * Only required for translating the values to their RotationAxis.POSITIVE_?.rotationDegrees() equivalence

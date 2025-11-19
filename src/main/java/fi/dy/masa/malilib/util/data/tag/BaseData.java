@@ -6,9 +6,7 @@ import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Experimental
 public abstract class BaseData
 {
     protected final int type;

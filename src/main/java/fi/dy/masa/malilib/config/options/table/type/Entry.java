@@ -7,8 +7,7 @@ public abstract class Entry
     @Override
     public String toString()
     {
-        throw new UnsupportedOperationException();
-//        return super.toString();
+		return Entry.getString(this);
     }
 
     public static String getString(Entry entry)

@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import javax.annotation.Nullable;
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextInputFeedback;
 import fi.dy.masa.malilib.gui.LeftRight;
@@ -62,7 +61,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             else if (hoveredIcon == this.iconCreateDir)
             {
                 String title = "malilib.gui.title.create_directory";
-                DirectoryCreator creator = new DirectoryCreator(this.currentDir, this.navigator);
+                DirectoryCreator creator = new DirectoryCreator(this.currentDir, this.navigator, false);
                 GuiTextInputFeedback gui = new GuiTextInputFeedback(256, title, "", GuiUtils.getCurrentScreen(), creator);
                 GuiBase.openGui(gui);
                 return true;

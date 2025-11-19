@@ -11,6 +11,7 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.StringIdentifiable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A Utility Table of Minecraft Data Versions and their respective Version strings.
@@ -23,6 +24,7 @@ public enum Schema implements IEnumCodecProvider
     // TODO --> Add Schema Versions to this as versions get released
     // Minecraft Data Versions
     SCHEMA_FUTURE  (9999, "FUTURE"),
+	SCHEMA_1_21_11 (4663, "1.21.11-pre1"),
 	SCHEMA_25W46A  (4662, "25w46a"),
 	SCHEMA_25W41A  (4657, "25w41a"),
 	SCHEMA_1_21_10 (4556, "1.21.10"),
@@ -154,7 +156,7 @@ public enum Schema implements IEnumCodecProvider
             return Objects.requireNonNull(Schema.getSchemaByDataVersion(PacketCodecs.INTEGER.decode(buf)));
         }
     };
-    public static final ImmutableList<Schema> VALUES = ImmutableList.copyOf(values());
+    public static final ImmutableList<@NotNull Schema> VALUES = ImmutableList.copyOf(values());
 
     private final int schemaId;
     private final String str;

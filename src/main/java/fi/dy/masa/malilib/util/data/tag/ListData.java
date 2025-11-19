@@ -78,7 +78,7 @@ public class ListData extends BaseData
 
     public boolean add(BaseData entry)
     {
-		int type =this.getContainedType();
+		int type = this.getContainedType();
 
         if (type != Constants.NBT.TAG_END &&
 	        entry.getType() != type)

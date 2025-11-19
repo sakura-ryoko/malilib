@@ -9,7 +9,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
-import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.block.Oxidizable;
 import net.minecraft.entity.*;
@@ -50,7 +49,6 @@ import fi.dy.masa.malilib.util.nbt.INbtEntityInvoker;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
 
-@ApiStatus.Experimental
 public class DataEntityUtils
 {
 	/**

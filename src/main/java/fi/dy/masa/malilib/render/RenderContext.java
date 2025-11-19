@@ -9,7 +9,6 @@ import net.minecraft.client.gl.ScissorState;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BuiltBuffer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.client.texture.TextureContents;
@@ -33,7 +32,7 @@ import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
 
 /**
- * MaLiLib 1.21.5+ RenderContext for World Rendering
+ * MaLiLib 1.21.5+ RenderContext for In-Game Rendering
  * -
  * NOTE:  lineWidth is now part of the Vertex Buffer Builder params.
  */

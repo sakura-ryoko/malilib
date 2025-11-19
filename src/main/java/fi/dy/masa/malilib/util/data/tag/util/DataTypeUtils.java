@@ -6,7 +6,6 @@ import java.util.UUID;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -25,7 +24,6 @@ import fi.dy.masa.malilib.util.data.tag.*;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
-@ApiStatus.Experimental
 public class DataTypeUtils
 {
     @Nullable

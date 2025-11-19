@@ -1231,9 +1231,6 @@ public class InventoryOverlay
     {
         if (stack.isEmpty() == false)
         {
-            // Not sure why getBestWorld() is required here,
-            // it's also required when connected to a server;
-            // or else not be able to see Enchantment tooltips. (>.>)
             List<Text> toolTips = ctx.itemTooltips(stack);
 
 //            if (MaLiLibReference.DEBUG_MODE)
@@ -1288,4 +1285,49 @@ public class InventoryOverlay
         public int slotOffsetX = 8;
         public int slotOffsetY = 8;
     }
+
+	/**
+	 * Use {@link InventoryOverlayType}
+	 */
+	@Deprecated(forRemoval = true)
+	public enum InventoryRenderType
+	{
+		BREWING_STAND,
+		CRAFTER,
+		DISPENSER,
+		FURNACE,
+		HOPPER,
+		HORSE,
+		LLAMA,
+		WOLF,
+		HAPPY_GHAST,
+		COPPER_GOLEM,
+		FIXED_27,
+		FIXED_54,
+		VILLAGER,
+		PLAYER,
+		ENDER_CHEST,
+		BOOKSHELF,
+		WALL_SHELF,
+		SINGLE_ITEM,
+		BUNDLE,
+		ARMOR_STAND,
+		LIVING_ENTITY,
+		GENERIC;
+	}
+
+	/**
+	 * Use {@link InventoryOverlayContext}
+	 */
+	@Deprecated(forRemoval = true)
+	public record Context(InventoryRenderType type, @Nullable Inventory inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable NbtCompound nbt, Refresher handler) {}
+
+	/**
+	 * Use {@link InventoryOverlayRefresher}
+	 */
+	@Deprecated(forRemoval = true)
+	public interface Refresher
+	{
+		Context onContextRefresh(Context data, World world);
+	}
 }

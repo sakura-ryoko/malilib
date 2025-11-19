@@ -14,6 +14,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.MaLiLib;
 
@@ -21,7 +22,7 @@ import fi.dy.masa.malilib.MaLiLib;
  * Interface for ClientPlayHandler, for downstream mods.
  * @param <T> (Payload)
  */
-public interface IPluginClientPlayHandler<T extends CustomPayload> extends ClientPlayNetworking.PlayPayloadHandler<T>
+public interface IPluginClientPlayHandler<T extends CustomPayload> extends ClientPlayNetworking.PlayPayloadHandler<@NotNull T>
 {
     int FROM_SERVER = 1;
     int TO_SERVER = 2;
@@ -66,7 +67,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      */
     default void registerPlayPayload(@Nonnull CustomPayload.Id<T> id, @Nonnull PacketCodec<? super RegistryByteBuf,T> codec, int direction)
     {
-        if (this.isPlayRegistered(this.getPayloadChannel()) == false)
+        if (!this.isPlayRegistered(this.getPayloadChannel()))
         {
             try
             {
@@ -103,7 +104,7 @@ public interface IPluginClientPlayHandler<T extends CustomPayload> extends Clien
      * @param receiver (Your Packet Receiver // if null, uses this::receivePlayPayload)
      * @return (True / False)
      */
-    default boolean registerPlayReceiver(@Nonnull CustomPayload.Id<T> id, @Nullable ClientPlayNetworking.PlayPayloadHandler<T> receiver)
+    default boolean registerPlayReceiver(@Nonnull CustomPayload.Id<T> id, @Nullable ClientPlayNetworking.PlayPayloadHandler<@NotNull T> receiver)
     {
         if (this.isPlayRegistered(this.getPayloadChannel()))
         {

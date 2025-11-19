@@ -5,6 +5,7 @@ import net.minecraft.network.PacketByteBuf;
 
 /**
  * A Helper Interface for designing a Payload Encoder/Decoder class with some common functions
+ * Using this interface is completely optional.
  */
 public interface IClientPayloadData
 {
