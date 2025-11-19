@@ -6,5 +6,6 @@ public enum EntryTypes
 	INTEGER,
 	//    KEYBIND,
 	BOOLEAN,
-	DOUBLE
+	DOUBLE,
+    LABEL
 }

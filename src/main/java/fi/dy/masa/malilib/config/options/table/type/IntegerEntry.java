@@ -59,7 +59,13 @@ public class IntegerEntry extends Entry
 		return this.value != other.value;
 	}
 
-	public static IntegerEntry getFromJsonObject(JsonObject obj)
+    @Override
+    public String asString()
+    {
+        return Integer.toString(getValue());
+    }
+
+    public static IntegerEntry getFromJsonObject(JsonObject obj)
 	{
 		try
 		{

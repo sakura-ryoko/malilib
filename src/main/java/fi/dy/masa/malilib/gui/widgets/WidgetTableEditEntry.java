@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.ConfigTable;
+import fi.dy.masa.malilib.config.options.table.Label;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.config.options.table.type.*;
 import fi.dy.masa.malilib.gui.GuiTextFieldDouble;
@@ -17,13 +18,12 @@ import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 
 import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.util.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Experimental
@@ -43,6 +43,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	private final List<Pair<ConfigButtonKeybind, WidgetKeybindSettings>> keybindWidgets = new ArrayList<>();
 
 	private final List<ConfigButtonBoolean> booleanWidgets = new ArrayList<>();
+
+    private final Map<WidgetLabel, Label> labels = new HashMap<>();
 
 	protected TableRow initialValue;
 	private final List<String> lastAppliedValues = new ArrayList<>();
@@ -177,6 +179,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 //                this.keybindWidgets.add(new Pair<>(keybindButton, settingsWidget));
 //                this.subWidgets.add(keybindButton);
 //                this.subWidgets.add(settingsWidget);
+//                this.labels.add(null);
 //                this.textFields.add(null);
 //                this.booleanWidgets.add(null);
 			}
@@ -193,6 +196,23 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 
 				this.subWidgets.add(booleanButton);
 				this.booleanWidgets.add(booleanButton);
+				this.textFields.add(null);
+				this.keybindWidgets.add(null);
+			}
+			else if (type == EntryTypes.LABEL)
+			{
+                WidgetLabel widgetLabel = new WidgetLabel(
+                        x + i * (configWidth / types.size()) + 2,
+                        y,
+                        configWidth / types.size() - 4,
+                        configHeight - 3,
+                        0xFFFFFFFF,
+                        ((LabelEntry) value).getValue().label()
+                );
+
+                this.subWidgets.add(widgetLabel);
+                this.labels.put(widgetLabel, ((LabelEntry)value).getValue());
+				this.booleanWidgets.add(null);
 				this.textFields.add(null);
 				this.keybindWidgets.add(null);
 			}
@@ -267,11 +287,37 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						}
 						else if (type == EntryTypes.INTEGER)
 						{
-							temp.list().add(IntegerEntry.of(Integer.parseInt(text)));
+                            if (text.isEmpty())
+                            {
+                                tfw.textField().setText("0");
+                                temp.list().add(IntegerEntry.of(0));
+                                checkResetButtonState();
+                            }
+							else
+                            {
+                                temp.list().add(IntegerEntry.of(Integer.parseInt(text)));
+                            }
 						}
 						else if (type == EntryTypes.DOUBLE)
 						{
-							temp.list().add(DoubleEntry.of(Double.parseDouble(text)));
+                            if (text.isEmpty())
+                            {
+                                tfw.textField().setText("0.0");
+                                temp.list().add(DoubleEntry.of(0.0));
+                                checkResetButtonState();
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    temp.list().add(DoubleEntry.of(Double.parseDouble(text)));
+                                }
+                                // TODO: remove try/catch when GuiTextFieldDouble's predicate gets added back
+                                catch (NumberFormatException ignored)
+                                {
+                                    temp.list().add(DoubleEntry.of(0.0));
+                                }
+                            }
 						}
 //                    } else if (type == EntryTypes.KEYBIND) {
 //                        assert this.entries.get(i) instanceof KeybindEntry;
@@ -285,6 +331,12 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						BooleanEntry booleanEntry = (BooleanEntry) this.entries.get(i);
 						temp.list().add(booleanEntry);
 						this.lastAppliedValues.add(Boolean.toString(booleanEntry.getValue()));
+					}
+					else if (type == EntryTypes.LABEL)
+					{
+                        LabelEntry labelEntry = (LabelEntry) this.entries.get(i);
+						temp.list().add(labelEntry);
+                        this.lastAppliedValues.add(labelEntry.getValue().label() + ";" + labelEntry.getValue().comment());
 					}
 				}
 
@@ -399,7 +451,20 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				}
 			}
 		}
-		super.render(ctx, mouseX, mouseY, selected);
+
+        super.render(ctx, mouseX, mouseY, selected);
+
+        if (this.hoveredSubWidget instanceof WidgetLabel widgetLabel)
+        {
+            Label correspondingLabel = labels.get(widgetLabel);
+            if (correspondingLabel != null)
+            {
+                if (correspondingLabel.comment().isEmpty() == false)
+                {
+                    RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(correspondingLabel.comment()));
+                }
+            }
+        }
 	}
 
 	@Override
@@ -619,7 +684,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				}
 
 			}
-			else
+			else if (entry.getType() == EntryTypes.DOUBLE || entry.getType() == EntryTypes.INTEGER || entry.getType() == EntryTypes.STRING)
 			{
 				TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
 				String text = tfw.textField().getText();

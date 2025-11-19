@@ -41,6 +41,7 @@ public record TableRow(List<Entry> list)
 				case Double v -> tableRow.add(new DoubleEntry(v));
 				case Boolean b -> tableRow.add(new BooleanEntry(b));
 //                case IKeybind k -> tableRow.add(new KeybindEntry(k));
+                case Label l -> tableRow.add(new LabelEntry(l));
 				case Entry e -> tableRow.add(e);
 				default -> throw new IllegalArgumentException("Unsupported entry type: " + entry.getClass().getName());
 			}
@@ -82,6 +83,11 @@ public record TableRow(List<Entry> list)
 		return (StringEntry) this.list.get(index);
 	}
 
+	public LabelEntry getLabelEntry(int index)
+	{
+		return (LabelEntry) this.list.get(index);
+	}
+
 	public Integer getInt(int index)
 	{
 		return ((IntegerEntry) this.list.get(index)).getValue();
@@ -100,6 +106,10 @@ public record TableRow(List<Entry> list)
 	public String getString(int index)
 	{
 		return ((StringEntry) this.list.get(index)).getValue();
+	}
+	public Label getLabel(int index)
+	{
+		return ((LabelEntry) this.list.get(index)).getValue();
 	}
 
 //    public IKeybind getKeybind(int index) {

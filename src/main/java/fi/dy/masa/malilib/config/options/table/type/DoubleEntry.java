@@ -59,6 +59,12 @@ public class DoubleEntry extends Entry
 		return this.value != other.value;
 	}
 
+    @Override
+    public String asString()
+    {
+        return Double.toString(this.getValue());
+    }
+
 	public static DoubleEntry getFromJsonObject(JsonObject obj)
 	{
 		try

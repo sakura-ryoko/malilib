@@ -2,9 +2,8 @@ package fi.dy.masa.malilib.gui.button;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.config.options.table.type.*;
@@ -64,57 +63,23 @@ public class ConfigButtonTable extends ButtonGeneric
 			this.displayString = this.config.getDisplayString();
 			return;
 		}
+        // alternative way I guess
+//        List<String> list = this.config.getTable().stream()
+//                .map(row -> row.list().stream()
+//                        .map(Entry::asString)
+//                        .collect(Collectors.joining(", ")))
+//                .toList();
+
 		List<String> list = new ArrayList<>();
 
-//		boolean addDivider = false;
 		for (TableRow row : this.config.getTable())
 		{
-			StringBuilder sb = new StringBuilder();
-			boolean addDividerEntry = false;
-
-//			if (addDivider)
-//			{
-//				sb.append("; ");
-//			}
-
-			for (Entry entryPart : row.list())
-			{
-				if (addDividerEntry)
-				{
-					sb.append(", ");
-				}
-				// honestly this is starting to become impossible :sob:
-				if (entryPart.getType() == EntryTypes.STRING)
-				{
-					sb.append(((StringEntry) entryPart).getValue());
-				}
-				else if (entryPart.getType() == EntryTypes.INTEGER)
-				{
-					sb.append(((IntegerEntry) entryPart).getValue());
-				}
-				else if (entryPart.getType() == EntryTypes.DOUBLE)
-				{
-					sb.append(((DoubleEntry) entryPart).getValue());
-				}
-				else if (entryPart.getType() == EntryTypes.BOOLEAN)
-				{
-					sb.append(((BooleanEntry) entryPart).getValue());
-//                } else if (entryPart.getType() == EntryTypes.KEYBIND) {
-//                    sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
-				}
-				else
-				{
-//					throw new IllegalStateException();
-					MaLiLib.debugLog("ConfigButtonTable: entryType Exception.");
-				}
-
-				addDividerEntry = true;
-			}
-
-			list.add(sb.toString());
-//			addDivider = true;
+            String result = row.list().stream()
+                    .map(Entry::asString)
+                    .collect(Collectors.joining(", "));
+			list.add(result);
 		}
 
-		this.displayString = StringUtils.getClampedDisplayStringRenderlen(list, this.width - 10, "{", "}");
+		this.displayString = StringUtils.getClampedDisplayStringRenderlen(list, this.width - 20, "{", "}");
 	}
 }

@@ -60,7 +60,13 @@ public class BooleanEntry extends Entry
 		return this.configBoolean.getBooleanValue() != other.configBoolean.getBooleanValue();
 	}
 
-	public static BooleanEntry getFromJsonObject(JsonObject obj)
+    @Override
+    public String asString()
+    {
+        return Boolean.toString(this.getValue());
+    }
+
+    public static BooleanEntry getFromJsonObject(JsonObject obj)
 	{
 		boolean val = Boolean.parseBoolean(obj.get("value").getAsString());
 		return BooleanEntry.of(val);
