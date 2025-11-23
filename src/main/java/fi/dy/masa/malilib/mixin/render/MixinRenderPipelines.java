@@ -223,8 +223,7 @@ public abstract class MixinRenderPipelines
                               .withFragmentShader("core/terrain")
                               .withUniform("Projection", UniformType.UNIFORM_BUFFER)
                               .withUniform("ChunkSection", UniformType.UNIFORM_BUFFER)
-//                              .withSampler("Sampler0")
-//                              .withSampler("Sampler2")
+		                      .withColorWrite(true)
                               .withVertexFormat(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS)
                               .withBlend(BlendFunction.TRANSLUCENT)
                               .buildSnippet();
@@ -235,8 +234,7 @@ public abstract class MixinRenderPipelines
                               .withFragmentShader("core/terrain")
                               .withUniform("Projection", UniformType.UNIFORM_BUFFER)
                               .withUniform("ChunkSection", UniformType.UNIFORM_BUFFER)
-//                              .withSampler("Sampler0")
-//                              .withSampler("Sampler2")
+                              .withColorWrite(true)
                               .withVertexFormat(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS)
                               .withBlend(MASA_BLEND)
                               .buildSnippet();
@@ -245,8 +243,7 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(FOG_AND_SAMPLERS_SNIPPET, TRANSFORMS_AND_PROJECTION_SNIPPET)
 			                  .withVertexShader("core/block")
 			                  .withFragmentShader("core/block")
-//			                  .withSampler("Sampler0")
-//			                  .withSampler("Sampler2")
+			                  .withColorWrite(true)
 			                  .withVertexFormat(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS)
 			                  .withBlend(BlendFunction.TRANSLUCENT)
 			                  .buildSnippet();
@@ -255,8 +252,7 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(FOG_AND_SAMPLERS_SNIPPET, TRANSFORMS_AND_PROJECTION_SNIPPET)
 			                  .withVertexShader("core/block")
 			                  .withFragmentShader("core/block")
-//			                  .withSampler("Sampler0")
-//			                  .withSampler("Sampler2")
+			                  .withColorWrite(true)
 			                  .withVertexFormat(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS)
 			                  .withBlend(MASA_BLEND)
 			                  .buildSnippet();
