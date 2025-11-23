@@ -655,7 +655,7 @@ public class LayerRange
 
     public boolean intersects(IntBoundingBox box)
     {
-        return this.intersectsBox(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+        return this.intersectsBox(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
     }
 
     public boolean intersectsBox(BlockPos posMin, BlockPos posMax)
@@ -698,21 +698,21 @@ public class LayerRange
         {
             case X:
             {
-                final int xMin = Math.max(box.minX, this.getLayerMin());
-                final int xMax = Math.min(box.maxX, this.getLayerMax());
-                return IntBoundingBox.createProper(xMin, box.minY, box.minZ, xMax, box.maxY, box.maxZ);
+                final int xMin = Math.max(box.minX(), this.getLayerMin());
+                final int xMax = Math.min(box.maxX(), this.getLayerMax());
+                return IntBoundingBox.createProper(xMin, box.minY(), box.minZ(), xMax, box.maxY(), box.maxZ());
             }
             case Y:
             {
-                final int yMin = Math.max(box.minY, this.getLayerMin());
-                final int yMax = Math.min(box.maxY, this.getLayerMax());
-                return IntBoundingBox.createProper(box.minX, yMin, box.minZ, box.maxX, yMax, box.maxZ);
+                final int yMin = Math.max(box.minY(), this.getLayerMin());
+                final int yMax = Math.min(box.maxY(), this.getLayerMax());
+                return IntBoundingBox.createProper(box.minX(), yMin, box.minZ(), box.maxX(), yMax, box.maxZ());
             }
             case Z:
             {
-                final int zMin = Math.max(box.minZ, this.getLayerMin());
-                final int zMax = Math.min(box.maxZ, this.getLayerMax());
-                return IntBoundingBox.createProper(box.minX, box.minY, zMin, box.maxX, box.maxY, zMax);
+                final int zMin = Math.max(box.minZ(), this.getLayerMin());
+                final int zMax = Math.min(box.maxZ(), this.getLayerMax());
+                return IntBoundingBox.createProper(box.minX(), box.minY(), zMin, box.maxX(), box.maxY(), zMax);
             }
             default:
                 return null;

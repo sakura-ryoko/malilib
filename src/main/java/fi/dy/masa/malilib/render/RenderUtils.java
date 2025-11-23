@@ -32,7 +32,6 @@ import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.gui.render.state.TextGuiElementRenderState;
 import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BlockModelPart;
 import net.minecraft.client.render.model.BlockStateModel;
 import net.minecraft.client.texture.ResourceTexture;
@@ -40,7 +39,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.texture.TextureSetup;
 import net.minecraft.client.util.BufferAllocator;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
@@ -80,7 +78,6 @@ import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.position.PositionUtils;
-import org.w3c.dom.Text;
 
 public class RenderUtils
 {
@@ -1540,12 +1537,12 @@ public class RenderUtils
     public static void drawBox(IntBoundingBox bb, Vec3d cameraPos, Color4f color, float lineWidth,
                                BufferBuilder bufferQuads, BufferBuilder bufferLines)
     {
-        float minX = (float) (bb.minX - cameraPos.x);
-        float minY = (float) (bb.minY - cameraPos.y);
-        float minZ = (float) (bb.minZ - cameraPos.z);
-        float maxX = (float) (bb.maxX + 1 - cameraPos.x);
-        float maxY = (float) (bb.maxY + 1 - cameraPos.y);
-        float maxZ = (float) (bb.maxZ + 1 - cameraPos.z);
+        float minX = (float) (bb.minX() - cameraPos.x);
+        float minY = (float) (bb.minY() - cameraPos.y);
+        float minZ = (float) (bb.minZ() - cameraPos.z);
+        float maxX = (float) (bb.maxX() + 1 - cameraPos.x);
+        float maxY = (float) (bb.maxY() + 1 - cameraPos.y);
+        float maxZ = (float) (bb.maxZ() + 1 - cameraPos.z);
 
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, bufferQuads);
         drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, lineWidth, bufferLines);
@@ -1554,12 +1551,12 @@ public class RenderUtils
     public static void drawBoxNoOutlines(IntBoundingBox bb, Vec3d cameraPos, Color4f color,
                                          BufferBuilder bufferQuads)
     {
-        float minX = (float) (bb.minX - cameraPos.x);
-        float minY = (float) (bb.minY - cameraPos.y);
-        float minZ = (float) (bb.minZ - cameraPos.z);
-        float maxX = (float) (bb.maxX + 1 - cameraPos.x);
-        float maxY = (float) (bb.maxY + 1 - cameraPos.y);
-        float maxZ = (float) (bb.maxZ + 1 - cameraPos.z);
+        float minX = (float) (bb.minX() - cameraPos.x);
+        float minY = (float) (bb.minY() - cameraPos.y);
+        float minZ = (float) (bb.minZ() - cameraPos.z);
+        float maxX = (float) (bb.maxX() + 1 - cameraPos.x);
+        float maxY = (float) (bb.maxY() + 1 - cameraPos.y);
+        float maxZ = (float) (bb.maxZ() + 1 - cameraPos.z);
 
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, bufferQuads);
     }
