@@ -160,7 +160,7 @@
     "malilib.gui.label.duration_format.regular": "凡式",
     "malilib.gui.label.keybind_settings.activate_on": "啟以",
     "malilib.gui.label.keybind_settings.allow_empty_keybind": "允空鍵",
-    "malilib.gui.label.keybind_settings.allow_extra_keys": "諾餘鍵",
+    "malilib.gui.label.keybind_settings.allow_extra_keys": "允餘鍵",
     "malilib.gui.label.keybind_settings.cancel_further": "罷進發",
     "malilib.gui.label.keybind_settings.context": "生效之境",
     "malilib.gui.label.keybind_settings.exclusive": "專佔",
