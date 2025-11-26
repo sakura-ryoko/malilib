@@ -219,10 +219,11 @@ public abstract class MixinRenderPipelines
 
         MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE =
                 RenderPipeline.builder(FOG_AND_SAMPLERS_SNIPPET)
-                              .withVertexShader("core/terrain")
-                              .withFragmentShader("core/terrain")
+                              .withVertexShader(Identifier.of(MaLiLibReference.MOD_ID, "core/terrain"))
+                              .withFragmentShader(Identifier.of(MaLiLibReference.MOD_ID, "core/terrain"))
                               .withUniform("Projection", UniformType.UNIFORM_BUFFER)
                               .withUniform("ChunkSection", UniformType.UNIFORM_BUFFER)
+                              .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
 //		                      .withColorWrite(true)
                               .withVertexFormat(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS)
                               .withBlend(BlendFunction.TRANSLUCENT)
@@ -230,10 +231,11 @@ public abstract class MixinRenderPipelines
 
         MaLiLibPipelines.TERRAIN_MASA_STAGE =
                 RenderPipeline.builder(FOG_AND_SAMPLERS_SNIPPET)
-                              .withVertexShader("core/terrain")
-                              .withFragmentShader("core/terrain")
+                              .withVertexShader(Identifier.of(MaLiLibReference.MOD_ID, "core/terrain"))
+                              .withFragmentShader(Identifier.of(MaLiLibReference.MOD_ID, "core/terrain"))
                               .withUniform("Projection", UniformType.UNIFORM_BUFFER)
                               .withUniform("ChunkSection", UniformType.UNIFORM_BUFFER)
+                              .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
 //                              .withColorWrite(true)
                               .withVertexFormat(VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS)
                               .withBlend(MASA_BLEND)
