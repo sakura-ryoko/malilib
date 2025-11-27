@@ -99,17 +99,17 @@ public class CompoundData extends BaseData implements DataView
     {
         BaseData data = this.values.get(key);
 
-		if (data instanceof ListData listData)
+		if (data.getType() == Constants.NBT.TAG_LIST &&
+			data instanceof ListData listData)
 		{
 			LOGGER.debug("containsList: req [{}], has [{}]", listEntryType, listData.getContainedType());
+			return listData.getContainedType() == listEntryType;
 		}
 		else
 		{
-			LOGGER.debug("containsList: req [{}], has: [NULL]", listEntryType);
+			LOGGER.debug("containsList: req [{}], has: [NULL] (Type found: '{}')", listEntryType, data.getType());
 			return false;
 		}
-
-        return data.getType() == Constants.NBT.TAG_LIST && listData.getContainedType() == listEntryType;
     }
 
 	@Override
@@ -128,6 +128,19 @@ public class CompoundData extends BaseData implements DataView
     {
         return Optional.ofNullable(this.values.get(key));
     }
+
+	@Override
+	public Optional<Integer> getDataType(String key)
+	{
+		BaseData data = this.values.get(key);
+
+		if (data != null)
+		{
+			return Optional.of(data.getType());
+		}
+
+		return Optional.empty();
+	}
 
     @Override
     public boolean getBoolean(String key)

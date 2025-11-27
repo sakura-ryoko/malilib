@@ -26,6 +26,8 @@ public interface DataView
 
     Optional<BaseData> getData(String key);
 
+	Optional<Integer> getDataType(String key);
+
     boolean getBoolean(String key);
 
 	byte getByte(String key);

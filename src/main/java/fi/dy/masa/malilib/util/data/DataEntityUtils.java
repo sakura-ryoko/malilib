@@ -576,16 +576,6 @@ public class DataEntityUtils
 		return null;
 	}
 
-	public static @Nullable TradeOfferList getTradeOffers_Test(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
-	{
-		if (data.containsList(NbtKeys.OFFERS, Constants.NBT.TAG_COMPOUND))
-		{
-			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
-		}
-
-		return null;
-	}
-
 	/**
 	 * Get the Villager Data object from Data Tag
 	 *
