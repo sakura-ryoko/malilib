@@ -99,18 +99,17 @@ public class CompoundData extends BaseData implements DataView
     {
         BaseData data = this.values.get(key);
 
-		if (data != null)
+		if (data instanceof ListData listData)
 		{
-			LOGGER.debug("containsList: req [{}], has [{}]", listEntryType, ((ListData) data).getContainedType());
+			LOGGER.debug("containsList: req [{}], has [{}]", listEntryType, listData.getContainedType());
 		}
 		else
 		{
 			LOGGER.debug("containsList: req [{}], has: [NULL]", listEntryType);
+			return false;
 		}
 
-        return data != null &&
-               data.getType() == Constants.NBT.TAG_LIST &&
-               ((ListData) data).getContainedType() == listEntryType;
+        return data.getType() == Constants.NBT.TAG_LIST && listData.getContainedType() == listEntryType;
     }
 
 	@Override

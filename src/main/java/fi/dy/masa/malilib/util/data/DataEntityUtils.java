@@ -568,7 +568,17 @@ public class DataEntityUtils
 	 */
 	public static @Nullable TradeOfferList getTradeOffers(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
 	{
-		if (data.contains(NbtKeys.OFFERS, Constants.NBT.TAG_LIST))
+		if (data.containsLenient(NbtKeys.OFFERS))
+		{
+			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+		}
+
+		return null;
+	}
+
+	public static @Nullable TradeOfferList getTradeOffers_Test(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	{
+		if (data.containsList(NbtKeys.OFFERS, Constants.NBT.TAG_COMPOUND))
 		{
 			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
 		}
