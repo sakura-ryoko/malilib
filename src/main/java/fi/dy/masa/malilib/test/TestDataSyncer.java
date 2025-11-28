@@ -3,8 +3,8 @@ package fi.dy.masa.malilib.test;
 import org.jetbrains.annotations.ApiStatus;
 import fi.dy.masa.malilib.interfaces.IDataSyncer;
 import fi.dy.masa.malilib.util.WorldUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.world.World;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.level.Level;
 
 @ApiStatus.Experimental
 public class TestDataSyncer implements IDataSyncer
@@ -16,8 +16,8 @@ public class TestDataSyncer implements IDataSyncer
     public static TestDataSyncer getInstance() { return INSTANCE; }
 
     @Override
-    public World getWorld()
+    public Level getWorld()
     {
-        return WorldUtils.getBestWorld(MinecraftClient.getInstance());
+        return WorldUtils.getBestWorld(Minecraft.getInstance());
     }
 }

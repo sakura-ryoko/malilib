@@ -7,9 +7,8 @@ import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.test.gui.widgets.WidgetTestList;
 import fi.dy.masa.malilib.test.gui.widgets.WidgetTestListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class GuiTestList extends GuiListBase<GuiTestList.Entry, WidgetTestListEntry, WidgetTestList>
         implements ISelectionListener<GuiTestList.Entry>

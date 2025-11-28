@@ -3,11 +3,11 @@ package fi.dy.masa.malilib.util.game;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.debug.DebugHudEntries;
-import net.minecraft.client.gui.hud.debug.DebugHudEntry;
-import net.minecraft.client.gui.hud.debug.DebugHudEntryVisibility;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import net.minecraft.client.gui.components.debug.DebugScreenEntry;
+import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
+import net.minecraft.resources.Identifier;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.hud.IMixinDebugHudProfile;
 
@@ -18,22 +18,22 @@ import fi.dy.masa.malilib.mixin.hud.IMixinDebugHudProfile;
  */
 public class DebugHudUtils
 {
-	public static void register(Identifier id, @Nonnull DebugHudEntry entry)
+	public static void register(Identifier id, @Nonnull DebugScreenEntry entry)
 	{
 		if (Objects.equals(id.getNamespace(), "minecraft")) return;
-		if (!DebugHudEntries.getEntries().containsKey(id))
+		if (!DebugScreenEntries.allEntries().containsKey(id))
 		{
-			MinecraftClient mc = MinecraftClient.getInstance();
+			Minecraft mc = Minecraft.getInstance();
 
-			DebugHudEntries.ENTRIES.put(id, entry);
+			DebugScreenEntries.ENTRIES_BY_ID.put(id, entry);
 			MaLiLib.debugLog("DebugHudUtils#register(): Registered [{}]", id.toString());
 
-			if (mc.debugHudEntryList == null) return;
+			if (mc.debugEntries == null) return;
 
-			if (!((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().containsKey(id))
+			if (!((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().containsKey(id))
 			{
-				((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().put(id, DebugHudEntryVisibility.NEVER);
-				mc.debugHudEntryList.saveProfileFile();
+				((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().put(id, DebugScreenEntryStatus.NEVER);
+				mc.debugEntries.save();
 			}
 		}
 	}
@@ -41,40 +41,40 @@ public class DebugHudUtils
 	public static void unregister(Identifier id)
 	{
 		if (Objects.equals(id.getNamespace(), "minecraft")) return;
-		MinecraftClient mc = MinecraftClient.getInstance();
+		Minecraft mc = Minecraft.getInstance();
 
-		DebugHudEntries.ENTRIES.remove(id);
+		DebugScreenEntries.ENTRIES_BY_ID.remove(id);
 
-		if (mc.debugHudEntryList != null)
+		if (mc.debugEntries != null)
 		{
-			((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().remove(id);
-			mc.debugHudEntryList.getVisibleEntries().remove(id);
-			mc.debugHudEntryList.saveProfileFile();
+			((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().remove(id);
+			mc.debugEntries.getCurrentlyEnabled().remove(id);
+			mc.debugEntries.save();
 		}
 	}
 
-	public static @Nullable DebugHudEntryVisibility getVisibility(Identifier id)
+	public static @Nullable DebugScreenEntryStatus getVisibility(Identifier id)
 	{
-		MinecraftClient mc = MinecraftClient.getInstance();
+		Minecraft mc = Minecraft.getInstance();
 
-		if (DebugHudEntries.getEntries().containsKey(id) &&
-			mc.debugHudEntryList != null &&
-			((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().containsKey(id))
+		if (DebugScreenEntries.allEntries().containsKey(id) &&
+			mc.debugEntries != null &&
+			((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().containsKey(id))
 		{
-			return ((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().get(id);
+			return ((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().get(id);
 		}
 
 		return null;
 	}
 
-	public static void setVisibility(Identifier id, DebugHudEntryVisibility visibility)
+	public static void setVisibility(Identifier id, DebugScreenEntryStatus visibility)
 	{
-		MinecraftClient mc = MinecraftClient.getInstance();
+		Minecraft mc = Minecraft.getInstance();
 
-		if (DebugHudEntries.getEntries().containsKey(id) &&
-			mc.debugHudEntryList != null)
+		if (DebugScreenEntries.allEntries().containsKey(id) &&
+			mc.debugEntries != null)
 		{
-			((IMixinDebugHudProfile) mc.debugHudEntryList).malilib$getVisibilityMap().put(id, visibility);
+			((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().put(id, visibility);
 		}
 	}
 }

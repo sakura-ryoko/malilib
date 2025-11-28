@@ -5,29 +5,24 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.base.Splitter;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FluidBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.CrafterBlockEntity;
-import net.minecraft.block.enums.Orientation;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.*;
-import net.minecraft.state.property.Properties;
-import net.minecraft.storage.NbtWriteView;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.CrafterBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.level.storage.TagValueOutput;
 
 import fi.dy.masa.malilib.data.CachedTagUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -51,13 +46,13 @@ public class BlockUtils
     {
         int index = str.indexOf("["); // [prop=value]
         String blockName = index != -1 ? str.substring(0, index) : str;
-        Identifier id = Identifier.of(blockName);
+        Identifier id = Identifier.parse(blockName);
 
         if (RegistryUtils.getBlockById(id) != null)
         {
             Block block = RegistryUtils.getBlockById(id);
-            BlockState state = block.getDefaultState();
-            StateManager<Block, BlockState> stateManager = block.getStateManager();
+            BlockState state = block.defaultBlockState();
+            StateDefinition<@NotNull Block, @NotNull BlockState> stateManager = block.getStateDefinition();
 
             if (index != -1 && str.length() > (index + 4) && str.charAt(str.length() - 1) == ']')
             {
@@ -103,17 +98,17 @@ public class BlockUtils
      * None of the values are checked for validity here, and this can be used for
      * parsing strings for states from another Minecraft version, such as 1.12 <-> 1.13+.
      */
-    public static NbtCompound getBlockStateTagFromString(String stateString)
+    public static CompoundTag getBlockStateTagFromString(String stateString)
     {
         int index = stateString.indexOf("["); // [f=b]
         String blockName = index != -1 ? stateString.substring(0, index) : stateString;
-        NbtCompound tag = new NbtCompound();
+        CompoundTag tag = new CompoundTag();
 
         tag.putString("Name", blockName);
 
         if (index != -1 && stateString.length() > (index + 4) && stateString.charAt(stateString.length() - 1) == ']')
         {
-            NbtCompound propsTag = new NbtCompound();
+            CompoundTag propsTag = new CompoundTag();
             String propStr = stateString.substring(index + 1, stateString.length() - 1);
 
             for (String propAndVal : COMMA_SPLITTER.split(propStr))
@@ -149,21 +144,21 @@ public class BlockUtils
      * This string format is what the Sponge schematic format uses in the palette.
      * @return an equivalent of BlockState.toString() of the given tag representing a block state
      */
-    public static String getBlockStateStringFromTag(NbtCompound stateTag)
+    public static String getBlockStateStringFromTag(CompoundTag stateTag)
     {
-        String name = stateTag.getString("Name", "");
+        String name = stateTag.getStringOr("Name", "");
 
         if (stateTag.contains("Properties") == false)
         {
             return name;
         }
 
-        NbtCompound propTag = stateTag.getCompoundOrEmpty("Properties");
+        CompoundTag propTag = stateTag.getCompoundOrEmpty("Properties");
         ArrayList<Pair<String, String>> props = new ArrayList<>();
 
-        for (String key : propTag.getKeys())
+        for (String key : propTag.keySet())
         {
-            props.add(Pair.of(key, propTag.getString(key, "")));
+            props.add(Pair.of(key, propTag.getStringOr(key, "")));
         }
 
         final int size = props.size();
@@ -193,15 +188,15 @@ public class BlockUtils
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> BlockState getBlockStateWithProperty(BlockState state, Property<T> prop, Comparable<?> value)
+    public static <T extends Comparable<T>> BlockState getBlockStateWithProperty(BlockState state, Property<@NotNull T> prop, Comparable<?> value)
     {
-        return state.with(prop, (T) value);
+        return state.setValue(prop, (T) value);
     }
 
     @Nullable
-    public static <T extends Comparable<T>> T getPropertyValueByName(Property<T> prop, String valStr)
+    public static <T extends Comparable<T>> T getPropertyValueByName(Property<@NotNull T> prop, String valStr)
     {
-        return prop.parse(valStr).orElse(null);
+        return prop.getValue(valStr).orElse(null);
     }
 
     /**
@@ -211,8 +206,8 @@ public class BlockUtils
      */
     public static Optional<Direction> getFirstPropertyFacingValue(BlockState state)
     {
-        Optional<EnumProperty<Direction>> propOptional = getFirstDirectionProperty(state);
-        return propOptional.map(directionProperty -> Direction.byId(state.get(directionProperty).getId()));
+        Optional<EnumProperty<@NotNull Direction>> propOptional = getFirstDirectionProperty(state);
+        return propOptional.map(directionProperty -> Direction.byName(state.getValue(directionProperty).getName()));
     }
 
     /**
@@ -220,13 +215,13 @@ public class BlockUtils
      * @return the first PropertyDirection, or empty() if there are no such properties
      */
     @SuppressWarnings("unchecked")
-    public static Optional<EnumProperty<Direction>> getFirstDirectionProperty(BlockState state)
+    public static Optional<EnumProperty<@NotNull Direction>> getFirstDirectionProperty(BlockState state)
     {
         for (Property<?> prop : state.getProperties())
         {
-            if (prop instanceof EnumProperty<?> ep && ep.getType().equals(Direction.class))
+            if (prop instanceof EnumProperty<?> ep && ep.getValueClass().equals(Direction.class))
             {
-                return Optional.of((EnumProperty<Direction>) ep);
+                return Optional.of((EnumProperty<@NotNull Direction>) ep);
             }
         }
 
@@ -250,7 +245,7 @@ public class BlockUtils
             {
                 for (Property<?> prop : properties)
                 {
-                    Comparable<?> val = state.get(prop);
+                    Comparable<?> val = state.getValue(prop);
                     String key;
 
                     if (prop instanceof BooleanProperty)
@@ -260,11 +255,11 @@ public class BlockUtils
                     }
                     else if (prop instanceof EnumProperty<?> enumProperty)
                     {
-                        if (enumProperty.getType().equals(Direction.class))
+                        if (enumProperty.getValueClass().equals(Direction.class))
                         {
                             key = "malilib.label.block_state_properties.direction";
                         }
-                        else if (enumProperty.getType().equals(Orientation.class))
+                        else if (enumProperty.getValueClass().equals(FrontAndTop.class))
                         {
                             key = "malilib.label.block_state_properties.orientation";
                         }
@@ -273,7 +268,7 @@ public class BlockUtils
                             key = "malilib.label.block_state_properties.enum";
                         }
                     }
-                    else if (prop instanceof IntProperty)
+                    else if (prop instanceof IntegerProperty)
                     {
                         key = "malilib.label.block_state_properties.integer";
                     }
@@ -346,52 +341,52 @@ public class BlockUtils
 
     public static boolean isFluidBlock(BlockState state)
     {
-        return !state.getFluidState().equals(Fluids.EMPTY.getDefaultState());
+        return !state.getFluidState().equals(Fluids.EMPTY.defaultFluidState());
     }
 
     public static boolean isFluidSourceBlock(BlockState state)
     {
-        return state.getBlock() instanceof FluidBlock && state.getFluidState().getLevel() == 8;
+        return state.getBlock() instanceof LiquidBlock && state.getFluidState().getAmount() == 8;
     }
 
     @Nullable
     public static Direction getPropertyFacingValue(BlockState state)
     {
-        return state.contains(Properties.FACING) ? state.get(Properties.FACING) : null;
+        return state.hasProperty(BlockStateProperties.FACING) ? state.getValue(BlockStateProperties.FACING) : null;
     }
 
     @Nullable
     public static Direction getPropertyHopperFacingValue(BlockState state)
     {
-        return state.contains(Properties.HOPPER_FACING) ? state.get(Properties.HOPPER_FACING) : null;
+        return state.hasProperty(BlockStateProperties.FACING_HOPPER) ? state.getValue(BlockStateProperties.FACING_HOPPER) : null;
     }
 
     @Nullable
     public static Direction getPropertyHorizontalFacingValue(BlockState state)
     {
-        return state.contains(Properties.HORIZONTAL_FACING) ? state.get(Properties.HORIZONTAL_FACING) : null;
+        return state.hasProperty(BlockStateProperties.HORIZONTAL_FACING) ? state.getValue(BlockStateProperties.HORIZONTAL_FACING) : null;
     }
 
     @Nullable
-    public static Orientation getPropertyOrientationValue(BlockState state)
+    public static FrontAndTop getPropertyOrientationValue(BlockState state)
     {
-        return state.contains(Properties.ORIENTATION) ? state.get(Properties.ORIENTATION) : null;
+        return state.hasProperty(BlockStateProperties.ORIENTATION) ? state.getValue(BlockStateProperties.ORIENTATION) : null;
     }
 
     @Nullable
     public static Direction getPropertyOrientationFacing(BlockState state)
     {
-        Orientation o = getPropertyOrientationValue(state);
+        FrontAndTop o = getPropertyOrientationValue(state);
 
-        return o != null ? o.getFacing() : null;
+        return o != null ? o.front() : null;
     }
 
     @Nullable
     public static Direction getPropertyOrientationRotation(BlockState state)
     {
-        Orientation o = getPropertyOrientationValue(state);
+        FrontAndTop o = getPropertyOrientationValue(state);
 
-        return o != null ? o.getRotation() : null;
+        return o != null ? o.top() : null;
     }
 
     public static boolean isFacingValidForDirection(ItemStack stack, Direction facing)
@@ -401,18 +396,18 @@ public class BlockUtils
         if (stack.isEmpty() == false && item instanceof BlockItem)
         {
             Block block = ((BlockItem) item).getBlock();
-            BlockState state = block.getDefaultState();
+            BlockState state = block.defaultBlockState();
 
-            if (state.contains(Properties.FACING))
+            if (state.hasProperty(BlockStateProperties.FACING))
             {
                 return true;
             }
-            else if (state.contains(Properties.HOPPER_FACING) &&
+            else if (state.hasProperty(BlockStateProperties.FACING_HOPPER) &&
                     facing.equals(Direction.UP) == false)
             {
                 return true;
             }
-            else if (state.contains(Properties.HORIZONTAL_FACING) &&
+            else if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING) &&
                     facing.equals(Direction.UP) == false &&
                     facing.equals(Direction.DOWN) == false)
             {
@@ -427,7 +422,7 @@ public class BlockUtils
     {
         if (isFacingValidForDirection(stack, facing))
         {
-            return facing.getIndex();
+            return facing.get3DDataValue();
         }
 
         return -1;
@@ -440,9 +435,9 @@ public class BlockUtils
         if (stack.isEmpty() == false && item instanceof BlockItem)
         {
             Block block = ((BlockItem) item).getBlock();
-            BlockState state = block.getDefaultState();
+            BlockState state = block.defaultBlockState();
 
-            return state.contains(Properties.ORIENTATION);
+            return state.hasProperty(BlockStateProperties.ORIENTATION);
         }
 
         return false;
@@ -452,17 +447,17 @@ public class BlockUtils
     {
         if (stack.getItem() instanceof BlockItem blockItem)
         {
-            BlockState defaultState = blockItem.getBlock().getDefaultState();
+            BlockState defaultState = blockItem.getBlock().defaultBlockState();
 
-            if (defaultState.contains(Properties.ORIENTATION))
+            if (defaultState.hasProperty(BlockStateProperties.ORIENTATION))
             {
-                List<Orientation> list = Arrays.stream(Orientation.values()).toList();
+                List<FrontAndTop> list = Arrays.stream(FrontAndTop.values()).toList();
 
                 for (int i = 0; i < list.size(); i++)
                 {
-                    Orientation o = list.get(i);
+                    FrontAndTop o = list.get(i);
 
-                    if (o.getFacing().equals(facing))
+                    if (o.front().equals(facing))
                     {
                         return i;
                     }
@@ -476,8 +471,8 @@ public class BlockUtils
     /**
      * Get a Crafter's "locked slots" from the Block Entity by iterating all 9 slots.
      *
-     * @param ce
-     * @return
+     * @param ce ()
+     * @return ()
      */
     public static Set<Integer> getDisabledSlots(CrafterBlockEntity ce)
     {
@@ -504,15 +499,15 @@ public class BlockUtils
      * @param be ()
      * @param registry ()
      */
-    public static void setStackNbt(@Nonnull ItemStack stack, @Nonnull BlockEntity be, @Nonnull DynamicRegistryManager registry)
+    public static void setStackNbt(@Nonnull ItemStack stack, @Nonnull BlockEntity be, @Nonnull RegistryAccess registry)
     {
         if (stack.isEmpty()) return;
 //        NbtCompound nbt = be.createComponentlessNbt(registry);
         NbtView view = NbtView.getWriter(registry);
 //        view = view.writeNbt(nbt);
-        be.writeComponentlessData(view.getWriter());
-        BlockItem.setBlockEntityData(stack, be.getType(), (NbtWriteView) view.getWriter());
-        stack.applyComponentsFrom(be.createComponentMap());
+        be.saveCustomOnly(view.getWriter());
+        BlockItem.setBlockEntityData(stack, be.getType(), (TagValueOutput) view.getWriter());
+        stack.applyComponents(be.collectComponents());
     }
 
     /**
@@ -532,12 +527,12 @@ public class BlockUtils
 //            }
 //        }
 
-        Pair<RegistryEntryList<Block>, RegistryEntry<Block>> pairLeft = CachedTagUtils.matchReplaceableBlockTag(left);
-        Pair<RegistryEntryList<Block>, RegistryEntry<Block>> pairRight = CachedTagUtils.matchReplaceableBlockTag(right);
+        Pair<HolderSet<@NotNull Block>, Holder<@NotNull Block>> pairLeft = CachedTagUtils.matchReplaceableBlockTag(left);
+        Pair<HolderSet<@NotNull Block>, Holder<@NotNull Block>> pairRight = CachedTagUtils.matchReplaceableBlockTag(right);
 
         // Do not check the block tag (getRight())
         return pairLeft.getLeft() != null && pairRight.getLeft() != null &&
-               pairLeft.getLeft().getTagKey().equals(pairRight.getLeft().getTagKey());
+               pairLeft.getLeft().unwrapKey().equals(pairRight.getLeft().unwrapKey());
     }
 
     /**
@@ -559,13 +554,13 @@ public class BlockUtils
         for (Property<?> entry : props)
         {
             @SuppressWarnings("unchecked")
-            Property<T> p = (Property<T>) entry;
+            Property<@NotNull T> p = (Property<@NotNull T>) entry;
 
-            if (otherState.contains(p))
+            if (otherState.hasProperty(p))
             {
-                T value = state.get(p);
+                T value = state.getValue(p);
 
-                if (!value.equals(otherState.get(p)))
+                if (!value.equals(otherState.getValue(p)))
                 {
                     return false;
                 }
@@ -584,13 +579,13 @@ public class BlockUtils
     {
         if (left.isSolid() && right.isSolid())
         {
-            return left.isOpaqueFullCube() && right.isOpaqueFullCube();
+            return left.isSolidRender() && right.isSolidRender();
         }
 
         return false;
     }
 
-    public static boolean matchMapColors(World world, BlockPos pos, BlockState left, BlockState right)
+    public static boolean matchMapColors(Level world, BlockPos pos, BlockState left, BlockState right)
     {
         return left.getMapColor(world, pos) == right.getMapColor(world, pos);
     }

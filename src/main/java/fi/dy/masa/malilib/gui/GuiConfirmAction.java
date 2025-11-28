@@ -3,9 +3,7 @@ package fi.dy.masa.malilib.gui;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-
-import net.minecraft.client.gui.screen.Screen;
-
+import net.minecraft.client.gui.screens.Screen;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -78,9 +76,9 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
     }
 
     @Override
-    public boolean shouldPause()
+    public boolean isPauseScreen()
     {
-        return this.getParent() != null && this.getParent().shouldPause();
+        return this.getParent() != null && this.getParent().isPauseScreen();
     }
 
     @Override
@@ -91,8 +89,8 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
             this.getParent().render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
         }
 
-	    ctx.getMatrices().pushMatrix();
-	    ctx.getMatrices().translate(0, 0);
+	    ctx.pose().pushMatrix();
+	    ctx.pose().translate(0, 0);
 
         RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xF0000000, COLOR_HORIZONTAL_BAR);
 
@@ -107,7 +105,7 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
         }
 
         this.drawButtons(ctx, mouseX, mouseY, partialTicks);
-	    ctx.getMatrices().popMatrix();
+	    ctx.pose().popMatrix();
     }
 
     protected ButtonListener createActionListener(ButtonType type)

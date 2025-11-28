@@ -16,15 +16,13 @@ import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
-
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.util.Pair;
-
 import java.util.*;
-
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.util.Tuple;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Experimental
 public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
@@ -40,7 +38,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields = new ArrayList<>();
 
 	// You're probably going to hate me for this, but...
-	private final List<Pair<ConfigButtonKeybind, WidgetKeybindSettings>> keybindWidgets = new ArrayList<>();
+	private final List<Tuple<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings>> keybindWidgets = new ArrayList<>();
 
 	private final List<ConfigButtonBoolean> booleanWidgets = new ArrayList<>();
 
@@ -146,7 +144,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 							throw new IllegalStateException("Unsupported type: " + type.name() + " with value: " + value.getType().name());
 				};
 				tf.setMaxLength(this.maxTextfieldTextLength);
-				tf.setText(Entry.getString(value));
+				tf.setValue(Entry.getString(value));
 				TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = new TextFieldWrapper<>(tf, textField ->
 				{
 					checkResetButtonState();
@@ -279,7 +277,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 					if (type == EntryTypes.STRING || type == EntryTypes.INTEGER || type == EntryTypes.DOUBLE)
 					{
 						TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
-						String text = tfw.textField().getText();
+						String text = tfw.textField().getValue();
 						this.lastAppliedValues.add(text);
 						if (type == EntryTypes.STRING)
 						{
@@ -289,7 +287,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						{
                             if (text.isEmpty())
                             {
-                                tfw.textField().setText("0");
+                                tfw.textField().setValue("0");
                                 temp.list().add(IntegerEntry.of(0));
                                 checkResetButtonState();
                             }
@@ -302,7 +300,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						{
                             if (text.isEmpty())
                             {
-                                tfw.textField().setText("0.0");
+                                tfw.textField().setValue("0.0");
                                 temp.list().add(DoubleEntry.of(0.0));
                                 checkResetButtonState();
                             }
@@ -435,12 +433,12 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				wrapper.textField().render(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
 			}
 		}
-		for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets)
+		for (Tuple<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)
 		{
 			if (pair != null)
 			{
-				ConfigButtonKeybind button = pair.getLeft();
-				WidgetKeybindSettings settings = pair.getRight();
+				ConfigButtonKeybind button = pair.getA();
+				WidgetKeybindSettings settings = pair.getB();
 				if (button != null)
 				{
 					button.render(ctx, mouseX, mouseY, selected);
@@ -468,13 +466,13 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	}
 
 	@Override
-	public boolean onMouseClicked(Click click, boolean doubleClick)
+	public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
 	{
-		for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets)
+		for (Tuple<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)
 		{
 			if (pair != null)
 			{
-				ConfigButtonKeybind button = pair.getLeft();
+				ConfigButtonKeybind button = pair.getA();
 				if (button != null)
 				{
 					if (button.isMouseOver((int) click.x(), (int) click.y()))
@@ -503,13 +501,13 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	}
 
 	@Override
-	public boolean onKeyTyped(KeyInput input)
+	public boolean onKeyTyped(KeyEvent input)
 	{
-		for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets)
+		for (Tuple<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)
 		{
 			if (pair != null)
 			{
-				ConfigButtonKeybind button = pair.getLeft();
+				ConfigButtonKeybind button = pair.getA();
 				if (button != null)
 				{
 					if (button.isSelected())
@@ -544,7 +542,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				if (wrapper != null)
 				{
 					String defaultText = Entry.getString(this.defaultValue.list().get(i));
-					if (!wrapper.textField().getText().equals(defaultText))
+					if (!wrapper.textField().getValue().equals(defaultText))
 					{
 						this.buttonReset.setEnabled(true);
 						return true;
@@ -584,7 +582,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				if (wrapper != null)
 				{
 					String defaultText = Entry.getString(this.defaultValue.list().get(i));
-					wrapper.textField().setText(defaultText);
+					wrapper.textField().setValue(defaultText);
 				}
 //            } else if (type == EntryTypes.KEYBIND) {
 //                assert this.entries.get(i) instanceof KeybindEntry;
@@ -687,7 +685,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 			else if (entry.getType() == EntryTypes.DOUBLE || entry.getType() == EntryTypes.INTEGER || entry.getType() == EntryTypes.STRING)
 			{
 				TextFieldWrapper<? extends GuiTextFieldGeneric> tfw = this.textFields.get(i);
-				String text = tfw.textField().getText();
+				String text = tfw.textField().getValue();
 
 				if (!text.equals(lastApplied))
 				{
@@ -700,7 +698,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 
 
 	@Override
-	protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+	protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
 	{
 		if (super.onMouseClickedImpl(click, doubleClick))
 		{
@@ -720,7 +718,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	}
 
 	@Override
-	public boolean onKeyTypedImpl(KeyInput input)
+	public boolean onKeyTypedImpl(KeyEvent input)
 	{
 		for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields)
 		{
@@ -741,7 +739,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	}
 
 	@Override
-	protected boolean onCharTypedImpl(CharInput input)
+	protected boolean onCharTypedImpl(CharacterEvent input)
 	{
 		for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields)
 		{

@@ -1,43 +1,60 @@
 package fi.dy.masa.malilib.util.data;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.block.Oxidizable;
-import net.minecraft.entity.*;
-import net.minecraft.entity.attribute.*;
-import net.minecraft.entity.decoration.painting.PaintingVariant;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.passive.*;
-import net.minecraft.entity.player.HungerManager;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.core.*;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.recipe.ServerRecipeManager;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.network.ServerRecipeBook;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.stats.ServerRecipeBook;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.village.TradeOfferList;
-import net.minecraft.village.VillagerData;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.*;
+import net.minecraft.world.entity.animal.axolotl.Axolotl;
+import net.minecraft.world.entity.animal.chicken.ChickenVariant;
+import net.minecraft.world.entity.animal.chicken.ChickenVariants;
+import net.minecraft.world.entity.animal.cow.CowVariant;
+import net.minecraft.world.entity.animal.cow.CowVariants;
+import net.minecraft.world.entity.animal.cow.MushroomCow;
+import net.minecraft.world.entity.animal.equine.Llama;
+import net.minecraft.world.entity.animal.equine.Markings;
+import net.minecraft.world.entity.animal.equine.Variant;
+import net.minecraft.world.entity.animal.feline.CatVariant;
+import net.minecraft.world.entity.animal.feline.CatVariants;
+import net.minecraft.world.entity.animal.fish.Salmon;
+import net.minecraft.world.entity.animal.fish.TropicalFish;
+import net.minecraft.world.entity.animal.fox.Fox;
+import net.minecraft.world.entity.animal.frog.FrogVariant;
+import net.minecraft.world.entity.animal.frog.FrogVariants;
+import net.minecraft.world.entity.animal.panda.Panda;
+import net.minecraft.world.entity.animal.parrot.Parrot;
+import net.minecraft.world.entity.animal.pig.PigVariant;
+import net.minecraft.world.entity.animal.pig.PigVariants;
+import net.minecraft.world.entity.animal.rabbit.Rabbit;
+import net.minecraft.world.entity.animal.wolf.WolfSoundVariant;
+import net.minecraft.world.entity.animal.wolf.WolfVariant;
+import net.minecraft.world.entity.animal.wolf.WolfVariants;
+import net.minecraft.world.entity.decoration.painting.PaintingVariant;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.food.FoodData;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.world.level.block.WeatheringCopper;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.tag.BaseData;
@@ -72,7 +89,7 @@ public class DataEntityUtils
 	{
 		if (data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
 		{
-			return Registries.ENTITY_TYPE.getOptionalValue(Identifier.tryParse(data.getString(NbtKeys.ID))).orElse(null);
+			return BuiltInRegistries.ENTITY_TYPE.getOptional(Identifier.tryParse(data.getString(NbtKeys.ID))).orElse(null);
 		}
 
 		return null;
@@ -88,7 +105,7 @@ public class DataEntityUtils
 	public CompoundData setEntityType(EntityType<?> type, @Nullable CompoundData dataIn)
 	{
 		CompoundData data = new CompoundData();
-		Identifier id = EntityType.getId(type);
+		Identifier id = EntityType.getKey(type);
 
 		if (id != null)
 		{
@@ -113,11 +130,11 @@ public class DataEntityUtils
 	 * @param registry (registry)
 	 * @return ()
 	 */
-	public static RegistryEntry.Reference<EntityType<?>> getEntityTypeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+	public static Holder.Reference<@NotNull EntityType<?>> getEntityTypeEntry(Identifier id, @Nonnull RegistryAccess registry)
 	{
 		try
 		{
-			return registry.getOrThrow(Registries.ENTITY_TYPE.getKey()).getEntry(id).orElseThrow();
+			return registry.lookupOrThrow(BuiltInRegistries.ENTITY_TYPE.key()).get(id).orElseThrow();
 		}
 		catch (Exception e)
 		{
@@ -132,25 +149,25 @@ public class DataEntityUtils
 	 * @return ()
 	 */
 	@SuppressWarnings("unchecked")
-	public static @Nullable AttributeContainer getAttributes(@Nonnull CompoundData data)
+	public static @Nullable AttributeMap getAttributes(@Nonnull CompoundData data)
 	{
 		EntityType<?> type = getEntityType(data);
 
 		if (type != null && data.contains(NbtKeys.ATTRIB, Constants.NBT.TAG_LIST))
 		{
-			AttributeContainer container = new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
+			AttributeMap container = new AttributeMap(DefaultAttributes.getSupplier((EntityType<? extends LivingEntity>) type));
 			ListData list = data.getList(NbtKeys.ATTRIB);
 
-			container.unpack(EntityAttributeInstance.Packed.LIST_CODEC.parse(NbtOps.INSTANCE, DataConverterNbt.toVanillaList(list)).getPartialOrThrow());
+			container.apply(AttributeInstance.Packed.LIST_CODEC.parse(NbtOps.INSTANCE, DataConverterNbt.toVanillaList(list)).getPartialOrThrow());
 			return container;
 		}
 
 		return null;
 	}
 
-	public static double getAttributeBaseValue(@Nonnull CompoundData data, RegistryEntry<EntityAttribute> attribute)
+	public static double getAttributeBaseValue(@Nonnull CompoundData data, Holder<Attribute> attribute)
 	{
-		AttributeContainer attributes = getAttributes(data);
+		AttributeMap attributes = getAttributes(data);
 
 		if (attributes != null)
 		{
@@ -166,9 +183,9 @@ public class DataEntityUtils
 	 * @param attribute ()
 	 * @return ()
 	 */
-	public static double getAttributeValue(@Nonnull CompoundData data, RegistryEntry<EntityAttribute> attribute)
+	public static double getAttributeValue(@Nonnull CompoundData data, Holder<@NotNull Attribute> attribute)
 	{
-		AttributeContainer attributes = getAttributes(data);
+		AttributeMap attributes = getAttributes(data);
 
 		if (attributes != null)
 		{
@@ -194,7 +211,7 @@ public class DataEntityUtils
 			health = data.getFloat(NbtKeys.HEALTH);
 		}
 
-		maxHealth = getAttributeValue(data, EntityAttributes.MAX_HEALTH);
+		maxHealth = getAttributeValue(data, Attributes.MAX_HEALTH);
 
 		if (maxHealth < 0)
 		{
@@ -212,14 +229,14 @@ public class DataEntityUtils
 	 */
 	public static Pair<Double, Double> getSpeedAndJumpStrength(@Nonnull CompoundData data)
 	{
-		AttributeContainer container = getAttributes(data);
+		AttributeMap container = getAttributes(data);
 		double moveSpeed = 0d;
 		double jumpStrength = 0d;
 
 		if (container != null)
 		{
-			moveSpeed = container.getValue(EntityAttributes.MOVEMENT_SPEED);
-			jumpStrength = container.getValue(EntityAttributes.JUMP_STRENGTH);
+			moveSpeed = container.getValue(Attributes.MOVEMENT_SPEED);
+			jumpStrength = container.getValue(Attributes.JUMP_STRENGTH);
 		}
 
 		return Pair.of(moveSpeed, jumpStrength);
@@ -232,11 +249,11 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static @Nullable Text getCustomName(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable Component getCustomName(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		if (data.contains(NbtKeys.CUSTOM_NAME, Constants.NBT.TAG_COMPOUND))
 		{
-			return data.getCodec(NbtKeys.CUSTOM_NAME, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.CUSTOM_NAME, ComponentSerialization.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -251,7 +268,7 @@ public class DataEntityUtils
 	 * @param key ()
 	 * @return (Data Tag Out)
 	 */
-	public static CompoundData setCustomNameToDataTag(@Nonnull Text name, @Nonnull DynamicRegistryManager registry, @Nullable CompoundData dataIn, String key)
+	public static CompoundData setCustomNameToDataTag(@Nonnull Component name, @Nonnull RegistryAccess registry, @Nullable CompoundData dataIn, String key)
 	{
 		CompoundData data = dataIn != null ? dataIn.copy() : new CompoundData();
 
@@ -260,7 +277,7 @@ public class DataEntityUtils
 			key = NbtKeys.CUSTOM_NAME;
 		}
 
-		return data.putCodec(key, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE), name);
+		return data.putCodec(key, ComponentSerialization.CODEC, registry.createSerializationContext(NbtOps.INSTANCE), name);
 	}
 
 	/**
@@ -269,17 +286,17 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static Map<RegistryEntry<StatusEffect>, StatusEffectInstance> getActiveStatusEffects(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static Map<Holder<@NotNull MobEffect>, MobEffectInstance> getActiveStatusEffects(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		Map<RegistryEntry<StatusEffect>, StatusEffectInstance> statusEffects = Maps.newHashMap();
+		Map<Holder<@NotNull MobEffect>, MobEffectInstance> statusEffects = Maps.newHashMap();
 
 		if (data.contains(NbtKeys.EFFECTS, Constants.NBT.TAG_LIST))
 		{
-			List<StatusEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(NbtOps.INSTANCE)).orElse(List.of());
+			List<MobEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, MobEffectInstance.CODEC.listOf(), registry.createSerializationContext(NbtOps.INSTANCE)).orElse(List.of());
 
-			for (StatusEffectInstance instance : list)
+			for (MobEffectInstance instance : list)
 			{
-				statusEffects.put(instance.getEffectType(), instance);
+				statusEffects.put(instance.getEffect(), instance);
 			}
 		}
 
@@ -293,12 +310,12 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static @Nullable EntityEquipment getEquipmentSlots(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable EntityEquipment getEquipmentSlots(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		if (data.contains(NbtKeys.EQUIPMENT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.EQUIPMENT);
-			Optional<EntityEquipment> opt = EntityEquipment.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).result();
+			Optional<EntityEquipment> opt = EntityEquipment.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).result();
 
 			if (opt.isPresent())
 			{
@@ -316,11 +333,11 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static @Nullable BaseData setEquipmentSlotsToDataTag(@Nonnull EntityEquipment equipment, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable BaseData setEquipmentSlotsToDataTag(@Nonnull EntityEquipment equipment, @Nonnull RegistryAccess registry)
 	{
 		try
 		{
-			return DataConverterNbt.fromVanillaNbt(EntityEquipment.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), equipment).getOrThrow());
+			return DataConverterNbt.fromVanillaNbt(EntityEquipment.CODEC.encodeStart(registry.createSerializationContext(NbtOps.INSTANCE), equipment).getOrThrow());
 		}
 		catch (Exception err)
 		{
@@ -337,9 +354,9 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static DefaultedList<ItemStack> getHandItems(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static NonNullList<@NotNull ItemStack> getHandItems(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		DefaultedList<ItemStack> list = DefaultedList.ofSize(2, ItemStack.EMPTY);
+		NonNullList<@NotNull ItemStack> list = NonNullList.withSize(2, ItemStack.EMPTY);
 		EntityEquipment equipment = getEquipmentSlots(data, registry);
 
 		if (equipment != null)
@@ -369,9 +386,9 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static DefaultedList<ItemStack> getHumanoidArmor(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static NonNullList<@NotNull ItemStack> getHumanoidArmor(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		DefaultedList<ItemStack> list = DefaultedList.ofSize(4, ItemStack.EMPTY);
+		NonNullList<@NotNull ItemStack> list = NonNullList.withSize(4, ItemStack.EMPTY);
 		EntityEquipment equipment = getEquipmentSlots(data, registry);
 
 		if (equipment != null)
@@ -413,9 +430,9 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static DefaultedList<ItemStack> getHorseEquipment(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static NonNullList<@NotNull ItemStack> getHorseEquipment(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		DefaultedList<ItemStack> list = DefaultedList.ofSize(2, ItemStack.EMPTY);
+		NonNullList<@NotNull ItemStack> list = NonNullList.withSize(2, ItemStack.EMPTY);
 		EntityEquipment equipment = getEquipmentSlots(data, registry);
 
 		if (equipment != null)
@@ -447,9 +464,9 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static DefaultedList<ItemStack> getAllEquipment(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static NonNullList<@NotNull ItemStack> getAllEquipment(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		DefaultedList<ItemStack> list = DefaultedList.ofSize(8, ItemStack.EMPTY);
+		NonNullList<@NotNull ItemStack> list = NonNullList.withSize(8, ItemStack.EMPTY);
 		EntityEquipment equipment = getEquipmentSlots(data, registry);
 
 		if (equipment != null)
@@ -566,11 +583,11 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static @Nullable TradeOfferList getTradeOffers(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable MerchantOffers getTradeOffers(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		if (data.containsLenient(NbtKeys.OFFERS))
 		{
-			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.OFFERS, MerchantOffers.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -675,18 +692,18 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static Pair<PandaEntity.Gene, PandaEntity.Gene> getPandaGenes(@Nonnull CompoundData data)
+	public static Pair<Panda.Gene, Panda.Gene> getPandaGenes(@Nonnull CompoundData data)
 	{
-		PandaEntity.Gene mainGene = null;
-		PandaEntity.Gene hiddenGene = null;
+		Panda.Gene mainGene = null;
+		Panda.Gene hiddenGene = null;
 
 		if (data.contains(NbtKeys.MAIN_GENE, Constants.NBT.TAG_STRING))
 		{
-			mainGene = data.getCodec(NbtKeys.MAIN_GENE, PandaEntity.Gene.CODEC).orElse(PandaEntity.Gene.NORMAL);
+			mainGene = data.getCodec(NbtKeys.MAIN_GENE, Panda.Gene.CODEC).orElse(Panda.Gene.NORMAL);
 		}
 		if (data.contains(NbtKeys.HIDDEN_GENE, Constants.NBT.TAG_STRING))
 		{
-			hiddenGene = data.getCodec(NbtKeys.HIDDEN_GENE, PandaEntity.Gene.CODEC).orElse(PandaEntity.Gene.NORMAL);
+			hiddenGene = data.getCodec(NbtKeys.HIDDEN_GENE, Panda.Gene.CODEC).orElse(Panda.Gene.NORMAL);
 		}
 
 		return Pair.of(mainGene, hiddenGene);
@@ -705,7 +722,7 @@ public class DataEntityUtils
 
 		if (data.contains(NbtKeys.ITEM_ROTATION, Constants.NBT.TAG_BYTE))
 		{
-			rotation = Direction.byIndex(data.getByte(NbtKeys.ITEM_ROTATION));
+			rotation = Direction.from3DDataValue(data.getByte(NbtKeys.ITEM_ROTATION));
 		}
 
 		return Pair.of(facing, rotation);
@@ -718,15 +735,15 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static Pair<Direction, PaintingVariant> getPaintingData(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static Pair<Direction, PaintingVariant> getPaintingData(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		Direction facing = DataTypeUtils.readDirectionFromTag(data, NbtKeys.FACING);
-		RegistryEntry<PaintingVariant> variant = null;
+		Holder<@NotNull PaintingVariant> variant = null;
 
 		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
 		{
-			variant = PaintingVariant.ENTRY_CODEC.fieldOf(NbtKeys.VARIANT).codec()
-			                                     .parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+			variant = PaintingVariant.CODEC.fieldOf(NbtKeys.VARIANT).codec()
+			                                     .parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
 			                                     .resultOrPartial().orElse(null);
 		}
 
@@ -740,11 +757,11 @@ public class DataEntityUtils
 	 * @return ()
 	 */
 	@SuppressWarnings("deprecation")
-	public static @Nullable AxolotlEntity.Variant getAxolotlVariant(@Nonnull CompoundData data)
+	public static @Nullable Axolotl.Variant getAxolotlVariant(@Nonnull CompoundData data)
 	{
 		if (data.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
 		{
-			return data.getCodec(NbtKeys.VARIANT_2, AxolotlEntity.Variant.INDEX_CODEC).orElse(AxolotlEntity.Variant.LUCY);
+			return data.getCodec(NbtKeys.VARIANT_2, Axolotl.Variant.LEGACY_CODEC).orElse(Axolotl.Variant.LUCY);
 		}
 
 		return null;
@@ -758,23 +775,23 @@ public class DataEntityUtils
 	 * @return ()
 	 */
 	@SuppressWarnings("deprecation")
-	public static Pair<RegistryKey<CatVariant>, DyeColor> getCatVariant(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static Pair<ResourceKey<@NotNull CatVariant>, DyeColor> getCatVariant(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		RegistryKey<CatVariant> variantKey = null;
+		ResourceKey<@NotNull CatVariant> variantKey = null;
 		DyeColor collar = null;
 
 		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
 		{
-			Optional<RegistryEntry<CatVariant>> variant = CatVariant.ENTRY_CODEC
+			Optional<Holder<@NotNull CatVariant>> variant = CatVariant.CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
 					.resultOrPartial();
 
-			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
+			variantKey = variant.map(entry -> entry.unwrapKey().orElseThrow()).orElse(CatVariants.BLACK);
 		}
 		if (data.contains(NbtKeys.COLLAR, Constants.NBT.TAG_INT))
 		{
-			collar = data.getCodec(NbtKeys.COLLAR, DyeColor.INDEX_CODEC).orElse(DyeColor.RED);
+			collar = data.getCodec(NbtKeys.COLLAR, DyeColor.LEGACY_ID_CODEC).orElse(DyeColor.RED);
 		}
 
 		return Pair.of(variantKey, collar);
@@ -787,16 +804,16 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static @Nullable RegistryKey<ChickenVariant> getChickenVariant(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable ResourceKey<@NotNull ChickenVariant> getChickenVariant(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
 		{
-			Optional<RegistryEntry<ChickenVariant>> variant = ChickenVariant.ENTRY_CODEC
+			Optional<Holder<@NotNull ChickenVariant>> variant = ChickenVariant.CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
 					.resultOrPartial();
 
-			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(ChickenVariants.DEFAULT);
+			return variant.map(entry -> entry.unwrapKey().orElseThrow()).orElse(ChickenVariants.DEFAULT);
 		}
 
 		return null;
@@ -809,16 +826,16 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static @Nullable RegistryKey<CowVariant> getCowVariant(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable ResourceKey<@NotNull CowVariant> getCowVariant(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
 		{
-			Optional<RegistryEntry<CowVariant>> variant = CowVariant.ENTRY_CODEC
+			Optional<Holder<@NotNull CowVariant>> variant = CowVariant.CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
 					.resultOrPartial();
 
-			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(CowVariants.DEFAULT);
+			return variant.map(entry -> entry.unwrapKey().orElseThrow()).orElse(CowVariants.DEFAULT);
 		}
 
 		return null;
@@ -830,11 +847,11 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static @Nullable MooshroomEntity.Variant getMooshroomVariant(@Nonnull CompoundData data)
+	public static @Nullable MushroomCow.Variant getMooshroomVariant(@Nonnull CompoundData data)
 	{
 		if (data.contains(NbtKeys.TYPE_2, Constants.NBT.TAG_STRING))
 		{
-			return data.getCodec(NbtKeys.TYPE_2, MooshroomEntity.Variant.CODEC).orElse(MooshroomEntity.Variant.RED);
+			return data.getCodec(NbtKeys.TYPE_2, MushroomCow.Variant.CODEC).orElse(MushroomCow.Variant.RED);
 		}
 
 		return null;
@@ -847,16 +864,16 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static @Nullable RegistryKey<FrogVariant> getFrogVariant(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable ResourceKey<@NotNull FrogVariant> getFrogVariant(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
 		{
-			Optional<RegistryEntry<FrogVariant>> variant = FrogVariant.ENTRY_CODEC
+			Optional<Holder<@NotNull FrogVariant>> variant = FrogVariant.CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
 					.resultOrPartial();
 
-			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
+			return variant.map(entry -> entry.unwrapKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
 		}
 
 		return null;
@@ -867,16 +884,16 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static Pair<HorseColor, HorseMarking> getHorseVariant(@Nonnull CompoundData data)
+	public static Pair<Variant, Markings> getHorseVariant(@Nonnull CompoundData data)
 	{
-		HorseColor color = null;
-		HorseMarking marking = null;
+		Variant color = null;
+		Markings marking = null;
 
 		if (data.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
 		{
 			int variant = data.getInt(NbtKeys.VARIANT_2);
-			color = HorseColor.byIndex(variant & 0xFF);
-			marking = HorseMarking.byIndex((variant & 0xFF00) >> 8);
+			color = Variant.byId(variant & 0xFF);
+			marking = Markings.byId((variant & 0xFF00) >> 8);
 		}
 
 		return Pair.of(color, marking);
@@ -889,11 +906,11 @@ public class DataEntityUtils
 	 * @return ()
 	 */
 	@SuppressWarnings("deprecation")
-	public static @Nullable ParrotEntity.Variant getParrotVariant(@Nonnull CompoundData data)
+	public static @Nullable Parrot.Variant getParrotVariant(@Nonnull CompoundData data)
 	{
 		if (data.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
 		{
-			return data.getCodec(NbtKeys.VARIANT_2, ParrotEntity.Variant.INDEX_CODEC).orElse(ParrotEntity.Variant.RED_BLUE);
+			return data.getCodec(NbtKeys.VARIANT_2, Parrot.Variant.LEGACY_CODEC).orElse(Parrot.Variant.RED_BLUE);
 		}
 
 		return null;
@@ -905,11 +922,11 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static @Nullable TropicalFishEntity.Variant getFishVariant(@Nonnull CompoundData data)
+	public static @Nullable TropicalFish.Variant getFishVariant(@Nonnull CompoundData data)
 	{
 		if (data.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
 		{
-			return data.getCodec(NbtKeys.VARIANT_2, TropicalFishEntity.Variant.CODEC).orElse(TropicalFishEntity.DEFAULT_VARIANT);
+			return data.getCodec(NbtKeys.VARIANT_2, TropicalFish.Variant.CODEC).orElse(TropicalFish.DEFAULT_VARIANT);
 		}
 
 		return null;
@@ -921,15 +938,15 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static @Nullable TropicalFishEntity.Pattern getFishPattern(@Nonnull CompoundData data)
+	public static @Nullable TropicalFish.Pattern getFishPattern(@Nonnull CompoundData data)
 	{
 		if (data.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
 		{
-			return data.getCodec(NbtKeys.VARIANT_2, TropicalFishEntity.Variant.CODEC).orElse(TropicalFishEntity.DEFAULT_VARIANT).pattern();
+			return data.getCodec(NbtKeys.VARIANT_2, TropicalFish.Variant.CODEC).orElse(TropicalFish.DEFAULT_VARIANT).pattern();
 		}
 		else if (data.contains(NbtKeys.BUCKET_VARIANT, Constants.NBT.TAG_INT))
 		{
-			return TropicalFishEntity.Pattern.byIndex(data.getInt(NbtKeys.BUCKET_VARIANT) & '\uffff');
+			return TropicalFish.Pattern.byId(data.getInt(NbtKeys.BUCKET_VARIANT) & '\uffff');
 		}
 
 		return null;
@@ -942,23 +959,23 @@ public class DataEntityUtils
 	 * @return ()
 	 */
 	@SuppressWarnings("deprecation")
-	public static Pair<RegistryKey<WolfVariant>, DyeColor> getWolfVariant(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static Pair<ResourceKey<@NotNull WolfVariant>, DyeColor> getWolfVariant(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		RegistryKey<WolfVariant> variantKey = null;
+		ResourceKey<@NotNull WolfVariant> variantKey = null;
 		DyeColor collar = null;
 
 		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
 		{
-			Optional<RegistryEntry<WolfVariant>> variant = WolfVariant.ENTRY_CODEC
+			Optional<Holder<@NotNull WolfVariant>> variant = WolfVariant.CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
 					.resultOrPartial();
 
-			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(WolfVariants.DEFAULT);
+			variantKey = variant.map(entry -> entry.unwrapKey().orElseThrow()).orElse(WolfVariants.DEFAULT);
 		}
 		if (data.contains(NbtKeys.COLLAR, Constants.NBT.TAG_INT))
 		{
-			collar = data.getCodec(NbtKeys.COLLAR, DyeColor.INDEX_CODEC).orElse(DyeColor.RED);
+			collar = data.getCodec(NbtKeys.COLLAR, DyeColor.LEGACY_ID_CODEC).orElse(DyeColor.RED);
 		}
 
 		if (variantKey == null)
@@ -980,15 +997,15 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static @Nullable RegistryKey<WolfSoundVariant> getWolfSoundType(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable ResourceKey<@NotNull WolfSoundVariant> getWolfSoundType(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		if (data.contains(NbtKeys.SOUND_VARIANT, Constants.NBT.TAG_STRING))
 		{
-			RegistryEntry.Reference<WolfSoundVariant> soundVariant = registry.getOrThrow(RegistryKeys.WOLF_SOUND_VARIANT).getEntry(Identifier.tryParse(data.getString(NbtKeys.SOUND_VARIANT))).orElse(null);
+			Holder.Reference<@NotNull WolfSoundVariant> soundVariant = registry.lookupOrThrow(Registries.WOLF_SOUND_VARIANT).get(Identifier.tryParse(data.getString(NbtKeys.SOUND_VARIANT))).orElse(null);
 
 			if (soundVariant != null)
 			{
-				return soundVariant.registryKey();
+				return soundVariant.key();
 			}
 		}
 
@@ -1006,7 +1023,7 @@ public class DataEntityUtils
 	{
 		if (data.contains(NbtKeys.COLOR, Constants.NBT.TAG_INT))
 		{
-			return data.getCodec(NbtKeys.COLOR, DyeColor.INDEX_CODEC).orElse(DyeColor.WHITE);
+			return data.getCodec(NbtKeys.COLOR, DyeColor.LEGACY_ID_CODEC).orElse(DyeColor.WHITE);
 		}
 
 		return null;
@@ -1019,11 +1036,11 @@ public class DataEntityUtils
 	 * @return ()
 	 */
 	@SuppressWarnings("deprecation")
-	public static @Nullable RabbitEntity.Variant getRabbitType(@Nonnull CompoundData data)
+	public static @Nullable Rabbit.Variant getRabbitType(@Nonnull CompoundData data)
 	{
 		if (data.contains(NbtKeys.RABBIT_TYPE, Constants.NBT.TAG_INT))
 		{
-			return data.getCodec(NbtKeys.RABBIT_TYPE, RabbitEntity.Variant.INDEX_CODEC).orElse(RabbitEntity.Variant.BROWN);
+			return data.getCodec(NbtKeys.RABBIT_TYPE, Rabbit.Variant.LEGACY_CODEC).orElse(Rabbit.Variant.BROWN);
 		}
 
 		return null;
@@ -1036,14 +1053,14 @@ public class DataEntityUtils
 	 * @return ()
 	 */
 	@SuppressWarnings("deprecation")
-	public static Pair<LlamaEntity.Variant, Integer> getLlamaType(@Nonnull CompoundData data)
+	public static Pair<Llama.Variant, Integer> getLlamaType(@Nonnull CompoundData data)
 	{
-		LlamaEntity.Variant variant = null;
+		Llama.Variant variant = null;
 		int strength = -1;
 
 		if (data.contains(NbtKeys.VARIANT_2, Constants.NBT.TAG_INT))
 		{
-			variant = data.getCodec(NbtKeys.VARIANT_2, LlamaEntity.Variant.INDEX_CODEC).orElse(LlamaEntity.Variant.CREAMY);
+			variant = data.getCodec(NbtKeys.VARIANT_2, Llama.Variant.LEGACY_CODEC).orElse(Llama.Variant.CREAMY);
 		}
 
 		if (data.contains(NbtKeys.STRENGTH, Constants.NBT.TAG_INT))
@@ -1061,18 +1078,17 @@ public class DataEntityUtils
 	 * @param registry ()
 	 * @return ()
 	 */
-	public static @Nullable RegistryKey<PigVariant> getPigVariant(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable ResourceKey<@NotNull PigVariant> getPigVariant(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
 		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
 		{
-			Optional<RegistryEntry.Reference<PigVariant>> opt = registry.getOrThrow(RegistryKeys.PIG_VARIANT).getEntry(Identifier.tryParse(data.getString(NbtKeys.VARIANT)));
-
-			if (opt.isPresent())
+			try
 			{
-				return opt.get().registryKey();
-			}
+				Optional<Holder.Reference<@NotNull PigVariant>> opt = registry.lookupOrThrow(Registries.PIG_VARIANT).get(Objects.requireNonNull(Identifier.tryParse(data.getString(NbtKeys.VARIANT))));
 
-			return PigVariants.DEFAULT;
+				return opt.map(Holder.Reference::key).orElse(PigVariants.DEFAULT);
+			}
+			catch (Exception ignored) { }
 		}
 
 		return null;
@@ -1084,11 +1100,11 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static @Nullable FoxEntity.Variant getFoxVariant(@Nonnull CompoundData data)
+	public static @Nullable Fox.Variant getFoxVariant(@Nonnull CompoundData data)
 	{
 		if (data.contains(NbtKeys.TYPE_2, Constants.NBT.TAG_STRING))
 		{
-			return data.getCodec(NbtKeys.TYPE_2, FoxEntity.Variant.CODEC).orElse(FoxEntity.Variant.RED);
+			return data.getCodec(NbtKeys.TYPE_2, Fox.Variant.CODEC).orElse(Fox.Variant.RED);
 		}
 
 		return null;
@@ -1100,11 +1116,11 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static @Nullable SalmonEntity.Variant getSalmonVariant(@Nonnull CompoundData data)
+	public static @Nullable Salmon.Variant getSalmonVariant(@Nonnull CompoundData data)
 	{
 		if (data.contains(NbtKeys.TYPE, Constants.NBT.TAG_STRING))
 		{
-			return data.getCodec(NbtKeys.TYPE, SalmonEntity.Variant.CODEC).orElse(SalmonEntity.Variant.MEDIUM);
+			return data.getCodec(NbtKeys.TYPE, Salmon.Variant.CODEC).orElse(Salmon.Variant.MEDIUM);
 		}
 
 		return null;
@@ -1168,15 +1184,15 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static @Nullable HungerManager getPlayerHunger(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	public static @Nullable FoodData getPlayerHunger(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
 	{
-		HungerManager hunger = null;
+		FoodData hunger = null;
 
 		if (data.containsLenient(NbtKeys.FOOD_LEVEL))
 		{
-			hunger = new HungerManager();
+			hunger = new FoodData();
 			NbtView view = NbtView.getReader(data, registry);
-			hunger.readData(view.getReader());
+			hunger.readAdditionalSaveData(view.getReader());
 		}
 
 		return hunger;
@@ -1188,17 +1204,17 @@ public class DataEntityUtils
 	 * @param manager ()
 	 * @return ()
 	 */
-	public static @Nullable ServerRecipeBook getPlayerRecipeBook(@Nonnull CompoundData data, @Nonnull ServerRecipeManager manager)
+	public static @Nullable ServerRecipeBook getPlayerRecipeBook(@Nonnull CompoundData data, @Nonnull RecipeManager manager)
 	{
 		ServerRecipeBook book = null;
 
 		if (data.contains(NbtKeys.RECIPE_BOOK, Constants.NBT.TAG_COMPOUND))
 		{
-			book = new ServerRecipeBook(manager::forEachRecipeDisplay);
-			NbtCompound nbt = DataConverterNbt.toVanillaCompound(data.getCompoundOrDefault(NbtKeys.RECIPE_BOOK, new CompoundData()));
-			book.unpack(ServerRecipeBook.Packed.CODEC
+			book = new ServerRecipeBook(manager::listDisplaysForRecipe);
+			CompoundTag nbt = DataConverterNbt.toVanillaCompound(data.getCompoundOrDefault(NbtKeys.RECIPE_BOOK, new CompoundData()));
+			book.loadUntrusted(ServerRecipeBook.Packed.CODEC
 					            .parse(NbtOps.INSTANCE, nbt).getOrThrow(),
-			            (key) -> manager.get(key).isPresent()
+			            (key) -> manager.byKey(key).isPresent()
 			);
 		}
 
@@ -1212,12 +1228,12 @@ public class DataEntityUtils
 	 */
 	public static Pair<BlockPos, Integer> getHomePos(@Nonnull CompoundData data)
 	{
-		BlockPos pos = BlockPos.ORIGIN;
+		BlockPos pos = BlockPos.ZERO;
 		int radius = -1;
 
 		if (data.containsLenient(NbtKeys.HOME_POS))
 		{
-			pos = data.getCodec(NbtKeys.HOME_POS, BlockPos.CODEC).orElse(BlockPos.ORIGIN);
+			pos = data.getCodec(NbtKeys.HOME_POS, BlockPos.CODEC).orElse(BlockPos.ZERO);
 		}
 
 		if (data.contains(NbtKeys.HOME_RADIUS, Constants.NBT.TAG_INT))
@@ -1233,14 +1249,14 @@ public class DataEntityUtils
 	 * @param data ()
 	 * @return ()
 	 */
-	public static Pair<Oxidizable.OxidationLevel, Long> getWeatheringData(@Nonnull CompoundData data)
+	public static Pair<WeatheringCopper.WeatherState, Long> getWeatheringData(@Nonnull CompoundData data)
 	{
-		Oxidizable.OxidationLevel level = Oxidizable.OxidationLevel.UNAFFECTED;
+		WeatheringCopper.WeatherState level = WeatheringCopper.WeatherState.UNAFFECTED;
 		long age = -1L;
 
 		if (data.contains(NbtKeys.WEATHER_STATE, Constants.NBT.TAG_STRING))
 		{
-			level = data.getCodec(NbtKeys.WEATHER_STATE, Oxidizable.OxidationLevel.CODEC).orElse(Oxidizable.OxidationLevel.UNAFFECTED);
+			level = data.getCodec(NbtKeys.WEATHER_STATE, WeatheringCopper.WeatherState.CODEC).orElse(WeatheringCopper.WeatherState.UNAFFECTED);
 		}
 
 		if (data.contains(NbtKeys.NEXT_WEATHER_AGE, Constants.NBT.TAG_LONG))

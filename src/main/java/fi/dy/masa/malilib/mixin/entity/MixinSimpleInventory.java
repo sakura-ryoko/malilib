@@ -4,12 +4,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import fi.dy.masa.malilib.util.game.IEntityOwnedInventory;
-import net.minecraft.entity.Entity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.Entity;
 
-@Mixin(SimpleInventory.class)
-public abstract class MixinSimpleInventory implements IEntityOwnedInventory, Inventory
+@Mixin(SimpleContainer.class)
+public abstract class MixinSimpleInventory implements IEntityOwnedInventory, Container
 {
     @Unique Entity entityOwner;
 

@@ -2,12 +2,14 @@ package fi.dy.masa.malilib.util.position;
 
 import java.util.function.IntFunction;
 import javax.annotation.Nonnull;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ByIdMap;
+import net.minecraft.util.StringRepresentable;
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -15,24 +17,24 @@ import fi.dy.masa.malilib.util.StringUtils;
 /**
  * Post-ReWrite code
  */
-public enum BlockRotation implements IConfigOptionListEntry, StringIdentifiable
+public enum BlockRotation implements IConfigOptionListEntry, StringRepresentable
 {
-    NONE    (0, net.minecraft.util.BlockRotation.NONE,                  "none"),
-    CW_90   (1, net.minecraft.util.BlockRotation.CLOCKWISE_90,          "rotate_90"),
-    CW_180  (2, net.minecraft.util.BlockRotation.CLOCKWISE_180,         "rotate_180"),
-    CCW_90  (3, net.minecraft.util.BlockRotation.COUNTERCLOCKWISE_90,   "rotate_270");
+    NONE    (0, net.minecraft.world.level.block.Rotation.NONE,                  "none"),
+    CW_90   (1, net.minecraft.world.level.block.Rotation.CLOCKWISE_90,          "rotate_90"),
+    CW_180  (2, net.minecraft.world.level.block.Rotation.CLOCKWISE_180,         "rotate_180"),
+    CCW_90  (3, net.minecraft.world.level.block.Rotation.COUNTERCLOCKWISE_90,   "rotate_270");
 
-    public static final StringIdentifiable.EnumCodec<BlockRotation> CODEC = StringIdentifiable.createCodec(BlockRotation::values);
-    public static final IntFunction<BlockRotation> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(BlockRotation::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
-    public static final PacketCodec<ByteBuf, BlockRotation> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, BlockRotation::getIndex);
+    public static final StringRepresentable.EnumCodec<@NotNull BlockRotation> CODEC = StringRepresentable.fromEnum(BlockRotation::values);
+    public static final IntFunction<BlockRotation> INDEX_TO_VALUE = ByIdMap.continuous(BlockRotation::getIndex, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull BlockRotation> PACKET_CODEC = ByteBufCodecs.idMapper(INDEX_TO_VALUE, BlockRotation::getIndex);
     public static final BlockRotation[] VALUES = values();
 
     private final int index;
     private final String configString;
     private final String translationKey;
-    private final net.minecraft.util.BlockRotation vanillaRotation;
+    private final net.minecraft.world.level.block.Rotation vanillaRotation;
 
-    BlockRotation(int index, net.minecraft.util.BlockRotation vanillaRotation, String name)
+    BlockRotation(int index, net.minecraft.world.level.block.Rotation vanillaRotation, String name)
     {
         this.index = index;
         this.vanillaRotation = vanillaRotation;
@@ -57,7 +59,7 @@ public enum BlockRotation implements IConfigOptionListEntry, StringIdentifiable
     }
 
     @Override
-    public @Nonnull String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.configString;
     }
@@ -74,9 +76,9 @@ public enum BlockRotation implements IConfigOptionListEntry, StringIdentifiable
         {
             switch(this)
             {
-                case CW_90:     return direction.rotateYClockwise();
+                case CW_90:     return direction.getClockWise();
                 case CW_180:    return direction.getOpposite();
-                case CCW_90:    return direction.rotateYCounterclockwise();
+                case CCW_90:    return direction.getCounterClockWise();
             }
         }
 
@@ -108,7 +110,7 @@ public enum BlockRotation implements IConfigOptionListEntry, StringIdentifiable
         return byName(value);
     }
 
-    public net.minecraft.util.BlockRotation getVanillaRotation()
+    public net.minecraft.world.level.block.Rotation getVanillaRotation()
     {
         return this.vanillaRotation;
     }

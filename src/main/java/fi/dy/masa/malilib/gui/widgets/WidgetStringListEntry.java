@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
-import net.minecraft.client.gui.DrawContext;
 
 public class WidgetStringListEntry extends WidgetListEntryBase<String>
 {

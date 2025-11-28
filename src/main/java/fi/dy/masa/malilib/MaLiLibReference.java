@@ -11,8 +11,8 @@ public class MaLiLibReference
     public static final String MOD_ID = "malilib";
     public static final String MOD_NAME = "MaLiLib";
     public static final String MOD_VERSION = StringUtils.getModVersionString(MOD_ID);
-    public static final String MC_VERSION = SharedConstants.getGameVersion().id();
-    public static final int MC_DATA_VERSION = SharedConstants.getGameVersion().dataVersion().id();
+    public static final String MC_VERSION = SharedConstants.getCurrentVersion().id();
+    public static final int MC_DATA_VERSION = SharedConstants.getCurrentVersion().dataVersion().version();
 	public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir();
 	public static final Path CONFIG_DIR = FabricLoader.getInstance().getConfigDir();
     public static final boolean DEBUG_MODE = false;

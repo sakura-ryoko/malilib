@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.config.gui;
 
 import java.util.List;
-import net.minecraft.client.gui.DrawContext;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.render.GuiContext;

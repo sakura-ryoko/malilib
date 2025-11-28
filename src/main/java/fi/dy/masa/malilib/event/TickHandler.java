@@ -2,7 +2,7 @@ package fi.dy.masa.malilib.event;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.ApiStatus;
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
 
@@ -26,7 +26,7 @@ public class TickHandler
     }
 
     @ApiStatus.Internal
-    public void onClientTick(MinecraftClient mc)
+    public void onClientTick(Minecraft mc)
     {
         if (this.clientTickHandlers.isEmpty() == false)
         {

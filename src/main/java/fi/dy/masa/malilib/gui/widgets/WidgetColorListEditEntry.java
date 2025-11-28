@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.List;
-import net.minecraft.client.gui.DrawContext;
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -87,7 +86,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
-        field.setText(initialValue);
+        field.setValue(initialValue);
 
         ButtonGeneric resetButton = this.createResetButton(resetX, y, field);
         ChangeListenerTextField listenerChange = new ChangeListenerTextField(field, resetButton, this.defaultValue.toString());
@@ -103,7 +102,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     {
         String labelReset = StringUtils.translate("malilib.gui.button.reset.caps");
         ButtonGeneric resetButton = new ButtonGeneric(x, y, -1, 20, labelReset);
-        resetButton.setEnabled(!textField.getText().equals(this.defaultValue));
+        resetButton.setEnabled(!textField.getValue().equals(this.defaultValue));
 
         return resetButton;
     }
@@ -113,7 +112,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     {
 	    if (this.textField != null)
 	    {
-		    return !this.isDummy() && !this.textField.textField().getText().equals(this.initialStringValue);
+		    return !this.isDummy() && !this.textField.textField().getValue().equals(this.initialStringValue);
 	    }
 
 		return false;
@@ -124,7 +123,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     {
 		if (this.textField != null)
 		{
-			applyNewValueToConfig(StringUtils.getColor(this.textField.textField().getText(), Color4f.ZERO.intValue));
+			applyNewValueToConfig(StringUtils.getColor(this.textField.textField().getValue(), Color4f.ZERO.intValue));
 		}
     }
 
@@ -246,7 +245,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         @Override
         public boolean onTextChange(GuiTextFieldGeneric textField)
         {
-            this.buttonReset.setEnabled(!this.textField.getText().equals(this.defaultValue));
+            this.buttonReset.setEnabled(!this.textField.getValue().equals(this.defaultValue));
             return false;
         }
     }
@@ -259,9 +258,9 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 		{
 			if (this.parent.textField != null)
 			{
-				this.parent.textField.textField().setText(this.parent.defaultValue.toString());
+				this.parent.textField.textField().setValue(this.parent.defaultValue.toString());
 				this.parent.parent.applyPendingModifications();
-				this.buttonReset.setEnabled(!this.parent.textField.textField().getText().equals(this.parent.defaultValue.toString()));
+				this.buttonReset.setEnabled(!this.parent.textField.textField().getValue().equals(this.parent.defaultValue.toString()));
 			}
 
 			this.parent.parent.refreshEntries();

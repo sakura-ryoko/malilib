@@ -5,28 +5,30 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.entity.CrafterBlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.CopperGolemEntity;
-import net.minecraft.entity.passive.HappyGhastEntity;
-import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.village.TradeOfferList;
-import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.animal.golem.CopperGolem;
+import net.minecraft.world.entity.animal.happyghast.HappyGhast;
+import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.npc.villager.AbstractVillager;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.entity.CrafterBlockEntity;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.mixin.entity.IMixinMerchantEntity;
@@ -39,11 +41,9 @@ import fi.dy.masa.malilib.util.data.DataBlockUtils;
 import fi.dy.masa.malilib.util.data.DataEntityUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.game.BlockUtils;
-import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
-import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
-public class InventoryOverlayScreen extends Screen implements Drawable
+public class InventoryOverlayScreen extends Screen implements Renderable
 {
     String modId;
 	private InventoryOverlayContext previewDataNew;
@@ -71,13 +71,13 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 	}
 
 	@Override
-    public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks)
+    public void renderBackground(@NotNull GuiGraphics context, int mouseX, int mouseY, float deltaTicks)
     {
         // NO BLUR / MASKING
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float delta)
+    public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float delta)
     {
 		if (this.previewDataNew != null)
 	    {
@@ -88,8 +88,8 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 	private void renderData(GuiContext ctx, int mouseX, int mouseY, float delta)
 	{
 		this.ticks++;
-		MinecraftClient mc = MinecraftClient.getInstance();
-		World world = WorldUtils.getBestWorld(mc);
+		Minecraft mc = Minecraft.getInstance();
+		Level world = WorldUtils.getBestWorld(mc);
 
 		if (this.previewDataNew != null && world != null)
 		{
@@ -99,32 +99,32 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 			int y = yCenter - 92;
 
 			int startSlot = 0;
-			int totalSlots = this.previewDataNew.inv() == null ? 0 : this.previewDataNew.inv().size();
+			int totalSlots = this.previewDataNew.inv() == null ? 0 : this.previewDataNew.inv().getContainerSize();
 			List<ItemStack> armourItems = new ArrayList<>();
 
-			if (this.previewDataNew.entity() instanceof AbstractHorseEntity)
+			if (this.previewDataNew.entity() instanceof AbstractHorse)
 			{
 				if (this.previewDataNew.inv() == null)
 				{
 					MaLiLib.LOGGER.warn("renderData(): Horse inv() = null");
 					return;
 				}
-				armourItems.add(this.previewDataNew.entity().getEquippedStack(EquipmentSlot.BODY));
-				armourItems.add(this.previewDataNew.inv().getStack(0));
+				armourItems.add(this.previewDataNew.entity().getItemBySlot(EquipmentSlot.BODY));
+				armourItems.add(this.previewDataNew.inv().getItem(0));
 				startSlot = 1;
-				totalSlots = this.previewDataNew.inv().size() - 1;
+				totalSlots = this.previewDataNew.inv().getContainerSize() - 1;
 			}
-			else if (this.previewDataNew.entity() instanceof WolfEntity || this.previewDataNew.entity() instanceof HappyGhastEntity)
+			else if (this.previewDataNew.entity() instanceof Wolf || this.previewDataNew.entity() instanceof HappyGhast)
 			{
-				armourItems.add(this.previewDataNew.entity().getEquippedStack(EquipmentSlot.BODY));
+				armourItems.add(this.previewDataNew.entity().getItemBySlot(EquipmentSlot.BODY));
 				//armourItems.add(ItemStack.EMPTY);
 			}
-			else if (this.previewDataNew.entity() instanceof CopperGolemEntity)
+			else if (this.previewDataNew.entity() instanceof CopperGolem)
 			{
-				armourItems.add(this.previewDataNew.entity().getEquippedStack(EquipmentSlot.SADDLE));
+				armourItems.add(this.previewDataNew.entity().getItemBySlot(EquipmentSlot.SADDLE));
 			}
 
-			final InventoryOverlayType type = (this.previewDataNew.entity() instanceof VillagerEntity)
+			final InventoryOverlayType type = (this.previewDataNew.entity() instanceof Villager)
 			                                  ? InventoryOverlayType.VILLAGER
 			                                  : InventoryOverlay.getBestInventoryType(this.previewDataNew, this.previewDataNew.inv(), this.previewDataNew.data() != null ? this.previewDataNew.data() : new CompoundData());
 			final InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, totalSlots);
@@ -144,7 +144,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 				MaLiLib.LOGGER.warn("renderData():0: type [{}], previewData.type [{}], previewData.inv [{}], previewData.be [{}], previewData.ent [{}], previewData.data [{}]", type.toString(), this.previewDataNew.type().toString(),
 				                    this.previewDataNew.inv() != null, this.previewDataNew.be() != null, this.previewDataNew.entity() != null, this.previewDataNew.data() != null ? this.previewDataNew.data().getString("id") : null);
 				MaLiLib.LOGGER.error("0: -> inv.type [{}] // data.type [{}]", this.previewDataNew.inv() != null ? InventoryOverlay.getInventoryType(this.previewDataNew.inv()) : null, this.previewDataNew.data() != null ? InventoryOverlay.getInventoryType(this.previewDataNew.data()) : null);
-				MaLiLib.LOGGER.error("1: -> inv.size [{}] // inv.isEmpty [{}]", this.previewDataNew.inv() != null ? this.previewDataNew.inv().size() : -1, this.previewDataNew.inv() != null ? this.previewDataNew.inv().isEmpty() : -1);
+				MaLiLib.LOGGER.error("1: -> inv.size [{}] // inv.isEmpty [{}]", this.previewDataNew.inv() != null ? this.previewDataNew.inv().getContainerSize() : -1, this.previewDataNew.inv() != null ? this.previewDataNew.inv().isEmpty() : -1);
 				MaLiLib.LOGGER.error("2: -> total slots [{}] // rows [{}] // startSlot [{}]", totalSlots, rows, startSlot);
 			}
 
@@ -165,16 +165,16 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 
 			if (!armourItems.isEmpty())
 			{
-				Inventory horseInv = new SimpleInventory(armourItems.toArray(new ItemStack[0]));
-				InventoryOverlay.renderInventoryBackground(ctx, type, xInv, yInv, 1, horseInv.size());
+				Container horseInv = new SimpleContainer(armourItems.toArray(new ItemStack[0]));
+				InventoryOverlay.renderInventoryBackground(ctx, type, xInv, yInv, 1, horseInv.getContainerSize());
 				InventoryOverlay.renderInventoryBackgroundSlots(ctx, type, horseInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY);
-				InventoryOverlay.renderInventoryStacks(ctx, type, horseInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, 1, 0, horseInv.size(), mouseX, mouseY);
+				InventoryOverlay.renderInventoryStacks(ctx, type, horseInv, xInv + props.slotOffsetX, yInv + props.slotOffsetY, 1, 0, horseInv.getContainerSize(), mouseX, mouseY);
 				xInv += 32 + 4;
 			}
 
 			int color = -1;
 
-			if (this.previewDataNew.be() != null && this.previewDataNew.be().getCachedState().getBlock() instanceof ShulkerBoxBlock sbb)
+			if (this.previewDataNew.be() != null && this.previewDataNew.be().getBlockState().getBlock() instanceof ShulkerBoxBlock sbb)
 			{
 				color = RenderUtils.setShulkerboxBackgroundTintColor(sbb, this.shulkerBGColors);
 			}
@@ -196,16 +196,16 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 			if ((this.previewDataNew.type() == InventoryOverlayType.PLAYER || type == InventoryOverlayType.ENDER_CHEST) &&
 				this.previewDataNew.data() != null && this.previewDataNew.data().contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
 			{
-				EnderChestInventory enderItems = InventoryUtils.getPlayerEnderItemsFromData(this.previewDataNew.data(), world.getRegistryManager());
+				PlayerEnderChestContainer enderItems = InventoryUtils.getPlayerEnderItemsFromData(this.previewDataNew.data(), world.registryAccess());
 
 				if (enderItems == null)
 				{
-					enderItems = new EnderChestInventory();
+					enderItems = new PlayerEnderChestContainer();
 				}
 
 				if (MaLiLibReference.DEBUG_MODE)
 				{
-					MaLiLib.LOGGER.error("renderData(): enderItems [{}]", enderItems.size());
+					MaLiLib.LOGGER.error("renderData(): enderItems [{}]", enderItems.getContainerSize());
 				}
 
 				yInv = yCenter + 6;
@@ -213,7 +213,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 				InventoryOverlay.renderInventoryStacks(ctx, InventoryOverlayType.GENERIC, enderItems, xInv + props.slotOffsetX, yInv + props.slotOffsetY, 9, 0, 27, mouseX, mouseY);
 			}
 			// Player Inventory Display
-			else if (this.previewDataNew.entity() instanceof PlayerEntity player)
+			else if (this.previewDataNew.entity() instanceof Player player)
 			{
 				yInv = yCenter + 6;
 				InventoryOverlay.renderInventoryBackground(ctx, InventoryOverlayType.GENERIC, xInv, yInv, 9, 27, color);
@@ -224,8 +224,8 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 			if (type == InventoryOverlayType.VILLAGER &&
 				this.previewDataNew.data() != null && this.previewDataNew.data().contains(NbtKeys.OFFERS, Constants.NBT.TAG_LIST))
 			{
-				DefaultedList<ItemStack> offers = InventoryUtils.getSellingItemsFromData(this.previewDataNew.data(), world.getRegistryManager());
-				Inventory tradeOffers = InventoryUtils.getAsInventory(offers);
+				NonNullList<@NotNull ItemStack> offers = InventoryUtils.getSellingItemsFromData(this.previewDataNew.data(), world.registryAccess());
+				Container tradeOffers = InventoryUtils.getAsInventory(offers);
 
 				if (tradeOffers != null && !tradeOffers.isEmpty())
 				{
@@ -246,11 +246,11 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 				}
 			}
 			// Villager Trades Display
-			else if (this.previewDataNew.entity() instanceof MerchantEntity merchant)
+			else if (this.previewDataNew.entity() instanceof AbstractVillager merchant)
 			{
-				TradeOfferList trades = ((IMixinMerchantEntity) merchant).malilib_offers();
-				DefaultedList<ItemStack> offers = trades != null ? InventoryUtils.getSellingItems(trades) : DefaultedList.of();
-				Inventory tradeOffers = InventoryUtils.getAsInventory(offers);
+				MerchantOffers trades = ((IMixinMerchantEntity) merchant).malilib_offers();
+				NonNullList<@NotNull ItemStack> offers = trades != null ? InventoryUtils.getSellingItems(trades) : NonNullList.create();
+				Container tradeOffers = InventoryUtils.getAsInventory(offers);
 
 				if (tradeOffers != null && !tradeOffers.isEmpty())
 				{
@@ -265,7 +265,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 						offerSlotCount = 18;
 					}
 
-					if (merchant instanceof VillagerEntity villager)
+					if (merchant instanceof Villager villager)
 					{
 						color = RenderUtils.setVillagerBackgroundTintColor(villager.getVillagerData(), this.villagerBGColors);
 					}
@@ -291,7 +291,7 @@ public class InventoryOverlayScreen extends Screen implements Drawable
 	}
 
     @Override
-    public boolean shouldPause()
+    public boolean isPauseScreen()
     {
         return false;
     }

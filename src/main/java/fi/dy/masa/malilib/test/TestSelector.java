@@ -9,10 +9,10 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.profiler.Profiler;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class TestSelector implements IClientTickHandler
 {
@@ -32,18 +32,18 @@ public class TestSelector implements IClientTickHandler
     public TestSelector() {}
 
     @Override
-    public void onClientTick(MinecraftClient mc)
+    public void onClientTick(Minecraft mc)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
             if (ConfigTestEnum.TEST_SELECTOR_HOTKEY.getBooleanValue())
             {
-                if (mc.options.attackKey.isPressed())
+                if (mc.options.keyAttack.isDown())
                 {
                     select(false);
                 }
 
-                if (mc.options.useKey.isPressed())
+                if (mc.options.keyUse.isDown())
                 {
                     select(true);
                 }
@@ -62,11 +62,11 @@ public class TestSelector implements IClientTickHandler
         public BlockPos pos2 = null;
     }
 
-    public void updateLookingAt(MinecraftClient mc)
+    public void updateLookingAt(Minecraft mc)
     {
-        if (mc.crosshairTarget instanceof BlockHitResult)
+        if (mc.hitResult instanceof BlockHitResult)
         {
-            this.posLookingAt = ((BlockHitResult) mc.crosshairTarget).getBlockPos();
+            this.posLookingAt = ((BlockHitResult) mc.hitResult).getBlockPos();
             //posLookingAt = posLookingAt.offset(((BlockHitResult) mc.crosshairTarget).getSide());
         }
         else
@@ -98,7 +98,7 @@ public class TestSelector implements IClientTickHandler
                 this.posLookingAt == null;
     }
 
-    public void render(Matrix4f posMatrix, Matrix4f projMatrix, Profiler profiler, MinecraftClient mc)
+    public void render(Matrix4f posMatrix, Matrix4f projMatrix, ProfilerFiller profiler, Minecraft mc)
     {
         float expand = 0.001f;
         //float lineWidthBlockBox = 2.0f;
@@ -139,7 +139,7 @@ public class TestSelector implements IClientTickHandler
         profiler.pop();
     }
 
-    public void renderSelection(Matrix4f posMatrix, Matrix4f projMatrix, Profiler profiler, Selection selection, MinecraftClient mc)
+    public void renderSelection(Matrix4f posMatrix, Matrix4f projMatrix, ProfilerFiller profiler, Selection selection, Minecraft mc)
     {
 
         BlockPos pos1 = selection.pos1;

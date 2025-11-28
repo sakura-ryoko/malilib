@@ -1,9 +1,8 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.List;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import fi.dy.masa.malilib.config.IConfigLockedList;
 import fi.dy.masa.malilib.config.IConfigLockedListEntry;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
@@ -79,7 +78,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
-        field.setText(initialValue != null ? initialValue.getDisplayName() : "");
+        field.setValue(initialValue != null ? initialValue.getDisplayName() : "");
 
         ButtonGeneric resetButton = this.createResetButton(resetX, y, field);
         ChangeListenerTextField listenerChange = new ChangeListenerTextField(field, resetButton, this.defaultValue);
@@ -95,7 +94,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
     {
         String labelReset = StringUtils.translate("malilib.gui.button.reset.caps");
         ButtonGeneric resetButton = new ButtonGeneric(x, y, -1, 20, labelReset);
-        resetButton.setEnabled(textField.getText().equals(this.defaultValue.getStringValue()) == false && textField.getText().equals(this.defaultValue.getDisplayName()) == false);
+        resetButton.setEnabled(textField.getValue().equals(this.defaultValue.getStringValue()) == false && textField.getValue().equals(this.defaultValue.getDisplayName()) == false);
 
         return resetButton;
     }
@@ -103,7 +102,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
     @Override
     public boolean wasConfigModified()
     {
-        return this.isDummy() == false && this.textField.textField().getText().equals(this.initialStringValue) == false;
+        return this.isDummy() == false && this.textField.textField().getValue().equals(this.initialStringValue) == false;
     }
 
     @Override
@@ -113,7 +112,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
         {
             IConfigLockedList config = this.parent.getConfig();
             List<IConfigLockedListEntry> list = config.getEntries();
-            String value = this.textField.textField().getText();
+            String value = this.textField.textField().getValue();
 
             if (list.size() > this.listIndex)
             {
@@ -199,19 +198,19 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
         @Override
         public boolean onTextChange(GuiTextFieldGeneric textField)
         {
-            this.buttonReset.setEnabled(this.textField.getText().equals(this.defaultValue.getStringValue()) == false && this.textField.getText().equals(this.defaultValue.getDisplayName()) == false);
+            this.buttonReset.setEnabled(this.textField.getValue().equals(this.defaultValue.getStringValue()) == false && this.textField.getValue().equals(this.defaultValue.getDisplayName()) == false);
             return false;
         }
     }
 
     @Override
-    public boolean onKeyTypedImpl(KeyInput input)
+    public boolean onKeyTypedImpl(KeyEvent input)
     {
         return false;
     }
 
     @Override
-    protected boolean onCharTypedImpl(CharInput input)
+    protected boolean onCharTypedImpl(CharacterEvent input)
     {
         return false;
     }
@@ -222,8 +221,8 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
 		@Override
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
 		{
-			this.parent.textField.textField().setText(this.parent.defaultValue.getDisplayName());
-			this.buttonReset.setEnabled(this.parent.textField.textField().getText().equals(this.parent.defaultValue.getStringValue()) == false && this.parent.textField.textField().getText().equals(this.parent.defaultValue.getDisplayName()) == false);
+			this.parent.textField.textField().setValue(this.parent.defaultValue.getDisplayName());
+			this.buttonReset.setEnabled(this.parent.textField.textField().getValue().equals(this.parent.defaultValue.getStringValue()) == false && this.parent.textField.textField().getValue().equals(this.parent.defaultValue.getDisplayName()) == false);
 		}
 	}
 
@@ -237,7 +236,7 @@ public class WidgetLockedListEditEntry extends WidgetConfigOptionBase<String>
 		}
 	}
 
-    private enum ButtonType
+    protected enum ButtonType
     {
         MOVE_UP     (MaLiLibIcons.ARROW_UP,     "malilib.gui.button.hovertext.move_up"),
         MOVE_DOWN   (MaLiLibIcons.ARROW_DOWN,   "malilib.gui.button.hovertext.move_down");

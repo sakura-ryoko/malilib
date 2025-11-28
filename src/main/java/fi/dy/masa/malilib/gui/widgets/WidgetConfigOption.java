@@ -1,9 +1,10 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.config.*;
 import fi.dy.masa.malilib.config.gui.*;
 import fi.dy.masa.malilib.config.gui.ConfigOptionListenerResetConfig.ConfigResetterButton;
@@ -30,7 +31,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     protected final ConfigOptionWrapper wrapper;
     protected final IKeybindConfigGui host;
     @Nullable protected final KeybindSettings initialKeybindSettings;
-    @Nullable protected ImmutableList<String> initialStringList;
+    @Nullable protected ImmutableList<@NotNull String> initialStringList;
     protected int colorDisplayPosX;
     private boolean initialBoolean;
 
@@ -265,7 +266,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             {
                 if (this.textField != null)
                 {
-                    modified |= this.initialStringValue.equals(this.textField.textField().getText()) == false;
+                    modified |= this.initialStringValue.equals(this.textField.textField().getValue()) == false;
                 }
 
                 if (this.initialKeybindSettings != null && this.initialKeybindSettings.equals(((IHotkey) config).getKeybind().getSettings()) == false)
@@ -292,7 +293,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         {
             if (this.textField != null && this.hasPendingModifications())
             {
-                config.setValueFromString(this.textField.textField().getText());
+                config.setValueFromString(this.textField.textField().getValue());
             }
 
             this.lastAppliedValue = config.getStringValue();
@@ -360,7 +361,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(this.maxTextfieldTextLength);
-        field.setText(config.getStringValue());
+        field.setValue(config.getStringValue());
 
         ButtonGeneric resetButton = this.createResetButton(resetX, y, config);
         ConfigOptionChangeListenerTextField listenerChange = new ConfigOptionChangeListenerTextField(config, field, resetButton);

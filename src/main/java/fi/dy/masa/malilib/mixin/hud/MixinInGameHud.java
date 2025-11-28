@@ -10,26 +10,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.game.IGameHud;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 
-@Mixin(InGameHud.class)
+@Mixin(Gui.class)
 public abstract class MixinInGameHud implements IGameHud
 {
-    @Shadow @Final private MinecraftClient client;
-    @Shadow private int overlayRemaining;
+    @Shadow @Final private Minecraft minecraft;
+    @Shadow private int overlayMessageTime;
 
     @Inject(method = "render", at = @At("TAIL"))
-    private void malilib_onGameOverlayPost(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci)
+    private void malilib_onGameOverlayPost(GuiGraphics context, DeltaTracker tickCounter, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(GuiContext.fromGuiGraphics(context), tickCounter.getTickProgress(false));
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(GuiContext.fromGuiGraphics(context), tickCounter.getGameTimeDeltaPartialTick(false));
     }
 
     @Override
     public void malilib$setOverlayRemaining(int ticks)
     {
-        this.overlayRemaining = ticks;
+        this.overlayMessageTime = ticks;
     }
 }

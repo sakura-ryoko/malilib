@@ -5,31 +5,29 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
-import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
-import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
-import net.minecraft.client.render.BufferBuilderStorage;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.DefaultFramebufferSet;
-import net.minecraft.client.render.FrameGraphBuilder;
-import net.minecraft.client.render.FramePass;
-import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.Handle;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.profiler.Profilers;
+import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.LevelTargetBundle;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
+import com.mojang.blaze3d.framegraph.FramePass;
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.resource.ResourceHandle;
 import com.mojang.blaze3d.systems.RenderSystem;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -111,7 +109,7 @@ public class RenderEventHandler implements IRenderDispatcher
     @ApiStatus.Internal
     public void onRenderGameOverlayPost(GuiContext ctx, float partialTicks)
     {
-        Profiler profiler = Profilers.get();
+        ProfilerFiller profiler = Profiler.get();
 
         profiler.push(MaLiLibReference.MOD_ID+"_game_overlay");
 
@@ -126,13 +124,13 @@ public class RenderEventHandler implements IRenderDispatcher
             }
         }
 
-        profiler.swap(MaLiLibReference.MOD_ID+"_game_messages");
+        profiler.popPush(MaLiLibReference.MOD_ID+"_game_messages");
         InfoUtils.renderInGameMessages(ctx);
         profiler.pop();
     }
 
     @ApiStatus.Internal
-    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
+    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (this.tooltipLastRenderers.isEmpty() == false)
         {
@@ -144,7 +142,7 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
+    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (this.tooltipLastRenderers.isEmpty() == false)
         {
@@ -156,7 +154,7 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
+    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (this.tooltipLastRenderers.isEmpty() == false)
         {
@@ -170,7 +168,7 @@ public class RenderEventHandler implements IRenderDispatcher
     @ApiStatus.Internal
     public void onRenderTooltipLast(GuiContext ctx, ItemStack stack, int x, int y)
     {
-        Profiler profiler = Profilers.get();
+        ProfilerFiller profiler = Profiler.get();
 
         profiler.push(MaLiLibReference.MOD_ID+"_tooltip");
 
@@ -178,7 +176,7 @@ public class RenderEventHandler implements IRenderDispatcher
         {
             for (IRenderer renderer : this.tooltipLastRenderers)
             {
-                profiler.swap(renderer.getProfilerSectionSupplier());
+                profiler.popPush(renderer.getProfilerSectionSupplier());
                 renderer.onRenderTooltipLast(ctx ,stack, x, y);
             }
         }
@@ -207,16 +205,16 @@ public class RenderEventHandler implements IRenderDispatcher
 //    }
 
     @ApiStatus.Internal
-    public void runRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-                                         FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
-                                         Frustum frustum, Camera camera, BufferBuilderStorage buffers,
-                                         Profiler profiler)
+    public void runRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Minecraft mc,
+                                         FrameGraphBuilder frameGraphBuilder, LevelTargetBundle fbSet,
+                                         Frustum frustum, Camera camera, RenderBuffers buffers,
+                                         ProfilerFiller profiler)
     {
         profiler.push(MaLiLibReference.MOD_ID+"_pre_weather");
 
         if (this.worldPreWeatherRenderers.isEmpty() == false)
         {
-            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_pre_weather");
+            FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID+"_pre_weather");
 
 //            if (fbSet.weatherFramebuffer != null)
 //            {
@@ -225,13 +223,13 @@ public class RenderEventHandler implements IRenderDispatcher
 //            }
 //            else
 //            {
-                fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
+                fbSet.main = pass.readsAndWrites(fbSet.main);
 //            }
 
-            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
+            ResourceHandle<@NotNull RenderTarget> handleMain = fbSet.main;
 //            Handle<Framebuffer> handleWeather = fbSet.weatherFramebuffer;
 
-            pass.setRenderer(() ->
+            pass.executes(() ->
             {
                 GpuBufferSlice fog = RenderSystem.getShaderFog();
 //                RenderSystem.setShaderFog(Fog.DUMMY);
@@ -242,7 +240,7 @@ public class RenderEventHandler implements IRenderDispatcher
 //                }
 
 //                Framebuffer fb = handleWeather != null ? handleWeather.get() : handleMain.get();
-                Framebuffer fb = handleMain.get();
+                RenderTarget fb = handleMain.get();
                 //handleMain.get().beginWrite(false);
                 //RenderUtils.fbStartDrawing();
 
@@ -263,7 +261,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
             if (!this.worldPreWeatherRenderers.isEmpty())
             {
-                pass.markToBeVisited();
+                pass.disableCulling();
             }
         }
 
@@ -271,16 +269,16 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void runRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix, MinecraftClient mc,
-                                   FrameGraphBuilder frameGraphBuilder, DefaultFramebufferSet fbSet,
-                                   Frustum frustum, Camera camera, BufferBuilderStorage buffers,
-                                   Profiler profiler)
+    public void runRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix, Minecraft mc,
+                                   FrameGraphBuilder frameGraphBuilder, LevelTargetBundle fbSet,
+                                   Frustum frustum, Camera camera, RenderBuffers buffers,
+                                   ProfilerFiller profiler)
     {
         profiler.push(MaLiLibReference.MOD_ID+"_world_last");
 
         if (this.worldLastRenderers.isEmpty() == false)
         {
-            FramePass pass = frameGraphBuilder.createPass(MaLiLibReference.MOD_ID+"_world_last");
+            FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID+"_world_last");
 
 //            if (fbSet.entityOutlineFramebuffer != null)
 //            {
@@ -289,13 +287,13 @@ public class RenderEventHandler implements IRenderDispatcher
 //            }
 //            else
 //            {
-                fbSet.mainFramebuffer = pass.transfer(fbSet.mainFramebuffer);
+                fbSet.main = pass.readsAndWrites(fbSet.main);
 //            }
 
-            Handle<Framebuffer> handleMain = fbSet.mainFramebuffer;
+            ResourceHandle<@NotNull RenderTarget> handleMain = fbSet.main;
 //            Handle<Framebuffer> handleOutlines = fbSet.entityOutlineFramebuffer;
 
-            pass.setRenderer(() ->
+            pass.executes(() ->
             {
                 GpuBufferSlice fog = RenderSystem.getShaderFog();
 //                RenderSystem.setShaderFog(Fog.DUMMY);
@@ -328,7 +326,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
             if (!this.worldLastRenderers.isEmpty())
             {
-                pass.markToBeVisited();
+                pass.disableCulling();
             }
         }
 
@@ -337,7 +335,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
     @ApiStatus.Internal
     @ApiStatus.Experimental
-    public void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc, ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder)
+    public void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, MultiBufferSource.BufferSource immediate, Minecraft mc, ImmutableMap.Builder<@NotNull Class<? extends PictureInPictureRenderState>, @NotNull PictureInPictureRenderer<?>> builder)
     {
 //        MaLiLib.LOGGER.warn("onRegisterSpecialGuiRenderer():");
 

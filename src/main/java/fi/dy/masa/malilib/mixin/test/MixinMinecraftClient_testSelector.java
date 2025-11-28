@@ -1,6 +1,5 @@
 package fi.dy.masa.malilib.mixin.test;
 
-import net.minecraft.client.MinecraftClient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -11,11 +10,12 @@ import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.test.ConfigTestEnum;
 import fi.dy.masa.malilib.test.TestSelector;
+import net.minecraft.client.Minecraft;
 
-@Mixin(MinecraftClient.class)
+@Mixin(Minecraft.class)
 public class MixinMinecraftClient_testSelector
 {
-	@Inject(method = "doAttack", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
 	private void malilib_onLeftClickMouse(CallbackInfoReturnable<Boolean> cir)
 	{
 		if (MaLiLibReference.DEBUG_MODE &&
@@ -28,7 +28,7 @@ public class MixinMinecraftClient_testSelector
 		}
 	}
 
-	@Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "startUseItem", at = @At("HEAD"), cancellable = true)
 	private void malilib_onRightClickMouse(CallbackInfo ci)
 	{
 		if (MaLiLibReference.DEBUG_MODE &&

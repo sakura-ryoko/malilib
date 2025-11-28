@@ -1,14 +1,15 @@
 package fi.dy.masa.malilib.data;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.Item;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class CachedTagUtils
 {
@@ -18,7 +19,7 @@ public class CachedTagUtils
      * @param block (Block Entry)
      * @return ()
      */
-    public static boolean matchBlockTag(CachedTagKey key, RegistryEntry<Block> block)
+    public static boolean matchBlockTag(CachedTagKey key, Holder<@NotNull Block> block)
     {
         return CachedBlockTags.getInstance().match(key, block);
     }
@@ -51,7 +52,7 @@ public class CachedTagUtils
      * @param item (Item Entry)
      * @return ()
      */
-    public static boolean matchItemTag(CachedTagKey key, RegistryEntry<Item> item)
+    public static boolean matchItemTag(CachedTagKey key, Holder<@NotNull Item> item)
     {
         return CachedItemTags.getInstance().match(key, item);
     }
@@ -73,7 +74,7 @@ public class CachedTagUtils
      * @param block (Block Entry)
      * @return ()
      */
-    public static boolean matchBlockTagMulti(List<CachedTagKey> keys, RegistryEntry<Block> block)
+    public static boolean matchBlockTagMulti(List<CachedTagKey> keys, Holder<@NotNull Block> block)
     {
         for (CachedTagKey key : keys)
         {
@@ -130,7 +131,7 @@ public class CachedTagUtils
      * @param item (Item Entry)
      * @return ()
      */
-    public static boolean matchItemTagMulti(List<CachedTagKey> keys, RegistryEntry<Item> item)
+    public static boolean matchItemTagMulti(List<CachedTagKey> keys, Holder<@NotNull Item> item)
     {
         for (CachedTagKey key : keys)
         {
@@ -167,9 +168,9 @@ public class CachedTagUtils
      * @param block (Block Entry)
      * @return ()
      */
-    public static Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchReplaceableBlockTag(RegistryEntry<Block> block)
+    public static Pair<HolderSet<@NotNull Block>, Holder<@NotNull Block>> matchReplaceableBlockTag(Holder<@NotNull Block> block)
     {
-        Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.REPLACEABLE_BLOCKS_KEY, block);
+        Optional<Pair<HolderSet<@NotNull Block>, Holder<@NotNull Block>>> pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.REPLACEABLE_BLOCKS_KEY, block);
 
         if (pair.isPresent())
         {
@@ -207,9 +208,9 @@ public class CachedTagUtils
      * @param block (Block)
      * @return ()
      */
-    public static Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchReplaceableBlockTag(Block block)
+    public static Pair<HolderSet<@NotNull Block>, Holder<@NotNull Block>> matchReplaceableBlockTag(Block block)
     {
-        Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.REPLACEABLE_BLOCKS_KEY, block);
+        Optional<Pair<HolderSet<@NotNull Block>, Holder<@NotNull Block>>> pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.REPLACEABLE_BLOCKS_KEY, block);
 
         if (pair.isPresent())
         {
@@ -247,9 +248,9 @@ public class CachedTagUtils
      * @param state (Block State)
      * @return ()
      */
-    public static Pair<RegistryEntryList<Block>, RegistryEntry<Block>> matchReplaceableBlockTag(BlockState state)
+    public static Pair<HolderSet<@NotNull Block>, Holder<@NotNull Block>> matchReplaceableBlockTag(BlockState state)
     {
-        Optional<Pair<RegistryEntryList<Block>, RegistryEntry<Block>>> pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.REPLACEABLE_BLOCKS_KEY, state);
+        Optional<Pair<HolderSet<@NotNull Block>, Holder<@NotNull Block>>> pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.REPLACEABLE_BLOCKS_KEY, state);
 
         if (pair.isPresent())
         {

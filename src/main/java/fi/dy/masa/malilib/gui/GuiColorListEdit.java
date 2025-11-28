@@ -1,9 +1,11 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyInput;
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
@@ -119,7 +121,7 @@ public class GuiColorListEdit extends GuiListBase<Color4f, WidgetColorListEditEn
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
@@ -142,7 +144,7 @@ public class GuiColorListEdit extends GuiListBase<Color4f, WidgetColorListEditEn
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
         {

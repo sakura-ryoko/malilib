@@ -9,11 +9,10 @@ import fi.dy.masa.malilib.interfaces.IStringConsumer;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.MessageRenderer;
 import fi.dy.masa.malilib.util.game.IGameHud;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.world.World;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.level.Level;
 
 public class InfoUtils
 {
@@ -146,7 +145,7 @@ public class InfoUtils
     {
         if (MaLiLibConfigs.Generic.ENABLE_ACTIONBAR_MESSAGES.getBooleanValue())
         {
-            sendVanillaMessage(Text.translatable(key, args));
+            sendVanillaMessage(Component.translatable(key, args));
         }
     }
 
@@ -196,18 +195,18 @@ public class InfoUtils
         IN_GAME_MESSAGES.drawMessages(ctx, x, y);
     }
 
-    public static void sendVanillaMessage(MutableText message)
+    public static void sendVanillaMessage(MutableComponent message)
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
-        World world = mc.world;
+        Minecraft mc = Minecraft.getInstance();
+        Level world = mc.level;
 
         if (world != null)
         {
-            mc.inGameHud.setOverlayMessage(message, false);
+            mc.gui.setOverlayMessage(message, false);
 
             if (MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.isModified())
             {
-                ((IGameHud) mc.inGameHud).malilib$setOverlayRemaining(MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.getIntegerValue());
+                ((IGameHud) mc.gui).malilib$setOverlayRemaining(MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.getIntegerValue());
             }
         }
     }

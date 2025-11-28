@@ -1,9 +1,8 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -11,7 +10,7 @@ import fi.dy.masa.malilib.render.RenderUtils;
 public class GuiScrollBar
 {
     @Nullable protected final IGuiIcon barTexture;
-    protected final MinecraftClient mc = MinecraftClient.getInstance();
+    protected final Minecraft mc = Minecraft.getInstance();
     protected boolean mouseOver = false;
     protected boolean dragging = false;
     protected boolean renderScrollbarBackground = true;
@@ -45,7 +44,7 @@ public class GuiScrollBar
 
     public void setValue(int value)
     {
-        this.currentValue = MathHelper.clamp(value, 0, this.maxValue);
+        this.currentValue = Mth.clamp(value, 0, this.maxValue);
     }
 
     public void offsetValue(int offset)

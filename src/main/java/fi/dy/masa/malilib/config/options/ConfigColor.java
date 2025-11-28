@@ -11,7 +11,7 @@ import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
 {
@@ -165,7 +165,7 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
 
     protected int getClampedValue(int value)
     {
-        return MathHelper.clamp(value, this.minValue, this.maxValue);
+        return Mth.clamp(value, this.minValue, this.maxValue);
     }
 
     @Override

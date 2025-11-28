@@ -12,11 +12,11 @@ import fi.dy.masa.malilib.MaLiLibReference;
 @Mixin(SharedConstants.class)
 public class MixinSharedConstants
 {
-    @Shadow public static boolean isDevelopment;
+    @Shadow public static boolean IS_RUNNING_IN_IDE;
 
     @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void malilib_sharedConstants(CallbackInfo ci)
     {
-        isDevelopment = MaLiLibReference.DEBUG_MODE;
+        IS_RUNNING_IN_IDE = MaLiLibReference.DEBUG_MODE;
     }
 }

@@ -13,15 +13,14 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
-
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyInput;
-
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 
 @ApiStatus.Experimental
 public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, WidgetListTableEdit>
@@ -117,7 +116,7 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
 	}
 
 	@Override
-	public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+	public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
 	{
 		if (this.getParent() != null)
 		{
@@ -157,13 +156,13 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
 			}
 
 			this.drawStringWithShadow(ctx, label.label(), x, this.dialogTop + 25, COLOR_WHITE);
-            int labelWidth = ctx.textRenderer().getWidth(label.label());
+            int labelWidth = ctx.fontRenderer().width(label.label());
 
             final int leniency = 2;
             int minLabelX = x - leniency;
             int maxLabelX = x + labelWidth + leniency;
             int minLabelY = this.dialogTop + 25 - leniency;
-            int maxLabelY = minLabelY + ctx.textRenderer().fontHeight + leniency;
+            int maxLabelY = minLabelY + ctx.fontRenderer().lineHeight + leniency;
 
             if (label.comment().isEmpty() == false && (mouseX >= minLabelX && mouseX <= maxLabelX && mouseY >= minLabelY && mouseY <= maxLabelY))
             {
@@ -173,7 +172,7 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
 	}
 
 	@Override
-	public boolean onKeyTyped(KeyInput input)
+	public boolean onKeyTyped(KeyEvent input)
 	{
 		if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
 		{

@@ -26,12 +26,12 @@ public class FileUtils
 
     public static Path getConfigDirectoryAsPath()
     {
-        return GameWrap.getClient().runDirectory.toPath().resolve("config");
+        return GameWrap.getClient().gameDirectory.toPath().resolve("config");
     }
 
     public static Path getMinecraftDirectoryAsPath()
     {
-        return GameWrap.getClient().runDirectory.toPath();
+        return GameWrap.getClient().gameDirectory.toPath();
     }
 
     public static Path getRootDirectory()
@@ -271,10 +271,10 @@ public class FileUtils
     /**
      * Checks that the target directory exists, and the file either doesn't exist,
      * or the canOverwrite argument is true and the file is writable
-     * @param dir
-     * @param fileName
-     * @param canOverwrite
-     * @return
+     * @param dir ()
+     * @param fileName ()
+     * @param canOverwrite ()
+     * @return ()
      */
     public static boolean canWriteToFile(File dir, String fileName, boolean canOverwrite)
     {

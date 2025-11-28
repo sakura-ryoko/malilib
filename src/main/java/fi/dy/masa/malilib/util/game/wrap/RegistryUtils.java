@@ -6,18 +6,19 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Post-ReWrite code
@@ -29,7 +30,7 @@ public class RegistryUtils
     {
         try
         {
-            return getBlockById(Identifier.of(name));
+            return getBlockById(Identifier.parse(name));
         }
         catch (Exception e)
         {
@@ -39,12 +40,12 @@ public class RegistryUtils
 
     public static Block getBlockById(Identifier id)
     {
-        return Registries.BLOCK.get(id);
+        return BuiltInRegistries.BLOCK.getValue(id);
     }
 
     public static @Nonnull Identifier getBlockId(Block block)
     {
-        return Registries.BLOCK.getId(block);
+        return BuiltInRegistries.BLOCK.getKey(block);
     }
 
     public static @Nonnull Identifier getBlockId(BlockState state)
@@ -65,11 +66,11 @@ public class RegistryUtils
      * @param registry ()
      * @return ()
      */
-    public static RegistryEntry<Block> getBlockEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull Block> getBlockEntry(Identifier id, @Nonnull RegistryAccess registry)
     {
         try
         {
-            return registry.getOrThrow(Registries.BLOCK.getKey()).getEntry(id).orElseThrow();
+            return registry.lookupOrThrow(BuiltInRegistries.BLOCK.key()).get(id).orElseThrow();
         }
         catch (Exception e)
         {
@@ -78,11 +79,11 @@ public class RegistryUtils
     }
 
     @Nullable
-    public static RegistryEntry<BlockEntityType<?>> getBlockEntityType(Identifier id, @Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull BlockEntityType<?>> getBlockEntityType(Identifier id, @Nonnull RegistryAccess registry)
     {
         try
         {
-            return registry.getOrThrow(Registries.BLOCK_ENTITY_TYPE.getKey()).getEntry(id).orElse(null);
+            return registry.lookupOrThrow(BuiltInRegistries.BLOCK_ENTITY_TYPE.key()).get(id).orElse(null);
         }
         catch (Exception e)
         {
@@ -91,11 +92,11 @@ public class RegistryUtils
     }
 
     @Nullable
-    public static RegistryEntry<EntityType<?>> getEntityType(Identifier id, @Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull EntityType<?>> getEntityType(Identifier id, @Nonnull RegistryAccess registry)
     {
         try
         {
-            return registry.getOrThrow(Registries.ENTITY_TYPE.getKey()).getEntry(id).orElse(null);
+            return registry.lookupOrThrow(BuiltInRegistries.ENTITY_TYPE.key()).get(id).orElse(null);
         }
             catch (Exception e)
         {
@@ -110,12 +111,12 @@ public class RegistryUtils
 
     public static Collection<Identifier> getRegisteredBlockIds()
     {
-        return new ArrayList<>(Registries.BLOCK.getIds());
+        return new ArrayList<>(BuiltInRegistries.BLOCK.keySet());
     }
 
     public static List<Block> getSortedBlockList()
     {
-        List<Block> blocks = new ArrayList<>(Registries.BLOCK.stream().toList());
+        List<Block> blocks = new ArrayList<>(BuiltInRegistries.BLOCK.stream().toList());
 
         blocks.sort(Comparator.comparing(RegistryUtils::getBlockIdStr));
 
@@ -126,7 +127,7 @@ public class RegistryUtils
     {
         try
         {
-            return getItemById(Identifier.of(name));
+            return getItemById(Identifier.parse(name));
         }
         catch (Exception e)
         {
@@ -136,12 +137,12 @@ public class RegistryUtils
 
     public static Item getItemById(Identifier id)
     {
-        return Registries.ITEM.get(id);
+        return BuiltInRegistries.ITEM.getValue(id);
     }
 
     public static Identifier getItemId(Item item)
     {
-        return Registries.ITEM.getId(item);
+        return BuiltInRegistries.ITEM.getKey(item);
     }
 
     public static String getItemIdStr(Item item)
@@ -152,12 +153,12 @@ public class RegistryUtils
 
     public static Collection<Identifier> getRegisteredItemIds()
     {
-        return new ArrayList<>(Registries.ITEM.getIds());
+        return new ArrayList<>(BuiltInRegistries.ITEM.keySet());
     }
 
     public static List<Item> getSortedItemList()
     {
-        List<Item> items = new ArrayList<>(Registries.ITEM.stream().toList());
+        List<Item> items = new ArrayList<>(BuiltInRegistries.ITEM.stream().toList());
 
         items.sort(Comparator.comparing(RegistryUtils::getItemIdStr));
 

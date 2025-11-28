@@ -2,10 +2,12 @@ package fi.dy.masa.malilib.gui;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
 import fi.dy.masa.malilib.config.options.ConfigOptionList;
@@ -129,7 +131,7 @@ public class GuiKeybindSettings extends GuiDialogBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
@@ -152,13 +154,13 @@ public class GuiKeybindSettings extends GuiDialogBase
     }
 
     @Override
-    public boolean keyPressed(KeyInput input)
+    public boolean keyPressed(@NotNull KeyEvent input)
     {
         return this.onKeyTyped(input);
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
         {

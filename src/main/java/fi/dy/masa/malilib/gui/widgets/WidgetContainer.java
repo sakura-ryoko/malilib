@@ -3,10 +3,9 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.render.GuiContext;
@@ -54,7 +53,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onMouseClicked(Click click, boolean doubleClick)
+    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
         boolean handled = false;
 
@@ -82,7 +81,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public void onMouseReleased(Click click)
+    public void onMouseReleased(MouseButtonEvent click)
     {
         if (this.subWidgets.isEmpty() == false)
         {
@@ -118,7 +117,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         boolean handled = false;
 
@@ -143,7 +142,7 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
-    public boolean onCharTyped(CharInput input)
+    public boolean onCharTyped(CharacterEvent input)
     {
         boolean handled = false;
 

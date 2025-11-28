@@ -16,8 +16,7 @@ import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.table.type.*;
 
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.dynamic.Codecs;
-
+import net.minecraft.util.ExtraCodecs;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +36,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 					PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(ConfigBase::getPrettyName),
 					PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(ConfigBase::getTranslatedName),
 					PrimitiveCodec.STRING.fieldOf("displayString").forGetter(get -> get.displayString == null ? "n" : "s" + get.displayString),
-					Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("defaultTable").forGetter(get ->
+					ExtraCodecs.compactListCodec(PrimitiveCodec.STRING.listOf()).fieldOf("defaultTable").forGetter(get ->
 					                                                                                      {
 						                                                                                      List<List<String>> table = new ArrayList<>();
 						                                                                                      for (TableRow row : get.getDefaultTable())
@@ -66,7 +65,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 						                                                                                      }
 						                                                                                      return table;
 					                                                                                      }),
-					Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("table").forGetter(get ->
+					ExtraCodecs.compactListCodec(PrimitiveCodec.STRING.listOf()).fieldOf("table").forGetter(get ->
 					                                                                               {
 						                                                                               List<List<String>> table = new ArrayList<>();
 						                                                                               for (TableRow row : get.getTable())
@@ -95,7 +94,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 						                                                                               }
 						                                                                               return table;
 					                                                                               }),
-					Codecs.listOrSingle(PrimitiveCodec.STRING.listOf()).fieldOf("labels").forGetter(get ->
+					ExtraCodecs.compactListCodec(PrimitiveCodec.STRING.listOf()).fieldOf("labels").forGetter(get ->
                                                                                                    {
                                                                                                        ArrayList<List<String>> labels = new ArrayList<>();
                                                                                                        for (Label label : get.getLabels())

@@ -2,16 +2,17 @@ package fi.dy.masa.malilib.config;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
 import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.config.options.table.ConfigTable;
 
-public enum ConfigType implements StringIdentifiable
+public enum ConfigType implements StringRepresentable
 {
     BOOLEAN     ("boolean",         ConfigBoolean.CODEC),
     INTEGER     ("integer",         ConfigInteger.CODEC),
@@ -27,8 +28,8 @@ public enum ConfigType implements StringIdentifiable
 	TABLE       ("table",           ConfigTable.CODEC),
     ;
 
-    public static final StringIdentifiable.EnumCodec<ConfigType> CODEC = StringIdentifiable.createCodec(ConfigType::values);
-    public static final PacketCodec<ByteBuf, ConfigType> PACKET_CODEC = PacketCodecs.STRING.xmap(ConfigType::fromString, ConfigType::asString);
+    public static final StringRepresentable.EnumCodec<@NotNull ConfigType> CODEC = StringRepresentable.fromEnum(ConfigType::values);
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull ConfigType> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(ConfigType::fromString, ConfigType::getSerializedName);
 
     private final String name;
     private final Codec<? extends IConfigBase> codec;
@@ -40,7 +41,7 @@ public enum ConfigType implements StringIdentifiable
     }
 
     @Override
-    public @Nonnull String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.name;
     }

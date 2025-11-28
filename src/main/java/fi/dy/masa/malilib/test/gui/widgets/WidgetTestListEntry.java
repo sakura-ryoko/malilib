@@ -1,8 +1,7 @@
 package fi.dy.masa.malilib.test.gui.widgets;
 
 import java.util.List;
-import net.minecraft.block.Block;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntrySortable;
 import fi.dy.masa.malilib.render.GuiContext;

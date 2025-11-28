@@ -10,7 +10,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigFloat;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
 {
@@ -151,7 +151,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
 
     protected float getClampedValue(float value)
     {
-        return MathHelper.clamp(value, this.minValue, this.maxValue);
+        return Mth.clamp(value, this.minValue, this.maxValue);
     }
 
     @Override

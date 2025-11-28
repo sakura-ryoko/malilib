@@ -3,31 +3,31 @@ package fi.dy.masa.malilib.util.game;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.recipebook.ClientRecipeBook;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.NetworkRecipeId;
-import net.minecraft.recipe.RecipeDisplayEntry;
-import net.minecraft.recipe.book.RecipeBookCategory;
-import net.minecraft.recipe.display.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.context.ContextParameterMap;
+import net.minecraft.client.ClientRecipeBook;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.util.context.ContextMap;
+import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeBookCategory;
+import net.minecraft.world.item.crafting.display.*;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -41,7 +41,7 @@ import fi.dy.masa.malilib.util.log.AnsiLogger;
 public class RecipeBookUtils
 {
     private static final AnsiLogger LOGGER = new AnsiLogger(RecipeBookUtils.class, MaLiLibReference.DEBUG_MODE, true);
-    public static ContextParameterMap map;
+    public static ContextMap map;
     private static final int refreshTime = 300;
     private static long lastRefresh = -1L;
     // Cache a ContextParameterMap, because Minecraft hates it when you spam this function;
@@ -72,11 +72,11 @@ public class RecipeBookUtils
      */
     public static String getRecipeCategoryId(RecipeBookCategory category)
     {
-        RegistryKey<RecipeBookCategory> key = Registries.RECIPE_BOOK_CATEGORY.getKey(category).orElse(null);
+        ResourceKey<@NotNull RecipeBookCategory> key = BuiltInRegistries.RECIPE_BOOK_CATEGORY.getResourceKey(category).orElse(null);
 
         if (key != null)
         {
-            return key.getValue().toString();
+            return key.identifier().toString();
         }
 
         return "";
@@ -89,12 +89,16 @@ public class RecipeBookUtils
      */
     public static @Nullable RecipeBookCategory getRecipeCategoryFromId(String id)
     {
-        RegistryEntry.Reference<RecipeBookCategory> catReference = Registries.RECIPE_BOOK_CATEGORY.getEntry(Identifier.tryParse(id)).orElse(null);
+		try
+		{
+			Holder.Reference<@NotNull RecipeBookCategory> catReference = BuiltInRegistries.RECIPE_BOOK_CATEGORY.get(Objects.requireNonNull(Identifier.tryParse(id))).orElse(null);
 
-        if (catReference != null && catReference.hasKeyAndValue())
-        {
-            return catReference.value();
-        }
+			if (catReference != null && catReference.isBound())
+			{
+				return catReference.value();
+			}
+		}
+		catch (Exception ignored) { }
 
         return null;
     }
@@ -104,13 +108,13 @@ public class RecipeBookUtils
      * @param mc ()
      * @return ()
      */
-    public static @Nullable ContextParameterMap getMap(MinecraftClient mc)
+    public static @Nullable ContextMap getMap(Minecraft mc)
     {
-        if (mc.world == null) return null;
+        if (mc.level == null) return null;
 
         if (map == null || (System.currentTimeMillis() - lastRefresh) > (refreshTime * 1000L))
         {
-            map = SlotDisplayContexts.createParameters(mc.world);
+            map = SlotDisplayContext.fromLevel(mc.level);
             lastRefresh = System.currentTimeMillis();
         }
 
@@ -132,25 +136,25 @@ public class RecipeBookUtils
      * @param types (Recipe Type list)
      * @return (List of all matching recipe's and their corresponding NetworkRecipeId)
      */
-    public static List<Pair<NetworkRecipeId, RecipeDisplayEntry>> getDisplayEntryFromRecipeBook(ItemStack result, List<Type> types)
+    public static List<Pair<RecipeDisplayId, RecipeDisplayEntry>> getDisplayEntryFromRecipeBook(ItemStack result, List<Type> types)
     {
-        MinecraftClient mc = MinecraftClient.getInstance();
+        Minecraft mc = Minecraft.getInstance();
 
-        if (mc.world == null || mc.player == null)
+        if (mc.level == null || mc.player == null)
         {
             return null;
         }
 
         ClientRecipeBook recipeBook = mc.player.getRecipeBook();
-        Map<NetworkRecipeId, RecipeDisplayEntry> recipeMap = ((IMixinClientRecipeBook) recipeBook).malilib_getRecipeMap();
-        List<Pair<NetworkRecipeId, RecipeDisplayEntry>> list = new ArrayList<>();
-        FeatureSet features = mc.world.getEnabledFeatures();
-        ContextParameterMap map = getMap(mc);
+        Map<RecipeDisplayId, RecipeDisplayEntry> recipeMap = ((IMixinClientRecipeBook) recipeBook).malilib_getRecipeMap();
+        List<Pair<RecipeDisplayId, RecipeDisplayEntry>> list = new ArrayList<>();
+        FeatureFlagSet features = mc.level.enabledFeatures();
+        ContextMap map = getMap(mc);
 
         if (map == null) return null;
 //        LOGGER.debug("getDisplayEntryFromRecipeBook(): Checking [{}] recipes", recipeMap.size());
 
-        for (NetworkRecipeId id : recipeMap.keySet())
+        for (RecipeDisplayId id : recipeMap.keySet())
         {
             RecipeDisplayEntry entry = recipeMap.get(id);
             Type type = Type.fromRecipeDisplay(entry.display());
@@ -159,16 +163,16 @@ public class RecipeBookUtils
             if (entry.craftingRequirements().isPresent() &&
                 types.contains(type) &&
                 entry.display().isEnabled(features) &&
-                !(entry.display().result() instanceof SlotDisplay.SmithingTrimSlotDisplay))
+                !(entry.display().result() instanceof SlotDisplay.SmithingTrimDemoSlotDisplay))
             {
-                ItemStack resultSlot = entry.display().result().getFirst(map);
+                ItemStack resultSlot = entry.display().result().resolveForFirstStack(map);
 
                 if (resultSlot.isEmpty())
                 {
                     continue;
                 }
 
-                if (ItemStack.areItemsEqual(result, resultSlot))
+                if (ItemStack.isSameItem(result, resultSlot))
                 {
 //                    LOGGER.debug("ID[{}]: type: [{}], resultStack: [{}] --> MATCHED", id.index(), type.name(), resultSlot.getRegistryEntry().getIdAsString());
                     list.add(Pair.of(id, entry));
@@ -195,9 +199,9 @@ public class RecipeBookUtils
      * @param mc ()
      * @return (True|False)
      */
-    public static boolean matchClientRecipeBookEntry(ItemStack result, List<ItemStack> recipeStacks, RecipeDisplayEntry entry, List<Type> allowed, MinecraftClient mc)
+    public static boolean matchClientRecipeBookEntry(ItemStack result, List<ItemStack> recipeStacks, RecipeDisplayEntry entry, List<Type> allowed, Minecraft mc)
     {
-        if (mc.world == null || result.isEmpty())
+        if (mc.level == null || result.isEmpty())
         {
             return false;
         }
@@ -209,9 +213,9 @@ public class RecipeBookUtils
             return false;
         }
          */
-        ContextParameterMap map = getMap(mc);
+        ContextMap map = getMap(mc);
         if (map == null) return false;
-        List<ItemStack> stacks = entry.getStacks(map);
+        List<ItemStack> stacks = entry.resultItems(map);
 
         LOGGER.debug("matchClientRecipeBookEntry() --> [{}] vs [{}]", recipeStacks, stacks.getFirst().toString());
 
@@ -491,11 +495,11 @@ public class RecipeBookUtils
 
     private static boolean checkMatchingItemsEach(ItemStack lStack, int lPos, int i, Ingredient ri)
     {
-        List<RegistryEntry<Item>> rItems = ((IMixinIngredient) (Object) ri).malilib_getEntries().stream().toList();
+        List<Holder<@NotNull Item>> rItems = ((IMixinIngredient) (Object) ri).malilib_getEntries().stream().toList();
 
-        for (RegistryEntry<Item> rItem : rItems)
+        for (Holder<@NotNull Item> rItem : rItems)
         {
-            LOGGER.debug(" checkMatchingItemsEach() [{}] left [{}] / [{}] right [{}] -->", lPos, lStack, i, rItem.getIdAsString());
+            LOGGER.debug(" checkMatchingItemsEach() [{}] left [{}] / [{}] right [{}] -->", lPos, lStack, i, rItem.getRegisteredName());
 
             if (ri.test(lStack))
             {
@@ -522,7 +526,7 @@ public class RecipeBookUtils
      */
     public static boolean areStacksEqual(ItemStack left, ItemStack right)
     {
-        return ItemStack.areItemsEqual(left, right) && left.getCount() == right.getCount();
+        return ItemStack.isSameItem(left, right) && left.getCount() == right.getCount();
     }
 
     private static void dumpStacks(List<ItemStack> stacks, String side)
@@ -548,12 +552,12 @@ public class RecipeBookUtils
 
         for (Ingredient ing : ings)
         {
-            List<RegistryEntry<Item>> items = ((IMixinIngredient) (Object) ing).malilib_getEntries().stream().toList();
+            List<Holder<Item>> items = ((IMixinIngredient) (Object) ing).malilib_getEntries().stream().toList();
             List<String> list = new ArrayList<>();
 
-            for (RegistryEntry<Item> item : items)
+            for (Holder<Item> item : items)
             {
-                list.add(item.getIdAsString());
+                list.add(item.getRegisteredName());
             }
 
             LOGGER.info(" {}[{}] // {}", i, side, list.toString());
@@ -567,7 +571,7 @@ public class RecipeBookUtils
      * Crafting Recipe Types -- This provides an easier way to filter and organize Recipe Book Display
      * results by Crafting Type; without the complexity of the Vanilla methods for doing this.
      */
-    public enum Type implements StringIdentifiable
+    public enum Type implements StringRepresentable
     {
         FURNACE,
         SHAPED,
@@ -576,9 +580,9 @@ public class RecipeBookUtils
         STONECUTTER,
         UNKNOWN;
 
-        public static final StringIdentifiable.EnumCodec<Type> CODEC = StringIdentifiable.createCodec(Type::values);
-        public static final PacketCodec<ByteBuf, Type> PACKET_CODEC = PacketCodecs.STRING.xmap(Type::fromStringStatic, Type::asString);
-        public static final ImmutableList<Type> VALUES = ImmutableList.copyOf(values());
+        public static final StringRepresentable.EnumCodec<@NotNull Type> CODEC = StringRepresentable.fromEnum(Type::values);
+        public static final StreamCodec<@NotNull ByteBuf, @NotNull Type> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(Type::fromStringStatic, Type::getSerializedName);
+        public static final ImmutableList<@NotNull Type> VALUES = ImmutableList.copyOf(values());
 
         public static Type fromRecipeDisplay(RecipeDisplay type)
         {
@@ -607,7 +611,7 @@ public class RecipeBookUtils
         }
 
         @Override
-        public @Nonnull String asString()
+        public @Nonnull String getSerializedName()
         {
             return this.name().toLowerCase();
         }

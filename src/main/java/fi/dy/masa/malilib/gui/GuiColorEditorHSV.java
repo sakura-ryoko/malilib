@@ -2,13 +2,15 @@ package fi.dy.masa.malilib.gui;
 
 import java.awt.*;
 import javax.annotation.Nullable;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.client.texture.TextureSetup;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.util.Mth;
+
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2f;
 import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
@@ -114,7 +116,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         y += this.createComponentElements(xTextField, y, xLabel, Element.A);
 
         this.addLabel(this.xH - 26, y + 3, 12, 12, 0xFFFFFFFF, "HEX:");
-        this.textFieldFullColor = new GuiTextFieldGeneric(this.xH, y + 1, 68, 14, this.textRenderer);
+        this.textFieldFullColor = new GuiTextFieldGeneric(this.xH, y + 1, 68, 14, this.font);
         this.textFieldFullColor.setMaxLength(12);
         this.addTextField(this.textFieldFullColor, new TextFieldListener(null, this));
 
@@ -127,7 +129,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     protected int createComponentElements(int x, int y, int xLabel, Element element)
     {
         TextFieldListener listener = new TextFieldListener(element, this);
-        GuiTextFieldInteger textField = new GuiTextFieldInteger(x, y, 32, 12, this.textRenderer);
+        GuiTextFieldInteger textField = new GuiTextFieldInteger(x, y, 32, 12, this.font);
 
         switch (element)
         {
@@ -156,7 +158,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, float partialTicks)
+    public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
@@ -191,13 +193,13 @@ public class GuiColorEditorHSV extends GuiDialogBase
     }
 
     @Override
-    public boolean keyPressed(KeyInput input)
+    public boolean keyPressed(@NotNull KeyEvent input)
     {
         return this.onKeyTyped(input);
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
         {
@@ -211,7 +213,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     }
 
     @Override
-    public boolean onMouseClicked(Click click, boolean doubleClick)
+    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
         this.clickedElement = this.getHoveredElement((int) click.x(), (int) click.y());
 
@@ -225,7 +227,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     }
 
     @Override
-    public boolean onMouseReleased(Click click)
+    public boolean onMouseReleased(MouseButtonEvent click)
     {
         this.mouseDown = false;
         this.clickedElement = null;
@@ -320,8 +322,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
     {
         if (element == Element.SV)
         {
-            mouseX = MathHelper.clamp(mouseX, this.xHS, this.xHS + this.sizeHS);
-            mouseY = MathHelper.clamp(mouseY, this.yHS, this.yHS + this.sizeHS);
+            mouseX = Mth.clamp(mouseX, this.xHS, this.xHS + this.sizeHS);
+            mouseY = Mth.clamp(mouseY, this.yHS, this.yHS + this.sizeHS);
             int relX = mouseX - this.xHS;
             int relY = mouseY - this.yHS;
             float saturation = 1f - ((float) relY / (float) this.sizeHS);
@@ -336,7 +338,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
         else if (element == Element.H_FULL_SV)
         {
-            mouseY = MathHelper.clamp(mouseY, this.yHS, this.yHS + this.sizeHS);
+            mouseY = Mth.clamp(mouseY, this.yHS, this.yHS + this.sizeHS);
             int relY = mouseY - this.yHS;
             float hue = 1f - ((float) relY / (float) this.sizeHS);
 
@@ -346,7 +348,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
         else
         {
-            mouseX = MathHelper.clamp(mouseX, this.xH, this.xH + this.widthSlider);
+            mouseX = Mth.clamp(mouseX, this.xH, this.xH + this.widthSlider);
             int relX = mouseX - this.xH;
             float relVal = (float) relX / (float) this.widthSlider;
 
@@ -432,35 +434,35 @@ public class GuiColorEditorHSV extends GuiDialogBase
             switch (type)
             {
                 case HEX:
-                    this.textFieldFullColor.setText(String.format("#%08X", this.color));
+                    this.textFieldFullColor.setValue(String.format("#%08X", this.color));
                     break;
 
                 case H:
-                    this.textFieldH.setText(String.valueOf((int) (this.relH * 360)));
+                    this.textFieldH.setValue(String.valueOf((int) (this.relH * 360)));
                     break;
 
                 case S:
-                    this.textFieldS.setText(String.valueOf((int) (this.relS * 100)));
+                    this.textFieldS.setValue(String.valueOf((int) (this.relS * 100)));
                     break;
 
                 case V:
-                    this.textFieldV.setText(String.valueOf((int) (this.relV * 100)));
+                    this.textFieldV.setValue(String.valueOf((int) (this.relV * 100)));
                     break;
 
                 case R:
-                    this.textFieldR.setText(String.valueOf((int) (this.relR * 255)));
+                    this.textFieldR.setValue(String.valueOf((int) (this.relR * 255)));
                     break;
 
                 case G:
-                    this.textFieldG.setText(String.valueOf((int) (this.relG * 255)));
+                    this.textFieldG.setValue(String.valueOf((int) (this.relG * 255)));
                     break;
 
                 case B:
-                    this.textFieldB.setText(String.valueOf((int) (this.relB * 255)));
+                    this.textFieldB.setValue(String.valueOf((int) (this.relB * 255)));
                     break;
 
                 case A:
-                    this.textFieldA.setText(String.valueOf((int) (this.relA * 255)));
+                    this.textFieldA.setValue(String.valueOf((int) (this.relA * 255)));
                     break;
 
                 default:
@@ -470,7 +472,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
     protected void drawColorSelector(GuiContext ctx, int mouseX, int mouseY)
     {
-        if (this.client == null) return;
+        if (this.minecraft == null) return;
 
         int x = this.xH - 1;
         int y = this.yH - 1;
@@ -523,8 +525,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
 	    ctx.addSimpleElement(new MaLiLibHSV4ColorGradientGuiElement(
 				RenderPipelines.GUI,
-				TextureSetup.empty(),
-				new Matrix3x2f(ctx.getMatrices()),
+				TextureSetup.noTexture(),
+				new Matrix3x2f(ctx.pose()),
 				x, x + w, y, y + h,
 				colorPair,
 				ctx.peekLastScissor())
@@ -534,8 +536,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
         // Current color indicator
 	    ctx.addSimpleElement(new MaLiLibHSV1ColorIndicatorGuiElement(
 				RenderPipelines.GUI,
-				TextureSetup.empty(),
-				new Matrix3x2f(ctx.getMatrices()),
+				TextureSetup.noTexture(),
+				new Matrix3x2f(ctx.pose()),
 				cx, cx + cw,
 				cy, cy + ch,
 				r, g, b, a,
@@ -548,8 +550,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
         // SV selection marker for saturation, horizontal marker, vertical range
 	    ctx.addSimpleElement(new MaLiLibHSV1ColorIndicatorGuiElement(
 				RenderPipelines.GUI,
-				TextureSetup.empty(),
-				new Matrix3x2f(ctx.getMatrices()),
+				TextureSetup.noTexture(),
+				new Matrix3x2f(ctx.pose()),
 				x - 1, x + w + 1,
 				yt, yt + 1,
 				c, c, c, a,
@@ -562,8 +564,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
         // SV selection marker for value, vertical marker, horizontal range
 	    ctx.addSimpleElement(new MaLiLibHSV1ColorIndicatorGuiElement(
 				RenderPipelines.GUI,
-				TextureSetup.empty(),
-				new Matrix3x2f(ctx.getMatrices()),
+				TextureSetup.noTexture(),
+				new Matrix3x2f(ctx.pose()),
 				xt, xt + 1,
 				y - 1, y + h + 1,
 				c, c, c, a,
@@ -642,8 +644,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
     {
 	    ctx.addSimpleElement(new MaLiLibHSV2ColorGradientGuiElement(
 				RenderPipelines.GUI,
-				TextureSetup.empty(),
-				new Matrix3x2f(ctx.getMatrices()),
+				TextureSetup.noTexture(),
+				new Matrix3x2f(ctx.pose()),
 				x, x + width,
 				y, y + height,
 				colorStart, colorEnd,
@@ -704,8 +706,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
     {
 	    ctx.addSimpleElement(new MaLiLibHSV2ColorSegmentedHueGuiElement(
 				RenderPipelines.GUI,
-				TextureSetup.empty(),
-				new Matrix3x2f(ctx.getMatrices()),
+				TextureSetup.noTexture(),
+				new Matrix3x2f(ctx.pose()),
 				x, y,
 				width, height,
 				segmentWidth, segmentHeight,
@@ -718,8 +720,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
     {
 	    ctx.addSimpleElement(new MaLiLibHSVColorSelectorGuiElement(
 				RenderPipelines.GUI,
-				TextureSetup.empty(),
-				new Matrix3x2f(ctx.getMatrices()),
+				TextureSetup.noTexture(),
+				new Matrix3x2f(ctx.pose()),
 				xStart, yStart,
 				width, height,
 				hue,
@@ -731,8 +733,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
     {
 	    ctx.addSimpleElement(new MaLiLibHSVColorHorizontalBarMarkerGuiElement(
 				RenderPipelines.GUI,
-				TextureSetup.empty(),
-				new Matrix3x2f(ctx.getMatrices()),
+				TextureSetup.noTexture(),
+				new Matrix3x2f(ctx.pose()),
 				x, y,
 				barWidth, barHeight,
 				value,
@@ -744,8 +746,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
     {
 	    ctx.addSimpleElement(new MaLiLibHSVColorVerticalBarMarkerGuiElement(
 				RenderPipelines.GUI,
-				TextureSetup.empty(),
-				new Matrix3x2f(ctx.getMatrices()),
+				TextureSetup.noTexture(),
+				new Matrix3x2f(ctx.pose()),
 				x, y,
 				barWidth, barHeight,
 				value,
@@ -797,47 +799,47 @@ public class GuiColorEditorHSV extends GuiDialogBase
 			if (this.type == null)
 			{
 				this.gui.currentTextInputElement = Element.HEX;
-				this.gui.setColor(StringUtils.getColor(textField.getText(), colorOld));
+				this.gui.setColor(StringUtils.getColor(textField.getValue(), colorOld));
 			}
 			else
 			{
 				try
 				{
-					int val = Integer.parseInt(textField.getText());
+					int val = Integer.parseInt(textField.getValue());
 					float[] hsv = this.gui.getCurrentColorHSV();
 					int colorNew = colorOld;
 
 					switch (this.type)
 					{
 						case H:
-							val = MathHelper.clamp(val, 0, 360);
+							val = Mth.clamp(val, 0, 360);
 							float h = (float) val / 360f;
 							colorNew = Color.HSBtoRGB(h, hsv[1], hsv[2]);
 							break;
 						case S:
-							val = MathHelper.clamp(val, 0, 100);
+							val = Mth.clamp(val, 0, 100);
 							float s = (float) val / 100f;
 							colorNew = Color.HSBtoRGB(hsv[0], s, hsv[2]);
 							break;
 						case V:
-							val = MathHelper.clamp(val, 0, 100);
+							val = Mth.clamp(val, 0, 100);
 							float v = (float) val / 100f;
 							colorNew = Color.HSBtoRGB(hsv[0], hsv[1], v);
 							break;
 						case R:
-							val = MathHelper.clamp(val, 0, 255);
+							val = Mth.clamp(val, 0, 255);
 							colorNew = (colorOld & 0x00FFFF) | (val << 16);
 							break;
 						case G:
-							val = MathHelper.clamp(val, 0, 255);
+							val = Mth.clamp(val, 0, 255);
 							colorNew = (colorOld & 0xFF00FF) | (val << 8);
 							break;
 						case B:
-							val = MathHelper.clamp(val, 0, 255);
+							val = Mth.clamp(val, 0, 255);
 							colorNew = (colorOld & 0xFFFF00) | val;
 							break;
 						case A:
-							val = MathHelper.clamp(val, 0, 255);
+							val = Mth.clamp(val, 0, 255);
 							colorNew = (colorOld & 0x00FFFFFF) | (val << 24);
 							break;
 						default:

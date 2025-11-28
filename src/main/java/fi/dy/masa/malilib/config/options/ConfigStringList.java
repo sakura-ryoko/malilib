@@ -2,11 +2,12 @@ package fi.dy.masa.malilib.config.options;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.ExtraCodecs;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
@@ -21,32 +22,32 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
     public static final Codec<ConfigStringList> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
-                    Codecs.listOrSingle(PrimitiveCodec.STRING).fieldOf("defaultValue").forGetter(get -> get.defaultValue.stream().toList()),
-                    Codecs.listOrSingle(PrimitiveCodec.STRING).fieldOf("values").forGetter(get -> get.strings),
+                    ExtraCodecs.compactListCodec(PrimitiveCodec.STRING).fieldOf("defaultValue").forGetter(get -> get.defaultValue.stream().toList()),
+                    ExtraCodecs.compactListCodec(PrimitiveCodec.STRING).fieldOf("values").forGetter(get -> get.strings),
                     PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
                     PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
                     PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)
             ).apply(inst, ConfigStringList::new)
     );
-    private final ImmutableList<String> defaultValue;
+    private final ImmutableList<@NotNull String> defaultValue;
     private final List<String> strings = new ArrayList<>();
 
-    public ConfigStringList(String name, ImmutableList<String> defaultValue)
+    public ConfigStringList(String name, ImmutableList<@NotNull String> defaultValue)
     {
         this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
     }
 
-    public ConfigStringList(String name, ImmutableList<String> defaultValue, String comment)
+    public ConfigStringList(String name, ImmutableList<@NotNull String> defaultValue, String comment)
     {
         this(name, defaultValue, comment, StringUtils.splitCamelCase(name), name);
     }
 
-    public ConfigStringList(String name, ImmutableList<String> defaultValue, String comment, String prettyName)
+    public ConfigStringList(String name, ImmutableList<@NotNull String> defaultValue, String comment, String prettyName)
     {
         this(name, defaultValue, comment, prettyName, name);
     }
 
-    public ConfigStringList(String name, ImmutableList<String> defaultValue, String comment, String prettyName, String translatedName)
+    public ConfigStringList(String name, ImmutableList<@NotNull String> defaultValue, String comment, String prettyName, String translatedName)
     {
         super(ConfigType.STRING_LIST, name, comment, prettyName, translatedName);
 
@@ -67,7 +68,7 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
     }
 
     @Override
-    public ImmutableList<String> getDefaultStrings()
+    public ImmutableList<@NotNull String> getDefaultStrings()
     {
         return this.defaultValue;
     }

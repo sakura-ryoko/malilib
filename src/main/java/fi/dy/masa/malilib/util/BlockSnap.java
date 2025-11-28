@@ -1,22 +1,24 @@
 package fi.dy.masa.malilib.util;
 
 import javax.annotation.Nonnull;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
-public enum BlockSnap implements IConfigOptionListEntry, StringIdentifiable
+public enum BlockSnap implements IConfigOptionListEntry, StringRepresentable
 {
     NONE        ("none",    "malilib.gui.label.block_snap.none"),
     CENTER      ("center",  "malilib.gui.label.block_snap.center"),
     CORNER      ("corner",  "malilib.gui.label.block_snap.corner");
 
-    public static final StringIdentifiable.EnumCodec<BlockSnap> CODEC = StringIdentifiable.createCodec(BlockSnap::values);
-    public static final PacketCodec<ByteBuf, BlockSnap> PACKET_CODEC = PacketCodecs.STRING.xmap(BlockSnap::fromStringStatic, BlockSnap::asString);
-    public static final ImmutableList<BlockSnap> VALUES = ImmutableList.copyOf(values());
+    public static final StringRepresentable.EnumCodec<@NotNull BlockSnap> CODEC = StringRepresentable.fromEnum(BlockSnap::values);
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull BlockSnap> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(BlockSnap::fromStringStatic, BlockSnap::getSerializedName);
+    public static final ImmutableList<@NotNull BlockSnap> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
     private final String translationKey;
@@ -40,7 +42,7 @@ public enum BlockSnap implements IConfigOptionListEntry, StringIdentifiable
     }
 
     @Override
-    public @Nonnull String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.configString;
     }

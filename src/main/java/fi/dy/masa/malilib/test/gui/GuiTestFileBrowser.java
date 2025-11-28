@@ -25,7 +25,7 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 	{
 		super(12, 24);
 		this.title = StringUtils.translate("malilib.gui.title.test_file_browser");
-		this.textField = new GuiTextFieldGeneric(10, 32, 160, 20, this.textRenderer);
+		this.textField = new GuiTextFieldGeneric(10, 32, 160, 20, this.font);
 		this.textField.setMaxLengthWrapper(256);
 		this.textField.setFocusedWrapper(true);
 		this.lastText = "";

@@ -2,8 +2,7 @@ package fi.dy.masa.malilib.render;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 
@@ -21,7 +20,7 @@ public class MessageRenderer
     private boolean expandUp;
 //    private float zLevel;
 
-    protected static final Identifier BG_TEXTURE = Identifier.ofVanilla("textures/gui/inworld_menu_list_background.png");
+    protected static final Identifier BG_TEXTURE = Identifier.withDefaultNamespace("textures/gui/inworld_menu_list_background.png");
 
     public MessageRenderer(int bgColor, int borderColor)
     {
@@ -52,8 +51,8 @@ public class MessageRenderer
      * Sets whether the rendered box should get centered to the given x and y coordinates, or expand
      * to a given direction from that point.
      * If centeredV is false, then the value set in {@link #setExpandUp(boolean)} determines whether the box expands up or down.
-     * @param centeredH
-     * @param centeredV
+     * @param centeredH ()
+     * @param centeredV ()
      */
     public MessageRenderer setCentered(boolean centeredH, boolean centeredV)
     {

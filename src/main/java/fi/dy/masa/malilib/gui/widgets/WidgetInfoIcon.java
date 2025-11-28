@@ -3,8 +3,6 @@ package fi.dy.masa.malilib.gui.widgets;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.GuiContext;
 
-import net.minecraft.client.gui.DrawContext;
-
 public class WidgetInfoIcon extends WidgetHoverInfo
 {
     protected final IGuiIcon icon;

@@ -3,12 +3,14 @@ package fi.dy.masa.malilib.util.position;
 import java.util.function.IntFunction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.ByIdMap;
+import net.minecraft.util.StringRepresentable;
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -16,25 +18,25 @@ import fi.dy.masa.malilib.util.StringUtils;
 /**
  * Post-ReWrite code
  */
-public enum BlockMirror implements IConfigOptionListEntry, StringIdentifiable
+public enum BlockMirror implements IConfigOptionListEntry, StringRepresentable
 {
-    NONE (0, "none", null, net.minecraft.util.BlockMirror.NONE),
-    X    (1, "x", Direction.Axis.X, net.minecraft.util.BlockMirror.FRONT_BACK),
-    Y    (2, "y", Direction.Axis.Y, net.minecraft.util.BlockMirror.NONE),
-    Z    (3, "z", Direction.Axis.Z, net.minecraft.util.BlockMirror.LEFT_RIGHT);
+    NONE (0, "none", null, net.minecraft.world.level.block.Mirror.NONE),
+    X    (1, "x", Direction.Axis.X, net.minecraft.world.level.block.Mirror.FRONT_BACK),
+    Y    (2, "y", Direction.Axis.Y, net.minecraft.world.level.block.Mirror.NONE),
+    Z    (3, "z", Direction.Axis.Z, net.minecraft.world.level.block.Mirror.LEFT_RIGHT);
 
-    public static final StringIdentifiable.EnumCodec<BlockMirror> CODEC = StringIdentifiable.createCodec(BlockMirror::values);
-    public static final IntFunction<BlockMirror> INDEX_TO_VALUE = ValueLists.createIndexToValueFunction(BlockMirror::getIndex, values(), ValueLists.OutOfBoundsHandling.WRAP);
-    public static final PacketCodec<ByteBuf, BlockMirror> PACKET_CODEC = PacketCodecs.indexed(INDEX_TO_VALUE, BlockMirror::getIndex);
+    public static final StringRepresentable.EnumCodec<@NotNull BlockMirror> CODEC = StringRepresentable.fromEnum(BlockMirror::values);
+    public static final IntFunction<BlockMirror> INDEX_TO_VALUE = ByIdMap.continuous(BlockMirror::getIndex, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull BlockMirror> PACKET_CODEC = ByteBufCodecs.idMapper(INDEX_TO_VALUE, BlockMirror::getIndex);
     public static final BlockMirror[] VALUES = values();
 
     private final int index;
     private final String name;
     private final String translationKey;
-    private final net.minecraft.util.BlockMirror vanillaMirror;
+    private final net.minecraft.world.level.block.Mirror vanillaMirror;
     @Nullable private final Direction.Axis axis;
 
-    BlockMirror(int index, String name, @Nullable Direction.Axis axis, net.minecraft.util.BlockMirror vanillaMirror)
+    BlockMirror(int index, String name, @Nullable Direction.Axis axis, net.minecraft.world.level.block.Mirror vanillaMirror)
     {
         this.index = index;
         this.name = name;
@@ -60,7 +62,7 @@ public enum BlockMirror implements IConfigOptionListEntry, StringIdentifiable
     }
 
     @Override
-    public @Nonnull String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.name;
     }
@@ -103,7 +105,7 @@ public enum BlockMirror implements IConfigOptionListEntry, StringIdentifiable
         return byName(value);
     }
 
-    public net.minecraft.util.BlockMirror getVanillaMirror()
+    public net.minecraft.world.level.block.Mirror getVanillaMirror()
     {
         return this.vanillaMirror;
     }

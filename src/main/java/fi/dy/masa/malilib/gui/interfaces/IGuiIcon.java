@@ -1,9 +1,7 @@
 package fi.dy.masa.malilib.gui.interfaces;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-
 import fi.dy.masa.malilib.render.GuiContext;
+import net.minecraft.resources.Identifier;
 
 public interface IGuiIcon
 {

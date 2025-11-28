@@ -1,8 +1,6 @@
 package fi.dy.masa.malilib.util.position;
 
 import javax.annotation.Nonnull;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector2d;
@@ -10,6 +8,8 @@ import org.joml.Vector2d;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 
 /**
  * Post-ReWrite code
@@ -22,21 +22,21 @@ public class Vec2d
                     PrimitiveCodec.DOUBLE.fieldOf("y").forGetter(get -> get.y)
             ).apply(inst, Vec2d::new)
     );
-    public static final PacketCodec<ByteBuf, Vec2d> PACKET_CODEC = new PacketCodec<>()
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull Vec2d> PACKET_CODEC = new StreamCodec<>()
     {
         @Override
         public void encode(@Nonnull ByteBuf buf, Vec2d value)
         {
-            PacketCodecs.DOUBLE.encode(buf, value.x);
-            PacketCodecs.DOUBLE.encode(buf, value.y);
+            ByteBufCodecs.DOUBLE.encode(buf, value.x);
+            ByteBufCodecs.DOUBLE.encode(buf, value.y);
         }
 
         @Override
         public @Nonnull Vec2d decode(@Nonnull ByteBuf buf)
         {
             return new Vec2d(
-                    PacketCodecs.DOUBLE.decode(buf),
-                    PacketCodecs.DOUBLE.decode(buf)
+                    ByteBufCodecs.DOUBLE.decode(buf),
+                    ByteBufCodecs.DOUBLE.decode(buf)
             );
         }
     };

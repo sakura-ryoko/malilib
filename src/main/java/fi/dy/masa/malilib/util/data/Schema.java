@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
@@ -141,19 +141,19 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_1_09_00 (169,  "1.9"),
     SCHEMA_15W32A  (100,  "15w32a");
 
-    public static final EnumCodec<Schema> CODEC = StringIdentifiable.createCodec(Schema::sorted);
-    public static final PacketCodec<ByteBuf, Schema> PACKET_CODEC = new PacketCodec<>()
+    public static final EnumCodec<@NotNull Schema> CODEC = StringRepresentable.fromEnum(Schema::sorted);
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull Schema> PACKET_CODEC = new StreamCodec<>()
     {
         @Override
         public void encode(@Nonnull ByteBuf buf, Schema value)
         {
-            PacketCodecs.INTEGER.encode(buf, value.schemaId);
+            ByteBufCodecs.INT.encode(buf, value.schemaId);
         }
 
         @Override
         public @Nonnull Schema decode(@Nonnull ByteBuf buf)
         {
-            return Objects.requireNonNull(Schema.getSchemaByDataVersion(PacketCodecs.INTEGER.decode(buf)));
+            return Objects.requireNonNull(Schema.getSchemaByDataVersion(ByteBufCodecs.INT.decode(buf)));
         }
     };
     public static final ImmutableList<@NotNull Schema> VALUES = ImmutableList.copyOf(values());
@@ -220,7 +220,7 @@ public enum Schema implements IEnumCodecProvider
     }
 
     @Override
-    public @Nonnull String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.str;
     }

@@ -1,20 +1,19 @@
 package fi.dy.masa.malilib.gui;
 
+import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
-
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.Text;
-
 import fi.dy.masa.malilib.util.StringUtils;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
 
-public class GuiTextFieldGeneric extends TextFieldWidget
+public class GuiTextFieldGeneric extends EditBox
 {
     protected int x;
     protected int y;
@@ -22,9 +21,9 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     protected int height;
     protected int zLevel;
 
-    public GuiTextFieldGeneric(int x, int y, int width, int height, TextRenderer textRenderer)
+    public GuiTextFieldGeneric(int x, int y, int width, int height, Font textRenderer)
     {
-        super(textRenderer, x, y, width, height, ScreenTexts.EMPTY);
+        super(textRenderer, x, y, width, height, CommonComponents.EMPTY);
 
         this.x = x;
         this.y = y;
@@ -35,15 +34,15 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     }
 
     @Override
-    public boolean mouseClicked(Click click, boolean doubleClick)
+    public boolean mouseClicked(@NotNull MouseButtonEvent click, boolean doubleClick)
     {
         boolean ret = super.mouseClicked(click, doubleClick);
 
         if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
-            if (click.getKeycode() == 1)
+            if (click.input() == 1)
             {
-                this.setText("");
+                this.setValue("");
             }
 
             this.setFocused(true);
@@ -95,11 +94,11 @@ public class GuiTextFieldGeneric extends TextFieldWidget
     }
 
     @Override
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta)
+    public void renderWidget(@NotNull GuiGraphics context, int mouseX, int mouseY, float delta)
     {
         if (this.zLevel != 0)
         {
-            Matrix3x2fStack matrixStack = context.getMatrices();
+            Matrix3x2fStack matrixStack = context.pose();
             matrixStack.pushMatrix();
             // this.zLevel
             matrixStack.translate(0, 0);
@@ -125,17 +124,17 @@ public class GuiTextFieldGeneric extends TextFieldWidget
 		{
 			if (StringUtils.hasTranslation(translationKey))
 			{
-				this.setTooltip(Tooltip.of(StringUtils.translateAsText(translationKey, args)));
+				this.setTooltip(Tooltip.create(StringUtils.translateAsText(translationKey, args)));
 			}
 			else
 			{
 				if (args != null && args.length > 0)
 				{
-					this.setTooltip(Tooltip.of(Text.of(String.format(translationKey, args))));
+					this.setTooltip(Tooltip.create(Component.nullToEmpty(String.format(translationKey, args))));
 				}
 				else
 				{
-					this.setTooltip(Tooltip.of(Text.of(translationKey)));
+					this.setTooltip(Tooltip.create(Component.nullToEmpty(translationKey)));
 				}
 			}
 		}
@@ -155,7 +154,7 @@ public class GuiTextFieldGeneric extends TextFieldWidget
      */
     public void setTextWrapper(String text)
     {
-        this.setText(text);
+        this.setValue(text);
     }
 
     /**
@@ -164,7 +163,7 @@ public class GuiTextFieldGeneric extends TextFieldWidget
      */
     public String getTextWrapper()
     {
-        return this.getText();
+        return this.getValue();
     }
 
     /**
@@ -182,7 +181,7 @@ public class GuiTextFieldGeneric extends TextFieldWidget
      */
     public int getCursorWrapper()
     {
-        return this.getCursor();
+        return this.getCursorPosition();
     }
 
     /**
@@ -255,7 +254,7 @@ public class GuiTextFieldGeneric extends TextFieldWidget
      * @param mouseY ()
      * @param delta ()
      */
-    public void renderWrapper(DrawContext context, int mouseX, int mouseY, float delta)
+    public void renderWrapper(GuiGraphics context, int mouseX, int mouseY, float delta)
     {
         this.render(context, mouseX, mouseY, delta);
     }
@@ -265,7 +264,7 @@ public class GuiTextFieldGeneric extends TextFieldWidget
      * @param input ()
      * @return ()
      */
-    public boolean keyPressedWrapper(KeyInput input)
+    public boolean keyPressedWrapper(KeyEvent input)
     {
         return this.keyPressed(input);
     }
@@ -275,7 +274,7 @@ public class GuiTextFieldGeneric extends TextFieldWidget
      * @param input ()
      * @return ()
      */
-    public boolean charTypedWrapper(CharInput input)
+    public boolean charTypedWrapper(CharacterEvent input)
     {
         return this.charTyped(input);
     }
@@ -285,7 +284,7 @@ public class GuiTextFieldGeneric extends TextFieldWidget
      * @param click ()
      * @return ()
      */
-    public boolean mouseClickedWrapper(Click click, boolean doubleClick)
+    public boolean mouseClickedWrapper(MouseButtonEvent click, boolean doubleClick)
     {
         return this.mouseClicked(click, doubleClick);
     }

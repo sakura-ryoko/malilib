@@ -1,9 +1,10 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.function.IntConsumer;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.MouseButtonEvent;
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.config.options.ConfigColor;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -17,7 +18,7 @@ import fi.dy.masa.malilib.util.data.Color4f;
 public class WidgetColorIndicator extends WidgetBase
 {
     protected final IConfigColor config;
-    protected final ImmutableList<String> hoverText;
+    protected final ImmutableList<@NotNull String> hoverText;
 
     public WidgetColorIndicator(int x, int y, int width, int height, Color4f color, IntConsumer consumer)
     {
@@ -35,7 +36,7 @@ public class WidgetColorIndicator extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
         GuiColorEditorHSV gui = new GuiColorEditorHSV(this.config, null, GuiUtils.getCurrentScreen());
         GuiBase.openGui(gui);

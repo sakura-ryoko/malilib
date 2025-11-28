@@ -1,28 +1,28 @@
 package fi.dy.masa.malilib.mixin.render;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.cursor.Cursor;
+import com.mojang.blaze3d.platform.cursor.CursorType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.render.state.GuiRenderState;
-import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.SpriteHolder;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.resources.model.MaterialSet;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(value = DrawContext.class)
+@Mixin(value = GuiGraphics.class)
 public interface IMixinDrawContext
 {
 //    @Accessor("vertexConsumers")
 //    VertexConsumerProvider.Immediate malilib_getVertexConsumers();
 
-	@Accessor("client")
-	MinecraftClient malilib_getClient();
+	@Accessor("minecraft")
+	Minecraft malilib_getClient();
 
-    @Accessor("state")
+    @Accessor("guiRenderState")
     GuiRenderState malilib_getRenderState();
 
     @Accessor("scissorStack")
-    DrawContext.ScissorStack malilib_getScissorStack();
+    GuiGraphics.ScissorStack malilib_getScissorStack();
 
 	@Accessor("mouseX")
 	int malilib_getMouseX();
@@ -30,12 +30,12 @@ public interface IMixinDrawContext
 	@Accessor("mouseY")
 	int malilib_getMouseY();
 
-	@Accessor("cursor")
-	Cursor malilib_getCursor();
+	@Accessor("pendingCursor")
+	CursorType malilib_getCursor();
 
-	@Accessor("spriteHolder")
-	SpriteHolder malilib_getSpriteHolder();
+	@Accessor("materials")
+	MaterialSet malilib_getSpriteHolder();
 
-	@Accessor("spriteAtlasTexture")
-	SpriteAtlasTexture malilib_getSpriteAtlas();
+	@Accessor("guiSprites")
+	TextureAtlas malilib_getSpriteAtlas();
 }

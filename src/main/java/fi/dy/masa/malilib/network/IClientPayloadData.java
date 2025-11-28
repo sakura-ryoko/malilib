@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.network;
 
 import javax.annotation.Nullable;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 
 /**
  * A Helper Interface for designing a Payload Encoder/Decoder class with some common functions
@@ -43,13 +43,13 @@ public interface IClientPayloadData
      * @param <T> (The implementation class)
      */
     @Nullable
-    static <T extends IClientPayloadData> T fromPacket(PacketByteBuf input) { return null; }
+    static <T extends IClientPayloadData> T fromPacket(FriendlyByteBuf input) { return null; }
 
     /**
      * PacketByteBuf Encoder -- How this Data is converted TO a PacketByteBuf
      * @param output (A new Pooled Buffer containing this implementation's data)
      */
-    void toPacket(PacketByteBuf output);
+    void toPacket(FriendlyByteBuf output);
 
     /**
      * Clear / Reset any values that need to be cleared

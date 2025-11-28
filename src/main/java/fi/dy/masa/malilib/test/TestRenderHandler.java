@@ -1,69 +1,49 @@
 package fi.dy.masa.malilib.test;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.CrafterBlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.BufferBuilderStorage;
-import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.CopperGolemEntity;
-import net.minecraft.entity.passive.HappyGhastEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.passive.WolfEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EnderChestInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.text.Text;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.profiler.Profilers;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
-import fi.dy.masa.malilib.MaLiLib;
+
+import com.mojang.blaze3d.pipeline.RenderTarget;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.PlayerEnderChestContainer;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MapItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
-import fi.dy.masa.malilib.util.game.BlockUtils;
-import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.time.TickUtils;
@@ -84,7 +64,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderGameOverlayPostAdvanced(GuiContext ctx, float partialTicks, Profiler profiler)
+    public void onRenderGameOverlayPostAdvanced(GuiContext ctx, float partialTicks, ProfilerFiller profiler)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -173,7 +153,7 @@ public class TestRenderHandler implements IRenderer
 //    }
 
     @Override
-    public void onRenderWorldPreWeather(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, BufferBuilderStorage buffers, Profiler profiler)
+    public void onRenderWorldPreWeather(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, RenderBuffers buffers, ProfilerFiller profiler)
     {
 //        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
 //        {
@@ -196,11 +176,11 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderWorldLastAdvanced(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, BufferBuilderStorage buffers, Profiler profiler)
+    public void onRenderWorldLastAdvanced(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, RenderBuffers buffers, ProfilerFiller profiler)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
-            MinecraftClient mc = MinecraftClient.getInstance();
+            Minecraft mc = Minecraft.getInstance();
 
             if (mc.player != null)
             {
@@ -211,10 +191,10 @@ public class TestRenderHandler implements IRenderer
                     TestSelector.INSTANCE.render(posMatrix, projMatrix, profiler, mc);
                 }
 
-                profiler.swap(MaLiLibReference.MOD_ID + "_targeting_overlay");
+                profiler.popPush(MaLiLibReference.MOD_ID + "_targeting_overlay");
                 this.renderTargetingOverlay(posMatrix, mc);
 
-                profiler.swap(MaLiLibReference.MOD_ID + "_test_walls");
+                profiler.popPush(MaLiLibReference.MOD_ID + "_test_walls");
 
                 if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
                 {
@@ -232,7 +212,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
+    public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -247,7 +227,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
+    public void onRenderTooltipComponentInsertMiddle(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -256,7 +236,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, Consumer<Text> list)
+    public void onRenderTooltipComponentInsertLast(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -268,9 +248,9 @@ public class TestRenderHandler implements IRenderer
     public void onRenderTooltipLast(GuiContext ctx, ItemStack stack, int x, int y)
     {
         Item item = stack.getItem();
-        Profiler profiler = Profilers.get();
+        ProfilerFiller profiler = Profiler.get();
 
-        if (item instanceof FilledMapItem)
+        if (item instanceof MapItem)
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
@@ -279,7 +259,7 @@ public class TestRenderHandler implements IRenderer
                 profiler.pop();
             }
         }
-        else if (stack.getComponents().contains(DataComponentTypes.CONTAINER) && InventoryUtils.shulkerBoxHasItems(stack))
+        else if (stack.getComponents().has(DataComponents.CONTAINER) && InventoryUtils.shulkerBoxHasItems(stack))
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
@@ -288,7 +268,7 @@ public class TestRenderHandler implements IRenderer
                 profiler.pop();
             }
         }
-        else if (stack.getComponents().contains(DataComponentTypes.BUNDLE_CONTENTS) && InventoryUtils.bundleHasItems(stack))
+        else if (stack.getComponents().has(DataComponents.BUNDLE_CONTENTS) && InventoryUtils.bundleHasItems(stack))
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
@@ -297,30 +277,30 @@ public class TestRenderHandler implements IRenderer
                 profiler.pop();
             }
         }
-        else if (stack.isOf(Items.ENDER_CHEST))
+        else if (stack.is(Items.ENDER_CHEST))
         {
             if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() && GuiBase.isShiftDown())
             {
-                MinecraftClient mc = MinecraftClient.getInstance();
-                World world = WorldUtils.getBestWorld(mc);
+                Minecraft mc = Minecraft.getInstance();
+                Level world = WorldUtils.getBestWorld(mc);
 
                 if (mc.player == null || world == null)
                 {
                     return;
                 }
 
-                PlayerEntity player = world.getPlayerByUuid(mc.player.getUuid());
+                Player player = world.getPlayerByUUID(mc.player.getUUID());
 
                 if (player != null)
                 {
                     Pair<Entity, CompoundData> pair = TestDataSyncer.getInstance().requestEntity(world, player.getId());
-                    EnderChestInventory inv;
+                    PlayerEnderChestContainer inv;
 
                     if (pair != null && pair.getRight() != null && pair.getRight().contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
                     {
-                        inv = InventoryUtils.getPlayerEnderItemsFromData(pair.getRight(), world.getRegistryManager());
+                        inv = InventoryUtils.getPlayerEnderItemsFromData(pair.getRight(), world.registryAccess());
                     }
-                    else if (pair != null && pair.getLeft() instanceof PlayerEntity pe && !pe.getEnderChestInventory().isEmpty())
+                    else if (pair != null && pair.getLeft() instanceof Player pe && !pe.getEnderChestInventory().isEmpty())
                     {
                         inv = pe.getEnderChestInventory();
                     }
@@ -334,8 +314,8 @@ public class TestRenderHandler implements IRenderer
                     {
                         try (NbtInventory nbtInv = NbtInventory.fromInventory(inv))
                         {
-                            NbtList list = nbtInv.toNbtList(world.getRegistryManager());
-                            NbtCompound nbt = new NbtCompound();
+                            ListTag list = nbtInv.toNbtList(world.registryAccess());
+                            CompoundTag nbt = new CompoundTag();
 
                             nbt.put(NbtKeys.ENDER_ITEMS, list);
                             RenderUtils.renderNbtItemsPreview(ctx, stack, nbt, x, y, false);
@@ -353,24 +333,24 @@ public class TestRenderHandler implements IRenderer
         return () -> MaLiLibReference.MOD_ID + "_test";
     }
 
-    private void renderTargetingOverlay(Matrix4f posMatrix, MinecraftClient mc)
+    private void renderTargetingOverlay(Matrix4f posMatrix, Minecraft mc)
     {
         Entity entity = mc.getCameraEntity();
 
         if (entity != null &&
-            mc.crosshairTarget != null &&
-            mc.crosshairTarget.getType() == HitResult.Type.BLOCK &&
+            mc.hitResult != null &&
+            mc.hitResult.getType() == HitResult.Type.BLOCK &&
             MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
             GuiBase.isCtrlDown())
         {
-            BlockHitResult hitResult = (BlockHitResult) mc.crosshairTarget;
+            BlockHitResult hitResult = (BlockHitResult) mc.hitResult;
             Color4f color = Color4f.fromColor(StringUtils.getColor("#C03030F0", 0));
 
             RenderUtils.renderBlockTargetingOverlay(
                     entity,
                     hitResult.getBlockPos(),
-                    hitResult.getSide(),
-                    hitResult.getPos(),
+                    hitResult.getDirection(),
+                    hitResult.getLocation(),
                     color, posMatrix);
         }
     }

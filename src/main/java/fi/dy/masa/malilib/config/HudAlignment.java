@@ -1,14 +1,16 @@
 package fi.dy.masa.malilib.config;
 
 import javax.annotation.Nonnull;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.util.StringUtils;
 
-public enum HudAlignment implements IConfigOptionListEntry, StringIdentifiable
+public enum HudAlignment implements IConfigOptionListEntry, StringRepresentable
 {
     TOP_LEFT        ("top_left",        "malilib.label.alignment.top_left"),
     TOP_RIGHT       ("top_right",       "malilib.label.alignment.top_right"),
@@ -16,17 +18,17 @@ public enum HudAlignment implements IConfigOptionListEntry, StringIdentifiable
     BOTTOM_RIGHT    ("bottom_right",    "malilib.label.alignment.bottom_right"),
     CENTER          ("center",          "malilib.label.alignment.center");
 
-    public static final StringIdentifiable.EnumCodec<HudAlignment> CODEC = StringIdentifiable.createCodec(HudAlignment::values);
-    public static final PacketCodec<ByteBuf, HudAlignment> PACKET_CODEC = PacketCodecs.STRING.xmap(HudAlignment::fromStringStatic, HudAlignment::asString);
-    public static final ImmutableList<HudAlignment> VALUES = ImmutableList.copyOf(values());
+    public static final StringRepresentable.EnumCodec<@NotNull HudAlignment> CODEC = StringRepresentable.fromEnum(HudAlignment::values);
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull HudAlignment> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(HudAlignment::fromStringStatic, HudAlignment::getSerializedName);
+    public static final ImmutableList<@NotNull HudAlignment> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
-    private final String unlocName;
+    private final String unlockName;
 
     HudAlignment(String configString, String unlocName)
     {
         this.configString = configString;
-        this.unlocName = unlocName;
+        this.unlockName = unlocName;
     }
 
     @Override
@@ -38,7 +40,7 @@ public enum HudAlignment implements IConfigOptionListEntry, StringIdentifiable
     @Override
     public String getDisplayName()
     {
-        return StringUtils.translate(this.unlocName);
+        return StringUtils.translate(this.unlockName);
     }
 
     @Override
@@ -84,7 +86,7 @@ public enum HudAlignment implements IConfigOptionListEntry, StringIdentifiable
     }
 
     @Override
-    public @Nonnull String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.configString;
     }

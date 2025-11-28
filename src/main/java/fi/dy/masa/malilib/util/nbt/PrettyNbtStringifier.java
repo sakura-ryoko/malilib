@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
@@ -38,7 +38,7 @@ public class PrettyNbtStringifier extends BaseNbtStringifier
         this.printTagType = printTagType;
     }
 
-    public List<String> getNbtLines(NbtCompound tag)
+    public List<String> getNbtLines(CompoundTag tag)
     {
         this.lines = new ArrayList<>();
         this.setIndentationLevel(0);
@@ -78,14 +78,14 @@ public class PrettyNbtStringifier extends BaseNbtStringifier
     }
 
     @Override
-    protected void appendPrimitive(String tagName, NbtElement tag)
+    protected void appendPrimitive(String tagName, Tag tag)
     {
         String value = this.getFormattedPrimitiveString(tag);
         String name = this.getFormattedTagName(tagName);
 
         if (this.printTagType)
         {
-            String tagType = tag.getNbtType().getCommandFeedbackName();
+            String tagType = tag.getType().getPrettyName();
             this.addIndentedLine(String.format("[%s] %s: %s", tagType, name, value));
         }
         else if (StringUtils.isBlank(name) == false)
@@ -99,9 +99,9 @@ public class PrettyNbtStringifier extends BaseNbtStringifier
     }
 
     @Override
-    protected void appendCompound(String tagName, NbtCompound compound)
+    protected void appendCompound(String tagName, CompoundTag compound)
     {
-        List<String> keys = Lists.newArrayList(compound.getKeys());
+        List<String> keys = Lists.newArrayList(compound.keySet());
         Collections.sort(keys);
 
         String name = this.getFormattedTagName(tagName);
@@ -132,10 +132,10 @@ public class PrettyNbtStringifier extends BaseNbtStringifier
     }
 
     @Override
-    protected void appendList(String tagName, NbtList list)
+    protected void appendList(String tagName, ListTag list)
     {
         final int size = list.size();
-        String containedTypeName = size > 0 ? list.getFirst().getNbtType().getCommandFeedbackName() : "?";
+        String containedTypeName = size > 0 ? list.getFirst().getType().getPrettyName() : "?";
         String name = this.getFormattedTagName(tagName);
 
         if (this.printTagType)

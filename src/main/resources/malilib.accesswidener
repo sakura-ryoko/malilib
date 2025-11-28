@@ -1,6 +1,6 @@
 accessWidener v2 named
-extendable class net/minecraft/client/gui/DrawContext
-accessible class net/minecraft/client/gui/DrawContext$ScissorStack
-accessible field net/minecraft/client/gui/DrawContext scissorStack Lnet/minecraft/client/gui/DrawContext$ScissorStack;
-accessible method net/minecraft/client/gui/hud/debug/DebugHudEntries register (Lnet/minecraft/util/Identifier;Lnet/minecraft/client/gui/hud/debug/DebugHudEntry;)Lnet/minecraft/util/Identifier;
-accessible field net/minecraft/client/gui/hud/debug/DebugHudEntries ENTRIES Ljava/util/Map;
+extendable class net/minecraft/client/gui/GuiGraphics
+transitive-accessible class net/minecraft/client/gui/GuiGraphics$ScissorStack
+transitive-accessible field net/minecraft/client/gui/GuiGraphics scissorStack Lnet/minecraft/client/gui/GuiGraphics$ScissorStack;
+transitive-accessible field net/minecraft/client/gui/components/debug/DebugScreenEntries ENTRIES_BY_ID Ljava/util/Map;
+transitive-accessible method net/minecraft/client/gui/components/debug/DebugScreenEntries register (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/gui/components/debug/DebugScreenEntry;)Lnet/minecraft/resources/Identifier;

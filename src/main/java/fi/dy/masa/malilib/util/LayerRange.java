@@ -1,17 +1,18 @@
 package fi.dy.masa.malilib.util;
 
 import javax.annotation.Nullable;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Direction.Axis;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Direction.Axis;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
@@ -34,37 +35,37 @@ public class LayerRange
                     PrimitiveCodec.BOOL.fieldOf("hotkey_range_max").forGetter(get -> get.hotkeyRangeMax)
             ).apply(inst, LayerRange::new)
     );
-    public static final PacketCodec<ByteBuf, LayerRange> PACKET_CODEC = new PacketCodec<ByteBuf, LayerRange>()
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull LayerRange> PACKET_CODEC = new StreamCodec<>()
     {
-        @Override
-        public void encode(ByteBuf buf, LayerRange value)
-        {
-            LayerMode.PACKET_CODEC.encode(buf, value.layerMode);
-            PacketCodecs.STRING.encode(buf, value.axis.asString());
-            PacketCodecs.INTEGER.encode(buf, value.layerSingle);
-            PacketCodecs.INTEGER.encode(buf, value.layerAbove);
-            PacketCodecs.INTEGER.encode(buf, value.layerBelow);
-            PacketCodecs.INTEGER.encode(buf, value.layerRangeMin);
-            PacketCodecs.INTEGER.encode(buf, value.layerRangeMax);
-            PacketCodecs.BOOLEAN.encode(buf, value.hotkeyRangeMin);
-            PacketCodecs.BOOLEAN.encode(buf, value.hotkeyRangeMax);
-        }
+	    @Override
+	    public void encode(ByteBuf buf, LayerRange value)
+	    {
+		    LayerMode.PACKET_CODEC.encode(buf, value.layerMode);
+		    ByteBufCodecs.STRING_UTF8.encode(buf, value.axis.getSerializedName());
+		    ByteBufCodecs.INT.encode(buf, value.layerSingle);
+		    ByteBufCodecs.INT.encode(buf, value.layerAbove);
+		    ByteBufCodecs.INT.encode(buf, value.layerBelow);
+		    ByteBufCodecs.INT.encode(buf, value.layerRangeMin);
+		    ByteBufCodecs.INT.encode(buf, value.layerRangeMax);
+		    ByteBufCodecs.BOOL.encode(buf, value.hotkeyRangeMin);
+		    ByteBufCodecs.BOOL.encode(buf, value.hotkeyRangeMax);
+	    }
 
-        @Override
-        public LayerRange decode(ByteBuf buf)
-        {
-            return new LayerRange(
-                    LayerMode.PACKET_CODEC.decode(buf),
-                    Direction.Axis.fromId(PacketCodecs.STRING.decode(buf)),
-                    PacketCodecs.INTEGER.decode(buf),
-                    PacketCodecs.INTEGER.decode(buf),
-                    PacketCodecs.INTEGER.decode(buf),
-                    PacketCodecs.INTEGER.decode(buf),
-                    PacketCodecs.INTEGER.decode(buf),
-                    PacketCodecs.BOOLEAN.decode(buf),
-                    PacketCodecs.BOOLEAN.decode(buf)
-            );
-        }
+	    @Override
+	    public LayerRange decode(ByteBuf buf)
+	    {
+		    return new LayerRange(
+				    LayerMode.PACKET_CODEC.decode(buf),
+				    Direction.Axis.byName(ByteBufCodecs.STRING_UTF8.decode(buf)),
+				    ByteBufCodecs.INT.decode(buf),
+				    ByteBufCodecs.INT.decode(buf),
+				    ByteBufCodecs.INT.decode(buf),
+				    ByteBufCodecs.INT.decode(buf),
+				    ByteBufCodecs.INT.decode(buf),
+				    ByteBufCodecs.BOOL.decode(buf),
+				    ByteBufCodecs.BOOL.decode(buf)
+		    );
+	    }
     };
     protected IRangeChangeListener refresher;
     protected LayerMode layerMode = LayerMode.ALL;
@@ -294,9 +295,9 @@ public class LayerRange
     {
         switch (this.axis)
         {
-            case X: return MathHelper.floor(entity.getX());
-            case Y: return MathHelper.floor(entity.getY());
-            case Z: return MathHelper.floor(entity.getZ());
+            case X: return Mth.floor(entity.getX());
+            case Y: return Mth.floor(entity.getY());
+            case Z: return Mth.floor(entity.getZ());
         }
 
         return 0;
@@ -533,7 +534,7 @@ public class LayerRange
 
     protected int getWorldLimitsClampedValue(int value, IntBoundingBox limits)
     {
-        return MathHelper.clamp(value,
+        return Mth.clamp(value,
                                 limits.getMinValueForAxis(this.axis),
                                 limits.getMaxValueForAxis(this.axis));
     }
@@ -545,9 +546,9 @@ public class LayerRange
 
     public boolean isPositionWithinRange(long posLong)
     {
-        int x = BlockPos.unpackLongX(posLong);
-        int y = BlockPos.unpackLongY(posLong);
-        int z = BlockPos.unpackLongZ(posLong);
+        int x = BlockPos.getX(posLong);
+        int y = BlockPos.getY(posLong);
+        int z = BlockPos.getZ(posLong);
 
         return this.isPositionWithinRange(x, y, z);
     }
@@ -679,7 +680,7 @@ public class LayerRange
     {
         if (this.axis == axis)
         {
-            return MathHelper.clamp(value, this.getLayerMin(), this.getLayerMax());
+            return Mth.clamp(value, this.getLayerMin(), this.getLayerMax());
         }
 
         //return MathHelper.clamp(value, limits.getMinValueForAxis(axis), limits.getMaxValueForAxis(axis));
@@ -724,12 +725,12 @@ public class LayerRange
      * which is expanded by the expandAmount (if possible) in both
      * directions on the axis that this LayerRange is set to.
      */
-    public IntBoundingBox getExpandedBox(World world, int expandAmount)
+    public IntBoundingBox getExpandedBox(Level world, int expandAmount)
     {
         int worldMinH = -30000000;
         int worldMaxH =  30000000;
-        int worldMinY = world != null ? world.getBottomY() : -64;
-        int worldMaxY = world != null ? world.getTopYInclusive() : 319;
+        int worldMinY = world != null ? world.getMinY() : -64;
+        int worldMaxY = world != null ? world.getMaxY() : 319;
         int minX = worldMinH;
         int minY = worldMinY;
         int minZ = worldMinH;
@@ -824,7 +825,7 @@ public class LayerRange
     public void fromJson(JsonObject obj)
     {
         this.layerMode = LayerMode.fromStringStatic(JsonUtils.getString(obj, "mode"));
-        this.axis = Direction.Axis.fromId(JsonUtils.getString(obj, "axis"));
+        this.axis = Direction.Axis.byName(JsonUtils.getString(obj, "axis"));
         if (this.axis == null) { this.axis = Direction.Axis.Y; }
 
         this.layerSingle = JsonUtils.getInteger(obj, "layer_single");

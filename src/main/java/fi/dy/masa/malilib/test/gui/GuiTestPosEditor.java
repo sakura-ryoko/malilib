@@ -2,10 +2,8 @@ package fi.dy.masa.malilib.test.gui;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.ICoordinateValueModifier;
@@ -46,19 +44,19 @@ public class GuiTestPosEditor extends GuiBase
 
 	public static class TestVec3dSupplier
 	{
-		private Vec3d pos;
+		private Vec3 pos;
 
 		public TestVec3dSupplier()
 		{
-			this.pos = Vec3d.ZERO;
+			this.pos = Vec3.ZERO;
 		}
 
-		public Vec3d get()
+		public Vec3 get()
 		{
 			return this.pos;
 		}
 
-		public void set(Vec3d pos)
+		public void set(Vec3 pos)
 		{
 			this.pos = pos;
 			this.debug();
@@ -76,7 +74,7 @@ public class GuiTestPosEditor extends GuiBase
 
 		public TestBlockPosSupplier()
 		{
-			this.pos = BlockPos.ORIGIN;
+			this.pos = BlockPos.ZERO;
 		}
 
 		public BlockPos get()
@@ -96,7 +94,7 @@ public class GuiTestPosEditor extends GuiBase
 		}
 	}
 
-	public record TestVec3dEditor(Supplier<Vec3d> supplier, Consumer<Vec3d> consumer, GuiTestPosEditor gui) implements ICoordinateValueModifier
+	public record TestVec3dEditor(Supplier<Vec3> supplier, Consumer<Vec3> consumer, GuiTestPosEditor gui) implements ICoordinateValueModifier
 	{
 		@Override
 		public boolean modifyValue(PositionUtils.CoordinateType type, int amount)

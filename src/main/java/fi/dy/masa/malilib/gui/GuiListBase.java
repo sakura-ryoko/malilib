@@ -1,11 +1,9 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
@@ -91,7 +89,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onMouseClicked(Click click, boolean doubleClick)
+    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
         if (super.onMouseClicked(click, doubleClick))
         {
@@ -102,7 +100,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onMouseReleased(Click click)
+    public boolean onMouseReleased(MouseButtonEvent click)
     {
         if (super.onMouseReleased(click))
         {
@@ -124,7 +122,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         // Try to handle everything except ESC in the parent first
         if (input.key() != KeyCodes.KEY_ESCAPE && super.onKeyTyped(input))
@@ -138,16 +136,11 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
         }
 
         // If the list widget or its sub widgets didn't consume the ESC, then send that to the parent (to close the GUI)
-        if (input.key() == KeyCodes.KEY_ESCAPE && super.onKeyTyped(input))
-        {
-            return true;
-        }
-
-        return false;
+	    return input.key() == KeyCodes.KEY_ESCAPE && super.onKeyTyped(input);
     }
 
     @Override
-    public boolean onCharTyped(CharInput input)
+    public boolean onCharTyped(CharacterEvent input)
     {
         // Try to handle everything except ESC in the parent first
         if (super.onCharTyped(input))

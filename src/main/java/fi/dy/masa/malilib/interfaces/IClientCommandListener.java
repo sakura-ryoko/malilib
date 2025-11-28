@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.interfaces;
 
 import java.util.List;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public interface IClientCommandListener
 {
@@ -17,5 +17,5 @@ public interface IClientCommandListener
      * return if it should cancel further processing.
      * @return (True|False)
      */
-    boolean execute(List<String> args, MinecraftClient mc);
+    boolean execute(List<String> args, Minecraft mc);
 }

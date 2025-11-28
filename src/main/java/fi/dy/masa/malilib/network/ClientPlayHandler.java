@@ -1,17 +1,17 @@
 package fi.dy.masa.malilib.network;
 
 import com.google.common.collect.ArrayListMultimap;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
  * The Client Network Play handler
  * @param <T> (Payload)
  */
-public class ClientPlayHandler<T extends CustomPayload> implements IClientPlayHandler
+public class ClientPlayHandler<T extends CustomPacketPayload> implements IClientPlayHandler
 {
-    private static final ClientPlayHandler<CustomPayload> INSTANCE = new ClientPlayHandler<>();
+    private static final ClientPlayHandler<CustomPacketPayload> INSTANCE = new ClientPlayHandler<>();
     private final ArrayListMultimap<Identifier, IPluginClientPlayHandler<T>> handlers = ArrayListMultimap.create();
     public static IClientPlayHandler getInstance()
     {
@@ -22,7 +22,7 @@ public class ClientPlayHandler<T extends CustomPayload> implements IClientPlayHa
 
     @Override
     @SuppressWarnings("unchecked")
-    public <P extends CustomPayload> void registerClientPlayHandler(IPluginClientPlayHandler<P> handler)
+    public <P extends CustomPacketPayload> void registerClientPlayHandler(IPluginClientPlayHandler<P> handler)
     {
         Identifier channel = handler.getPayloadChannel();
 
@@ -33,7 +33,7 @@ public class ClientPlayHandler<T extends CustomPayload> implements IClientPlayHa
     }
 
     @Override
-    public <P extends CustomPayload> void unregisterClientPlayHandler(IPluginClientPlayHandler<P> handler)
+    public <P extends CustomPacketPayload> void unregisterClientPlayHandler(IPluginClientPlayHandler<P> handler)
     {
         Identifier channel = handler.getPayloadChannel();
 

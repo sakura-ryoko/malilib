@@ -2,7 +2,7 @@ package fi.dy.masa.malilib.interoperation;
 
 import java.util.ArrayList;
 import javax.annotation.Nullable;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.ApiStatus;
 
 /**

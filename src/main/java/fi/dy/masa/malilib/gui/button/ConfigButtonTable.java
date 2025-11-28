@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.gui.button;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.config.options.table.type.*;
@@ -13,9 +13,6 @@ import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-
-import net.minecraft.client.gui.Click;
-
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +36,7 @@ public class ConfigButtonTable extends ButtonGeneric
 	}
 
 	@Override
-	protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+	protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
 	{
 		super.onMouseClickedImpl(click, doubleClick);
 

@@ -1,19 +1,19 @@
 package fi.dy.masa.malilib.mixin.input;
 
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(KeyBinding.class)
+@Mixin(KeyMapping.class)
 public interface IMixinKeyBinding
 {
 	@Accessor("defaultKey")
-	InputUtil.Key malilib$getDefaultKey();
+	InputConstants.Key malilib$getDefaultKey();
 
-	@Accessor("boundKey")
-	InputUtil.Key malilib$getBoundKey();
+	@Accessor("key")
+	InputConstants.Key malilib$getBoundKey();
 
 	@Accessor("category")
-	KeyBinding.Category malilib$getCategory();
+	KeyMapping.Category malilib$getCategory();
 }

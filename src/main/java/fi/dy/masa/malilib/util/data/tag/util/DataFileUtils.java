@@ -19,8 +19,8 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtSizeTracker;
 
 public class DataFileUtils
 {
@@ -131,10 +131,10 @@ public class DataFileUtils
 
 	public static CompoundData readFromFileUsingNbtIo(@Nonnull Path file)
 	{
-		return readFromFileUsingNbtIo(file, NbtSizeTracker.ofUnlimitedBytes());
+		return readFromFileUsingNbtIo(file, NbtAccounter.unlimitedHeap());
 	}
 
-	public static CompoundData readFromFileUsingNbtIo(@Nonnull Path file, NbtSizeTracker tracker)
+	public static CompoundData readFromFileUsingNbtIo(@Nonnull Path file, NbtAccounter tracker)
 	{
 		if (!Files.exists(file) || !Files.isReadable(file))
 		{

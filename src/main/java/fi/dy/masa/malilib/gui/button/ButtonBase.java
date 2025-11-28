@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.MouseInput;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.resources.Identifier;
+import net.minecraft.sounds.SoundEvents;
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.render.GuiContext;
@@ -19,12 +20,12 @@ import fi.dy.masa.malilib.util.StringUtils;
 
 public abstract class ButtonBase extends WidgetBase
 {
-    protected static final Identifier BUTTON_TEXTURE = Identifier.ofVanilla("widget/button");
-    protected static final Identifier BUTTON_DISABLE_TEXTURE = Identifier.ofVanilla("widget/button_disabled");
-    protected static final Identifier BUTTON_HOVER_TEXTURE = Identifier.ofVanilla("widget/button_highlighted");
+    protected static final Identifier BUTTON_TEXTURE = Identifier.withDefaultNamespace("widget/button");
+    protected static final Identifier BUTTON_DISABLE_TEXTURE = Identifier.withDefaultNamespace("widget/button_disabled");
+    protected static final Identifier BUTTON_HOVER_TEXTURE = Identifier.withDefaultNamespace("widget/button_highlighted");
 
     protected final List<String> hoverStrings = new ArrayList<>();
-    protected final ImmutableList<String> hoverHelp;
+    protected final ImmutableList<@NotNull String> hoverHelp;
     protected String displayString;
     protected boolean enabled = true;
     protected boolean visible = true;
@@ -77,13 +78,13 @@ public abstract class ButtonBase extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
-        this.mc.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+        this.mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 
         if (this.actionListener != null)
         {
-            this.actionListener.actionPerformedWithButton(this, click.getKeycode());
+            this.actionListener.actionPerformedWithButton(this, click.input());
         }
 
         return true;
@@ -93,7 +94,7 @@ public abstract class ButtonBase extends WidgetBase
     public boolean onMouseScrolledImpl(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         int mouseButton = verticalAmount < 0 ? 1 : 0;
-        return this.onMouseClickedImpl(new Click(mouseX, mouseY, new MouseInput(mouseButton, -1)), false);
+        return this.onMouseClickedImpl(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(mouseButton, -1)), false);
     }
 
     @Override

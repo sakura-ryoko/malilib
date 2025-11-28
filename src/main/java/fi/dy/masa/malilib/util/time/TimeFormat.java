@@ -2,11 +2,13 @@ package fi.dy.masa.malilib.util.time;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.time.formatter.TimeFmt;
@@ -14,7 +16,7 @@ import fi.dy.masa.malilib.util.time.formatter.TimeFmt;
 /**
  * Ported from CoreLib by Sakura Ryoko
  */
-public enum TimeFormat implements IConfigOptionListEntry, StringIdentifiable
+public enum TimeFormat implements IConfigOptionListEntry, StringRepresentable
 {
     REGULAR     ("regular",    TimeFmtType.REGULAR,     "malilib.gui.label.time_format.regular"),
     ISO_LOCAL   ("iso_local",  TimeFmtType.ISO_LOCAL,   "malilib.gui.label.time_format.iso_local"),
@@ -28,9 +30,9 @@ public enum TimeFormat implements IConfigOptionListEntry, StringIdentifiable
     DATE_ONLY   ("date_only",  TimeFmtType.DATE_ONLY,   "malilib.gui.label.time_format.date_only"),
     ;
 
-    public static final StringIdentifiable.EnumCodec<TimeFormat> CODEC = StringIdentifiable.createCodec(TimeFormat::values);
-    public static final PacketCodec<ByteBuf, TimeFormat> PACKET_CODEC = PacketCodecs.STRING.xmap(TimeFormat::fromStringStatic, TimeFormat::asString);
-    public static final ImmutableList<TimeFormat> VALUES = ImmutableList.copyOf(values());
+    public static final StringRepresentable.EnumCodec<@NotNull TimeFormat> CODEC = StringRepresentable.fromEnum(TimeFormat::values);
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull TimeFormat> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(TimeFormat::fromStringStatic, TimeFormat::getSerializedName);
+    public static final ImmutableList<@NotNull TimeFormat> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
     private final TimeFmtType<?> type;
@@ -44,7 +46,7 @@ public enum TimeFormat implements IConfigOptionListEntry, StringIdentifiable
     }
 
     @Override
-    public @Nonnull String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.configString;
     }

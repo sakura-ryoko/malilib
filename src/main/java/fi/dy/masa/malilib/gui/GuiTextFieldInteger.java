@@ -1,8 +1,7 @@
 package fi.dy.masa.malilib.gui;
 
 import java.util.regex.Pattern;
-
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.Font;
 
 public class GuiTextFieldInteger extends GuiTextFieldGeneric
 {
@@ -10,12 +9,12 @@ public class GuiTextFieldInteger extends GuiTextFieldGeneric
     private static final Pattern PATTERN_NUMBER = Pattern.compile("-?[0-9]*");
 //    private static final Pattern PATTERN_NUMBER = Pattern.compile("^\\b\\d[\\d,.' ]*\\b");
 
-    public GuiTextFieldInteger(int x, int y, int width, int height, TextRenderer fontRenderer)
+    public GuiTextFieldInteger(int x, int y, int width, int height, Font fontRenderer)
     {
         super(x, y, width, height, fontRenderer);
 
-        this.setTextPredicate(input -> input.isEmpty() || PATTERN_NUMBER.matcher(input).matches());
-		this.setChangedListener(this::onChanged);
+        this.setFilter(input -> input.isEmpty() || PATTERN_NUMBER.matcher(input).matches());
+		this.setResponder(this::onValueChange);
     }
 
 	protected boolean testInteger(String input)
@@ -30,7 +29,7 @@ public class GuiTextFieldInteger extends GuiTextFieldGeneric
 		return false;
 	}
 
-	protected void onChanged(String newText)
+	protected void onValueChange(String newText)
 	{
 		if (!this.testInteger(newText))
 		{

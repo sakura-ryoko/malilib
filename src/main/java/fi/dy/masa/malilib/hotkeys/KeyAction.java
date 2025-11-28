@@ -1,23 +1,23 @@
 package fi.dy.masa.malilib.hotkeys;
 
 import javax.annotation.Nonnull;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.util.StringRepresentable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-public enum KeyAction implements IConfigOptionListEntry, StringIdentifiable
+public enum KeyAction implements IConfigOptionListEntry, StringRepresentable
 {
     PRESS   ("press",   "malilib.label.key_action.press"),
     RELEASE ("release", "malilib.label.key_action.release"),
     BOTH    ("both",    "malilib.label.key_action.both");
 
-    public static final StringIdentifiable.EnumCodec<KeyAction> CODEC = StringIdentifiable.createCodec(KeyAction::values);
-    public static final PacketCodec<ByteBuf, KeyAction> PACKET_CODEC = PacketCodecs.STRING.xmap(KeyAction::fromStringStatic, KeyAction::asString);
+    public static final StringRepresentable.EnumCodec<@NotNull KeyAction> CODEC = StringRepresentable.fromEnum(KeyAction::values);
+    public static final StreamCodec<@NotNull ByteBuf, @NotNull KeyAction> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(KeyAction::fromStringStatic, KeyAction::getSerializedName);
     public static final ImmutableList<@NotNull KeyAction> VALUES = ImmutableList.copyOf(values());
 
     private final String configString;
@@ -30,7 +30,7 @@ public enum KeyAction implements IConfigOptionListEntry, StringIdentifiable
     }
 
     @Override
-    public @Nonnull String asString()
+    public @Nonnull String getSerializedName()
     {
         return this.configString;
     }

@@ -2,7 +2,7 @@ package fi.dy.masa.malilib.gui.button;
 
 import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiBase;
-import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.MouseButtonEvent;
 
 public class ConfigButtonBoolean extends ButtonGeneric
 {
@@ -17,7 +17,7 @@ public class ConfigButtonBoolean extends ButtonGeneric
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
         this.config.toggleBooleanValue();
         this.updateDisplayString();

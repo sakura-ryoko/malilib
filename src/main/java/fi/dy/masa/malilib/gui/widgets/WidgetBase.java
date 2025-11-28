@@ -3,17 +3,16 @@ package fi.dy.masa.malilib.gui.widgets;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 
 public abstract class WidgetBase
 {
-    protected final MinecraftClient mc;
-    protected final TextRenderer textRenderer;
+    protected final Minecraft mc;
+    protected final Font textRenderer;
     protected final int fontHeight;
     protected GuiContext guiContext;
     protected int x;
@@ -28,9 +27,9 @@ public abstract class WidgetBase
         this.y = y;
         this.width = width;
         this.height = height;
-        this.mc = MinecraftClient.getInstance();
-        this.textRenderer = this.mc.textRenderer;
-        this.fontHeight = this.textRenderer.fontHeight;
+        this.mc = Minecraft.getInstance();
+        this.textRenderer = this.mc.font;
+        this.fontHeight = this.textRenderer.lineHeight;
     }
 
     public int getX()
@@ -90,7 +89,7 @@ public abstract class WidgetBase
                mouseY >= this.y && mouseY < this.y + this.height;
     }
 
-    public boolean onMouseClicked(Click click, boolean doubleClick)
+    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
         if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
@@ -100,17 +99,17 @@ public abstract class WidgetBase
         return false;
     }
 
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
         return false;
     }
 
-    public void onMouseReleased(Click click)
+    public void onMouseReleased(MouseButtonEvent click)
     {
         this.onMouseReleasedImpl(click);
     }
 
-    public void onMouseReleasedImpl(Click click)
+    public void onMouseReleasedImpl(MouseButtonEvent click)
     {
     }
 
@@ -129,22 +128,22 @@ public abstract class WidgetBase
         return false;
     }
 
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         return this.onKeyTypedImpl(input);
     }
 
-    protected boolean onKeyTypedImpl(KeyInput input)
+    protected boolean onKeyTypedImpl(KeyEvent input)
     {
         return false;
     }
 
-    public boolean onCharTyped(CharInput input)
+    public boolean onCharTyped(CharacterEvent input)
     {
         return this.onCharTypedImpl(input);
     }
 
-    protected boolean onCharTypedImpl(CharInput input)
+    protected boolean onCharTypedImpl(CharacterEvent input)
     {
         return false;
     }
@@ -152,34 +151,34 @@ public abstract class WidgetBase
     /**
      * Returns true if this widget can be selected by clicking at the given point
      */
-    public boolean canSelectAt(Click click)
+    public boolean canSelectAt(MouseButtonEvent click)
     {
         return this.isMouseOver((int) click.x(), (int) click.y());
     }
 
     public int getStringWidth(String text)
     {
-        return this.textRenderer.getWidth(text);
+        return this.textRenderer.width(text);
     }
 
     public void drawString(GuiContext ctx, int x, int y, int color, String text)
     {
-	    ctx.drawText(this.textRenderer, text, x, y, color, false);
+	    ctx.drawString(this.textRenderer, text, x, y, color, false);
     }
 
     public void drawCenteredString(GuiContext ctx, int x, int y, int color, String text)
     {
-	    ctx.drawText(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
+	    ctx.drawString(this.textRenderer, text, x - this.getStringWidth(text) / 2, y, color, false);
     }
 
     public void drawStringWithShadow(GuiContext ctx, int x, int y, int color, String text)
     {
-	    ctx.drawTextWithShadow(this.textRenderer, text, x, y, color);
+	    ctx.drawString(this.textRenderer, text, x, y, color);
     }
 
     public void drawCenteredStringWithShadow(GuiContext ctx, int x, int y, int color, String text)
     {
-	    ctx.drawCenteredTextWithShadow(this.textRenderer, text, x, y, color);
+	    ctx.drawCenteredString(this.textRenderer, text, x, y, color);
     }
 
     public void drawBackgroundMask(GuiContext ctx)

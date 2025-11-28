@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.nio.file.Path;
 import java.util.Collections;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.Click;
+import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextInputFeedback;
 import fi.dy.masa.malilib.gui.LeftRight;
@@ -42,7 +42,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
         if (this.searchOpen == false)
         {

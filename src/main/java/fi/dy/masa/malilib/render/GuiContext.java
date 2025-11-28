@@ -6,25 +6,23 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.tuple.Pair;
-
+import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTextureView;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.GpuSampler;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.state.*;
-import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
-import net.minecraft.client.texture.ResourceTexture;
-import net.minecraft.client.texture.TextureSetup;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
@@ -37,9 +35,9 @@ import fi.dy.masa.malilib.util.WorldUtils;
  * -
  * When you need a GuiGraphics, you can just use this in its place and move on.
  */
-public class GuiContext extends DrawContext
+public class GuiContext extends GuiGraphics
 {
-	public GuiContext(MinecraftClient client, GuiRenderState state, int mouseX, int mouseY)
+	public GuiContext(Minecraft client, GuiRenderState state, int mouseX, int mouseY)
 	{
 		super(client, state, mouseX, mouseY);
 	}
@@ -49,7 +47,7 @@ public class GuiContext extends DrawContext
 	 * @param context ()
 	 * @return ()
 	 */
-	public static GuiContext fromGuiGraphics(DrawContext context)
+	public static GuiContext fromGuiGraphics(GuiGraphics context)
 	{
 		return new GuiContext(
 				((IMixinDrawContext) context).malilib_getClient(),
@@ -63,19 +61,19 @@ public class GuiContext extends DrawContext
 	 * Get as GuiGraphics
 	 * @return ()
 	 */
-	public DrawContext getGuiGraphics()
+	public GuiGraphics getGuiGraphics()
 	{
-		return (DrawContext) this;
+		return (GuiGraphics) this;
 	}
 
-	public MinecraftClient mc()
+	public Minecraft mc()
 	{
-		return MinecraftClient.getInstance();
+		return Minecraft.getInstance();
 	}
 
-	public TextRenderer textRenderer()
+	public Font fontRenderer()
 	{
-		return MinecraftClient.getInstance().textRenderer;
+		return Minecraft.getInstance().font;
 	}
 
 	/**
@@ -86,11 +84,11 @@ public class GuiContext extends DrawContext
 	public Pair<GpuTextureView, GpuSampler> bindTexture(@Nullable Identifier id)
 	{
 		if (id == null) return null;
-		ResourceTexture tex = (ResourceTexture) this.mc().getTextureManager().getTexture(id);
+		SimpleTexture tex = (SimpleTexture) this.mc().getTextureManager().getTexture(id);
 
 		if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTextureView() != null)
 		{
-			return Pair.of(tex.getGlTextureView(), tex.getSampler());
+			return Pair.of(tex.getTextureView(), tex.getSampler());
 		}
 
 		MaLiLib.LOGGER.error("bindTexture: Texture Result is null for texture [{}]", id.toString());
@@ -102,17 +100,17 @@ public class GuiContext extends DrawContext
 	 * @param stack ()
 	 * @return ()
 	 */
-	public List<Text> itemTooltips(ItemStack stack)
+	public List<Component> itemTooltips(ItemStack stack)
 	{
 //		return stack.getTooltip(ctx, mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
-		MinecraftClient mc = MinecraftClient.getInstance();
-		if (mc.world == null || mc.player == null) return List.of();
-		Item.TooltipContext ctx = Item.TooltipContext.create(WorldUtils.getBestWorld(mc));
-		TooltipDisplayComponent displayComp = stack.getOrDefault(DataComponentTypes.TOOLTIP_DISPLAY, TooltipDisplayComponent.DEFAULT);
-		List<Text> list = new ArrayList<>();
+		Minecraft mc = Minecraft.getInstance();
+		if (mc.level == null || mc.player == null) return List.of();
+		Item.TooltipContext ctx = Item.TooltipContext.of(WorldUtils.getBestWorld(mc));
+		TooltipDisplay displayComp = stack.getOrDefault(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.DEFAULT);
+		List<Component> list = new ArrayList<>();
 
-		list.add(stack.getFormattedName());
-		stack.appendTooltip(ctx, displayComp, mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC, list::add);
+		list.add(stack.getStyledHoverName());
+		stack.addDetailsToTooltip(ctx, displayComp, mc.player, mc.options.advancedItemTooltips ? TooltipFlag.ADVANCED : TooltipFlag.NORMAL, list::add);
 
 		return list;
 	}
@@ -121,61 +119,61 @@ public class GuiContext extends DrawContext
 	 * Add a Basic GUI Element
 	 * @param element ()
 	 */
-	public void addSimpleElement(SimpleGuiElementRenderState element)
+	public void addSimpleElement(GuiElementRenderState element)
 	{
-		((IMixinDrawContext) this).malilib_getRenderState().addSimpleElement(element);
+		((IMixinDrawContext) this).malilib_getRenderState().submitGuiElement(element);
 	}
 
 	/**
 	 * Add a Special GUI Element
 	 * @param specialElement ()
 	 */
-	public void addSpecialElement(SpecialGuiElementRenderState specialElement)
+	public void addSpecialElement(PictureInPictureRenderState specialElement)
 	{
-		((IMixinDrawContext) this).malilib_getRenderState().addSpecialElement(specialElement);
+		((IMixinDrawContext) this).malilib_getRenderState().submitPicturesInPictureState(specialElement);
 	}
 
 	/**
 	 * Add a Item GUI Element
 	 * @param itemElement ()
 	 */
-	public void addItemElement(ItemGuiElementRenderState itemElement)
+	public void addItemElement(GuiItemRenderState itemElement)
 	{
-		((IMixinDrawContext) this).malilib_getRenderState().addItem(itemElement);
+		((IMixinDrawContext) this).malilib_getRenderState().submitItem(itemElement);
 	}
 
 	/**
 	 * Add a Text GUI Element
 	 * @param textElement ()
 	 */
-	public void addTextElement(TextGuiElementRenderState textElement)
+	public void addTextElement(GuiTextRenderState textElement)
 	{
-		((IMixinDrawContext) this).malilib_getRenderState().addText(textElement);
+		((IMixinDrawContext) this).malilib_getRenderState().submitText(textElement);
 	}
 
 	/**
 	 * Add a 'prepared' Text Element
 	 * @param element ()
 	 */
-	public void addPreparedTextElement(SimpleGuiElementRenderState element)
+	public void addPreparedTextElement(GuiElementRenderState element)
 	{
-		((IMixinDrawContext) this).malilib_getRenderState().addPreparedTextElement(element);
+		((IMixinDrawContext) this).malilib_getRenderState().submitGlyphToCurrentLayer(element);
 	}
 
 	/**
 	 * Add a Textured Quad GUI Element
 	 * @param element ()
 	 */
-	public void addSimpleElementToCurrentLayer(TexturedQuadGuiElementRenderState element)
+	public void addSimpleElementToCurrentLayer(BlitRenderState element)
 	{
-		((IMixinDrawContext) this).malilib_getRenderState().addSimpleElementToCurrentLayer(element);
+		((IMixinDrawContext) this).malilib_getRenderState().submitBlitToCurrentLayer(element);
 	}
 
 	/**
 	 * Push the Scissor Stack
 	 * @param rect ()
 	 */
-	public void pushScissor(@Nonnull ScreenRect rect)
+	public void pushScissor(@Nonnull ScreenRectangle rect)
 	{
 		((IMixinDrawContext) this).malilib_getScissorStack().push(rect);
 	}
@@ -188,23 +186,23 @@ public class GuiContext extends DrawContext
 	 */
 	public boolean containsScissor(int x, int y)
 	{
-		return ((IMixinDrawContext) this).malilib_getScissorStack().contains(x, y);
+		return ((IMixinDrawContext) this).malilib_getScissorStack().containsPoint(x, y);
 	}
 
 	/**
 	 * Peek the last Scissor Stack
 	 * @return ()
 	 */
-	public ScreenRect peekLastScissor()
+	public ScreenRectangle peekLastScissor()
 	{
-		return ((IMixinDrawContext) this).malilib_getScissorStack().peekLast();
+		return ((IMixinDrawContext) this).malilib_getScissorStack().peek();
 	}
 
 	/**
 	 * Pop the last Scissor Stack
 	 * @return ()
 	 */
-	public ScreenRect popScissor()
+	public ScreenRectangle popScissor()
 	{
 		return ((IMixinDrawContext) this).malilib_getScissorStack().pop();
 	}
@@ -217,7 +215,7 @@ public class GuiContext extends DrawContext
 	 */
 	public TextureSetup setupTexture(Pair<GpuTextureView, GpuSampler> pair)
 	{
-		return TextureSetup.of(pair.getLeft(), pair.getRight());
+		return TextureSetup.singleTexture(pair.getLeft(), pair.getRight());
 	}
 
 	/**
@@ -230,7 +228,7 @@ public class GuiContext extends DrawContext
 	public TextureSetup setupTextureOrEmpty(@Nullable Identifier texture)
 	{
 		Pair<GpuTextureView, GpuSampler> pair = this.bindTexture(texture);
-		if (pair == null) return TextureSetup.empty();
+		if (pair == null) return TextureSetup.noTexture();
 		return setupTexture(pair);
 	}
 }

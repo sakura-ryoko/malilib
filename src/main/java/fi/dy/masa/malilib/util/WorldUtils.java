@@ -1,69 +1,72 @@
 package fi.dy.masa.malilib.util;
 
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.SectionPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.dimension.DimensionType;
 
 public class WorldUtils
 {
-    public static String getDimensionId(World world)
+    public static String getDimensionId(Level world)
     {
-        Identifier id = world.getRegistryKey().getValue();
+        Identifier id = world.dimension().identifier();
         return id != null ? id.getNamespace() + "_" + id.getPath() : "__fallback";
     }
 
     /**
      * Best name. Returns the integrated server world for the current dimension
      * in single player, otherwise just the client world.
-     * @param mc
-     * @return
+     * @param mc ()
+     * @return ()
      */
     @Nullable
-    public static World getBestWorld(MinecraftClient mc)
+    public static Level getBestWorld(Minecraft mc)
     {
-        IntegratedServer server = mc.getServer();
+        IntegratedServer server = mc.getSingleplayerServer();
 
-        if (mc.world != null && server != null)
+        if (mc.level != null && server != null)
         {
-            return server.getWorld(mc.world.getRegistryKey());
+            return server.getLevel(mc.level.dimension());
         }
         else
         {
-            return mc.world;
+            return mc.level;
         }
     }
 
     /**
      * Returns the requested chunk from the integrated server, if it's available.
-     * Otherwise returns the client world chunk.
-     * @param chunkX
-     * @param chunkZ
-     * @param mc
-     * @return
+     * Otherwise, returns the client world chunk.
+     * @param chunkX ()
+     * @param chunkZ ()
+     * @param mc ()
+     * @return ()
      */
     @Nullable
-    public static WorldChunk getBestChunk(int chunkX, int chunkZ, MinecraftClient mc)
+    public static LevelChunk getBestChunk(int chunkX, int chunkZ, Minecraft mc)
     {
-        IntegratedServer server = mc.getServer();
-        WorldChunk chunk = null;
+        IntegratedServer server = mc.getSingleplayerServer();
+        LevelChunk chunk = null;
 
-        if (mc.world != null && server != null)
+        if (mc.level != null && server != null)
         {
-            ServerWorld world = server.getWorld(mc.world.getRegistryKey());
+            ServerLevel world = server.getLevel(mc.level.dimension());
 
             if (world != null)
             {
@@ -76,18 +79,18 @@ public class WorldUtils
             return chunk;
         }
 
-        return mc.world != null ? mc.world.getChunk(chunkX, chunkZ) : null;
+        return mc.level != null ? mc.level.getChunk(chunkX, chunkZ) : null;
     }
 
     /**
      * Replaces getHighestNonEmptySectionYOffset() marked for removal from Minecraft and used across downstream mods
      * Returns Maximum Y Offset Value of a Chunk.
      */
-    public static int getHighestSectionYOffset(Chunk chunk)
+    public static int getHighestSectionYOffset(ChunkAccess chunk)
     {
-        int yMax = chunk.getHighestNonEmptySection();
+        int yMax = chunk.getHighestFilledSectionIndex();
 
-        yMax = yMax == -1 ? chunk.getBottomY() : ChunkSectionPos.getBlockCoord(chunk.sectionIndexToCoord(yMax));
+        yMax = yMax == -1 ? chunk.getMinY() : SectionPos.sectionToBlockCoord(chunk.getSectionYFromSectionIndex(yMax));
 
         return yMax;
     }
@@ -95,15 +98,15 @@ public class WorldUtils
     /**
      * Get the Dimension RegistryEntry based on Dimension Type.
      *
-     * @param key
-     * @param registry
-     * @return
+     * @param key ()
+     * @param registry ()
+     * @return ()
      */
-    public static RegistryEntry<DimensionType> getDimensionTypeEntry(DimensionType key, @Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull DimensionType> getDimensionTypeEntry(DimensionType key, @Nonnull RegistryAccess registry)
     {
         try
         {
-            return registry.getOrThrow(RegistryKeys.DIMENSION_TYPE).getEntry(key);
+            return registry.lookupOrThrow(Registries.DIMENSION_TYPE).wrapAsHolder(key);
         }
         catch (Exception e)
         {
@@ -114,15 +117,15 @@ public class WorldUtils
     /**
      * Get the Dimension RegistryEntry based on Dimension ID.
      *
-     * @param id
-     * @param registry
-     * @return
+     * @param id ()
+     * @param registry ()
+     * @return ()
      */
-    public static RegistryEntry<DimensionType> getDimensionTypeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull DimensionType> getDimensionTypeEntry(Identifier id, @Nonnull RegistryAccess registry)
     {
         try
         {
-            return registry.getOrThrow(RegistryKeys.DIMENSION_TYPE).getEntry(id).orElseThrow();
+            return registry.lookupOrThrow(Registries.DIMENSION_TYPE).get(id).orElseThrow();
         }
         catch (Exception e)
         {
@@ -133,15 +136,15 @@ public class WorldUtils
     /**
      * Get the Dimension RegistryEntry based on Dimension ID String.
      *
-     * @param id
-     * @param registry
-     * @return
+     * @param id ()
+     * @param registry ()
+     * @return ()
      */
-    public static RegistryEntry<DimensionType> getDimensionTypeEntry(String id, @Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull DimensionType> getDimensionTypeEntry(String id, @Nonnull RegistryAccess registry)
     {
         try
         {
-            return registry.getOrThrow(RegistryKeys.DIMENSION_TYPE).getEntry(Identifier.tryParse(id)).orElseThrow();
+            return registry.lookupOrThrow(Registries.DIMENSION_TYPE).get(Objects.requireNonNull(Identifier.tryParse(id))).orElseThrow();
         }
         catch (Exception e)
         {
@@ -152,15 +155,15 @@ public class WorldUtils
     /**
      * Get the Biome Registry Entry from a Biome Registry Key.
      *
-     * @param key
-     * @param registry
-     * @return
+     * @param key ()
+     * @param registry ()
+     * @return ()
      */
-    public static RegistryEntry<Biome> getBiomeEntry(RegistryKey<Biome> key, @Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull Biome> getBiomeEntry(ResourceKey<@NotNull Biome> key, @Nonnull RegistryAccess registry)
     {
         try
         {
-            return registry.getOrThrow(RegistryKeys.BIOME).getOrThrow(key);
+            return registry.lookupOrThrow(Registries.BIOME).getOrThrow(key);
         }
         catch (Exception e)
         {
@@ -171,15 +174,15 @@ public class WorldUtils
     /**
      * Get the Biome Registry Entry from a Biome ID.
      *
-     * @param id
-     * @param registry
-     * @return
+     * @param id ()
+     * @param registry ()
+     * @return ()
      */
-    public static RegistryEntry<Biome> getBiomeEntry(Identifier id, @Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull Biome> getBiomeEntry(Identifier id, @Nonnull RegistryAccess registry)
     {
         try
         {
-            return registry.getOrThrow(RegistryKeys.BIOME).getEntry(id).orElseThrow();
+            return registry.lookupOrThrow(Registries.BIOME).get(id).orElseThrow();
         }
         catch (Exception e)
         {
@@ -190,15 +193,15 @@ public class WorldUtils
     /**
      * Get the Biome Registry Entry from a Biome ID String.
      *
-     * @param id
-     * @param registry
-     * @return
+     * @param id ()
+     * @param registry ()
+     * @return ()
      */
-    public static RegistryEntry<Biome> getBiomeEntry(String id, @Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull Biome> getBiomeEntry(String id, @Nonnull RegistryAccess registry)
     {
         try
         {
-            return registry.getOrThrow(RegistryKeys.BIOME).getEntry(Identifier.tryParse(id)).orElseThrow();
+            return registry.lookupOrThrow(Registries.BIOME).get(Objects.requireNonNull(Identifier.tryParse(id))).orElseThrow();
         }
         catch (Exception e)
         {
@@ -209,33 +212,33 @@ public class WorldUtils
     /**
      * Get the PLAINS Biome Registry Entry.
      *
-     * @param registry
-     * @return
+     * @param registry ()
+     * @return ()
      */
-    public static RegistryEntry<Biome> getPlains(@Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull Biome> getPlains(@Nonnull RegistryAccess registry)
     {
-        return getBiomeEntry(BiomeKeys.PLAINS, registry);
+        return getBiomeEntry(Biomes.PLAINS, registry);
     }
 
     /**
      * Get the NETHER WASTES Biome Registry Entry.
      *
-     * @param registry
-     * @return
+     * @param registry ()
+     * @return ()
      */
-    public static RegistryEntry<Biome> getWastes(@Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull Biome> getWastes(@Nonnull RegistryAccess registry)
     {
-        return getBiomeEntry(BiomeKeys.NETHER_WASTES, registry);
+        return getBiomeEntry(Biomes.NETHER_WASTES, registry);
     }
 
     /**
      * Get the END Biome Registry Entry.
      *
-     * @param registry
-     * @return
+     * @param registry ()
+     * @return ()
      */
-    public static RegistryEntry<Biome> getTheEnd(@Nonnull DynamicRegistryManager registry)
+    public static Holder<@NotNull Biome> getTheEnd(@Nonnull RegistryAccess registry)
     {
-        return getBiomeEntry(BiomeKeys.THE_END, registry);
+        return getBiomeEntry(Biomes.THE_END, registry);
     }
 }

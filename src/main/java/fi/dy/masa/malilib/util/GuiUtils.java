@@ -2,10 +2,10 @@ package fi.dy.masa.malilib.util;
 
 import java.util.Locale;
 import javax.annotation.Nullable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import fi.dy.masa.malilib.gui.*;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -18,28 +18,28 @@ public class GuiUtils
 {
     public static int getScaledWindowWidth()
     {
-        return MinecraftClient.getInstance().getWindow().getScaledWidth();
+        return Minecraft.getInstance().getWindow().getGuiScaledWidth();
     }
 
     public static int getScaledWindowHeight()
     {
-        return MinecraftClient.getInstance().getWindow().getScaledHeight();
+        return Minecraft.getInstance().getWindow().getGuiScaledHeight();
     }
 
     public static int getDisplayWidth()
     {
-        return MinecraftClient.getInstance().getWindow().getWidth();
+        return Minecraft.getInstance().getWindow().getScreenWidth();
     }
 
     public static int getDisplayHeight()
     {
-        return MinecraftClient.getInstance().getWindow().getHeight();
+        return Minecraft.getInstance().getWindow().getScreenHeight();
     }
 
     @Nullable
     public static Screen getCurrentScreen()
     {
-        return MinecraftClient.getInstance().currentScreen;
+        return Minecraft.getInstance().screen;
     }
 
     public static int getCurrentScreenHeight()
@@ -70,7 +70,7 @@ public class GuiUtils
         createBlockPosInput(x, y + 34, textFieldWidth, CoordinateType.Z, pos, modifier, addButton, gui);
     }
 
-    public static void createVec3dInputsVertical(int x, int y, int textFieldWidth, Vec3d pos,
+    public static void createVec3dInputsVertical(int x, int y, int textFieldWidth, Vec3 pos,
                                                  ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
         createVec3dInput(x, y     , textFieldWidth, CoordinateType.X, pos, modifier, addButton, gui);
@@ -83,19 +83,19 @@ public class GuiUtils
     {
         x = addLabel(x, y, type, gui);
 
-        GuiTextFieldInteger textField = new GuiTextFieldInteger(x, y + 1, textFieldWidth, 14, MinecraftClient.getInstance().textRenderer);
-        textField.setText(getCoordinateValueString(type, pos));
+        GuiTextFieldInteger textField = new GuiTextFieldInteger(x, y + 1, textFieldWidth, 14, Minecraft.getInstance().font);
+        textField.setValue(getCoordinateValueString(type, pos));
 
         addTextFieldAndButton(x + textFieldWidth + 4, y, type, modifier, textField, addButton, gui);
     }
 
-    public static void createVec3dInput(int x, int y, int textFieldWidth, CoordinateType type, Vec3d pos,
+    public static void createVec3dInput(int x, int y, int textFieldWidth, CoordinateType type, Vec3 pos,
                                         ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
         x = addLabel(x, y, type, gui);
 
-        GuiTextFieldDouble textField = new GuiTextFieldDouble(x, y + 1, textFieldWidth, 14, MinecraftClient.getInstance().textRenderer);
-        textField.setText(getCoordinateValueString(type, pos));
+        GuiTextFieldDouble textField = new GuiTextFieldDouble(x, y + 1, textFieldWidth, 14, Minecraft.getInstance().font);
+        textField.setValue(getCoordinateValueString(type, pos));
 
         addTextFieldAndButton(x + textFieldWidth + 4, y, type, modifier, textField, addButton, gui);
     }
@@ -124,7 +124,7 @@ public class GuiUtils
 
     }
 
-    public static String getCoordinateValueString(CoordinateType type, Vec3d pos)
+    public static String getCoordinateValueString(CoordinateType type, Vec3 pos)
     {
         // Truncate to 2 decimal places
         return switch (type)
@@ -166,7 +166,7 @@ public class GuiUtils
         @Override
         public boolean onTextChange(GuiTextFieldGeneric textField)
         {
-            this.modifier.setValueFromString(this.type, textField.getText());
+            this.modifier.setValueFromString(this.type, textField.getValue());
 
             return false;
         }
@@ -197,7 +197,7 @@ public class GuiUtils
         {
             NUDGE_COORD_X,
             NUDGE_COORD_Y,
-            NUDGE_COORD_Z;
+            NUDGE_COORD_Z
         }
     }
 }

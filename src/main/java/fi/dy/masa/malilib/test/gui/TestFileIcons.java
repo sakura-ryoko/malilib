@@ -3,10 +3,7 @@ package fi.dy.masa.malilib.test.gui;
 import java.nio.file.Path;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.resources.Identifier;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
@@ -24,7 +21,7 @@ public enum TestFileIcons implements IGuiIcon, IFileBrowserIconProvider
 	FILE_ICON_CREATE_DIR    (12,  48, 12, 12),
 	;
 
-	public static final Identifier TEXTURE = Identifier.of(MaLiLibReference.MOD_ID, "textures/gui/test_gui_widgets.png");
+	public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "textures/gui/test_gui_widgets.png");
 
 	private final int u;
 	private final int v;

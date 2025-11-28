@@ -1,23 +1,24 @@
 package fi.dy.masa.malilib.interfaces;
 
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.ChestType;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.ApiStatus;
 
-import fi.dy.masa.malilib.render.*;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.ChestType;
+
+import fi.dy.masa.malilib.render.GuiContext;
+import fi.dy.masa.malilib.render.InventoryOverlayContext;
+import fi.dy.masa.malilib.render.InventoryOverlayRefresher;
+import fi.dy.masa.malilib.render.InventoryOverlayScreen;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 
 public interface IInventoryOverlayHandler
@@ -66,7 +67,7 @@ public interface IInventoryOverlayHandler
 	 * @return ()
 	 */
 	@Nullable
-	default InventoryOverlayContext getRenderContext(GuiContext ctx, Profiler profiler) { return null; }
+	default InventoryOverlayContext getRenderContext(GuiContext ctx, ProfilerFiller profiler) { return null; }
 
 	/**
 	 * Render the InventoryOverlayContext on Screen for the First time.
@@ -99,7 +100,7 @@ public interface IInventoryOverlayHandler
      * @param shulkerBGColors (Display the Shulker Box Background Colors)
      * @param villagerBGColors (Display the Villager Profession Background Colors)
      */
-    default void refreshInventoryOverlay(MinecraftClient mc, boolean shulkerBGColors, boolean villagerBGColors)
+    default void refreshInventoryOverlay(Minecraft mc, boolean shulkerBGColors, boolean villagerBGColors)
     {
 	    this.getTargetInventory(mc);
 
@@ -109,12 +110,12 @@ public interface IInventoryOverlayHandler
         }
     }
 
-    default void refreshInventoryOverlay(MinecraftClient mc, boolean shulkerBGColors)
+    default void refreshInventoryOverlay(Minecraft mc, boolean shulkerBGColors)
     {
         this.refreshInventoryOverlay(mc, shulkerBGColors, false);
     }
 
-    default void refreshInventoryOverlay(MinecraftClient mc)
+    default void refreshInventoryOverlay(Minecraft mc)
     {
         this.refreshInventoryOverlay(mc, false, false);
     }
@@ -127,9 +128,9 @@ public interface IInventoryOverlayHandler
 	 * @return ()
 	 */
 	@Nullable
-	default Pair<BlockEntity, CompoundData> requestBlockEntityAt(World world, BlockPos pos)
+	default Pair<BlockEntity, CompoundData> requestBlockEntityAt(Level world, BlockPos pos)
 	{
-		if (!(world instanceof ServerWorld))
+		if (!(world instanceof ServerLevel))
 		{
 			Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
 
@@ -137,11 +138,11 @@ public interface IInventoryOverlayHandler
 
 			if (state.getBlock() instanceof ChestBlock)
 			{
-				ChestType type = state.get(ChestBlock.CHEST_TYPE);
+				ChestType type = state.getValue(ChestBlock.TYPE);
 
 				if (type != ChestType.SINGLE)
 				{
-					return this.getDataSyncer().requestBlockEntity(world, pos.offset(ChestBlock.getFacing(state)));
+					return this.getDataSyncer().requestBlockEntity(world, pos.relative(ChestBlock.getConnectedDirection(state)));
 				}
 			}
 
@@ -157,7 +158,7 @@ public interface IInventoryOverlayHandler
 	 * @return ()
 	 */
 	@Nullable
-	default InventoryOverlayContext getTargetInventory(MinecraftClient mc) { return null; }
+	default InventoryOverlayContext getTargetInventory(Minecraft mc) { return null; }
 
 	/**
 	 * The code used to build the Block Entity Context.
@@ -168,7 +169,7 @@ public interface IInventoryOverlayHandler
 	 * @return ()
 	 */
 	@Nullable
-	default InventoryOverlayContext getTargetInventoryFromBlock(World world, BlockPos pos, @Nullable BlockEntity be, CompoundData data) { return null; }
+	default InventoryOverlayContext getTargetInventoryFromBlock(Level world, BlockPos pos, @Nullable BlockEntity be, CompoundData data) { return null; }
 
 	/**
 	 * The code used to build the Entity Context.

@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.util;
 
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Post-ReWrite code
@@ -474,14 +474,14 @@ public class MathUtils
         return angle;
     }
 
-    public static Vec3d getRotationVector(float yaw, float pitch)
+    public static Vec3 getRotationVector(float yaw, float pitch)
     {
         double f = Math.cos(-yaw * (Math.PI / 180.0) - Math.PI);
         double g = Math.sin(-yaw * (Math.PI / 180.0) - Math.PI);
         double h = -Math.cos(-pitch * (Math.PI / 180.0));
         double i = Math.sin(-pitch * (Math.PI / 180.0));
 
-        return new Vec3d(g * h, i, f * h);
+        return new Vec3(g * h, i, f * h);
     }
 
     public static long getCoordinateRandom(int x, int y, int z)
@@ -541,8 +541,8 @@ public class MathUtils
     }
 
     // TODO until util.position.Vec3d gets added (RayTraceUtils)
-    public static Vec3d scale(Vec3d vec, double factor)
+    public static Vec3 scale(Vec3 vec, double factor)
     {
-        return new Vec3d(vec.x * factor, vec.y * factor, vec.z * factor);
+        return new Vec3(vec.x * factor, vec.y * factor, vec.z * factor);
     }
 }

@@ -1,12 +1,12 @@
 package fi.dy.masa.malilib.mixin.network;
 
-import net.minecraft.client.network.DataQueryHandler;
+import net.minecraft.client.DebugQueryHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(DataQueryHandler.class)
+@Mixin(DebugQueryHandler.class)
 public interface IMixinDataQueryHandler
 {
-    @Accessor("expectedTransactionId")
+    @Accessor("transactionId")
     int malilib_currentTransactionId();
 }

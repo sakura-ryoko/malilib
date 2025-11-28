@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.config.ConfigManager;
@@ -90,10 +92,10 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                 {
                     super.setSelectedEntry(index);
 
-                    if (this.selectedEntry != null && client != null &&
+                    if (this.selectedEntry != null && minecraft != null &&
 						this.selectedEntry.configScreenSupplier() != null)
                     {
-                        client.setScreen(this.selectedEntry.configScreenSupplier().get());
+                        minecraft.setScreen(this.selectedEntry.configScreenSupplier().get());
                     }
                 }
 
@@ -197,7 +199,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public boolean onKeyTyped(KeyInput input)
+    public boolean onKeyTyped(KeyEvent input)
     {
         if (this.activeKeybindButton != null)
         {
@@ -222,7 +224,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public boolean onCharTyped(CharInput input)
+    public boolean onCharTyped(CharacterEvent input)
     {
         if (this.activeKeybindButton != null)
         {
@@ -239,7 +241,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     }
 
     @Override
-    public boolean onMouseClicked(Click click, boolean doubleClick)
+    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
         if (super.onMouseClicked(click, doubleClick))
         {
@@ -340,7 +342,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
 
         public static List<ConfigOptionWrapper> createFor(Collection<? extends IConfigBase> configs)
         {
-            ImmutableList.Builder<ConfigOptionWrapper> builder = ImmutableList.builder();
+            ImmutableList.Builder<@NotNull ConfigOptionWrapper> builder = ImmutableList.builder();
 
             for (IConfigBase config : configs)
             {
@@ -353,7 +355,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
         public enum Type
         {
             CONFIG,
-            LABEL;
+            LABEL
         }
     }
 }

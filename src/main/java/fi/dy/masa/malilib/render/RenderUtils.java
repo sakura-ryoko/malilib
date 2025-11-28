@@ -12,54 +12,64 @@ import org.joml.Matrix4fStack;
 
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.GpuSampler;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.ScreenRect;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.MeshData;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.GuiRenderer;
-import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
-import net.minecraft.client.gui.render.state.ItemGuiElementRenderState;
-import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
-import net.minecraft.client.gui.render.state.TextGuiElementRenderState;
-import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
-import net.minecraft.client.render.*;
-import net.minecraft.client.render.model.BlockModelPart;
-import net.minecraft.client.render.model.BlockStateModel;
-import net.minecraft.client.texture.ResourceTexture;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.texture.TextureSetup;
-import net.minecraft.client.util.BufferAllocator;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.MapIdComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.*;
-import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.util.Colors;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.*;
-import net.minecraft.util.math.random.LocalRandom;
-import net.minecraft.village.VillagerData;
-import net.minecraft.village.VillagerProfession;
+import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+import net.minecraft.client.gui.render.state.GuiElementRenderState;
+import net.minecraft.client.gui.render.state.GuiItemRenderState;
+import net.minecraft.client.gui.render.state.GuiTextRenderState;
+import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.block.model.BlockModelPart;
+import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.util.ARGB;
+import net.minecraft.util.CommonColors;
+import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.npc.villager.VillagerData;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.SingleThreadedRandomSource;
+import net.minecraft.world.level.saveddata.maps.MapId;
+import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -82,10 +92,10 @@ import fi.dy.masa.malilib.util.position.PositionUtils;
 public class RenderUtils
 {
     private static final AnsiLogger LOGGER = new AnsiLogger(RenderUtils.class);
-    public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.ofVanilla("textures/map/map_background.png");
-    public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.ofVanilla("textures/map/map_background_checkerboard.png");
+    public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.withDefaultNamespace("textures/map/map_background.png");
+    public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.withDefaultNamespace("textures/map/map_background_checkerboard.png");
 
-    private static final LocalRandom RAND = new LocalRandom(0);
+    private static final SingleThreadedRandomSource RAND = new SingleThreadedRandomSource(0);
 
     //private static final Vec3d LIGHT0_POS = (new Vec3d( 0.2D, 1.0D, -0.7D)).normalize();
     //private static final Vec3d LIGHT1_POS = (new Vec3d(-0.2D, 1.0D,  0.7D)).normalize();
@@ -189,11 +199,11 @@ public class RenderUtils
 	@Deprecated(forRemoval = true)
     public static @Nullable Pair<GpuTexture, GpuSampler> bindGpuTexture(Identifier texture)
     {
-        ResourceTexture tex = (ResourceTexture) tex().getTexture(texture);
+        SimpleTexture tex = (SimpleTexture) tex().getTexture(texture);
 
         if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTexture() != null)
         {
-            return Pair.of(tex.getGlTexture(), tex.getSampler());
+            return Pair.of(tex.getTexture(), tex.getSampler());
         }
 
 	    MaLiLib.LOGGER.error("bindGpuTexture: Result is null!");
@@ -211,11 +221,11 @@ public class RenderUtils
 	@Deprecated
     public static @Nullable Pair<GpuTextureView, GpuSampler> bindGpuTextureView(Identifier texture)
     {
-        ResourceTexture tex = (ResourceTexture) tex().getTexture(texture);
+        SimpleTexture tex = (SimpleTexture) tex().getTexture(texture);
 
         if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTextureView() != null)
         {
-            return Pair.of(tex.getGlTextureView(), tex.getSampler());
+            return Pair.of(tex.getTextureView(), tex.getSampler());
         }
 
         MaLiLib.LOGGER.error("bindGpuTextureView: Result is null!");
@@ -232,9 +242,9 @@ public class RenderUtils
      * @param simpleElement ()
      */
 	@Deprecated
-    public static void addSimpleElement(DrawContext drawContext, SimpleGuiElementRenderState simpleElement)
+    public static void addSimpleElement(GuiGraphics drawContext, GuiElementRenderState simpleElement)
     {
-        ((IMixinDrawContext) drawContext).malilib_getRenderState().addSimpleElement(simpleElement);
+        ((IMixinDrawContext) drawContext).malilib_getRenderState().submitGuiElement(simpleElement);
     }
 
     /**
@@ -247,16 +257,16 @@ public class RenderUtils
      * @param specialElement ()
      */
     @Deprecated
-    public static void addSpecialElement(DrawContext drawContext, SpecialGuiElementRenderState specialElement)
+    public static void addSpecialElement(GuiGraphics drawContext, PictureInPictureRenderState specialElement)
     {
-        ((IMixinDrawContext) drawContext).malilib_getRenderState().addSpecialElement(specialElement);
+        ((IMixinDrawContext) drawContext).malilib_getRenderState().submitPicturesInPictureState(specialElement);
     }
 
     // FIXME
     @ApiStatus.Internal
-    public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, VertexConsumerProvider.Immediate immediate, MinecraftClient mc)
+    public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, MultiBufferSource.BufferSource immediate, Minecraft mc)
     {
-        ImmutableMap.Builder<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> builder = new ImmutableMap.Builder<>();
+        ImmutableMap.Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder = new ImmutableMap.Builder<>();
 
         // Build new ImmutableMap
         builder.putAll(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
@@ -277,7 +287,7 @@ public class RenderUtils
         }
     }
 
-    public static void dumpBuilderMap(Map<Class<? extends SpecialGuiElementRenderState>, SpecialGuiElementRenderer<?>> entries)
+    public static void dumpBuilderMap(Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> entries)
     {
         System.out.print("DUMP SpecialGuiRenderers()\n");
 
@@ -289,7 +299,7 @@ public class RenderUtils
 
         int i = 0;
 
-        for (Class<? extends SpecialGuiElementRenderState> entry : entries.keySet())
+        for (Class<? extends PictureInPictureRenderState> entry : entries.keySet())
         {
             System.out.printf("[%d] K (State): [%s], V (Renderer): [%s]\n", i, entry.getName(), entries.get(entry).getClass().getName());
             i++;
@@ -308,9 +318,9 @@ public class RenderUtils
      * @param itemElement ()
      */
     @Deprecated
-    public static void addItemElement(DrawContext drawContext, ItemGuiElementRenderState itemElement)
+    public static void addItemElement(GuiGraphics drawContext, GuiItemRenderState itemElement)
     {
-        ((IMixinDrawContext) drawContext).malilib_getRenderState().addItem(itemElement);
+        ((IMixinDrawContext) drawContext).malilib_getRenderState().submitItem(itemElement);
     }
 
     /**
@@ -323,9 +333,9 @@ public class RenderUtils
      * @param textElement ()
      */
     @Deprecated
-    public static void addTextElement(DrawContext drawContext, TextGuiElementRenderState textElement)
+    public static void addTextElement(GuiGraphics drawContext, GuiTextRenderState textElement)
     {
-        ((IMixinDrawContext) drawContext).malilib_getRenderState().addText(textElement);
+        ((IMixinDrawContext) drawContext).malilib_getRenderState().submitText(textElement);
     }
 
     /**
@@ -337,7 +347,7 @@ public class RenderUtils
      * @param rect ()
      */
     @Deprecated
-    public static void pushScissor(DrawContext drawContext, @Nonnull ScreenRect rect)
+    public static void pushScissor(GuiGraphics drawContext, @Nonnull ScreenRectangle rect)
     {
         ((IMixinDrawContext) drawContext).malilib_getScissorStack().push(rect);
     }
@@ -353,9 +363,9 @@ public class RenderUtils
      * @return ()
      */
     @Deprecated
-    public static boolean containsScissor(DrawContext drawContext, int x, int y)
+    public static boolean containsScissor(GuiGraphics drawContext, int x, int y)
     {
-        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().contains(x, y);
+        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().containsPoint(x, y);
     }
 
     /**
@@ -367,9 +377,9 @@ public class RenderUtils
      * @return ()
      */
     @Deprecated
-    public static ScreenRect peekLastScissor(DrawContext drawContext)
+    public static ScreenRectangle peekLastScissor(GuiGraphics drawContext)
     {
-        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().peekLast();
+        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().peek();
     }
 
     /**
@@ -381,7 +391,7 @@ public class RenderUtils
      * @return ()
      */
     @Deprecated
-    public static ScreenRect popScissor(DrawContext drawContext)
+    public static ScreenRectangle popScissor(GuiGraphics drawContext)
     {
         return ((IMixinDrawContext) drawContext).malilib_getScissorStack().pop();
     }
@@ -518,14 +528,14 @@ public class RenderUtils
         RenderContext ctx = new RenderContext(() -> "malilib:drawRect", depthMask ? MaLiLibPipelines.POSITION_COLOR_MASA_DEPTH_MASK : MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL);
         BufferBuilder buffer = ctx.getBuilder();
 
-        buffer.vertex(x * scale,           y * scale,            zLevel).color(r, g, b, a);
-        buffer.vertex(x * scale,           (y + height) * scale, zLevel).color(r, g, b, a);
-        buffer.vertex((x + width) * scale, (y + height) * scale, zLevel).color(r, g, b, a);
-        buffer.vertex((x + width) * scale, y * scale           , zLevel).color(r, g, b, a);
+        buffer.addVertex(x * scale,           y * scale,            zLevel).setColor(r, g, b, a);
+        buffer.addVertex(x * scale,           (y + height) * scale, zLevel).setColor(r, g, b, a);
+        buffer.addVertex((x + width) * scale, (y + height) * scale, zLevel).setColor(r, g, b, a);
+        buffer.addVertex((x + width) * scale, y * scale           , zLevel).setColor(r, g, b, a);
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -571,8 +581,8 @@ public class RenderUtils
     {
         ctx.addSimpleElement(new MaLiLibBasicRectGuiElement(
                 RenderPipelines.GUI,
-                TextureSetup.empty(),
-                new Matrix3x2f(ctx.getMatrices()),
+                TextureSetup.noTexture(),
+                new Matrix3x2f(ctx.pose()),
                 x, y,
                 width, height,
                 scale, color,
@@ -585,9 +595,9 @@ public class RenderUtils
      *
      * @param mc
      */
-    public static void drawScreenBlur(MinecraftClient mc)
+    public static void drawScreenBlur(Minecraft mc)
     {
-        mc.gameRenderer.renderBlur();
+        mc.gameRenderer.processBlurEffect();
     }
 
 	/**
@@ -647,10 +657,10 @@ public class RenderUtils
         float pixelWidth = 0.00390625F;
 
         // GUI_TEXTURED_OVERLAY
-        buffer.vertex(posMatrix, x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth).color(color);
-        buffer.vertex(posMatrix, x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(color);
-        buffer.vertex(posMatrix, x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(color);
-        buffer.vertex(posMatrix, x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(color);
+        buffer.addVertex(posMatrix, x, y + height, zLevel).setUv(u * pixelWidth, (v + height) * pixelWidth).setColor(color);
+        buffer.addVertex(posMatrix, x + width, y + height, zLevel).setUv((u + width) * pixelWidth, (v + height) * pixelWidth).setColor(color);
+        buffer.addVertex(posMatrix, x + width, y, zLevel).setUv((u + width) * pixelWidth, v * pixelWidth).setColor(color);
+        buffer.addVertex(posMatrix, x, y, zLevel).setUv(u * pixelWidth, v * pixelWidth).setColor(color);
     }
 
     /**
@@ -716,7 +726,7 @@ public class RenderUtils
         ctx.addSimpleElement(new MaLiLibTexturedGuiElement(
                 RenderPipelines.GUI_TEXTURED,
                 ctx.setupTexture(pair),
-                new Matrix3x2f(ctx.getMatrices()),
+                new Matrix3x2f(ctx.pose()),
                 x, y, x + width, y + height,
                 u * pixelWidth, (u + width) * pixelWidth,
                 v * pixelWidth, (v + height) * pixelWidth,
@@ -778,10 +788,10 @@ public class RenderUtils
     {
         float pixelWidth = 0.00390625F;
 
-        buffer.vertex(x, y + height, zLevel).texture(u * pixelWidth, (v + height) * pixelWidth).color(argb);
-        buffer.vertex(x + width, y + height, zLevel).texture((u + width) * pixelWidth, (v + height) * pixelWidth).color(argb);
-        buffer.vertex(x + width, y, zLevel).texture((u + width) * pixelWidth, v * pixelWidth).color(argb);
-        buffer.vertex(x, y, zLevel).texture(u * pixelWidth, v * pixelWidth).color(argb);
+        buffer.addVertex(x, y + height, zLevel).setUv(u * pixelWidth, (v + height) * pixelWidth).setColor(argb);
+        buffer.addVertex(x + width, y + height, zLevel).setUv((u + width) * pixelWidth, (v + height) * pixelWidth).setColor(argb);
+        buffer.addVertex(x + width, y, zLevel).setUv((u + width) * pixelWidth, v * pixelWidth).setColor(argb);
+        buffer.addVertex(x, y, zLevel).setUv(u * pixelWidth, v * pixelWidth).setColor(argb);
     }
 
 	/**
@@ -838,7 +848,7 @@ public class RenderUtils
         ctx.addSimpleElement(new MaLiLibTexturedRectGuiElement(
 				RenderPipelines.GUI_TEXTURED,
 				ctx.setupTexture(pair),
-				new Matrix3x2f(ctx.getMatrices()),
+				new Matrix3x2f(ctx.pose()),
 				x, y, u, v,
 				width, height, argb,
 				ctx.peekLastScissor())
@@ -857,7 +867,7 @@ public class RenderUtils
     {
         if (textLines.isEmpty() == false && GuiUtils.getCurrentScreen() != null)
         {
-            TextRenderer font = mc().textRenderer;
+            Font font = mc().font;
             int maxLineLength = 0;
             int maxWidth = GuiUtils.getCurrentScreen().width;
             List<String> linesNew = new ArrayList<>();
@@ -868,7 +878,7 @@ public class RenderUtils
 
                 for (String line : lines)
                 {
-                    int length = font.getWidth(line);
+                    int length = font.width(line);
 
                     if (length > maxLineLength)
                     {
@@ -881,7 +891,7 @@ public class RenderUtils
 
             textLines = linesNew;
 
-            final int lineHeight = font.fontHeight + 1;
+            final int lineHeight = font.lineHeight + 1;
             int textHeight = textLines.size() * lineHeight - 2;
             int textStartX = x + 4;
             int textStartY = Math.max(8, y - textHeight - 6);
@@ -891,8 +901,8 @@ public class RenderUtils
                 textStartX = Math.max(2, maxWidth - maxLineLength - 8);
             }
 
-	        ctx.getMatrices().pushMatrix();
-	        ctx.getMatrices().translate(0, 0);
+	        ctx.pose().pushMatrix();
+	        ctx.pose().translate(0, 0);
 
             float zLevel = (float) 300;
             int borderColor = 0xF0100010;
@@ -912,11 +922,11 @@ public class RenderUtils
             for (int i = 0; i < textLines.size(); ++i)
             {
                 String str = textLines.get(i);
-	            ctx.drawText(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
+	            ctx.drawString(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
                 textStartY += lineHeight;
             }
 
-	        ctx.getMatrices().popMatrix();
+	        ctx.pose().popMatrix();
         }
     }
 
@@ -935,8 +945,8 @@ public class RenderUtils
     {
         ctx.addSimpleElement(new MaLiLibGradientRectGuiElement(
                 RenderPipelines.GUI,
-                TextureSetup.empty(),
-                new Matrix3x2f(ctx.getMatrices()),
+                TextureSetup.noTexture(),
+                new Matrix3x2f(ctx.pose()),
                 left, top, right, bottom,
                 startColor, endColor,
                 ctx.peekLastScissor())
@@ -970,14 +980,14 @@ public class RenderUtils
         RenderContext ctx = new RenderContext(() -> "malilib:drawGradientRect", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL);
         BufferBuilder buffer = ctx.getBuilder();
 
-        buffer.vertex(right, top, zLevel).color(sr, sg, sb, sa);
-        buffer.vertex(left, top, zLevel).color(sr, sg, sb, sa);
-        buffer.vertex(left, bottom, zLevel).color(er, eg, eb, ea);
-        buffer.vertex(right, bottom, zLevel).color(er, eg, eb, ea);
+        buffer.addVertex(right, top, zLevel).setColor(sr, sg, sb, sa);
+        buffer.addVertex(left, top, zLevel).setColor(sr, sg, sb, sa);
+        buffer.addVertex(left, bottom, zLevel).setColor(er, eg, eb, ea);
+        buffer.addVertex(right, bottom, zLevel).setColor(er, eg, eb, ea);
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -1004,7 +1014,7 @@ public class RenderUtils
 	 */
     public static void drawCenteredString(GuiContext ctx, int x, int y, int color, String text)
     {
-	    ctx.drawCenteredTextWithShadow(mc().textRenderer, text, x, y, color);
+	    ctx.drawCenteredString(mc().font, text, x, y, color);
     }
 
 	/**
@@ -1050,11 +1060,11 @@ public class RenderUtils
     {
         if (texture != null)
         {
-            Sprite sprite = mc().getAtlasManager().getAtlasTexture(atlas).getSprite(texture);
+            TextureAtlasSprite sprite = mc().getAtlasManager().getAtlasOrThrow(atlas).getSprite(texture);
 
             if (sprite != null)
             {
-	            ctx.drawSpriteStretched(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height, -1);
+	            ctx.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height, -1);
             }
         }
     }
@@ -1071,12 +1081,12 @@ public class RenderUtils
     public static void renderText(GuiContext ctx, int x, int y, int color, String text)
     {
         String[] parts = text.split("\\\\n");
-        TextRenderer textRenderer = mc().textRenderer;
+        Font textRenderer = mc().font;
 
         for (String line : parts)
         {
-	        ctx.drawText(textRenderer, line, x, y, color, true);
-            y += textRenderer.fontHeight + 1;
+	        ctx.drawString(textRenderer, line, x, y, color, true);
+            y += textRenderer.lineHeight + 1;
         }
     }
 
@@ -1093,12 +1103,12 @@ public class RenderUtils
     {
         if (lines.isEmpty() == false)
         {
-            TextRenderer textRenderer = mc().textRenderer;
+            Font textRenderer = mc().font;
 
             for (String line : lines)
             {
-	            ctx.drawText(textRenderer, line, x, y, color, false);
-                y += textRenderer.fontHeight + 2;
+	            ctx.drawString(textRenderer, line, x, y, color, false);
+                y += textRenderer.lineHeight + 2;
             }
         }
     }
@@ -1150,9 +1160,9 @@ public class RenderUtils
                                  boolean useBackground, boolean useShadow, boolean useStatusShift,
                                  List<String> lines)
     {
-        TextRenderer fontRenderer = mc().textRenderer;
+        Font fontRenderer = mc().font;
         final int scaledWidth = GuiUtils.getScaledWindowWidth();
-        final int lineHeight = fontRenderer.fontHeight + 2;
+        final int lineHeight = fontRenderer.lineHeight + 2;
         final int contentHeight = lines.size() * lineHeight - 2;
         final int bgMargin = 2;
 
@@ -1173,8 +1183,8 @@ public class RenderUtils
 //                yOff = (int) (yOff * scale);
 //            }
 
-	        ctx.getMatrices().pushMatrix();
-	        ctx.getMatrices().scale((float) scale, (float) scale);      // z = 1.0f
+	        ctx.pose().pushMatrix();
+	        ctx.pose().scale((float) scale, (float) scale);      // z = 1.0f
         }
 
         double posX = xOff + bgMargin;
@@ -1189,7 +1199,7 @@ public class RenderUtils
 
         for (String line : lines)
         {
-            final int width = fontRenderer.getWidth(line);
+            final int width = fontRenderer.width(line);
 
             switch (alignment)
             {
@@ -1210,15 +1220,15 @@ public class RenderUtils
             if (useBackground)
             {
 //                drawRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) (scale * 2));
-                drawRect(ctx, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor);
+                drawRect(ctx, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.lineHeight, bgColor);
             }
 
-	        ctx.drawText(fontRenderer, line, x, y, textColor, useShadow);
+	        ctx.drawString(fontRenderer, line, x, y, textColor, useShadow);
         }
 
         if (scaled)
         {
-	        ctx.getMatrices().popMatrix();
+	        ctx.pose().popMatrix();
         }
 
         return contentHeight + bgMargin * 2;
@@ -1232,7 +1242,7 @@ public class RenderUtils
 	 * @param player
 	 * @return
 	 */
-    public static int getHudOffsetForPotions(HudAlignment alignment, double scale, PlayerEntity player)
+    public static int getHudOffsetForPotions(HudAlignment alignment, double scale, Player player)
     {
         if (alignment == HudAlignment.TOP_RIGHT)
         {
@@ -1242,7 +1252,7 @@ public class RenderUtils
                 return 0;
             }
 
-            Collection<StatusEffectInstance> effects = player.getStatusEffects();
+            Collection<MobEffectInstance> effects = player.getActiveEffects();
             boolean hasTurtleHelmet = EntityUtils.hasTurtleHelmetEquipped(player);
             // Turtle Helmets only add their status effects when in water
 
@@ -1251,11 +1261,11 @@ public class RenderUtils
                 int y1 = 0;
                 int y2 = 0;
 
-                for (StatusEffectInstance effectInstance : effects)
+                for (MobEffectInstance effectInstance : effects)
                 {
-                    StatusEffect effect = effectInstance.getEffectType().value();
+                    MobEffect effect = effectInstance.getEffect().value();
 
-                    if (effectInstance.shouldShowParticles() && effectInstance.shouldShowIcon())
+                    if (effectInstance.isVisible() && effectInstance.showIcon())
                     {
                         if (effect.isBeneficial())
                         {
@@ -1321,7 +1331,7 @@ public class RenderUtils
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, buffer);
     }
 
-    public static void drawBlockBoundingBoxSidesBatchedQuads(BlockPos pos, Vec3d cameraPos, Color4f color, double expand,
+    public static void drawBlockBoundingBoxSidesBatchedQuads(BlockPos pos, Vec3 cameraPos, Color4f color, double expand,
                                                              BufferBuilder buffer)
     {
         float minX = (float) (pos.getX() - cameraPos.x - expand);
@@ -1341,7 +1351,7 @@ public class RenderUtils
                                                                 float lineWidth,
                                                                 BufferBuilder buffer)
     {
-        drawBlockBoundingBoxOutlinesBatchedLines(pos, Vec3d.ZERO, color, expand, lineWidth, buffer);
+        drawBlockBoundingBoxOutlinesBatchedLines(pos, Vec3.ZERO, color, expand, lineWidth, buffer);
     }
 
     /**
@@ -1354,7 +1364,7 @@ public class RenderUtils
      * @param expand
      * @param buffer
      */
-    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Vec3d cameraPos, Color4f color, double expand,
+    public static void drawBlockBoundingBoxOutlinesBatchedLines(BlockPos pos, Vec3 cameraPos, Color4f color, double expand,
 																float lineWidth,
                                                                 BufferBuilder buffer)
     {
@@ -1395,7 +1405,7 @@ public class RenderUtils
                                                float lineWidth,
                                                BufferBuilder bufferQuads, BufferBuilder bufferLines)
     {
-        drawBoxWithEdgesBatched(posMin, posMax, Vec3d.ZERO, colorLines, colorSides, lineWidth, bufferQuads, bufferLines);
+        drawBoxWithEdgesBatched(posMin, posMax, Vec3.ZERO, colorLines, colorSides, lineWidth, bufferQuads, bufferLines);
     }
 
     /**
@@ -1414,7 +1424,7 @@ public class RenderUtils
      * @param bufferQuads
      * @param bufferLines
      */
-    public static void drawBoxWithEdgesBatched(BlockPos posMin, BlockPos posMax, Vec3d cameraPos, Color4f colorLines, Color4f colorSides,
+    public static void drawBoxWithEdgesBatched(BlockPos posMin, BlockPos posMax, Vec3 cameraPos, Color4f colorLines, Color4f colorSides,
 											   float lineWidth,
                                                BufferBuilder bufferQuads, BufferBuilder bufferLines)
     {
@@ -1436,28 +1446,28 @@ public class RenderUtils
                                                           Color4f color, BufferBuilder buffer)
     {
         // West side
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, minY, minZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, minY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, maxY, minZ).setColor(color.r, color.g, color.b, color.a);
 
         // East side
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, minY, minZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a);
 
         // North side
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, minY, minZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, minY, minZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, maxY, minZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color.r, color.g, color.b, color.a);
 
         // South side
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, minY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a);
     }
 
     /**
@@ -1466,10 +1476,10 @@ public class RenderUtils
     public static void drawBoxTopBatchedQuads(float minX, float minZ, float maxX, float maxY, float maxZ, Color4f color, BufferBuilder buffer)
     {
         // Top side
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, maxY, minZ).setColor(color.r, color.g, color.b, color.a);
     }
 
     /**
@@ -1478,10 +1488,10 @@ public class RenderUtils
     public static void drawBoxBottomBatchedQuads(float minX, float minY, float minZ, float maxX, float maxZ, Color4f color, BufferBuilder buffer)
     {
         // Bottom side
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a);
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, minY, maxZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(minX, minY, minZ).setColor(color.r, color.g, color.b, color.a);
+        buffer.addVertex(maxX, minY, minZ).setColor(color.r, color.g, color.b, color.a);
     }
 
     /**
@@ -1494,47 +1504,47 @@ public class RenderUtils
                                                    BufferBuilder buffer)
     {
         // West side
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
         // East side
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
         // North side (don't repeat the vertical lines that are done by the east/west sides)
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
         // South side (don't repeat the vertical lines that are done by the east/west sides)
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
     }
 
-    public static void drawBox(IntBoundingBox bb, Vec3d cameraPos, Color4f color, float lineWidth,
+    public static void drawBox(IntBoundingBox bb, Vec3 cameraPos, Color4f color, float lineWidth,
                                BufferBuilder bufferQuads, BufferBuilder bufferLines)
     {
         float minX = (float) (bb.minX() - cameraPos.x);
@@ -1548,7 +1558,7 @@ public class RenderUtils
         drawBoxAllEdgesBatchedLines(minX, minY, minZ, maxX, maxY, maxZ, color, lineWidth, bufferLines);
     }
 
-    public static void drawBoxNoOutlines(IntBoundingBox bb, Vec3d cameraPos, Color4f color,
+    public static void drawBoxNoOutlines(IntBoundingBox bb, Vec3 cameraPos, Color4f color,
                                          BufferBuilder bufferQuads)
     {
         float minX = (float) (bb.minX() - cameraPos.x);
@@ -1577,18 +1587,18 @@ public class RenderUtils
 
         if (entity != null)
         {
-            drawTextPlate(text, x, y, z, entity.getYaw(), entity.getPitch(), scale, 0xFFFFFFFF, 0x40000000, true);
+            drawTextPlate(text, x, y, z, entity.getYRot(), entity.getXRot(), scale, 0xFFFFFFFF, 0x40000000, true);
         }
     }
 
     public static void drawTextPlate(List<String> text, double x, double y, double z, float yaw, float pitch,
                                      float scale, int textColor, int bgColor, boolean disableDepth)
     {
-        Vec3d cameraPos = camPos();
+        Vec3 cameraPos = camPos();
         double cx = cameraPos.x;
         double cy = cameraPos.y;
         double cz = cameraPos.z;
-        TextRenderer textRenderer = mc().textRenderer;
+        Font textRenderer = mc().font;
 
         Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
         global4fStack.pushMatrix();
@@ -1610,11 +1620,11 @@ public class RenderUtils
 
         for (String line : text)
         {
-            maxLineLen = Math.max(maxLineLen, textRenderer.getWidth(line));
+            maxLineLen = Math.max(maxLineLen, textRenderer.width(line));
         }
 
         int strLenHalf = maxLineLen / 2;
-        int textHeight = textRenderer.fontHeight * text.size() - 1;
+        int textHeight = textRenderer.lineHeight * text.size() - 1;
         int bga = ((bgColor >>> 24) & 0xFF);
         int bgr = ((bgColor >>> 16) & 0xFF);
         int bgg = ((bgColor >>> 8) & 0xFF);
@@ -1626,14 +1636,14 @@ public class RenderUtils
             depthTest(false);
         }
 
-        buffer.vertex((float) (-strLenHalf - 1), (float) -1, 0.0F).color(bgr, bgg, bgb, bga);
-        buffer.vertex((float) (-strLenHalf - 1), (float) textHeight, 0.0F).color(bgr, bgg, bgb, bga);
-        buffer.vertex((float) strLenHalf, (float) textHeight, 0.0F).color(bgr, bgg, bgb, bga);
-        buffer.vertex((float) strLenHalf, (float) -1, 0.0F).color(bgr, bgg, bgb, bga);
+        buffer.addVertex((float) (-strLenHalf - 1), (float) -1, 0.0F).setColor(bgr, bgg, bgb, bga);
+        buffer.addVertex((float) (-strLenHalf - 1), (float) textHeight, 0.0F).setColor(bgr, bgg, bgb, bga);
+        buffer.addVertex((float) strLenHalf, (float) textHeight, 0.0F).setColor(bgr, bgg, bgb, bga);
+        buffer.addVertex((float) strLenHalf, (float) -1, 0.0F).setColor(bgr, bgg, bgb, bga);
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -1660,7 +1670,7 @@ public class RenderUtils
         Matrix4f modelMatrix = new Matrix4f();
         modelMatrix.identity();
 
-        BufferAllocator allocator = new BufferAllocator(RenderLayer.field_64010);
+        ByteBufferBuilder allocator = new ByteBufferBuilder(RenderType.TRANSIENT_BUFFER_SIZE);
 
         for (String line : text)
         {
@@ -1668,17 +1678,17 @@ public class RenderUtils
             {
                 //depthMask(false);
                 depthTest(false);
-                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(allocator);
-                textRenderer.draw(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFF), false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
-                immediate.draw();
+                MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
+                textRenderer.drawInBatch(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFF), false, modelMatrix, immediate, Font.DisplayMode.SEE_THROUGH, 0, 15728880);
+                immediate.endBatch();
                 depthTest(true);
                 //depthMask(true);
             }
 
-            VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(allocator);
-            textRenderer.draw(line, -strLenHalf, textY, textColor, false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
-            immediate.draw();
-            textY += textRenderer.fontHeight;
+            MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
+            textRenderer.drawInBatch(line, -strLenHalf, textY, textColor, false, modelMatrix, immediate, Font.DisplayMode.SEE_THROUGH, 0, 15728880);
+            immediate.endBatch();
+            textY += textRenderer.lineHeight;
         }
 
         allocator.close();
@@ -1694,12 +1704,12 @@ public class RenderUtils
         global4fStack.popMatrix();
     }
 
-    public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3d hitVec,
+    public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3 hitVec,
                                                    Color4f color, Matrix4f posMatrix)
     {
-        Direction playerFacing = entity.getHorizontalFacing();
+        Direction playerFacing = entity.getDirection();
         PositionUtils.HitPart part = PositionUtils.getHitPart(side, playerFacing, pos, hitVec);
-        Vec3d cameraPos = camPos();
+        Vec3 cameraPos = camPos();
 
         double x = (pos.getX() + 0.5d - cameraPos.x);
         double y = (pos.getY() + 0.5d - cameraPos.y);
@@ -1721,49 +1731,49 @@ public class RenderUtils
         int c = 255;
 
         // White full block background
-        buffer.vertex((float) (x - 0.5), (float) (y - 0.5), (float) z).color(c, c, c, quadAlpha);
-        buffer.vertex((float) (x + 0.5), (float) (y - 0.5), (float) z).color(c, c, c, quadAlpha);
-        buffer.vertex((float) (x + 0.5), (float) (y + 0.5), (float) z).color(c, c, c, quadAlpha);
-        buffer.vertex((float) (x - 0.5), (float) (y + 0.5), (float) z).color(c, c, c, quadAlpha);
+        buffer.addVertex((float) (x - 0.5), (float) (y - 0.5), (float) z).setColor(c, c, c, quadAlpha);
+        buffer.addVertex((float) (x + 0.5), (float) (y - 0.5), (float) z).setColor(c, c, c, quadAlpha);
+        buffer.addVertex((float) (x + 0.5), (float) (y + 0.5), (float) z).setColor(c, c, c, quadAlpha);
+        buffer.addVertex((float) (x - 0.5), (float) (y + 0.5), (float) z).setColor(c, c, c, quadAlpha);
 
         switch (part)
         {
             case CENTER:
-                buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.25), (float) (y - 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.25), (float) (y - 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.25), (float) (y + 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.25), (float) (y + 0.25), (float) z).setColor(hr, hg, hb, ha);
                 break;
             case LEFT:
-                buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.50), (float) (y - 0.50), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.25), (float) (y - 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.25), (float) (y + 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.50), (float) (y + 0.50), (float) z).setColor(hr, hg, hb, ha);
                 break;
             case RIGHT:
-                buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.50), (float) (y - 0.50), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.25), (float) (y - 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.25), (float) (y + 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.50), (float) (y + 0.50), (float) z).setColor(hr, hg, hb, ha);
                 break;
             case TOP:
-                buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.50), (float) (y + 0.50), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.25), (float) (y + 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.25), (float) (y + 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.50), (float) (y + 0.50), (float) z).setColor(hr, hg, hb, ha);
                 break;
             case BOTTOM:
-                buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(hr, hg, hb, ha);
-                buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.50), (float) (y - 0.50), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x - 0.25), (float) (y - 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.25), (float) (y - 0.25), (float) z).setColor(hr, hg, hb, ha);
+                buffer.addVertex((float) (x + 0.50), (float) (y - 0.50), (float) z).setColor(hr, hg, hb, ha);
                 break;
             default:
         }
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -1786,15 +1796,15 @@ public class RenderUtils
         buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlay/center", MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_NO_DEPTH_NO_CULL);
 
         // Middle small rectangle
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.addVertex((float) (x - 0.25), (float) (y - 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x + 0.25), (float) (y - 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x + 0.25), (float) (y + 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x - 0.25), (float) (y + 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x - 0.25), (float) (y - 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -1816,24 +1826,24 @@ public class RenderUtils
         buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlay/edges", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL);
 
         // Bottom left
-        buffer.vertex((float) (x - 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x - 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.addVertex((float) (x - 0.50), (float) (y - 0.50), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x - 0.25), (float) (y - 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
 
         // Top left
-        buffer.vertex((float) (x - 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x - 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.addVertex((float) (x - 0.50), (float) (y + 0.50), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x - 0.25), (float) (y + 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
 
         // Bottom right
-        buffer.vertex((float) (x + 0.50), (float) (y - 0.50), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x + 0.25), (float) (y - 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.addVertex((float) (x + 0.50), (float) (y - 0.50), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x + 0.25), (float) (y - 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
 
         // Top right
-        buffer.vertex((float) (x + 0.50), (float) (y + 0.50), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x + 0.25), (float) (y + 0.25), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.addVertex((float) (x + 0.50), (float) (y + 0.50), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x + 0.25), (float) (y + 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -1856,8 +1866,8 @@ public class RenderUtils
     public static void renderBlockTargetingOverlaySimple(Entity entity, BlockPos pos, Direction side,
                                                          Color4f color, Matrix4f posMatrix)
     {
-        Direction playerFacing = entity.getHorizontalFacing();
-        Vec3d cameraPos = camPos();
+        Direction playerFacing = entity.getDirection();
+        Vec3 cameraPos = camPos();
 
         double x = pos.getX() + 0.5d - cameraPos.x;
         double y = pos.getY() + 0.5d - cameraPos.y;
@@ -1878,14 +1888,14 @@ public class RenderUtils
         int c = 255;
 
         // Simple colored quad
-        buffer.vertex((float) (x - 0.5), (float) (y - 0.5), (float) z).color(r, g, b, a);
-        buffer.vertex((float) (x + 0.5), (float) (y - 0.5), (float) z).color(r, g, b, a);
-        buffer.vertex((float) (x + 0.5), (float) (y + 0.5), (float) z).color(r, g, b, a);
-        buffer.vertex((float) (x - 0.5), (float) (y + 0.5), (float) z).color(r, g, b, a);
+        buffer.addVertex((float) (x - 0.5), (float) (y - 0.5), (float) z).setColor(r, g, b, a);
+        buffer.addVertex((float) (x + 0.5), (float) (y - 0.5), (float) z).setColor(r, g, b, a);
+        buffer.addVertex((float) (x + 0.5), (float) (y + 0.5), (float) z).setColor(r, g, b, a);
+        buffer.addVertex((float) (x - 0.5), (float) (y + 0.5), (float) z).setColor(r, g, b, a);
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -1906,14 +1916,14 @@ public class RenderUtils
         buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlaySimple/lines", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL);
 
         // Middle rectangle
-        buffer.vertex((float) (x - 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x + 0.375), (float) (y - 0.375), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x + 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c).lineWidth(lineWidth);
-        buffer.vertex((float) (x - 0.375), (float) (y + 0.375), (float) z).color(c, c, c, c).lineWidth(lineWidth);
+        buffer.addVertex((float) (x - 0.375), (float) (y - 0.375), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x + 0.375), (float) (y - 0.375), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x + 0.375), (float) (y + 0.375), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
+        buffer.addVertex((float) (x - 0.375), (float) (y + 0.375), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -1944,11 +1954,11 @@ public class RenderUtils
         switch (side)
         {
             case DOWN:
-                matrix4fStack.rotateY(matrix4fRotateFix(180f - playerFacing.getPositiveHorizontalDegrees()));
+                matrix4fStack.rotateY(matrix4fRotateFix(180f - playerFacing.toYRot()));
                 matrix4fStack.rotateX(matrix4fRotateFix(90f));
                 break;
             case UP:
-                matrix4fStack.rotateY(matrix4fRotateFix(180f - playerFacing.getPositiveHorizontalDegrees()));
+                matrix4fStack.rotateY(matrix4fRotateFix(180f - playerFacing.toYRot()));
                 matrix4fStack.rotateX(matrix4fRotateFix(-90f));
                 break;
             case NORTH:
@@ -1974,7 +1984,7 @@ public class RenderUtils
 
     public static void renderMapPreview(GuiContext ctx, ItemStack stack, int x, int y, int dimensions, boolean requireShift)
     {
-        if (stack.getItem() instanceof FilledMapItem && (!requireShift || GuiBase.isShiftDown()))
+        if (stack.getItem() instanceof MapItem && (!requireShift || GuiBase.isShiftDown()))
         {
             int y1 = y - dimensions - 20;
             int y2 = y1 + dimensions;
@@ -1983,9 +1993,9 @@ public class RenderUtils
             int z = 300;
             int uv = 0xF000F0;
 
-            MapState mapState = FilledMapItem.getMapState(stack, mc().world);
-            ComponentMap data = stack.getComponents();
-            MapIdComponent mapId = data.get(DataComponentTypes.MAP_ID);
+            MapItemSavedData mapState = MapItem.getSavedData(stack, mc().level);
+            DataComponentMap data = stack.getComponents();
+            MapId mapId = data.get(DataComponents.MAP_ID);
 
             Identifier bgTexture = mapState == null ? TEXTURE_MAP_BACKGROUND : TEXTURE_MAP_BACKGROUND_CHECKERBOARD;
             Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(bgTexture);
@@ -1999,7 +2009,7 @@ public class RenderUtils
 	        ctx.addSimpleElement(new MaLiLibLightTexturedGuiElement(
 					RenderPipelines.GUI_TEXTURED,
 					ctx.setupTexture(pair),
-					new Matrix3x2f(ctx.getMatrices()),
+					new Matrix3x2f(ctx.pose()),
 					x1, y1, x2, y2,
 					0.0f, 1.0f, 0.0f, 1.0f,
 					-1, uv,
@@ -2014,23 +2024,23 @@ public class RenderUtils
 
                 double scale = (double) (dimensions - 16) / 128.0D;
 
-	            ctx.getMatrices().pushMatrix();
-	            ctx.getMatrices().translate(x1, y1);
-	            ctx.getMatrices().scale((float) scale, (float) scale);
+	            ctx.pose().pushMatrix();
+	            ctx.pose().translate(x1, y1);
+	            ctx.pose().scale((float) scale, (float) scale);
 
                 MapRenderState mapRenderState = new MapRenderState();
-                mc().getMapRenderer().update(mapId, mapState, mapRenderState);
-	            ctx.drawMap(mapRenderState);
-	            ctx.getMatrices().popMatrix();
+                mc().getMapRenderer().extractRenderState(mapId, mapState, mapRenderState);
+	            ctx.submitMapRenderState(mapRenderState);
+	            ctx.pose().popMatrix();
             }
         }
     }
 
     public static void renderShulkerBoxPreview(GuiContext ctx, ItemStack stack, int baseX, int baseY, boolean useBgColors)
     {
-        DefaultedList<ItemStack> items;
+        NonNullList<ItemStack> items;
 
-        if (stack.getComponents().contains(DataComponentTypes.CONTAINER))
+        if (stack.getComponents().has(DataComponents.CONTAINER))
         {
             //items = InventoryUtils.getStoredItems(stack, ShulkerBoxBlockEntity.INVENTORY_SIZE);
             items = InventoryUtils.getStoredItems(stack, -1);
@@ -2040,17 +2050,17 @@ public class RenderUtils
                 return;
             }
 
-            NbtCompound nbt = InventoryUtils.getStoredBlockEntityNbt(stack);
+            CompoundTag nbt = InventoryUtils.getStoredBlockEntityNbt(stack);
             Set<Integer> lockedSlots = new HashSet<>();
-            Inventory inv = InventoryUtils.getAsInventory(items);
+            Container inv = InventoryUtils.getAsInventory(items);
             InventoryOverlayType type = InventoryOverlay.getInventoryType(stack);
             InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, items.size());
 
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
             int height = props.height + 18;
-            int x = MathHelper.clamp(baseX + 8, 0, screenWidth - props.width);
-            int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
+            int x = Mth.clamp(baseX + 8, 0, screenWidth - props.width);
+            int y = Mth.clamp(baseY - height, 0, screenHeight - height);
             int color;
 
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof ShulkerBoxBlock)
@@ -2059,7 +2069,7 @@ public class RenderUtils
             }
             else
             {
-                color = Colors.WHITE;
+                color = CommonColors.WHITE;
             }
 
             Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
@@ -2067,7 +2077,7 @@ public class RenderUtils
             matrix4fStack.translate(0, 0, 500);
 
             InventoryOverlay.renderInventoryBackground(ctx, type, x, y, props.slotsPerRow, props.totalSlots, color);
-            color = Colors.WHITE;
+            color = CommonColors.WHITE;
 
             if (type == InventoryOverlayType.BREWING_STAND)
             {
@@ -2096,9 +2106,9 @@ public class RenderUtils
 
     public static void renderBundlePreview(GuiContext ctx, ItemStack stack, int baseX, int baseY, int slotsPerRow, boolean useBgColors)
     {
-        DefaultedList<ItemStack> items;
+        NonNullList<ItemStack> items;
 
-        if (stack.getComponents().contains(DataComponentTypes.BUNDLE_CONTENTS))
+        if (stack.getComponents().has(DataComponents.BUNDLE_CONTENTS))
         {
             int count = InventoryUtils.bundleCountItems(stack);
             items = InventoryUtils.getBundleItems(stack, count);
@@ -2109,15 +2119,15 @@ public class RenderUtils
                 return;
             }
 
-            Inventory inv = InventoryUtils.getAsInventory(items);
+            Container inv = InventoryUtils.getAsInventory(items);
 	        InventoryOverlayType type = InventoryOverlay.getInventoryType(stack);
             InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, count, slotsPerRow);
 
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
             int height = props.height + 18;
-            int x = MathHelper.clamp(baseX + 8, 0, screenWidth - props.width);
-            int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
+            int x = Mth.clamp(baseX + 8, 0, screenWidth - props.width);
+            int y = Mth.clamp(baseY - height, 0, screenHeight - height);
 
             int color = setBundleBackgroundTintColor(stack, useBgColors);
 
@@ -2145,17 +2155,17 @@ public class RenderUtils
      * @param useBgColors
      * @param drawContext
      */
-    public static void renderNbtItemsPreview(GuiContext ctx, ItemStack stackIn, @Nonnull NbtCompound itemsTag, int baseX, int baseY, boolean useBgColors)
+    public static void renderNbtItemsPreview(GuiContext ctx, ItemStack stackIn, @Nonnull CompoundTag itemsTag, int baseX, int baseY, boolean useBgColors)
     {
         if (InventoryUtils.hasNbtItems(itemsTag))
         {
-            if (mc().world == null)
+            if (mc().level == null)
             {
                 return;
             }
 
 	        CompoundData data = DataConverterNbt.fromVanillaCompound(itemsTag);
-            DefaultedList<ItemStack> items = InventoryUtils.getDataItems(data, -1, mc().world.getRegistryManager());
+            NonNullList<ItemStack> items = InventoryUtils.getDataItems(data, -1, mc().level.registryAccess());
 
             if (items.size() == 0)
             {
@@ -2168,10 +2178,10 @@ public class RenderUtils
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
             int height = props.height + 18;
-            int x = MathHelper.clamp(baseX + 8, 0, screenWidth - props.width);
-            int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
+            int x = Mth.clamp(baseX + 8, 0, screenWidth - props.width);
+            int y = Mth.clamp(baseY - height, 0, screenHeight - height);
 
-            int color = Colors.WHITE;
+            int color = CommonColors.WHITE;
 
             Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
             matrix4fStack.pushMatrix();
@@ -2179,7 +2189,7 @@ public class RenderUtils
 
             InventoryOverlay.renderInventoryBackground(ctx, type, x, y, props.slotsPerRow, items.size(), color);
 
-            Inventory inv = InventoryUtils.getAsInventory(items);
+            Container inv = InventoryUtils.getAsInventory(items);
             InventoryOverlay.renderInventoryStacks(ctx, type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1);
 
             matrix4fStack.popMatrix();
@@ -2203,12 +2213,12 @@ public class RenderUtils
 	{
 		if (InventoryUtils.hasDataItems(data))
 		{
-			if (mc().world == null)
+			if (mc().level == null)
 			{
 				return;
 			}
 
-			DefaultedList<ItemStack> items = InventoryUtils.getDataItems(data, -1, mc().world.getRegistryManager());
+			NonNullList<ItemStack> items = InventoryUtils.getDataItems(data, -1, mc().level.registryAccess());
 
 			if (items.size() == 0)
 			{
@@ -2221,10 +2231,10 @@ public class RenderUtils
 			int screenWidth = GuiUtils.getScaledWindowWidth();
 			int screenHeight = GuiUtils.getScaledWindowHeight();
 			int height = props.height + 18;
-			int x = MathHelper.clamp(baseX + 8, 0, screenWidth - props.width);
-			int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
+			int x = Mth.clamp(baseX + 8, 0, screenWidth - props.width);
+			int y = Mth.clamp(baseY - height, 0, screenHeight - height);
 
-			int color = Colors.WHITE;
+			int color = CommonColors.WHITE;
 
 			Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 			matrix4fStack.pushMatrix();
@@ -2232,7 +2242,7 @@ public class RenderUtils
 
 			InventoryOverlay.renderInventoryBackground(ctx, type, x, y, props.slotsPerRow, items.size(), color);
 
-			Inventory inv = InventoryUtils.getAsInventory(items);
+			Container inv = InventoryUtils.getAsInventory(items);
 			InventoryOverlay.renderInventoryStacks(ctx, type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1);
 
 			matrix4fStack.popMatrix();
@@ -2250,12 +2260,12 @@ public class RenderUtils
         if (block != null && useBgColors)
         {
             // In 1.13+ there is the uncolored Shulker Box variant, which returns null from getColor()
-            final float[] colors = getColorComponents(block.getColor() != null ? block.getColor().getEntityColor() : 0xFF875F87);
-            return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
+            final float[] colors = getColorComponents(block.getColor() != null ? block.getColor().getTextureDiffuseColor() : 0xFF875F87);
+            return ARGB.colorFromFloat(1f, colors[0], colors[1], colors[2]);
         }
         else
         {
-            return Colors.WHITE;
+            return CommonColors.WHITE;
         }
     }
 
@@ -2276,7 +2286,7 @@ public class RenderUtils
 
     public static int setBundleBackgroundTintColor(ItemStack bundle, boolean useBgColors)
     {
-        if (bundle.isIn(ItemTags.BUNDLES) && useBgColors)
+        if (bundle.is(ItemTags.BUNDLES) && useBgColors)
         {
             // In 1.17+ there is the uncolored Bundle variant, which returns null from getColor()
 //            final DyeColor dye = getBundleColor(bundle);
@@ -2287,7 +2297,7 @@ public class RenderUtils
 			return getBundleColor(bundle);
         }
 
-        return Colors.WHITE;
+        return CommonColors.WHITE;
     }
 
     // returns real colors now instead of Dye Colors.
@@ -2297,7 +2307,7 @@ public class RenderUtils
 
         if (item == null)
         {
-            return Colors.WHITE;
+            return CommonColors.WHITE;
         }
         if (item.equals(Items.WHITE_BUNDLE))            // 	#ffe6e6e6
         {
@@ -2373,14 +2383,14 @@ public class RenderUtils
     {
         if (useBgColors)
         {
-            RegistryEntry<VillagerProfession> profession = data != null ? data.profession() : null;
+            Holder<VillagerProfession> profession = data != null ? data.profession() : null;
             return setVillagerBackgroundTintColor(profession, useBgColors);
         }
 
-        return Colors.WHITE;
+        return CommonColors.WHITE;
     }
 
-    public static int setVillagerBackgroundTintColor(RegistryEntry<VillagerProfession> profession, boolean useBgColors)
+    public static int setVillagerBackgroundTintColor(Holder<VillagerProfession> profession, boolean useBgColors)
     {
         if (useBgColors)
         {
@@ -2388,16 +2398,16 @@ public class RenderUtils
 
             if (dye != null)
             {
-                final float[] colors = getColorComponents(dye.getEntityColor());
-                return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
+                final float[] colors = getColorComponents(dye.getTextureDiffuseColor());
+                return ARGB.colorFromFloat(1f, colors[0], colors[1], colors[2]);
             }
         }
 
-        return Colors.WHITE;
+        return CommonColors.WHITE;
     }
 
     // todo - return real colors
-    public static DyeColor getVillagerColor(RegistryEntry<VillagerProfession> profession)
+    public static DyeColor getVillagerColor(Holder<VillagerProfession> profession)
     {
         if (profession == null)
         {
@@ -2408,59 +2418,59 @@ public class RenderUtils
         {
             return DyeColor.BLUE;
         }
-        else if (profession.matchesKey(VillagerProfession.ARMORER))
+        else if (profession.is(VillagerProfession.ARMORER))
         {
             return DyeColor.GRAY;
         }
-        else if (profession.matchesKey(VillagerProfession.BUTCHER))
+        else if (profession.is(VillagerProfession.BUTCHER))
         {
             return DyeColor.PINK;
         }
-        else if (profession.matchesKey(VillagerProfession.CARTOGRAPHER))
+        else if (profession.is(VillagerProfession.CARTOGRAPHER))
         {
             return DyeColor.LIGHT_BLUE;
         }
-        else if (profession.matchesKey(VillagerProfession.CLERIC))
+        else if (profession.is(VillagerProfession.CLERIC))
         {
             return DyeColor.PURPLE;
         }
-        else if (profession.matchesKey(VillagerProfession.FARMER))
+        else if (profession.is(VillagerProfession.FARMER))
         {
             return DyeColor.YELLOW;
         }
-        else if (profession.matchesKey(VillagerProfession.FISHERMAN))
+        else if (profession.is(VillagerProfession.FISHERMAN))
         {
             return DyeColor.CYAN;
         }
-        else if (profession.matchesKey(VillagerProfession.FLETCHER))
+        else if (profession.is(VillagerProfession.FLETCHER))
         {
             return DyeColor.ORANGE;
         }
-        else if (profession.matchesKey(VillagerProfession.LEATHERWORKER))
+        else if (profession.is(VillagerProfession.LEATHERWORKER))
         {
             return DyeColor.BROWN;
         }
-        else if (profession.matchesKey(VillagerProfession.LIBRARIAN))
+        else if (profession.is(VillagerProfession.LIBRARIAN))
         {
             return DyeColor.RED;
         }
-        else if (profession.matchesKey(VillagerProfession.MASON))
+        else if (profession.is(VillagerProfession.MASON))
         {
             return DyeColor.MAGENTA;
         }
-        else if (profession.matchesKey(VillagerProfession.NITWIT))
+        else if (profession.is(VillagerProfession.NITWIT))
         {
             return DyeColor.GREEN;
         }
-        else if (profession.matchesKey(VillagerProfession.SHEPHERD))
+        else if (profession.is(VillagerProfession.SHEPHERD))
         {
             return DyeColor.WHITE;
         }
-        else if (profession.matchesKey(VillagerProfession.TOOLSMITH))
+        else if (profession.is(VillagerProfession.TOOLSMITH))
         {
             return DyeColor.LIGHT_GRAY;
         }
-        else if (profession.matchesKey(VillagerProfession.WEAPONSMITH))
+        else if (profession.is(VillagerProfession.WEAPONSMITH))
         {
             return DyeColor.BLACK;
         }
@@ -2473,12 +2483,12 @@ public class RenderUtils
 
     public static boolean stateModelHasQuads(BlockState state)
     {
-        return modelHasQuads(Objects.requireNonNull(MinecraftClient.getInstance().getBlockRenderManager().getModel(state)));
+        return modelHasQuads(Objects.requireNonNull(Minecraft.getInstance().getBlockRenderer().getBlockModel(state)));
     }
 
     public static boolean modelHasQuads(@Nonnull BlockStateModel model)
     {
-        return hasQuads(model.getParts(new LocalRandom(0)));
+        return hasQuads(model.collectParts(new SingleThreadedRandomSource(0)));
     }
 
     public static boolean hasQuads(List<BlockModelPart> modelParts)
@@ -2578,19 +2588,19 @@ public class RenderUtils
 //        }
 //    }
 
-    public static MinecraftClient mc()
+    public static Minecraft mc()
     {
-        return MinecraftClient.getInstance();
+        return Minecraft.getInstance();
     }
 
-    public static Framebuffer fb()
+    public static RenderTarget fb()
     {
-        return mc().getFramebuffer();
+        return mc().getMainRenderTarget();
     }
 
-    public static Vec3d camPos()
+    public static Vec3 camPos()
     {
-        return mc().gameRenderer.getCamera().getCameraPos();
+        return mc().gameRenderer.getMainCamera().position();
     }
 
     public static TextureManager tex()
@@ -2598,14 +2608,14 @@ public class RenderUtils
         return mc().getTextureManager();
     }
 
-    public static LightmapTextureManager lightmap()
+    public static LightTexture lightmap()
     {
-        return mc().gameRenderer.getLightmapTextureManager();
+        return mc().gameRenderer.lightTexture();
     }
 
-	public static TextRenderer textRenderer()
+	public static Font textRenderer()
 	{
-		return mc().textRenderer;
+		return mc().font;
 	}
 
     /**
@@ -2628,7 +2638,7 @@ public class RenderUtils
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -2650,7 +2660,7 @@ public class RenderUtils
 																	  float lineWidth,
                                                                       BufferBuilder buffer)
     {
-        Vec3d cameraPos = camPos();
+        Vec3 cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2670,7 +2680,7 @@ public class RenderUtils
 													  float lineWidth,
                                                       BufferBuilder buffer)
     {
-        Vec3d cameraPos = camPos();
+        Vec3 cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2692,8 +2702,8 @@ public class RenderUtils
             z2 += 0.5F;
         }
 
-        buffer.vertex(x1, y1, z1).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(x2, y2, z2).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(x1, y1, z1).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(x2, y2, z2).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
     }
 
     public static void renderBlockOutlineOverlapping(BlockPos pos, float expand, float lineWidth,
@@ -2707,7 +2717,7 @@ public class RenderUtils
                                                      Color4f color1, Color4f color2, Color4f color3, Matrix4f matrix4f,
                                                      boolean renderThrough)
     {
-        Vec3d cameraPos = camPos();
+        Vec3 cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2724,47 +2734,47 @@ public class RenderUtils
         BufferBuilder buffer = ctx.getBuilder();
 
         // Min corner
-        buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, minZ).setColor(color1.r, color1.g, color1.b, color1.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, minZ).setColor(color1.r, color1.g, color1.b, color1.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).lineWidth(lineWidth);
-        buffer.vertex(minX, maxY, minZ).color(color1.r, color1.g, color1.b, color1.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, minZ).setColor(color1.r, color1.g, color1.b, color1.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, minZ).setColor(color1.r, color1.g, color1.b, color1.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, minY, minZ).color(color1.r, color1.g, color1.b, color1.a).lineWidth(lineWidth);
-        buffer.vertex(minX, minY, maxZ).color(color1.r, color1.g, color1.b, color1.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, minZ).setColor(color1.r, color1.g, color1.b, color1.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, minY, maxZ).setColor(color1.r, color1.g, color1.b, color1.a).setLineWidth(lineWidth);
 
         // Max corner
-        buffer.vertex(minX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color2.r, color2.g, color2.b, color2.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color2.r, color2.g, color2.b, color2.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, minY, maxZ).color(color2.r, color2.g, color2.b, color2.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color2.r, color2.g, color2.b, color2.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color2.r, color2.g, color2.b, color2.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, maxY, minZ).color(color2.r, color2.g, color2.b, color2.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, maxZ).color(color2.r, color2.g, color2.b, color2.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color2.r, color2.g, color2.b, color2.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color2.r, color2.g, color2.b, color2.a).setLineWidth(lineWidth);
 
         // The rest of the edges
-        buffer.vertex(minX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, minZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, maxZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, minY, minZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, minZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
-        buffer.vertex(minX, maxY, maxZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, maxZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, minY, minZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, minY, maxZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, minZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, maxY, minZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
-        buffer.vertex(minX, maxY, maxZ).color(color3.r, color3.g, color3.b, color3.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, minZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color3.r, color3.g, color3.b, color3.a).setLineWidth(lineWidth);
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -2784,7 +2794,7 @@ public class RenderUtils
     public static void renderAreaOutline(BlockPos pos1, BlockPos pos2, float lineWidth,
                                          Color4f colorX, Color4f colorY, Color4f colorZ)
     {
-        Vec3d cameraPos = camPos();
+        Vec3 cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2812,7 +2822,7 @@ public class RenderUtils
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -2832,49 +2842,49 @@ public class RenderUtils
     private static void drawBoundingBoxLinesX(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
                                               Color4f color, float lineWidth)
     {
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
     }
 
     private static void drawBoundingBoxLinesY(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
                                               Color4f color, float lineWidth)
     {
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
     }
 
     private static void drawBoundingBoxLinesZ(BufferBuilder buffer, float minX, float minY, float minZ, float maxX, float maxY, float maxZ,
                                               Color4f color, float lineWidth)
     {
-        buffer.vertex(minX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, minY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, minY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(minX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(minX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(minX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
 
-        buffer.vertex(maxX, maxY, minZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
-        buffer.vertex(maxX, maxY, maxZ).color(color.r, color.g, color.b, color.a).lineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, minZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
+        buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
     }
 
     public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f)
@@ -2893,7 +2903,7 @@ public class RenderUtils
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -2925,7 +2935,7 @@ public class RenderUtils
     public static void renderAreaSidesBatched(BlockPos pos1, BlockPos pos2, Color4f color,
                                               double expand, BufferBuilder buffer)
     {
-        Vec3d cameraPos = camPos();
+        Vec3 cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2950,7 +2960,7 @@ public class RenderUtils
         final int zMax = Math.max(pos1.getZ(), pos2.getZ());
 
         final double expand = 0.001;
-        Vec3d cameraPos = camPos();
+        Vec3 cameraPos = camPos();
         final double dx = cameraPos.x;
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
@@ -2981,8 +2991,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a).lineWidth(lineWidth);
-            buffer.vertex(end + dxMax, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a).lineWidth(lineWidth);
+            buffer.addVertex(start + dxMin, minY, minZ).setColor(colorX.r, colorX.g, colorX.b, colorX.a).setLineWidth(lineWidth);
+            buffer.addVertex(end + dxMax, minY, minZ).setColor(colorX.r, colorX.g, colorX.b, colorX.a).setLineWidth(lineWidth);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMin) ? xMin + 1 : xMin;
@@ -2990,8 +3000,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a).lineWidth(lineWidth);
-            buffer.vertex(end + dxMax, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a).lineWidth(lineWidth);
+            buffer.addVertex(start + dxMin, maxY + 1, minZ).setColor(colorX.r, colorX.g, colorX.b, colorX.a).setLineWidth(lineWidth);
+            buffer.addVertex(end + dxMax, maxY + 1, minZ).setColor(colorX.r, colorX.g, colorX.b, colorX.a).setLineWidth(lineWidth);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMax) ? xMin + 1 : xMin;
@@ -2999,8 +3009,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a).lineWidth(lineWidth);
-            buffer.vertex(end + dxMax, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a).lineWidth(lineWidth);
+            buffer.addVertex(start + dxMin, minY, maxZ + 1).setColor(colorX.r, colorX.g, colorX.b, colorX.a).setLineWidth(lineWidth);
+            buffer.addVertex(end + dxMax, minY, maxZ + 1).setColor(colorX.r, colorX.g, colorX.b, colorX.a).setLineWidth(lineWidth);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMax) ? xMin + 1 : xMin;
@@ -3008,8 +3018,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a).lineWidth(lineWidth);
-            buffer.vertex(end + dxMax, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a).lineWidth(lineWidth);
+            buffer.addVertex(start + dxMin, maxY + 1, maxZ + 1).setColor(colorX.r, colorX.g, colorX.b, colorX.a).setLineWidth(lineWidth);
+            buffer.addVertex(end + dxMax, maxY + 1, maxZ + 1).setColor(colorX.r, colorX.g, colorX.b, colorX.a).setLineWidth(lineWidth);
         }
 
         // Edges along the Y-axis
@@ -3018,8 +3028,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a).lineWidth(lineWidth);
-            buffer.vertex(minX, end + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a).lineWidth(lineWidth);
+            buffer.addVertex(minX, start + dyMin, minZ).setColor(colorY.r, colorY.g, colorY.b, colorY.a).setLineWidth(lineWidth);
+            buffer.addVertex(minX, end + dyMax, minZ).setColor(colorY.r, colorY.g, colorY.b, colorY.a).setLineWidth(lineWidth);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMin) ? yMin + 1 : yMin;
@@ -3027,8 +3037,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a).lineWidth(lineWidth);
-            buffer.vertex(maxX + 1, end + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a).lineWidth(lineWidth);
+            buffer.addVertex(maxX + 1, start + dyMin, minZ).setColor(colorY.r, colorY.g, colorY.b, colorY.a).setLineWidth(lineWidth);
+            buffer.addVertex(maxX + 1, end + dyMax, minZ).setColor(colorY.r, colorY.g, colorY.b, colorY.a).setLineWidth(lineWidth);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMax) ? yMin + 1 : yMin;
@@ -3036,8 +3046,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a).lineWidth(lineWidth);
-            buffer.vertex(minX, end + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a).lineWidth(lineWidth);
+            buffer.addVertex(minX, start + dyMin, maxZ + 1).setColor(colorY.r, colorY.g, colorY.b, colorY.a).setLineWidth(lineWidth);
+            buffer.addVertex(minX, end + dyMax, maxZ + 1).setColor(colorY.r, colorY.g, colorY.b, colorY.a).setLineWidth(lineWidth);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMax) ? yMin + 1 : yMin;
@@ -3045,8 +3055,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a).lineWidth(lineWidth);
-            buffer.vertex(maxX + 1, end + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a).lineWidth(lineWidth);
+            buffer.addVertex(maxX + 1, start + dyMin, maxZ + 1).setColor(colorY.r, colorY.g, colorY.b, colorY.a).setLineWidth(lineWidth);
+            buffer.addVertex(maxX + 1, end + dyMax, maxZ + 1).setColor(colorY.r, colorY.g, colorY.b, colorY.a).setLineWidth(lineWidth);
         }
 
         // Edges along the Z-axis
@@ -3055,8 +3065,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).lineWidth(lineWidth);
-            buffer.vertex(minX, minY, end + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).lineWidth(lineWidth);
+            buffer.addVertex(minX, minY, start + dzMin).setColor(colorZ.r, colorZ.g, colorZ.b, colorZ.a).setLineWidth(lineWidth);
+            buffer.addVertex(minX, minY, end + dzMax).setColor(colorZ.r, colorZ.g, colorZ.b, colorZ.a).setLineWidth(lineWidth);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMin) ? zMin + 1 : zMin;
@@ -3064,8 +3074,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).lineWidth(lineWidth);
-            buffer.vertex(maxX + 1, minY, end + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).lineWidth(lineWidth);
+            buffer.addVertex(maxX + 1, minY, start + dzMin).setColor(colorZ.r, colorZ.g, colorZ.b, colorZ.a).setLineWidth(lineWidth);
+            buffer.addVertex(maxX + 1, minY, end + dzMax).setColor(colorZ.r, colorZ.g, colorZ.b, colorZ.a).setLineWidth(lineWidth);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMin) ? zMin + 1 : zMin;
@@ -3073,8 +3083,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).lineWidth(lineWidth);
-            buffer.vertex(minX, maxY + 1, end + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).lineWidth(lineWidth);
+            buffer.addVertex(minX, maxY + 1, start + dzMin).setColor(colorZ.r, colorZ.g, colorZ.b, colorZ.a).setLineWidth(lineWidth);
+            buffer.addVertex(minX, maxY + 1, end + dzMax).setColor(colorZ.r, colorZ.g, colorZ.b, colorZ.a).setLineWidth(lineWidth);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMax && pos2.getZ() == zMin) ? zMin + 1 : zMin;
@@ -3082,13 +3092,13 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).lineWidth(lineWidth);
-            buffer.vertex(maxX + 1, maxY + 1, end + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a).lineWidth(lineWidth);
+            buffer.addVertex(maxX + 1, maxY + 1, start + dzMin).setColor(colorZ.r, colorZ.g, colorZ.b, colorZ.a).setLineWidth(lineWidth);
+            buffer.addVertex(maxX + 1, maxY + 1, end + dzMax).setColor(colorZ.r, colorZ.g, colorZ.b, colorZ.a).setLineWidth(lineWidth);
         }
 
         try
         {
-            BuiltBuffer meshData = buffer.endNullable();
+            MeshData meshData = buffer.build();
 
             if (meshData != null)
             {
@@ -3107,12 +3117,12 @@ public class RenderUtils
 
 	public static boolean shouldCull(BlockPos pos1, BlockPos pos2)
 	{
-		return shouldCull(new Box(pos1.getX(), pos1.getY(), pos1.getZ(), pos2.getX(), pos2.getY(), pos2.getZ()));
+		return shouldCull(new AABB(pos1.getX(), pos1.getY(), pos1.getZ(), pos2.getX(), pos2.getY(), pos2.getZ()));
 	}
 
-	public static boolean shouldCull(Vec3d pos1, Vec3d pos2)
+	public static boolean shouldCull(Vec3 pos1, Vec3 pos2)
 	{
-		return shouldCull(new Box(pos1, pos2));
+		return shouldCull(new AABB(pos1, pos2));
 	}
 
 	/**
@@ -3125,15 +3135,15 @@ public class RenderUtils
 	 * @param bb
 	 * @return
 	 */
-	public static boolean shouldCull(Box bb)
+	public static boolean shouldCull(AABB bb)
 	{
 		Entity camera = mc().getCameraEntity();
-		final Vec3d minPos = bb.getMinPos();
-		final Vec3d maxPos = bb.getMaxPos();
-		Vec3d mid = bb.getCenter();
+		final Vec3 minPos = bb.getMinPosition();
+		final Vec3 maxPos = bb.getMaxPosition();
+		Vec3 mid = bb.getCenter();
 		BlockPos pos;
 
-		if (minPos.getY() < maxPos.getY())
+		if (minPos.y() < maxPos.y())
 		{
 			pos = new BlockPos((int) mid.x, (int) minPos.y, (int) mid.z);
 		}
@@ -3142,16 +3152,16 @@ public class RenderUtils
 			pos = new BlockPos((int) mid.x, (int) maxPos.y, (int) mid.z);
 		}
 
-		if (mc().world != null)
+		if (mc().level != null)
 		{
 			// Calculate only if the Down Direction is a Block, while above it is Air.
-			BlockState state = mc().world.getBlockState(pos);
-			BlockState stateDown = mc().world.getBlockState(pos.offset(Direction.DOWN));
+			BlockState state = mc().level.getBlockState(pos);
+			BlockState stateDown = mc().level.getBlockState(pos.relative(Direction.DOWN));
 
 			if (camera != null && state.isAir() && !stateDown.isAir())
 			{
 				// Causes Z fighting on the floor (~24 Block distance)
-				return camera.getEntityPos().distanceTo(mid) >= 23;
+				return camera.position().distanceTo(mid) >= 23;
 			}
 		}
 

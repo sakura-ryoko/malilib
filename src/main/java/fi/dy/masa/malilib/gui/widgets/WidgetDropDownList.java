@@ -3,11 +3,10 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.CharInput;
-import net.minecraft.client.input.KeyInput;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.joml.Matrix3x2fStack;
 import org.joml.Matrix4fStack;
 
@@ -87,7 +86,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         this.searchBar.textField().setY(y - 18);
     }
 
-    protected int getRequiredWidth(int width, List<T> entries, MinecraftClient mc)
+    protected int getRequiredWidth(int width, List<T> entries, Minecraft mc)
     {
         if (width == -1)
         {
@@ -134,7 +133,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
+    protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
 		int mouseX = (int) click.x();
 		int mouseY = (int) click.y();
@@ -168,7 +167,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
             if (this.isOpen == false)
             {
-                this.searchBar.textField().setText("");
+                this.searchBar.textField().setValue("");
                 this.updateFilteredEntries();
             }
         }
@@ -177,7 +176,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    public void onMouseReleasedImpl(Click click)
+    public void onMouseReleasedImpl(MouseButtonEvent click)
     {
         this.scrollBar.setIsDragging(false);
     }
@@ -195,7 +194,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onKeyTypedImpl(KeyInput input)
+    protected boolean onKeyTypedImpl(KeyEvent input)
     {
         if (this.isOpen)
         {
@@ -206,7 +205,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
-    protected boolean onCharTypedImpl(CharInput input)
+    protected boolean onCharTypedImpl(CharacterEvent input)
     {
         if (this.isOpen)
         {
@@ -219,7 +218,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     protected void updateFilteredEntries()
     {
         this.filteredEntries.clear();
-        String filterText = this.searchBar.textField().getText();
+        String filterText = this.searchBar.textField().getValue();
 
         if (this.isOpen && filterText.isEmpty() == false)
         {
@@ -271,7 +270,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
         matrixStack.pushMatrix();
         matrixStack.translate(0, 0, 10);
-        Matrix3x2fStack matrixStackIn = ctx.getMatrices();
+        Matrix3x2fStack matrixStackIn = ctx.pose();
         matrixStackIn.pushMatrix();
         // 10
         matrixStackIn.translate(0, 0);
@@ -293,7 +292,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         if (this.isOpen)
         {
-            if (this.searchBar.textField().getText().isEmpty() == false)
+            if (this.searchBar.textField().getValue().isEmpty() == false)
             {
                 this.searchBar.draw(ctx, mouseX, mouseY);
             }
