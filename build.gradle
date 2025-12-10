@@ -29,7 +29,7 @@ dependencies {
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 	modCompileOnly "maven.modrinth:iris:${project.iris_version}+${project.iris_mc_version}-fabric"
 //	modCompileOnly "net.irisshaders:iris-fabric-1.8.12-snapshot+mc1.21.5-local"
-	modRuntimeOnly 'me.fallenbreath:mixin-auditor:0.1.0'
+//	modRuntimeOnly 'me.fallenbreath:mixin-auditor:0.1.0'
 }
 
 base {
@@ -45,16 +45,16 @@ base {
 loom {
     accessWidenerPath = file("src/main/resources/malilib.accesswidener")
 
-	def commonVmArgs = ['-Dmixin.debug.export=true', '-Dmixin.debug.countInjections=true']
-	// [FEATURE] MIXIN_AUDITOR
-	runs {
-		def auditVmArgs = [*commonVmArgs, '-DmixinAuditor.audit=true']
-		clientMixinAudit {
-			client()
-			vmArgs auditVmArgs
-			ideConfigGenerated false
-		}
-	}
+//	def commonVmArgs = ['-Dmixin.debug.export=true', '-Dmixin.debug.countInjections=true']
+//	// [FEATURE] MIXIN_AUDITOR
+//	runs {
+//		def auditVmArgs = [*commonVmArgs, '-DmixinAuditor.audit=true']
+//		clientMixinAudit {
+//			client()
+//			vmArgs auditVmArgs
+//			ideConfigGenerated false
+//		}
+//	}
 }
 
 processResources {
