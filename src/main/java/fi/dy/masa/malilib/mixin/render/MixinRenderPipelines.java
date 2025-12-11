@@ -223,7 +223,6 @@ public abstract class MixinRenderPipelines
                               .withFragmentShader("core/terrain")
                               .withUniform("Projection", UniformType.UNIFORM_BUFFER)
                               .withUniform("ChunkSection", UniformType.UNIFORM_BUFFER)
-//		                      .withColorWrite(true)
                               .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
                               .withBlend(BlendFunction.TRANSLUCENT)
                               .buildSnippet();
@@ -234,7 +233,6 @@ public abstract class MixinRenderPipelines
                               .withFragmentShader("core/terrain")
                               .withUniform("Projection", UniformType.UNIFORM_BUFFER)
                               .withUniform("ChunkSection", UniformType.UNIFORM_BUFFER)
-//                              .withColorWrite(true)
                               .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
                               .withBlend(MASA_BLEND)
                               .buildSnippet();
@@ -243,7 +241,6 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(GENERIC_BLOCKS_SNIPPET, MATRICES_PROJECTION_SNIPPET)
 			                  .withVertexShader("core/block")
 			                  .withFragmentShader("core/block")
-//			                  .withColorWrite(true)
 			                  .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
 			                  .withBlend(BlendFunction.TRANSLUCENT)
 			                  .buildSnippet();
@@ -252,7 +249,6 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(GENERIC_BLOCKS_SNIPPET, MATRICES_PROJECTION_SNIPPET)
 			                  .withVertexShader("core/block")
 			                  .withFragmentShader("core/block")
-//			                  .withColorWrite(true)
 			                  .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
 			                  .withBlend(MASA_BLEND)
 			                  .buildSnippet();
@@ -1029,61 +1025,6 @@ public abstract class MixinRenderPipelines
                               .withDepthWrite(false)
                               .build();
 
-        // TERRAIN_MASA_OFFSET --> PRE-REGISTER
-        MaLiLibPipelines.SOLID_TERRAIN_MASA_OFFSET =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
-                              .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/solid_terrain/masa/offset"))
-                              .withDepthBias(-0.3f, -0.6f)
-                              .build());
-
-	    MaLiLibPipelines.SOLID_BLOCK_MASA_OFFSET =
-			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_MASA_STAGE)
-			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/solid_block/masa/offset"))
-			                           .withDepthBias(-0.3f, -0.6f)
-			                           .build());
-
-	    MaLiLibPipelines.WIREFRAME_MASA_OFFSET =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
-                              .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/wireframe/masa/offset"))
-                              .withPolygonMode(PolygonMode.WIREFRAME)
-                              .withDepthBias(-0.3f, -0.6f)
-                              .build());
-
-        MaLiLibPipelines.CUTOUT_TERRAIN_MASA_OFFSET =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
-                              .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/cutout_terrain/masa/offset"))
-                              .withShaderDefine("ALPHA_CUTOUT", 0.5F)
-                              .withDepthBias(-0.3f, -0.6f)
-                              .build());
-
-        MaLiLibPipelines.CUTOUT_BLOCK_MASA_OFFSET =
-                register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_MASA_STAGE)
-                              .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/cutout_block/masa/offset"))
-                              .withShaderDefine("ALPHA_CUTOUT", 0.5F)
-                              .withDepthBias(-0.3f, -0.6f)
-                              .build());
-
-        MaLiLibPipelines.TRANSLUCENT_MASA_OFFSET =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
-                              .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/translucent/masa/offset"))
-                              .withShaderDefine("ALPHA_CUTOUT", 0.01F)
-                              .withDepthBias(-0.3f, -0.6f)
-                              .build());
-
-        MaLiLibPipelines.TRIPWIRE_TERRAIN_MASA_OFFSET =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
-                              .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/tripwire_terrain/masa/offset"))
-                              .withShaderDefine("ALPHA_CUTOUT", 0.1F)
-                              .withDepthBias(-0.3f, -0.6f)
-                              .build());
-
-	    MaLiLibPipelines.TRIPWIRE_BLOCK_MASA_OFFSET =
-			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_TRANSLUCENT_STAGE)
-			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/tripwire_block/masa/offset"))
-			                           .withShaderDefine("ALPHA_CUTOUT", 0.1F)
-			                           .withDepthBias(-0.3f, -0.6f)
-			                           .build());
-
 	    // TERRAIN_MASA --> PRE-REGISTER
         MaLiLibPipelines.SOLID_TERRAIN_MASA =
                 register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
@@ -1129,6 +1070,61 @@ public abstract class MixinRenderPipelines
 			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_TRANSLUCENT_STAGE)
 			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/tripwire_block/masa"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+			                           .build());
+
+	    // TERRAIN_MASA_OFFSET --> PRE-REGISTER
+	    MaLiLibPipelines.SOLID_TERRAIN_MASA_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/solid_terrain/masa/offset"))
+			                           .withDepthBias(-0.3f, -0.6f)
+			                           .build());
+
+	    MaLiLibPipelines.SOLID_BLOCK_MASA_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_MASA_STAGE)
+			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/solid_block/masa/offset"))
+			                           .withDepthBias(-0.3f, -0.6f)
+			                           .build());
+
+	    MaLiLibPipelines.WIREFRAME_MASA_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/wireframe/masa/offset"))
+			                           .withPolygonMode(PolygonMode.WIREFRAME)
+			                           .withDepthBias(-0.3f, -0.6f)
+			                           .build());
+
+	    MaLiLibPipelines.CUTOUT_TERRAIN_MASA_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
+			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/cutout_terrain/masa/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .withDepthBias(-0.3f, -0.6f)
+			                           .build());
+
+	    MaLiLibPipelines.CUTOUT_BLOCK_MASA_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_MASA_STAGE)
+			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/cutout_block/masa/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .withDepthBias(-0.3f, -0.6f)
+			                           .build());
+
+	    MaLiLibPipelines.TRANSLUCENT_MASA_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/translucent/masa/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
+			                           .withDepthBias(-0.3f, -0.6f)
+			                           .build());
+
+	    MaLiLibPipelines.TRIPWIRE_TERRAIN_MASA_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/tripwire_terrain/masa/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+			                           .withDepthBias(-0.3f, -0.6f)
+			                           .build());
+
+	    MaLiLibPipelines.TRIPWIRE_BLOCK_MASA_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_TRANSLUCENT_STAGE)
+			                           .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/tripwire_block/masa/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+			                           .withDepthBias(-0.3f, -0.6f)
 			                           .build());
 
 	    // MINIHUD_SHAPE
