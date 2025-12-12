@@ -1272,7 +1272,90 @@ public abstract class MixinRenderPipelines
                               .withBlend(BlendFunction.OVERLAY)
                               .build();
 
-        // Try registering with Iris.
+		// LEGACY_TERRAIN STAGES
+		MaLiLibPipelines.LEGACY_TERRAIN_STAGE =
+				RenderPipeline.builder(MATRICES_FOG_SNIPPET)
+							  .withVertexShader(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "legacy_terrain"))
+							  .withFragmentShader(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "legacy_terrain"))
+							  .withSampler("Sampler0")
+							  .withSampler("Sampler2")
+							  .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
+							  .buildSnippet();
+
+		MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE =
+				RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
+							  .withBlend(MASA_BLEND)
+							  .buildSnippet();
+
+		MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE =
+				RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
+							  .withBlend(BlendFunction.TRANSLUCENT)
+							  .buildSnippet();
+
+		// TERRAIN_MASA --> PRE-REGISTER
+		MaLiLibPipelines.LEGACY_SOLID_TERRAIN_MASA =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/solid/masa"))
+									   .build());
+
+		MaLiLibPipelines.LEGACY_WIREFRAME_MASA =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/wireframe/masa"))
+									   .withPolygonMode(PolygonMode.WIREFRAME)
+									   .build());
+
+		MaLiLibPipelines.LEGACY_CUTOUT_TERRAIN_MASA =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/cutout/masa"))
+									   .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+									   .build());
+
+		MaLiLibPipelines.LEGACY_TRANSLUCENT_MASA =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/translucent/masa"))
+									   .build());
+
+		MaLiLibPipelines.LEGACY_TRIPWIRE_TERRAIN_MASA =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/tripwire/masa"))
+									   .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+									   .build());
+
+		// LEGACY_TERRAIN_MASA_OFFSET --> PRE-REGISTER
+		MaLiLibPipelines.LEGACY_SOLID_TERRAIN_MASA_OFFSET =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/solid/masa/offset"))
+									   .withDepthBias(-0.3f, -0.6f)
+									   .build());
+
+		MaLiLibPipelines.LEGACY_WIREFRAME_MASA_OFFSET =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/wireframe/masa/offset"))
+									   .withPolygonMode(PolygonMode.WIREFRAME)
+									   .withDepthBias(-0.3f, -0.6f)
+									   .build());
+
+		MaLiLibPipelines.LEGACY_CUTOUT_TERRAIN_MASA_OFFSET =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/cutout/masa/offset"))
+									   .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+									   .withDepthBias(-0.3f, -0.6f)
+									   .build());
+
+		MaLiLibPipelines.LEGACY_TRANSLUCENT_MASA_OFFSET =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/translucent/masa/offset"))
+									   .withDepthBias(-0.3f, -0.6f)
+									   .build());
+
+		MaLiLibPipelines.LEGACY_TRIPWIRE_TERRAIN_MASA_OFFSET =
+				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
+									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/tripwire/masa/offset"))
+									   .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+									   .withDepthBias(-0.3f, -0.6f)
+									   .build());
+
+		// Try registering with Iris.
         IrisCompat.registerPipelines();
     }
 }
