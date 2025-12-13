@@ -774,9 +774,19 @@ public class DataEntityUtils
 
 			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
 		}
-		if (data.contains(NbtKeys.COLLAR, Constants.NBT.TAG_INT))
+		if (data.containsLenient(NbtKeys.COLLAR))
 		{
 			collar = data.getCodec(NbtKeys.COLLAR, DyeColor.INDEX_CODEC).orElse(DyeColor.RED);
+		}
+
+		if (variantKey == null)
+		{
+			variantKey = CatVariants.BLACK;
+		}
+
+		if (collar == null)
+		{
+			collar = DyeColor.RED;
 		}
 
 		return Pair.of(variantKey, collar);
@@ -958,7 +968,7 @@ public class DataEntityUtils
 
 			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(WolfVariants.DEFAULT);
 		}
-		if (data.contains(NbtKeys.COLLAR, Constants.NBT.TAG_INT))
+		if (data.containsLenient(NbtKeys.COLLAR))
 		{
 			collar = data.getCodec(NbtKeys.COLLAR, DyeColor.INDEX_CODEC).orElse(DyeColor.RED);
 		}

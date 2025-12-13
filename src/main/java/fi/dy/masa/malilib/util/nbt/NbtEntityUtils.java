@@ -822,6 +822,16 @@ public class NbtEntityUtils
             collar = nbt.get(NbtKeys.COLLAR, DyeColor.INDEX_CODEC).orElse(DyeColor.RED);
         }
 
+        if (variantKey == null)
+        {
+            variantKey = CatVariants.BLACK;
+        }
+
+        if (collar == null)
+        {
+            collar = DyeColor.RED;
+        }
+
         return Pair.of(variantKey, collar);
     }
 
