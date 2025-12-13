@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.render.uniform;
 
+import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -49,7 +50,16 @@ public class ChunkFixUniform implements AutoCloseable
 	 */
 	public void drawPass(@Nonnull RenderPass pass)
 	{
-		pass.setUniform("ChunkFix", this.ubo.currentBuffer());
+		pass.setUniform("ChunkFix", this.getCurrentBuffer());
+	}
+
+	/**
+	 * Get the 'currentBuffer' from the Ring Buffer.
+	 * @return ()
+	 */
+	public GpuBuffer getCurrentBuffer()
+	{
+		return this.ubo.currentBuffer();
 	}
 
 	/**
