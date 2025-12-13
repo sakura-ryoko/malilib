@@ -3,6 +3,12 @@
 #moj_import <minecraft:fog.glsl>
 #moj_import <minecraft:dynamictransforms.glsl>
 
+layout(std140) uniform ChunkFix {
+    ivec2 atlasWidthHeight;
+    float chunkVisibility;
+    int useRGSS;
+};
+
 uniform sampler2D Sampler0;
 
 in float sphericalVertexDistance;
@@ -86,7 +92,10 @@ vec4 sampleRGSS(sampler2D source, vec2 uv, vec2 pixelSize) {
 
 void main() {
 //    vec4 color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
-    vec4 color = sampleNearest(Sampler0, texCoord0, 1.0f / ivec2(2048, 2048)) * vertexColor * ColorModulator;
+//    vec4 color = sampleNearest(Sampler0, texCoord0, 1.0f / ivec2(2048, 2048)) * vertexColor * ColorModulator;
+    vec4 color = sampleNearest(Sampler0, texCoord0, 1.0f / atlasWidthHeight) * vertexColor * ColorModulator;
+//    vec4 color = (useRGSS == 1 ? sampleRGSS(Sampler0, texCoord0, 1.0f / atlasWidthHeight) : sampleNearest(Sampler0, texCoord0, 1.0f / atlasWidthHeight)) * vertexColor * ColorModulator;
+//    color = mix(FogColor * vec4(1, 1, 1, color.a), color, chunkVisibility);
 #ifdef ALPHA_CUTOUT
     if (color.a < ALPHA_CUTOUT) {
         discard;
