@@ -45,8 +45,28 @@ public class IrisCompat
     {
         return isSodiumLoaded && isIrisLoaded;
     }
-    
-    public static void registerPipelines()
+
+	public static boolean isShaderActive()
+	{
+		if (hasIris())
+		{
+			return IrisApi.getInstance().isShaderPackInUse();
+		}
+
+		return false;
+	}
+
+	public static boolean isShadowPassActive()
+	{
+		if (hasIris())
+		{
+			return IrisApi.getInstance().isRenderingShadowPass();
+		}
+
+		return false;
+	}
+
+	public static void registerPipelines()
     {
         if (hasIris())
         {

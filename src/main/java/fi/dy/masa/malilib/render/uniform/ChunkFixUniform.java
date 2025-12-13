@@ -1,9 +1,6 @@
 package fi.dy.masa.malilib.render.uniform;
 
-import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
-
-import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.Std140Builder;
@@ -14,10 +11,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.TextureFilteringMethod;
 import net.minecraft.client.renderer.MappableRingBuffer;
 
-@ApiStatus.Experimental
+import fi.dy.masa.malilib.compat.iris.IrisCompat;
+
 public class ChunkFixUniform implements AutoCloseable
 {
-	private static final int UBO_SIZE = new Std140SizeCalculator().putIVec2().putFloat().putInt().get();
+	private static final int UBO_SIZE = new Std140SizeCalculator().putIVec2().putFloat().putInt().putInt().get();
 	private final MappableRingBuffer ubo = new MappableRingBuffer(() -> "ChunkFix UBO", 130, UBO_SIZE);
 
 	/**
@@ -36,11 +34,12 @@ public class ChunkFixUniform implements AutoCloseable
 		}
 
 		final int useRGSS = Minecraft.getInstance().options.textureFiltering().get() == TextureFilteringMethod.RGSS ? 1 : 0;
+		final int hasShadersOn = IrisCompat.isShaderActive() ? 1 : 0;
 
 		try (GpuBuffer.MappedView mappedView = RenderSystem.getDevice().createCommandEncoder()
 		                                                   .mapBuffer(this.ubo.currentBuffer(), false, true))
 		{
-			Std140Builder.intoBuffer(mappedView.data()).putIVec2(atlasWidth, atlasHeight).putFloat(chunkVisibility).putInt(useRGSS);
+			Std140Builder.intoBuffer(mappedView.data()).putIVec2(atlasWidth, atlasHeight).putFloat(chunkVisibility).putInt(useRGSS).putInt(hasShadersOn);
 		}
 	}
 
