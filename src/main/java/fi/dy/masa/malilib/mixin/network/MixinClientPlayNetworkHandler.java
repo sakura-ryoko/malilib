@@ -29,7 +29,7 @@ public abstract class MixinClientPlayNetworkHandler
         // Need to grab the old world reference at the start of the method,
         // because the next injection point is right after the world has been assigned,
         // since we need the new world reference for the callback.
-        //MaLiLib.logger.error("CP#onPreJoinGameHead(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
+//        MaLiLib.LOGGER.error("CP#onPreJoinGameHead(): world [{}], worldBefore [{}]", this.level != null, this.worldBefore != null);
         this.worldBefore = this.level;
     }
 
@@ -39,14 +39,14 @@ public abstract class MixinClientPlayNetworkHandler
             shift = At.Shift.BEFORE))
     private void malilib_onPreGameJoin(ClientboundLoginPacket packet, CallbackInfo ci)
     {
-        //MaLiLib.logger.error("CP#onPreGameJoin(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
+//        MaLiLib.LOGGER.error("CP#onPreGameJoin(): world [{}], worldBefore [{}]", this.level != null, this.worldBefore != null);
         ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.worldBefore, this.level, Minecraft.getInstance());
     }
 
     @Inject(method = "handleLogin", at = @At("RETURN"))
     private void malilib_onPostGameJoin(ClientboundLoginPacket packet, CallbackInfo ci)
     {
-        //MaLiLib.logger.error("CP#onPostGameJoin(): world [{}], worldBefore [{}]", this.world != null, this.worldBefore != null);
+//        MaLiLib.LOGGER.error("CP#onPostGameJoin(): world [{}], worldBefore [{}]", this.level != null, this.worldBefore != null);
         ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, this.level, Minecraft.getInstance());
         this.worldBefore = null;
     }
