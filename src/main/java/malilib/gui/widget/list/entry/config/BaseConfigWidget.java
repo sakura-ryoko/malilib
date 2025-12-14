@@ -2,7 +2,6 @@ package malilib.gui.widget.list.entry.config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import malilib.MaLiLibConfigs;
 import malilib.config.option.ConfigInfo;
@@ -46,7 +45,6 @@ public abstract class BaseConfigWidget<CFG extends ConfigInfo> extends BaseDataL
 
         EventListener clickHandler = config.getLabelClickHandler();
         List<String> comments = new ArrayList<>();
-        Optional<String> o = Optional.empty(); o.ifPresent(comments::add);
 
         if (clickHandler != null)
         {
@@ -60,6 +58,10 @@ public abstract class BaseConfigWidget<CFG extends ConfigInfo> extends BaseDataL
 
         this.configOwnerAndNameLabelWidget.getBorderRenderer().getHoverSettings().setBorderWidthAndColor(1, 0x30FFFFFF);
         this.configOwnerAndNameLabelWidget.getHoverInfoFactory().addStrings(comments);
+
+        int size = this.configOwnerAndNameLabelWidget.getHoverInfoFactory().getStyledLines().size();
+        int maxLines = MaLiLibConfigs.Generic.CONFIG_TOOLTIP_MAX_LINES_DIRECT.getIntegerValue();
+        this.configOwnerAndNameLabelWidget.setHoverInfoRequiresShift(size > maxLines);
 
         boolean bgEnabled = MaLiLibConfigs.Generic.CONFIG_WIDGET_BACKGROUND.getBooleanValue();
         this.getBackgroundRenderer().getNormalSettings()

@@ -40,6 +40,7 @@ public class MaLiLibConfigs
         public static final BooleanConfig ACTION_PROMPT_SEARCH_DISPLAY_NAME         = new BooleanConfig("actionPromptSearchDisplayName", false);
         public static final BooleanConfig CONFIG_BACKUP_ANTI_DUPLICATE              = new BooleanConfig("configBackupAntiDuplicate", true);
         public static final IntegerConfig CONFIG_BACKUP_COUNT                       = new IntegerConfig("configBackupCount", 20, 0, 200);
+        public static final IntegerConfig CONFIG_TOOLTIP_MAX_LINES_DIRECT           = new IntegerConfig("configTooltipMaxLinesDirect", 6, 0, 64);
         public static final BooleanConfig CONFIG_WIDGET_BACKGROUND                  = new BooleanConfig("configWidgetBackground", true);
         public static final BooleanAndIntConfig COORDINATE_DECIMAL_CLAMPING         = new BooleanAndIntConfig("coordinateDecimalClamping", true, 4, 0, 32);
         public static final IntegerConfig CUSTOM_HOTBAR_MESSAGE_LIMIT               = new IntegerConfig("customHotbarMessageLimit", 3, 1, 16);
@@ -74,8 +75,9 @@ public class MaLiLibConfigs
                 ACTION_PROMPT_SEARCH_DISPLAY_NAME,
                 CONFIG_BACKUP_ANTI_DUPLICATE,
                 CONFIG_BACKUP_COUNT,
-                CONFIG_WIDGET_BACKGROUND,
                 CONFIG_SEARCH_DEFAULT_SCOPE,
+                CONFIG_TOOLTIP_MAX_LINES_DIRECT,
+                CONFIG_WIDGET_BACKGROUND,
                 CONFIG_WRITE_METHOD,
                 COORDINATE_DECIMAL_CLAMPING,
                 CUSTOM_HOTBAR_MESSAGE_LIMIT,
