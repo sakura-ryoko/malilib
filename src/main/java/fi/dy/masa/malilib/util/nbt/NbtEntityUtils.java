@@ -40,6 +40,8 @@ import net.minecraft.world.entity.animal.fish.TropicalFish;
 import net.minecraft.world.entity.animal.fox.Fox;
 import net.minecraft.world.entity.animal.frog.FrogVariant;
 import net.minecraft.world.entity.animal.frog.FrogVariants;
+import net.minecraft.world.entity.animal.nautilus.ZombieNautilusVariant;
+import net.minecraft.world.entity.animal.nautilus.ZombieNautilusVariants;
 import net.minecraft.world.entity.animal.panda.Panda;
 import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.animal.pig.PigVariant;
@@ -929,6 +931,28 @@ public class NbtEntityUtils
                     .resultOrPartial();
 
             return variant.map(entry -> entry.unwrapKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get a Zombie Nautilus's Variant from NBT.
+     *
+     * @param nbt ()
+     * @param registry ()
+     * @return ()
+     */
+    public static @Nullable ResourceKey<@NotNull ZombieNautilusVariant> getZombieNautilusVariantFromNbt(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry)
+    {
+        if (nbt.contains(NbtKeys.VARIANT))
+        {
+            Optional<Holder<@NotNull ZombieNautilusVariant>> variant = ZombieNautilusVariant.CODEC
+                    .fieldOf(NbtKeys.VARIANT).codec()
+                    .parse(registry.createSerializationContext(NbtOps.INSTANCE), nbt)
+                    .resultOrPartial();
+
+            return variant.map(entry -> entry.unwrapKey().orElseThrow()).orElse(ZombieNautilusVariants.DEFAULT);
         }
 
         return null;

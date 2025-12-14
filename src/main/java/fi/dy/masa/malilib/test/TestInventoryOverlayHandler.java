@@ -150,7 +150,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 		if (cameraEntity == mc.player && world instanceof ServerLevel)
 		{
-			// We need to get the player from the server world (if available, ie. in single player),
+			// We need to get the player from the server world (if available, i.e. in single player),
 			// so that the player itself won't be included in the ray trace
 			Entity serverPlayer = world.getPlayerByUUID(mc.player.getUUID());
 
@@ -222,6 +222,11 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		else if (trace.getType() == HitResult.Type.ENTITY)
 		{
 			Entity entity = ((EntityHitResult) trace).getEntity();
+
+			if (entity.getUUID().equals(cameraEntity.getUUID()))
+			{
+				return null;
+			}
 
 			if (mc.crosshairPickEntity != null && entity.getId() != mc.crosshairPickEntity.getId())
 			{

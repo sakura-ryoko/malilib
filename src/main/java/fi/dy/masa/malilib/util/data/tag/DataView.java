@@ -1,14 +1,14 @@
 package fi.dy.masa.malilib.util.data.tag;
 
-import fi.dy.masa.malilib.util.data.Constants;
-
 import java.util.Optional;
 import java.util.Set;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 
 public interface DataView
 {
@@ -56,13 +56,19 @@ public interface DataView
 
 	default <T> Optional<T> getCodec(String key, Codec<T> codec)
 	{
-		return this.getCodec(key, codec, NbtOps.INSTANCE);
+		return this.getCodec(key, codec, DataOps.INSTANCE);
 	}
 
-	default <T> Optional<T> getCodec(String key, Codec<T> codec, DynamicOps<Tag> ops)
+	default <T> Optional<T> getCodec(String key, Codec<T> codec, DynamicOps<BaseData> ops)
 	{
 		return Optional.empty();
 	}
+
+    @Deprecated
+    default <T> Optional<T> getNbtCodec(String key, Codec<T> codec, DynamicOps<Tag> ops)
+    {
+        return Optional.empty();
+    }
 
     default boolean getBooleanOrDefault(String key, boolean defaultValue)
     {

@@ -28,6 +28,7 @@ import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
@@ -166,7 +167,7 @@ public class DataBlockUtils
 
 		if (data.contains(NbtKeys.LISTENER, Constants.NBT.TAG_COMPOUND))
 		{
-			listener = data.getCodec(NbtKeys.LISTENER, VibrationSystem.Data.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElseGet(VibrationSystem.Data::new);
+			listener = data.getCodec(NbtKeys.LISTENER, VibrationSystem.Data.CODEC, registry.createSerializationContext(DataOps.INSTANCE)).orElseGet(VibrationSystem.Data::new);
 		}
 
 		return Pair.of(lastFreq, listener);
@@ -242,7 +243,7 @@ public class DataBlockUtils
 
 		if (data.contains(NbtKeys.BOOK, Constants.NBT.TAG_COMPOUND))
 		{
-			book = data.getCodec(NbtKeys.BOOK, ItemStack.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
+			book = data.getCodec(NbtKeys.BOOK, ItemStack.CODEC, registry.createSerializationContext(DataOps.INSTANCE)).orElse(ItemStack.EMPTY);
 		}
 
 		if (data.contains(NbtKeys.PAGE, Constants.NBT.TAG_INT))

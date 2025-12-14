@@ -39,6 +39,8 @@ import net.minecraft.world.entity.animal.fish.TropicalFish;
 import net.minecraft.world.entity.animal.fox.Fox;
 import net.minecraft.world.entity.animal.frog.FrogVariant;
 import net.minecraft.world.entity.animal.frog.FrogVariants;
+import net.minecraft.world.entity.animal.nautilus.ZombieNautilusVariant;
+import net.minecraft.world.entity.animal.nautilus.ZombieNautilusVariants;
 import net.minecraft.world.entity.animal.panda.Panda;
 import net.minecraft.world.entity.animal.parrot.Parrot;
 import net.minecraft.world.entity.animal.pig.PigVariant;
@@ -61,6 +63,7 @@ import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.INbtEntityInvoker;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
@@ -253,7 +256,7 @@ public class DataEntityUtils
 	{
 		if (data.contains(NbtKeys.CUSTOM_NAME, Constants.NBT.TAG_COMPOUND))
 		{
-			return data.getCodec(NbtKeys.CUSTOM_NAME, ComponentSerialization.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.CUSTOM_NAME, ComponentSerialization.CODEC, registry.createSerializationContext(DataOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -277,7 +280,7 @@ public class DataEntityUtils
 			key = NbtKeys.CUSTOM_NAME;
 		}
 
-		return data.putCodec(key, ComponentSerialization.CODEC, registry.createSerializationContext(NbtOps.INSTANCE), name);
+		return data.putCodec(key, ComponentSerialization.CODEC, registry.createSerializationContext(DataOps.INSTANCE), name);
 	}
 
 	/**
@@ -292,7 +295,7 @@ public class DataEntityUtils
 
 		if (data.contains(NbtKeys.EFFECTS, Constants.NBT.TAG_LIST))
 		{
-			List<MobEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, MobEffectInstance.CODEC.listOf(), registry.createSerializationContext(NbtOps.INSTANCE)).orElse(List.of());
+			List<MobEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, MobEffectInstance.CODEC.listOf(), registry.createSerializationContext(DataOps.INSTANCE)).orElse(List.of());
 
 			for (MobEffectInstance instance : list)
 			{
@@ -587,7 +590,7 @@ public class DataEntityUtils
 	{
 		if (data.containsLenient(NbtKeys.OFFERS))
 		{
-			return data.getCodec(NbtKeys.OFFERS, MerchantOffers.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.OFFERS, MerchantOffers.CODEC, registry.createSerializationContext(DataOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -884,6 +887,28 @@ public class DataEntityUtils
 					.resultOrPartial();
 
 			return variant.map(entry -> entry.unwrapKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Get a Zombie Nautilus's Variant from NBT.
+	 *
+	 * @param data ()
+	 * @param registry ()
+	 * @return ()
+	 */
+	public static @Nullable ResourceKey<@NotNull ZombieNautilusVariant> getZombieNautilusVariantFromNbt(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
+	{
+		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
+		{
+			Optional<Holder<@NotNull ZombieNautilusVariant>> variant = ZombieNautilusVariant.CODEC
+					.fieldOf(NbtKeys.VARIANT).codec()
+					.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.resultOrPartial();
+
+			return variant.map(entry -> entry.unwrapKey().orElseThrow()).orElse(ZombieNautilusVariants.DEFAULT);
 		}
 
 		return null;

@@ -32,10 +32,8 @@ public class DataConverterNbt
             case Constants.NBT.TAG_COMPOUND:    return fromVanillaCompound(vanillaTag.asCompound().orElse(new CompoundTag()));
             case Constants.NBT.TAG_LIST:        return fromVanillaList(vanillaTag.asList().orElse(new ListTag()));
             default:
-                MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaCompound: Unknown NBT tag id {}", vanillaTag.getId());
+                return EmptyData.INSTANCE;
         }
-
-        return null;
     }
 
     public static ListData fromVanillaList(ListTag vanillaList)
@@ -117,10 +115,8 @@ public class DataConverterNbt
             case Constants.NBT.TAG_COMPOUND:    return toVanillaCompound((CompoundData) data);
             case Constants.NBT.TAG_LIST:        return toVanillaList((ListData) data);
             default:
-                MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaNbt: Unknown NBT tag id {}", data.getType());
+                return EndTag.INSTANCE;
         }
-
-        return null;
     }
 
     public static ListTag toVanillaList(ListData listData)
