@@ -1,11 +1,5 @@
 package fi.dy.masa.malilib.util.data.tag;
 
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.util.data.Constants;
-import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
-import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
-import fi.dy.masa.malilib.util.log.AnsiLogger;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -14,13 +8,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.log.AnsiLogger;
 
 public class CompoundData extends BaseData implements DataView
 {
@@ -60,6 +60,11 @@ public class CompoundData extends BaseData implements DataView
     public Set<String> getKeys()
     {
         return this.values.keySet();
+    }
+
+    public Set<Map.Entry<String, BaseData>> entrySet()
+    {
+        return this.values.entrySet();
     }
 
     @Override
@@ -291,17 +296,31 @@ public class CompoundData extends BaseData implements DataView
     }
 
 	@Override
-	public <T> Optional<T> getCodec(String key, Codec<T> codec, DynamicOps<NbtElement> ops)
+	public <T> Optional<T> getCodec(String key, Codec<T> codec, DynamicOps<BaseData> ops)
 	{
 		BaseData data = this.values.get(key);
 
 		return data == null
 		       ? Optional.empty()
-		       : codec.parse(ops, DataConverterNbt.toVanillaNbt(data))
+		       : codec.parse(ops, data)
 		              .resultOrPartial(
-							  e -> MaLiLib.LOGGER.error("Failed to get field ({}={}): {}", key, data.toString(), e)
+							  e -> MaLiLib.LOGGER.error("getCodec: Failed to get field ({}={}): {}", key, data.toString(), e)
 		              );
 	}
+
+    @Override
+    @Deprecated
+    public <T> Optional<T> getNbtCodec(String key, Codec<T> codec, DynamicOps<NbtElement> ops)
+    {
+        BaseData data = this.values.get(key);
+
+        return data == null
+               ? Optional.empty()
+               : codec.parse(ops, DataConverterNbt.toVanillaNbt(data))
+                      .resultOrPartial(
+                              e -> MaLiLib.LOGGER.error("getNbtCodec: Failed to get field ({}={}): {}", key, data.toString(), e)
+                      );
+    }
 
     public CompoundData putBoolean(String key, boolean value)
     {
@@ -377,20 +396,32 @@ public class CompoundData extends BaseData implements DataView
 
 	public <T> CompoundData putCodec(String key, Codec<T> codec, @Nullable T value)
 	{
-		return this.putCodec(key, codec, NbtOps.INSTANCE, value);
+		return this.putCodec(key, codec, DataOps.INSTANCE, value);
 	}
 
-	public <T> CompoundData putCodec(String key, Codec<T> codec, DynamicOps<NbtElement> ops, @Nullable T value)
+	public <T> CompoundData putCodec(String key, Codec<T> codec, DynamicOps<BaseData> ops, @Nullable T value)
 	{
 		if (value != null)
 		{
-			this.values.put(key, DataConverterNbt.fromVanillaNbt(codec.encodeStart(ops, value).getOrThrow()));
+            // DataConverterNbt.fromVanillaNbt(codec.encodeStart(ops, value)
+			this.values.put(key, codec.encodeStart(ops, value).getOrThrow());
 		}
 
 		return this;
 	}
 
-	@Override
+    @Deprecated
+    public <T> CompoundData putNbtCodec(String key, Codec<T> codec, DynamicOps<NbtElement> ops, @Nullable T value)
+    {
+        if (value != null)
+        {
+            this.values.put(key, DataConverterNbt.fromVanillaNbt(codec.encodeStart(ops, value).getOrThrow()));
+        }
+
+        return this;
+    }
+
+    @Override
     public CompoundData copy()
     {
         CompoundData copy = new CompoundData();
