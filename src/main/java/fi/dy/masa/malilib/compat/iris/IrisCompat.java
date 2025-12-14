@@ -41,7 +41,12 @@ public class IrisCompat
         MaLiLib.LOGGER.info("Sodium: [{}], Iris: [{}]", isSodiumLoaded ? sodiumVersion : "N/F", isIrisLoaded ? irisVersion : "N/F");
     }
 
-    public static boolean hasIris()
+	public static boolean hasSodium()
+	{
+		return isSodiumLoaded;
+	}
+
+	public static boolean hasIris()
     {
         return isSodiumLoaded && isIrisLoaded;
     }

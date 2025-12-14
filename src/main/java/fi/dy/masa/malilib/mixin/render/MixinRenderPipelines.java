@@ -368,9 +368,9 @@ public abstract class MixinRenderPipelines
 	    // todo POSITION_COLOR_LINES Snippet
 	    MaLiLibPipelines.POSITION_COLOR_LINES_STAGE =
 			    RenderPipeline.builder(MATRICES_PROJECTION_SNIPPET)
-			                  .withVertexShader("core/position_color")
-			                  .withFragmentShader("core/position_color")
-			                  .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_LINE_WIDTH, VertexFormat.Mode.QUADS)
+                              .withVertexShader(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "position_color_lines"))
+                              .withFragmentShader(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "position_color_lines"))
+			                  .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_LINE_WIDTH, VertexFormat.Mode.LINES)
 			                  .buildSnippet();
 
 	    MaLiLibPipelines.POSITION_COLOR_LINES_TRANSLUCENT_STAGE =
@@ -885,8 +885,8 @@ public abstract class MixinRenderPipelines
 	    // todo DEBUG_LINES Snippet
 	    MaLiLibPipelines.DEBUG_LINES_STAGE =
 			    RenderPipeline.builder(MATRICES_PROJECTION_SNIPPET)
-			                  .withVertexShader("core/position_color")
-			                  .withFragmentShader("core/position_color")
+                              .withVertexShader(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "position_color_lines"))
+                              .withFragmentShader(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "position_color_lines"))
 			                  .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_LINE_WIDTH, VertexFormat.Mode.DEBUG_LINES)
 			                  .buildSnippet();
 
@@ -1012,8 +1012,8 @@ public abstract class MixinRenderPipelines
 	    // todo DEBUG_LINE_STRIP
 	    MaLiLibPipelines.DEBUG_LINE_STRIP_STAGE =
 			    RenderPipeline.builder(MATRICES_PROJECTION_SNIPPET)
-			                  .withVertexShader("core/position_color")
-			                  .withFragmentShader("core/position_color")
+                              .withVertexShader(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "position_color_lines"))
+                              .withFragmentShader(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "position_color_lines"))
 			                  .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_LINE_WIDTH, VertexFormat.Mode.DEBUG_LINE_STRIP)
 			                  .buildSnippet();
 

@@ -42,6 +42,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigInteger           ACTIONBAR_HUD_TICKS         = new ConfigInteger           ("actionbarHudTicks",       60, 1, 240).apply(GENERIC_KEY);
         public static final ConfigFloat             IN_GAME_MESSAGE_TIMEOUT     = new ConfigFloat             ("inGameMessageTimeout",    5.0f, 0.5f, 15.0f).apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
+        public static final ConfigBooleanHotkeyed   RENDER_TRANSPARENCY_FIX     = new ConfigBooleanHotkeyed   ("renderTransparencyFix",   true, "").apply(GENERIC_KEY);
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
@@ -51,6 +52,7 @@ public class MaLiLibConfigs implements IConfigHandler
                 ACTIONBAR_HUD_TICKS,
                 IN_GAME_MESSAGE_TIMEOUT,
                 ENABLE_CONFIG_SWITCHER,
+                RENDER_TRANSPARENCY_FIX,
                 REALMS_COMMON_CONFIG
         );
 
@@ -58,7 +60,8 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
                 OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
-                ENABLE_CONFIG_SWITCHER
+                ENABLE_CONFIG_SWITCHER,
+                RENDER_TRANSPARENCY_FIX
         );
     }
 

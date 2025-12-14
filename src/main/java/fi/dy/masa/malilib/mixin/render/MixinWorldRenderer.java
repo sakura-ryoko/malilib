@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -58,4 +59,14 @@ public abstract class MixinWorldRenderer
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(matrix4f, projectionMatrix, this.minecraft, frameGraphBuilder, this.targets, frustum, camera, this.renderBuffers, profiler);
     }
+
+	@Inject(method = "allChanged", at = @At("HEAD"))
+	private void malilib_verifyRenderTransparencyFix(CallbackInfo ci)
+	{
+		if (MaLiLibConfigs.Generic.RENDER_TRANSPARENCY_FIX.getBooleanValue() &&
+			this.minecraft.options.improvedTransparency().get())
+		{
+			this.minecraft.options.improvedTransparency().set(false);
+		}
+	}
 }

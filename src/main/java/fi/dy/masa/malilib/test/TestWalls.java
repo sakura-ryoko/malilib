@@ -46,7 +46,7 @@ public class TestWalls implements AutoCloseable
     {
         this.renderThrough = false;
         this.useCulling = false;
-        this.glLineWidth = 3.0f;
+        this.glLineWidth = 1.6f;
         this.lastUpdatePos = null;
         this.updateCameraPos = Vec3.ZERO;
         this.hasData = false;
@@ -82,6 +82,7 @@ public class TestWalls implements AutoCloseable
         }
 
         int radius = MaLiLibConfigs.Test.TEST_CONFIG_INTEGER.getIntegerValue();
+        this.glLineWidth = 1.6f;
         Vec3 vec = camera.position();
         BlockPos pos = entity.blockPosition();
         BlockPos testPos = pos.offset(2, 0, 2);
