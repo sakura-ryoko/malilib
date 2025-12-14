@@ -12,6 +12,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.animal.nautilus.AbstractNautilus;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.block.state.properties.ChestType;
 import org.apache.commons.lang3.tuple.Pair;
 
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
+import fi.dy.masa.malilib.mixin.entity.IMixinAbstractNautilus;
 import fi.dy.masa.malilib.mixin.entity.IMixinPiglinEntity;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
@@ -389,6 +391,10 @@ public interface IDataSyncer
 			else if (entity instanceof AbstractHorse)
 			{
 				inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
+			}
+			else if (entity instanceof AbstractNautilus)
+			{
+				inv = ((IMixinAbstractNautilus) entity).malilib_getNautilusInventory();
 			}
 			else if (entity instanceof Piglin)
 			{

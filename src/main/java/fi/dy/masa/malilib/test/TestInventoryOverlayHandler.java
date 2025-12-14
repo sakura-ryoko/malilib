@@ -13,6 +13,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.animal.nautilus.AbstractNautilus;
 import net.minecraft.world.entity.npc.InventoryCarrier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
@@ -34,6 +35,7 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IDataSyncer;
 import fi.dy.masa.malilib.interfaces.IInventoryOverlayHandler;
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
+import fi.dy.masa.malilib.mixin.entity.IMixinAbstractNautilus;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.InventoryOverlayContext;
@@ -371,6 +373,10 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		{
 			inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
 		}
+		else if (entity instanceof AbstractNautilus)
+		{
+			inv = ((IMixinAbstractNautilus) entity).malilib_getNautilusInventory();
+		}
 		else if (entity instanceof InventoryCarrier)
 		{
 			inv = ((InventoryCarrier) entity).getInventory();
@@ -388,7 +394,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 			{
 				MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): [Fix for horse inv] inv.size: [{}]", inv.getContainerSize());
 
-				if (entity instanceof AbstractHorse)
+				if (entity instanceof AbstractHorse || entity instanceof AbstractNautilus)
 				{
 					inv2 = InventoryUtils.getDataInventoryHorseFix(data, inv.getContainerSize(), entity.registryAccess());
 				}

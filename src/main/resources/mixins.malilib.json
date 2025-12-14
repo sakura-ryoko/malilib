@@ -5,10 +5,12 @@
     "minVersion": "0.8",
     "mixins": [
         "entity.IMixinAbstractHorseEntity",
+        "entity.IMixinAbstractNautilus",
         "entity.IMixinMerchantEntity",
         "entity.IMixinPiglinEntity",
         "entity.IMixinPlayerEntity",
         "entity.MixinAbstractHorseEntity",
+        "entity.MixinAbstractNautilus",
         "entity.MixinEntity",
         "entity.MixinPiglinEntity",
         "entity.MixinSimpleInventory",

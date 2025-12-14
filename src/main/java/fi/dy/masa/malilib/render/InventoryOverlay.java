@@ -33,6 +33,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
 import net.minecraft.world.entity.animal.equine.Llama;
 import net.minecraft.world.entity.animal.golem.CopperGolem;
+import net.minecraft.world.entity.animal.nautilus.AbstractNautilus;
 import net.minecraft.world.entity.animal.wolf.Wolf;
 import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.player.Inventory;
@@ -80,9 +81,11 @@ public class InventoryOverlay
     public static final Identifier TEXTURE_LOCKED_SLOT      = Identifier.withDefaultNamespace("container/crafter/disabled_slot");
 
     // Additional Empty Slot Textures
-    public static final Identifier TEXTURE_EMPTY_HORSE_ARMOR = Identifier.withDefaultNamespace("container/slot/horse_armor");
-    public static final Identifier TEXTURE_EMPTY_LLAMA_ARMOR = Identifier.withDefaultNamespace("container/slot/llama_armor");
-    public static final Identifier TEXTURE_EMPTY_SADDLE      = Identifier.withDefaultNamespace("container/slot/saddle");
+    public static final Identifier TEXTURE_EMPTY_HORSE_ARMOR        = Identifier.withDefaultNamespace("container/slot/horse_armor");
+    public static final Identifier TEXTURE_EMPTY_LLAMA_ARMOR        = Identifier.withDefaultNamespace("container/slot/llama_armor");
+	public static final Identifier TEXTURE_EMPTY_NAUTILUS_ARMOR     = Identifier.withDefaultNamespace("container/slot/nautilus_armor_inventory");
+	public static final Identifier TEXTURE_EMPTY_NAUTILUS_ARMOR2    = Identifier.withDefaultNamespace("container/slot/nautilus_armor");
+    public static final Identifier TEXTURE_EMPTY_SADDLE             = Identifier.withDefaultNamespace("container/slot/saddle");
 
     // Brewer Slots (1.21.4+)
     public static final Identifier TEXTURE_EMPTY_BREWER_FUEL = Identifier.withDefaultNamespace("container/slot/brewing_fuel");
@@ -105,6 +108,7 @@ public class InventoryOverlay
     public static final Identifier TEXTURE_EMPTY_SLOT_SHOVEL     = Identifier.withDefaultNamespace("container/slot/shovel");
     public static final Identifier TEXTURE_EMPTY_SLOT_ARMOR_TRIM = Identifier.withDefaultNamespace("container/slot/smithing_template_armor_trim");
     public static final Identifier TEXTURE_EMPTY_SLOT_UPGRADE    = Identifier.withDefaultNamespace("container/slot/smithing_template_netherite_upgrade");
+	public static final Identifier TEXTURE_EMPTY_SLOT_SPEAR      = Identifier.withDefaultNamespace("container/slot/spear");
     public static final Identifier TEXTURE_EMPTY_SLOT_SWORD      = Identifier.withDefaultNamespace("container/slot/sword");
 
     // Other Slot-Related textures (Nine-Slice Slots w/mcmeta)
@@ -273,6 +277,10 @@ public class InventoryOverlay
 		{
 			renderHorseArmorBackgroundSlots(ctx, inv, x, y);
 		}
+		else if (type == InventoryOverlayType.NAUTILUS)
+		{
+			renderNautilusArmorBackgroundSlots(ctx, inv, x, y);
+		}
 		else if (type == InventoryOverlayType.LLAMA)
 		{
 			renderLlamaArmorBackgroundSlots(ctx, inv, x, y);
@@ -326,7 +334,25 @@ public class InventoryOverlay
         }
     }
 
-    public static void renderLlamaArmorBackgroundSlots(GuiContext ctx, Container inv, int x, int y)
+	public static void renderNautilusArmorBackgroundSlots(GuiContext ctx, Container inv, int x, int y)
+	{
+		renderNautilusArmorBackgroundSlots(ctx, inv, x, y, 0.9f, 0, 0);
+	}
+
+	public static void renderNautilusArmorBackgroundSlots(GuiContext ctx, Container inv, int x, int y, float scale, double mouseX, double mouseY)
+	{
+		if (inv.getItem(0).isEmpty())
+		{
+			renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_NAUTILUS_ARMOR, x, y, scale - 0.05f, mouseX, mouseY);
+		}
+
+		if (inv.getItem(1).isEmpty())
+		{
+			renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_SADDLE, x, y + 18, scale, mouseX, mouseY);
+		}
+	}
+
+	public static void renderLlamaArmorBackgroundSlots(GuiContext ctx, Container inv, int x, int y)
     {
         renderLlamaArmorBackgroundSlots(ctx, inv, x, y, 0.9f, 0, 0);
     }
@@ -371,7 +397,12 @@ public class InventoryOverlay
         RenderUtils.drawTexturedRectBatched(ctx, pair, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18);
         RenderUtils.drawTexturedRectBatched(ctx, pair, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18);
 
-        if (entity.getItemBySlot(EquipmentSlot.OFFHAND).isEmpty())
+	    if (entity.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty())
+	    {
+		    renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_SLOT_SWORD, x + 28 + 1, y + 2 * 18 + 7 + 1);
+	    }
+
+	    if (entity.getItemBySlot(EquipmentSlot.OFFHAND).isEmpty())
         {
             renderBackgroundSlotAt(ctx, TEXTURE_EMPTY_SHIELD, x + 28 + 1, y + 3 * 18 + 7 + 1);
         }
@@ -467,6 +498,10 @@ public class InventoryOverlay
 				else if (inventory.malilib$getEntityOwner() instanceof AbstractHorse)
 				{
 					return InventoryOverlayType.HORSE;
+				}
+				else if (inventory.malilib$getEntityOwner() instanceof AbstractNautilus)
+				{
+					return InventoryOverlayType.NAUTILUS;
 				}
 				else if (inventory.malilib$getEntityOwner() instanceof Piglin)
 				{
@@ -649,6 +684,7 @@ public class InventoryOverlay
 					entityType.equals(EntityType.MULE) ||
 					entityType.equals(EntityType.CAMEL) ||
 					entityType.equals(EntityType.SKELETON_HORSE) ||
+					entityType.equals(EntityType.CAMEL_HUSK) ||
 					entityType.equals(EntityType.ZOMBIE_HORSE))
 			{
 				return InventoryOverlayType.HORSE;
@@ -657,6 +693,11 @@ public class InventoryOverlay
 					entityType.equals(EntityType.TRADER_LLAMA))
 			{
 				return InventoryOverlayType.LLAMA;
+			}
+			else if (entityType.equals(EntityType.NAUTILUS) ||
+					entityType.equals(EntityType.ZOMBIE_NAUTILUS))
+			{
+				return InventoryOverlayType.NAUTILUS;
 			}
 			else if (entityType.equals(EntityType.WOLF))
 			{
@@ -796,7 +837,9 @@ public class InventoryOverlay
 			INV_PROPS_TEMP.width = 68;
 			INV_PROPS_TEMP.height = 68;
 		}
-		else if (type == InventoryOverlayType.HORSE || type == InventoryOverlayType.LLAMA || type == InventoryOverlayType.WOLF || type == InventoryOverlayType.COPPER_GOLEM)
+		else if (type == InventoryOverlayType.HORSE || type == InventoryOverlayType.LLAMA ||
+				 type == InventoryOverlayType.WOLF || type == InventoryOverlayType.COPPER_GOLEM ||
+				 type == InventoryOverlayType.HAPPY_GHAST || type == InventoryOverlayType.NAUTILUS)
 		{
 			INV_PROPS_TEMP.slotsPerRow = Math.max(1, totalSlots / 3);
 			INV_PROPS_TEMP.slotOffsetX = 8;

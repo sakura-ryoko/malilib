@@ -12,6 +12,7 @@ public enum InventoryOverlayType
 	HOPPER,
 	HORSE,
 	LLAMA,
+	NAUTILUS,
 	WOLF,
 	HAPPY_GHAST,
 	COPPER_GOLEM,
