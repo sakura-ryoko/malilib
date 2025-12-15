@@ -39,6 +39,7 @@ import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -199,7 +200,7 @@ public class RenderUtils
 	@Deprecated(forRemoval = true)
     public static @Nullable Pair<GpuTexture, GpuSampler> bindGpuTexture(Identifier texture)
     {
-        SimpleTexture tex = (SimpleTexture) tex().getTexture(texture);
+        AbstractTexture tex = (AbstractTexture) tex().getTexture(texture);
 
         if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTexture() != null)
         {

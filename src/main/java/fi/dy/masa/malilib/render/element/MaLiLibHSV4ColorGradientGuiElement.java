@@ -30,10 +30,10 @@ public record MaLiLibHSV4ColorGradientGuiElement(
     @Override
     public void buildVertices(VertexConsumer vertices)
     {
-        vertices.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setColor(this.colorPair()[0]);
-        vertices.addVertexWith2DPose(this.pose(), this.x1(), this.y2()).setColor(this.colorPair()[1]);
-        vertices.addVertexWith2DPose(this.pose(), this.x2(), this.y2()).setColor(this.colorPair()[2]);
-        vertices.addVertexWith2DPose(this.pose(), this.x2(), this.y1()).setColor(this.colorPair()[3]);
+        vertices.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setColor(this.colorPair()[0]);      // TOP LEFT
+        vertices.addVertexWith2DPose(this.pose(), this.x1(), this.y2()).setColor(this.colorPair()[1]);      // TOP RIGHT
+        vertices.addVertexWith2DPose(this.pose(), this.x2(), this.y2()).setColor(this.colorPair()[2]);      // BOTTOM RIGHT
+        vertices.addVertexWith2DPose(this.pose(), this.x2(), this.y1()).setColor(this.colorPair()[3]);      // BOTTOM LEFT
     }
 
     @Nullable
