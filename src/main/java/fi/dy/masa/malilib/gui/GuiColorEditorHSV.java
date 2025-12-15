@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.gui;
 
 import java.awt.*;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
@@ -10,6 +11,11 @@ import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.texture.TextureSetup;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix3x2f;
+
+import com.mojang.blaze3d.platform.NativeImage;
+
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
@@ -51,6 +57,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     protected float relG;
     protected float relB;
     protected float relA;
+    private Pair<Identifier, DynamicTexture> dynamicTexture = null;
 
     public GuiColorEditorHSV(IConfigColor config, @Nullable IDialogHandler dialogHandler, Screen parent)
     {
@@ -150,7 +157,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     public void removed()
     {
         this.config.setIntegerValue(this.color);
-
+        this.clearDynamicTexture();
         super.removed();
     }
 
@@ -172,15 +179,12 @@ public class GuiColorEditorHSV extends GuiDialogBase
             }
         }
 
-        //RenderUtils.forceDraw(drawContext);
         this.drawColorSelector(drawContext, mouseX, mouseY);
     }
 
     @Override
     protected void drawScreenBackground(DrawContext drawContext, int mouseX, int mouseY)
     {
-//        super.drawTexturedBG(drawContext, GuiLayer.NONE, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, true);
-//        RenderUtils.applyLayer(drawContext, GuiLayer.BLUR);
         RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
     }
 
@@ -283,6 +287,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         this.color = (ai << 24) | (ri << 16) | (gi << 8) | bi;
 
+        this.clearDynamicTexture();
         this.updateTextFieldsHSV(this.relH, this.relS, this.relV);
     }
 
@@ -294,6 +299,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.relS = hsv[1];
         this.relV = hsv[2];
 
+        this.clearDynamicTexture();
         this.updateTextFieldsHSV(this.relH, this.relS, this.relV);
     }
 
@@ -404,6 +410,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
                 default:
             }
         }
+
+        this.clearDynamicTexture();
     }
 
     protected void updateTextFieldsHSV(float h, float s, float v)
@@ -519,7 +527,24 @@ public class GuiColorEditorHSV extends GuiDialogBase
         GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
          */
 
-        final int[] colorPair = this.getColorPairForSelector();
+//        final int[] colorPair = this.getColorPairForSelector();
+        this.generateDynamicTextureForHSVSelector();
+
+        RenderUtils.addSimpleElement(drawContext,
+                                     new MaLiLibTexturedGuiElement(
+                                     RenderPipelines.GUI_TEXTURED,
+                                     TextureSetup.singleTexture(
+                                        this.dynamicTexture.getRight().getTextureView(),
+                                        this.dynamicTexture.getRight().getSampler()
+                                    ),
+                                    new Matrix3x2f(drawContext.getMatrices()),
+                                    x, y,
+                                    x + w, y + h,
+                                    0, 256 * 0.00390625F,
+                                    0, 256 * 0.00390625F,
+                                    -1,
+                                    RenderUtils.peekLastScissor(drawContext)
+                                    ));
 
         RenderUtils.addSimpleElement(drawContext,
                                      new MaLiLibHSV4ColorGradientGuiElement(
@@ -634,15 +659,71 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
     private int[] getColorPairForSelector()
     {
-        int color1 = Color.HSBtoRGB(this.relH, 0f, 0f);
-        int color2 = Color.HSBtoRGB(this.relH, 1f, 0f);
-        int color3 = Color.HSBtoRGB(this.relH, 0f, 1f);
-        int color4 = Color.HSBtoRGB(this.relH, 1f, 1f);
+        int color1 = Color.HSBtoRGB(this.relH, 0f, 0f);     // TOP LEFT
+        int color2 = Color.HSBtoRGB(this.relH, 1f, 0f);     // TOP RIGHT
+        int color3 = Color.HSBtoRGB(this.relH, 0f, 1f);     // BOTTOM RIGHT
+        int color4 = Color.HSBtoRGB(this.relH, 1f, 1f);     // BOTTOM LEFT
 
         return new int[]{ color1, color2, color3, color4 };
     }
 
-    public static void renderGradientColorBar(DrawContext drawContext, int x, int y, float z, int width, int height, int colorStart, int colorEnd)
+    private void generateDynamicTextureForHSVSelector()
+    {
+        if (this.dynamicTexture != null)
+        {
+            return;
+        }
+
+        Identifier id = Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, UUID.randomUUID().toString());
+        final int sizeW = 256;
+        final int sizeH = 256;
+
+        try (NativeImage image = new NativeImage(sizeW, sizeH, false))
+        {
+            DynamicTexture texture = new DynamicTexture(id::toString, image);
+            this.mc.getTextureManager().register(id, texture);
+
+            for (int x = 0; x < sizeW; x++)
+            {
+                float brightness = Fraction.getFraction(x, sizeW).floatValue();
+
+                for (int y = 0; y < sizeH; y++)
+                {
+                    float saturation = Fraction.getFraction(y, sizeH).floatValue();
+
+                    // inverted Y (?)
+                    image.setPixel(x, ((sizeH - 1) - y), Color.HSBtoRGB(this.relH, saturation, brightness));
+                }
+            }
+
+//            if (MaLiLibReference.DEBUG_MODE)
+//            {
+//                Path dir = MaLiLibReference.CONFIG_DIR.resolve(id.getNamespace());
+//                FileUtils.createDirectoriesIfMissing(dir);
+//                Path file = dir.resolve(id.getPath() + ".png");
+//                image.writeToFile(file);
+//            }
+
+            texture.upload();
+            this.dynamicTexture = Pair.of(id, texture);
+        }
+        catch (Throwable err)
+        {
+            MaLiLib.LOGGER.error("GuiColorEditorHSV: generate native image failed; {}", err.getLocalizedMessage());
+        }
+    }
+
+    private void clearDynamicTexture()
+    {
+        if (this.dynamicTexture != null)
+        {
+            this.mc.getTextureManager().release(this.dynamicTexture.getLeft());
+            this.dynamicTexture.getRight().close();
+            this.dynamicTexture = null;
+        }
+    }
+
+    public static void renderGradientColorBar(GuiContext ctx, int x, int y, float z, int width, int height, int colorStart, int colorEnd)
     {
         RenderUtils.addSimpleElement(drawContext,
                                      new MaLiLibHSV2ColorGradientGuiElement(
