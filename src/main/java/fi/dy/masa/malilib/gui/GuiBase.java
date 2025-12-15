@@ -79,7 +79,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     private final List<WidgetBase> widgets = new ArrayList<>();
     private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields = new ArrayList<>();
     private final MessageRenderer messageRenderer = new MessageRenderer(0xDD000000, COLOR_HORIZONTAL_BAR);
-    protected GuiGraphics drawContext;
     private long openTime;
     protected WidgetBase hoveredWidget = null;
     protected String title = "";
@@ -193,11 +192,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     @Override
     public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
     {
-        if (this.drawContext == null || this.drawContext.equals(drawContext) == false)
-        {
-            this.drawContext = drawContext;
-        }
-
 		GuiContext ctx = GuiContext.fromGuiGraphics(drawContext);
 	    ctx.nextStratum();
 
@@ -214,16 +208,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.drawButtonHoverTexts(ctx, mouseX, mouseY, partialTicks);
         this.drawGuiMessages(ctx);
     }
-
-    public GuiGraphics getDrawContext()
-    {
-        return this.drawContext;
-    }
-
-	public GuiContext getGuiContext()
-	{
-		return GuiContext.fromGuiGraphics(this.getDrawContext());
-	}
 
     @Override
     public void renderBackground(@NotNull GuiGraphics context, int mouseX, int mouseY, float deltaTicks)
