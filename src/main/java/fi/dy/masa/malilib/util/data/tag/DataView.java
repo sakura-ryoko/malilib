@@ -6,7 +6,6 @@ import java.util.Set;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.DataOps;

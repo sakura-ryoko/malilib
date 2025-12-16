@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.jspecify.annotations.NonNull;
+import javax.annotation.Nonnull;
 
 public interface ArrayData extends Iterable<BaseData>
 {
@@ -25,7 +25,7 @@ public interface ArrayData extends Iterable<BaseData>
 		return size() == 0;
 	}
 
-	default @NonNull Iterator<BaseData> iterator()
+	default @Nonnull Iterator<BaseData> iterator()
 	{
 		return new Iterator<>()
 		{

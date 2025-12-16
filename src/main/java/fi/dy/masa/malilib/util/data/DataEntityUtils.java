@@ -45,6 +45,7 @@ import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.INbtEntityInvoker;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
@@ -238,7 +239,7 @@ public class DataEntityUtils
 	{
 		if (data.contains(NbtKeys.CUSTOM_NAME, Constants.NBT.TAG_COMPOUND))
 		{
-			return data.getCodec(NbtKeys.CUSTOM_NAME, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.CUSTOM_NAME, TextCodecs.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(null);
 		}
 
 		return null;
@@ -262,7 +263,7 @@ public class DataEntityUtils
 			key = NbtKeys.CUSTOM_NAME;
 		}
 
-		return data.putCodec(key, TextCodecs.CODEC, registry.getOps(NbtOps.INSTANCE), name);
+		return data.putCodec(key, TextCodecs.CODEC, registry.getOps(DataOps.INSTANCE), name);
 	}
 
 	/**
@@ -277,7 +278,7 @@ public class DataEntityUtils
 
 		if (data.contains(NbtKeys.EFFECTS, Constants.NBT.TAG_LIST))
 		{
-			List<StatusEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(NbtOps.INSTANCE)).orElse(List.of());
+			List<StatusEffectInstance> list = data.getCodec(NbtKeys.EFFECTS, StatusEffectInstance.CODEC.listOf(), registry.getOps(DataOps.INSTANCE)).orElse(List.of());
 
 			for (StatusEffectInstance instance : list)
 			{
@@ -572,7 +573,7 @@ public class DataEntityUtils
 	{
 		if (data.contains(NbtKeys.OFFERS, Constants.NBT.TAG_LIST))
 		{
-			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(null);
+			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(null);
 		}
 
 		return null;

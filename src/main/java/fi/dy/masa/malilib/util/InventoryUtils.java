@@ -62,6 +62,7 @@ import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
@@ -2066,7 +2067,7 @@ public class InventoryUtils
 	@ApiStatus.Experimental
 	public static ItemStack getStackCodec(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, String key)
 	{
-		return data.getCodec(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
+		return data.getCodec(key, ItemStack.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(ItemStack.EMPTY);
 	}
 
 	/**
@@ -2094,6 +2095,6 @@ public class InventoryUtils
 	@ApiStatus.Experimental
 	public static CompoundData putStackCodec(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry, @Nonnull ItemStack stack, String key)
 	{
-		return data.putCodec(key, ItemStack.CODEC, registry.getOps(NbtOps.INSTANCE), stack);
+		return data.putCodec(key, ItemStack.CODEC, registry.getOps(DataOps.INSTANCE), stack);
 	}
 }

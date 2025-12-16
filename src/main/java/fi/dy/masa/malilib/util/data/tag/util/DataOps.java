@@ -408,7 +408,7 @@ public class DataOps implements DynamicOps<BaseData>
 	@Override
 	public BaseData createList(Stream<BaseData> stream)
 	{
-		return new ListData((ArrayList<BaseData>) stream.collect(Util.toMutableList()));
+		return new ListData((ArrayList<BaseData>) stream.collect(Util.toArrayList()));
 	}
 
 	@Override

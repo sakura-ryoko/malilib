@@ -5,38 +5,12 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import fi.dy.masa.malilib.mixin.item.IMixinContainerComponent;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2fStack;
-import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.textures.GpuTextureView;
-import net.minecraft.block.AbstractFurnaceBlock;
-import net.minecraft.block.BarrelBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BrewingStandBlock;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.block.ChiseledBookshelfBlock;
-import net.minecraft.block.CrafterBlock;
-import net.minecraft.block.DecoratedPotBlock;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.EnderChestBlock;
-import net.minecraft.block.HopperBlock;
-import net.minecraft.block.JukeboxBlock;
-import net.minecraft.block.LecternBlock;
-import net.minecraft.block.ShelfBlock;
-import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.BrewingStandBlockEntity;
-import net.minecraft.block.entity.ChiseledBookshelfBlockEntity;
-import net.minecraft.block.entity.CrafterBlockEntity;
-import net.minecraft.block.entity.DispenserBlockEntity;
-import net.minecraft.block.entity.HopperBlockEntity;
-import net.minecraft.block.entity.ShelfBlockEntity;
-import net.minecraft.block.entity.ShulkerBoxBlockEntity;
+import net.minecraft.block.*;
+import net.minecraft.block.entity.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -71,9 +45,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import fi.dy.masa.malilib.MaLiLibReference;
+
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.mixin.item.IMixinContainerComponent;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.data.Constants;
@@ -531,6 +506,11 @@ public class InventoryOverlay
         // Main hand and offhand
         RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18);
         RenderUtils.drawTexturedRectBatched(context, gpuTextureView, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18);
+
+	    if (entity.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty())
+	    {
+		    renderBackgroundSlotAt(context, TEXTURE_EMPTY_SLOT_SWORD, x + 28 + 1, y + 2 * 18 + 7 + 1);
+	    }
 
         if (entity.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty())
         {
