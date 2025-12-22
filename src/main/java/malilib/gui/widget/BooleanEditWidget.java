@@ -24,6 +24,7 @@ public class BooleanEditWidget extends ContainerWidget
         this.label = new LabelWidget(labelKey);
         this.button.setClickListener(this::onButtonClicked);
         this.setButtonPosition(LeftRight.LEFT);
+        this.updateLabelColor();
     }
 
     public BooleanEditWidget(int height, BooleanStorageWithDefault storage, String labelKey, String commentKey)
