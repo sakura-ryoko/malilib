@@ -95,7 +95,8 @@ public class ContainerWidget extends InteractableWidget
     {
         widget.setTaskQueue(this.taskQueue);
         widget.setFocusChangeListener(this.focusChangeListener);
-        widget.onWidgetAdded(this.getZ());
+        widget.setZLevelBasedOnParent(this.getZ());
+        widget.onWidgetAdded();
         widget.updateWidgetState();
     }
 
@@ -192,9 +193,9 @@ public class ContainerWidget extends InteractableWidget
     }
 
     @Override
-    public void onWidgetAdded(float parentZLevel)
+    public void onWidgetAdded()
     {
-        super.onWidgetAdded(parentZLevel);
+        super.onWidgetAdded();
         this.reAddSubWidgets();
         this.updateSubWidgetPositions();
     }

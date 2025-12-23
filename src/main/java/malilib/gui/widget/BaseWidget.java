@@ -531,9 +531,8 @@ public class BaseWidget
      * This method is called whenever a widget gets added to its parent widget or GUI.
      * By default, it updates the widget's own rendering Z-level based on the parent's Z-level.
      */
-    public void onWidgetAdded(float parentZLevel)
+    public void onWidgetAdded()
     {
-        this.setZLevelBasedOnParent(parentZLevel);
     }
 
     protected int getZLevelIncrementFromParent()
