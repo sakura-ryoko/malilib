@@ -12,6 +12,7 @@ public class BooleanEditWidget extends ContainerWidget
     protected LeftRight buttonPosition;
     protected boolean useSeparateColorForModifiedLabel = true;
     protected int buttonXOffset;
+    protected int disabledLabelColor = 0xFF505050;
     protected int normalLabelColor = 0xFFFFFFFF;
     protected int modifiedLabelColor = 0xFFFF00FF;
 
@@ -20,9 +21,11 @@ public class BooleanEditWidget extends ContainerWidget
         super(-1, height);
 
         this.storage = storage;
-        this.button = new BooleanConfigButton(-1, height, storage);
         this.label = new LabelWidget(labelKey);
+        this.button = new BooleanConfigButton(-1, height, storage);
         this.button.setClickListener(this::onButtonClicked);
+        this.button.blockHoverContentFromBelow = false;
+
         this.setButtonPosition(LeftRight.LEFT);
         this.updateLabelColor();
     }
@@ -63,6 +66,7 @@ public class BooleanEditWidget extends ContainerWidget
         }
 
         this.label.centerVerticallyInside(this, 1);
+        this.updateLabelColor();
     }
 
     @Override
@@ -87,14 +91,17 @@ public class BooleanEditWidget extends ContainerWidget
 
     public void updateLabelColor()
     {
-        if (this.useSeparateColorForModifiedLabel)
+        if (this.enabled == false)
         {
-            int color = this.storage.isModified() ? this.modifiedLabelColor : this.normalLabelColor;
-            this.label.setNormalTextColor(color);
+            this.label.setNormalTextColor(this.disabledLabelColor);
+            this.label.setHoverTextColor(this.disabledLabelColor);
         }
         else
         {
-            this.label.setNormalTextColor(0xFFFFFFFF);
+            boolean useModifiedColor = this.useSeparateColorForModifiedLabel && this.storage.isModified();
+            int color = useModifiedColor ? this.modifiedLabelColor : this.normalLabelColor;
+            this.label.setNormalTextColor(color);
+            this.label.setHoverTextColor(color);
         }
     }
 
@@ -111,6 +118,18 @@ public class BooleanEditWidget extends ContainerWidget
     public void setUseSeparateColorForModifiedLabel(boolean useSeparateColorForModifiedLabel)
     {
         this.useSeparateColorForModifiedLabel = useSeparateColorForModifiedLabel;
+    }
+
+    public void setDisabledLabelColor(int color)
+    {
+        this.disabledLabelColor = color;
+        this.updateLabelColor();
+    }
+
+    public void setNormalStateLabelColor(int color)
+    {
+        this.normalLabelColor = color;
+        this.updateLabelColor();
     }
 
     public void setLabelColors(int normalColor, int modifiedColor)

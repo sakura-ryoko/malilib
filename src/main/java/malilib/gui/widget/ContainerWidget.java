@@ -27,6 +27,17 @@ public class ContainerWidget extends InteractableWidget
         this.blockHoverContentFromBelow = true;
     }
 
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        super.setEnabled(enabled);
+
+        for (InteractableWidget widget : this.subWidgets)
+        {
+            widget.setEnabled(enabled);
+        }
+    }
+
     public void clearWidgets()
     {
         this.subWidgets.clear();

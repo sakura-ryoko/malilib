@@ -293,6 +293,7 @@ public class LabelWidget extends InteractableWidget
             x = this.getRight() - this.stringListRenderer.getTotalRenderWidth() - this.padding.getRight() - bw;
         }
 
-        this.stringListRenderer.renderAt(x, y, z, this.isHoveredForRender(ctx), ctx);
+        boolean hovered = this.enabled && this.isHoveredForRender(ctx);
+        this.stringListRenderer.renderAt(x, y, z, hovered, ctx);
     }
 }

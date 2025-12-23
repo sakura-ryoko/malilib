@@ -145,6 +145,11 @@ public abstract class InteractableWidget extends BackgroundWidget
 
     protected int getTextColorForRender(boolean hovered)
     {
+        if (this.enabled == false)
+        {
+            return this.getTextSettings().getTextColor();
+        }
+
         return this.getTextSettings().getEffectiveTextColor(hovered);
     }
 
