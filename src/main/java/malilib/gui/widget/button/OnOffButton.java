@@ -24,6 +24,7 @@ public class OnOffButton extends GenericButton
     protected OnOffStyle style;
     protected String displayStringOn;
     protected String displayStringOff;
+    protected boolean showAsOffIfDisabled;
     @Nullable protected StyledTextLine textForOn;
     @Nullable protected StyledTextLine textForOff;
     @Nullable protected StyledTextLine fullTextForOn;
@@ -77,6 +78,11 @@ public class OnOffButton extends GenericButton
         return this;
     }
 
+    public void setShowAsOffIfDisabled(boolean showAsOffIfDisabled)
+    {
+        this.showAsOffIfDisabled = showAsOffIfDisabled;
+    }
+
     protected String getCurrentDisplayString()
     {
         boolean value = this.getCurrentValue();
@@ -85,6 +91,11 @@ public class OnOffButton extends GenericButton
 
     public boolean getCurrentValue()
     {
+        if (this.showAsOffIfDisabled && this.enabled == false)
+        {
+            return false;
+        }
+
         return this.valueStatusSupplier != null && this.valueStatusSupplier.getAsBoolean();
     }
 

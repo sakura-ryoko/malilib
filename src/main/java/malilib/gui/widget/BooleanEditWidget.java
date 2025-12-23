@@ -115,6 +115,11 @@ public class BooleanEditWidget extends ContainerWidget
         return this.button;
     }
 
+    public void setShowAsOffIfDisabled(boolean showAsOffIfDisabled)
+    {
+        this.button.setShowAsOffIfDisabled(showAsOffIfDisabled);
+    }
+
     public void setUseSeparateColorForModifiedLabel(boolean useSeparateColorForModifiedLabel)
     {
         this.useSeparateColorForModifiedLabel = useSeparateColorForModifiedLabel;
