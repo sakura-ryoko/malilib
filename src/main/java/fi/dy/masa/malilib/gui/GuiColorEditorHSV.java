@@ -306,7 +306,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.relS = hsv[1];
         this.relV = hsv[2];
 
-        this.clearDynamicTexture();
         this.updateTextFieldsHSV(this.relH, this.relS, this.relV);
     }
 
@@ -326,7 +325,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.relG = (float) ((rgb >>>  8) & 0xFF) / 255f;
         this.relB = (float) ((rgb       ) & 0xFF) / 255f;
 
-        this.clearDynamicTexture();
         this.updateTextFieldsRGB();
     }
 
@@ -418,8 +416,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
                 default:
             }
         }
-
-        this.clearDynamicTexture();
     }
 
     protected void updateTextFieldsHSV(float h, float s, float v)
@@ -535,10 +531,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int a = 255;
         int c = 255;
 
-//        RenderUtils.blend(true);
-//        int tempColor = RenderUtils.color(r, g, b, a);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
-
         /*
         GlProgramManager.useProgram(SHADER_HUE.getProgram());
         GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
@@ -547,10 +539,8 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //        final int[] colorPair = this.getColorPairForSelector();
         this.generateDynamicTextureForHSVSelector();
 
-        // TODO
-        ctx.color(Colors.WHITE);
         ctx.directBindTexture(this.dynamicTexture.getLeft(), 0, this.dynamicTexture.getRight());
-//        RenderUtils.drawTexturedRect(this.dynamicTexture.getLeft(), x, y, 0, 0, 256, 256, -1, this.drawContext);
+        ctx.color(Colors.WHITE);
 
         buffer.vertex(x    , y    , z).texture(0, 0);
         buffer.vertex(x    ,y + h, z).texture(0, 1);
@@ -680,6 +670,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         catch (Exception ignored) { }
     }
 
+    @Deprecated
     private int[] getColorPairForSelector()
     {
         int color1 = Color.HSBtoRGB(this.relH, 0f, 0f);     // TOP LEFT
@@ -690,21 +681,29 @@ public class GuiColorEditorHSV extends GuiDialogBase
         return new int[]{ color1, color2, color3, color4 };
     }
 
+    /**
+     * This Generates a Dynamic Image for the 4-Point Color Selector;
+     * - as opposed to using a custom Fragment shader.
+     */
     private void generateDynamicTextureForHSVSelector()
     {
-        if (this.dynamicTexture != null)
-        {
-            this.clearDynamicTexture();
-        }
-
-        Identifier id = Identifier.of(MaLiLibReference.MOD_ID, UUID.randomUUID().toString());
         final int sizeW = 256;
         final int sizeH = 256;
 
+        if (this.dynamicTexture != null)
+        {
+            // for 1.21.5+ we need to destroy the last texture
+            this.clearDynamicTexture();
+        }
+
         try (NativeImage image = new NativeImage(sizeW, sizeH, false))
         {
-            NativeImageBackedTexture texture = new NativeImageBackedTexture(id::toString, image);
-            this.mc.getTextureManager().registerTexture(id, texture);
+            Identifier id = Identifier.of(MaLiLibReference.MOD_ID, UUID.randomUUID().toString());
+            this.dynamicTexture = Pair.of(
+                    id,
+                    new NativeImageBackedTexture(id::toString, image)
+            );
+            this.mc.getTextureManager().registerTexture(id, this.dynamicTexture.getRight());
 
             for (int x = 0; x < sizeW; x++)
             {
@@ -728,8 +727,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //                image.writeToFile(file);
 //            }
 
-            texture.upload();
-            this.dynamicTexture = Pair.of(id, texture);
+            this.dynamicTexture.getRight().upload();
         }
         catch (Throwable err)
         {
@@ -996,7 +994,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
                     return true;
                 }
-                catch (Exception e) {}
+                catch (Exception ignored) {}
             }
 
             return false;
