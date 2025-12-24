@@ -39,11 +39,11 @@
         "fabric-resource-loader-v1": "*"
 	},
     "suggests": {
-        "sodium": ">=0.8.0-",
-        "iris": ">=1.10.2-"
+        "sodium": ">=0.8.2-",
+        "iris": ">=1.10.4-"
     },
 	"breaks": {
-        "sodium": "<0.8.0-",
-		"iris": "<1.10.2-"
+        "sodium": "<0.8.2-",
+		"iris": "<1.10.4-"
 	}
 }
