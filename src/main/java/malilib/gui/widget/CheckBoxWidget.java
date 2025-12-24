@@ -22,12 +22,6 @@ public class CheckBoxWidget extends InteractableWidget
     protected boolean currentValue;
 
     public CheckBoxWidget(@Nullable String translationKey,
-                          @Nullable String hoverInfoKey)
-    {
-        this(translationKey, hoverInfoKey, DefaultIcons.CHECKMARK_DARK_OFF, DefaultIcons.CHECKMARK_DARK_ON_VARIANT_1);
-    }
-
-    public CheckBoxWidget(@Nullable String translationKey,
                           @Nullable String hoverInfoKey,
                           Icon iconUnchecked,
                           Icon iconChecked)
@@ -61,10 +55,29 @@ public class CheckBoxWidget extends InteractableWidget
     }
 
     public CheckBoxWidget(@Nullable String translationKey,
+                          @Nullable String hoverInfoKey)
+    {
+        this(translationKey, hoverInfoKey, DefaultIcons.CHECKMARK_DARK_OFF, DefaultIcons.CHECKMARK_DARK_ON_VARIANT_1);
+    }
+
+    public CheckBoxWidget(@Nullable String translationKey,
+                          BooleanStorage booleanStorage)
+    {
+        this(translationKey, null, booleanStorage::getBooleanValue, booleanStorage::setBooleanValue);
+    }
+
+    public CheckBoxWidget(@Nullable String translationKey,
                           @Nullable String hoverInfoKey,
                           BooleanStorage booleanStorage)
     {
         this(translationKey, hoverInfoKey, booleanStorage::getBooleanValue, booleanStorage::setBooleanValue);
+    }
+
+    public CheckBoxWidget(@Nullable String translationKey,
+                          BooleanSupplier booleanSupplier,
+                          BooleanConsumer booleanConsumer)
+    {
+        this(translationKey, null, booleanSupplier, booleanConsumer);
     }
 
     public CheckBoxWidget(@Nullable String translationKey,

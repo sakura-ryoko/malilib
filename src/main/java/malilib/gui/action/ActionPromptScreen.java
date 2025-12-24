@@ -41,25 +41,21 @@ public class ActionPromptScreen extends BaseListScreen<DataListWidget<NamedActio
 
         String label = "malilib.checkbox.action_prompt_screen.remember_search";
         String hoverKey = "malilib.hover.action.prompt_screen.remember_search_text";
-        this.rememberSearchCheckBoxWidget = new CheckBoxWidget(label, hoverKey);
-        this.rememberSearchCheckBoxWidget.setBooleanStorage(MaLiLibConfigs.Generic.ACTION_PROMPT_REMEMBER_SEARCH);
+        this.rememberSearchCheckBoxWidget = new CheckBoxWidget(label, hoverKey, MaLiLibConfigs.Generic.ACTION_PROMPT_REMEMBER_SEARCH);
 
         label = "malilib.checkbox.action_prompt_screen.fuzzy_search";
         hoverKey = "malilib.hover.action.prompt_screen.use_fuzzy_search";
-        this.fuzzySearchCheckBoxWidget = new CheckBoxWidget(label, hoverKey);
-        this.fuzzySearchCheckBoxWidget.setBooleanStorage(MaLiLibConfigs.Generic.ACTION_PROMPT_FUZZY_SEARCH);
+        this.fuzzySearchCheckBoxWidget = new CheckBoxWidget(label, hoverKey, MaLiLibConfigs.Generic.ACTION_PROMPT_FUZZY_SEARCH);
         this.fuzzySearchCheckBoxWidget.setListener((v) -> this.updateFilteredList());
 
         label = "malilib.checkbox.action_prompt_screen.search_display_name";
         hoverKey = "malilib.hover.action.prompt_screen.search_display_name";
-        this.searchDisplayNameCheckBoxWidget = new CheckBoxWidget(label, hoverKey);
-        this.searchDisplayNameCheckBoxWidget.setBooleanStorage(MaLiLibConfigs.Generic.ACTION_PROMPT_SEARCH_DISPLAY_NAME);
+        this.searchDisplayNameCheckBoxWidget = new CheckBoxWidget(label, hoverKey, MaLiLibConfigs.Generic.ACTION_PROMPT_SEARCH_DISPLAY_NAME);
         this.searchDisplayNameCheckBoxWidget.setListener((v) -> this.updateFilteredList());
 
         label = "malilib.checkbox.action_prompt_screen.close_on_execute";
         hoverKey = "malilib.hover.action.prompt_screen.close_on_execute";
-        this.closeOnExecuteCheckBoxWidget = new CheckBoxWidget(label, hoverKey);
-        this.closeOnExecuteCheckBoxWidget.setBooleanStorage(MaLiLibConfigs.Generic.ACTION_PROMPT_CLOSE_ON_EXECUTE);
+        this.closeOnExecuteCheckBoxWidget = new CheckBoxWidget(label, hoverKey, MaLiLibConfigs.Generic.ACTION_PROMPT_CLOSE_ON_EXECUTE);
 
         int screenWidth = 320;
         this.searchTextField = new BaseTextFieldWidget(screenWidth - this.rememberSearchCheckBoxWidget.getIconWidth(), 16);

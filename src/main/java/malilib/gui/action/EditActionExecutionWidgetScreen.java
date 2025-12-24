@@ -117,14 +117,14 @@ public class EditActionExecutionWidgetScreen extends BaseScreen
         this.nameXOffsetEditWidget = new IntegerEditWidget(72, 16, widget.getTextOffset().getXOffset(), -512, 512, widget.getTextOffset()::setXOffset);
         this.nameYOffsetEditWidget = new IntegerEditWidget(72, 16, widget.getTextOffset().getYOffset(), -512, 512, widget.getTextOffset()::setYOffset);
 
-        this.nameCenteredOnXCheckbox = new CheckBoxWidget("malilib.checkbox.center", null, widget.getTextOffset()::getCenterHorizontally, widget.getTextOffset()::setCenterHorizontally);
-        this.nameCenteredOnYCheckbox = new CheckBoxWidget("malilib.checkbox.center", null, widget.getTextOffset()::getCenterVertically, widget.getTextOffset()::setCenterVertically);
+        this.nameCenteredOnXCheckbox = new CheckBoxWidget("malilib.checkbox.center", widget.getTextOffset()::getCenterHorizontally, widget.getTextOffset()::setCenterHorizontally);
+        this.nameCenteredOnYCheckbox = new CheckBoxWidget("malilib.checkbox.center", widget.getTextOffset()::getCenterVertically, widget.getTextOffset()::setCenterVertically);
 
         this.iconXOffsetEditWidget = new IntegerEditWidget(72, 16, widget.getIconOffset().getXOffset(), -512, 512, widget.getIconOffset()::setXOffset);
         this.iconYOffsetEditWidget = new IntegerEditWidget(72, 16, widget.getIconOffset().getYOffset(), -512, 512, widget.getIconOffset()::setYOffset);
 
-        this.iconCenteredOnXCheckbox = new CheckBoxWidget("malilib.checkbox.center", null, widget.getIconOffset()::getCenterHorizontally, widget.getIconOffset()::setCenterHorizontally);
-        this.iconCenteredOnYCheckbox = new CheckBoxWidget("malilib.checkbox.center", null, widget.getIconOffset()::getCenterVertically, widget.getIconOffset()::setCenterVertically);
+        this.iconCenteredOnXCheckbox = new CheckBoxWidget("malilib.checkbox.center", widget.getIconOffset()::getCenterHorizontally, widget.getIconOffset()::setCenterHorizontally);
+        this.iconCenteredOnYCheckbox = new CheckBoxWidget("malilib.checkbox.center", widget.getIconOffset()::getCenterVertically, widget.getIconOffset()::setCenterVertically);
 
         this.iconScaleXEditWidget = new FloatEditWidget(72, 16, widget.getIconScaleX(), 0, 100, widget::setIconScaleX);
         this.iconScaleYEditWidget = new FloatEditWidget(72, 16, widget.getIconScaleY(), 0, 100, widget::setIconScaleY);

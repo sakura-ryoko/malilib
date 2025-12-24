@@ -44,10 +44,8 @@ public class BaseLayerRangeEditWidget extends ContainerWidget
 
         String label = "malilib.checkbox.layer_range.hotkey";
         String hover = "malilib.hover.checkbox.layer_range.hotkey";
-        this.moveMinLayerCheckbox = new CheckBoxWidget(label, hover,
-                                                       this.range::getMoveLayerRangeMin, this.range::setMoveLayerRangeMin);
-        this.moveMaxLayerCheckbox = new CheckBoxWidget(label, hover,
-                                                       this.range::getMoveLayerRangeMax, this.range::setMoveLayerRangeMax);
+        this.moveMinLayerCheckbox = new CheckBoxWidget(label, hover, this.range::getMoveLayerRangeMin, this.range::setMoveLayerRangeMin);
+        this.moveMaxLayerCheckbox = new CheckBoxWidget(label, hover, this.range::getMoveLayerRangeMax, this.range::setMoveLayerRangeMax);
 
         this.followPlayerButton.translateAndAddHoverString("malilib.hover.button.layer_range.follow_player");
         this.followOffsetEditWidget.setLabelText("malilib.label.layer_range.player_follow_offset");
