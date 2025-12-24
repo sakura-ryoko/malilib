@@ -7,8 +7,7 @@ public abstract class Entry
     @Override
     public String toString()
     {
-        throw new UnsupportedOperationException();
-//        return super.toString();
+		return Entry.getString(this);
     }
 
     public static String getString(Entry entry)
@@ -41,4 +40,6 @@ public abstract class Entry
     public abstract Entry copy();
 
     public abstract boolean wasConfigModified(Entry entry);
+
+    public abstract String asString();
 }

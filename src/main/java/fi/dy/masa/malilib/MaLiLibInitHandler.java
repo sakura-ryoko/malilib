@@ -41,6 +41,8 @@ public class MaLiLibInitHandler implements IInitializationHandler
             ClientCommandHandler.INSTANCE.registerCommand(new TestCommand());
             TickHandler.getInstance().registerClientTickHandler(TestSelector.INSTANCE);
         }
+
+//        MaLiLibCallbacks.init();
     }
 
     private static class CallbackOpenConfigGui implements IHotkeyCallback

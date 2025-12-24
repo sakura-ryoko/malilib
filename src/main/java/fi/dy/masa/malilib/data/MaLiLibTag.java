@@ -10,7 +10,9 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
-// TODO (Migrate to CachedBlockTags)
+/**
+ * Replaced in future builds by the {@link CachedTagManager} system
+ */
 @Deprecated(forRemoval = true)
 public class MaLiLibTag
 {

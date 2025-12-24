@@ -1,5 +1,9 @@
 package fi.dy.masa.malilib.gui.button;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.config.options.table.type.*;
@@ -8,98 +12,72 @@ import fi.dy.masa.malilib.gui.GuiTableEdit;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.util.GuiUtils;
-import net.minecraft.client.gui.Click;
+import fi.dy.masa.malilib.util.StringUtils;
+
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+@ApiStatus.Experimental
 public class ConfigButtonTable extends ButtonGeneric
 {
-    private final IConfigTable config;
-    private final IConfigGui configGui;
-    @Nullable
-    private final IDialogHandler dialogHandler;
+	private final IConfigTable config;
+	private final IConfigGui configGui;
+	@Nullable
+	private final IDialogHandler dialogHandler;
 
-    public ConfigButtonTable(int x, int y, int width, int height, IConfigTable config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler)
-    {
-        super(x, y, width, height, "");
+	public ConfigButtonTable(int x, int y, int width, int height, IConfigTable config, IConfigGui configGui, @Nullable IDialogHandler dialogHandler)
+	{
+		super(x, y, width, height, "");
 
-        this.config = config;
-        this.configGui = configGui;
-        this.dialogHandler = dialogHandler;
+		this.config = config;
+		this.configGui = configGui;
+		this.dialogHandler = dialogHandler;
 
-        this.updateDisplayString();
-    }
+		this.updateDisplayString();
+	}
 
-    @Override
-    protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
-    {
-        super.onMouseClickedImpl(click, doubleClick);
+	@Override
+	protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+	{
+		super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
 
-        if (this.dialogHandler != null)
-        {
-            this.dialogHandler.openDialog(new GuiTableEdit(this.config, this.configGui, this.dialogHandler, null));
-        }
-        else
-        {
-            GuiBase.openGui(new GuiTableEdit(this.config, this.configGui, null, GuiUtils.getCurrentScreen()));
-        }
+		if (this.dialogHandler != null)
+		{
+			this.dialogHandler.openDialog(new GuiTableEdit(this.config, this.configGui, this.dialogHandler, null));
+		}
+		else
+		{
+			GuiBase.openGui(new GuiTableEdit(this.config, this.configGui, null, GuiUtils.getCurrentScreen()));
+		}
 
-        return true;
-    }
+		return true;
+	}
 
-    @Override
-    public void updateDisplayString()
-    {
-        if (this.config.getDisplayString() != null)
-        {
-            this.displayString = this.config.getDisplayString();
-            return;
-        }
-        StringBuilder sb = new StringBuilder();
+	@Override
+	public void updateDisplayString()
+	{
+		if (this.config.getDisplayString() != null)
+		{
+			this.displayString = this.config.getDisplayString();
+			return;
+		}
+        // alternative way I guess
+//        List<String> list = this.config.getTable().stream()
+//                .map(row -> row.list().stream()
+//                        .map(Entry::asString)
+//                        .collect(Collectors.joining(", ")))
+//                .toList();
 
-        sb.append("{");
-        boolean addDivider = false;
-        for (TableRow row : this.config.getTable())
-        {
-            if (addDivider)
-            {
-                sb.append("; ");
-            }
-            boolean addDividerEntry = false;
-            for (Entry entryPart : row.list)
-            {
-                if (addDividerEntry)
-                {
-                    sb.append(", ");
-                }
-                // honestly this is starting to become impossible :sob:
-                if (entryPart.getType() == EntryTypes.STRING)
-                {
-                    sb.append(((StringEntry) entryPart).getValue());
-                }
-                else if (entryPart.getType() == EntryTypes.INTEGER)
-                {
-                    sb.append(((IntegerEntry) entryPart).getValue());
-                }
-                else if (entryPart.getType() == EntryTypes.DOUBLE)
-                {
-                    sb.append(((DoubleEntry) entryPart).getValue());
-                }
-                else if (entryPart.getType() == EntryTypes.BOOLEAN)
-                {
-                    sb.append(((BooleanEntry) entryPart).getValue());
-//                } else if (entryPart.getType() == EntryTypes.KEYBIND) {
-//                    sb.append(((KeybindEntry) entryPart).getKeybind().getKeysDisplayString());
-                }
-                else
-                {
-                    throw new IllegalStateException();
-                }
-                addDividerEntry = true;
-            }
-                addDivider = true;
-            }
-            sb.append("}");
+		List<String> list = new ArrayList<>();
 
-            this.displayString = sb.toString();
-        }
-    }
+		for (TableRow row : this.config.getTable())
+		{
+            String result = row.list().stream()
+                    .map(Entry::asString)
+                    .collect(Collectors.joining(", "));
+			list.add(result);
+		}
+
+		this.displayString = StringUtils.getClampedDisplayStringRenderlen(list, this.width - 20, "{", "}");
+	}
+}

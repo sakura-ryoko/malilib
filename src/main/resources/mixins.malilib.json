@@ -50,7 +50,8 @@
         "screen.MixinHandledScreen",
         "screen.MixinInventoryScreen",
         "server.MixinIntegratedServer",
-        "test.MixinClientPlayInteractionManager"
+        "test.MixinClientPlayInteractionManager_testSelector",
+        "test.MixinMinecraftClient_testSelector"
     ],
     "server": [],
     "injectors": {

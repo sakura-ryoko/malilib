@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.render.special;
 
 import javax.annotation.Nonnull;
+import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4fStack;
 import org.joml.Quaternionf;
 
@@ -20,6 +21,7 @@ import fi.dy.masa.malilib.MaLiLibReference;
  * DISABLED -- DOES NOT WORK, DO NOT USE
  */
 @Deprecated
+@ApiStatus.Experimental
 public class MaLiLibBlockModelGuiElementRenderer extends SpecialGuiElementRenderer<MaLiLibBlockStateModelGuiElement>
 {
     BlockRenderManager blockRenderManager;

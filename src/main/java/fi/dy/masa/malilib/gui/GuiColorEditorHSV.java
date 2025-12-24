@@ -13,6 +13,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureSetup;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 import org.apache.commons.lang3.math.Fraction;
@@ -533,33 +534,33 @@ public class GuiColorEditorHSV extends GuiDialogBase
         GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
          */
 
-        final int[] colorPair = this.getColorPairForSelector();
-//        this.generateDynamicTextureForHSVSelector();
-
-//        RenderUtils.addSimpleElement(drawContext,
-//                                     new MaLiLibTexturedGuiElement(
-//                                     RenderPipelines.GUI_TEXTURED,
-//                                     TextureSetup.of(
-//                                        this.dynamicTexture.getRight().getGlTextureView()
-//                                    ),
-//                                    new Matrix3x2f(drawContext.getMatrices()),
-//                                    x, y,
-//                                    x + w, y + h,
-//                                    0, 256 * 0.00390625F,
-//                                    0, 256 * 0.00390625F,
-//                                    -1,
-//                                    RenderUtils.peekLastScissor(drawContext)
-//                                    ));
+//        final int[] colorPair = this.getColorPairForSelector();
+        this.generateDynamicTextureForHSVSelector();
 
         RenderUtils.addSimpleElement(drawContext,
-                                     new MaLiLibHSV4ColorGradientGuiElement(
-                                             RenderPipelines.GUI,
-                                             TextureSetup.empty(),
-                                             new Matrix3x2f(drawContext.getMatrices()),
-                                             x, x + w, y, y + h,
-                                             colorPair,
-                                             RenderUtils.peekLastScissor(drawContext))
-                                     );
+                                     new MaLiLibTexturedGuiElement(
+                                     RenderPipelines.GUI_TEXTURED,
+                                     TextureSetup.of(
+                                        this.dynamicTexture.getRight().getGlTextureView()
+                                    ),
+                                    new Matrix3x2f(drawContext.getMatrices()),
+                                    x, y,
+                                    x + w, y + h,
+                                    0, 256 * 0.00390625F,
+                                    0, 256 * 0.00390625F,
+                                    -1,
+                                    RenderUtils.peekLastScissor(drawContext)
+                                    ));
+
+//        RenderUtils.addSimpleElement(drawContext,
+//                                     new MaLiLibHSV4ColorGradientGuiElement(
+//                                             RenderPipelines.GUI,
+//                                             TextureSetup.empty(),
+//                                             new Matrix3x2f(drawContext.getMatrices()),
+//                                             x, x + w, y, y + h,
+//                                             colorPair,
+//                                             RenderUtils.peekLastScissor(drawContext))
+//                                     );
 
         // Element Selectors --
         // Current color indicator
@@ -697,17 +698,17 @@ public class GuiColorEditorHSV extends GuiDialogBase
                     float saturation = Fraction.getFraction(y, sizeH).floatValue();
 
                     // inverted Y (?)
-                    image.setColor(x, ((sizeH - 1) - y), Color.HSBtoRGB(this.relH, saturation, brightness));
+                    image.setColor(x, ((sizeH - 1) - y), ColorHelper.toAbgr(Color.HSBtoRGB(this.relH, saturation, brightness)));
                 }
             }
 
-            if (MaLiLibReference.DEBUG_MODE)
-            {
-                Path dir = MaLiLibReference.CONFIG_DIR.resolve(id.getNamespace());
-                FileUtils.createDirectoriesIfMissing(dir);
-                Path file = dir.resolve(id.getPath() + ".png");
-                image.writeTo(file);
-            }
+//            if (MaLiLibReference.DEBUG_MODE)
+//            {
+//                Path dir = MaLiLibReference.CONFIG_DIR.resolve(id.getNamespace());
+//                FileUtils.createDirectoriesIfMissing(dir);
+//                Path file = dir.resolve(id.getPath() + ".png");
+//                image.writeTo(file);
+//            }
 
             texture.upload();
             this.dynamicTexture = Pair.of(id, texture);

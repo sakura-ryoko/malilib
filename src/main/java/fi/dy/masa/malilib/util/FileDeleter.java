@@ -9,6 +9,13 @@ import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.interfaces.IConfirmationListener;
 
+/**
+ * Used to Delete Files via the GUI
+ *
+ * @param file
+ * @param navigator
+ * @param feedback
+ */
 public record FileDeleter(Path file, @Nullable IDirectoryNavigator navigator, boolean feedback) implements IConfirmationListener
 {
 	@Override
@@ -17,12 +24,14 @@ public record FileDeleter(Path file, @Nullable IDirectoryNavigator navigator, bo
 		if (this.file() == null)
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.invalid_file_or_directory");
+			MaLiLib.debugLog("FileDeleter: Failed to delete file; File is invalid/empty.");
 			return false;
 		}
 
 		if (!Files.exists(this.file()))
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.file_or_directory_does_not_exist", this.file().toAbsolutePath());
+			MaLiLib.debugLog("FileDeleter: Failed to delete file '{}'; File does not exist", this.file().toAbsolutePath());
 			return false;
 		}
 
@@ -47,6 +56,7 @@ public record FileDeleter(Path file, @Nullable IDirectoryNavigator navigator, bo
 			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_or_directory_deleted", this.file().getFileName());
 		}
 
+		MaLiLib.debugLog("FileDeleter: File '{}' deleted", this.file().toAbsolutePath());
 		return true;
 	}
 

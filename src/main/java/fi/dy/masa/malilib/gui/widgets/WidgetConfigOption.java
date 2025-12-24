@@ -231,6 +231,11 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                 this.addButton(toggleBtn, new ListenerSliderToggle((IConfigSlider) config));
             }
         }
+		else if (type == ConfigType.TABLE)
+        {
+			ConfigButtonTable optionButton = new ConfigButtonTable(x, y, configWidth, configHeight, (IConfigTable) config, this.host, this.host.getDialogHandler());
+	        this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
+        }
     }
 
     @Override
@@ -397,77 +402,53 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     }
 
     @Override
-    public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
+    public void render(DrawContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
+        super.render(ctx, mouseX, mouseY, selected);
 
-        this.drawSubWidgets(drawContext, mouseX, mouseY);
+        this.drawSubWidgets(ctx, mouseX, mouseY);
 
         if (this.wrapper.getType() == ConfigOptionWrapper.Type.CONFIG)
         {
-            this.drawTextFields(drawContext, mouseX, mouseY);
-            super.render(drawContext, mouseX, mouseY, selected);
+            this.drawTextFields(ctx, mouseX, mouseY);
+            super.render(ctx, mouseX, mouseY, selected);
         }
     }
 
-    public static class ListenerSliderToggle implements IButtonActionListener
-    {
-        protected final IConfigSlider config;
+	public record ListenerSliderToggle(IConfigSlider config) implements IButtonActionListener
+	{
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			this.config.toggleUseSlider();
 
-        public ListenerSliderToggle(IConfigSlider config)
-        {
-            this.config = config;
-        }
+			Screen gui = GuiUtils.getCurrentScreen();
 
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            this.config.toggleUseSlider();
+			if (gui instanceof GuiBase)
+			{
+				((GuiBase) gui).initGui();
+			}
+		}
+	}
 
-            Screen gui = GuiUtils.getCurrentScreen();
+	public record HotkeyedBooleanResetListener(IConfigResettable config, ButtonGeneric booleanButton,
+	                                           ConfigButtonKeybind hotkeyButton, ButtonGeneric resetButton,
+	                                           IKeybindConfigGui host) implements IButtonActionListener
+	{
 
-            if (gui instanceof GuiBase)
-            {
-                ((GuiBase) gui).initGui();
-            }
-        }
-    }
+		@Override
+		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		{
+			this.config.resetToDefault();
+			this.host.getButtonPressListener().actionPerformedWithButton(button, mouseButton);
+			this.updateButtons();
+		}
 
-    public static class HotkeyedBooleanResetListener implements IButtonActionListener
-    {
-        private final IConfigResettable config;
-        private final ButtonGeneric booleanButton;
-        private final ConfigButtonKeybind hotkeyButton;
-        private final ButtonGeneric resetButton;
-        private final IKeybindConfigGui host;
-
-        public HotkeyedBooleanResetListener(IConfigResettable config,
-                                            ButtonGeneric booleanButton,
-                                            ConfigButtonKeybind hotkeyButton,
-                                            ButtonGeneric resetButton,
-                                            IKeybindConfigGui host)
-        {
-            this.config = config;
-            this.booleanButton = booleanButton;
-            this.hotkeyButton = hotkeyButton;
-            this.resetButton = resetButton;
-            this.host = host;
-        }
-
-        @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-        {
-            this.config.resetToDefault();
-            this.host.getButtonPressListener().actionPerformedWithButton(button, mouseButton);
-            this.updateButtons();
-        }
-
-        public void updateButtons()
-        {
-            this.booleanButton.updateDisplayString();
-            this.hotkeyButton.updateDisplayString();
-            this.resetButton.setEnabled(this.config.isModified());
-        }
-    }
+		public void updateButtons()
+		{
+			this.booleanButton.updateDisplayString();
+			this.hotkeyButton.updateDisplayString();
+			this.resetButton.setEnabled(this.config.isModified());
+		}
+	}
 }

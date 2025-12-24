@@ -3,12 +3,15 @@ package fi.dy.masa.malilib.render.special;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
+
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * DISABLED -- DOES NOT WORK, DO NOT USE
  */
 @Deprecated
+@ApiStatus.Experimental
 public record MaLiLibBlockStateModelGuiElement(
         BlockState state,
         int x1,

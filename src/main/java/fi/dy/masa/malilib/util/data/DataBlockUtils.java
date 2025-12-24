@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.block.entity.*;
@@ -33,11 +32,10 @@ import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
 
-@ApiStatus.Experimental
 public class DataBlockUtils
 {
 	/**
-	 * Get the Block Entity Type from the Data Tag Tag.
+	 * Get the Block Entity Type from the Data Tag.
 	 *
 	 * @param data ()
 	 * @return ()
