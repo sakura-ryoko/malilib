@@ -57,6 +57,8 @@ base {
 }
 
 loom {
+	accessWidenerPath = file("src/main/resources/malilib.accesswidener")
+
 //	def commonVmArgs = ['-Dmixin.debug.export=true', '-Dmixin.debug.countInjections=true']
 //	// [FEATURE] MIXIN_AUDITOR
 //	runs {
@@ -68,7 +70,6 @@ loom {
 //		}
 //	}
 //
-//	accessWidenerPath = file("src/main/resources/malilib.accesswidener")
 }
 
 processResources {
