@@ -139,7 +139,6 @@ public class TestWalls implements AutoCloseable
 //        MatrixStack matrices = new MatrixStack();
         Vec3d updatePos = this.getUpdatePosition();
 
-        this.preRender();
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
 
@@ -183,7 +182,6 @@ public class TestWalls implements AutoCloseable
             MaLiLib.LOGGER.error("TestWalls#renderQuads(): Exception; {}", err.getMessage());
         }
 
-        this.postRender();
         matrix4fstack.popMatrix();
         profiler.pop();
     }
@@ -206,7 +204,6 @@ public class TestWalls implements AutoCloseable
 //        MatrixStack matrices = new MatrixStack();
         Vec3d updatePos = this.getUpdatePosition();
 
-//        this.preRender();
         matrix4fstack.pushMatrix();
         matrix4fstack.translate((float) (updatePos.x - cameraPos.x), (float) (updatePos.y - cameraPos.y), (float) (updatePos.z - cameraPos.z));
 //        matrices.push();
@@ -242,45 +239,7 @@ public class TestWalls implements AutoCloseable
             MaLiLib.LOGGER.error("TestWalls#renderOutlines(): Exception; {}", err.getMessage());
         }
 
-//        this.postRender();
         profiler.pop();
-    }
-
-    protected void preRender()
-    {
-//        RenderUtils.polygonOffset(-3f, -3f);
-//        RenderUtils.polygonOffset(true);
-//        RenderUtils.blend(true);
-//        RenderSystem.lineWidth(this.glLineWidth);
-
-//        if (this.renderThrough)
-//        {
-//            RenderUtils.depthTest(false);
-//        }
-//        else
-//        {
-//            RenderUtils.depthMask(true);
-//        }
-
-//        RenderUtils.culling(this.useCulling);
-    }
-
-    protected void postRender()
-    {
-//        if (this.renderThrough)
-//        {
-//            RenderUtils.depthTest(true);
-//        }
-//        else
-//        {
-//            RenderUtils.depthMask(false);
-//        }
-
-//        RenderUtils.culling(!this.useCulling);
-//        RenderUtils.polygonOffset(0f, 0f);
-//        RenderUtils.polygonOffset(false);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
-//        RenderUtils.blend(false);
     }
 
     public void clear()
