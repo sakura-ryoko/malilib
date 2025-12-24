@@ -305,7 +305,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.relS = hsv[1];
         this.relV = hsv[2];
 
-        this.clearDynamicTexture();
         this.updateTextFieldsHSV(this.relH, this.relS, this.relV);
     }
 
@@ -325,7 +324,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.relG = (float) ((rgb >>>  8) & 0xFF) / 255f;
         this.relB = (float) ((rgb       ) & 0xFF) / 255f;
 
-        this.clearDynamicTexture();
         this.updateTextFieldsRGB();
     }
 
@@ -417,8 +415,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
                 default:
             }
         }
-
-        this.clearDynamicTexture();
     }
 
     protected void updateTextFieldsHSV(float h, float s, float v)
@@ -523,19 +519,11 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(drawContext, this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
         // Full SV Square --
-        // MaLiLibPipelines.POSITION_SIMPLE
-//        RenderContext ctx = new RenderContext(() -> "ColorSelector A", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
-//        BufferBuilder buffer = ctx.getBuilder();
-
         int r = (int) (this.relR * 255f);
         int g = (int) (this.relG * 255f);
         int b = (int) (this.relB * 255f);
         int a = 255;
         int c = 255;
-
-//        RenderUtils.blend(true);
-//        int tempColor = RenderUtils.color(r, g, b, a);
-//        RenderUtils.color(1f, 1f, 1f, 1f);
 
         /*
         GlProgramManager.useProgram(SHADER_HUE.getProgram());
@@ -568,48 +556,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
                                              RenderUtils.peekLastScissor(drawContext)
                                      ));
 
-//        buffer.vertex(x    , y    , z).texture(1, 0);
-//        buffer.vertex(x    , y + h, z).texture(0, 0);
-//        buffer.vertex(x + w, y + h, z).texture(0, 1);
-//        buffer.vertex(x + w, y    , z).texture(1, 1);
-
-//        buffer.vertex(x    , y    , z).color(colorPair[0]);
-//        buffer.vertex(x    , y + h, z).color(colorPair[1]);
-//        buffer.vertex(x + w, y + h, z).color(colorPair[2]);
-//        buffer.vertex(x + w, y    , z).color(colorPair[3]);
-
-//        try
-//        {
-//            BuiltBuffer meshData = buffer.endNullable();
-//
-//            if (meshData != null)
-//            {
-//                ctx.draw(meshData, false);
-//                meshData.close();
-//            }
-//
-//            ctx.reset();
-//        }
-//        catch (Exception ignored) { }
-
         // Element Selectors --
-        // MaLiLibPipelines.POSITION_COLOR_SIMPLE
-//        buffer = ctx.start(() -> "ColorSelector B", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, BufferUsage.STATIC_WRITE);
-
-        /*
-        int r = (int) (this.relR * 255f);
-        int g = (int) (this.relG * 255f);
-        int b = (int) (this.relB * 255f);
-        int a = 255;
-        int c = 255;
-         */
-
-        // Current color indicator
-//        buffer.vertex(cx     , cy     , z).color(r, g, b, a);
-//        buffer.vertex(cx     , cy + ch, z).color(r, g, b, a);
-//        buffer.vertex(cx + cw, cy + ch, z).color(r, g, b, a);
-//        buffer.vertex(cx + cw, cy     , z).color(r, g, b, a);
-
         // Current color indicator
         RenderUtils.addSimpleElement(drawContext,
                                      new MaLiLibHSV1ColorIndicatorGuiElement(
@@ -624,10 +571,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         // SV selection marker for saturation, horizontal marker, vertical range
         int yt = y + (int) ((1 - this.relS) * h);
-//        buffer.vertex(x - 1    , yt    , z).color(c, c, c, a);
-//        buffer.vertex(x - 1    , yt + 1, z).color(c, c, c, a);
-//        buffer.vertex(x + w + 1, yt + 1, z).color(c, c, c, a);
-//        buffer.vertex(x + w + 1, yt    , z).color(c, c, c, a);
 
         // SV selection marker for saturation, horizontal marker, vertical range
         RenderUtils.addSimpleElement(drawContext,
@@ -643,10 +586,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
         // SV selection marker for value, vertical marker, horizontal range
         int xt = x + (int) (this.relV * w);
-//        buffer.vertex(xt    , y - 1    , z).color(c, c, c, a);
-//        buffer.vertex(xt    , y + h + 1, z).color(c, c, c, a);
-//        buffer.vertex(xt + 1, y + h + 1, z).color(c, c, c, a);
-//        buffer.vertex(xt + 1, y - 1    , z).color(c, c, c, a);
 
         // SV selection marker for value, vertical marker, horizontal range
         RenderUtils.addSimpleElement(drawContext,
@@ -716,22 +655,9 @@ public class GuiColorEditorHSV extends GuiDialogBase
         renderGradientColorBar(drawContext, x, y, z, w, h, color1, color2);
         renderBarMarkerHorizontalBar(drawContext, x, y, z, w, h, (float) a / 255f);
         y += yd;
-
-//        try
-//        {
-//            BuiltBuffer meshData = buffer.endNullable();
-//
-//            if (meshData != null)
-//            {
-//                ctx.draw(meshData, false);
-//                meshData.close();
-//            }
-//
-//            ctx.close();
-//        }
-//        catch (Exception ignored) { }
     }
 
+    @Deprecated
     private int[] getColorPairForSelector()
     {
         int color1 = Color.HSBtoRGB(this.relH, 0f, 0f);     // TOP LEFT
@@ -742,21 +668,29 @@ public class GuiColorEditorHSV extends GuiDialogBase
         return new int[]{ color1, color2, color3, color4 };
     }
 
+    /**
+     * This Generates a Dynamic Image for the 4-Point Color Selector;
+     * - as opposed to using a custom Fragment shader.
+     */
     private void generateDynamicTextureForHSVSelector()
     {
-        if (this.dynamicTexture != null)
-        {
-            return;
-        }
-
-        Identifier id = Identifier.of(MaLiLibReference.MOD_ID, UUID.randomUUID().toString());
         final int sizeW = 256;
         final int sizeH = 256;
 
+        if (this.dynamicTexture != null)
+        {
+            // for 1.21.5+ we need to destroy the last texture
+            this.clearDynamicTexture();
+        }
+
         try (NativeImage image = new NativeImage(sizeW, sizeH, false))
         {
-            NativeImageBackedTexture texture = new NativeImageBackedTexture(id::toString, image);
-            this.mc.getTextureManager().registerTexture(id, texture);
+            Identifier id = Identifier.of(MaLiLibReference.MOD_ID, UUID.randomUUID().toString());
+            this.dynamicTexture = Pair.of(
+                    id,
+                    new NativeImageBackedTexture(id::toString, image)
+            );
+            this.mc.getTextureManager().registerTexture(id, this.dynamicTexture.getRight());
 
             for (int x = 0; x < sizeW; x++)
             {
@@ -780,8 +714,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 //                image.writeToFile(file);
 //            }
 
-            texture.upload();
-            this.dynamicTexture = Pair.of(id, texture);
+            this.dynamicTexture.getRight().upload();
         }
         catch (Throwable err)
         {
@@ -1104,7 +1037,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
 
                     return true;
                 }
-                catch (Exception e) {}
+                catch (Exception ignored) {}
             }
 
             return false;
