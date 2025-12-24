@@ -14,7 +14,6 @@ import net.minecraft.block.spawner.TrialSpawnerData;
 import net.minecraft.component.type.ProfileComponent;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
@@ -26,7 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.Vibrations;
 
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
-import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
@@ -211,13 +209,13 @@ public class DataBlockUtils
 		if (data.contains(NbtKeys.FRONT_TEXT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.FRONT_TEXT);
-			SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(front::set);
+			SignText.CODEC.parse(registry.getOps(DataOps.INSTANCE), comp).resultOrPartial().ifPresent(front::set);
 		}
 
 		if (data.contains(NbtKeys.BACK_TEXT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.BACK_TEXT);
-			SignText.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(back::set);
+			SignText.CODEC.parse(registry.getOps(DataOps.INSTANCE), comp).resultOrPartial().ifPresent(back::set);
 		}
 
 		if (data.contains(NbtKeys.WAXED, Constants.NBT.TAG_BYTE))
