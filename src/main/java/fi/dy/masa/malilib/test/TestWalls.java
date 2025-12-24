@@ -304,10 +304,10 @@ public class TestWalls implements AutoCloseable
     {
         if (this.hasData)
         {
-            preRender();
+            this.preRender();
             drawInternal(matrix4f, projMatrix, this.VERTEX_1, this.SHADER_1);
             drawInternal(matrix4f, projMatrix, this.VERTEX_2, this.SHADER_2);
-            postRender();
+            this.postRender();
         }
     }
 

@@ -1,19 +1,18 @@
 package fi.dy.masa.malilib.gui;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.math.Fraction;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
@@ -521,23 +520,25 @@ public class GuiColorEditorHSV extends GuiDialogBase
         RenderUtils.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
         Tessellator tessellator = Tessellator.getInstance();
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 //        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         BuiltBuffer builtBuffer;
 
         RenderUtils.setupBlend();
-        RenderUtils.color(1f, 1f, 1f, 1f);
+        RenderUtils.color(1, 1, 1, 1);
 
         //GlProgramManager.useProgram(SHADER_HUE.getProgram());
         //GL20.glUniform1f(GL20.glGetUniformLocation(SHADER_HUE.getProgram(), "hue_value"), this.relH);
 
 //        final int[] colorPair = this.getColorPairForSelector();
-//        this.generateDynamicTextureForHSVSelector();
+        this.generateDynamicTextureForHSVSelector();
+        RenderSystem.setShaderTexture(0, this.dynamicTexture.getLeft());
 
-        buffer.vertex(x    , y    , z).texture(1, 0);
-        buffer.vertex(x    , y + h, z).texture(0, 0);
-        buffer.vertex(x + w, y + h, z).texture(0, 1);
-        buffer.vertex(x + w, y    , z).texture(1, 1);
+        buffer.vertex(x    , y    , z).texture(0, 0);
+        buffer.vertex(x    , y + h, z).texture(0, 1);
+        buffer.vertex(x + w, y + h, z).texture(1, 1);
+        buffer.vertex(x + w, y    , z).texture(1, 0);
 
 //        buffer.vertex(x    , y    , z).color(colorPair[0]);
 //        buffer.vertex(x    , y + h, z).color(colorPair[1]);
@@ -552,8 +553,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
         catch (Exception ignored) { }
 
-        // FIXME
-        //RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         int r = (int) (this.relR * 255f);
@@ -660,25 +660,23 @@ public class GuiColorEditorHSV extends GuiDialogBase
         return new int[]{ color1, color2, color3, color4 };
     }
 
-    /**
-     * Only required from 1.21.5+ due to Core Fragment Shader changes
-     */
     private void generateDynamicTextureForHSVSelector()
     {
-        if (this.dynamicTexture != null)
-        {
-            this.clearDynamicTexture();
-        }
-
-        Identifier id = Identifier.of(MaLiLibReference.MOD_ID, UUID.randomUUID().toString());
         final int sizeW = 256;
         final int sizeH = 256;
 
+        if (this.dynamicTexture == null)
+        {
+            this.dynamicTexture = Pair.of(
+                    Identifier.of(MaLiLibReference.MOD_ID, UUID.randomUUID().toString()),
+                    new NativeImageBackedTexture(sizeW, sizeH, false)
+            );
+
+            this.mc.getTextureManager().registerTexture(this.dynamicTexture.getLeft(), this.dynamicTexture.getRight());
+        }
+
         try (NativeImage image = new NativeImage(sizeW, sizeH, false))
         {
-            NativeImageBackedTexture texture = new NativeImageBackedTexture(image);
-            this.mc.getTextureManager().registerTexture(id, texture);
-
             for (int x = 0; x < sizeW; x++)
             {
                 float brightness = Fraction.getFraction(x, sizeW).floatValue();
@@ -688,21 +686,21 @@ public class GuiColorEditorHSV extends GuiDialogBase
                     float saturation = Fraction.getFraction(y, sizeH).floatValue();
 
                     // inverted Y (?)
-                    image.setColor(x, ((sizeH - 1) - y), Color.HSBtoRGB(this.relH, saturation, brightness));
+                    image.setColor(x, ((sizeH - 1) - y), ColorHelper.toAbgr(Color.HSBtoRGB(this.relH, saturation, brightness)));
                     // 1.21.10- seems to need ABGR, where Color.HSBtoRGB returns RGBA
                 }
             }
 
 //            if (MaLiLibReference.DEBUG_MODE)
 //            {
-//                Path dir = MaLiLibReference.CONFIG_DIR.resolve(id.getNamespace());
+//                Path dir = MaLiLibReference.CONFIG_DIR.resolve(MaLiLibReference.MOD_ID);
 //                FileUtils.createDirectoriesIfMissing(dir);
-//                Path file = dir.resolve(id.getPath() + ".png");
-//                image.writeToFile(file);
+//                Path file = dir.resolve(this.dynamicTexture.getLeft().getPath() + ".png");
+//                image.writeTo(file);
 //            }
 
-            texture.upload();
-            this.dynamicTexture = Pair.of(id, texture);
+            this.dynamicTexture.getRight().setImage(image);
+            this.dynamicTexture.getRight().upload();
         }
         catch (Throwable err)
         {
@@ -710,16 +708,12 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
     }
 
-//    private int toAbgrFix(int argb)
-//    {
-//        return argb & Colors.GREEN | (argb & 0xFF0000) >> 16 | (argb & 0xFF) << 16;
-//    }
-
     private void clearDynamicTexture()
     {
         if (this.dynamicTexture != null)
         {
-            this.mc.getTextureManager().destroyTexture(this.dynamicTexture.getLeft());
+            Identifier id = this.dynamicTexture.getLeft();
+            this.mc.getTextureManager().destroyTexture(id);
             this.dynamicTexture.getRight().close();
             this.dynamicTexture = null;
         }
