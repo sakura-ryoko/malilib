@@ -16,7 +16,7 @@ public class MaLiLibReference
     public static final int MC_DATA_VERSION = SharedConstants.getGameVersion().dataVersion().id();
 	public static final Path GAME_DIR = FabricLoader.getInstance().getGameDir();
     public static final Path CONFIG_DIR = FabricLoader.getInstance().getConfigDir();
-    public static final boolean DEBUG_MODE = true;
+    public static final boolean DEBUG_MODE = false;
     public static final boolean ANSI_MODE = DEBUG_MODE;
     public static final boolean EXPERIMENTAL_MODE = false;
 }

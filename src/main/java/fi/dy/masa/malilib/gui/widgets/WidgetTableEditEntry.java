@@ -16,7 +16,10 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.util.Pair;
 
 import java.util.*;
@@ -465,7 +468,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	}
 
 	@Override
-	public boolean onMouseClicked(int mouseX, int mouseY, int mouseButton)
+	public boolean onMouseClicked(Click click, boolean doubleClick)
 	{
 		for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets)
 		{
@@ -474,10 +477,10 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				ConfigButtonKeybind button = pair.getLeft();
 				if (button != null)
 				{
-					if (button.isMouseOver(mouseX, mouseY))
+					if (button.isMouseOver((int) click.x(), (int) click.y()))
 					{
 						boolean selectedPre = button.isSelected();
-						button.onMouseClicked(mouseX, mouseY, mouseButton);
+						button.onMouseClicked(click, doubleClick);
 
 						if (!selectedPre)
 						{
@@ -496,11 +499,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				}
 			}
 		}
-		return super.onMouseClicked(mouseX, mouseY, mouseButton);
+		return super.onMouseClicked(click, doubleClick);
 	}
 
 	@Override
-	public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+	public boolean onKeyTyped(KeyInput input)
 	{
 		for (Pair<ConfigButtonKeybind, WidgetKeybindSettings> pair : this.keybindWidgets)
 		{
@@ -511,9 +514,9 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				{
 					if (button.isSelected())
 					{
-						button.onKeyPressed(keyCode);
+						button.onKeyPressed(input.key());
 
-						if (keyCode == KeyCodes.KEY_ESCAPE)
+						if (input.key() == KeyCodes.KEY_ESCAPE)
 						{
 							button.onClearSelection();
 						}
@@ -527,7 +530,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				}
 			}
 		}
-		return super.onKeyTyped(keyCode, scanCode, modifiers);
+		return super.onKeyTyped(input);
 	}
 
 	private boolean checkResetButtonState()
@@ -697,9 +700,9 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 
 
 	@Override
-	protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+	protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
 	{
-		if (super.onMouseClickedImpl(mouseX, mouseY, mouseButton))
+		if (super.onMouseClickedImpl(click, doubleClick))
 		{
 			return true;
 		}
@@ -710,27 +713,27 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		{
 			if (tfw != null)
 			{
-				ret |= tfw.getTextField().mouseClicked(mouseX, mouseY, mouseButton);
+				ret |= tfw.getTextField().mouseClicked(click, doubleClick);
 			}
 		}
 		return ret;
 	}
 
 	@Override
-	public boolean onKeyTypedImpl(int keyCode, int scanCode, int modifiers)
+	public boolean onKeyTypedImpl(KeyInput input)
 	{
 		for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields)
 		{
 			if (tfw != null && tfw.getTextField().isFocused())
 			{
-				if (keyCode == KeyCodes.KEY_ENTER)
+				if (input.key() == KeyCodes.KEY_ENTER)
 				{
 					this.applyNewValueToConfig();
 					return true;
 				}
 				else
 				{
-					return tfw.onKeyTyped(keyCode, scanCode, modifiers);
+					return tfw.onKeyTyped(input);
 				}
 			}
 		}
@@ -738,16 +741,16 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	}
 
 	@Override
-	protected boolean onCharTypedImpl(char charIn, int modifiers)
+	protected boolean onCharTypedImpl(CharInput input)
 	{
 		for (TextFieldWrapper<? extends GuiTextFieldGeneric> tfw : this.textFields)
 		{
-			if (tfw != null && tfw.onCharTyped(charIn, modifiers))
+			if (tfw != null && tfw.onCharTyped(input))
 			{
 				return true;
 			}
 		}
 
-		return super.onCharTypedImpl(charIn, modifiers);
+		return super.onCharTypedImpl(input);
 	}
 }

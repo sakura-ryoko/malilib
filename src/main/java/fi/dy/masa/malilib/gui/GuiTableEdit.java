@@ -1,5 +1,14 @@
 package fi.dy.masa.malilib.gui;
 
+import java.util.Collections;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
+
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.Label;
@@ -12,15 +21,6 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Collections;
 
 @ApiStatus.Experimental
 public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, WidgetListTableEdit>
@@ -172,16 +172,16 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
 	}
 
 	@Override
-	public boolean onKeyTyped(int keyCode, int scanCode, int modifiers)
+	public boolean onKeyTyped(KeyInput input)
 	{
-		if (keyCode == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+		if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
 		{
 			this.dialogHandler.closeDialog();
 			return true;
 		}
 		else
 		{
-			return super.onKeyTyped(keyCode, scanCode, modifiers);
+			return super.onKeyTyped(input);
 		}
 	}
 }

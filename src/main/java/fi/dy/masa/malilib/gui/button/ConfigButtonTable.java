@@ -17,6 +17,8 @@ import fi.dy.masa.malilib.util.StringUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+import net.minecraft.client.gui.Click;
+
 @ApiStatus.Experimental
 public class ConfigButtonTable extends ButtonGeneric
 {
@@ -37,9 +39,9 @@ public class ConfigButtonTable extends ButtonGeneric
 	}
 
 	@Override
-	protected boolean onMouseClickedImpl(int mouseX, int mouseY, int mouseButton)
+	protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
 	{
-		super.onMouseClickedImpl(mouseX, mouseY, mouseButton);
+		super.onMouseClickedImpl(click, doubleClick);
 
 		if (this.dialogHandler != null)
 		{

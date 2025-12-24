@@ -27,6 +27,8 @@ import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
 
+import static fi.dy.masa.malilib.config.options.table.type.EntryTypes.*;
+
 public class MaLiLibConfigs implements IConfigHandler
 {
     private static final String CONFIG_FILE_NAME = MaLiLibReference.MOD_ID + ".json";
