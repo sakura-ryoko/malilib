@@ -1052,6 +1052,7 @@ public abstract class MixinRenderPipelines
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/translucent/lequal_depth"))
                               .withDepthWrite(false)
+                              .withCull(false)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
                               .build();
 
@@ -1059,23 +1060,27 @@ public abstract class MixinRenderPipelines
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/translucent/offset_1"))
                               .withDepthBias(-0.8f, -1.8f)
+                              .withCull(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/translucent/offset_2"))
                               .withDepthBias(-1.2f, -0.2f)
+                              .withCull(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/translucent/offset_3"))
                               .withDepthBias(-3.0f, -3.0f)
+                              .withCull(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/translucent"))
+                              .withCull(false)
                               .build();
 
         // DEBUG_LINES_MASA_SIMPLE
@@ -1104,6 +1109,7 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/masa_simple/lequal_depth"))
+                              .withCull(false)
                               .withDepthWrite(false)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
                               .build();
@@ -1112,6 +1118,7 @@ public abstract class MixinRenderPipelines
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/masa_simple/offset_1"))
                               .withDepthBias(-0.8f, -1.8f)
+                              .withCull(false)
                               .withDepthWrite(false)
                               .build();
 
@@ -1119,6 +1126,7 @@ public abstract class MixinRenderPipelines
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/masa_simple/offset_2"))
                               .withDepthBias(-1.2f, -0.2f)
+                              .withCull(false)
                               .withDepthWrite(false)
                               .build();
 
@@ -1126,12 +1134,14 @@ public abstract class MixinRenderPipelines
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/masa_simple/offset_3"))
                               .withDepthBias(-3.0f, -3.0f)
+                              .withCull(false)
                               .withDepthWrite(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_lines/masa_simple"))
+                              .withCull(false)
                               .withDepthWrite(false)
                               .build();
 
@@ -1161,23 +1171,27 @@ public abstract class MixinRenderPipelines
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_line_strip/translucent/offset_1"))
                               .withDepthBias(-0.8f, -1.8f)
+                              .withCull(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_line_strip/translucent/offset_2"))
                               .withDepthBias(-1.2f, -0.2f)
+                              .withCull(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_line_strip/translucent/offset_3"))
                               .withDepthBias(-3.0f, -3.0f)
+                              .withCull(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_line_strip/translucent"))
+                              .withCull(false)
                               .build();
 
         // DEBUG_LINE_STRIP_MASA_SIMPLE
@@ -1208,6 +1222,7 @@ public abstract class MixinRenderPipelines
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_line_strip/masa_simple/offset_1"))
                               .withDepthBias(-0.8f, -1.8f)
                               .withDepthWrite(false)
+                              .withCull(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_OFFSET_2 =
@@ -1215,6 +1230,7 @@ public abstract class MixinRenderPipelines
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_line_strip/masa_simple/offset_2"))
                               .withDepthBias(-1.2f, -0.2f)
                               .withDepthWrite(false)
+                              .withCull(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_OFFSET_3 =
@@ -1222,12 +1238,14 @@ public abstract class MixinRenderPipelines
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_line_strip/masa_simple/offset_3"))
                               .withDepthBias(-3.0f, -3.0f)
                               .withDepthWrite(false)
+                              .withCull(false)
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/debug_line_strip/masa_simple"))
                               .withDepthWrite(false)
+                              .withCull(false)
                               .build();
 
         // TERRAIN_MASA_OFFSET --> PRE-REGISTER
@@ -1348,6 +1366,7 @@ public abstract class MixinRenderPipelines
 	    MaLiLibPipelines.MINIHUD_SHAPE_DEPTH_MASK =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/depth_mask"))
+                              .withCull(false)
                               .withDepthWrite(true)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)

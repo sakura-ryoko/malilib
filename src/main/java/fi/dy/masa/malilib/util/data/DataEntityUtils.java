@@ -18,8 +18,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
@@ -42,7 +40,6 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
-import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.INbtEntityInvoker;
@@ -141,7 +138,7 @@ public class DataEntityUtils
 			AttributeContainer container = new AttributeContainer(DefaultAttributeRegistry.get((EntityType<? extends LivingEntity>) type));
 			ListData list = data.getList(NbtKeys.ATTRIB);
 
-			container.unpack(EntityAttributeInstance.Packed.LIST_CODEC.parse(NbtOps.INSTANCE, DataConverterNbt.toVanillaList(list)).getPartialOrThrow());
+			container.unpack(EntityAttributeInstance.Packed.LIST_CODEC.parse(DataOps.INSTANCE, list).getPartialOrThrow());
 			return container;
 		}
 
@@ -298,7 +295,7 @@ public class DataEntityUtils
 		if (data.contains(NbtKeys.EQUIPMENT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.EQUIPMENT);
-			Optional<EntityEquipment> opt = EntityEquipment.CODEC.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).result();
+			Optional<EntityEquipment> opt = EntityEquipment.CODEC.parse(registry.getOps(DataOps.INSTANCE), comp).result();
 
 			if (opt.isPresent())
 			{
@@ -320,7 +317,7 @@ public class DataEntityUtils
 	{
 		try
 		{
-			return DataConverterNbt.fromVanillaNbt(EntityEquipment.CODEC.encodeStart(registry.getOps(NbtOps.INSTANCE), equipment).getOrThrow());
+			return EntityEquipment.CODEC.encodeStart(registry.getOps(DataOps.INSTANCE), equipment).getOrThrow();
 		}
 		catch (Exception err)
 		{
@@ -726,7 +723,7 @@ public class DataEntityUtils
 		if (data.contains(NbtKeys.VARIANT, Constants.NBT.TAG_STRING))
 		{
 			variant = PaintingVariant.ENTRY_CODEC.fieldOf(NbtKeys.VARIANT).codec()
-			                                     .parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+			                                     .parse(registry.getOps(DataOps.INSTANCE), data)
 			                                     .resultOrPartial().orElse(null);
 		}
 
@@ -767,7 +764,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<CatVariant>> variant = CatVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(CatVariants.BLACK);
@@ -803,7 +800,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<ChickenVariant>> variant = ChickenVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(ChickenVariants.DEFAULT);
@@ -825,7 +822,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<CowVariant>> variant = CowVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(CowVariants.DEFAULT);
@@ -863,7 +860,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<FrogVariant>> variant = FrogVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			return variant.map(entry -> entry.getKey().orElseThrow()).orElse(FrogVariants.TEMPERATE);
@@ -961,7 +958,7 @@ public class DataEntityUtils
 		{
 			Optional<RegistryEntry<WolfVariant>> variant = WolfVariant.ENTRY_CODEC
 					.fieldOf(NbtKeys.VARIANT).codec()
-					.parse(registry.getOps(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(data))
+					.parse(registry.getOps(DataOps.INSTANCE), data)
 					.resultOrPartial();
 
 			variantKey = variant.map(entry -> entry.getKey().orElseThrow()).orElse(WolfVariants.DEFAULT);
@@ -1205,9 +1202,9 @@ public class DataEntityUtils
 		if (data.contains(NbtKeys.RECIPE_BOOK, Constants.NBT.TAG_COMPOUND))
 		{
 			book = new ServerRecipeBook(manager::forEachRecipeDisplay);
-			NbtCompound nbt = DataConverterNbt.toVanillaCompound(data.getCompoundOrDefault(NbtKeys.RECIPE_BOOK, new CompoundData()));
+			CompoundData entry = data.getCompoundOrDefault(NbtKeys.RECIPE_BOOK, new CompoundData());
 			book.unpack(ServerRecipeBook.Packed.CODEC
-					            .parse(NbtOps.INSTANCE, nbt).getOrThrow(),
+					            .parse(DataOps.INSTANCE, entry).getOrThrow(),
 			            (key) -> manager.get(key).isPresent()
 			);
 		}
