@@ -245,8 +245,10 @@ public class IrisCompat
 
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH_OFFSET, IrisProgram.BASIC);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH, IrisProgram.BASIC);
+            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_OFFSET_NO_CULL, IrisProgram.BASIC);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_OFFSET, IrisProgram.BASIC);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_DEPTH_MASK, IrisProgram.BASIC);
+            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_NO_CULL, IrisProgram.BASIC);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE, IrisProgram.BASIC);
         }
     }

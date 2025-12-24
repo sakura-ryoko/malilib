@@ -28,34 +28,34 @@ import fi.dy.masa.malilib.render.MaLiLibPipelines;
 @Mixin(RenderPipelines.class)
 public abstract class MixinRenderPipelines
 {
-    @Shadow @Final private static Map<Identifier, RenderPipeline> PIPELINES;
-    @Shadow @Final private static RenderPipeline.Snippet MATRICES_SNIPPET;                       // MATRICES
-    @Shadow @Final private static RenderPipeline.Snippet FOG_NO_COLOR_SNIPPET;                   // FOG_NO_COLOR
-    @Shadow @Final private static RenderPipeline.Snippet FOG_SNIPPET;                            // FOG
-    @Shadow @Final private static RenderPipeline.Snippet MATRICES_COLOR_SNIPPET;                 // MATRICES_COLOR
-    @Shadow @Final private static RenderPipeline.Snippet MATRICES_COLOR_FOG_SNIPPET;             // MATRICES_COLOR_FOG
-    @Shadow @Final private static RenderPipeline.Snippet MATRICES_COLOR_FOG_OFFSET_SNIPPET;      // MATRICES_COLOR_FOG_OFFSET
-    @Shadow @Final private static RenderPipeline.Snippet MATRICES_COLOR_FOG_LIGHT_DIR_SNIPPET;   // MATRICES_COLOR_FOG_LIGHT_DIR
-    @Shadow @Final private static RenderPipeline.Snippet TERRAIN_SNIPPET;                        // TERRAIN
-    @Shadow @Final private static RenderPipeline.Snippet ENTITY_SNIPPET;                         // ENTITY
-    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_BEACON_BEAM_SNIPPET;         // RENDERTYPE_BEACON_BEAM
-    @Shadow @Final private static RenderPipeline.Snippet TEXT_SNIPPET;                           // TEXT
-    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_END_PORTAL_SNIPPET;          // RENDERTYPE_END_PORTAL
-    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_CLOUDS_SNIPPET;              // RENDERTYPE_CLOUDS
-    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_LINES_SNIPPET;               // RENDERTYPE_LINES
-    @Shadow @Final private static RenderPipeline.Snippet POSITION_COLOR_SNIPPET;                 // DEBUG_FILLED
-    @Shadow @Final private static RenderPipeline.Snippet PARTICLE_SNIPPET;                       // PARTICLE_TEX
-    @Shadow @Final private static RenderPipeline.Snippet WEATHER_SNIPPET;                        // WEATHER
-    @Shadow @Final private static RenderPipeline.Snippet GUI_SNIPPET;                            // GUI
-    @Shadow @Final private static RenderPipeline.Snippet POSITION_TEX_COLOR_SNIPPET;             // GUI_TEXTURED
-    @Shadow @Final private static RenderPipeline.Snippet RENDERTYPE_OUTLINE_SNIPPET;             // RENDERTYPE_OUTLINE
+    @Shadow @Final public static Map<Identifier, RenderPipeline> PIPELINES;
+    @Shadow @Final public static RenderPipeline.Snippet MATRICES_SNIPPET;                       // MATRICES
+    @Shadow @Final public static RenderPipeline.Snippet FOG_NO_COLOR_SNIPPET;                   // FOG_NO_COLOR
+    @Shadow @Final public static RenderPipeline.Snippet FOG_SNIPPET;                            // FOG
+    @Shadow @Final public static RenderPipeline.Snippet MATRICES_COLOR_SNIPPET;                 // MATRICES_COLOR
+    @Shadow @Final public static RenderPipeline.Snippet MATRICES_COLOR_FOG_SNIPPET;             // MATRICES_COLOR_FOG
+    @Shadow @Final public static RenderPipeline.Snippet MATRICES_COLOR_FOG_OFFSET_SNIPPET;      // MATRICES_COLOR_FOG_OFFSET
+    @Shadow @Final public static RenderPipeline.Snippet MATRICES_COLOR_FOG_LIGHT_DIR_SNIPPET;   // MATRICES_COLOR_FOG_LIGHT_DIR
+    @Shadow @Final public static RenderPipeline.Snippet TERRAIN_SNIPPET;                        // TERRAIN
+    @Shadow @Final public static RenderPipeline.Snippet ENTITY_SNIPPET;                         // ENTITY
+    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_BEACON_BEAM_SNIPPET;         // RENDERTYPE_BEACON_BEAM
+    @Shadow @Final public static RenderPipeline.Snippet TEXT_SNIPPET;                           // TEXT
+    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_END_PORTAL_SNIPPET;          // RENDERTYPE_END_PORTAL
+    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_CLOUDS_SNIPPET;              // RENDERTYPE_CLOUDS
+    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_LINES_SNIPPET;               // RENDERTYPE_LINES
+    @Shadow @Final public static RenderPipeline.Snippet POSITION_COLOR_SNIPPET;                 // DEBUG_FILLED
+    @Shadow @Final public static RenderPipeline.Snippet PARTICLE_SNIPPET;                       // PARTICLE_TEX
+    @Shadow @Final public static RenderPipeline.Snippet WEATHER_SNIPPET;                        // WEATHER
+    @Shadow @Final public static RenderPipeline.Snippet GUI_SNIPPET;                            // GUI
+    @Shadow @Final public static RenderPipeline.Snippet POSITION_TEX_COLOR_SNIPPET;             // GUI_TEXTURED
+    @Shadow @Final public static RenderPipeline.Snippet RENDERTYPE_OUTLINE_SNIPPET;             // RENDERTYPE_OUTLINE
     @Shadow @Final public static RenderPipeline.Snippet POST_EFFECT_PROCESSOR_SNIPPET;          // POST_PROCESSOR
 
     @Unique private static final BlendFunction MASA_BLEND = new BlendFunction(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
     @Unique private static final BlendFunction MASA_BLEND_SIMPLE = new BlendFunction(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 
     @Shadow
-    private static RenderPipeline register(RenderPipeline renderPipeline)
+    public static RenderPipeline register(RenderPipeline renderPipeline)
     {
         PIPELINES.put(renderPipeline.getLocation(), renderPipeline);
         return renderPipeline;
@@ -1308,9 +1308,9 @@ public abstract class MixinRenderPipelines
                               .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                               .build();
 
-        MaLiLibPipelines.MINIHUD_SHAPE_OFFSET =
+        MaLiLibPipelines.MINIHUD_SHAPE_OFFSET_NO_CULL =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
-                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/offset"))
+                              .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/offset/no_cull"))
                               .withDepthBias(-3.0f, -3.0f)
                               .withCull(false)
                               .withDepthWrite(false)
@@ -1318,19 +1318,35 @@ public abstract class MixinRenderPipelines
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
                               .build();
 
-        MaLiLibPipelines.MINIHUD_SHAPE_DEPTH_MASK =
+	    MaLiLibPipelines.MINIHUD_SHAPE_OFFSET =
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+			                  .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/offset"))
+			                  .withDepthBias(-3.0f, -3.0f)
+			                  .withDepthWrite(false)
+			                  .withColorWrite(true)
+			                  .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+			                  .build();
+
+	    MaLiLibPipelines.MINIHUD_SHAPE_DEPTH_MASK =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/depth_mask"))
-                              .withCull(false)
                               .withDepthWrite(true)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
                               .build();
 
-        MaLiLibPipelines.MINIHUD_SHAPE =
+	    MaLiLibPipelines.MINIHUD_SHAPE_NO_CULL =
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
+			                  .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape/no_cull"))
+			                  .withCull(false)
+			                  .withDepthWrite(false)
+			                  .withColorWrite(true)
+			                  .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)
+			                  .build();
+
+	    MaLiLibPipelines.MINIHUD_SHAPE =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(Identifier.of(MaLiLibReference.MOD_ID, "pipeline/minihud/shape"))
-                              .withCull(false)
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST)

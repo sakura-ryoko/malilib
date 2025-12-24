@@ -200,7 +200,9 @@ public class MaLiLibPipelines
     // MINIHUD_SHAPE
     public static RenderPipeline MINIHUD_SHAPE_NO_DEPTH_OFFSET;
     public static RenderPipeline MINIHUD_SHAPE_NO_DEPTH;
+    public static RenderPipeline MINIHUD_SHAPE_OFFSET_NO_CULL;
     public static RenderPipeline MINIHUD_SHAPE_OFFSET;
     public static RenderPipeline MINIHUD_SHAPE_DEPTH_MASK;
+    public static RenderPipeline MINIHUD_SHAPE_NO_CULL;
     public static RenderPipeline MINIHUD_SHAPE;
 }
