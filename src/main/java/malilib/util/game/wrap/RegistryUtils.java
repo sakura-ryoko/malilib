@@ -8,12 +8,15 @@ import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 
 import malilib.util.data.Identifier;
+import malilib.util.world.BlockState;
 
 public class RegistryUtils
 {
@@ -80,6 +83,37 @@ public class RegistryUtils
         }
 
         blocks.sort(Comparator.comparing(RegistryUtils::getBlockIdStr));
+
+        return blocks;
+    }
+
+    public static List<BlockState> getSortedBlockStatesList()
+    {
+        List<BlockState> states = new ArrayList<>();
+
+        for (Block block : Block.REGISTRY)
+        {
+            for (IBlockState state : block.getBlockState().getValidStates())
+            {
+                states.add(BlockState.of(state));
+            }
+        }
+
+        states.sort(Comparator.comparing(BlockState::getFullStateString));
+
+        return states;
+    }
+
+    public static List<Class<? extends Entity>> getSortedEntityList()
+    {
+        List<Class<? extends Entity>> blocks = new ArrayList<>();
+
+        for (Class<? extends Entity> clazz : EntityList.REGISTRY)
+        {
+            blocks.add(clazz);
+        }
+
+        blocks.sort(Comparator.comparing(e -> EntityList.getKey(e).toString()));
 
         return blocks;
     }
