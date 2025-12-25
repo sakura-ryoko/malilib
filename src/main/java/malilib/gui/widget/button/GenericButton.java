@@ -673,6 +673,14 @@ public class GenericButton extends InteractableWidget
         return button;
     }
 
+    public static GenericButton create(int height, Icon icon, EventListener actionListener)
+    {
+        int size = height;
+        GenericButton button = create(size, size, icon);
+        button.setActionListener(actionListener);
+        return button;
+    }
+
     public static GenericButton create(@Nullable Supplier<Icon> iconSupplier, EventListener actionListener)
     {
         GenericButton button = new GenericButton(-1, -1);
