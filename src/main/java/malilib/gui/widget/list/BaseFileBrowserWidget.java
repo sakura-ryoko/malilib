@@ -470,7 +470,7 @@ public class BaseFileBrowserWidget extends DataListWidget<DirectoryEntry> implem
 
     protected void openSettingsContextMenu(int mouseX, int mouseY)
     {
-        this.createAndOpenContextMenu(mouseX, mouseY, this.getSettingsMenuEntries());
+        this.closeOrOpenContextMenu(mouseX, mouseY, this::getSettingsMenuEntries);
     }
 
     public void openContextMenuForEntry(int mouseX, int mouseY, int listIndex)
@@ -490,12 +490,19 @@ public class BaseFileBrowserWidget extends DataListWidget<DirectoryEntry> implem
             handler.setSelectedEntryByIndex(listIndex);
         }
 
-        List<MenuEntryWidget> entries = new ArrayList<>(listIndex >= 0 ?
+
+
+        this.closeOrOpenContextMenu(mouseX, mouseY, () -> this.getContextMenuEntries(listIndex >= 0));
+    }
+
+    protected List<MenuEntryWidget> getContextMenuEntries(boolean isFile)
+    {
+        List<MenuEntryWidget> entries = new ArrayList<>(isFile ?
                                                         this.getFileOperationMenuEntriesForFile() :
                                                         this.getFileOperationMenuEntriesForNonFile());
         entries.addAll(this.getSettingsMenuEntries());
 
-        this.createAndOpenContextMenu(mouseX, mouseY, entries);
+        return entries;
     }
 
     protected List<MenuEntryWidget> getFileOperationMenuEntriesForNonFile()

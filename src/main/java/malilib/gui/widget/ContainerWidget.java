@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
 
@@ -107,11 +108,17 @@ public class ContainerWidget extends InteractableWidget
         this.addWidget(widget);
     }
 
+    public boolean hasContextMenuOpen()
+    {
+        return this.activeContextMenuWidget != null;
+    }
+
     public void closeCurrentContextMenu()
     {
         if (this.activeContextMenuWidget != null)
         {
             this.removeWidget(this.activeContextMenuWidget);
+            this.activeContextMenuWidget = null;
         }
     }
 
@@ -122,6 +129,18 @@ public class ContainerWidget extends InteractableWidget
         menuWidget.setMenuEntries(entries);
 
         this.openContextMenu(menuWidget);
+    }
+
+    public void closeOrOpenContextMenu(int mouseX, int mouseY, Supplier<List<MenuEntryWidget>> entrySupplier)
+    {
+        if (this.hasContextMenuOpen())
+        {
+            this.closeCurrentContextMenu();
+        }
+        else
+        {
+            this.createAndOpenContextMenu(mouseX, mouseY, entrySupplier.get());
+        }
     }
 
     @Override

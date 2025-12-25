@@ -989,7 +989,7 @@ public class BaseTextFieldWidget extends ContainerWidget
 
     protected void openRightClickContextMenu(int mouseX, int mouseY)
     {
-        this.createAndOpenContextMenu(mouseX, mouseY, this.getContextMenuEntries());
+        this.closeOrOpenContextMenu(mouseX, mouseY, this::getContextMenuEntries);
     }
 
     protected List<MenuEntryWidget> getContextMenuEntries()

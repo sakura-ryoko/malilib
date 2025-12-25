@@ -440,16 +440,11 @@ public class DataListWidget<DATATYPE> extends BaseListWidget
     {
         if (mouseButton == 1 && this.getEntrySelectionHandler().isNonModifierMultiSelection())
         {
-            this.openSelectionContextMenu(mouseX, mouseY);
+            this.closeOrOpenContextMenu(mouseX, mouseY, this::getSelectionContextMenuEntries);
             return true;
         }
 
         return super.onMouseClicked(mouseX, mouseY, mouseButton);
-    }
-
-    protected void openSelectionContextMenu(int mouseX, int mouseY)
-    {
-        this.createAndOpenContextMenu(mouseX, mouseY, this.getSelectionContextMenuEntries());
     }
 
     protected List<MenuEntryWidget> getSelectionContextMenuEntries()
