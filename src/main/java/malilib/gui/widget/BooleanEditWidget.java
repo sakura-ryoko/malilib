@@ -12,9 +12,10 @@ public class BooleanEditWidget extends ContainerWidget
     protected LeftRight buttonPosition;
     protected boolean useSeparateColorForModifiedLabel = true;
     protected int buttonXOffset;
-    protected int disabledLabelColor = 0xFF505050;
-    protected int normalLabelColor = 0xFFFFFFFF;
-    protected int modifiedLabelColor = 0xFFFF00FF;
+    protected int disabledWidgetLabelColor = 0xFF505050;
+    protected int normalOnLabelColor = 0xFFF0F0F0;
+    protected int normalOffLabelColor = 0xFFD0D0D0;
+    protected int modifiedLabelColor = 0xFFD050D0;
 
     public BooleanEditWidget(int height, BooleanStorageWithDefault storage, String labelKey)
     {
@@ -22,9 +23,13 @@ public class BooleanEditWidget extends ContainerWidget
 
         this.storage = storage;
         this.label = new LabelWidget(labelKey);
+
         this.button = new BooleanConfigButton(-1, height, storage);
-        this.button.setClickListener(this::onButtonClicked);
         this.button.blockHoverContentFromBelow = false;
+
+        this.button.setClickListener(this::onButtonClicked);
+        this.label.setClickListener(this::onClick);
+        this.setClickListener(this::onClick);
 
         this.setButtonPosition(LeftRight.LEFT);
         this.updateLabelColor();
@@ -93,13 +98,22 @@ public class BooleanEditWidget extends ContainerWidget
     {
         if (this.enabled == false)
         {
-            this.label.setNormalTextColor(this.disabledLabelColor);
-            this.label.setHoverTextColor(this.disabledLabelColor);
+            this.label.setNormalTextColor(this.disabledWidgetLabelColor);
+            this.label.setHoverTextColor(this.disabledWidgetLabelColor);
         }
         else
         {
-            boolean useModifiedColor = this.useSeparateColorForModifiedLabel && this.storage.isModified();
-            int color = useModifiedColor ? this.modifiedLabelColor : this.normalLabelColor;
+            int color;
+
+            if (this.useSeparateColorForModifiedLabel && this.storage.isModified())
+            {
+                color = this.modifiedLabelColor;
+            }
+            else
+            {
+                color = this.storage.getBooleanValue() ? this.normalOnLabelColor : this.normalOffLabelColor;
+            }
+
             this.label.setNormalTextColor(color);
             this.label.setHoverTextColor(color);
         }
@@ -125,22 +139,34 @@ public class BooleanEditWidget extends ContainerWidget
         this.useSeparateColorForModifiedLabel = useSeparateColorForModifiedLabel;
     }
 
-    public void setDisabledLabelColor(int color)
+    public void setDisabledWidgetLabelColor(int color)
     {
-        this.disabledLabelColor = color;
+        this.disabledWidgetLabelColor = color;
         this.updateLabelColor();
     }
 
-    public void setNormalStateLabelColor(int color)
+    public void setNormalStateOnAndOffLabelColor(int color)
     {
-        this.normalLabelColor = color;
+        this.normalOnLabelColor = color;
+        this.normalOffLabelColor = color;
         this.updateLabelColor();
     }
 
-    public void setLabelColors(int normalColor, int modifiedColor)
+    public void setNormalStateOnLabelColor(int color)
     {
-        this.normalLabelColor = normalColor;
-        this.modifiedLabelColor = modifiedColor;
+        this.normalOnLabelColor = color;
+        this.updateLabelColor();
+    }
+
+    public void setNormalStateOffLabelColor(int color)
+    {
+        this.normalOffLabelColor = color;
+        this.updateLabelColor();
+    }
+
+    public void setModifiedStateLabelColor(int color)
+    {
+        this.modifiedLabelColor = color;
         this.updateLabelColor();
     }
 
@@ -166,13 +192,14 @@ public class BooleanEditWidget extends ContainerWidget
         this.updateWidth();
     }
 
+    protected void onClick()
+    {
+        this.storage.toggleBooleanValue();
+        this.updateLabelColor();
+    }
+
     protected void onButtonClicked()
     {
         this.updateLabelColor();
-
-        if (this.clickListener != null)
-        {
-            this.clickListener.onEvent();
-        }
     }
 }
