@@ -4,18 +4,15 @@ plugins {
 }
 
 repositories {
-//	maven {
-//		name = "Masa"
-//		url = "https://masa.dy.fi/maven"
-//		content {
-//			includeGroupAndSubgroups("fi.dy.masa")
-//		}
-//	}
-// 	maven { url = 'https://maven.fallenbreath.me/releases' }
- 	maven { url = 'https://maven.terraformersmc.com/releases/' }
-	maven { url = 'https://maven.fallenbreath.me/releases' }
+//	maven {url = "https://masa.dy.fi/maven/sakura-ryoko"
+//		content {includeGroupAndSubgroups("fi.dy.masa")}
+	maven {url = 'https://maven.fallenbreath.me/releases'
+		content {includeGroupAndSubgroups("me.fallenbreath")}
+	}
+	maven { url = 'https://maven.terraformersmc.com/releases/'
+		content {includeGroupAndSubgroups("com.terraformersmc")}
+	}
 	maven { url = 'https://api.modrinth.com/maven' }
-//	flatDir { dirs 'libs' }
 }
 
 fabricApi {
@@ -27,6 +24,7 @@ fabricApi {
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.mappings_version}:v2"
+//    mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
 	implementation "com.google.code.findbugs:jsr305:3.0.2"
 
@@ -34,9 +32,9 @@ dependencies {
 	//modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
 	include(modApi(fabricApi.module("fabric-api-base", project.fabric_api_version)))
-	include(modApi(fabricApi.module("fabric-networking-api-v1", project.fabric_api_version)))
 	include(modApi(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
-
+	include(modApi(fabricApi.module("fabric-networking-api-v1", project.fabric_api_version)))
+//	include(modApi(fabricApi.module("fabric-resource-loader-v1", project.fabric_api_version)))
 	// Used to run DataGen only
 	modImplementation(modApi(fabricApi.module("fabric-data-generation-api-v1", project.fabric_api_version)))
 
@@ -57,7 +55,7 @@ base {
 }
 
 loom {
-	accessWidenerPath = file("src/main/resources/malilib.accesswidener")
+    accessWidenerPath = file("src/main/resources/malilib.accesswidener")
 
 //	def commonVmArgs = ['-Dmixin.debug.export=true', '-Dmixin.debug.countInjections=true']
 //	// [FEATURE] MIXIN_AUDITOR
@@ -69,7 +67,6 @@ loom {
 //			ideConfigGenerated false
 //		}
 //	}
-//
 }
 
 processResources {
