@@ -270,5 +270,11 @@ public class BlockPos extends Vec3i
         {
             return new BlockPos(this.x, this.y, this.z);
         }
+
+        @Override
+        public net.minecraft.util.math.BlockPos toVanillaPos()
+        {
+            return new net.minecraft.util.math.BlockPos(this.x, this.y, this.z);
+        }
     }
 }
