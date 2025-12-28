@@ -9,7 +9,7 @@ public class MaLiLibCallbacks
 {
 	public static void init()
 	{
-//		MaLiLibConfigs.Generic.RENDER_TRANSPARENCY_FIX.setValueChangeCallback(MaLiLibCallbacks::RenderFixCallback);
+		MaLiLibConfigs.Generic.RENDER_TRANSPARENCY_FIX.setValueChangeCallback(MaLiLibCallbacks::RenderFixCallback);
 	}
 
 	public static void RenderFixCallback(IConfigBoolean config)
@@ -17,7 +17,7 @@ public class MaLiLibCallbacks
 		if (config.getBooleanValue())
 		{
 			MinecraftClient.getInstance().options.getGraphicsMode().setValue(GraphicsMode.FANCY);
-//			MinecraftClient.getInstance().worldRenderer.reload();
+			MinecraftClient.getInstance().worldRenderer.reload();
 		}
 	}
 }
