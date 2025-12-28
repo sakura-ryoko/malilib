@@ -171,11 +171,15 @@ public class BlockPos extends Vec3i
         public MutBlockPos(int x, int y, int z)
         {
             super(x, y, z);
+
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
 
         public MutBlockPos(net.minecraft.util.math.Vec3i pos)
         {
-            super(pos.getX(), pos.getY(), pos.getZ());
+            this(pos.getX(), pos.getY(), pos.getZ());
         }
 
         @Override
