@@ -269,6 +269,38 @@ public class BlockPos extends Vec3i
             return this.move(direction, 1);
         }
 
+        public MutBlockPos addMut(Vec3i pos)
+        {
+            this.x += pos.getX();
+            this.y += pos.getY();
+            this.z += pos.getZ();
+            return this;
+        }
+
+        public MutBlockPos subtractMut(Vec3i pos)
+        {
+            this.x -= pos.getX();
+            this.y -= pos.getY();
+            this.z -= pos.getZ();
+            return this;
+        }
+
+        public MutBlockPos addMut(int x, int y, int z)
+        {
+            this.x += x;
+            this.y += y;
+            this.z += z;
+            return this;
+        }
+
+        public MutBlockPos subtractMut(int x, int y, int z)
+        {
+            this.x -= x;
+            this.y -= y;
+            this.z -= z;
+            return this;
+        }
+
         @Override
         public BlockPos toImmutable()
         {
