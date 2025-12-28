@@ -23,12 +23,12 @@ import malilib.util.position.Vec3d;
 
 public class ModelRenderUtils
 {
-    private static final Identifier BLOCK_TEXTURE = new Identifier(TextureMap.LOCATION_BLOCKS_TEXTURE);
+    public static final Identifier BLOCK_TEXTURE = new Identifier(TextureMap.LOCATION_BLOCKS_TEXTURE);
 
     public static void renderModelInGui(int x, int y, float zLevel,
                                         IBakedModel model, IBlockState state, RenderContext ctx)
     {
-        if (state.getBlock() == Blocks.AIR)
+        if (state.getBlock() == Blocks.AIR || model.isBuiltInRenderer())
         {
             return;
         }
@@ -76,23 +76,24 @@ public class ModelRenderUtils
 
     public static void renderModel(IBakedModel model, IBlockState state, float zLevel, RenderContext ctx)
     {
+        if (model.isBuiltInRenderer())
+        {
+            return;
+        }
+
         RenderWrap.pushMatrix(ctx);
         RenderWrap.translate(-0.5F, -0.5F, zLevel, ctx);
+        VertexBuilder builder = VanillaWrappingVertexBuilder.create(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
         int color = 0xFFFFFFFF;
 
-        if (model.isBuiltInRenderer() == false)
+        for (Direction side : PositionUtils.ALL_DIRECTIONS)
         {
-            VertexBuilder builder = VanillaWrappingVertexBuilder.create(GL11.GL_QUADS, DefaultVertexFormats.ITEM);
-
-            for (Direction side : PositionUtils.ALL_DIRECTIONS)
-            {
-                renderQuads(model.getQuads(state, side.getVanillaDirection(), 0L), state, color, builder);
-            }
-
-            renderQuads(model.getQuads(state, null, 0L), state, color, builder);
-
-            builder.draw();
+            renderQuads(model.getQuads(state, side.getVanillaDirection(), 0L), state, color, builder);
         }
+
+        renderQuads(model.getQuads(state, null, 0L), state, color, builder);
+
+        builder.draw();
 
         RenderWrap.popMatrix(ctx);
     }
