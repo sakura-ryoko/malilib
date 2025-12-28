@@ -1,5 +1,8 @@
 package malilib.util.position;
 
+import java.util.Locale;
+import com.google.common.collect.ImmutableList;
+
 import net.minecraft.util.EnumFacing;
 
 import malilib.util.MathUtils;
@@ -252,7 +255,7 @@ public enum Direction
         Y("y", true),
         Z("z", false);
 
-        public static final Axis[] ALL_AXES = new Axis[] { X, Y, Z };
+        public static final ImmutableList<Axis> ALL_AXES = ImmutableList.of(X, Y, Z);
 
         private final String name;
         private final boolean isVertical;
@@ -280,7 +283,7 @@ public enum Direction
 
         public static Axis byName(String name)
         {
-            switch (name)
+            switch (name.toLowerCase(Locale.ROOT))
             {
                 case "x": return X;
                 case "y": return Y;
