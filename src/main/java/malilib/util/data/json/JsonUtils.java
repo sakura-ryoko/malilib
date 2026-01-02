@@ -34,6 +34,7 @@ import malilib.util.data.FloatConsumer;
 import malilib.util.position.BlockMirror;
 import malilib.util.position.BlockPos;
 import malilib.util.position.BlockRotation;
+import malilib.util.position.Direction;
 import malilib.util.position.Vec3d;
 import malilib.util.position.Vec3i;
 
@@ -624,6 +625,22 @@ public class JsonUtils
         }
 
         return BlockMirror.NONE;
+    }
+
+    public static Direction.Axis getAxis(JsonObject obj, String name)
+    {
+        String str = getString(obj, name);
+
+        if (str != null)
+        {
+            try
+            {
+                return Direction.Axis.byName(str);
+            }
+            catch (Exception ignore) {}
+        }
+
+        return Direction.Axis.Y;
     }
 
     public static JsonArray stringListAsArray(List<String> list)
