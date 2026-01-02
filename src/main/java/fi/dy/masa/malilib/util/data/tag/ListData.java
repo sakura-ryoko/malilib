@@ -242,6 +242,12 @@ public class ListData extends BaseData
     }
 
     @Override
+    public boolean isEmpty()
+    {
+        return this.list.isEmpty();
+    }
+
+    @Override
     public void write(DataOutput output) throws IOException
     {
         int containedType = this.list.isEmpty() ? Constants.NBT.TAG_END : this.getContainedType();

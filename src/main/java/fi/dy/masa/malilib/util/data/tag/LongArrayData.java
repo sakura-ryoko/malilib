@@ -54,6 +54,11 @@ public class LongArrayData extends BaseData
         return sb.append(']').toString();
     }
 
+    @Override
+    public boolean isEmpty()
+    {
+        return this.value.length == 0;
+    }
 
     @Override
     public void clear()

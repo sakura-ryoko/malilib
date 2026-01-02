@@ -21,7 +21,8 @@ import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 
-public class CompoundData extends BaseData implements DataView
+public class CompoundData extends BaseData
+        implements DataView
 {
 	private static final AnsiLogger LOGGER = new AnsiLogger(CompoundData.class, true, true);
 
@@ -443,6 +444,32 @@ public class CompoundData extends BaseData implements DataView
         }
 
         return copy;
+    }
+
+    public CompoundData combine(CompoundData other)
+    {
+        if (other == null || other.isEmpty())
+        {
+            return this.copy();
+        }
+
+        for (String key : other.values.keySet())
+        {
+            BaseData data = other.values.get(key);
+
+            if (data.getType() == Constants.NBT.TAG_COMPOUND &&
+                this.values.containsKey(key) &&
+                this.values.get(key).getType() == Constants.NBT.TAG_COMPOUND)
+            {
+                CompoundData out = ((CompoundData) this.values.get(key)).combine((CompoundData) data);
+                this.values.put(key, out);
+                continue;
+            }
+
+            this.values.put(key, data);
+        }
+
+        return this.copy();
     }
 
     @Override

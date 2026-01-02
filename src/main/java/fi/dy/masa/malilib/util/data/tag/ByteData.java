@@ -40,6 +40,12 @@ public class ByteData extends BaseData
     }
 
     @Override
+    public boolean isEmpty()
+    {
+        return false;
+    }
+
+    @Override
     public Optional<Number> asNumber()
     {
         return Optional.of(this.value);

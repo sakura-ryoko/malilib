@@ -30,6 +30,12 @@ public class EmptyData extends BaseData
 	}
 
 	@Override
+	public boolean isEmpty()
+	{
+		return true;
+	}
+
+	@Override
 	public void write(DataOutput output) throws IOException
 	{
 	}

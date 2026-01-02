@@ -56,6 +56,12 @@ public class ByteArrayData extends BaseData
     }
 
     @Override
+    public boolean isEmpty()
+    {
+        return this.value.length == 0;
+    }
+
+    @Override
     public void clear()
     {
         this.value = new byte[0];
