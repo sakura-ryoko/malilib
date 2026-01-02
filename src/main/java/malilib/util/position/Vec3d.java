@@ -95,6 +95,33 @@ public class Vec3d
         return "Vec3d{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) {return true;}
+        if (o == null || this.getClass() != o.getClass()) {return false;}
+
+        Vec3d vec3d = (Vec3d) o;
+
+        if (Double.compare(vec3d.x, this.x) != 0) {return false;}
+        if (Double.compare(vec3d.y, this.y) != 0) {return false;}
+        return Double.compare(vec3d.z, this.z) == 0;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(this.x);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(this.y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(this.z);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
     public static Vec3d of(double x, double y, double z)
     {
         return new Vec3d(x, y, z);
@@ -121,30 +148,118 @@ public class Vec3d
         return new Vec3d(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    @Override
-    public boolean equals(Object o)
+    public static class MutVec3d
     {
-        if (this == o) {return true;}
-        if (o == null || this.getClass() != o.getClass()) {return false;}
+        public double x;
+        public double y;
+        public double z;
 
-        Vec3d vec3d = (Vec3d) o;
+        public MutVec3d()
+        {
+            this(0, 0, 0);
+        }
 
-        if (Double.compare(vec3d.x, this.x) != 0) {return false;}
-        if (Double.compare(vec3d.y, this.y) != 0) {return false;}
-        return Double.compare(vec3d.z, this.z) == 0;
-    }
+        public MutVec3d(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
 
-    @Override
-    public int hashCode()
-    {
-        int result;
-        long temp;
-        temp = Double.doubleToLongBits(this.x);
-        result = (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(this.y);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(this.z);
-        result = 31 * result + (int) (temp ^ (temp >>> 32));
-        return result;
+        public MutVec3d(net.minecraft.util.math.Vec3d pos)
+        {
+            this(pos.x, pos.y, pos.z);
+        }
+
+        public double getX()
+        {
+            return this.x;
+        }
+
+        public double getY()
+        {
+            return this.y;
+        }
+
+        public double getZ()
+        {
+            return this.z;
+        }
+
+        public MutVec3d setX(double x)
+        {
+            this.x = x;
+            return this;
+        }
+
+        public MutVec3d setY(double y)
+        {
+            this.y = y;
+            return this;
+        }
+
+        public MutVec3d setZ(double z)
+        {
+            this.z = z;
+            return this;
+        }
+
+        public MutVec3d set(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            return this;
+        }
+
+        public MutVec3d setFrom(net.minecraft.util.math.Vec3d pos)
+        {
+            this.x = pos.x;
+            this.y = pos.y;
+            this.z = pos.z;
+            return this;
+        }
+
+        public MutVec3d add(Vec3d pos)
+        {
+            this.x += pos.x;
+            this.y += pos.y;
+            this.z += pos.z;
+            return this;
+        }
+
+        public MutVec3d subtract(Vec3d pos)
+        {
+            this.x -= pos.x;
+            this.y -= pos.y;
+            this.z -= pos.z;
+            return this;
+        }
+
+        public MutVec3d add(double x, double y, double z)
+        {
+            this.x += x;
+            this.y += y;
+            this.z += z;
+            return this;
+        }
+
+        public MutVec3d subtract(double x, double y, double z)
+        {
+            this.x -= x;
+            this.y -= y;
+            this.z -= z;
+            return this;
+        }
+
+        public Vec3d toImmutable()
+        {
+            return new Vec3d(this.x, this.y, this.z);
+        }
+
+        public net.minecraft.util.math.Vec3d toVanilla()
+        {
+            return new net.minecraft.util.math.Vec3d(this.x, this.y, this.z);
+        }
     }
 }
