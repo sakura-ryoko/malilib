@@ -2,9 +2,9 @@ package fi.dy.masa.malilib.interfaces;
 
 /**
  * Extend this to create a "Daemon" Instance class that manages a task queue for the Daemon.
- * @param <T> {@link AsyncThreadTaskBase}
+ * @param <T> {@link IThreadTaskBase}
  */
-public interface IAsyncThreadDaemon<T extends AsyncThreadTaskBase>
+public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 		extends IClientTickHandler, AutoCloseable
 {
 	/**
@@ -24,13 +24,13 @@ public interface IAsyncThreadDaemon<T extends AsyncThreadTaskBase>
 
 	/**
 	 * Add a new task to process
-	 * @param newTask {@link AsyncThreadTaskBase}
+	 * @param newTask {@link IThreadTaskBase}
 	 */
 	void addTask(T newTask);
 
 	/**
 	 * Pool the next free task, or NULL
-	 * @return {@link AsyncThreadTaskBase}
+	 * @return {@link IThreadTaskBase}
 	 */
 	T getNextTask();
 

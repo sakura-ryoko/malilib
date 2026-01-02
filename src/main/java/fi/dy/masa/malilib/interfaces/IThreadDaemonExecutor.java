@@ -1,10 +1,11 @@
 package fi.dy.masa.malilib.interfaces;
 
 /**
- * This interface is for creating a Thread Executor class -- The thread's main loop via {@link Runnable}
- * @param <T> {@link AsyncThreadTaskBase}
+ * This interface is for creating a Thread Executor class --
+ * - The thread's main loop via {@link Runnable}
+ * @param <T> {@link IThreadTaskBase}
  */
-public interface IAsyncThreadExecutor<T extends AsyncThreadTaskBase>
+public interface IThreadDaemonExecutor<T extends IThreadTaskBase>
 		extends Runnable
 {
 	/**
@@ -25,7 +26,7 @@ public interface IAsyncThreadExecutor<T extends AsyncThreadTaskBase>
 
 	/**
 	 * Executes a task that is polled by the {@link java.util.Queue}
-	 * @param task {@link AsyncThreadTaskBase}
+	 * @param task {@link IThreadTaskBase}
 	 * @throws InterruptedException ()
 	 */
 	void processTask(T task) throws InterruptedException;

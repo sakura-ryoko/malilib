@@ -1,21 +1,20 @@
 package fi.dy.masa.malilib.interfaces;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Basic runAsync() task handler structure --
+ * Basic run() task handler structure --
  * This is meant to be extended and managed by {@link IThreadDaemonExecutor}
  * -
- * NOTE: Async tasks can often run "out of sequence", such as "3, 0, 2, 1, 4"
+ * NOTE: Default tasks are meant to run in a proper sequence; ie; "0, 1, 2, 3, 4"
  */
-public abstract class AsyncThreadTaskBase implements IThreadTaskBase
+
+public abstract class DefaultThreadTaskBase implements IThreadTaskBase, Runnable
 {
 	private final AtomicBoolean finished = new AtomicBoolean(false);
 
 	/**
 	 * Check if the task is marked as "finished"
-	 *
 	 * @return (bool)
 	 */
 	@Override
@@ -34,9 +33,8 @@ public abstract class AsyncThreadTaskBase implements IThreadTaskBase
 	}
 
 	/**
-	 * Run the task {@link CompletableFuture}
-	 * @return (null)
+	 * Run the task using {@link Runnable}
 	 */
 	@Override
-	public abstract CompletableFuture<Void> runAsync();
+	public abstract void run();
 }

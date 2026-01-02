@@ -4,9 +4,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.interfaces.IAsyncThreadExecutor;
+import fi.dy.masa.malilib.interfaces.IThreadDaemonExecutor;
 
-public class TestThreadExecutor implements IAsyncThreadExecutor<TestThreadAsync>
+public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<TestThreadTaskAsync>
 {
 	private final AtomicBoolean running = new AtomicBoolean(true);
 
@@ -35,7 +35,7 @@ public class TestThreadExecutor implements IAsyncThreadExecutor<TestThreadAsync>
 		{
 			try
 			{
-				TestThreadAsync task = TestThreadDaemon.INSTANCE.getNextTask();
+				TestThreadTaskAsync task = TestThreadDaemonAsyncHandler.INSTANCE.getNextTask();
 
 				if (task != null)
 				{
@@ -58,15 +58,20 @@ public class TestThreadExecutor implements IAsyncThreadExecutor<TestThreadAsync>
 	}
 
 	@Override
-	public void processTask(TestThreadAsync task)
+	public void processTask(TestThreadTaskAsync task)
 			throws InterruptedException
 	{
-		MaLiLib.LOGGER.info("TestThreadAsync started");
-		CompletableFuture<Void> result = task.runTask();
+		CompletableFuture<Void> result = task.runAsync();
 
 		result.whenComplete((res, err) ->
 		                    {
-								MaLiLib.LOGGER.info("TestThreadAsync completed");
+								if (err != null)
+								{
+									MaLiLib.LOGGER.error("TestThreadTaskAsync: completed with error: {}", err.getLocalizedMessage());
+									return;
+								}
+
+								MaLiLib.LOGGER.info("TestThreadTaskAsync: completed");
 		                    });
 	}
 }
