@@ -251,17 +251,20 @@ public enum Direction
 
     public enum Axis
     {
-        X("x", false),
-        Y("y", true),
-        Z("z", false);
+        X(0, "x", false),
+        Y(1, "y", true),
+        Z(2, "z", false);
 
-        public static final ImmutableList<Axis> ALL_AXES = ImmutableList.of(X, Y, Z);
+        public static final Axis[] VALUES_ARR = values();
+        public static final ImmutableList<Axis> ALL_AXES = ImmutableList.copyOf(VALUES_ARR);
 
+        private final int index;
         private final String name;
         private final boolean isVertical;
 
-        Axis(String name, boolean isVertical)
+        Axis(int index, String name, boolean isVertical)
         {
+            this.index = index;
             this.name = name;
             this.isVertical = isVertical;
         }
@@ -281,6 +284,31 @@ public enum Direction
             return this.isVertical;
         }
 
+        public Axis cycle(boolean reverse)
+        {
+            return reverse ? this.cycleBackward() : this.cycleForward();
+        }
+
+        public Axis cycleForward()
+        {
+            int index = this.index;
+
+            if (++index >= VALUES_ARR.length)
+                index = 0;
+
+            return VALUES_ARR[index];
+        }
+
+        public Axis cycleBackward()
+        {
+            int index = this.index;
+
+            if (--index < 0)
+                index = VALUES_ARR.length - 1;
+
+            return VALUES_ARR[index];
+        }
+
         public static Axis byName(String name)
         {
             switch (name.toLowerCase(Locale.ROOT))
@@ -290,7 +318,7 @@ public enum Direction
                 case "z": return Z;
             }
 
-            return X;
+            return Y;
         }
     }
 
