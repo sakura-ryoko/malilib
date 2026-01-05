@@ -45,7 +45,7 @@ public class BooleanConfig extends BaseGenericConfig<Boolean> implements Boolean
     @Override
     public boolean setBooleanValue(boolean newValue)
     {
-        if (this.locked == false && newValue != this.value)
+        if (this.isLocked() == false && newValue != this.value)
         {
             super.setValue(newValue);
             return true;

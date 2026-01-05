@@ -66,7 +66,7 @@ public abstract class BaseGenericConfig<T> extends BaseConfigOption<T> implement
 
     protected void updateEffectiveValue()
     {
-        this.effectiveValue = this.hasOverride ? this.overrideValue : this.value;
+        this.effectiveValue = this.hasOverride() ? this.overrideValue : this.value;
     }
 
     protected void updateEffectiveValueAndNotify()
@@ -87,7 +87,7 @@ public abstract class BaseGenericConfig<T> extends BaseConfigOption<T> implement
     @Override
     public boolean isLocked()
     {
-        return super.isLocked() || this.hasOverride;
+        return super.isLocked() || this.hasOverride();
     }
 
     @Override
@@ -125,7 +125,7 @@ public abstract class BaseGenericConfig<T> extends BaseConfigOption<T> implement
     {
         super.rebuildLockOverrideMessages();
 
-        if (this.hasOverride && this.overrideMessage != null)
+        if (this.hasOverride() && this.overrideMessage != null)
         {
             StringUtils.translateAndLineSplit(this.lockOverrideMessages::add, this.overrideMessage);
         }
