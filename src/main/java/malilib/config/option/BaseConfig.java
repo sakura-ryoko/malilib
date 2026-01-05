@@ -14,7 +14,6 @@ public abstract class BaseConfig extends CommonDescription implements ConfigInfo
 {
     protected final ArrayList<String> searchStrings = new ArrayList<>(0);
     protected final ArrayList<String> oldNames = new ArrayList<>(0);
-    protected boolean locked;
     @Nullable protected EventListener labelClickHandler;
 
     public BaseConfig(String name)
