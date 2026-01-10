@@ -1238,7 +1238,7 @@ public abstract class MixinRenderPipelines
 
 	    MaLiLibPipelines.BLOCK_MASA_STAGE =
 			    RenderPipeline.builder(MaLiLibPipelines.BLOCK_STAGE)
-			                  .withBlend(MASA_BLEND)
+//			                  .withBlend(MASA_BLEND)
 			                  .buildSnippet();
 
 		// todo BLOCK
@@ -1293,7 +1293,7 @@ public abstract class MixinRenderPipelines
 
 		MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE =
 				RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
-							  .withBlend(MASA_BLEND)
+//							  .withBlend(MASA_BLEND)
 							  .buildSnippet();
 
 		MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE =
@@ -1316,13 +1316,14 @@ public abstract class MixinRenderPipelines
 		MaLiLibPipelines.LEGACY_CUTOUT_TERRAIN_MASA =
 				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
 									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/cutout/masa"))
-									   .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+									   .withShaderDefine("ALPHA_CUTOUT", 0.5F)
 									   .build());
 
 		MaLiLibPipelines.LEGACY_TRANSLUCENT_MASA =
 				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
 									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/translucent/masa"))
-									   .build());
+									   .withShaderDefine("ALPHA_CUTOUT", 0.01F)
+				                       .build());
 
 		MaLiLibPipelines.LEGACY_TRIPWIRE_TERRAIN_MASA =
 				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
@@ -1347,13 +1348,14 @@ public abstract class MixinRenderPipelines
 		MaLiLibPipelines.LEGACY_CUTOUT_TERRAIN_MASA_OFFSET =
 				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
 									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/cutout/masa/offset"))
-									   .withShaderDefine("ALPHA_CUTOUT", 0.1F)
+									   .withShaderDefine("ALPHA_CUTOUT", 0.5F)
 									   .withDepthBias(-0.3f, -0.6f)
 									   .build());
 
 		MaLiLibPipelines.LEGACY_TRANSLUCENT_MASA_OFFSET =
 				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
 									   .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/legacy/translucent/masa/offset"))
+									   .withShaderDefine("ALPHA_CUTOUT", 0.01F)
 									   .withDepthBias(-0.3f, -0.6f)
 									   .build());
 
