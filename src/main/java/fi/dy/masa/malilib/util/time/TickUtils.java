@@ -364,10 +364,7 @@ public class TickUtils
         @ApiStatus.Internal
         public void updateNanoTick(long timeUpdate)
         {
-            if (this.tickRate <= 1.0F)
-            {
-                this.tickRate = 20.0f;
-            }
+            this.ensureTickRateIsValid();
 
             if (!MinecraftClient.getInstance().isIntegratedServerRunning())
             {
@@ -419,21 +416,19 @@ public class TickUtils
         public void updateNanoTickFromIntegratedServer(MinecraftServer server)
         {
             this.lastNanoTime = System.nanoTime();
-
-            if (this.tickRate <= 1.0F)
-            {
-                this.tickRate = 20.0f;
-            }
+            this.ensureTickRateIsValid();
 
             if (server != null)
             {
                 this.measuredMSPT = MathUtils.average(server.getTickTimes()) / 1000000D;
                 this.measuredTPS = this.measuredMSPT <= 50 ? this.tickRate : (1000D / this.measuredMSPT);
                 this.actualTPS = (1000D / this.measuredMSPT);
+
                 if (MaLiLibReference.DEBUG_MODE)
                 {
                     this.calculateAverages();
                 }
+
                 this.isValid = true;
             }
         }
@@ -445,10 +440,7 @@ public class TickUtils
          */
         public void updateNanoTickFromServerDirect(final double tps, final double mspt)
         {
-            if (this.tickRate <= 1.0F)
-            {
-                this.tickRate = 20.0f;
-            }
+            this.ensureTickRateIsValid();
 
             if (this.useDirectServerData && !this.hasServuxData)
             {
@@ -482,10 +474,7 @@ public class TickUtils
                                              boolean sprinting,
                                              boolean stepping)
         {
-            if (this.tickRate <= 1.0F)
-            {
-                this.tickRate = 20.0f;
-            }
+            this.ensureTickRateIsValid();
 
             if (this.useDirectServerData)
             {
@@ -503,6 +492,14 @@ public class TickUtils
                 }
                 this.hasServuxData = true;
                 this.isValid = true;
+            }
+        }
+
+        private void ensureTickRateIsValid()
+        {
+            if (this.tickRate <= 1.0f)
+            {
+                this.tickRate = 20.0f;
             }
         }
 
