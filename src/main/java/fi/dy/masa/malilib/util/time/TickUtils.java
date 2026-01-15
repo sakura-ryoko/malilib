@@ -364,10 +364,7 @@ public class TickUtils
         @ApiStatus.Internal
         public void updateNanoTick(long timeUpdate)
         {
-            if (this.tickRate <= 1.0F)
-            {
-                this.tickRate = 20.0f;
-            }
+            this.ensureTickRateIsValid();
 
             if (!Minecraft.getInstance().hasSingleplayerServer())
             {
@@ -419,11 +416,7 @@ public class TickUtils
         public void updateNanoTickFromIntegratedServer(MinecraftServer server)
         {
             this.lastNanoTime = System.nanoTime();
-
-            if (this.tickRate <= 1.0F)
-            {
-                this.tickRate = 20.0f;
-            }
+            this.ensureTickRateIsValid();
 
             if (server != null)
             {
@@ -447,10 +440,7 @@ public class TickUtils
          */
         public void updateNanoTickFromServerDirect(final double tps, final double mspt)
         {
-            if (this.tickRate <= 1.0F)
-            {
-                this.tickRate = 20.0f;
-            }
+            this.ensureTickRateIsValid();
 
             if (this.useDirectServerData && !this.hasServuxData)
             {
@@ -484,10 +474,7 @@ public class TickUtils
                                              boolean sprinting,
                                              boolean stepping)
         {
-            if (this.tickRate < 1.0F)
-            {
-                this.tickRate = TickUtils.getTickRate();
-            }
+            this.ensureTickRateIsValid();
 
             if (this.useDirectServerData)
             {
@@ -505,6 +492,14 @@ public class TickUtils
                 }
                 this.hasServuxData = true;
                 this.isValid = true;
+            }
+        }
+
+        private void ensureTickRateIsValid()
+        {
+            if (this.tickRate <= 1.0f)
+            {
+                this.tickRate = 20.0f;
             }
         }
 
