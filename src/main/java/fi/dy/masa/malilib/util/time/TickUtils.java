@@ -36,7 +36,8 @@ public class TickUtils
 
         // Things like ViaVersion breaks this; since
         // older MC doesn't have a tickRate; so return 20.0F.
-        if (tickRate <= 1.0F)
+        if ((!getInstance().isTickRateValid() && tickRate <= 1.0F)
+            || tickRate < 1.0F)
         {
             tickRate = 20.0F;
         }
@@ -337,13 +338,23 @@ public class TickUtils
         private boolean isFrozen;
         private boolean isSprinting;
         private boolean isStepping;
+        private boolean validTickRate = false;
 
         private Data() {}
 
         @ApiStatus.Internal
         public void updateTickRate(float tickRate)
         {
-            this.tickRate = tickRate;
+            if (tickRate >= 1.0f)
+            {
+                this.tickRate = tickRate;
+                this.validTickRate = true;
+            }
+            else
+            {
+                this.tickRate = 20.0f;
+                this.validTickRate = false;
+            }
         }
 
         /**
@@ -495,9 +506,14 @@ public class TickUtils
             }
         }
 
+        public boolean isTickRateValid()
+        {
+            return this.validTickRate;
+        }
+
         private void ensureTickRateIsValid()
         {
-            if (this.tickRate <= 1.0f)
+            if (!this.validTickRate || this.tickRate < 1.0f)
             {
                 this.tickRate = 20.0f;
             }
