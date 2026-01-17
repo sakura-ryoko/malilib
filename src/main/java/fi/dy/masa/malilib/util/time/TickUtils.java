@@ -36,8 +36,7 @@ public class TickUtils
 
         // Things like ViaVersion breaks this; since
         // older MC doesn't have a tickRate; so return 20.0F.
-        if ((!getInstance().isTickRateValid() && tickRate <= 1.0F)
-            || tickRate < 1.0F)
+        if (tickRate < 1.0F)
         {
             tickRate = 20.0F;
         }
