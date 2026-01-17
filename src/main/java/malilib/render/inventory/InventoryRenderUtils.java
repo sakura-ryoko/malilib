@@ -167,7 +167,7 @@ public class InventoryRenderUtils
         RenderWrap.setupBlendSeparate();
         RenderWrap.bindTexture(icon.getTexture());
 
-        VertexBuilder builder = VanillaWrappingVertexBuilder.texturedQuad();
+        VertexBuilder builder = VanillaWrappingVertexBuilder.tintedTexturedQuad();
         // Main part (top left) with all the slots
         ShapeRenderUtils.renderScaledTintedTexturedRectangle(x, y, z, u, v, w1, h1,
                                                              w1, h1, pw, ph, backgroundTintColor, builder);
@@ -235,10 +235,9 @@ public class InventoryRenderUtils
 
         RenderWrap.color(1f, 1f, 1f, 1f);
         RenderWrap.setupBlendSeparate();
-        RenderWrap.disableItemLighting();
         RenderWrap.bindTexture(icon.getTexture());
 
-        VertexBuilder builder = VanillaWrappingVertexBuilder.texturedQuad();
+        VertexBuilder builder = VanillaWrappingVertexBuilder.tintedTexturedQuad();
 
         for (int i = 0; i < loopCount; ++i)
         {
