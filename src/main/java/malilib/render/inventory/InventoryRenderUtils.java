@@ -30,6 +30,7 @@ import net.minecraft.item.ItemShulkerBox;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityBrewingStand;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityDispenser;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.tileentity.TileEntityHopper;
@@ -430,7 +431,7 @@ public class InventoryRenderUtils
 
     public static InventoryRenderDefinition getInventoryType(IInventory inv)
     {
-        if (inv instanceof TileEntityShulkerBox)
+        if ((inv instanceof TileEntityShulkerBox) || (inv instanceof TileEntityChest))
         {
             return BuiltinInventoryRenderDefinitions.GENERIC_27;
         }
