@@ -38,6 +38,8 @@ public class MaLiLibConfigs
         public static final BooleanConfig ACTION_PROMPT_FUZZY_SEARCH                = new BooleanConfig("actionPromptFuzzySearch", false);
         public static final BooleanConfig ACTION_PROMPT_REMEMBER_SEARCH             = new BooleanConfig("actionPromptRememberSearch", false);
         public static final BooleanConfig ACTION_PROMPT_SEARCH_DISPLAY_NAME         = new BooleanConfig("actionPromptSearchDisplayName", false);
+        public static final BooleanConfig BYPASS_INVENTORY_BLOCKED_CHECK            = new BooleanConfig("bypassInventoryBlockedCheck", false);
+        public static final BooleanConfig BYPASS_INVENTORY_LOCKED_CHECK             = new BooleanConfig("bypassInventoryLockedCheck", false);
         public static final BooleanConfig CONFIG_BACKUP_ANTI_DUPLICATE              = new BooleanConfig("configBackupAntiDuplicate", true);
         public static final IntegerConfig CONFIG_BACKUP_COUNT                       = new IntegerConfig("configBackupCount", 20, 0, 200);
         public static final IntegerConfig CONFIG_TOOLTIP_MAX_LINES_DIRECT           = new IntegerConfig("configTooltipMaxLinesDirect", 6, 0, 64);
@@ -73,6 +75,8 @@ public class MaLiLibConfigs
                 ACTION_PROMPT_FUZZY_SEARCH,
                 ACTION_PROMPT_REMEMBER_SEARCH,
                 ACTION_PROMPT_SEARCH_DISPLAY_NAME,
+                BYPASS_INVENTORY_BLOCKED_CHECK,
+                BYPASS_INVENTORY_LOCKED_CHECK,
                 CONFIG_BACKUP_ANTI_DUPLICATE,
                 CONFIG_BACKUP_COUNT,
                 CONFIG_SEARCH_DEFAULT_SCOPE,

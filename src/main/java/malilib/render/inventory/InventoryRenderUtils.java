@@ -40,6 +40,7 @@ import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
+import malilib.MaLiLibConfigs;
 import malilib.config.value.HorizontalAlignment;
 import malilib.config.value.VerticalAlignment;
 import malilib.gui.icon.DefaultIcons;
@@ -54,6 +55,7 @@ import malilib.render.buffer.VanillaWrappingVertexBuilder;
 import malilib.render.buffer.VertexBuilder;
 import malilib.util.MathUtils;
 import malilib.util.game.RayTraceUtils;
+import malilib.util.game.wrap.BlockWrap;
 import malilib.util.game.wrap.EntityWrap;
 import malilib.util.game.wrap.GameWrap;
 import malilib.util.game.wrap.ItemWrap;
@@ -535,31 +537,41 @@ public class InventoryRenderUtils
     @Nullable
     public static Pair<InventoryView, InventoryRenderDefinition> getInventoryViewFromBlock(World world, BlockPos pos)
     {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity be = world.getTileEntity(pos);
 
-        if (te instanceof IInventory)
+        if (be instanceof IInventory)
         {
-            IInventory inv = (IInventory) te;
+            IInventory inv = (IInventory) be;
             IBlockState state = world.getBlockState(pos);
+            Block block = state.getBlock();
 
             // Prevent loot generation attempt from crashing due to NPEs
             // TODO 1.13+ check if this is still needed
-            if (te instanceof TileEntityLockableLoot && (world instanceof WorldServer) == false)
+            if (be instanceof TileEntityLockableLoot && (world instanceof WorldServer) == false)
             {
-                ((TileEntityLockableLoot) te).setLootTable(null, 0);
+                ((TileEntityLockableLoot) be).setLootTable(null, 0);
             }
 
-            if (state.getBlock() instanceof BlockChest)
+            if (be instanceof TileEntityChest)
             {
-                ILockableContainer cont = ((BlockChest) state.getBlock()).getLockableContainer(world, pos);
+                boolean bypassBlockedCheck = MaLiLibConfigs.Generic.BYPASS_INVENTORY_BLOCKED_CHECK.getBooleanValue();
+                inv = BlockWrap.getLockableContainer(world, pos, block, (TileEntityChest) be, bypassBlockedCheck);
+            }
 
-                if (cont instanceof InventoryLargeChest)
+            if (inv instanceof ILockableContainer)
+            {
+                boolean bypassLockedCheck = MaLiLibConfigs.Generic.BYPASS_INVENTORY_LOCKED_CHECK.getBooleanValue();
+
+                if (((ILockableContainer) inv).isLocked() && bypassLockedCheck == false)
                 {
-                    inv = cont;
+                    return null;
                 }
             }
 
-            Block block = world.getBlockState(pos).getBlock();
+            if (inv == null)
+            {
+                return null;
+            }
 
             if (block instanceof BlockShulkerBox)
             {
