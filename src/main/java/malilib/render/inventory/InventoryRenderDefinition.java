@@ -210,8 +210,10 @@ public class InventoryRenderDefinition
         public InventoryRenderDefinition build()
         {
             return new InventoryRenderDefinition(this.slotsPerRowFunction,
-                                                 this.renderWidthFunction, this.renderHeightFunction,
-                                                 this.slotOffset, this.backgroundTextures,
+                                                 this.renderWidthFunction,
+                                                 this.renderHeightFunction,
+                                                 this.slotOffset,
+                                                 this.backgroundTextures,
                                                  this.customSlotPositions,
                                                  this.inventoryRanges,
                                                  this.emptySlotTextures);
