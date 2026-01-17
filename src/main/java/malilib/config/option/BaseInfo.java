@@ -7,8 +7,9 @@ import malilib.util.data.ModInfo;
 public interface BaseInfo
 {
     /**
-     * Returns the (internal) name of this object, used for example in the config files
-     * @return the internal name of this config
+     * @return The internal name of this config, used for example in config files
+     * and for some identification purposes, such as the config lock/override system.
+     * By default, it's also used to generate the localization keys.
      */
     String getName();
 
