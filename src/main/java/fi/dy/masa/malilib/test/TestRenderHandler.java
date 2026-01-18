@@ -15,8 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -44,6 +42,7 @@ import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.time.TickUtils;
@@ -314,11 +313,11 @@ public class TestRenderHandler implements IRenderer
                     {
                         try (NbtInventory nbtInv = NbtInventory.fromInventory(inv))
                         {
-                            ListTag list = nbtInv.toNbtList(world.registryAccess());
-                            CompoundTag nbt = new CompoundTag();
+                            ListData list = nbtInv.toDataList(world.registryAccess());
+                            CompoundData data = new CompoundData();
 
-                            nbt.put(NbtKeys.ENDER_ITEMS, list);
-                            RenderUtils.renderNbtItemsPreview(ctx, stack, nbt, x, y, false);
+                            data.put(NbtKeys.ENDER_ITEMS, list);
+                            RenderUtils.renderDataItemsPreview(ctx, stack, data, x, y, false);
                         }
                         catch (Exception ignored) { }
                     }
