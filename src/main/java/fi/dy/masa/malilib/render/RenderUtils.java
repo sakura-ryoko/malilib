@@ -1581,15 +1581,16 @@ public class RenderUtils
     }
 
 	/**
+	 * @deprecated (Use the Tick Progress version to remove the "jumpy" text problem)<br>
+	 * -
 	 * Renders a text plate/billboard, similar to the player name plate.<br>
 	 * The plate will always face towards the viewer.
-	 * @deprecated (Use the Tick Progress version to remove the "jumpy" text problem)
 	 *
-	 * @param text  (Text)
-	 * @param x     ()
-	 * @param y     ()
-	 * @param z     ()
-	 * @param scale (Scale)
+	 * @param text  List of strings
+	 * @param x     xPos
+	 * @param y     yPos
+	 * @param z     zPos
+	 * @param scale FontScale
 	 */
 	@Deprecated
 	public static void drawTextPlate(List<String> text, double x, double y, double z, float scale)
@@ -1606,12 +1607,12 @@ public class RenderUtils
 	 * Renders a text plate/billboard, similar to the player name plate.<br>
 	 * The plate will always face towards the viewer.
 	 *
-	 * @param text (Text)
-	 * @param x ()
-	 * @param y ()
-	 * @param z ()
-	 * @param scale (Scale)
-	 * @param delta (Tick Progress for Lerping the Camera Rotations)
+	 * @param text  List of strings
+	 * @param x     xPos
+	 * @param y     yPos
+	 * @param z     zPos
+	 * @param scale FontScale
+	 * @param delta Tick Progress for Lerping the Camera Entity Rotations
 	 */
 	public static void drawTextPlate(List<String> text, double x, double y, double z, float scale, float delta)
 	{
@@ -1623,6 +1624,21 @@ public class RenderUtils
 		}
 	}
 
+	/**
+	 * Renders a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text  List of strings
+	 * @param x     xPos
+	 * @param y     yPos
+	 * @param z     zPos
+	 * @param yaw       Camera Yaw / YRot
+	*  @param pitch     Camera Pitch / XRot
+	 * @param scale     FontScale
+	 * @param textColor     Text Color
+	 * @param bgColor       Background Color of the Rectangle
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 */
 	public static void drawTextPlate(List<String> text,
                                      double x, double y, double z,
                                      float yaw, float pitch,
