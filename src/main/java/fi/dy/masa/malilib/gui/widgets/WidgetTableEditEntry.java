@@ -15,6 +15,7 @@ import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import java.util.*;
 import net.minecraft.client.input.CharacterEvent;
@@ -348,7 +349,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	{
 		List<TableRow> list = this.parent.getConfig().getTable();
 		final int size = list.size();
-		int index = this.listIndex < 0 ? size : (Math.min(this.listIndex, size));
+		int index = this.listIndex < 0 ? size : (MathUtils.min(this.listIndex, size));
 		list.add(index, ConfigTable.getDummy(types));
 		this.parent.getConfig().setModified();
 		this.parent.refreshEntries();

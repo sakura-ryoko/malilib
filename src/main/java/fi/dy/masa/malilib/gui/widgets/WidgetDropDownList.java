@@ -20,6 +20,7 @@ import fi.dy.masa.malilib.interfaces.IStringRetriever;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.malilib.util.MathUtils;
 
 /**
  * A dropdown selection widget for entries in the given list.
@@ -61,10 +62,10 @@ public class WidgetDropDownList<T> extends WidgetBase
         this.filteredEntries = new ArrayList<>();
         this.stringRetriever = stringRetriever;
 
-        int v = Math.min(maxVisibleEntries, entries.size());
-        v = Math.min(v, maxHeight / height);
-        v = Math.min(v, (GuiUtils.getScaledWindowHeight() - y) / height);
-        v = Math.max(v, 1);
+        int v = MathUtils.min(maxVisibleEntries, entries.size());
+        v = MathUtils.min(v, maxHeight / height);
+        v = MathUtils.min(v, (GuiUtils.getScaledWindowHeight() - y) / height);
+        v = MathUtils.max(v, 1);
 
         this.maxVisibleEntries = v;
         this.totalHeight = (v + 1) * height;

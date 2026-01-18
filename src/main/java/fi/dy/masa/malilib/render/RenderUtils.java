@@ -13,6 +13,8 @@ import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.DestFactor;
+import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTexture;
@@ -110,7 +112,13 @@ public class RenderUtils
         if (toggle)
         {
             GlStateManager._enableBlend();
-            GlStateManager._blendFuncSeparate(770, 771, 1, 0);
+//            GlStateManager._blendFuncSeparate(770, 771, 1, 0);
+	        GlStateManager._blendFuncSeparate(
+					GlConst.toGl(SourceFactor.SRC_ALPHA),
+					GlConst.toGl(DestFactor.ONE_MINUS_SRC_ALPHA),
+					GlConst.toGl(SourceFactor.ONE),
+					GlConst.toGl(DestFactor.ZERO)
+	        );
         }
         else
         {
@@ -1592,8 +1600,11 @@ public class RenderUtils
         }
     }
 
-    public static void drawTextPlate(List<String> text, double x, double y, double z, float yaw, float pitch,
-                                     float scale, int textColor, int bgColor, boolean disableDepth)
+    public static void drawTextPlate(List<String> text,
+                                     double x, double y, double z,
+                                     float yaw, float pitch,
+                                     float scale, int textColor, int bgColor,
+                                     boolean disableDepth)
     {
         Vec3 cameraPos = camPos();
         double cx = cameraPos.x;
@@ -1612,16 +1623,17 @@ public class RenderUtils
         global4fStack.scale((-scale), (-scale), scale);
         //RenderSystem.applyModelViewMatrix();
 
-        culling(false);
-        blend(true);
+	    // FIXME
+//        culling(false);
+//        blend(true);
 
-        RenderContext ctx = new RenderContext(() -> "malilib:drawTextPlate", MaLiLibPipelines.POSITION_COLOR_MASA);
+        RenderContext ctx = new RenderContext(() -> "malilib:drawTextPlate", disableDepth ? MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH : MaLiLibPipelines.TEXT_PLATE_MASA);
         BufferBuilder buffer = ctx.getBuilder();
         int maxLineLen = 0;
 
         for (String line : text)
         {
-            maxLineLen = Math.max(maxLineLen, textRenderer.width(line));
+            maxLineLen = MathUtils.max(maxLineLen, textRenderer.width(line));
         }
 
         int strLenHalf = maxLineLen / 2;
@@ -1631,11 +1643,11 @@ public class RenderUtils
         int bgg = ((bgColor >>> 8) & 0xFF);
         int bgb = (bgColor & 0xFF);
 
-        if (disableDepth)
-        {
-            //RenderSystem.depthMask(false);
-            depthTest(false);
-        }
+//        if (disableDepth)
+//        {
+//            //RenderSystem.depthMask(false);
+//            depthTest(false);
+//        }
 
         buffer.addVertex((float) (-strLenHalf - 1), (float) -1, 0.0F).setColor(bgr, bgg, bgb, bga);
         buffer.addVertex((float) (-strLenHalf - 1), (float) textHeight, 0.0F).setColor(bgr, bgg, bgb, bga);
@@ -1662,11 +1674,11 @@ public class RenderUtils
         int textY = 0;
 
         // translate the text a bit infront of the background
-        if (disableDepth == false)
-        {
-            polygonOffset(true);
-            polygonOffset(-0.6f, -1.2f);
-        }
+//        if (disableDepth == false)
+//        {
+//            polygonOffset(true);
+//            polygonOffset(-0.6f, -1.2f);
+//        }
 
         Matrix4f modelMatrix = new Matrix4f();
         modelMatrix.identity();
@@ -1675,33 +1687,46 @@ public class RenderUtils
 
         for (String line : text)
         {
-            if (disableDepth)
-            {
-                //depthMask(false);
-                depthTest(false);
-                MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
-                textRenderer.drawInBatch(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFF), false, modelMatrix, immediate, Font.DisplayMode.SEE_THROUGH, 0, 15728880);
-                immediate.endBatch();
-                depthTest(true);
-                //depthMask(true);
-            }
+			// f = x
+	        // g = y
+	        // i = color
+	        // bl = shadow
+	        // j = bgColor
+	        // k = light
+	        // bl2 = incl empty
+//            if (disableDepth)
+//            {
+//                //depthMask(false);
+////                depthTest(false);
+//                MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
+//                textRenderer.drawInBatch(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFFFF), false, modelMatrix, immediate, Font.DisplayMode.SEE_THROUGH, 0, 15728880);
+//                immediate.endBatch();
+////                depthTest(true);
+//                //depthMask(true);
+//            }
 
             MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
-            textRenderer.drawInBatch(line, -strLenHalf, textY, textColor, false, modelMatrix, immediate, Font.DisplayMode.SEE_THROUGH, 0, 15728880);
+
+            textRenderer.drawInBatch(line, -strLenHalf, textY,
+                                     disableDepth ? 0x20000000 | (textColor & 0xFFFFFFFF) : textColor,
+                                     false, modelMatrix, immediate,
+                                     disableDepth ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
+                                     0, 15728880
+            );
+
             immediate.endBatch();
             textY += textRenderer.lineHeight;
         }
 
         allocator.close();
 
-        if (disableDepth == false)
-        {
-            polygonOffset(0f, 0f);
-            polygonOffset(false);
-        }
+//        if (disableDepth == false)
+//        {
+//            polygonOffset(0f, 0f);
+//            polygonOffset(false);
+//        }
 
-//        color(1f, 1f, 1f, 1f);
-        culling(true);
+//        culling(true);
         global4fStack.popMatrix();
     }
 

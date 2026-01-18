@@ -301,6 +301,22 @@ public abstract class MixinRenderPipelines
 			                  .withColorWrite(true)
 			                  .build();
 
+	    MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH =
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
+			                  .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/text_plate/no_depth"))
+			                  .withCull(false)
+			                  .withColorWrite(true)
+			                  .withDepthWrite(false)
+			                  .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+			                  .build();
+
+	    MaLiLibPipelines.TEXT_PLATE_MASA =
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
+			                  .withLocation(Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "pipeline/text_plate"))
+					          .withCull(false)
+			                  .withColorWrite(true)
+			                  .build();
+
 	    // todo MINIHUD_SHAPE
 	    MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH_OFFSET =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)

@@ -43,6 +43,10 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_COLOR_MASA_DEPTH_MASK;
     public static RenderPipeline POSITION_COLOR_MASA;
 
+	// TEXT_PLATE
+	public static RenderPipeline TEXT_PLATE_MASA_NO_DEPTH;
+	public static RenderPipeline TEXT_PLATE_MASA;
+
 	// todo MINIHUD_SHAPE
 	public static RenderPipeline MINIHUD_SHAPE_NO_DEPTH_OFFSET;
 	public static RenderPipeline MINIHUD_SHAPE_NO_DEPTH;

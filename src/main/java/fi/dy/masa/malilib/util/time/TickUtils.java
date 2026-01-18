@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.util.time;
 
 import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
 
@@ -13,6 +14,11 @@ import fi.dy.masa.malilib.util.MathUtils;
  */
 public class TickUtils
 {
+    public static final float DEFAULT_TICK_RATE = 20.0F;
+    public static final float MIN_TICK_RATE = 1.0F;
+    public static final float MAX_TICK_RATE = 10000.0F;
+    public static final float EMPTY_TICK_RATE = -1.0F;
+
     private static final Data INSTANCE = new Data();
     public static Data getInstance() { return INSTANCE; }
 
@@ -23,7 +29,7 @@ public class TickUtils
     public static float getTickRate()
     {
         Minecraft mc = Minecraft.getInstance();
-        float tickRate = -1.0F;
+        float tickRate = EMPTY_TICK_RATE;
 
         if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null)
         {
@@ -36,9 +42,9 @@ public class TickUtils
 
         // Things like ViaVersion breaks this; since
         // older MC doesn't have a tickRate; so return 20.0F.
-        if (tickRate < 1.0F)
+        if (tickRate < MIN_TICK_RATE)
         {
-            tickRate = 20.0F;
+            tickRate = DEFAULT_TICK_RATE;
         }
 
         return tickRate;
@@ -314,7 +320,7 @@ public class TickUtils
      */
     public static class Data
     {
-        private double tickRate = TickUtils.getTickRate();
+        private double tickRate = MathUtils.clamp(TickUtils.getTickRate(), MIN_TICK_RATE, MAX_TICK_RATE);
         private double measuredTPS = -1.0D;
         private double measuredMSPT = -1.0D;
         private double directTPS = -1.0D;
@@ -339,19 +345,22 @@ public class TickUtils
         private boolean isStepping;
         private boolean validTickRate = false;
 
-        private Data() {}
+        private Data()
+        {
+            this.ensureTickRateIsValid();
+        }
 
         @ApiStatus.Internal
         public void updateTickRate(float tickRate)
         {
-            if (tickRate >= 1.0f)
+            if (tickRate >= MIN_TICK_RATE && tickRate <= MAX_TICK_RATE)
             {
                 this.tickRate = tickRate;
                 this.validTickRate = true;
             }
             else
             {
-                this.tickRate = 20.0f;
+                this.tickRate = DEFAULT_TICK_RATE;
                 this.validTickRate = false;
             }
         }
@@ -496,10 +505,12 @@ public class TickUtils
                 this.isFrozen = frozen;
                 this.isSprinting = sprinting;
                 this.isStepping = stepping;
+
                 if (MaLiLibReference.DEBUG_MODE)
                 {
                     this.calculateAverages();
                 }
+
                 this.hasServuxData = true;
                 this.isValid = true;
             }
@@ -512,9 +523,11 @@ public class TickUtils
 
         private void ensureTickRateIsValid()
         {
-            if (!this.validTickRate || this.tickRate < 1.0f)
+            if (!this.validTickRate ||
+                this.tickRate < MIN_TICK_RATE || this.tickRate > MAX_TICK_RATE)
             {
-                this.tickRate = 20.0f;
+                this.tickRate = DEFAULT_TICK_RATE;
+                this.validTickRate = false;
             }
         }
 

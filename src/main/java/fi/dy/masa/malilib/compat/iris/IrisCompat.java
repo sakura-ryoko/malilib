@@ -101,6 +101,9 @@ public class IrisCompat
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_COLOR_MASA_DEPTH_MASK, IrisProgram.BASIC);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_COLOR_MASA, IrisProgram.BASIC);
 
+	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH, IrisProgram.BASIC);
+	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TEXT_PLATE_MASA, IrisProgram.BASIC);
+
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH_OFFSET, IrisProgram.BASIC);
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH, IrisProgram.BASIC);
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_OFFSET_NO_CULL, IrisProgram.BASIC);
