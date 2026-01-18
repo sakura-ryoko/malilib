@@ -1580,27 +1580,50 @@ public class RenderUtils
         drawBoxAllSidesBatchedQuads(minX, minY, minZ, maxX, maxY, maxZ, color, bufferQuads);
     }
 
-    /**
-     * Renders a text plate/billboard, similar to the player name plate.<br>
-     * The plate will always face towards the viewer.
-     *
-     * @param text
-     * @param x
-     * @param y
-     * @param z
-     * @param scale
-     */
-    public static void drawTextPlate(List<String> text, double x, double y, double z, float scale)
-    {
-        Entity entity = mc().getCameraEntity();
+	/**
+	 * Renders a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 * @deprecated (Use the Tick Progress version to remove the "jumpy" text problem)
+	 *
+	 * @param text  (Text)
+	 * @param x     ()
+	 * @param y     ()
+	 * @param z     ()
+	 * @param scale (Scale)
+	 */
+	@Deprecated
+	public static void drawTextPlate(List<String> text, double x, double y, double z, float scale)
+	{
+		Entity entity = mc().getCameraEntity();
 
-        if (entity != null)
-        {
-            drawTextPlate(text, x, y, z, entity.getYRot(), entity.getXRot(), scale, 0xFFFFFFFF, 0x40000000, true);
-        }
-    }
+		if (entity != null)
+		{
+			drawTextPlate(text, x, y, z, entity.getYRot(), entity.getXRot(), scale, 0xFFFFFFFF, 0x40000000, true);
+		}
+	}
 
-    public static void drawTextPlate(List<String> text,
+	/**
+	 * Renders a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text (Text)
+	 * @param x ()
+	 * @param y ()
+	 * @param z ()
+	 * @param scale (Scale)
+	 * @param delta (Tick Progress for Lerping the Camera Rotations)
+	 */
+	public static void drawTextPlate(List<String> text, double x, double y, double z, float scale, float delta)
+	{
+		Entity entity = mc().getCameraEntity();
+
+		if (entity != null)
+		{
+			drawTextPlate(text, x, y, z, entity.getYRot(delta), entity.getXRot(delta), scale, 0xFFFFFFFF, 0x40000000, true);
+		}
+	}
+
+	public static void drawTextPlate(List<String> text,
                                      double x, double y, double z,
                                      float yaw, float pitch,
                                      float scale, int textColor, int bgColor,
