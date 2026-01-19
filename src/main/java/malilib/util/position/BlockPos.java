@@ -129,9 +129,9 @@ public class BlockPos extends Vec3i
 
     public static BlockPos fromPacked(long posLong)
     {
-        int x = (int) ((posLong & (0x3FFFFFFL << (26L + 12L)) >> (26L + 12L)));
-        int y = (int) ((posLong & (0xFFFL << 26)) >> 26);
-        int z = (int) (posLong & 0x3FFFFFFL);
+        int x = (int) ( posLong               >> (64 - 26));
+        int y = (int) ((posLong <<       26 ) >> (64 - 12));
+        int z = (int) ((posLong << (26 + 12)) >> (64 - 26));
 
         return new BlockPos(x, y, z);
     }
