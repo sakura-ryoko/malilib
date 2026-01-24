@@ -3,6 +3,10 @@ package fi.dy.masa.malilib.util;
 import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
+
+import fi.dy.masa.malilib.data.CachedTagManager;
+import fi.dy.masa.malilib.data.CachedTagUtils;
+import net.minecraft.tags.BlockTags;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -231,7 +235,17 @@ public class EquipmentUtils
 		{
 			Tool toolComponent = stack.get(DataComponents.TOOL);
 
-			return (toolComponent != null && toolComponent.isCorrectForDrops(state));
+			if (toolComponent == null)
+			{
+				return false;
+			}
+
+			if (needPickaxe(state))
+			{
+				return isPickAxe(stack);
+			}
+
+			return toolComponent.isCorrectForDrops(state);
 		}
 
 		return false;
@@ -563,4 +577,10 @@ public class EquipmentUtils
 		if (stack == null || stack.isEmpty()) return false;
 		return isPickAxe(stack) && hasFortune(stack);
 	}
+
+    public static boolean needPickaxe(@Nonnull BlockState state)
+    {
+        return state.is(BlockTags.IMPERMEABLE) ||
+				CachedTagUtils.matchBlockTag(CachedTagManager.GLASS_PANES_KEY, state);
+    }
 }
