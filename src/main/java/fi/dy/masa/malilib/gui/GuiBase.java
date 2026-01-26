@@ -28,6 +28,7 @@ import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetLabel;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
 import fi.dy.masa.malilib.render.GuiContext;
@@ -513,9 +514,15 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return button;
     }
 
+    @Deprecated
     public <T extends GuiTextFieldGeneric> TextFieldWrapper<T> addTextField(T textField, @Nullable ITextFieldListener<T> listener)
     {
-        TextFieldWrapper<T> wrapper = new TextFieldWrapper<>(textField, listener);
+        return this.addTextField(textField, listener, TextFieldType.STRING);
+    }
+
+    public <T extends GuiTextFieldGeneric> TextFieldWrapper<T> addTextField(T textField, @Nullable ITextFieldListener<T> listener, TextFieldType type)
+    {
+        TextFieldWrapper<T> wrapper = new TextFieldWrapper<>(textField, listener, type);
         this.textFields.add(wrapper);
         return wrapper;
     }

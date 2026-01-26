@@ -7,6 +7,7 @@ import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetCheckBox;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.LayerMode;
 import fi.dy.masa.malilib.util.LayerRange;
@@ -89,7 +90,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         if (layerMode == LayerMode.LAYER_RANGE)
         {
             this.textField2 = new GuiTextFieldInteger(x, y, width, 20, this.font);
-            this.addTextField(this.textField2, new TextFieldListener(layerMode, layerRange, true));
+            this.addTextField(this.textField2, new TextFieldListener(layerMode, layerRange, true), TextFieldType.INTEGER);
 
             this.createHotkeyCheckBoxes(x + width + 24, y, layerRange);
 
@@ -102,7 +103,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         }
 
         this.textField1 = new GuiTextFieldInteger(x, y, width, 20, this.font);
-        this.addTextField(this.textField1, new TextFieldListener(layerMode, layerRange, false));
+        this.addTextField(this.textField1, new TextFieldListener(layerMode, layerRange, false), TextFieldType.INTEGER);
         this.createValueAdjustButton(x + width + 3, y, false, layerRange, valueAdjustIcon);
         y += 23;
 

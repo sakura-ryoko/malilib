@@ -8,6 +8,7 @@ import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.config.gui.ConfigOptionChangeListenerTextField;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
@@ -52,9 +53,15 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
         return new GuiTextFieldGeneric(x + 2, y, width, height, this.textRenderer);
     }
 
+    @Deprecated
     protected void addTextField(GuiTextFieldGeneric field, ConfigOptionChangeListenerTextField listener)
     {
-        TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = new TextFieldWrapper<>(field, listener);
+        this.addTextField(field, listener, TextFieldType.STRING);
+    }
+
+    protected void addTextField(GuiTextFieldGeneric field, ConfigOptionChangeListenerTextField listener, TextFieldType type)
+    {
+        TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper = new TextFieldWrapper<>(field, listener, type);
         this.textField = wrapper;
         this.parent.addTextField(wrapper);
     }
@@ -134,7 +141,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     {
         if (this.textField != null)
         {
-            this.textField.textField().render(ctx, mouseX, mouseY, 0f);
+            this.textField.textField().render(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
         }
     }
 }

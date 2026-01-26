@@ -95,12 +95,12 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 	protected void setTextFieldText(String text)
 	{
 		this.lastText = text;
-		this.textField.setTextWrapper(text);
+		this.textField.setValue(text);
 	}
 
 	protected String getTextFieldText()
 	{
-		return this.textField.getTextWrapper();
+		return this.textField.getValue();
 	}
 
 	@Override

@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.gui;
 
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
+
+import fi.dy.masa.malilib.mixin.render.IMixinAbstractWidget;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -140,6 +142,11 @@ public class GuiTextFieldGeneric extends EditBox
 		}
 	}
 
+    public boolean hasTooltip()
+    {
+        return ((IMixinAbstractWidget) this).malilib_getTooltipHolder().get() != null;
+    }
+
 	/**
 	 * Clear the Hover tooltip
 	 */
@@ -152,7 +159,7 @@ public class GuiTextFieldGeneric extends EditBox
      * For Compat/Crash prevention reasons
      * @param text ()
      */
-    public void setTextWrapper(String text)
+    public void setValueWrapper(String text)
     {
         this.setValue(text);
     }
@@ -161,7 +168,7 @@ public class GuiTextFieldGeneric extends EditBox
      * For Compat/Crash prevention reasons
      * @return ()
      */
-    public String getTextWrapper()
+    public String getValueWrapper()
     {
         return this.getValue();
     }

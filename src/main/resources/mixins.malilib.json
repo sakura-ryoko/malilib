@@ -36,6 +36,7 @@
         "network.MixinClientPlayNetworkHandler",
         "recipe.IMixinClientRecipeBook",
         "render.IMixinAbstractTexture",
+        "render.IMixinAbstractWidget",
         "render.IMixinBufferBuilder",
         "render.IMixinDrawContext",
         "render.IMixinGameRenderer",

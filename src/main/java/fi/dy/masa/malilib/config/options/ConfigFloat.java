@@ -199,7 +199,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
         }
         catch (Exception e)
         {
-            MaLiLib.LOGGER.warn("Failed to set config value for {} from the string '{}'", this.getName(), value, e);
+            MaLiLib.LOGGER.warn("Failed to set config value for {} from the string '{}'; {}", this.getName(), value, e.getLocalizedMessage());
         }
     }
 
@@ -219,7 +219,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
         }
         catch (Exception e)
         {
-            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'; {}", this.getName(), element, e.getLocalizedMessage());
         }
     }
 

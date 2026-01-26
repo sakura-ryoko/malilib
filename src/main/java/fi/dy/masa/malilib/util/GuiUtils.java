@@ -11,6 +11,7 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.interfaces.ICoordinateValueModifier;
 import fi.dy.masa.malilib.util.position.PositionUtils.CoordinateType;
 
@@ -86,7 +87,7 @@ public class GuiUtils
         GuiTextFieldInteger textField = new GuiTextFieldInteger(x, y + 1, textFieldWidth, 14, Minecraft.getInstance().font);
         textField.setValue(getCoordinateValueString(type, pos));
 
-        addTextFieldAndButton(x + textFieldWidth + 4, y, type, modifier, textField, addButton, gui);
+        addTextFieldAndButton(x + textFieldWidth + 4, y, type, modifier, textField, addButton, gui, TextFieldType.INTEGER);
     }
 
     public static void createVec3dInput(int x, int y, int textFieldWidth, CoordinateType type, Vec3 pos,
@@ -97,13 +98,14 @@ public class GuiUtils
         GuiTextFieldDouble textField = new GuiTextFieldDouble(x, y + 1, textFieldWidth, 14, Minecraft.getInstance().font);
         textField.setValue(getCoordinateValueString(type, pos));
 
-        addTextFieldAndButton(x + textFieldWidth + 4, y, type, modifier, textField, addButton, gui);
+        addTextFieldAndButton(x + textFieldWidth + 4, y, type, modifier, textField, addButton, gui, TextFieldType.DOUBLE);
     }
 
     protected static void addTextFieldAndButton(int x, int y, CoordinateType type, ICoordinateValueModifier modifier,
-                                                GuiTextFieldGeneric textField, boolean addButton, GuiBase gui)
+                                                GuiTextFieldGeneric textField, boolean addButton,
+                                                GuiBase gui, TextFieldType fieldType)
     {
-        gui.addTextField(textField, new TextFieldListenerCoordinateInput(type, modifier));
+        gui.addTextField(textField, new TextFieldListenerCoordinateInput(type, modifier), fieldType);
 
         if (addButton)
         {

@@ -9,6 +9,7 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -92,7 +93,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
         ChangeListenerTextField listenerChange = new ChangeListenerTextField(field, resetButton, this.defaultValue.toString());
         ListenerResetConfig listenerReset = new ListenerResetConfig(resetButton, this);
 
-        this.addTextField(field, listenerChange);
+        this.addTextField(field, listenerChange, TextFieldType.STRING.setMaxLength(this.maxTextfieldTextLength));
         this.addButton(resetButton, listenerReset);
 
         return resetButton.getX() + resetButton.getWidth() + 4;
@@ -214,7 +215,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     @Override
     public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(ctx, mouseX, mouseY, selected);
+//        super.render(ctx, mouseX, mouseY, selected);
 
         if (this.isOdd)
         {
@@ -290,10 +291,10 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 
     protected enum ButtonType
     {
-        ADD(MaLiLibIcons.PLUS, "malilib.gui.button.hovertext.add"),
-        REMOVE(MaLiLibIcons.MINUS, "malilib.gui.button.hovertext.remove"),
-        MOVE_UP(MaLiLibIcons.ARROW_UP, "malilib.gui.button.hovertext.move_up"),
-        MOVE_DOWN(MaLiLibIcons.ARROW_DOWN, "malilib.gui.button.hovertext.move_down");
+        ADD         (MaLiLibIcons.PLUS,         "malilib.gui.button.hovertext.add"),
+        REMOVE      (MaLiLibIcons.MINUS,        "malilib.gui.button.hovertext.remove"),
+        MOVE_UP     (MaLiLibIcons.ARROW_UP,     "malilib.gui.button.hovertext.move_up"),
+        MOVE_DOWN   (MaLiLibIcons.ARROW_DOWN,   "malilib.gui.button.hovertext.move_down");
 
         private final MaLiLibIcons icon;
         private final String hoverTextkey;

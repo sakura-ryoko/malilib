@@ -1,13 +1,12 @@
 package fi.dy.masa.malilib.gui;
 
 import java.math.BigDecimal;
-import java.util.regex.Pattern;
 import net.minecraft.client.gui.Font;
 
 public class GuiTextFieldDouble extends GuiTextFieldGeneric
 {
     // Regex doesn't allow commas or other locale-specific notations
-    private static final Pattern PATTERN_NUMBER = Pattern.compile("[-+]?([0-9]*[.])?[0-9]+([eE][-+]?\\d+)?");
+//    private static final Pattern PATTERN_NUMBER = Pattern.compile("[-+]?([0-9]*[.])?[0-9]+([eE][-+]?\\d+)?");
 //    private static final Pattern PATTERN_NUMBER = Pattern.compile("^-?([0-9]+(\\.[0-9]*)?)?");
 //    private static final Pattern PATTERN_NUMBER = Pattern.compile("^\\b\\d[\\d,.' ]*\\b");
 

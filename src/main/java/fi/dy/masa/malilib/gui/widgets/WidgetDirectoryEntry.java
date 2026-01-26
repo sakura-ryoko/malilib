@@ -51,7 +51,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     @Override
     public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(ctx, mouseX, mouseY, selected);
+//        super.render(ctx, mouseX, mouseY, selected);
 
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY))

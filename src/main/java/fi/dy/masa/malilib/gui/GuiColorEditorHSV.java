@@ -26,6 +26,7 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.render.element.*;
@@ -130,7 +131,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.addLabel(this.xH - 26, y + 3, 12, 12, 0xFFFFFFFF, "HEX:");
         this.textFieldFullColor = new GuiTextFieldGeneric(this.xH, y + 1, 68, 14, this.font);
         this.textFieldFullColor.setMaxLength(12);
-        this.addTextField(this.textFieldFullColor, new TextFieldListener(null, this));
+        this.addTextField(this.textFieldFullColor, new TextFieldListener(null, this), TextFieldType.STRING.setMaxLength(12));
 
         //String str = StringUtils.translate("malilib.gui.label.color_editor.current_color");
         //this.addLabel(this.xHS, this.yHS + this.sizeHS + 10, 60, 12, 0xFFFFFF, str);
@@ -156,7 +157,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
 
         this.addLabel(xLabel, y, 12, 12, 0xFFFFFFFF, element.name() + ":");
-        this.addTextField(textField, listener);
+        this.addTextField(textField, listener, TextFieldType.INTEGER);
 
         return this.heightSlider + this.gapSlider;
     }

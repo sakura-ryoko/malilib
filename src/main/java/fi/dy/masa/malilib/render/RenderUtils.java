@@ -39,6 +39,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.block.model.BlockModelPart;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.entity.layers.VillagerProfessionLayer;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
@@ -63,6 +64,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Blocks;
@@ -1625,10 +1627,6 @@ public class RenderUtils
         global4fStack.rotateYXZ((-yaw) * ((float) (Math.PI / 180.0)), pitch * ((float) (Math.PI / 180.0)), 0.0F);
         global4fStack.scale((-scale), (-scale), scale);
 
-	    // todo
-//        culling(false);
-//        blend(true);
-
         RenderContext ctx = new RenderContext(() -> "malilib:drawTextPlate", disableDepth ? MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH : MaLiLibPipelines.TEXT_PLATE_MASA);
         BufferBuilder buffer = ctx.getBuilder();
         int maxLineLen = 0;
@@ -1644,13 +1642,6 @@ public class RenderUtils
         int bgr = ((bgColor >>> 16) & 0xFF);
         int bgg = ((bgColor >>> 8) & 0xFF);
         int bgb = (bgColor & 0xFF);
-
-		// todo
-//        if (disableDepth)
-//        {
-//            //RenderSystem.depthMask(false);
-//            depthTest(false);
-//        }
 
         buffer.addVertex((float) (-strLenHalf - 1), (float) -1, 0.0F).setColor(bgr, bgg, bgb, bga);
         buffer.addVertex((float) (-strLenHalf - 1), (float) textHeight, 0.0F).setColor(bgr, bgg, bgb, bga);
@@ -1676,14 +1667,6 @@ public class RenderUtils
 
         int textY = 0;
 
-		// todo
-        // translate the text a bit infront of the background
-//        if (disableDepth == false)
-//        {
-//            polygonOffset(true);
-//            polygonOffset(-0.6f, -1.2f);
-//        }
-
         Matrix4f modelMatrix = new Matrix4f();
         modelMatrix.identity();
 
@@ -1699,18 +1682,6 @@ public class RenderUtils
 	        // k = light
 	        // bl2 = incl empty
 
-	        // todo
-//            if (disableDepth)
-//            {
-//                //depthMask(false);
-////                depthTest(false);
-//                MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
-//                textRenderer.drawInBatch(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFFFF), false, modelMatrix, immediate, Font.DisplayMode.SEE_THROUGH, 0, 15728880);
-//                immediate.endBatch();
-////                depthTest(true);
-//                //depthMask(true);
-//            }
-
             MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
 
             textRenderer.drawInBatch(line, -strLenHalf, textY,
@@ -1725,15 +1696,6 @@ public class RenderUtils
         }
 
         allocator.close();
-
-		// todo
-//        if (disableDepth == false)
-//        {
-//            polygonOffset(0f, 0f);
-//            polygonOffset(false);
-//        }
-
-//        culling(true);
         global4fStack.popMatrix();
     }
 
@@ -2434,29 +2396,177 @@ public class RenderUtils
         if (useBgColors)
         {
             Holder<VillagerProfession> profession = data != null ? data.profession() : null;
-            return setVillagerBackgroundTintColor(profession, useBgColors);
+	        Holder<VillagerType> type = data != null ? data.type() : null;
+
+            return setVillagerBackgroundTintColor(profession, data.type(), data.level(), useBgColors);
         }
 
         return CommonColors.WHITE;
     }
 
-    public static int setVillagerBackgroundTintColor(Holder<VillagerProfession> profession, boolean useBgColors)
+    public static int setVillagerBackgroundTintColor(Holder<VillagerProfession> profession,
+                                                     Holder<VillagerType> type,
+                                                     int level, boolean useBgColors)
     {
         if (useBgColors)
         {
-            final DyeColor dye = getVillagerColor(profession);
+//            final DyeColor dye = getVillagerColor(profession);
+			final int professionColor = getVillagerProfessionColor(profession);
 
-            if (dye != null)
-            {
-                final float[] colors = getColorComponents(dye.getTextureDiffuseColor());
-                return ARGB.colorFromFloat(1f, colors[0], colors[1], colors[2]);
-            }
+//            if (dye != null)
+//            {
+//                final float[] colors = getColorComponents(dye.getTextureDiffuseColor());
+//                return ARGB.colorFromFloat(1f, colors[0], colors[1], colors[2]);
+//            }
+
+			return professionColor;
         }
 
         return CommonColors.WHITE;
     }
 
-    // todo - return real colors based on the Villager, not Dye Colors
+	public static int getVillagerLevelColor(int level)
+	{
+		switch (level)
+		{
+			case 1 ->       // Stone
+			{
+				return 0xFFB3B1AF;
+			}
+			case 2 ->       // Iron
+			{
+				return 0xFFECC1A6;
+			}
+			case 3 ->       // Gold
+			{
+				return 0xFFFDFF76;
+			}
+			case 4 ->       // Emerald
+			{
+				return 0xFF41F384;
+			}
+			case 5 ->       // Diamond
+			{
+				return 0xFFA4FDF0;
+			}
+		}
+
+		return -1;
+	}
+
+	public static int getVillagerTypeColor(Holder<VillagerType> type)
+	{
+		if (type == null) return -1;
+
+		if (type.is(VillagerType.DESERT))
+		{
+			return 0xFFD75601;      // Orangeish color of robes
+		}
+		else if (type.is(VillagerType.JUNGLE))
+		{
+			return 0xFFEAC03F;      // Yellowish color of shirt
+		}
+		else if (type.is(VillagerType.PLAINS))
+		{
+			return 0xFF71544D;      // Brownish Color of overalls
+		}
+		else if (type.is(VillagerType.SAVANNA))
+		{
+			return 0xFFAA2A2A;      // Reddish Color of top
+		}
+		else if (type.is(VillagerType.SNOW))
+		{
+			return 0xFF5E8F83;      // Cyanish Color of coat
+		}
+		else if (type.is(VillagerType.SWAMP))
+		{
+			return 0xFF412D56;      // Purpleish color of shirt
+		}
+		else if (type.is(VillagerType.TAIGA))
+		{
+			return 0xFFE3E0C2;      // Off-White color of shirt
+		}
+
+		return -1;
+	}
+
+	public static int getVillagerProfessionColor(Holder<VillagerProfession> profession)
+	{
+		if (profession == null) return -1;
+
+		if (profession.is(VillagerProfession.NONE))
+		{
+//			return 0xFFBE886C;          // Skin-like color
+			return 0xFF5F44B6;          // Skin-like + Blue
+		}
+		else if (profession.is(VillagerProfession.ARMORER))
+		{
+			return 0xFF858078;          // A Gray face mask color
+//			return 0xFF615E58;          // A Gray + hint of Charcoal
+		}
+		else if (profession.is(VillagerProfession.BUTCHER))
+		{
+//			return 0xFFAE574F;          // Reddish/Orange Headband color
+			return 0xFFCE6D9F;          // Reddish/Orange + Pink
+		}
+		else if (profession.is(VillagerProfession.CARTOGRAPHER))
+		{
+			return 0xFF97CAF6;          // Light Blue Monicle glass color
+		}
+		else if (profession.is(VillagerProfession.CLERIC))
+		{
+//			return 0xFF793C5B;          // Purpleish robes color
+			return 0xFF6A2868;          // Purpleish + a hint Purple
+		}
+		else if (profession.is(VillagerProfession.FARMER))
+		{
+			return 0xFFDBC549;          // Yellowish hat color
+		}
+		else if (profession.is(VillagerProfession.FISHERMAN))
+		{
+			return 0xFF6B9F93;          // Cyanish "Fish" color
+		}
+		else if (profession.is(VillagerProfession.FLETCHER))
+		{
+			return 0xFF9A5030;          // Orangish belt color
+		}
+		else if (profession.is(VillagerProfession.LEATHERWORKER))
+		{
+			return 0xFF855636;          // Brownish apron color
+		}
+		else if (profession.is(VillagerProfession.LIBRARIAN))
+		{
+			return 0xFF9A2323;          // Red hat color
+		}
+		else if (profession.is(VillagerProfession.MASON))
+		{
+			return 0xFF363230;          // Dark Gray apron color
+//			return 0xFF5B1958;          // Dark Gray + Magenta
+		}
+		else if (profession.is(VillagerProfession.NITWIT))
+		{
+			return 0xFF5D744F;          // Greenish shirt color
+		}
+		else if (profession.is(VillagerProfession.SHEPHERD))
+		{
+			return 0xFFF4F4E1;          // Off-White vest color
+		}
+		else if (profession.is(VillagerProfession.TOOLSMITH))
+		{
+			return 0xFF615026;          // Wood-Brownish Hammer handle color
+//			return 0xFF82765C;          // Wood-Brown + Light Gray
+		}
+		else if (profession.is(VillagerProfession.WEAPONSMITH))
+		{
+			return 0xFF191919;          // Charcoalish hat color
+//			return 0xFF232121;          // Charcoal + hint of Mason Dark Gray
+		}
+
+//		return 0xFF32CD32;              // Lime
+		return 0xFF4EB349;              // Lime + hint of gray
+	}
+
+	// todo - return real colors based on the Villager, not Dye Colors
     public static DyeColor getVillagerColor(Holder<VillagerProfession> profession)
     {
         if (profession == null)
@@ -2466,63 +2576,63 @@ public class RenderUtils
 
         if (profession.equals(VillagerProfession.NONE))
         {
-            return DyeColor.BLUE;
+            return DyeColor.BLUE;           // 0xFFBE886C (Skin-Like Color)
         }
         else if (profession.is(VillagerProfession.ARMORER))
         {
-            return DyeColor.GRAY;
+            return DyeColor.GRAY;           // 0xFF5C5A57
         }
         else if (profession.is(VillagerProfession.BUTCHER))
         {
-            return DyeColor.PINK;
+            return DyeColor.PINK;           // 0xFFAE574F
         }
         else if (profession.is(VillagerProfession.CARTOGRAPHER))
         {
-            return DyeColor.LIGHT_BLUE;
+            return DyeColor.LIGHT_BLUE;     // 0xFF97CAF6
         }
         else if (profession.is(VillagerProfession.CLERIC))
         {
-            return DyeColor.PURPLE;
+            return DyeColor.PURPLE;         // 0xFF864E6A
         }
         else if (profession.is(VillagerProfession.FARMER))
         {
-            return DyeColor.YELLOW;
+            return DyeColor.YELLOW;         // 0xFFDBC549
         }
         else if (profession.is(VillagerProfession.FISHERMAN))
         {
-            return DyeColor.CYAN;
+            return DyeColor.CYAN;           // 0xFF6B9F93
         }
         else if (profession.is(VillagerProfession.FLETCHER))
         {
-            return DyeColor.ORANGE;
+            return DyeColor.ORANGE;         // 0xFFC26A44
         }
         else if (profession.is(VillagerProfession.LEATHERWORKER))
         {
-            return DyeColor.BROWN;
+            return DyeColor.BROWN;          // 0xFF855636
         }
         else if (profession.is(VillagerProfession.LIBRARIAN))
         {
-            return DyeColor.RED;
+            return DyeColor.RED;            // 0xFF9A2323
         }
         else if (profession.is(VillagerProfession.MASON))
         {
-            return DyeColor.MAGENTA;
+            return DyeColor.MAGENTA;        // 0xFF989696
         }
         else if (profession.is(VillagerProfession.NITWIT))
         {
-            return DyeColor.GREEN;
+            return DyeColor.GREEN;          // 0xFF5D744F
         }
         else if (profession.is(VillagerProfession.SHEPHERD))
         {
-            return DyeColor.WHITE;
+            return DyeColor.WHITE;          // 0xFFE5E0CB
         }
         else if (profession.is(VillagerProfession.TOOLSMITH))
         {
-            return DyeColor.LIGHT_GRAY;
+            return DyeColor.LIGHT_GRAY;     // 0xFFA29C91
         }
         else if (profession.is(VillagerProfession.WEAPONSMITH))
         {
-            return DyeColor.BLACK;
+            return DyeColor.BLACK;          // 0xFF191919
         }
         else
         {

@@ -37,6 +37,8 @@ import fi.dy.masa.malilib.util.WorldUtils;
  */
 public class GuiContext extends GuiGraphics
 {
+	private GuiGraphics guiGraphics;
+
 	public GuiContext(Minecraft client, GuiRenderState state, int mouseX, int mouseY)
 	{
 		super(client, state, mouseX, mouseY);
@@ -44,17 +46,21 @@ public class GuiContext extends GuiGraphics
 
 	/**
 	 * Create from GuiGraphics
-	 * @param context ()
+	 * @param guiGraphics ()
 	 * @return ()
 	 */
-	public static GuiContext fromGuiGraphics(GuiGraphics context)
+	public static GuiContext fromGuiGraphics(GuiGraphics guiGraphics)
 	{
-		return new GuiContext(
-				((IMixinDrawContext) context).malilib_getClient(),
-				((IMixinDrawContext) context).malilib_getRenderState(),
-				((IMixinDrawContext) context).malilib_getMouseX(),
-				((IMixinDrawContext) context).malilib_getMouseY()
+		GuiContext ctx = new GuiContext(
+				((IMixinDrawContext) guiGraphics).malilib_getClient(),
+				((IMixinDrawContext) guiGraphics).malilib_getRenderState(),
+				((IMixinDrawContext) guiGraphics).malilib_getMouseX(),
+				((IMixinDrawContext) guiGraphics).malilib_getMouseY()
 		);
+
+		// Store the proper reference
+		ctx.guiGraphics = guiGraphics;
+		return ctx;
 	}
 
 	/**
@@ -63,6 +69,11 @@ public class GuiContext extends GuiGraphics
 	 */
 	public GuiGraphics getGuiGraphics()
 	{
+		if (this.guiGraphics != null)
+		{
+			return this.guiGraphics;
+		}
+
 		return (GuiGraphics) this;
 	}
 

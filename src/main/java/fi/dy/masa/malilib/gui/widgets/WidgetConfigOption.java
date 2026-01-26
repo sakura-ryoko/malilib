@@ -9,8 +9,7 @@ import fi.dy.masa.malilib.config.*;
 import fi.dy.masa.malilib.config.gui.*;
 import fi.dy.masa.malilib.config.gui.ConfigOptionListenerResetConfig.ConfigResetterButton;
 import fi.dy.masa.malilib.config.gui.ConfigOptionListenerResetConfig.ConfigResetterTextField;
-import fi.dy.masa.malilib.config.options.BooleanHotkeyGuiWrapper;
-import fi.dy.masa.malilib.config.options.ConfigBooleanHotkeyed;
+import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase.ConfigOptionWrapper;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
@@ -20,6 +19,7 @@ import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
@@ -223,7 +223,26 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             }
             else
             {
-                this.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, (IConfigValue) config);
+                TextFieldType textType = TextFieldType.STRING.setMaxLength(this.maxTextfieldTextLength);
+
+                if (type == ConfigType.INTEGER)
+                {
+                    textType = TextFieldType.INTEGER;
+                }
+                else if (type == ConfigType.DOUBLE)
+                {
+                    textType = TextFieldType.DOUBLE;
+                }
+                else if (type == ConfigType.FLOAT)
+                {
+                    textType = TextFieldType.FLOAT;
+                }
+                else if (type == ConfigType.COLOR)
+                {
+                    textType = TextFieldType.STRING.setMaxLength(12);
+                }
+
+                this.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, (IConfigValue) config, textType);
             }
 
             if (type != ConfigType.COLOR && config instanceof IConfigSlider)
@@ -357,17 +376,17 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addButton(resetButton, listenerReset);
     }
 
-    protected void addConfigTextFieldEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigValue config)
+    protected void addConfigTextFieldEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigValue config, TextFieldType type)
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
-        field.setMaxLength(this.maxTextfieldTextLength);
+        field.setMaxLength(type.getMaxLength() > 0 ? type.getMaxLength() : this.maxTextfieldTextLength);
         field.setValue(config.getStringValue());
 
         ButtonGeneric resetButton = this.createResetButton(resetX, y, config);
         ConfigOptionChangeListenerTextField listenerChange = new ConfigOptionChangeListenerTextField(config, field, resetButton);
         ConfigOptionListenerResetConfig listenerReset = new ConfigOptionListenerResetConfig(config, new ConfigResetterTextField(config, field), resetButton, null);
 
-        this.addTextField(field, listenerChange);
+        this.addTextField(field, listenerChange, type);
         this.addButton(resetButton, listenerReset);
     }
 
@@ -406,7 +425,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     @Override
     public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(ctx, mouseX, mouseY, selected);
+//        super.render(ctx, mouseX, mouseY, selected);
 
         this.drawSubWidgets(ctx, mouseX, mouseY);
 

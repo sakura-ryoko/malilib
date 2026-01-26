@@ -1,15 +1,56 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
-import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
-import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
-import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.util.KeyCodes;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
-public record TextFieldWrapper<T extends GuiTextFieldGeneric>(T textField, ITextFieldListener<T> listener)
+import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
+import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.render.GuiContext;
+import fi.dy.masa.malilib.util.KeyCodes;
+
+public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 {
+	private final T textField;
+	private final ITextFieldListener<T> listener;
+	private final TextFieldType type;
+
+	public TextFieldWrapper(T textField, ITextFieldListener<T> listener)
+	{
+		this(textField, listener, TextFieldType.STRING);
+	}
+
+	public TextFieldWrapper(T textField, ITextFieldListener<T> listener, TextFieldType type)
+	{
+		this.textField = textField;
+		this.listener = listener;
+		this.type = type;
+
+		if (type.getMaxLength() > 0 && type.getMaxLength() < textField.getMaxLength())
+		{
+			textField.setMaxLength(type.getMaxLength());
+		}
+		else if (textField.getMaxLength() > 0 && textField.getMaxLength() < type.getMaxLength())
+		{
+			this.type.setMaxLength(textField.getMaxLength());
+		}
+	}
+
+	public T textField()
+	{
+		return this.textField;
+	}
+
+	public ITextFieldListener<T> listener()
+	{
+		return this.listener;
+	}
+
+	public TextFieldType type()
+	{
+		return this.type;
+	}
+
 	public boolean isFocused()
 	{
 		return this.textField.isFocused();
@@ -28,6 +69,7 @@ public record TextFieldWrapper<T extends GuiTextFieldGeneric>(T textField, IText
 		}
 	}
 
+	// Using the GuiContext here breaks the Hover Text from working
 	public void draw(GuiContext ctx, int mouseX, int mouseY)
 	{
 		this.textField.render(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
@@ -54,9 +96,15 @@ public record TextFieldWrapper<T extends GuiTextFieldGeneric>(T textField, IText
 
 		if (this.textField.isFocused() && this.textField.keyPressed(input))
 		{
+			if (this.textField().hasTooltip() && input.key() == KeyCodes.KEY_BACKSPACE ||
+				!this.textField.getValueWrapper().equals(textPre))
+			{
+				this.validateType();
+			}
+
 			if (this.listener != null &&
-					(input.key() == KeyCodes.KEY_ENTER || input.key() == KeyCodes.KEY_TAB ||
-							this.textField.getValue().equals(textPre) == false))
+				(input.key() == KeyCodes.KEY_ENTER || input.key() == KeyCodes.KEY_TAB ||
+				 this.textField.getValue().equals(textPre) == false))
 			{
 				this.listener.onTextChange(this.textField);
 			}
@@ -73,7 +121,12 @@ public record TextFieldWrapper<T extends GuiTextFieldGeneric>(T textField, IText
 
 		if (this.textField.isFocused() && this.textField.charTyped(input))
 		{
-			if (this.listener != null && this.textField.getValue().equals(textPre) == false)
+			if (!this.textField.getValue().equals(textPre))
+			{
+				this.validateType();
+			}
+
+			if (this.listener != null && !this.textField.getValue().equals(textPre))
 			{
 				this.listener.onTextChange(this.textField);
 			}
@@ -82,5 +135,59 @@ public record TextFieldWrapper<T extends GuiTextFieldGeneric>(T textField, IText
 		}
 
 		return false;
+	}
+
+	public void validateType()
+	{
+		switch (this.type)
+		{
+			case DOUBLE ->
+			{
+				try
+				{
+					Double.parseDouble(this.textField.getValue());
+					this.textField.clearHoverTooltip();
+				}
+				catch (Exception e)
+				{
+					this.textField.setHoverTooltip("malilib.gui.text_field.invalid_double");
+				}
+			}
+			case FLOAT ->
+			{
+				try
+				{
+					Float.parseFloat(this.textField.getValue());
+					this.textField.clearHoverTooltip();
+				}
+				catch (Exception e)
+				{
+					this.textField.setHoverTooltip("malilib.gui.text_field.invalid_float");
+				}
+			}
+			case INTEGER ->
+			{
+				try
+				{
+					Integer.parseInt(this.textField.getValue());
+					this.textField.clearHoverTooltip();
+				}
+				catch (Exception e)
+				{
+					this.textField.setHoverTooltip("malilib.gui.text_field.invalid_integer");
+				}
+			}
+			default ->
+			{
+				if (this.textField.getValue().length() > this.type.getMaxLength())
+				{
+					this.textField.setHoverTooltip("malilib.gui.text_field.invalid_length", this.type.getMaxLength());
+				}
+				else
+				{
+					this.textField.clearHoverTooltip();
+				}
+			}
+		}
 	}
 }

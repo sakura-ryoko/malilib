@@ -15,6 +15,7 @@ import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.MaLiLibIcons;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringRetriever;
 import fi.dy.masa.malilib.render.GuiContext;
@@ -72,7 +73,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         this.scrollBar.setMaxValue(entries.size() - this.maxVisibleEntries);
 
         TextFieldListener listener = new TextFieldListener(this);
-        this.searchBar = new TextFieldWrapper<>(new GuiTextFieldGeneric(x + 1, y - 18, this.width - 2, 16, this.textRenderer), listener);
+        this.searchBar = new TextFieldWrapper<>(new GuiTextFieldGeneric(x + 1, y - 18, this.width - 2, 16, this.textRenderer), listener, TextFieldType.STRING);
         this.searchBar.textField().setFocused(true);
 
         this.updateFilteredEntries();
