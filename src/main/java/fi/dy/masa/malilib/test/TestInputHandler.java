@@ -8,7 +8,7 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.render.InventoryOverlayScreen;
 import fi.dy.masa.malilib.test.gui.GuiTestFileBrowser;
-import fi.dy.masa.malilib.test.gui.GuiTestList;
+import fi.dy.masa.malilib.test.gui.GuiTestBlockStateList;
 import fi.dy.masa.malilib.test.gui.GuiTestPosEditor;
 import fi.dy.masa.malilib.util.time.TimeTestExample;
 import net.minecraft.client.Minecraft;
@@ -106,7 +106,7 @@ public class TestInputHandler implements IKeybindProvider
             else if (key == MaLiLibConfigs.Test.TEST_GUI_KEYBIND.getKeybind())
             {
                 System.out.printf("testGuiKeybind Callback Action: [%s] (Cancel = false)\n", action.getStringValue());
-                GuiBase.openGui(new GuiTestList());
+                GuiBase.openGui(new GuiTestBlockStateList());
             }
             else if (key == MaLiLibConfigs.Test.TEST_GUI_EDITOR_KEYBIND.getKeybind())
             {

@@ -37,6 +37,7 @@
         "recipe.IMixinClientRecipeBook",
         "render.IMixinAbstractTexture",
         "render.IMixinAbstractWidget",
+        "render.IMixinBlockRenderDispatcher",
         "render.IMixinBufferBuilder",
         "render.IMixinDrawContext",
         "render.IMixinGameRenderer",

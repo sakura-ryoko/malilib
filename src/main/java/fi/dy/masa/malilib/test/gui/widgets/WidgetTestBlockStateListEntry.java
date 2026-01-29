@@ -6,20 +6,20 @@ import org.jetbrains.annotations.Nullable;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntrySortable;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.test.gui.GuiTestList;
+import fi.dy.masa.malilib.test.gui.GuiTestBlockStateList;
 import fi.dy.masa.malilib.util.StringUtils;
 
-public class WidgetTestListEntry extends WidgetListEntrySortable<GuiTestList.Entry>
+public class WidgetTestBlockStateListEntry extends WidgetListEntrySortable<GuiTestBlockStateList.Entry>
 {
-    private final GuiTestList parent;
-    private final GuiTestList.Entry entry;
+    private final GuiTestBlockStateList parent;
+    private final GuiTestBlockStateList.Entry entry;
     private final boolean isOdd;
 
     private static int maxNameLengthExpected;
     private static int maxNameLengthFound;
     private static int maxCountLength;
 
-    public WidgetTestListEntry(int x, int y, int width, int height, boolean isOdd, @Nullable GuiTestList.Entry entry, GuiTestList parent, int listIndex)
+    public WidgetTestBlockStateListEntry(int x, int y, int width, int height, boolean isOdd, @Nullable GuiTestBlockStateList.Entry entry, GuiTestBlockStateList parent, int listIndex)
     {
         super(x, y, width, height, entry, listIndex);
         this.entry = entry;
@@ -27,7 +27,7 @@ public class WidgetTestListEntry extends WidgetListEntrySortable<GuiTestList.Ent
         this.parent = parent;
     }
 
-    public GuiTestList getParent()
+    public GuiTestBlockStateList getParent()
     {
         return this.parent;
     }
@@ -38,7 +38,7 @@ public class WidgetTestListEntry extends WidgetListEntrySortable<GuiTestList.Ent
     }
 
     @Override
-    public @Nullable GuiTestList.Entry getEntry()
+    public @Nullable GuiTestBlockStateList.Entry getEntry()
     {
         return this.entry;
     }
@@ -71,13 +71,13 @@ public class WidgetTestListEntry extends WidgetListEntrySortable<GuiTestList.Ent
         return false;
     }
 
-    public static void setMaxEntryLength(List<GuiTestList.Entry> entryList)
+    public static void setMaxEntryLength(List<GuiTestBlockStateList.Entry> entryList)
     {
         maxNameLengthExpected = 9;
         maxNameLengthFound = 9;
         maxCountLength = 3 * maxNameLengthExpected;
 
-        for (GuiTestList.Entry entry : entryList)
+        for (GuiTestBlockStateList.Entry entry : entryList)
         {
             Block block = entry.getBlock();
             String name = block.getName().getString();
@@ -123,18 +123,19 @@ public class WidgetTestListEntry extends WidgetListEntrySortable<GuiTestList.Ent
         int x2 = this.getColumnPosX(1);
         int x3 = this.getColumnPosX(2);
         final int iconSize = this.parent.iconSize;
-        int y = this.y + (iconSize);
+        int y = this.y;
         color = 0xFFFFFFFF;
 
         if (this.entry != null)
         {
-            this.drawString(ctx, x1 + iconSize + 4, (y - (iconSize / 2)), color, this.entry.name());
+            this.drawString(ctx, x1 + iconSize + 4, (y + (iconSize / 2)), color, this.entry.name());
 //            this.drawString(drawContext, x2 + 24, y, color, this.entry.state().toString());
 
-            y = this.y + 3;
+            y += 3;
             RenderUtils.drawRect(ctx, x1, y, iconSize, iconSize, 0x20FFFFFF); // light background for the item
-            // 0.625f
-            RenderUtils.renderModelInGui(ctx, x1, y, iconSize, this.entry.state(), 0.625f);
+            // scale: 0.625f ?
+            RenderUtils.renderModelInGui(ctx, x1, y, iconSize, this.entry.state(), 0.75f, 0.0F);
+            y += 3;
         }
 
         super.render(ctx, mouseX, mouseY, selected);
