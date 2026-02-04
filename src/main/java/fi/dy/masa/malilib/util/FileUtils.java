@@ -11,8 +11,8 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.value.FileWriteType;
-import fi.dy.masa.malilib.util.game.wrap.GameWrap;
 
 /**
  * File has been merged with Post-Rewrite FileUtils
@@ -26,12 +26,14 @@ public class FileUtils
 
     public static Path getConfigDirectoryAsPath()
     {
-        return GameWrap.getClient().gameDirectory.toPath().resolve("config");
+//        return GameWrap.getClient().gameDirectory.toPath().resolve("config");
+        return MaLiLibReference.CONFIG_DIR;
     }
 
     public static Path getMinecraftDirectoryAsPath()
     {
-        return GameWrap.getClient().gameDirectory.toPath();
+//        return GameWrap.getClient().gameDirectory.toPath();
+        return MaLiLibReference.GAME_DIR;
     }
 
     public static Path getRootDirectory()

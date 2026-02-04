@@ -11,4 +11,8 @@ public interface IConfigInteger extends IConfigValue, IConfigSlider
     int getMinIntegerValue();
 
     int getMaxIntegerValue();
+
+    default int getLastIntegerValue() { return this.getDefaultIntegerValue(); }
+
+    default void updateLastIntegerValue() {}
 }

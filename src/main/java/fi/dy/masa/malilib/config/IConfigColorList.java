@@ -14,4 +14,8 @@ public interface IConfigColorList extends IConfigBase
     void setColors(List<Color4f> colors);
 
     void setModified();
+
+    default List<Color4f> getLastColorsValue() { return this.getDefaultColors().stream().toList(); }
+
+    default void updateLastColorsValue() {}
 }

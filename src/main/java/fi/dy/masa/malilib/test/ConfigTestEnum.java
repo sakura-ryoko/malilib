@@ -5,15 +5,14 @@ import net.minecraft.util.StringRepresentable;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigBoolean;
-import fi.dy.masa.malilib.config.IConfigNotifiable;
-import fi.dy.masa.malilib.config.IHotkeyTogglable;
+import fi.dy.masa.malilib.config.*;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyCallbackToggleBooleanConfigWithMessage;
@@ -23,7 +22,7 @@ import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import fi.dy.masa.malilib.util.StringUtils;
 
 @ApiStatus.Experimental
-public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfigBoolean>, StringRepresentable
+public enum ConfigTestEnum implements IEnumBooleanHotkey, StringRepresentable
 {
     TEST_ENUM_CONFIG                ("testEnumConfig",              false,""),
     TEST_ENUM_SINGLE_PLAYER         ("testEnumSinglePlayer",        false,true, ""),
@@ -46,6 +45,7 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     private boolean valueBoolean;
     private IValueChangeCallback<IConfigBoolean> callback;
     private boolean dirty = false;
+    private Pair<Boolean, String> lastBooleanHotkey;
 
     ConfigTestEnum(String name, boolean defaultValue, String defaultHotkey)
     {
@@ -98,6 +98,7 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
         this.translatedName = translatedName;
         this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
         this.keybind.setCallback(new KeyCallbackToggleBooleanConfigWithMessage(this));
+        this.updateLastBooleanHotkeyValue();
     }
 
     private static String buildTranslateName(String name, String type)
@@ -137,6 +138,7 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
 
         if (oldValue != this.valueBoolean)
         {
+            this.markClean();
             this.onValueChanged();
         }
     }
@@ -161,13 +163,25 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
 
         if (oldValue != this.valueBoolean)
         {
+            this.markClean();
             this.onValueChanged();
         }
     }
 
     @Override
+    public boolean getLastBooleanValue()
+    {
+        return this.lastBooleanHotkey.getLeft();
+    }
+
+    @Override
     public void onValueChanged()
     {
+        if (MaLiLibReference.DEBUG_MODE || (MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG != null && MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG.getBooleanValue()))
+        {
+            MaLiLib.LOGGER.warn("TEST-ENUM: onValueChanged() -> name [{}], enumConfig {}", this.name, this.getBooleanHotkeyValue().toString());
+        }
+
         if (this.callback != null)
         {
             this.callback.onValueChanged(this);
@@ -264,18 +278,20 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     @Override
     public boolean isDirty()
     {
-        return this.dirty;
+        return this.getKeybind().isDirty() || this.dirty;
     }
 
     @Override
     public void markDirty()
     {
+        this.getKeybind().markDirty();
         this.dirty = true;
     }
 
     @Override
     public void markClean()
     {
+        this.getKeybind().markClean();
         this.dirty = false;
     }
 
@@ -302,9 +318,58 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     }
 
     @Override
+    public void toggleBooleanValue()
+    {
+        this.updateLastBooleanHotkeyValue();
+        this.valueBoolean = !this.valueBoolean;
+        this.markClean();
+        this.onValueChanged();
+    }
+
+    @Override
     public void resetToDefault()
     {
+        this.updateLastBooleanHotkeyValue();
+        boolean oldValue = this.valueBoolean;
         this.valueBoolean = this.defaultValueBoolean;
+
+        if (oldValue != this.valueBoolean)
+        {
+            this.markClean();
+            this.onValueChanged();
+        }
+    }
+
+    @Override
+    public Pair<Boolean, String> getBooleanHotkeyValue()
+    {
+        return Pair.of(this.valueBoolean, this.keybind.getStringValue());
+    }
+
+    @Override
+    public Pair<Boolean, String> getDefaultBooleanHotkeyValue()
+    {
+        return Pair.of(this.defaultValueBoolean, this.keybind.getDefaultStringValue());
+    }
+
+    @Override
+    public void setBooleanHotkeyValue(Pair<Boolean, String> value)
+    {
+        this.updateLastBooleanHotkeyValue();
+        this.setBooleanValue(value.getLeft());
+        this.getKeybind().setValueFromString(value.getRight());
+    }
+
+    @Override
+    public Pair<Boolean, String> getLastBooleanHotkeyValue()
+    {
+        return this.lastBooleanHotkey;
+    }
+
+    @Override
+    public void updateLastBooleanHotkeyValue()
+    {
+        this.lastBooleanHotkey = Pair.of(this.valueBoolean, this.keybind.getStringValue());
     }
 
     @Override
@@ -316,15 +381,37 @@ public enum ConfigTestEnum implements IHotkeyTogglable, IConfigNotifiable<IConfi
     @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+        final boolean oldBool = this.valueBoolean;
+        final String oldKeybind = this.keybind.getStringValue();
+
         try
         {
             if (element.isJsonPrimitive())
             {
-                this.setBooleanValue(element.getAsBoolean());
+                boolean temp = element.getAsBoolean();
+                this.valueBoolean = temp;       // This seems redundant, but this makes it safer from corruption
             }
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+            }
+
+            if (oldBool != this.valueBoolean ||
+                oldKeybind != null && !oldKeybind.equals(this.keybind.getStringValue()) ||
+                this.isDirty())
+            {
+                this.markClean();
+
+                if (!this.getLastBooleanHotkeyValue().equals(this.getBooleanHotkeyValue()))
+                {
+//                    MaLiLib.LOGGER.error("[TEST-ENUM/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                         this.getLastBooleanHotkeyValue().toString(),
+//                                         Pair.of(oldBool, oldKeybind).toString(),
+//                                         this.getBooleanHotkeyValue().toString()
+//                    );
+
+                    this.onValueChanged();
+                }
             }
         }
         catch (Exception e)

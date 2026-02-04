@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.config.options;
 
+import java.util.Objects;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
@@ -7,10 +8,11 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
+import fi.dy.masa.malilib.config.IConfigString;
 import fi.dy.masa.malilib.config.IConfigValue;
 import fi.dy.masa.malilib.util.StringUtils;
 
-public class ConfigString extends ConfigBase<ConfigString> implements IConfigValue
+public class ConfigString extends ConfigBase<ConfigString> implements IConfigValue, IConfigString
 {
     public static final Codec<ConfigString> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
@@ -49,14 +51,14 @@ public class ConfigString extends ConfigBase<ConfigString> implements IConfigVal
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
-        this.previousValue = defaultValue;
+        this.updateLastStringValue();
     }
 
     private ConfigString(String name, String defaultValue, String value, String previousValue, String comment, String prettyName, String translatedName)
     {
         this(name, defaultValue, comment, prettyName, translatedName);
         this.value = value;
-        this.previousValue = previousValue;
+        this.updateLastStringValue();
     }
 
     @Override
@@ -71,21 +73,34 @@ public class ConfigString extends ConfigBase<ConfigString> implements IConfigVal
         return this.defaultValue;
     }
 
-    public String getOldStringValue()
+    @Override
+    public String getLastStringValue()
     {
         return this.previousValue;
     }
 
     @Override
+    public void setStringValue(String value)
+    {
+        this.setValueFromString(value);
+    }
+
+    @Override
     public void setValueFromString(String value)
     {
-        this.previousValue = this.value;
+        this.updateLastStringValue();
         this.value = value;
 
         if (this.previousValue.equals(this.value) == false)
         {
             this.onValueChanged();
         }
+    }
+
+    @Override
+    public void updateLastStringValue()
+    {
+        this.previousValue = this.value;
     }
 
     @Override
@@ -109,15 +124,32 @@ public class ConfigString extends ConfigBase<ConfigString> implements IConfigVal
     @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+        final String oldValue = this.value;
+
         try
         {
             if (element.isJsonPrimitive())
             {
-                this.setValueFromString(element.getAsString());
+                String temp = element.getAsString();
+                this.value = temp != null ? temp : this.defaultValue;
             }
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+            }
+
+            if (!this.value.equals(oldValue) || this.isDirty())
+            {
+                this.markClean();
+
+                if (!Objects.equals(this.getLastStringValue(), this.getStringValue()))
+                {
+//                    MaLiLib.LOGGER.error("[STRING/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                         this.getLastStringValue(), oldValue, this.getStringValue()
+//                    );
+
+                    this.onValueChanged();
+                }
             }
         }
         catch (Exception e)

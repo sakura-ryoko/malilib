@@ -1,30 +1,30 @@
 package fi.dy.masa.malilib.config.options.table;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Range;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.ExtraCodecs;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.table.type.*;
-
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.util.ExtraCodecs;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.ImmutableCopy;
 
 @ApiStatus.Experimental
 public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
@@ -133,6 +133,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
 	private final ImmutableList<@NotNull TableRow> defaultTable;
 	private final List<TableRow> table = new ArrayList<>();
+	private final List<TableRow> lastTable = new ArrayList<>();
 	private final @Nullable String displayString;
 	private final ImmutableList<@NotNull EntryTypes> types;
 	private final List<Label> labels;
@@ -233,6 +234,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 		}
 
 		this.types = ilb.build();
+//		this.types = ImmutableCopy.of(types).toList();
+
 		this.displayString = displayString;
 		ImmutableList.Builder<@NotNull TableRow> ilb2 = ImmutableList.builder();
 		for (TableRow list : defaultValue)
@@ -242,7 +245,14 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 			ilb2.add(newEntry);
 		}
 		this.defaultTable = ilb2.build();
-		this.table.addAll(defaultTable);
+//		this.defaultTable = ImmutableCopy.of(defaultValue).toList();
+		this.table.addAll(this.defaultTable.stream().toList());
+
+//		MaLiLib.LOGGER.error("[TABLE/{}]: default rows: [{}], types: [{}], labels: [{}] // Table: [{}]",
+//		                     this.getName(), this.defaultTable.size(), this.types.size(),
+//		                     this.labels.size(), this.table.size());
+
+		this.updateLastTableValue();
 	}
 
 	@Override
@@ -284,18 +294,28 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 	@Override
 	public void setTable(List<TableRow> newTable)
 	{
+		this.updateLastTableValue();
+		this.table.clear();
+		this.table.addAll(newTable.stream().toList());
+
 		if (!this.table.equals(newTable))
 		{
-			this.table.clear();
-			this.table.addAll(newTable);
-			this.onValueChanged();
+			this.setModified();
 		}
 	}
 
 	@Override
 	public void setModified()
 	{
+		this.markClean();
 		this.onValueChanged();
+	}
+
+	@Override
+	public void updateLastTableValue()
+	{
+		this.lastTable.clear();
+		this.lastTable.addAll(ImmutableCopy.of(this.table).toList());
 	}
 
 	@Override
@@ -313,33 +333,40 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 	@Override
 	public void resetToDefault()
 	{
-		setTable(this.defaultTable);
+		this.setTable(this.defaultTable.stream().toList());
 	}
 
 	@Override
 	public boolean isModified()
 	{
-		for (int i = 0; i < this.table.size() && i < this.defaultTable.size(); i++)
-		{
-			if (!this.table.get(i).equals(this.defaultTable.get(i)))
-			{
-				return true;
-			}
-		}
+//		for (int i = 0; i < this.table.size() && i < this.defaultTable.size(); i++)
+//		{
+//			if (!this.table.get(i).equals(this.defaultTable.get(i)))
+//			{
+//				return true;
+//			}
+//		}
 
-		return false;
+		return  this.defaultTable.size() != this.table.size() ||
+				!this.defaultTable.equals(this.lastTable);
+	}
+
+	@Override
+	public List<TableRow> getLastTableValue()
+	{
+		return this.lastTable;
 	}
 
 	@Override
     public void setValueFromJsonElement(JsonElement element)
     {
-        List<TableRow> oldTable = new ArrayList<>();
+        ImmutableList<TableRow> oldTable = ImmutableCopy.of(this.table).toList();
         List<TableRow> tempTable = new ArrayList<>();
 
-        for (TableRow entry : this.table)
-        {
-            oldTable.add(new TableRow(entry.list()));
-        }
+//        for (TableRow entry : this.table)
+//        {
+//            oldTable.add(new TableRow(entry.list()));
+//        }
 
         try
         {
@@ -411,9 +438,20 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
             this.table.clear();
             this.table.addAll(tempTable);
 
-            if (!this.table.equals(oldTable))
+            if (!this.table.equals(oldTable) || this.isDirty())
             {
-                onValueChanged();
+				this.markClean();
+
+				if (!this.getLastTableValue().equals(this.getTable()))
+				{
+//					MaLiLib.LOGGER.error("[TABLE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//					                     this.getLastTableValue().size(),
+//					                     oldTable.size(),
+//					                     this.getTable().size()
+//					);
+
+					this.setModified();
+				}
             }
         }
         catch (Exception e)
@@ -428,7 +466,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 	{
 		JsonArray tableArr = new JsonArray();
 
-		for (var row : this.table)
+		for (TableRow row : this.table)
 		{
 			JsonArray entryArr = new JsonArray();
 			for (Entry entry : row.list())
@@ -551,7 +589,8 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
 		public Builder setDefaultValue(TableRow... defaultValue)
 		{
-			this.defaultValue = List.of(defaultValue);
+			this.defaultValue = new ArrayList<>();
+			this.defaultValue.addAll(Arrays.asList(defaultValue));
 			return this;
 		}
 
@@ -650,7 +689,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 			}
 			if (this.prettyName == null)
 			{
-				this.prettyName = this.name;
+				this.prettyName = StringUtils.splitCamelCase(this.name);
 			}
 			if (this.translatedName == null)
 			{
@@ -665,7 +704,7 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 						throw new IllegalArgumentException("Type mismatch: expected " + this.types[j] + " but got " + v.list().get(j).getType().name());
 					}
 
-                    if (this.allowAddNewEntry && this.types[j] == EntryTypes.LABEL && FabricLoader.getInstance().isDevelopmentEnvironment() && !ignoreWarning)
+                    if (this.allowAddNewEntry && this.types[j] == EntryTypes.LABEL && !ignoreWarning)
                     {
                         MaLiLib.LOGGER.warn("You probably shouldn't enable allowAddNewEntry if you are using labels.");
                     }

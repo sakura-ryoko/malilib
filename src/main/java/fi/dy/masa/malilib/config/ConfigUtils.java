@@ -24,6 +24,7 @@ public class ConfigUtils
                 if (obj.has(name))
                 {
                     option.setValueFromJsonElement(obj.get(name));
+                    option.checkIfClean();
                 }
             }
         }
@@ -49,6 +50,8 @@ public class ConfigUtils
                 {
                     hotkey.getKeybind().setValueFromString(JsonUtils.getString(objHotkeys, name));
                 }
+
+                hotkey.checkIfClean();
             }
         }
     }

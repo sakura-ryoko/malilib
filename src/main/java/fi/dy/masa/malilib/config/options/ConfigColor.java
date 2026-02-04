@@ -6,12 +6,13 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigColor;
+import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
-import net.minecraft.util.Mth;
 
 public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
 {
@@ -30,6 +31,7 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
     protected final int minValue;
     protected final int maxValue;
     private Color4f color;
+    private Color4f lastColor;
 
     public ConfigColor(String name, Color4f defaultValue)
     {
@@ -39,6 +41,7 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
         this.maxValue = Integer.MAX_VALUE;
         this.defaultValue = defaultValue;
         this.color = this.defaultValue;
+        this.updateLastColorValue();
     }
 
     public ConfigColor(String name, String defaultValue)
@@ -65,6 +68,7 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
         this.maxValue = Integer.MAX_VALUE;
         this.defaultValue = Color4f.fromColor(value);
         this.color = this.defaultValue;
+        this.updateLastColorValue();
     }
 
     private ConfigColor(String name, Color4f defaultValue, Color4f color, String comment, String prettyName, String translatedName)
@@ -127,7 +131,9 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
     @Override
     public void setValueFromString(String value)
     {
+        this.updateLastColorValue();
 		Color4f oldColor = this.color;
+
         this.color = Color4f.fromString(value);
 
 		if (oldColor.getIntValue() != this.color.getIntValue())
@@ -139,6 +145,7 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
     @Override
     public void setIntegerValue(int value)
     {
+        this.updateLastColorValue();
         int clamp = this.getClampedValue(value);
         int oldValue = this.color.getIntValue();
 
@@ -163,9 +170,21 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
         return this.maxValue;
     }
 
+    @Override
+    public Color4f getLastColorValue()
+    {
+        return this.lastColor;
+    }
+
+    @Override
+    public void updateLastColorValue()
+    {
+        this.lastColor = this.color;
+    }
+
     protected int getClampedValue(int value)
     {
-        return Mth.clamp(value, this.minValue, this.maxValue);
+        return MathUtils.clamp(value, this.minValue, this.maxValue);
     }
 
     @Override
@@ -177,6 +196,7 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
     @Override
     public void resetToDefault()
     {
+        this.updateLastColorValue();
         Color4f oldColor = this.color;
         this.color = this.defaultValue;
 
@@ -203,15 +223,35 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
     @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+        Color4f oldColor = this.color;
+
         try
         {
             if (element.isJsonPrimitive())
             {
-                this.setValueFromString(element.getAsString());
+                Color4f temp = Color4f.fromString(element.getAsString());
+                this.color = temp;      // This seems redundant, but this ensures that the 'value' cannot be corrupted
             }
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+            }
+
+            if (!this.color.equals(oldColor) || this.isDirty())
+            {
+                this.markClean();
+
+                if (!this.getLastColorValue().equals(this.getColor()))
+                {
+//                    MaLiLib.LOGGER.error("[COLOR/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                         this.getLastColorValue().toHexString(),
+//                                         oldColor.toHexString(),
+//                                         this.getColor().toHexString()
+//                    );
+
+                    this.onValueChanged();
+                    this.updateLastColorValue();
+                }
             }
         }
         catch (Exception e)

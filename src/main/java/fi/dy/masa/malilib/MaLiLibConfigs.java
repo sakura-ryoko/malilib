@@ -122,7 +122,7 @@ public class MaLiLibConfigs implements IConfigHandler
                                 T(L("fox:"), 0.0, 0.0, 0.0)
                         )
                         .setAllowAddNewEntry(false)
-                        .setDisplayString("Display string")
+                        .setDisplayString("Display Str (Open)")
                         .setLabels("", "X position", "Y position", "Z position")
                         .build().apply(TEST_KEY);
         public static final ConfigTable             TEST_CONFIG_TABLE_3             =

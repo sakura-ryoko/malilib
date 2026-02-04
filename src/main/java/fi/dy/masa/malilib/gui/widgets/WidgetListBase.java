@@ -5,12 +5,12 @@ import javax.annotation.Nullable;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.util.Mth;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.MathUtils;
 
 public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>> extends GuiBase
 {
@@ -585,7 +585,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         }
         else if (this.lastSelectedEntryIndex >= 0 && this.listContents.size() > 0)
         {
-            int index = Mth.clamp(this.lastSelectedEntryIndex + amount, 0, this.listContents.size() - 1);
+            int index = MathUtils.clamp(this.lastSelectedEntryIndex + amount, 0, this.listContents.size() - 1);
 
             if (index != this.lastSelectedEntryIndex)
             {

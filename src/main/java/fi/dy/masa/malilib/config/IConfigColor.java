@@ -16,4 +16,8 @@ public interface IConfigColor extends IConfigValue
     int getMinIntegerValue();
 
     int getMaxIntegerValue();
+
+    default Color4f getLastColorValue() { return Color4f.fromColor(this.getDefaultIntegerValue()); }
+
+    default void updateLastColorValue() {}
 }

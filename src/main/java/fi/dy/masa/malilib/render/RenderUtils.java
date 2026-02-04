@@ -57,7 +57,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
-import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -2062,8 +2061,8 @@ public class RenderUtils
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
             int height = props.height + 18;
-            int x = Mth.clamp(baseX + 8, 0, screenWidth - props.width);
-            int y = Mth.clamp(baseY - height, 0, screenHeight - height);
+            int x = MathUtils.clamp(baseX + 8, 0, screenWidth - props.width);
+            int y = MathUtils.clamp(baseY - height, 0, screenHeight - height);
             int color;
 
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof ShulkerBoxBlock)
@@ -2133,8 +2132,8 @@ public class RenderUtils
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
             int height = props.height + 18;
-            int x = Mth.clamp(baseX + 8, 0, screenWidth - props.width);
-            int y = Mth.clamp(baseY - height, 0, screenHeight - height);
+            int x = MathUtils.clamp(baseX + 8, 0, screenWidth - props.width);
+            int y = MathUtils.clamp(baseY - height, 0, screenHeight - height);
 
             int color = setBundleBackgroundTintColor(stack, useBgColors);
 
@@ -2190,8 +2189,8 @@ public class RenderUtils
 			int screenWidth = GuiUtils.getScaledWindowWidth();
 			int screenHeight = GuiUtils.getScaledWindowHeight();
 			int height = props.height + 18;
-			int x = Mth.clamp(baseX + 8, 0, screenWidth - props.width);
-			int y = Mth.clamp(baseY - height, 0, screenHeight - height);
+			int x = MathUtils.clamp(baseX + 8, 0, screenWidth - props.width);
+			int y = MathUtils.clamp(baseY - height, 0, screenHeight - height);
 
 			int color = CommonColors.WHITE;
 
@@ -2245,8 +2244,8 @@ public class RenderUtils
 			int screenWidth = GuiUtils.getScaledWindowWidth();
 			int screenHeight = GuiUtils.getScaledWindowHeight();
 			int height = props.height + 18;
-			int x = Mth.clamp(baseX + 8, 0, screenWidth - props.width);
-			int y = Mth.clamp(baseY - height, 0, screenHeight - height);
+			int x = MathUtils.clamp(baseX + 8, 0, screenWidth - props.width);
+			int y = MathUtils.clamp(baseY - height, 0, screenHeight - height);
 
 			int color = CommonColors.WHITE;
 

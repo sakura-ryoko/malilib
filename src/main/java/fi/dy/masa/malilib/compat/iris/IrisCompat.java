@@ -1,13 +1,10 @@
 package fi.dy.masa.malilib.compat.iris;
 
-import java.util.Objects;
 import net.irisshaders.iris.api.v0.IrisApi;
 import net.irisshaders.iris.api.v0.IrisProgram;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.metadata.ModMetadata;
-
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibFabricData;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 
 public class IrisCompat
@@ -22,21 +19,32 @@ public class IrisCompat
 
     static
     {
-        FabricLoader.getInstance().getAllMods().stream().toList().forEach((mc ->
-        {
-            ModMetadata meta = mc.getMetadata();
+//        FabricLoader.getInstance().getAllMods().stream().toList().forEach((mc ->
+//        {
+//            ModMetadata meta = mc.getMetadata();
+//
+//            if (Objects.equals(meta.getId(), SODIUM_ID))
+//            {
+//                sodiumVersion = meta.getVersion().getFriendlyString();
+//                isSodiumLoaded = true;
+//            }
+//            else if (Objects.equals(meta.getId(), IRIS_ID))
+//            {
+//                irisVersion = meta.getVersion().getFriendlyString();
+//                isIrisLoaded = true;
+//            }
+//        }));
 
-            if (Objects.equals(meta.getId(), SODIUM_ID))
-            {
-                sodiumVersion = meta.getVersion().getFriendlyString();
-                isSodiumLoaded = true;
-            }
-            else if (Objects.equals(meta.getId(), IRIS_ID))
-            {
-                irisVersion = meta.getVersion().getFriendlyString();
-                isIrisLoaded = true;
-            }
-        }));
+	    if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(SODIUM_ID))
+	    {
+			sodiumVersion = MaLiLibFabricData.ALL_MOD_VERSIONS.get(SODIUM_ID);
+			isSodiumLoaded = true;
+	    }
+		if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(IRIS_ID))
+		{
+			irisVersion = MaLiLibFabricData.ALL_MOD_VERSIONS.get(IRIS_ID);
+			isIrisLoaded = true;
+		}
 
         MaLiLib.LOGGER.info("Sodium: [{}], Iris: [{}]", isSodiumLoaded ? sodiumVersion : "N/F", isIrisLoaded ? irisVersion : "N/F");
     }

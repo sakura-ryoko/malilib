@@ -340,6 +340,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				}
 
 				list.set(this.listIndex, temp);
+				config.markDirty();
 				config.setModified();
 			}
 		}
@@ -351,6 +352,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		final int size = list.size();
 		int index = this.listIndex < 0 ? size : (MathUtils.min(this.listIndex, size));
 		list.add(index, ConfigTable.getDummy(types));
+		this.parent.getConfig().markDirty();
 		this.parent.getConfig().setModified();
 		this.parent.refreshEntries();
 		this.parent.markConfigsModified();
@@ -364,6 +366,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		if (this.listIndex >= 0 && this.listIndex < size)
 		{
 			list.remove(this.listIndex);
+			this.parent.getConfig().markDirty();
 			this.parent.getConfig().setModified();
 			this.parent.refreshEntries();
 			this.parent.markConfigsModified();
@@ -392,6 +395,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 
 			if (index2 >= 0)
 			{
+				this.parent.getConfig().markDirty();
 				this.parent.getConfig().setModified();
 				this.parent.markConfigsModified();
 				this.parent.applyPendingModifications();
@@ -519,6 +523,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						{
 							button.onClearSelection();
 						}
+
+						this.parent.getConfig().markDirty();
 						this.parent.getConfig().setModified();
 						this.parent.markConfigsModified();
 

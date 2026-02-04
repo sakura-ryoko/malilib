@@ -2,15 +2,17 @@ package fi.dy.masa.malilib.hotkeys;
 
 import java.util.*;
 import javax.annotation.Nullable;
-import net.minecraft.client.KeyMapping;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.KeyEvent;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.glfw.GLFW;
+
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.Message;
@@ -93,13 +95,13 @@ public class KeybindMulti implements IKeybind
 	@Override
 	public void markDirty()
 	{
-		this.dirty = true;
+        this.dirty = true;
 	}
 
 	@Override
 	public void markClean()
 	{
-		this.dirty = false;
+        this.dirty = false;
 	}
 
 	/**
@@ -352,7 +354,7 @@ public class KeybindMulti implements IKeybind
     @Override
     public void setValueFromString(String str)
     {
-		String oldString = this.getStringValue();
+		final String oldString = this.getStringValue();
         this.clearKeys();
         String[] keys = str.split(",");
 
@@ -467,7 +469,15 @@ public class KeybindMulti implements IKeybind
     public static KeybindMulti fromStorageString(String str, KeybindSettings settings)
     {
         KeybindMulti keybind = new KeybindMulti(str, settings);
+        final String oldValue = keybind.getStringValue();
+
         keybind.setValueFromString(str);
+
+        if (!oldValue.equals(keybind.getStringValue()))
+        {
+            keybind.markDirty();
+        }
+
         return keybind;
     }
 

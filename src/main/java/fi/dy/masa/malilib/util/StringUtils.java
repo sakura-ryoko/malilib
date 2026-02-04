@@ -18,12 +18,12 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+
+import fi.dy.masa.malilib.MaLiLibFabricData;
 import fi.dy.masa.malilib.MaLiLibReference;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.JsonOps;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ServerData;
@@ -79,12 +79,17 @@ public class StringUtils
 
     public static String getModVersionString(String modId)
     {
-        for (ModContainer container : FabricLoader.getInstance().getAllMods())
+//        for (ModContainer container : FabricLoader.getInstance().getAllMods())
+//        {
+//            if (container.getMetadata().getId().equals(modId))
+//            {
+//                return container.getMetadata().getVersion().getFriendlyString();
+//            }
+//        }
+
+        if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(modId))
         {
-            if (container.getMetadata().getId().equals(modId))
-            {
-                return container.getMetadata().getVersion().getFriendlyString();
-            }
+            return MaLiLibFabricData.ALL_MOD_VERSIONS.get(modId);
         }
 
         return "?";

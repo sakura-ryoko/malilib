@@ -252,7 +252,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                 this.addButton(toggleBtn, new ListenerSliderToggle((IConfigSlider) config));
             }
         }
-		else if (type == ConfigType.TABLE)
+		else if (type == ConfigType.TABLE || config instanceof IConfigTable)
         {
 			ConfigButtonTable optionButton = new ConfigButtonTable(x, y, configWidth, configHeight, (IConfigTable) config, this.host, this.host.getDialogHandler());
 	        this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
@@ -267,38 +267,50 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             IConfigBase config = this.wrapper.getConfig();
             boolean modified = false;
 
-            if (config instanceof BooleanHotkeyGuiWrapper booleanHotkey)
-            {
-                IKeybind keybind = booleanHotkey.getKeybind();
-                return this.initialBoolean != booleanHotkey.getBooleanValue() ||
-                       this.initialStringValue.equals(keybind.getStringValue()) == false ||
-                       this.initialKeybindSettings.equals(keybind.getSettings()) == false;
-            }
-            else if (config instanceof ConfigBooleanHotkeyed booleanHotkey)
-            {
-                IKeybind keybind = booleanHotkey.getKeybind();
-                return this.initialBoolean != booleanHotkey.getBooleanValue() ||
-                       this.initialStringValue.equals(keybind.getStringValue()) == false ||
-                       this.initialKeybindSettings.equals(keybind.getSettings()) == false;
-            }
-            else if (config instanceof IStringRepresentable)
-            {
-                if (this.textField != null)
-                {
-                    modified |= this.initialStringValue.equals(this.textField.textField().getValue()) == false;
-                }
+	        switch (config)
+	        {
+		        case BooleanHotkeyGuiWrapper booleanHotkey ->
+		        {
+			        IKeybind keybind = booleanHotkey.getKeybind();
+			        return  this.initialBoolean != booleanHotkey.getBooleanValue() ||
+					        this.initialStringValue.equals(keybind.getStringValue()) == false ||
+					        this.initialKeybindSettings.equals(keybind.getSettings()) == false ||
+					        config.isDirty();
+		        }
+		        case ConfigBooleanHotkeyed booleanHotkey ->
+		        {
+			        IKeybind keybind = booleanHotkey.getKeybind();
+			        return  this.initialBoolean != booleanHotkey.getBooleanValue() ||
+					        this.initialStringValue.equals(keybind.getStringValue()) == false ||
+					        this.initialKeybindSettings.equals(keybind.getSettings()) == false ||
+					        config.isDirty();
+		        }
+		        case IStringRepresentable iStringRepresentable ->
+		        {
+			        if (this.textField != null)
+			        {
+				        modified |= this.initialStringValue.equals(this.textField.textField().getValue()) == false ||
+						        config.isDirty();
+			        }
 
-                if (this.initialKeybindSettings != null && this.initialKeybindSettings.equals(((IHotkey) config).getKeybind().getSettings()) == false)
-                {
-                    modified = true;
-                }
+			        if (this.initialKeybindSettings != null && this.initialKeybindSettings.equals(((IHotkey) config).getKeybind().getSettings()) == false)
+			        {
+				        modified = true;
+			        }
 
-                return modified || this.initialStringValue.equals(((IStringRepresentable) config).getStringValue()) == false;
-            }
-            else if (this.initialStringList != null && config instanceof IConfigStringList)
-            {
-                return this.initialStringList.equals(((IConfigStringList) config).getStrings()) == false;
-            }
+			        return  modified || this.initialStringValue.equals(iStringRepresentable.getStringValue()) == false ||
+					        config.isDirty();
+		        }
+		        case IConfigStringList iConfigStringList when this.initialStringList != null ->
+		        {
+			        return  this.initialStringList.equals(iConfigStringList.getStrings()) == false ||
+					        config.isDirty();
+		        }
+		        case null, default ->
+		        {
+			        return config != null && config.isDirty();
+		        }
+	        }
         }
 
         return false;

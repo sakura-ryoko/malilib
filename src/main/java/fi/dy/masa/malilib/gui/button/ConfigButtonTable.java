@@ -1,20 +1,20 @@
 package fi.dy.masa.malilib.gui.button;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.client.input.MouseButtonEvent;
+
 import fi.dy.masa.malilib.config.IConfigTable;
-import fi.dy.masa.malilib.config.options.table.TableRow;
-import fi.dy.masa.malilib.config.options.table.type.*;
+import fi.dy.masa.malilib.config.options.table.type.Entry;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTableEdit;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 @ApiStatus.Experimental
 public class ConfigButtonTable extends ButtonGeneric
@@ -61,21 +61,20 @@ public class ConfigButtonTable extends ButtonGeneric
 			return;
 		}
         // alternative way I guess
-//        List<String> list = this.config.getTable().stream()
-//                .map(row -> row.list().stream()
-//                        .map(Entry::asString)
-//                        .collect(Collectors.joining(", ")))
-//                .toList();
+        List<String> list = this.config.getTable().stream()
+                .map(row -> row.list().stream()
+                        .map(Entry::asString)
+                        .collect(Collectors.joining(", ")))
+                .toList();
 
-		List<String> list = new ArrayList<>();
-
-		for (TableRow row : this.config.getTable())
-		{
-            String result = row.list().stream()
-                    .map(Entry::asString)
-                    .collect(Collectors.joining(", "));
-			list.add(result);
-		}
+//		List<String> list = new ArrayList<>();
+//		for (TableRow row : this.config.getTable())
+//		{
+//            String result = row.list().stream()
+//                    .map(Entry::asString)
+//                    .collect(Collectors.joining(", "));
+//			list.add(result);
+//		}
 
 		this.displayString = StringUtils.getClampedDisplayStringRenderlen(list, this.width - 20, "{", "}");
 	}

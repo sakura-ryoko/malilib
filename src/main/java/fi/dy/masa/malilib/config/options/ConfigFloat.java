@@ -6,11 +6,12 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigFloat;
+import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.util.Mth;
 
 public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
 {
@@ -33,6 +34,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
     protected final float defaultValue;
     protected float value;
     protected boolean useSlider;
+    private float lastFloat;
 
     public ConfigFloat(String name, float defaultValue)
     {
@@ -93,6 +95,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.useSlider = useSlider;
+        this.updateLastFloatValue();
     }
 
     private ConfigFloat(String name, Float defaultValue, Float minValue, Float maxValue, Float value, Boolean useSlider, String comment, String prettyName, String translatedName)
@@ -128,6 +131,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
     @Override
     public void setFloatValue(float value)
     {
+        this.updateLastFloatValue();
         float oldValue = this.value;
         this.value = this.getClampedValue(value);
 
@@ -149,9 +153,15 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
         return this.maxValue;
     }
 
+    @Override
+    public float getLastFloatValue()
+    {
+        return this.lastFloat;
+    }
+
     protected float getClampedValue(float value)
     {
-        return Mth.clamp(value, this.minValue, this.maxValue);
+        return MathUtils.clamp(value, this.minValue, this.maxValue);
     }
 
     @Override
@@ -204,17 +214,40 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
     }
 
     @Override
+    public void updateLastFloatValue()
+    {
+        this.lastFloat = this.value;
+    }
+
+    @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+        float oldValue = this.value;
+
         try
         {
             if (element.isJsonPrimitive())
             {
-                this.setFloatValue(this.getClampedValue(element.getAsFloat()));
+                float temp = element.getAsFloat();
+                this.value = this.getClampedValue(temp);
             }
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+            }
+
+            if (oldValue != this.value || this.isDirty())
+            {
+                this.markClean();
+
+                if (this.getLastFloatValue() != this.getFloatValue())
+                {
+//                    MaLiLib.LOGGER.error("[FLOAT/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                         this.getLastFloatValue(), oldValue, this.getFloatValue()
+//                    );
+
+                    this.onValueChanged();
+                }
             }
         }
         catch (Exception e)

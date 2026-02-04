@@ -23,4 +23,8 @@ public interface IConfigLockedList extends IConfigBase
     int getEntryIndex(IConfigLockedListEntry entry);
 
     void setModified();
+
+    default List<IConfigLockedListEntry> getLastLockedListValue() { return this.getDefaultEntries(); }
+
+    default void updateLastLockedListValue() {}
 }

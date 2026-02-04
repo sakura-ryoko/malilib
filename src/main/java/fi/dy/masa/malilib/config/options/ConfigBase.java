@@ -239,6 +239,11 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
 	@SuppressWarnings("unchecked")
     public void onValueChanged()
     {
+//        if (this.isDirty())
+//        {
+//            this.markClean();
+//        }
+
         if (CONFIG_TYPE_DEBUG || (MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG != null && MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG.getBooleanValue()))
         {
             MaLiLib.LOGGER.info("CONFIG: onValueChanged() -> type [{}], name [{}], hasCallback [{}]", type.name(), this.name, this.callback != null);

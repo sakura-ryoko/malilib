@@ -20,7 +20,7 @@ public class MixinMinecraftClient_testSelector
 	{
 		if (MaLiLibReference.DEBUG_MODE &&
 			MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
-			ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+			ConfigTestEnum.TEST_SELECTOR_HOTKEY.getBooleanValue())
 		{
 			TestSelector.INSTANCE.select(false);
 			cir.cancel();
@@ -33,7 +33,7 @@ public class MixinMinecraftClient_testSelector
 	{
 		if (MaLiLibReference.DEBUG_MODE &&
 			MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&
-			ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+			ConfigTestEnum.TEST_SELECTOR_HOTKEY.getBooleanValue())
 		{
 			TestSelector.INSTANCE.select(true);
 			ci.cancel();

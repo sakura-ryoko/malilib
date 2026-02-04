@@ -134,6 +134,10 @@ public class Color4f
                              getHexColorString(this.intValue), this.a, this.r, this.g, this.b, this.intValue);
     }
 
+    /**
+     * Return this {@link Color4f} as an 8-char Hex value, prefixed by a '#' (ex. '#F0F0F0F0')
+     * @return      The Hex Value as a String
+     */
     public String toHexString()
     {
         return String.format("#%08X", this.intValue);

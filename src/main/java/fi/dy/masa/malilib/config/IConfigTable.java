@@ -14,10 +14,11 @@ import java.util.List;
 public interface IConfigTable extends IConfigBase
 {
     List<TableRow> getTable();
+
     List<List<Object>> getRawTable();
 
-    // whats this 'Warning:(20, 19) Non-null type argument is expected' mean? it wasnt here before
     ImmutableList<TableRow> getDefaultTable();
+
     ImmutableList<List<Object>> getDefaultRawTable();
 
     void setTable(List<TableRow> newTable);
@@ -27,7 +28,14 @@ public interface IConfigTable extends IConfigBase
     @Nullable String getDisplayString();
 
     List<EntryTypes> getTypes();
+
     List<Label> getLabels();
+
     boolean allowNewEntry();
+
     boolean showEntryNumbers();
+
+    default List<TableRow> getLastTableValue() { return this.getDefaultTable().stream().toList(); }
+
+    default void updateLastTableValue() {}
 }

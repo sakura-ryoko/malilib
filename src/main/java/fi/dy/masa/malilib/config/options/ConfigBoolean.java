@@ -27,6 +27,7 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
     );
     private final boolean defaultValue;
     private boolean value;
+    private boolean lastValue;
 
     public ConfigBoolean(String name, boolean defaultValue)
     {
@@ -49,6 +50,7 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
+        this.updateLastBooleanValue();
     }
 
     private ConfigBoolean(String name, Boolean defaultValue, Boolean value, String comment, String prettyName, String translatedName)
@@ -72,6 +74,7 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
     @Override
     public void setBooleanValue(boolean value)
     {
+        this.updateLastBooleanValue();
         boolean oldValue = this.value;
         this.value = value;
 
@@ -79,6 +82,12 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
         {
             this.onValueChanged();
         }
+    }
+
+    @Override
+    public boolean getLastBooleanValue()
+    {
+        return this.lastValue;
     }
 
     @Override
@@ -114,6 +123,7 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
     @Override
     public void setValueFromString(String value)
     {
+        this.updateLastBooleanValue();
 		boolean oldValue = this.value;
         this.value = Boolean.parseBoolean(value);
 
@@ -124,17 +134,41 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
     }
 
     @Override
+    public void updateLastBooleanValue()
+    {
+        this.lastValue = this.value;
+    }
+
+    @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+        boolean oldValue = this.value;
+
         try
         {
             if (element.isJsonPrimitive())
             {
-				this.setBooleanValue(element.getAsBoolean());
+	            boolean temp = element.getAsBoolean();
+                this.value = temp;      // This seems redundant, but this ensures that the 'value' cannot be corrupted
             }
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+            }
+
+            if (this.value != oldValue || this.isDirty())
+            {
+                this.markClean();
+
+                if (this.getLastBooleanValue() != this.getBooleanValue())
+                {
+//                    MaLiLib.LOGGER.error("[BOOL/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                         this.getLastBooleanValue(), oldValue, this.getBooleanValue()
+//                    );
+
+                    this.onValueChanged();
+                    this.updateLastBooleanValue();
+                }
             }
         }
         catch (Exception e)
