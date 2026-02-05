@@ -131,6 +131,7 @@ public enum ConfigTestEnum implements IEnumBooleanHotkey, StringRepresentable
     @Override
     public void setValueFromString(String value)
     {
+        this.updateLastBooleanHotkeyValue();
         boolean oldValue = this.valueBoolean;
 
         switch (value)
@@ -162,6 +163,7 @@ public enum ConfigTestEnum implements IEnumBooleanHotkey, StringRepresentable
     @Override
     public void setBooleanValue(boolean value)
     {
+        this.updateLastBooleanHotkeyValue();
         boolean oldValue = this.valueBoolean;
         this.valueBoolean = value;
 
