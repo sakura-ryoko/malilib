@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.render;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +36,9 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
+import fi.dy.masa.malilib.test.data.TestDataSyncer;
+import fi.dy.masa.malilib.test.misc.TestSelector;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
@@ -197,12 +200,12 @@ public class TestRenderHandler implements IRenderer
 
                 if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
                 {
-                    if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
+                    if (TestRenderWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
                     {
-                        TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+                        TestRenderWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
                     }
 
-                    TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+                    TestRenderWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
                 }
 
                 profiler.pop();

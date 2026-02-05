@@ -11,10 +11,10 @@ import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import fi.dy.masa.malilib.interfaces.IRenderer;
-import fi.dy.masa.malilib.test.TestCommand;
-import fi.dy.masa.malilib.test.TestInputHandler;
-import fi.dy.masa.malilib.test.TestRenderHandler;
-import fi.dy.masa.malilib.test.TestSelector;
+import fi.dy.masa.malilib.test.command.TestCommand;
+import fi.dy.masa.malilib.test.input.TestInputHandler;
+import fi.dy.masa.malilib.test.misc.TestSelector;
+import fi.dy.masa.malilib.test.render.TestRenderHandler;
 
 public class MaLiLibInitHandler implements IInitializationHandler
 {

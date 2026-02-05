@@ -16,11 +16,10 @@ import fi.dy.masa.malilib.config.options.table.ConfigTable;
 import fi.dy.masa.malilib.config.options.table.Label;
 import fi.dy.masa.malilib.config.options.table.TableRow;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
-import fi.dy.masa.malilib.hotkeys.KeyAction;
-import fi.dy.masa.malilib.hotkeys.KeybindSettings;
-import fi.dy.masa.malilib.test.ConfigTestEnum;
-import fi.dy.masa.malilib.test.ConfigTestLockedList;
-import fi.dy.masa.malilib.test.ConfigTestOptList;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
+import fi.dy.masa.malilib.test.config.ConfigTestLockedList;
+import fi.dy.masa.malilib.test.config.ConfigTestOptList;
+import fi.dy.masa.malilib.test.config.TestHotkeys;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
@@ -91,10 +90,6 @@ public class MaLiLibConfigs implements IConfigHandler
     }
 
     private static final String TEST_KEY = MaLiLibReference.MOD_ID+".config.test";
-    private static final KeybindSettings OVERLAY_TOGGLE = KeybindSettings.create(KeybindSettings.Context.ANY, KeyAction.PRESS, true, true, false, true);
-    //private static final KeybindSettings GUI_RELAXED = KeybindSettings.create(KeybindSettings.Context.GUI, KeyAction.PRESS, true, false, false, false);
-    private static final KeybindSettings GUI_RELAXED_CANCEL = KeybindSettings.create(KeybindSettings.Context.GUI, KeyAction.PRESS, true, false, false, true);
-    //private static final KeybindSettings GUI_NO_ORDER = KeybindSettings.create(KeybindSettings.Context.GUI, KeyAction.PRESS, false, false, false, true);
     public static class Test
     {
         public static final ConfigBoolean           TEST_CONFIG_BOOLEAN             = new ConfigBoolean("testBoolean", false, "Test Boolean").apply(TEST_KEY);
@@ -103,7 +98,6 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigColorList         TEST_CONFIG_COLOR_LIST          = new ConfigColorList("testColorList", ImmutableList.of(new Color4f(0, 0, 0), new Color4f(255, 255, 255, 255)), "Test Color List").apply(TEST_KEY);
         public static final ConfigDouble            TEST_CONFIG_DOUBLE              = new ConfigDouble("testDouble", 0.5, 0, 1, true, "Test Double").apply(TEST_KEY);
         public static final ConfigFloat             TEST_CONFIG_FLOAT               = new ConfigFloat("testFloat", 0.5f, 0.0f, 1.0f, true, "Test Float").apply(TEST_KEY);
-        public static final ConfigHotkey            TEST_CONFIG_HOTKEY              = new ConfigHotkey("testHotkey", "", "Test Hotkey").apply(TEST_KEY);
         public static final ConfigInteger           TEST_CONFIG_INTEGER             = new ConfigInteger("testInteger", 5, 1, 10, "Test Integer").apply(TEST_KEY);
         public static final ConfigOptionList        TEST_CONFIG_OPTIONS_LIST        = new ConfigOptionList("testOptionList", ConfigTestOptList.TEST1, "Test Option List").apply(TEST_KEY);
         public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "testString", "Test String").apply(TEST_KEY);
@@ -163,13 +157,8 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigInteger           TEST_BUNDLE_PREVIEW_WIDTH       = new ConfigInteger("testBundlePreviewWidth", 9, 6, 9, "Test Bundle Preview Width").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY          = new ConfigBooleanHotkeyed("testInventoryOverlay", false, "LEFT_ALT").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY_OG       = new ConfigBooleanHotkeyed("testInventoryOverlayOG", false, "").apply(TEST_KEY);
-        public static final ConfigHotkey            TEST_INVENTORY_OVERLAY_TOGGLE   = new ConfigHotkey("testInventoryOverlayToggle", "BUTTON_3", OVERLAY_TOGGLE).apply(TEST_KEY);
-        public static final ConfigHotkey            TEST_GUI_KEYBIND                = new ConfigHotkey("testGuiKeybind", "").apply(TEST_KEY);
-	    public static final ConfigHotkey            TEST_GUI_EDITOR_KEYBIND         = new ConfigHotkey("testGuiEditorKeybind", "").apply(TEST_KEY);
-	    public static final ConfigHotkey            TEST_GUI_FILE_BROWSER_KEYBIND   = new ConfigHotkey("testGuiFileBrowserKeybind", "").apply(TEST_KEY);
         public static final ConfigOptionList        TEST_DATE_TIME_OPTION           = new ConfigOptionList("testDateTimeList", TimeFormat.RFC1123).apply(TEST_KEY);
         public static final ConfigOptionList        TEST_DURATION_OPTION            = new ConfigOptionList("testDurationList", DurationFormat.PRETTY).apply(TEST_KEY);
-        public static final ConfigHotkey            TEST_RUN_DATETIME_TEST          = new ConfigHotkey("testRunDateTimeTest", "").apply(TEST_KEY);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN,
@@ -178,7 +167,6 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_COLOR_LIST,
                 TEST_CONFIG_DOUBLE,
                 TEST_CONFIG_FLOAT,
-                TEST_CONFIG_HOTKEY,
                 TEST_CONFIG_INTEGER,
                 TEST_CONFIG_OPTIONS_LIST,
                 TEST_CONFIG_STRING,
@@ -192,24 +180,14 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_BUNDLE_PREVIEW_WIDTH,
                 TEST_INVENTORY_OVERLAY,
                 TEST_INVENTORY_OVERLAY_OG,
-                TEST_INVENTORY_OVERLAY_TOGGLE,
-                TEST_GUI_KEYBIND,
-                TEST_GUI_EDITOR_KEYBIND,
-                TEST_GUI_FILE_BROWSER_KEYBIND,
                 TEST_DATE_TIME_OPTION,
-                TEST_DURATION_OPTION,
-                TEST_RUN_DATETIME_TEST
+                TEST_DURATION_OPTION
         );
 
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN_HOTKEYED,
                 TEST_INVENTORY_OVERLAY,
-                TEST_INVENTORY_OVERLAY_OG,
-                TEST_INVENTORY_OVERLAY_TOGGLE,
-                TEST_GUI_KEYBIND,
-                TEST_GUI_EDITOR_KEYBIND,
-                TEST_GUI_FILE_BROWSER_KEYBIND,
-                TEST_RUN_DATETIME_TEST
+                TEST_INVENTORY_OVERLAY_OG
         );
     }
 
@@ -251,7 +229,8 @@ public class MaLiLibConfigs implements IConfigHandler
 
                 if (MaLiLibReference.DEBUG_MODE)
                 {
-                    ConfigUtils.readConfigBase(root, "Test", Test.OPTIONS);
+                    ConfigUtils.readConfigBase(root, "TestOptions", Test.OPTIONS);
+                    ConfigUtils.readConfigBase(root, "TestHotkeys", TestHotkeys.HOTKEY_LIST);
                     ConfigUtils.readHotkeyToggleOptions(root, "TestEnumHotkeys", "TestEnumToggles", ConfigTestEnum.VALUES);
                 }
 
@@ -294,7 +273,8 @@ public class MaLiLibConfigs implements IConfigHandler
 
             if (MaLiLibReference.DEBUG_MODE)
             {
-                ConfigUtils.writeConfigBase(root, "Test", Test.OPTIONS);
+                ConfigUtils.writeConfigBase(root, "TestOptions", Test.OPTIONS);
+                ConfigUtils.writeConfigBase(root, "TestHotkeys", TestHotkeys.HOTKEY_LIST);
                 ConfigUtils.writeHotkeyToggleOptions(root, "TestEnumHotkeys", "TestEnumToggles", ConfigTestEnum.VALUES);
             }
 

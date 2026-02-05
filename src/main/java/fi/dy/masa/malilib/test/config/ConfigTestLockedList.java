@@ -1,15 +1,16 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.config;
 
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.util.StringRepresentable;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.StringRepresentable;
+
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigLockedListEntry;
 import fi.dy.masa.malilib.config.IConfigLockedListType;
@@ -73,12 +74,6 @@ public class ConfigTestLockedList implements IConfigLockedListType
             this.translationKey = MaLiLibReference.MOD_ID+".gui.label.locked_test."+translationKey;
         }
 
-//        @Override
-//        public Codec<Entry> codec()
-//        {
-//            return CODEC;
-//        }
-//
         @Override
         public String getStringValue()
         {

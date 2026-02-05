@@ -1,9 +1,10 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.data;
 
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 

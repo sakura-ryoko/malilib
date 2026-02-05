@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
+import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
@@ -311,15 +312,18 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
 
         public ConfigOptionWrapper(@Nullable IConfigBase config)
         {
-            this.type = Type.CONFIG;
-            this.config = config;
-            this.label = null;
+            this(Type.CONFIG, config, null);
         }
 
         public ConfigOptionWrapper(@Nullable String label)
         {
-            this.type = Type.LABEL;
-            this.config = null;
+            this(Type.LABEL, null, label);
+        }
+
+        private ConfigOptionWrapper(Type type, @Nullable IConfigBase config, @Nullable String label)
+        {
+            this.type = type;
+            this.config = config;
             this.label = label;
         }
 

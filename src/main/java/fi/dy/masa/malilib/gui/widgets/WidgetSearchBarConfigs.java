@@ -1,5 +1,9 @@
 package fi.dy.masa.malilib.gui.widgets;
 
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.button.ConfigButtonKeybind;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
@@ -10,8 +14,6 @@ import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings.Context;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
 
 public class WidgetSearchBarConfigs extends WidgetSearchBar
 {
@@ -84,6 +86,19 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
         return super.onKeyTypedImpl(input);
     }
 
+    // This stops you from typing in the Search box
+    // while also setting a Search Keybind at the same time ...
+    @Override
+    protected boolean onCharTypedImpl(CharacterEvent input)
+    {
+        if (this.searchOpen && this.button.isSelected())
+        {
+            return true;
+        }
+
+        return super.onCharTypedImpl(input);
+    }
+
     @Override
     public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
@@ -92,6 +107,15 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
         if (this.searchOpen)
         {
             this.button.render(ctx, mouseX, mouseY, false);
+
+            if (!this.hasFilter())
+            {
+                this.searchBox.setHoverTooltip("malilib.gui.button.hover.search_bar_hotkey");
+            }
+            else
+            {
+                this.searchBox.clearHoverTooltip();
+            }
         }
     }
 }

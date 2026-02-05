@@ -1,8 +1,10 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.command;
 
 import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.interfaces.IClientCommandListener;
 import fi.dy.masa.malilib.util.time.TimeTestExample;

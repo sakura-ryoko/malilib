@@ -1,14 +1,7 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.render;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
@@ -17,6 +10,14 @@ import org.joml.Matrix4fStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.MeshData;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
@@ -25,9 +26,9 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 
 @ApiStatus.Experimental
-public class TestWalls implements AutoCloseable
+public class TestRenderWalls implements AutoCloseable
 {
-    public static final TestWalls INSTANCE = new TestWalls();
+    public static final TestRenderWalls INSTANCE = new TestRenderWalls();
 
     protected boolean renderThrough;
     protected boolean useCulling;
@@ -42,7 +43,7 @@ public class TestWalls implements AutoCloseable
     private final boolean needsUpdate;
     private final int updateDistance = 48;
 
-    public TestWalls()
+    public TestRenderWalls()
     {
         this.renderThrough = false;
         this.useCulling = false;
@@ -86,8 +87,8 @@ public class TestWalls implements AutoCloseable
         Vec3 vec = camera.position();
         BlockPos pos = entity.blockPosition();
         BlockPos testPos = pos.offset(2, 0, 2);
-        Pair<BlockPos, BlockPos> corners = TestUtils.getSpawnChunkCorners(testPos, radius, mc.level);
-        this.boxes = TestUtils.calculateBoxes(corners.getLeft(), corners.getRight());
+        Pair<BlockPos, BlockPos> corners = TestRenderUtils.getSpawnChunkCorners(testPos, radius, mc.level);
+        this.boxes = TestRenderUtils.calculateBoxes(corners.getLeft(), corners.getRight());
 
         if (!this.boxes.isEmpty())
         {
@@ -144,7 +145,7 @@ public class TestWalls implements AutoCloseable
 
         for (AABB entry : this.boxes)
         {
-            TestUtils.renderWallQuads(entry, cameraPos, quadsColor, builder);
+            TestRenderUtils.renderWallQuads(entry, cameraPos, quadsColor, builder);
         }
 
         try
@@ -202,7 +203,7 @@ public class TestWalls implements AutoCloseable
 
         for (AABB entry : this.boxes)
         {
-            TestUtils.renderWallOutlines(entry, 16, 16, true, cameraPos, linesColor, this.glLineWidth, builder);
+            TestRenderUtils.renderWallOutlines(entry, 16, 16, true, cameraPos, linesColor, this.glLineWidth, builder);
         }
 
         matrix4fstack.popMatrix();
