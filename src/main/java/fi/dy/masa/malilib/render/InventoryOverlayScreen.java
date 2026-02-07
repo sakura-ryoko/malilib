@@ -228,7 +228,7 @@ public class InventoryOverlayScreen extends Screen implements Renderable
 
 			// Villager Trades Display
 			if (type == InventoryOverlayType.VILLAGER &&
-				this.previewData.data() != null && this.previewData.data().contains(NbtKeys.OFFERS, Constants.NBT.TAG_LIST))
+				this.previewData.data() != null && this.previewData.data().contains(NbtKeys.OFFERS, Constants.NBT.TAG_COMPOUND))
 			{
 				NonNullList<@NotNull ItemStack> offers = InventoryUtils.getSellingItemsFromData(this.previewData.data(), world.registryAccess());
 				Container tradeOffers = InventoryUtils.getAsInventory(offers);
