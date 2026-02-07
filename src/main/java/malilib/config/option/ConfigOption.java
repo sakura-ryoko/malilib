@@ -49,8 +49,8 @@ public interface ConfigOption<T> extends ConfigInfo
     T getValue();
 
     /**
-     * This method is be called when the config is loaded from file
-     * @param newValue the value that was set to the config
+     * This method is called when the config is loaded from file
+     * @param newValue the new value that was just loaded
      */
     void onValueLoaded(T newValue);
 
