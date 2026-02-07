@@ -193,7 +193,7 @@ public class ToastWidget extends BaseWidget
 
     protected void renderToastBackground(int x, int y, float z, ScreenContext ctx)
     {
-        this.backgroundTexture.renderFourSplicedAt(x, y, z, this.getWidth(), this.getHeight(), ctx);
+        this.backgroundTexture.renderFourSlicedAt(x, y, z, this.getWidth(), this.getHeight(), ctx);
     }
 
     protected void renderToastText(int x, int y, float z, ScreenContext ctx)

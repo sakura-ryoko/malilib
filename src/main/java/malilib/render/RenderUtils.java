@@ -45,8 +45,8 @@ public class RenderUtils
         }
     }
 
-    public static void renderNineSplicedTexture(int x, int y, float z, int width, int height,
-                                                int edgeThickness, Icon icon, int variantIndex, RenderContext ctx)
+    public static void renderNineSlicedTexture(int x, int y, float z, int width, int height,
+                                               int edgeThickness, Icon icon, int variantIndex, RenderContext ctx)
     {
         int textureWidth = icon.getWidth();
         int textureHeight = icon.getHeight();
@@ -62,11 +62,11 @@ public class RenderUtils
         RenderWrap.color(1f, 1f, 1f, 1f);
         RenderWrap.bindTexture(icon.getTexture());
 
-        renderNineSplicedTexture(x, y, z, u, v, width, height, textureWidth, textureHeight, edgeThickness, ctx);
+        renderNineSlicedTexture(x, y, z, u, v, width, height, textureWidth, textureHeight, edgeThickness, ctx);
     }
 
-    public static void renderNineSplicedTexture(int x, int y, float z, int u, int v, int width, int height,
-                                                int texWidth, int texHeight, int edgeThickness, RenderContext ctx)
+    public static void renderNineSlicedTexture(int x, int y, float z, int u, int v, int width, int height,
+                                               int texWidth, int texHeight, int edgeThickness, RenderContext ctx)
     {
         VertexBuilder builder = VanillaWrappingVertexBuilder.texturedQuad();
         int e = edgeThickness;

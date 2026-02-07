@@ -163,12 +163,12 @@ public interface Icon
      * @param width the width of the icon to render
      * @param height the height of the icon to render
      */
-    default void renderFourSplicedAt(int x, int y, float z, int width, int height, RenderContext ctx)
+    default void renderFourSlicedAt(int x, int y, float z, int width, int height, RenderContext ctx)
     {
-        this.renderFourSplicedAt(x, y, z, width, height, 0, ctx);
+        this.renderFourSlicedAt(x, y, z, width, height, 0, ctx);
     }
 
-    default void renderFourSplicedAt(int x, int y, float z, int width, int height, int variantIndex, RenderContext ctx)
+    default void renderFourSlicedAt(int x, int y, float z, int width, int height, int variantIndex, RenderContext ctx)
     {
         int textureWidth = this.getWidth();
         int textureHeight = this.getHeight();

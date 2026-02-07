@@ -41,7 +41,7 @@ public class GenericButton extends InteractableWidget
     protected boolean renderButtonBackgroundTexture = true;
     protected boolean renderFullTextOnHover = true;
     protected boolean rightAligned;
-    protected int backgroundIconSplicingEdgeThickness = 4;
+    protected int backgroundIconSlicingEdgeThickness = 4;
     protected int disabledTextColor = 0xFF606060;
     protected int iconVsLabelPadding = 5;
 
@@ -162,9 +162,9 @@ public class GenericButton extends InteractableWidget
      * Basically this means that this many pixels from the opposite edge will be avoided
      * in the four spliced mode, and in the nine spliced mode the 8 edge parts will be this thick.
      */
-    public void setBackgroundIconSplicingEdgeThickness(int backgroundIconSplicingEdgeThickness)
+    public void setBackgroundIconSlicingEdgeThickness(int backgroundIconSlicingEdgeThickness)
     {
-        this.backgroundIconSplicingEdgeThickness = backgroundIconSplicingEdgeThickness;
+        this.backgroundIconSlicingEdgeThickness = backgroundIconSlicingEdgeThickness;
     }
 
     public GenericButton setBackgroundIcon(Icon icon)
@@ -476,15 +476,15 @@ public class GenericButton extends InteractableWidget
         int variantIndex = IconWidget.getVariantIndex(this.isEnabled(), hovered);
         int iconWidth = this.backgroundIcon.getWidth();
         int iconHeight = this.backgroundIcon.getHeight();
-        int edge = this.backgroundIconSplicingEdgeThickness;
+        int edge = this.backgroundIconSlicingEdgeThickness;
 
         if (width > (iconWidth - edge) * 2 || height > (iconHeight - edge) * 2)
         {
-            RenderUtils.renderNineSplicedTexture(x, y, z, width, height, edge, this.backgroundIcon, variantIndex, ctx);
+            RenderUtils.renderNineSlicedTexture(x, y, z, width, height, edge, this.backgroundIcon, variantIndex, ctx);
         }
         else
         {
-            this.backgroundIcon.renderFourSplicedAt(x, y, z, width, height, variantIndex, ctx);
+            this.backgroundIcon.renderFourSlicedAt(x, y, z, width, height, variantIndex, ctx);
         }
     }
 

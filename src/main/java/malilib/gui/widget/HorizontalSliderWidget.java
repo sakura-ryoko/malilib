@@ -47,7 +47,7 @@ public class HorizontalSliderWidget extends BaseSliderWidget<SliderCallbackWithT
         int height = this.getHeight();
 
         // Render the background texture
-        DefaultIcons.BUTTON_BACKGROUND.renderFourSplicedAt(x + 1, y, z, width - 2, height, ctx);
+        DefaultIcons.BUTTON_BACKGROUND.renderFourSlicedAt(x + 1, y, z, width - 2, height, ctx);
 
         // Render the slider bar texture
         double relPos = this.callback.getRelativeValue();
@@ -56,7 +56,7 @@ public class HorizontalSliderWidget extends BaseSliderWidget<SliderCallbackWithT
         int sx = x + 2 + (int) (relPos * usableWidth);
         boolean enabled = this.isEnabled();
         boolean hovered = GuiUtils.isMouseInRegion(ctx.mouseX, ctx.mouseY, sx, y, sw, height);
-        DefaultIcons.BUTTON_BACKGROUND.renderFourSplicedAt(sx, y, z, sw, height, IconWidget.getVariantIndex(enabled, hovered), ctx);
+        DefaultIcons.BUTTON_BACKGROUND.renderFourSlicedAt(sx, y, z, sw, height, IconWidget.getVariantIndex(enabled, hovered), ctx);
 
         int textColor = enabled ? 0xFFFFFFA0 : 0xFF909090;
         this.renderTextLine(x, y, z, textColor, this.callback.getDisplayText(), ctx);
