@@ -11,7 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.GameType;
 
-@Mixin(value = IntegratedServer.class)
+@Mixin(value = IntegratedServer.class, priority = 999)
 public class MixinIntegratedServer
 {
     @Shadow @Final private Minecraft minecraft;

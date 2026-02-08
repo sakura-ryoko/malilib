@@ -18,7 +18,7 @@ import fi.dy.masa.malilib.event.WorldLoadHandler;
 import fi.dy.masa.malilib.util.time.TickUtils;
 
 @Mixin(ClientPacketListener.class)
-public abstract class MixinClientPlayNetworkHandler
+public abstract class MixinClientPacketListener
 {
     @Shadow private ClientLevel level;
     @Unique @Nullable private ClientLevel worldBefore;

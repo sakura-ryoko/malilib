@@ -40,4 +40,10 @@ public interface IServerListener
      * @param server (The MinecraftServer object)
      */
     default void onServerStopped(MinecraftServer server) {}
+
+    /**
+     * Called for every server tick
+     * @param server (The MinecraftServer object)
+     */
+    default void onServerTick(MinecraftServer server) {}
 }

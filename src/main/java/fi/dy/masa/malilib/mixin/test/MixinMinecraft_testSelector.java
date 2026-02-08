@@ -13,7 +13,7 @@ import fi.dy.masa.malilib.test.misc.TestSelector;
 import net.minecraft.client.Minecraft;
 
 @Mixin(Minecraft.class)
-public class MixinMinecraftClient_testSelector
+public class MixinMinecraft_testSelector
 {
 	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)
 	private void malilib_onLeftClickMouse(CallbackInfoReturnable<Boolean> cir)

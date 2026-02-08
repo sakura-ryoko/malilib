@@ -13,11 +13,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractHorse.class)
-public abstract class MixinAbstractHorseEntity extends Entity
+public abstract class MixinAbstractHorse extends Entity
 {
     @Shadow protected SimpleContainer inventory;
 
-    public MixinAbstractHorseEntity(EntityType<?> type, Level world)
+    public MixinAbstractHorse(EntityType<?> type, Level world)
     {
         super(type, world);
     }

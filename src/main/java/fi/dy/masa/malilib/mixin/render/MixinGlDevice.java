@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.compat.lwgl.GpuCompat;
 
 @Mixin(GlDevice.class)
-public class MixinGlBackend
+public class MixinGlDevice
 {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void malilib_onGlBackendInit(long contextId, int debugVerbosity, boolean sync, ShaderSource defaultShaderSourceGetter, boolean renderDebugLabels, CallbackInfo ci)

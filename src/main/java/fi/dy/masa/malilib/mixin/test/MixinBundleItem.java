@@ -13,7 +13,7 @@ import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 
-@Mixin(BundleItem.class)
+@Mixin(value = BundleItem.class, priority = 1001)
 public class MixinBundleItem
 {
     @Inject(method = "getTooltipImage", at = @At("HEAD"), cancellable = true)

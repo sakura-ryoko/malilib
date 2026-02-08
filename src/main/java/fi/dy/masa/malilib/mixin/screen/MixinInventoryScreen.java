@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.render.GuiContext;
 
-@Mixin(InventoryScreen.class)
+@Mixin(value = InventoryScreen.class, priority = 990)
 public abstract class MixinInventoryScreen
 {
 	// Fix the Status Effects from overtaking the Tooltip rendering (Shulker Box Preview, etc.)

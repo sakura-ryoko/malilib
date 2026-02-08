@@ -11,8 +11,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 
-@Mixin(GuiGraphics.class)
-public abstract class MixinDrawContext
+@Mixin(value = GuiGraphics.class, priority = 999)
+public abstract class MixinGuiGraphics
 {
     @Inject(method = "setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;II)V", at = @At(value = "TAIL"))
     private void malilib_onRenderTooltip(Font textRenderer, ItemStack stack, int x, int y, CallbackInfo ci)

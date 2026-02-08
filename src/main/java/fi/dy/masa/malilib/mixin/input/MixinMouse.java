@@ -16,7 +16,7 @@ import net.minecraft.client.ScrollWheelHandler;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 
-@Mixin(MouseHandler.class)
+@Mixin(value = MouseHandler.class, priority = 990)
 public abstract class MixinMouse
 {
     @Shadow @Final private Minecraft minecraft;

@@ -1,17 +1,17 @@
 package fi.dy.masa.malilib.mixin.server;
 
+import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.minecraft.server.MinecraftServer;
+
 import fi.dy.masa.malilib.event.ServerHandler;
-import fi.dy.masa.malilib.util.time.TickUtils;
 
 /**
  * For invoking IntegratedServer() calls
  */
-@Mixin(value = MinecraftServer.class)
+@Mixin(value = MinecraftServer.class, priority = 999)
 public abstract class MixinMinecraftServer
 {
     @Inject(method = "runServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;initServer()Z"))
@@ -41,6 +41,6 @@ public abstract class MixinMinecraftServer
     @Inject(method = "logTickMethodTime", at = @At("HEAD"))
     private void malilib_onServerTick(long tickStartTime, CallbackInfo ci)
     {
-        TickUtils.getInstance().updateNanoTickFromIntegratedServer((MinecraftServer) (Object) this);
+        ((ServerHandler) ServerHandler.getInstance()).onServerTick((MinecraftServer) (Object) this);
     }
 }

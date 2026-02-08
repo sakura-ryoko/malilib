@@ -23,7 +23,7 @@ import fi.dy.masa.malilib.event.WorldLoadHandler;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 
 @Mixin(Minecraft.class)
-public abstract class MixinMinecraftClient
+public abstract class MixinMinecraft
 {
     @Shadow public ClientLevel level;
     @Unique private ClientLevel worldBefore;

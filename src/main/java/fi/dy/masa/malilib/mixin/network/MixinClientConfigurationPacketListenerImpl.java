@@ -10,12 +10,13 @@ import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.protocol.configuration.ClientboundFinishConfigurationPacket;
 
-@Mixin(ClientConfigurationPacketListenerImpl.class)
-public class MixinClientConfigurationNetworkHandler
+@Mixin(value = ClientConfigurationPacketListenerImpl.class, priority = 990)
+public class MixinClientConfigurationPacketListenerImpl
 {
-    @Inject(method = "handleConfigurationFinished", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/network/Connection;setupInboundProtocol(Lnet/minecraft/network/ProtocolInfo;Lnet/minecraft/network/PacketListener;)V",
-            shift = At.Shift.BEFORE)
+    @Inject(method = "handleConfigurationFinished",
+            at = @At(value = "INVOKE",
+                     target = "Lnet/minecraft/network/Connection;setupInboundProtocol(Lnet/minecraft/network/ProtocolInfo;Lnet/minecraft/network/PacketListener;)V"
+            )
     )
     private void malilib_onPlayLogin(ClientboundFinishConfigurationPacket packet, CallbackInfo ci, @Local RegistryAccess.Frozen immutable)
     {

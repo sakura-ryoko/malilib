@@ -31,7 +31,7 @@ import fi.dy.masa.malilib.util.nbt.INbtEntityInvoker;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
 
-@Mixin(Entity.class)
+@Mixin(value = Entity.class, priority = 999)
 public abstract class MixinEntity implements INbtEntityInvoker
 {
     @Shadow @Final private EntityType<?> type;

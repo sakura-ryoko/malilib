@@ -662,7 +662,7 @@ public class RenderContext implements AutoCloseable
             Vector4f colorMod = new Vector4f(1f, 1f, 1f, 1f);
             Vector3f modelOffset = new Vector3f(0f, 0f, 0f);
             Matrix4f texMatrix = new Matrix4f();
-            float line = 0.0f;
+//            float line = 0.0f;
 
             if (setColor)
             {

@@ -82,7 +82,7 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
-import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
+import fi.dy.masa.malilib.mixin.render.IMixinGuiGraphics;
 import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElementRenderer;
@@ -261,7 +261,7 @@ public class RenderUtils
 	@Deprecated(forRemoval = true)
 	public static void addSimpleElement(GuiGraphics drawContext, GuiElementRenderState simpleElement)
 	{
-		((IMixinDrawContext) drawContext).malilib_getRenderState().submitGuiElement(simpleElement);
+		((IMixinGuiGraphics) drawContext).malilib_getRenderState().submitGuiElement(simpleElement);
 	}
 
 	/**
@@ -270,7 +270,7 @@ public class RenderUtils
     @Deprecated(forRemoval = true)
     public static void addSpecialElement(GuiGraphics drawContext, PictureInPictureRenderState specialElement)
     {
-        ((IMixinDrawContext) drawContext).malilib_getRenderState().submitPicturesInPictureState(specialElement);
+        ((IMixinGuiGraphics) drawContext).malilib_getRenderState().submitPicturesInPictureState(specialElement);
     }
 
     // FIXME
@@ -325,7 +325,7 @@ public class RenderUtils
 	@Deprecated(forRemoval = true)
     public static void addItemElement(GuiGraphics drawContext, GuiItemRenderState itemElement)
     {
-        ((IMixinDrawContext) drawContext).malilib_getRenderState().submitItem(itemElement);
+        ((IMixinGuiGraphics) drawContext).malilib_getRenderState().submitItem(itemElement);
     }
 
 	/**
@@ -334,7 +334,7 @@ public class RenderUtils
 	@Deprecated(forRemoval = true)
     public static void addTextElement(GuiGraphics drawContext, GuiTextRenderState textElement)
     {
-        ((IMixinDrawContext) drawContext).malilib_getRenderState().submitText(textElement);
+        ((IMixinGuiGraphics) drawContext).malilib_getRenderState().submitText(textElement);
     }
 
 	/**
@@ -343,7 +343,7 @@ public class RenderUtils
 	@Deprecated(forRemoval = true)
     public static void pushScissor(GuiGraphics drawContext, @Nonnull ScreenRectangle rect)
     {
-        ((IMixinDrawContext) drawContext).malilib_getScissorStack().push(rect);
+        ((IMixinGuiGraphics) drawContext).malilib_getScissorStack().push(rect);
     }
 
 	/**
@@ -352,7 +352,7 @@ public class RenderUtils
 	@Deprecated(forRemoval = true)
     public static boolean containsScissor(GuiGraphics drawContext, int x, int y)
     {
-        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().containsPoint(x, y);
+        return ((IMixinGuiGraphics) drawContext).malilib_getScissorStack().containsPoint(x, y);
     }
 
 	/**
@@ -361,7 +361,7 @@ public class RenderUtils
 	@Deprecated(forRemoval = true)
     public static ScreenRectangle peekLastScissor(GuiGraphics drawContext)
     {
-        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().peek();
+        return ((IMixinGuiGraphics) drawContext).malilib_getScissorStack().peek();
     }
 
 	/**
@@ -370,7 +370,7 @@ public class RenderUtils
 	@Deprecated(forRemoval = true)
     public static ScreenRectangle popScissor(GuiGraphics drawContext)
     {
-        return ((IMixinDrawContext) drawContext).malilib_getScissorStack().pop();
+        return ((IMixinGuiGraphics) drawContext).malilib_getScissorStack().pop();
     }
 
     public static void drawOutlinedBox(GuiContext ctx, int x, int y, int width, int height, int colorBg, int colorBorder)
@@ -2394,7 +2394,7 @@ public class RenderUtils
 
     public static int setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
     {
-        if (useBgColors)
+        if (useBgColors && data != null)
         {
             Holder<VillagerProfession> profession = data != null ? data.profession() : null;
 	        Holder<VillagerType> type = data != null ? data.type() : null;
@@ -2568,79 +2568,80 @@ public class RenderUtils
 	}
 
 	// todo - return real colors based on the Villager, not Dye Colors
-    public static DyeColor getVillagerColor(Holder<VillagerProfession> profession)
-    {
-        if (profession == null)
-        {
-            return null;
-        }
+	@Deprecated(forRemoval = true)
+	public static DyeColor getVillagerColor(Holder<VillagerProfession> profession)
+	{
+		if (profession == null)
+		{
+			return null;
+		}
 
-        if (profession.equals(VillagerProfession.NONE))
-        {
-            return DyeColor.BLUE;           // 0xFFBE886C (Skin-Like Color)
-        }
-        else if (profession.is(VillagerProfession.ARMORER))
-        {
-            return DyeColor.GRAY;           // 0xFF5C5A57
-        }
-        else if (profession.is(VillagerProfession.BUTCHER))
-        {
-            return DyeColor.PINK;           // 0xFFAE574F
-        }
-        else if (profession.is(VillagerProfession.CARTOGRAPHER))
-        {
-            return DyeColor.LIGHT_BLUE;     // 0xFF97CAF6
-        }
-        else if (profession.is(VillagerProfession.CLERIC))
-        {
-            return DyeColor.PURPLE;         // 0xFF864E6A
-        }
-        else if (profession.is(VillagerProfession.FARMER))
-        {
-            return DyeColor.YELLOW;         // 0xFFDBC549
-        }
-        else if (profession.is(VillagerProfession.FISHERMAN))
-        {
-            return DyeColor.CYAN;           // 0xFF6B9F93
-        }
-        else if (profession.is(VillagerProfession.FLETCHER))
-        {
-            return DyeColor.ORANGE;         // 0xFFC26A44
-        }
-        else if (profession.is(VillagerProfession.LEATHERWORKER))
-        {
-            return DyeColor.BROWN;          // 0xFF855636
-        }
-        else if (profession.is(VillagerProfession.LIBRARIAN))
-        {
-            return DyeColor.RED;            // 0xFF9A2323
-        }
-        else if (profession.is(VillagerProfession.MASON))
-        {
-            return DyeColor.MAGENTA;        // 0xFF989696
-        }
-        else if (profession.is(VillagerProfession.NITWIT))
-        {
-            return DyeColor.GREEN;          // 0xFF5D744F
-        }
-        else if (profession.is(VillagerProfession.SHEPHERD))
-        {
-            return DyeColor.WHITE;          // 0xFFE5E0CB
-        }
-        else if (profession.is(VillagerProfession.TOOLSMITH))
-        {
-            return DyeColor.LIGHT_GRAY;     // 0xFFA29C91
-        }
-        else if (profession.is(VillagerProfession.WEAPONSMITH))
-        {
-            return DyeColor.BLACK;          // 0xFF191919
-        }
-        else
-        {
-            // Unhandled Profession
-            return DyeColor.LIME;
-        }
-    }
+		if (profession.equals(VillagerProfession.NONE))
+		{
+			return DyeColor.BLUE;           // 0xFFBE886C (Skin-Like Color)
+		}
+		else if (profession.is(VillagerProfession.ARMORER))
+		{
+			return DyeColor.GRAY;           // 0xFF5C5A57
+		}
+		else if (profession.is(VillagerProfession.BUTCHER))
+		{
+			return DyeColor.PINK;           // 0xFFAE574F
+		}
+		else if (profession.is(VillagerProfession.CARTOGRAPHER))
+		{
+			return DyeColor.LIGHT_BLUE;     // 0xFF97CAF6
+		}
+		else if (profession.is(VillagerProfession.CLERIC))
+		{
+			return DyeColor.PURPLE;         // 0xFF864E6A
+		}
+		else if (profession.is(VillagerProfession.FARMER))
+		{
+			return DyeColor.YELLOW;         // 0xFFDBC549
+		}
+		else if (profession.is(VillagerProfession.FISHERMAN))
+		{
+			return DyeColor.CYAN;           // 0xFF6B9F93
+		}
+		else if (profession.is(VillagerProfession.FLETCHER))
+		{
+			return DyeColor.ORANGE;         // 0xFFC26A44
+		}
+		else if (profession.is(VillagerProfession.LEATHERWORKER))
+		{
+			return DyeColor.BROWN;          // 0xFF855636
+		}
+		else if (profession.is(VillagerProfession.LIBRARIAN))
+		{
+			return DyeColor.RED;            // 0xFF9A2323
+		}
+		else if (profession.is(VillagerProfession.MASON))
+		{
+			return DyeColor.MAGENTA;        // 0xFF989696
+		}
+		else if (profession.is(VillagerProfession.NITWIT))
+		{
+			return DyeColor.GREEN;          // 0xFF5D744F
+		}
+		else if (profession.is(VillagerProfession.SHEPHERD))
+		{
+			return DyeColor.WHITE;          // 0xFFE5E0CB
+		}
+		else if (profession.is(VillagerProfession.TOOLSMITH))
+		{
+			return DyeColor.LIGHT_GRAY;     // 0xFFA29C91
+		}
+		else if (profession.is(VillagerProfession.WEAPONSMITH))
+		{
+			return DyeColor.BLACK;          // 0xFF191919
+		}
+		else
+		{
+			// Unhandled Profession
+			return DyeColor.LIME;
+		}
+	}
 
     public static boolean stateModelHasQuads(BlockState state)
     {
@@ -3009,9 +3010,9 @@ public class RenderUtils
 
     public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f, boolean shouldResort)
     {
-		boolean culling = shouldCull(pos1, pos2);
-        // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2
-        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", culling ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL);
+	    boolean isOutside = shouldCull(pos1, pos2);
+        // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL
+        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", isOutside ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
@@ -3261,32 +3262,38 @@ public class RenderUtils
 	public static boolean shouldCull(AABB bb)
 	{
 		Entity camera = mc().getCameraEntity();
-		final Vec3 minPos = bb.getMinPosition();
-		final Vec3 maxPos = bb.getMaxPosition();
-		Vec3 mid = bb.getCenter();
-		BlockPos pos;
+//		final Vec3 minPos = bb.getMinPosition();
+//		final Vec3 maxPos = bb.getMaxPosition();
+//		Vec3 mid = bb.getCenter();
+//		BlockPos pos;
 
-		if (minPos.y() < maxPos.y())
+		// Mark culling if the camera is outside of the bounding box (Walls overlapping, etc)
+		if (!bb.contains(camera.position()))
 		{
-			pos = new BlockPos((int) mid.x, (int) minPos.y, (int) mid.z);
-		}
-		else
-		{
-			pos = new BlockPos((int) mid.x, (int) maxPos.y, (int) mid.z);
+			return true;
 		}
 
-		if (mc().level != null)
-		{
-			// Calculate only if the Down Direction is a Block, while above it is Air.
-			BlockState state = mc().level.getBlockState(pos);
-			BlockState stateDown = mc().level.getBlockState(pos.relative(Direction.DOWN));
-
-			if (camera != null && state.isAir() && !stateDown.isAir())
-			{
-				// Causes Z fighting on the floor (~24 Block distance)
-				return camera.position().distanceTo(mid) >= 23;
-			}
-		}
+//		if (minPos.y() < maxPos.y())
+//		{
+//			pos = new BlockPos((int) mid.x, (int) minPos.y, (int) mid.z);
+//		}
+//		else
+//		{
+//			pos = new BlockPos((int) mid.x, (int) maxPos.y, (int) mid.z);
+//		}
+//
+//		if (mc().level != null)
+//		{
+//			// Calculate only if the Down Direction is a Block, while above it is Air.
+//			BlockState state = mc().level.getBlockState(pos);
+//			BlockState stateDown = mc().level.getBlockState(pos.relative(Direction.DOWN));
+//
+//			if (camera != null && state.isAir() && !stateDown.isAir())
+//			{
+//				// Causes Z fighting on the floor (~24 Block distance)
+//				return camera.position().distanceTo(mid) >= 22;
+//			}
+//		}
 
 		return false;
 	}

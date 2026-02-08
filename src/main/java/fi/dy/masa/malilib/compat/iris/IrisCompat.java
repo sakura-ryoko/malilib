@@ -5,13 +5,11 @@ import net.irisshaders.iris.api.v0.IrisProgram;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibFabricData;
+import fi.dy.masa.malilib.compat.ModIds;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 
 public class IrisCompat
 {
-    private static final String SODIUM_ID = "sodium";
-    private static final String IRIS_ID = "iris";
-
     private static boolean isSodiumLoaded = false;
     private static boolean isIrisLoaded = false;
     private static String sodiumVersion = "";
@@ -19,30 +17,14 @@ public class IrisCompat
 
     static
     {
-//        FabricLoader.getInstance().getAllMods().stream().toList().forEach((mc ->
-//        {
-//            ModMetadata meta = mc.getMetadata();
-//
-//            if (Objects.equals(meta.getId(), SODIUM_ID))
-//            {
-//                sodiumVersion = meta.getVersion().getFriendlyString();
-//                isSodiumLoaded = true;
-//            }
-//            else if (Objects.equals(meta.getId(), IRIS_ID))
-//            {
-//                irisVersion = meta.getVersion().getFriendlyString();
-//                isIrisLoaded = true;
-//            }
-//        }));
-
-	    if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(SODIUM_ID))
+	    if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(ModIds.sodium))
 	    {
-			sodiumVersion = MaLiLibFabricData.ALL_MOD_VERSIONS.get(SODIUM_ID);
+			sodiumVersion = MaLiLibFabricData.ALL_MOD_VERSIONS.get(ModIds.sodium);
 			isSodiumLoaded = true;
 	    }
-		if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(IRIS_ID))
+		if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(ModIds.iris))
 		{
-			irisVersion = MaLiLibFabricData.ALL_MOD_VERSIONS.get(IRIS_ID);
+			irisVersion = MaLiLibFabricData.ALL_MOD_VERSIONS.get(ModIds.iris);
 			isIrisLoaded = true;
 		}
 

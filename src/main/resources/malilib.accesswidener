@@ -1,5 +1,17 @@
 accessWidener v2 named
 extendable class net/minecraft/client/gui/GuiGraphics
+accessible method net/minecraft/client/gui/GuiGraphics <init> (Lnet/minecraft/client/Minecraft;Lorg/joml/Matrix3x2fStack;Lnet/minecraft/client/gui/render/state/GuiRenderState;II)V
+accessible field net/minecraft/client/gui/GuiGraphics minecraft Lnet/minecraft/client/Minecraft;
+accessible field net/minecraft/client/gui/GuiGraphics pose Lorg/joml/Matrix3x2fStack;
+accessible field net/minecraft/client/gui/GuiGraphics materials Lnet/minecraft/client/resources/model/MaterialSet;
+accessible field net/minecraft/client/gui/GuiGraphics guiRenderState Lnet/minecraft/client/gui/render/state/GuiRenderState;
+accessible field net/minecraft/client/gui/GuiGraphics guiSprites Lnet/minecraft/client/renderer/texture/TextureAtlas;
+accessible field net/minecraft/client/gui/GuiGraphics pendingCursor Lcom/mojang/blaze3d/platform/cursor/CursorType;
+accessible field net/minecraft/client/gui/GuiGraphics mouseX I
+accessible field net/minecraft/client/gui/GuiGraphics mouseY I
+accessible field net/minecraft/client/gui/GuiGraphics deferredTooltip Ljava/lang/Runnable;
+accessible field net/minecraft/client/gui/GuiGraphics hoveredTextStyle Lnet/minecraft/network/chat/Style;
+accessible field net/minecraft/client/gui/GuiGraphics clickableTextStyle Lnet/minecraft/network/chat/Style;
 transitive-accessible class net/minecraft/client/gui/GuiGraphics$ScissorStack
 transitive-accessible field net/minecraft/client/gui/GuiGraphics scissorStack Lnet/minecraft/client/gui/GuiGraphics$ScissorStack;
 transitive-accessible method net/minecraft/client/gui/components/EditBox getMaxLength ()I

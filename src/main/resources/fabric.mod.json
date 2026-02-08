@@ -39,12 +39,12 @@
         "fabric-resource-loader-v1": "*"
 	},
     "suggests": {
-        "sodium": ">=0.8.2-",
-        "iris": ">=1.10.4-"
+        "sodium": ">=0.8.4-",
+        "iris": ">=1.10.5-"
     },
 	"breaks": {
-        "sodium": "<0.8.2-",
-		"iris": "<1.10.4-",
+        "sodium": "<0.8.4-",
+		"iris": "<1.10.5-",
 		"litematica": "<0.25.2",
 		"minihud": "<0.38.2"
 	}

@@ -14,11 +14,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Piglin.class)
-public abstract class MixinPiglinEntity extends Entity
+public abstract class MixinPiglin extends Entity
 {
     @Shadow @Final private SimpleContainer inventory;
 
-    public MixinPiglinEntity(EntityType<?> type, Level world)
+    public MixinPiglin(EntityType<?> type, Level world)
     {
         super(type, world);
     }

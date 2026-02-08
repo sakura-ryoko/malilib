@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.world.inventory.Slot;
 
-@Mixin(AbstractContainerScreen.class)
+@Mixin(value = AbstractContainerScreen.class, priority = 990)
 public abstract class MixinHandledScreen
 {
     @Shadow @Nullable protected Slot hoveredSlot;

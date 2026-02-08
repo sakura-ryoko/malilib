@@ -6,6 +6,7 @@ import org.jetbrains.annotations.ApiStatus;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.server.MinecraftServer;
 import fi.dy.masa.malilib.interfaces.IServerListener;
+import fi.dy.masa.malilib.util.time.TickUtils;
 
 /**
  * Interface Handler for Server loading / unloading events --> similar to WorldLoadHandler,
@@ -100,6 +101,20 @@ public class ServerHandler implements IServerManager
             for (IServerListener handler : this.handlers)
             {
                 handler.onServerStopped(server);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    public void onServerTick(MinecraftServer server)
+    {
+        TickUtils.getInstance().updateNanoTickFromIntegratedServer(server);
+
+        if (!this.handlers.isEmpty())
+        {
+            for (IServerListener handler : this.handlers)
+            {
+                handler.onServerTick(server);
             }
         }
     }

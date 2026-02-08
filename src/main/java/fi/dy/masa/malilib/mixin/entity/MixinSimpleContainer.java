@@ -9,7 +9,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
 
 @Mixin(SimpleContainer.class)
-public abstract class MixinSimpleInventory implements IEntityOwnedInventory, Container
+public abstract class MixinSimpleContainer implements IEntityOwnedInventory, Container
 {
     @Unique Entity entityOwner;
 
