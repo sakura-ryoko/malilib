@@ -68,6 +68,19 @@ public class ListData extends BaseData
         return true;
     }
 
+    public boolean set(int index, BaseData entry)
+    {
+        if (entry.getType() != this.containedType ||
+            index < 0 ||
+            index >= this.list.size())
+        {
+            return false;
+        }
+
+        this.list.set(index, entry);
+        return true;
+    }
+
     public BaseData get(int index)
     {
         return this.list.get(index);
