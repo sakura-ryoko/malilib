@@ -35,7 +35,6 @@
 	"depends": {
 		"minecraft": "1.21.11",
 		"fabric-networking-api-v1": ">=5.1.4",
-		"fabric-resource-loader-v0": "*",
         "fabric-resource-loader-v1": "*"
 	},
     "suggests": {
