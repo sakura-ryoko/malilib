@@ -5,6 +5,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -438,5 +439,22 @@ public class CompoundData extends BaseData implements DataView
             output.writeUTF(key);
             data.write(output);
         }
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        CompoundData other = (CompoundData) o;
+
+        return Objects.equals(this.values, other.values);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.values != null ? this.values.hashCode() : 0;
     }
 }

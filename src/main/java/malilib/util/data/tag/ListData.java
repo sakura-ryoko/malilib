@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import com.google.common.collect.Lists;
 
 import malilib.MaLiLib;
@@ -229,5 +230,25 @@ public class ListData extends BaseData
         }
 
         return new ListData(tagType, list);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        ListData other = (ListData) o;
+
+        if (this.containedType != other.containedType) { return false; }
+        return Objects.equals(this.list, other.list);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = this.list != null ? this.list.hashCode() : 0;
+        result = 31 * result + this.containedType;
+        return result;
     }
 }

@@ -48,4 +48,22 @@ public class DoubleData extends BaseData
         sizeTracker.increment(8);
         return new DoubleData(input.readDouble());
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        DoubleData other = (DoubleData) o;
+
+        return Double.compare(other.value, this.value) == 0;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        long temp = Double.doubleToLongBits(this.value);
+        return (int) (temp ^ (temp >>> 32));
+    }
 }

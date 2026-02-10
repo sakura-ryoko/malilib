@@ -3,6 +3,7 @@ package malilib.util.data.tag;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Arrays;
 
 import malilib.util.data.Constants;
 import malilib.util.data.tag.util.SizeTracker;
@@ -75,5 +76,22 @@ public class IntArrayData extends BaseData
         }
 
         return new IntArrayData(arr);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        IntArrayData other = (IntArrayData) o;
+
+        return Arrays.equals(this.value, other.value);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Arrays.hashCode(this.value);
     }
 }
