@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,10 +20,12 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
+
 import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
-import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
+import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 
 /**
@@ -287,10 +288,23 @@ public class NbtInventory implements AutoCloseable
         return new CompoundTag();
     }
 
-	@ApiStatus.Experimental
 	public CompoundData toDataSingle(@Nonnull RegistryAccess registry)
 	{
-		return DataConverterNbt.fromVanillaCompound(this.toNbtSingle(registry));
+        if (this.size() > 1)
+        {
+            throw new RuntimeException("Inventory is too large for a single entry!");
+        }
+
+        ItemStackWithSlot slot = this.items.stream().findFirst().orElseThrow();
+
+        if (!slot.stack().isEmpty())
+        {
+            BaseData element = ItemStackWithSlot.CODEC.encodeStart(registry.createSerializationContext(DataOps.INSTANCE), slot).getPartialOrThrow();
+//            LOGGER.info("toDataSingle(): --> nbt: [{}]", element.toString());
+            return (CompoundData) element;
+        }
+
+        return new CompoundData();
 	}
 
     /**
@@ -322,10 +336,28 @@ public class NbtInventory implements AutoCloseable
         return nbt;
     }
 
-	@ApiStatus.Experimental
 	public ListData toDataList(@Nonnull RegistryAccess registry)
 	{
-		return DataConverterNbt.fromVanillaList(this.toNbtList(registry));
+        ListData list = new ListData();
+
+        if (this.isEmpty())
+        {
+            return list;
+        }
+
+        this.items.forEach(
+                (slot) ->
+                {
+                    if (!slot.stack().isEmpty())
+                    {
+                        BaseData element = ItemStackWithSlot.CODEC.encodeStart(registry.createSerializationContext(DataOps.INSTANCE), slot).getPartialOrThrow();
+                        //LOGGER.info("toDataList(): slot [{}] --> nbt: [{}]", slot.slot(), element.toString());
+                        list.add(element);
+                    }
+                }
+        );
+
+        return list;
 	}
 
     /**
@@ -439,18 +471,19 @@ public class NbtInventory implements AutoCloseable
 
     /**
      * Creates a new NbtInventory from a single-member NbtCompound containing a single item with a slot number.
-     * @param nbt ()
+     * @param tag ()
      * @return ()
      * @throws RuntimeException ()
      */
-    public static @Nullable NbtInventory fromNbtSingle(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry) throws RuntimeException
+    public static @Nullable NbtInventory fromNbtSingle(@Nonnull CompoundTag tag, @Nonnull RegistryAccess registry) throws RuntimeException
     {
-        if (nbt.isEmpty())
+        if (tag.isEmpty())
         {
             return null;
         }
 
         NbtInventory newInv = new NbtInventory();
+        CompoundTag nbt = checkNbtForIDOverrides(tag);
 
         newInv.items = new HashSet<>();
         ItemStackWithSlot slot = ItemStackWithSlot.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), nbt).getPartialOrThrow();
@@ -463,14 +496,20 @@ public class NbtInventory implements AutoCloseable
 	@ApiStatus.Experimental
 	public static @Nullable NbtInventory fromDataSingle(@Nonnull CompoundData data, @Nonnull RegistryAccess registry) throws RuntimeException
 	{
-		CompoundTag nbt = DataConverterNbt.toVanillaCompound(data);
+        if (data.isEmpty())
+        {
+            return null;
+        }
 
-		if (nbt != null)
-		{
-			return fromNbtSingle(nbt, registry);
-		}
+        NbtInventory newInv = new NbtInventory();
+        CompoundData tag = checkDataForIDOverrides(data);
 
-		return null;
+        newInv.items = new HashSet<>();
+        ItemStackWithSlot slot = ItemStackWithSlot.CODEC.parse(registry.createSerializationContext(DataOps.INSTANCE), tag).getPartialOrThrow();
+//        LOGGER.info("fromNbtSingle(): slot [{}], stack: [{}]", slot.slot(), slot.stack().toString());
+        newInv.items.add(slot);
+
+        return newInv;
 	}
 
     /**
@@ -480,7 +519,8 @@ public class NbtInventory implements AutoCloseable
      * @return ()
      * @throws RuntimeException ()
      */
-    public static @Nullable NbtInventory fromNbtList(@Nonnull ListTag list, boolean noSlotId, @Nonnull RegistryAccess registry) throws RuntimeException
+    public static @Nullable NbtInventory fromNbtList(@Nonnull ListTag list, boolean noSlotId, @Nonnull RegistryAccess registry)
+            throws RuntimeException
     {
         if (list.isEmpty())
         {
@@ -502,16 +542,17 @@ public class NbtInventory implements AutoCloseable
 
         for (int i = 0; i < list.size(); i++)
         {
+            CompoundTag tag = checkNbtForIDOverrides((CompoundTag) list.get(i));
             ItemStackWithSlot slot;
 
             // Some lists, such as the "Inventory" tag does not include slot ID's
             if (noSlotId)
             {
-                slot = new ItemStackWithSlot(i, ItemStack.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), list.get(i)).getPartialOrThrow());
+                slot = new ItemStackWithSlot(i, ItemStack.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), tag).getPartialOrThrow());
             }
             else
             {
-                slot = ItemStackWithSlot.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), list.get(i)).getPartialOrThrow();
+                slot = ItemStackWithSlot.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), tag).getPartialOrThrow();
             }
 
             //LOGGER.info("fromNbtList(): [{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
@@ -531,17 +572,93 @@ public class NbtInventory implements AutoCloseable
     }
 
 	@ApiStatus.Experimental
-	public static @Nullable NbtInventory fromDataList(@Nonnull ListData list, boolean noSlotId, @Nonnull RegistryAccess registry) throws RuntimeException
+	public static @Nullable NbtInventory fromDataList(@Nonnull ListData list, boolean noSlotId, @Nonnull RegistryAccess registry)
+            throws RuntimeException
 	{
-		ListTag nbt = DataConverterNbt.toVanillaList(list);
+        if (list.isEmpty())
+        {
+            return null;
+        }
+        else if (list.size() > MAX_SIZE)
+        {
+            throw new RuntimeException("Data List is too large!");
+        }
 
-		if (nbt != null)
-		{
-			return fromNbtList(nbt, noSlotId, registry);
-		}
+        int size = list.size();
+        size = getAdjustedSize(Mth.clamp(size, 1, MAX_SIZE));
+        NbtInventory newInv = new NbtInventory();
+        List<Integer> slotsUsed = new ArrayList<>();
+        int maxSlot = 0;
 
-		return null;
+        newInv.items = new HashSet<>();
+        //LOGGER.info("fromDataList(): listSize: [{}], invSize: [{}]", list.size(), size);
+
+        for (int i = 0; i < list.size(); i++)
+        {
+            CompoundData tag = checkDataForIDOverrides(list.getCompoundAt(i));
+            ItemStackWithSlot slot;
+
+            // Some lists, such as the "Inventory" tag does not include slot ID's
+            if (noSlotId)
+            {
+                slot = new ItemStackWithSlot(i, ItemStack.CODEC.parse(registry.createSerializationContext(DataOps.INSTANCE), tag).getPartialOrThrow());
+            }
+            else
+            {
+                slot = ItemStackWithSlot.CODEC.parse(registry.createSerializationContext(DataOps.INSTANCE), tag).getPartialOrThrow();
+            }
+
+            //LOGGER.info("fromDataList(): [{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
+            newInv.items.add(slot);
+            slotsUsed.add(slot.slot());
+
+            if (slot.slot() > maxSlot)
+            {
+                maxSlot = slot.slot();
+            }
+        }
+
+        newInv.verifySize(slotsUsed, maxSlot);
+//        newInv.dumpInv();
+
+        return newInv;
 	}
+
+    /**
+     * Primarily for Broken NBT situations where the Server might be outdated over ViaVersion, and the like.
+     * @param in ()
+     * @return ()
+     */
+    private static CompoundData checkDataForIDOverrides(CompoundData in)
+    {
+        String id = in.getStringOrDefault(NbtKeys.ID, "");
+
+        if (NbtOverrides.ID_OVERRIDES.containsKey(id))
+        {
+            id = NbtOverrides.ID_OVERRIDES.get(id);
+            in.putString(NbtKeys.ID, id);
+        }
+
+        return in;
+    }
+
+    /**
+     * Primarily for Broken NBT situations where the Server might be outdated over ViaVersion, and the like.
+     * @param in ()
+     * @return ()
+     */
+    private static CompoundTag checkNbtForIDOverrides(CompoundTag in)
+    {
+        String id = in.getStringOr(NbtKeys.ID, "");
+
+        if (NbtOverrides.ID_OVERRIDES.containsKey(id))
+        {
+            id = NbtOverrides.ID_OVERRIDES.get(id);
+            in.putString(NbtKeys.ID, id);
+        }
+
+        return in;
+    }
 
     /**
      * This exists because an NBT List can have empty slots not accounted for in the middle of its current size;

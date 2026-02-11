@@ -4,6 +4,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.EmptyData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 
 import java.io.BufferedInputStream;
@@ -91,7 +92,7 @@ public class DataFileUtils
 
             if (tagType == Constants.NBT.TAG_END)
             {
-                return null;
+                return EmptyData.INSTANCE;
             }
 
             // Discard the name of the root tag
@@ -129,11 +130,13 @@ public class DataFileUtils
         return false;
     }
 
+	@Deprecated
 	public static CompoundData readFromFileUsingNbtIo(@Nonnull Path file)
 	{
 		return readFromFileUsingNbtIo(file, NbtAccounter.unlimitedHeap());
 	}
 
+	@Deprecated
 	public static CompoundData readFromFileUsingNbtIo(@Nonnull Path file, NbtAccounter tracker)
 	{
 		if (!Files.exists(file) || !Files.isReadable(file))
@@ -153,6 +156,7 @@ public class DataFileUtils
 		return null;
 	}
 
+	@Deprecated
 	public static void writeToFileUsingNbtIo(@Nonnull CompoundData tag, @Nonnull Path file)
 	{
 		try

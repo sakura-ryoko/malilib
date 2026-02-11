@@ -14,14 +14,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.core.Vec3i;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.*;
-import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 public class DataTypeUtils
@@ -518,10 +515,9 @@ public class DataTypeUtils
 	 */
 	public static <T> Optional<T> readFlatMap(@Nonnull CompoundData data, MapCodec<T> mapCodec)
 	{
-		DynamicOps<Tag> ops = NbtOps.INSTANCE;
-		CompoundTag nbt = DataConverterNbt.toVanillaCompound(data);
+		DynamicOps<BaseData> ops = DataOps.INSTANCE;
 
-		return switch (ops.getMap(nbt).flatMap(map -> mapCodec.decode(ops, map)))
+		return switch (ops.getMap(data).flatMap(map -> mapCodec.decode(ops, map)))
 		{
 			case DataResult.Success<T> result -> Optional.of(result.value());
 			case DataResult.Error<T> error -> error.partialValue();
@@ -538,15 +534,15 @@ public class DataTypeUtils
 	 */
 	public static <T> CompoundData writeFlatMap(MapCodec<T> mapCodec, T value)
 	{
-		DynamicOps<Tag> ops = NbtOps.INSTANCE;
-		CompoundTag nbt = new CompoundTag();
+		DynamicOps<BaseData> ops = DataOps.INSTANCE;
+		CompoundData data = new CompoundData();
 
 		switch (mapCodec.encoder().encodeStart(ops, value))
 		{
-			case DataResult.Success<Tag> result -> nbt.merge((CompoundTag) result.value());
-			case DataResult.Error<Tag> error -> error.partialValue().ifPresent(partial -> nbt.merge((CompoundTag) partial));
+			case DataResult.Success<BaseData> result -> data.combine((CompoundData) result.value());
+			case DataResult.Error<BaseData> error -> error.partialValue().ifPresent(partial -> data.combine((CompoundData) partial));
 		}
 
-		return DataConverterNbt.fromVanillaCompound(nbt);
+		return data;
 	}
 }

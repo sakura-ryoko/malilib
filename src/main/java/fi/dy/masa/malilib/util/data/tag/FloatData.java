@@ -62,4 +62,21 @@ public class FloatData extends BaseData
         sizeTracker.increment(4);
         return new FloatData(input.readFloat());
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        FloatData other = (FloatData) o;
+
+        return Float.compare(other.value, this.value) == 0;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return (this.value != 0.0f ? Float.floatToIntBits(this.value) : 0);
+    }
 }

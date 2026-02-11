@@ -62,4 +62,21 @@ public class LongData extends BaseData
         sizeTracker.increment(8);
         return new LongData(input.readLong());
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        LongData other = (LongData) o;
+
+        return this.value == other.value;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return (int) (this.value ^ (this.value >>> 32));
+    }
 }

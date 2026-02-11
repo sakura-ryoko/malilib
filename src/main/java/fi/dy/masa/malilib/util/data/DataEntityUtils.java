@@ -340,7 +340,7 @@ public class DataEntityUtils
 	{
 		try
 		{
-			return DataConverterNbt.fromVanillaNbt(EntityEquipment.CODEC.encodeStart(registry.createSerializationContext(NbtOps.INSTANCE), equipment).getOrThrow());
+			return EntityEquipment.CODEC.encodeStart(registry.createSerializationContext(DataOps.INSTANCE), equipment).getOrThrow();
 		}
 		catch (Exception err)
 		{

@@ -62,4 +62,21 @@ public class ByteData extends BaseData
         sizeTracker.increment(1);
         return new ByteData(input.readByte());
     }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        ByteData other = (ByteData) o;
+
+        return this.value == other.value;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.value;
+    }
 }

@@ -44,4 +44,20 @@ public class EmptyData extends BaseData
 	{
 		return new EmptyData();
 	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		return o != null && this.getClass() == o.getClass();
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return 0;
+	}
 }

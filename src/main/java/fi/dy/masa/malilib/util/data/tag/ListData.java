@@ -4,6 +4,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import com.google.common.collect.Lists;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -64,36 +65,44 @@ public class ListData extends BaseData
     }
 
     @Override
-    public boolean set(int index, BaseData value)
+    public boolean set(int index, BaseData entry)
     {
         int type = this.getContainedType();
 
-        if (type == Constants.NBT.TAG_END || value.type != type)
+        if (type == Constants.NBT.TAG_END ||
+            entry.getType() != type ||
+            index < 0 ||
+            index >= this.list.size())
         {
             return false;
         }
 
-        if (index < this.size() && index >= 0)
+        if (index < this.size())
         {
-            this.list.set(index, value);
+            this.list.set(index, entry);
+            return true;
         }
 
         return false;
     }
 
     @Override
-    public boolean add(int index, BaseData value)
+    public boolean add(int index, BaseData entry)
     {
         int type = this.getContainedType();
 
-        if (type == Constants.NBT.TAG_END || value.type != type)
+        if (type == Constants.NBT.TAG_END ||
+            entry.getType() != type ||
+            index < 0 ||
+            index >= this.list.size())
         {
             return false;
         }
 
-        if (index < this.size() && index >= 0)
+        if (index < this.size())
         {
-            this.list.add(index, value);
+            this.list.add(index, entry);
+            return true;
         }
 
         return false;
@@ -303,5 +312,25 @@ public class ListData extends BaseData
         }
 
         return new ListData(list);
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        ListData other = (ListData) o;
+
+        if (this.getContainedType() != other.getContainedType()) { return false; }
+        return Objects.equals(this.list, other.list);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = this.list != null ? this.list.hashCode() : 0;
+        result = 31 * result + this.getContainedType();
+        return result;
     }
 }
