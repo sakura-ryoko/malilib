@@ -48,7 +48,7 @@ public class DataByteBufUtils
 	}
 
 	/**
-	 * Write Data Tags to a new Unpooled {@link ByteBuf}
+	 * Write Data Tags to an existing {@link ByteBuf}
 	 *
 	 * @param byteBuf       The input {@link ByteBuf} to add data to.  Buffer must be allocated.
 	 * @param data          The Data Tags to write
