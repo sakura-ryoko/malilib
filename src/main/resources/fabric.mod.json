@@ -44,9 +44,9 @@
 	"breaks": {
         "sodium": "<0.8.4-",
 		"iris": "<1.10.5-",
-		"itemscroller": "<0.30.2",
-		"litematica": "<0.26.0",
-		"minihud": "<0.38.3",
-		"tweakeroo": "<0.27.5"
+		"itemscroller": "<0.30.2-",
+		"litematica": "<0.26.0-",
+		"minihud": "<0.38.3-",
+		"tweakeroo": "<0.27.5-"
 	}
 }
