@@ -23,6 +23,7 @@ import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.render.RenderContext;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.util.data.Color4f;
 
 @ApiStatus.Experimental
@@ -40,7 +41,7 @@ public class TestRenderWalls implements AutoCloseable
     private Vec3 updateCameraPos;
     private boolean hasData;
     private final boolean shouldResort;
-    private final boolean needsUpdate;
+    private boolean needsUpdate;
     private final int updateDistance = 48;
 
     public TestRenderWalls()
@@ -75,6 +76,11 @@ public class TestRenderWalls implements AutoCloseable
                 Math.abs(cameraEntity.getY() - this.lastUpdatePos.getY()) > this.updateDistance;
     }
 
+    public void setNeedsUpdate()
+    {
+        this.needsUpdate = true;
+    }
+
     public void update(Camera camera, Entity entity, Minecraft mc)
     {
         if (mc.level == null || mc.player == null)
@@ -101,7 +107,8 @@ public class TestRenderWalls implements AutoCloseable
             this.hasData = false;
         }
 
-        setUpdatePosition(vec);
+        this.needsUpdate = false;
+        this.setUpdatePosition(vec);
     }
 
     public void render(Camera camera, Matrix4f matrix4f, Matrix4f projMatrix, Minecraft mc, ProfilerFiller profiler)
@@ -129,7 +136,7 @@ public class TestRenderWalls implements AutoCloseable
         }
 
         profiler.push("quads");
-        Color4f quadsColor = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
+        final Color4f quadsColor = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
         Vec3 cameraPos = camera.position();
 
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL
@@ -187,7 +194,10 @@ public class TestRenderWalls implements AutoCloseable
         }
 
         profiler.push("outlines");
-        Color4f linesColor = Color4f.WHITE;
+        boolean useColor = ConfigTestEnum.TEST_WALLS_USE_COLOR.getBooleanValue();
+        final Color4f linesColor = useColor
+                                   ? Color4f.fromColor(MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor(), 0xFF)
+                                   : Color4f.WHITE;
         Vec3 cameraPos = camera.position();
 
         // RenderPipelines.LINES

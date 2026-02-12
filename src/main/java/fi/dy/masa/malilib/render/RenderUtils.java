@@ -3010,9 +3010,9 @@ public class RenderUtils
 
     public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f, boolean shouldResort)
     {
-	    boolean isOutside = shouldCull(pos1, pos2);
+	    boolean insideOf = isCameraInsideOf(pos1, pos2);
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL
-        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", isOutside ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", insideOf ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
@@ -3238,14 +3238,24 @@ public class RenderUtils
 	 * @param pos2
 	 * @return
 	 */
-	public static boolean shouldCull(BlockPos pos1, BlockPos pos2)
+	public static boolean isCameraInsideOf(BlockPos pos1, BlockPos pos2)
 	{
-		return shouldCull(new AABB(pos1.getX(), pos1.getY(), pos1.getZ(), pos2.getX(), pos2.getY(), pos2.getZ()));
+		// Fix Bottom Y Border offset
+		if (pos1.getY() < pos2.getY())
+		{
+			pos1 = pos1.mutable().setY(pos1.getY() - 1).immutable();
+		}
+		else if (pos2.getY() < pos1.getY())
+		{
+			pos2 = pos2.mutable().setY(pos2.getY() - 1).immutable();
+		}
+
+		return isCameraInsideOf(AABB.encapsulatingFullBlocks(pos1, pos2));
 	}
 
-	public static boolean shouldCull(Vec3 pos1, Vec3 pos2)
+	public static boolean isCameraInsideOf(Vec3 pos1, Vec3 pos2)
 	{
-		return shouldCull(new AABB(pos1, pos2));
+		return isCameraInsideOf(new AABB(pos1, pos2));
 	}
 
 	/**
@@ -3259,42 +3269,12 @@ public class RenderUtils
 	 * @param bb
 	 * @return
 	 */
-	public static boolean shouldCull(AABB bb)
+	public static boolean isCameraInsideOf(AABB bb)
 	{
 		Entity camera = mc().getCameraEntity();
-//		final Vec3 minPos = bb.getMinPosition();
-//		final Vec3 maxPos = bb.getMaxPosition();
-//		Vec3 mid = bb.getCenter();
-//		BlockPos pos;
+		Vec3 pos = camera.position();
 
 		// Mark culling if the camera is outside of the bounding box (Walls overlapping, etc)
-		if (!bb.contains(camera.position()))
-		{
-			return true;
-		}
-
-//		if (minPos.y() < maxPos.y())
-//		{
-//			pos = new BlockPos((int) mid.x, (int) minPos.y, (int) mid.z);
-//		}
-//		else
-//		{
-//			pos = new BlockPos((int) mid.x, (int) maxPos.y, (int) mid.z);
-//		}
-//
-//		if (mc().level != null)
-//		{
-//			// Calculate only if the Down Direction is a Block, while above it is Air.
-//			BlockState state = mc().level.getBlockState(pos);
-//			BlockState stateDown = mc().level.getBlockState(pos.relative(Direction.DOWN));
-//
-//			if (camera != null && state.isAir() && !stateDown.isAir())
-//			{
-//				// Causes Z fighting on the floor (~24 Block distance)
-//				return camera.position().distanceTo(mid) >= 22;
-//			}
-//		}
-
-		return false;
+		return bb.contains(pos);
 	}
 }

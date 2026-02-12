@@ -1,21 +1,24 @@
-package fi.dy.masa.malilib.util;
+package fi.dy.masa.malilib.util.data;
 
 import java.util.Objects;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStack;
+import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * A wrapper around ItemStack, that implements hashCode() and equals().
  * Whether or not the NBT data is considered by those methods,
  * depends on the checkNBT argument to the constructor.
- *
- * @deprecated See {@link fi.dy.masa.malilib.util.data.ItemType}
  */
-@Deprecated
 public class ItemType
 {
     public static final Codec<ItemType> CODEC = RecordCodecBuilder.create(
@@ -29,6 +32,25 @@ public class ItemType
                     ItemStack.CODEC.fieldOf("stack").forGetter(get -> get.stack)
             ).apply(inst, ItemType::new)
     );
+    public static final StreamCodec<@NotNull RegistryFriendlyByteBuf, @NotNull ItemType> PACKET_CODEC = new StreamCodec<>()
+    {
+        @Override
+        public void encode(@Nonnull RegistryFriendlyByteBuf buf, ItemType value)
+        {
+            ItemStack.STREAM_CODEC.encode(buf, value.stack);
+            ByteBufCodecs.BOOL.encode(buf, value.checkNBT);
+        }
+
+        @Override
+        public @Nonnull ItemType decode(@Nonnull RegistryFriendlyByteBuf buf)
+        {
+            return new ItemType(
+                    ItemStack.STREAM_CODEC.decode(buf),
+                    ByteBufCodecs.BOOL.decode(buf)
+            );
+        }
+    };
+
     private ItemStack stack;
     private final boolean checkNBT;
 

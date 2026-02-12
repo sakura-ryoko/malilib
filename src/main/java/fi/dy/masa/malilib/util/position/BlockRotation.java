@@ -7,6 +7,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.Rotation;
+
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,10 +21,10 @@ import fi.dy.masa.malilib.util.StringUtils;
  */
 public enum BlockRotation implements IConfigOptionListEntry, StringRepresentable
 {
-    NONE    (0, net.minecraft.world.level.block.Rotation.NONE,                  "none"),
-    CW_90   (1, net.minecraft.world.level.block.Rotation.CLOCKWISE_90,          "rotate_90"),
-    CW_180  (2, net.minecraft.world.level.block.Rotation.CLOCKWISE_180,         "rotate_180"),
-    CCW_90  (3, net.minecraft.world.level.block.Rotation.COUNTERCLOCKWISE_90,   "rotate_270");
+    NONE    (0, "none",       Rotation.NONE),
+    CW_90   (1, "rotate_90",  Rotation.CLOCKWISE_90),
+    CW_180  (2, "rotate_180", Rotation.CLOCKWISE_180),
+    CCW_90  (3, "rotate_270", Rotation.COUNTERCLOCKWISE_90);
 
     public static final StringRepresentable.EnumCodec<@NotNull BlockRotation> CODEC = StringRepresentable.fromEnum(BlockRotation::values);
     public static final IntFunction<BlockRotation> INDEX_TO_VALUE = ByIdMap.continuous(BlockRotation::getIndex, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
@@ -30,16 +32,16 @@ public enum BlockRotation implements IConfigOptionListEntry, StringRepresentable
     public static final BlockRotation[] VALUES = values();
 
     private final int index;
-    private final String configString;
+    private final String name;
     private final String translationKey;
-    private final net.minecraft.world.level.block.Rotation vanillaRotation;
+    private final Rotation vanillaRotation;
 
-    BlockRotation(int index, net.minecraft.world.level.block.Rotation vanillaRotation, String name)
+    BlockRotation(int index, String name, Rotation vanillaRotation)
     {
         this.index = index;
+        this.name = name;
+        this.translationKey = MaLiLibReference.MOD_ID+".label.block_rotation." + name;
         this.vanillaRotation = vanillaRotation;
-        this.configString = name;
-        this.translationKey = MaLiLibReference.MOD_ID + ".label.block_rotation." + name;
     }
 
     public int getIndex()
@@ -47,10 +49,9 @@ public enum BlockRotation implements IConfigOptionListEntry, StringRepresentable
         return this.index;
     }
 
-    @Override
-    public String getStringValue()
+    public String getName()
     {
-        return this.configString;
+        return this.name;
     }
 
     public String getDisplayName()
@@ -59,9 +60,15 @@ public enum BlockRotation implements IConfigOptionListEntry, StringRepresentable
     }
 
     @Override
+    public String getStringValue()
+    {
+        return this.getName();
+    }
+
+    @Override
     public @Nonnull String getSerializedName()
     {
-        return this.configString;
+        return this.name;
     }
 
     public BlockRotation add(BlockRotation rotation)
@@ -74,7 +81,7 @@ public enum BlockRotation implements IConfigOptionListEntry, StringRepresentable
     {
         if (direction.getAxis() != Direction.Axis.Y)
         {
-            switch(this)
+            switch (this)
             {
                 case CW_90:     return direction.getClockWise();
                 case CW_180:    return direction.getOpposite();
@@ -87,15 +94,14 @@ public enum BlockRotation implements IConfigOptionListEntry, StringRepresentable
 
     public BlockRotation getReverseRotation()
     {
-        switch (this)
-        {
-            case CCW_90:    return BlockRotation.CW_90;
-            case CW_90:     return BlockRotation.CCW_90;
-            case CW_180:    return BlockRotation.CW_180;
-            default:
-        }
+	    return switch (this)
+	    {
+		    case CCW_90 -> BlockRotation.CW_90;
+		    case CW_90 -> BlockRotation.CCW_90;
+		    case CW_180 -> BlockRotation.CW_180;
+		    default -> this;
+	    };
 
-        return this;
     }
 
     public BlockRotation cycle(boolean reverse)
@@ -110,7 +116,7 @@ public enum BlockRotation implements IConfigOptionListEntry, StringRepresentable
         return byName(value);
     }
 
-    public net.minecraft.world.level.block.Rotation getVanillaRotation()
+    public Rotation getVanillaRotation()
     {
         return this.vanillaRotation;
     }
@@ -119,7 +125,7 @@ public enum BlockRotation implements IConfigOptionListEntry, StringRepresentable
     {
         for (BlockRotation rot : VALUES)
         {
-            if (rot.configString.equalsIgnoreCase(name))
+            if (rot.name.equalsIgnoreCase(name))
             {
                 return rot;
             }

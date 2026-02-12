@@ -3,11 +3,12 @@ package fi.dy.masa.malilib.util.position;
 import java.util.function.IntFunction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.core.Direction;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.level.block.Mirror;
+
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,10 +21,10 @@ import fi.dy.masa.malilib.util.StringUtils;
  */
 public enum BlockMirror implements IConfigOptionListEntry, StringRepresentable
 {
-    NONE (0, "none", null, net.minecraft.world.level.block.Mirror.NONE),
-    X    (1, "x", Direction.Axis.X, net.minecraft.world.level.block.Mirror.FRONT_BACK),
-    Y    (2, "y", Direction.Axis.Y, net.minecraft.world.level.block.Mirror.NONE),
-    Z    (3, "z", Direction.Axis.Z, net.minecraft.world.level.block.Mirror.LEFT_RIGHT);
+    NONE (0, "none", null, Mirror.NONE),
+    X    (1, "x", Direction.Axis.X, Mirror.FRONT_BACK),
+    Y    (2, "y", Direction.Axis.Y, Mirror.NONE),
+    Z    (3, "z", Direction.Axis.Z, Mirror.LEFT_RIGHT);
 
     public static final StringRepresentable.EnumCodec<@NotNull BlockMirror> CODEC = StringRepresentable.fromEnum(BlockMirror::values);
     public static final IntFunction<BlockMirror> INDEX_TO_VALUE = ByIdMap.continuous(BlockMirror::getIndex, values(), ByIdMap.OutOfBoundsStrategy.WRAP);
@@ -33,10 +34,10 @@ public enum BlockMirror implements IConfigOptionListEntry, StringRepresentable
     private final int index;
     private final String name;
     private final String translationKey;
-    private final net.minecraft.world.level.block.Mirror vanillaMirror;
+    private final Mirror vanillaMirror;
     @Nullable private final Direction.Axis axis;
 
-    BlockMirror(int index, String name, @Nullable Direction.Axis axis, net.minecraft.world.level.block.Mirror vanillaMirror)
+    BlockMirror(int index, String name, @Nullable Direction.Axis axis, Mirror vanillaMirror)
     {
         this.index = index;
         this.name = name;
@@ -48,6 +49,11 @@ public enum BlockMirror implements IConfigOptionListEntry, StringRepresentable
     public int getIndex()
     {
         return this.index;
+    }
+
+    public String getName()
+    {
+        return this.name;
     }
 
     @Override
@@ -105,7 +111,7 @@ public enum BlockMirror implements IConfigOptionListEntry, StringRepresentable
         return byName(value);
     }
 
-    public net.minecraft.world.level.block.Mirror getVanillaMirror()
+    public Mirror getVanillaMirror()
     {
         return this.vanillaMirror;
     }

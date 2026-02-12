@@ -15,7 +15,10 @@ import fi.dy.masa.malilib.MaLiLib;
 
 /**
  * Being moved to util/data/json sooner or later
+ * <br>
+ * See {@link fi.dy.masa.malilib.util.data.json.JsonUtils}
  */
+@Deprecated
 public class JsonUtils
 {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -51,7 +54,9 @@ public class JsonUtils
                 el.getAsBoolean();
                 return true;
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return false;
@@ -68,7 +73,9 @@ public class JsonUtils
                 el.getAsInt();
                 return true;
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return false;
@@ -85,7 +92,9 @@ public class JsonUtils
                 el.getAsLong();
                 return true;
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return false;
@@ -102,7 +111,9 @@ public class JsonUtils
                 el.getAsFloat();
                 return true;
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return false;
@@ -119,7 +130,9 @@ public class JsonUtils
                 el.getAsDouble();
                 return true;
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return false;
@@ -136,7 +149,9 @@ public class JsonUtils
                 el.getAsString();
                 return true;
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return false;
@@ -224,7 +239,8 @@ public class JsonUtils
         return defaultValue;
     }
 
-    public static String getStringOrDefault(JsonObject obj, String name, String defaultValue)
+    @Nullable
+    public static String getStringOrDefault(JsonObject obj, String name, @Nullable String defaultValue)
     {
         if (obj.has(name) && obj.get(name).isJsonPrimitive())
         {
@@ -298,7 +314,9 @@ public class JsonUtils
                 {
                     return new BlockPos(arr.get(0).getAsInt(), arr.get(1).getAsInt(), arr.get(2).getAsInt());
                 }
-                catch (Exception ignore) {}
+                catch (Exception ignore)
+                {
+                }
             }
         }
 
@@ -334,7 +352,9 @@ public class JsonUtils
                 {
                     return new Vec3(arr.get(0).getAsDouble(), arr.get(1).getAsDouble(), arr.get(2).getAsDouble());
                 }
-                catch (Exception ignore) {}
+                catch (Exception ignore)
+                {
+                }
             }
         }
 

@@ -1,28 +1,26 @@
-package fi.dy.masa.malilib.util;
+package fi.dy.masa.malilib.util.position;
 
 import javax.annotation.Nonnull;
+import com.google.common.collect.ImmutableList;
+import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.phys.Vec3;
-import com.google.common.collect.ImmutableList;
-import io.netty.buffer.ByteBuf;
-import fi.dy.masa.malilib.config.IConfigOptionListEntry;
-import org.jetbrains.annotations.NotNull;
 
-/**
- * @deprecated See {@link fi.dy.masa.malilib.util.position.Quadrant}
- */
-@Deprecated
+import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+
 public enum Quadrant implements IConfigOptionListEntry, StringRepresentable
 {
-    NORTH_WEST("north_west"),
-    NORTH_EAST("north_east"),
-    SOUTH_WEST("south_west"),
-    SOUTH_EAST("south_east");
+    NORTH_WEST ("north_west"),
+    NORTH_EAST ("north_east"),
+    SOUTH_WEST ("south_west"),
+    SOUTH_EAST ("south_east");
 
-    public static final StringRepresentable.EnumCodec<@NotNull Quadrant> CODEC = StringRepresentable.fromEnum(Quadrant::values);
+    public static final EnumCodec<@NotNull Quadrant> CODEC = StringRepresentable.fromEnum(Quadrant::values);
     public static final StreamCodec<@NotNull ByteBuf, @NotNull Quadrant> PACKET_CODEC = ByteBufCodecs.STRING_UTF8.map(Quadrant::fromStringStatic, Quadrant::getSerializedName);
     public static final ImmutableList<@NotNull Quadrant> VALUES = ImmutableList.copyOf(values());
 

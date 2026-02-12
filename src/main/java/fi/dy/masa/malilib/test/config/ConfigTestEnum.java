@@ -23,6 +23,7 @@ import fi.dy.masa.malilib.hotkeys.KeyCallbackToggleBooleanConfigWithMessage;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
+import fi.dy.masa.malilib.test.render.TestRenderWalls;
 import fi.dy.masa.malilib.util.StringUtils;
 
 @ApiStatus.Experimental
@@ -33,6 +34,7 @@ public enum ConfigTestEnum implements IEnumBooleanHotkey, StringRepresentable
     TEST_SELECTOR_HOTKEY            ("testSelectorHotkey",          false,""),
     TEST_TEXT_LINES                 ("testTestLines",               false,""),
     TEST_WALLS_HOTKEY               ("testWallsHotkey",             false,""),
+    TEST_WALLS_USE_COLOR            ("testWallsUseColor",           false, ""),
     ;
 
     public static final StringRepresentable.EnumCodec<@NotNull ConfigTestEnum> CODEC = StringRepresentable.fromEnum(ConfigTestEnum::values);
@@ -186,6 +188,11 @@ public enum ConfigTestEnum implements IEnumBooleanHotkey, StringRepresentable
         if (MaLiLibReference.DEBUG_MODE || (MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG != null && MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG.getBooleanValue()))
         {
             MaLiLib.LOGGER.warn("TEST-ENUM: onValueChanged() -> name [{}], enumConfig {}", this.name, this.getBooleanHotkeyValue().toString());
+        }
+
+        if (this.equals(TEST_WALLS_USE_COLOR))
+        {
+            TestRenderWalls.INSTANCE.setNeedsUpdate();
         }
 
         if (this.callback != null)
