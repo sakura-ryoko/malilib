@@ -164,11 +164,23 @@ public class GuiTextFieldGeneric extends EditBox
         this.setValue(text);
     }
 
+    @Deprecated
+    public void setTextWrapper(String text)
+    {
+        this.setValue(text);
+    }
+
     /**
      * For Compat/Crash prevention reasons
      * @return ()
      */
     public String getValueWrapper()
+    {
+        return this.getValue();
+    }
+
+    @Deprecated
+    public String getTextWrapper()
     {
         return this.getValue();
     }
