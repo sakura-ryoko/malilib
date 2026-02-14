@@ -14,6 +14,7 @@ import org.apache.commons.lang3.math.Fraction;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -28,10 +29,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.CompoundContainer;
-import net.minecraft.world.Container;
-import net.minecraft.world.ItemStackWithSlot;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.BlockItem;
@@ -2118,5 +2116,36 @@ public class InventoryUtils
 	public static CompoundData putStackCodec(@Nonnull CompoundData data, @Nonnull RegistryAccess registry, @Nonnull ItemStack stack, String key)
 	{
 		return data.putCodec(key, ItemStack.CODEC, registry.createSerializationContext(DataOps.INSTANCE), stack);
+	}
+
+	/**
+	 * Return the {@link InteractionHand} defined by the Slot config.
+	 * If the config is set to 'ANY', then pick whichever hand is empty first; such that:<br>
+	 * - If Both hands are Empty, return the Main Hand.<br>
+	 * - If One Hand is Empty and not the other; use that Hand.<br>
+	 * - If both hands are full, then return the Main Hand.
+	 *
+	 * @param slot      The {@link HandSlot} configuration.  If this is null, then the "Any" Hand Slot logic applies.
+	 * @return          The {@link InteractionHand} associated with the {@link HandSlot} value, or the Main Hand.
+	 */
+	public static InteractionHand getHandSlot(@Nullable HandSlot slot)
+	{
+		if (slot == null)
+		{
+			slot = HandSlot.ANY;
+		}
+
+		Minecraft mc = Minecraft.getInstance();
+		LocalPlayer player = mc.player;
+		if (player == null) return slot.getHand();
+
+		if (slot.getHand() == null)
+		{
+			return player.getOffhandItem().isEmpty()
+			       ? (player.getMainHandItem().isEmpty() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND)
+			       : InteractionHand.MAIN_HAND;
+		}
+
+		return slot.getHand();
 	}
 }
