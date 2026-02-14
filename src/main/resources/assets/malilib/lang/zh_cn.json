@@ -125,7 +125,7 @@
     "malilib.config.test_enum.comment.testSelectorHotkey": "选择器快捷键(testSelectorHotkey)注释。",
     "malilib.config.test_enum.comment.testTestLines": "测试线条测试注释。",
     "malilib.config.test_enum.comment.testWallsHotkey": "Walls快捷键(WallsHotkey)注释。",
-    "malilib.config.test_enum.comment.testWallsUseColor": "testWallsUseColor Comment.",
+    "malilib.config.test_enum.comment.testWallsUseColor": "testWallsUseColor 注释。",
     "malilib.config.test_enum.name.testEnumConfig": "枚举配置测试",
     "malilib.config.test_enum.name.testEnumSinglePlayer": "单人模式枚举测试",
     "malilib.config.test_enum.name.testSelectorHotkey": "选择器快捷键",
