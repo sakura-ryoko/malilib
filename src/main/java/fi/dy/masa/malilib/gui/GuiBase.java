@@ -26,8 +26,10 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.gui.interfaces.ITextFieldMultiLineListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetLabel;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldMultiLineWrapper;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
@@ -79,6 +81,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     private final List<ButtonBase> buttons = new ArrayList<>();
     private final List<WidgetBase> widgets = new ArrayList<>();
     private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields = new ArrayList<>();
+    private final List<TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine>> textFieldsMultiLine = new ArrayList<>();
     private final MessageRenderer messageRenderer = new MessageRenderer(0xDD000000, COLOR_HORIZONTAL_BAR);
     private long openTime;
     protected WidgetBase hoveredWidget = null;
@@ -205,6 +208,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.drawButtons(ctx, mouseX, mouseY, partialTicks);
         this.drawContents(ctx, mouseX, mouseY, partialTicks);
         this.drawTextFields(ctx, mouseX, mouseY);
+        this.drawTextFieldsMultiLine(ctx, mouseX, mouseY);
         this.drawHoveredWidget(ctx, mouseX, mouseY);
         this.drawButtonHoverTexts(ctx, mouseX, mouseY, partialTicks);
         this.drawGuiMessages(ctx);
@@ -332,6 +336,18 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (handled == false)
         {
+            for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
+            {
+                if (entry.mouseClicked(click, doubleClick))
+                {
+                    // Don't call super if the button press got handled
+                    handled = true;
+                }
+            }
+        }
+
+        if (handled == false)
+        {
             for (WidgetBase widget : this.widgets)
             {
                 if (widget.isMouseOver((int) click.x(), (int) click.y()) && widget.onMouseClicked(click, doubleClick))
@@ -383,6 +399,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         boolean handled = false;
         int selected = -1;
+        int selectedMultiLine = -1;
 
         for (int i = 0; i < this.textFields.size(); ++i)
         {
@@ -402,6 +419,30 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
                 handled = input.key() != KeyCodes.KEY_ESCAPE;
                 break;
+            }
+        }
+
+        if (handled == false)
+        {
+            for (int i = 0; i < this.textFieldsMultiLine.size(); ++i)
+            {
+                TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry = this.textFieldsMultiLine.get(i);
+
+                if (entry.isFocused())
+                {
+                    if (input.key() == KeyCodes.KEY_TAB)
+                    {
+                        entry.setFocused(false);
+                        selectedMultiLine = i;
+                    }
+                    else
+                    {
+                        entry.onKeyTyped(input);
+                    }
+
+                    handled = input.key() != KeyCodes.KEY_ESCAPE;
+                    break;
+                }
             }
         }
 
@@ -442,6 +483,20 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             this.textFields.get(selected).setFocused(true);
         }
 
+        if (selectedMultiLine >= 0)
+        {
+            if (input.hasShiftDown())
+            {
+                selectedMultiLine = selectedMultiLine > 0 ? selectedMultiLine - 1 : this.textFieldsMultiLine.size() - 1;
+            }
+            else
+            {
+                selectedMultiLine = (selectedMultiLine + 1) % this.textFieldsMultiLine.size();
+            }
+
+            this.textFieldsMultiLine.get(selectedMultiLine).setFocused(true);
+        }
+
         return handled;
     }
 
@@ -455,6 +510,18 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             {
                 handled = true;
                 break;
+            }
+        }
+
+        if (handled == false)
+        {
+            for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
+            {
+                if (entry.onCharTyped(input))
+                {
+                    handled = true;
+                    break;
+                }
             }
         }
 
@@ -527,6 +594,13 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return wrapper;
     }
 
+    public <T extends GuiTextFieldMultiLine> TextFieldMultiLineWrapper<T> addTextFieldMultiLine(T textField, int lines, @Nullable ITextFieldMultiLineListener<T> listener)
+    {
+        TextFieldMultiLineWrapper<T> wrapper = new TextFieldMultiLineWrapper<>(textField, lines, listener);
+        this.textFieldsMultiLine.add(wrapper);
+        return wrapper;
+    }
+
     public <T extends WidgetBase> T addWidget(T widget)
     {
         this.widgets.add(widget);
@@ -570,6 +644,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.clearWidgets();
         this.clearButtons();
         this.clearTextFields();
+        this.clearTextFieldsMultiLine();
     }
 
     protected void clearWidgets()
@@ -585,6 +660,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected void clearTextFields()
     {
         this.textFields.clear();
+    }
+
+    protected void clearTextFieldsMultiLine()
+    {
+        this.textFieldsMultiLine.clear();
     }
 
     /**
@@ -641,6 +721,14 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected void drawTextFields(GuiContext ctx, int mouseX, int mouseY)
     {
         for (TextFieldWrapper<?> entry : this.textFields)
+        {
+            entry.draw(ctx, mouseX, mouseY);
+        }
+    }
+
+    protected void drawTextFieldsMultiLine(GuiContext ctx, int mouseX, int mouseY)
+    {
+        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
         {
             entry.draw(ctx, mouseX, mouseY);
         }

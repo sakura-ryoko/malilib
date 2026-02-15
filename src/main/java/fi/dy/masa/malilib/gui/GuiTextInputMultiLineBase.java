@@ -1,37 +1,68 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
+
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.Color4f;
 
-public abstract class GuiTextInputBase extends GuiDialogBase
+@ApiStatus.Experimental
+public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
 {
-    protected final GuiTextFieldGeneric textField;
+    protected final GuiTextFieldMultiLine textField;
     protected final String originalText;
+    protected final int lines;
+    protected final int totalHeight;
+    protected final int totalWidth;
 
-    public GuiTextInputBase(int maxTextLength, String titleKey, String defaultText, @Nullable Screen parent)
+    public GuiTextInputMultiLineBase(int maxTextLength, int lines, String titleKey, String defaultText, @Nullable Screen parent)
+    {
+        this(maxTextLength, lines, titleKey, defaultText, parent, Color4f.WHITE, Color4f.WHITE, true, true, true);
+    }
+
+    public GuiTextInputMultiLineBase(int maxTextLength, int lines, String titleKey, String defaultText, @Nullable Screen parent,
+                                     Color4f textColor, boolean withShadow)
+    {
+        this(maxTextLength, lines, titleKey, defaultText, parent, textColor, Color4f.WHITE, withShadow, true, true);
+    }
+
+    public GuiTextInputMultiLineBase(int maxTextLength, int lines, String titleKey, String defaultText, @Nullable Screen parent,
+                                     Color4f textColor, Color4f cursorColor,
+                                     boolean withShadow, boolean withBackground, boolean withDecorations)
     {
         this.setParent(parent);
         this.title = StringUtils.translate(titleKey);
         this.useTitleHierarchy = false;
         this.originalText = defaultText;
+        this.lines = lines;
+        this.totalHeight = lines * 20;
+        this.totalWidth = MathUtils.min(maxTextLength * 10, 240);
 
-        this.setWidthAndHeight(260, 80);
+        this.setWidthAndHeight(this.totalWidth + 20, this.totalHeight + 60);
         this.centerOnScreen();
 
-        int width = Math.min(maxTextLength * 10, 240);
-        this.textField = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 20, width, 20, this.font);
-        this.textField.setMaxLength(maxTextLength);
+
+        GuiTextFieldMultiLine.Builder builder = new GuiTextFieldMultiLine.Builder();
+        this.textField = builder.setX(this.dialogLeft + 12).setY(this.dialogTop + 12).setWidth(this.totalWidth).setHeight(this.totalHeight)
+                                .setTextColor(textColor).setCursorColor(cursorColor)
+                                .setBackground(withBackground).setShadow(withShadow).setDecorations(withDecorations)
+                                .build(this.font, defaultText);
+//        this.textField = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 20, width, 20, this.font);
         this.textField.setFocused(true);
+        this.textField.setLineLimit(lines);
         this.textField.setValue(this.originalText);
     }
 
@@ -39,7 +70,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     public void initGui()
     {
         int x = this.dialogLeft + 10;
-        int y = this.dialogTop + 50;
+        int y = this.dialogTop + 90;
 
         x += this.createButton(x, y, ButtonType.OK) + 2;
         x += this.createButton(x, y, ButtonType.RESET) + 2;
@@ -49,7 +80,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     protected int createButton(int x, int y, ButtonType type)
     {
         ButtonGeneric button = new ButtonGeneric(x, y, -1, 20, type.getDisplayName());
-        button.setWidth(Math.max(40, button.getWidth()));
+        button.setWidth(MathUtils.max(40, button.getWidth()));
         return this.addButton(button, this.createActionListener(type)).getWidth();
     }
 
@@ -141,10 +172,10 @@ public abstract class GuiTextInputBase extends GuiDialogBase
 
     protected static class ButtonListener implements IButtonActionListener
     {
-        private final GuiTextInputBase gui;
+        private final GuiTextInputMultiLineBase gui;
         private final ButtonType type;
 
-        public ButtonListener(ButtonType type, GuiTextInputBase gui)
+        public ButtonListener(ButtonType type, GuiTextInputMultiLineBase gui)
         {
             this.type = type;
             this.gui = gui;

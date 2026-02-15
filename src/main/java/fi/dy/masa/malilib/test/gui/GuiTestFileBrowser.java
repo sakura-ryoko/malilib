@@ -141,15 +141,15 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 
 				if (this.type == ButtonType.COPY)
 				{
-//					MaLiLib.LOGGER.error("COPY-ENTRY: [{}] // [{}]", entry.getName(), entry.getFullPath().toString());
+//					MaLiLib.LOGGER.error("COPY-ENTRY: [{}] // [{}]", entry.name(), entry.getFullPath().toString());
 					FileCopier copier = new FileCopier(target, this.gui.getListWidget(), true);
 					GuiBase.openGui(new GuiTextInputFeedback(256, "malilib.gui.title.copy_file", entry.name(), this.gui, copier));
 				}
 				else if (this.type == ButtonType.RENAME)
 				{
-//					MaLiLib.LOGGER.error("RENAME-ENTRY: [{}] // [{}]", entry.getName(), entry.getFullPath().toString());
-					FileRenamer renamer = new FileRenamer(target, this.gui.getListWidget(), true);
-					GuiBase.openGui(new GuiTextInputFeedback(256, "malilib.gui.title.rename_file_or_directory", entry.name(), this.gui, renamer));
+//					MaLiLib.LOGGER.error("RENAME-ENTRY: [{}] // [{}]", entry.name(), entry.getFullPath().toString());
+					FileRenamerDualInput renamer = new FileRenamerDualInput(target.getParent(), this.gui.getListWidget(), true);
+					GuiBase.openGui(new GuiTextDualInputFeedback(256, "malilib.gui.title.rename_file_or_directory", target.getFileName().toString(), entry.name(), this.gui, renamer));
 				}
 				else if (this.type == ButtonType.DELETE)
 				{

@@ -316,9 +316,14 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
 	/**
 	 * @param dir private final File dir;
 	 */
-	public record DirectoryEntry(DirectoryEntryType type, Path dir, String name,
-	                             @Nullable String displayNamePrefix) implements Comparable<DirectoryEntry>
+	public record DirectoryEntry(DirectoryEntryType type, Path dir, String name, @Nullable String displayNamePrefix)
+            implements Comparable<DirectoryEntry>
 	{
+        public DirectoryEntryType getType()
+        {
+            return type;
+        }
+
 		public Path getDirectory()
 		{
 			return this.dir;
@@ -330,7 +335,12 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
 			return this.displayNamePrefix;
 		}
 
-		public String getDisplayName()
+        public String getName()
+        {
+            return this.name;
+        }
+
+        public String getDisplayName()
 		{
 			return this.displayNamePrefix != null ? this.displayNamePrefix + this.name : this.name;
 		}

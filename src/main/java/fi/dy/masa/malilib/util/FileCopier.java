@@ -17,7 +17,8 @@ import java.nio.file.Path;
  * @param navigator
  * @param feedback
  */
-public record FileCopier(Path file, @Nullable IDirectoryNavigator navigator, boolean feedback) implements IStringConsumerFeedback
+public record FileCopier(Path file, @Nullable IDirectoryNavigator navigator, boolean feedback)
+		implements IStringConsumerFeedback
 {
 	@Override
 	public boolean setString(String string)

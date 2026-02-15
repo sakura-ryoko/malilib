@@ -12,6 +12,7 @@ accessible field net/minecraft/client/gui/GuiGraphics mouseY I
 accessible field net/minecraft/client/gui/GuiGraphics deferredTooltip Ljava/lang/Runnable;
 accessible field net/minecraft/client/gui/GuiGraphics hoveredTextStyle Lnet/minecraft/network/chat/Style;
 accessible field net/minecraft/client/gui/GuiGraphics clickableTextStyle Lnet/minecraft/network/chat/Style;
+accessible method net/minecraft/client/gui/components/MultiLineEditBox <init> (Lnet/minecraft/client/gui/Font;IIIILnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;IZIZZ)V
 transitive-accessible class net/minecraft/client/gui/GuiGraphics$ScissorStack
 transitive-accessible field net/minecraft/client/gui/GuiGraphics scissorStack Lnet/minecraft/client/gui/GuiGraphics$ScissorStack;
 transitive-accessible method net/minecraft/client/gui/components/EditBox getMaxLength ()I

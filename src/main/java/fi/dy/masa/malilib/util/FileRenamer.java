@@ -88,7 +88,7 @@ public record FileRenamer(Path file, @Nullable IDirectoryNavigator navigator, bo
 
 		if (feedback())
 		{
-			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_or_directory_renamed", newFile.getFileName());
+			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_or_directory_renamed", this.file().getFileName(), newFile.getFileName());
 		}
 
 		MaLiLib.debugLog("FileRenamer: Renamed file '{}' -> '{}'", this.file().toAbsolutePath(), newFile.toAbsolutePath());
