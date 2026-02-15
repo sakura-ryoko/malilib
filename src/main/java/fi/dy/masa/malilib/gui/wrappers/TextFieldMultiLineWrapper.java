@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -56,6 +57,36 @@ public class TextFieldMultiLineWrapper<T extends GuiTextFieldMultiLine>
 	public void draw(GuiContext ctx, int mouseX, int mouseY)
 	{
 		this.textField.renderWidget(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
+	}
+
+	public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
+	{
+		if (this.textField.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+		{
+			return true;
+		}
+
+		if (this.textField.isMouseOver(mouseX, mouseY) == false)
+		{
+			this.textField.setFocused(false);
+		}
+
+		return false;
+	}
+
+	public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
+	{
+		if (this.textField.mouseDragged(click, dragXAmount, dragYAmount))
+		{
+			return true;
+		}
+
+		if (this.textField.isMouseOver(click.x(), click.y()) == false)
+		{
+			this.textField.setFocused(false);
+		}
+
+		return false;
 	}
 
 	public boolean mouseClicked(MouseButtonEvent click, boolean doubleClick)

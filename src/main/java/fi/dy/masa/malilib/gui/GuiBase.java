@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.lwjgl.glfw.GLFW;
+
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -17,9 +22,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 
-import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
-import com.mojang.blaze3d.platform.InputConstants;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
@@ -278,6 +280,17 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
+    public boolean mouseDragged(@NonNull MouseButtonEvent click, double dragX, double dragY)
+    {
+        if (this.onMouseDragged(click, dragX, dragY) == false)
+        {
+            return super.mouseDragged(click, dragX, dragY);
+        }
+
+        return false;
+    }
+
+    @Override
     public boolean keyPressed(@NotNull KeyEvent input)
     {
         this.keyInputCount++;
@@ -372,11 +385,70 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return false;
     }
 
+    public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
+    {
+        for (ButtonBase button : this.buttons)
+        {
+            if (button.onMouseDragged(click, dragXAmount, dragYAmount))
+            {
+                // Don't call super if the button press got handled
+                return true;
+            }
+        }
+
+        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
+        {
+            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
+            {
+                // Don't call super if the button press got handled
+                return true;
+            }
+        }
+
+        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
+        {
+            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
+            {
+                // Don't call super if the button press got handled
+                return true;
+            }
+        }
+
+        for (WidgetBase widget : this.widgets)
+        {
+            if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
+            {
+                // Don't call super if the action got handled
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         for (ButtonBase button : this.buttons)
         {
             if (button.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+            {
+                // Don't call super if the button press got handled
+                return true;
+            }
+        }
+
+        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
+        {
+            if (entry.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+            {
+                // Don't call super if the button press got handled
+                return true;
+            }
+        }
+
+        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
+        {
+            if (entry.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
             {
                 // Don't call super if the button press got handled
                 return true;
@@ -581,7 +653,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return button;
     }
 
-    @Deprecated
     public <T extends GuiTextFieldGeneric> TextFieldWrapper<T> addTextField(T textField, @Nullable ITextFieldListener<T> listener)
     {
         return this.addTextField(textField, listener, TextFieldType.STRING);

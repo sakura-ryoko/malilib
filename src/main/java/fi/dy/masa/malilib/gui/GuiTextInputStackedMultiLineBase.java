@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -20,55 +21,63 @@ import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 
 @ApiStatus.Experimental
-public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
+public abstract class GuiTextInputStackedMultiLineBase extends GuiDialogBase
 {
-    protected final GuiTextFieldMultiLine textField;
-    protected final String originalText;
+    protected final GuiTextFieldGeneric textField1;
+    protected final GuiTextFieldMultiLine textField2;
+    protected final String originalText1;
+    protected final String originalText2;
+    protected int selectedBox;
     protected final int displayLines;
+    protected final int text1Height;
+    protected final int text2Height;
     protected final int buttonHeight;
     protected final int totalLines;
     protected final int totalHeight;
     protected final int totalWidth;
 
-    public GuiTextInputMultiLineBase(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText, @Nullable Screen parent)
+    public GuiTextInputStackedMultiLineBase(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText1, String defaultText2, @Nullable Screen parent)
     {
-        this(maxTextLength, displayLines, maxLines, titleKey, defaultText, parent, Color4f.WHITE, Color4f.WHITE, true, true, true);
+        this(maxTextLength, displayLines, maxLines, titleKey, defaultText1, defaultText2, parent, Color4f.WHITE, true);
     }
 
-    public GuiTextInputMultiLineBase(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText, @Nullable Screen parent,
-                                     Color4f textColor, boolean withShadow)
-    {
-        this(maxTextLength, displayLines, maxLines, titleKey, defaultText, parent, textColor, Color4f.WHITE, withShadow, true, true);
-    }
-
-    public GuiTextInputMultiLineBase(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText, @Nullable Screen parent,
-                                     Color4f textColor, Color4f cursorColor,
-                                     boolean withShadow, boolean withBackground, boolean withDecorations)
+    public GuiTextInputStackedMultiLineBase(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText1, String defaultText2, @Nullable Screen parent,
+                                            Color4f textColor, boolean withShadow)
     {
         this.setParent(parent);
         this.title = StringUtils.translate(titleKey);
         this.useTitleHierarchy = false;
-        this.originalText = defaultText;
+        this.originalText1 = defaultText1;
+        this.originalText2 = defaultText2;
         this.displayLines = MathUtils.clamp(displayLines, 1, this.dialogHeight);
         this.totalLines = MathUtils.clamp(maxLines, 1, Integer.MAX_VALUE);
+        this.text1Height = 20;
+        this.text2Height = (displayLines * 20);
         this.buttonHeight = 20;
-        this.totalHeight = displayLines * 20;
+        this.totalHeight = this.text1Height + this.text2Height + 2;
         this.totalWidth = MathUtils.min(maxTextLength * 10, 240);
 
         boolean hasScrollbar = displayLines < maxLines;
         this.setWidthAndHeight(this.totalWidth + 20, this.totalHeight + this.buttonHeight + 40);
         this.centerOnScreen();
 
+        this.textField1 = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + this.buttonHeight, this.totalWidth, this.text1Height, this.font);
+        this.textField1.setMaxLength(maxTextLength);
+        this.textField1.setTextColor(textColor.getIntValue());
+        this.textField1.setTextShadow(withShadow);
+        this.textField1.setValue(this.originalText1);
+
         GuiTextFieldMultiLine.Builder builder = new GuiTextFieldMultiLine.Builder();
-        this.textField = builder.setX(this.dialogLeft + 12).setY(this.dialogTop + this.buttonHeight)
-                                .setWidth(this.totalWidth).setHeight(this.totalHeight)
-                                .setTextColor(textColor).setCursorColor(cursorColor)
-                                .setBackground(withBackground).setShadow(withShadow).setDecorations(withDecorations).setScrollbar(hasScrollbar)
-                                .build(this.font, defaultText);
-//        this.textField = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 20, width, 20, this.font);
-        this.textField.setFocused(true);
-        this.textField.setLineLimit(maxLines);
-        this.textField.setValue(this.originalText);
+
+        this.textField2 = builder.setX(this.dialogLeft + 12).setY(this.dialogTop + this.text1Height + this.buttonHeight + 2)
+                                 .setWidth(this.totalWidth).setHeight(this.text2Height)
+                                 .setTextColor(textColor).setShadow(withShadow).setScrollbar(hasScrollbar)
+                                 .build(this.font, defaultText2);
+        this.textField2.setLineLimit(maxLines);
+        this.textField2.setValue(this.originalText2);
+
+        this.textField1.setFocused(true);
+        this.selectedBox = 1;
     }
 
     @Override
@@ -85,8 +94,28 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
     protected int createButton(int x, int y, ButtonType type)
     {
         ButtonGeneric button = new ButtonGeneric(x, y, -1, this.buttonHeight, type.getDisplayName());
-        button.setWidth(MathUtils.max(40, button.getWidth()));
+        button.setWidth(Math.max(40, button.getWidth()));
         return this.addButton(button, this.createActionListener(type)).getWidth();
+    }
+
+    protected int getSelectedBox()
+    {
+        return this.selectedBox;
+    }
+
+    @Nullable
+    protected AbstractWidget getSelectedTextField()
+    {
+        if (this.getSelectedBox() == 1)
+        {
+            return this.textField1;
+        }
+        else if (this.getSelectedBox() == 2)
+        {
+            return this.textField2;
+        }
+
+        return null;
     }
 
     @Override
@@ -113,7 +142,8 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
         this.drawStringWithShadow(ctx, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
 
         //super.drawScreen(mouseX, mouseY, partialTicks);
-        this.textField.render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+        this.textField1.render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+        this.textField2.render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
 
         this.drawButtons(ctx, mouseX, mouseY, partialTicks);
 	    ctx.pose().popMatrix();
@@ -122,26 +152,31 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
     @Override
     public boolean onKeyTyped(KeyEvent input)
     {
-//        if (input.key() == KeyCodes.KEY_ENTER)
-//        {
-//            // Only close the GUI if the value was successfully applied
-//            if (this.applyValue(this.textField.getValue()))
-//            {
-//                GuiBase.openGui(this.getParent());
-//            }
-//
-//            return true;
-//        }
-//        else
-        if (input.key() == KeyCodes.KEY_ESCAPE)
+        if (input.key() == KeyCodes.KEY_ENTER && this.selectedBox == 1)
+        {
+            // Only close the GUI if the value was successfully applied
+            if (this.applyValues(this.textField1.getValue(), this.textField2.getValue()))
+            {
+                GuiBase.openGui(this.getParent());
+            }
+
+            return true;
+        }
+        else if (input.key() == KeyCodes.KEY_ESCAPE)
         {
             GuiBase.openGui(this.getParent());
             return true;
         }
 
-        if (this.textField.isFocused())
+        if (this.textField1.isFocused())
         {
-            return this.textField.keyPressed(input);
+            this.selectedBox = 1;
+            return this.textField1.keyPressed(input);
+        }
+        else if (this.textField2.isFocused())
+        {
+            this.selectedBox = 2;
+            return this.textField2.keyPressed(input);
         }
 
         return super.onKeyTyped(input);
@@ -150,9 +185,15 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
     @Override
     public boolean onCharTyped(CharacterEvent input)
     {
-        if (this.textField.isFocused())
+        if (this.textField1.isFocused())
         {
-            return this.textField.charTyped(input);
+            this.selectedBox = 1;
+            return this.textField1.charTyped(input);
+        }
+        else if (this.textField2.isFocused())
+        {
+            this.selectedBox = 2;
+            return this.textField2.charTyped(input);
         }
 
         return super.onCharTyped(input);
@@ -161,8 +202,14 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
     @Override
     public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
-        if (this.textField.mouseClicked(click, doubleClick))
+        if (this.textField1.mouseClicked(click, doubleClick))
         {
+            this.selectedBox = 1;
+            return true;
+        }
+        else if (this.textField2.mouseClicked(click, doubleClick))
+        {
+            this.selectedBox = 2;
             return true;
         }
 
@@ -172,8 +219,14 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
     @Override
     public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
     {
-        if (this.textField.mouseDragged(click, dragXAmount, dragYAmount))
+        if (this.textField1.mouseDragged(click, dragXAmount, dragYAmount))
         {
+            this.selectedBox = 1;
+            return true;
+        }
+        else if (this.textField2.mouseDragged(click, dragXAmount, dragYAmount))
+        {
+            this.selectedBox = 2;
             return true;
         }
 
@@ -183,8 +236,14 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
     @Override
     public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
-        if (this.textField.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+        if (this.textField1.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
         {
+            this.selectedBox = 1;
+            return true;
+        }
+        else if (this.textField2.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+        {
+            this.selectedBox = 2;
             return true;
         }
 
@@ -196,14 +255,14 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
         return new ButtonListener(type, this);
     }
 
-    protected abstract boolean applyValue(String string);
+    protected abstract boolean applyValues(String value1, String value2);
 
     protected static class ButtonListener implements IButtonActionListener
     {
-        private final GuiTextInputMultiLineBase gui;
+        private final GuiTextInputStackedMultiLineBase gui;
         private final ButtonType type;
 
-        public ButtonListener(ButtonType type, GuiTextInputMultiLineBase gui)
+        public ButtonListener(ButtonType type, GuiTextInputStackedMultiLineBase gui)
         {
             this.type = type;
             this.gui = gui;
@@ -215,7 +274,7 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
             if (this.type == ButtonType.OK)
             {
                 // Only close the GUI if the value was successfully applied
-                if (this.gui.applyValue(this.gui.textField.getValue()))
+                if (this.gui.applyValues(this.gui.textField1.getValue(), this.gui.textField2.getValue()))
                 {
                     GuiBase.openGui(this.gui.getParent());
                 }
@@ -226,8 +285,10 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
             }
             else if (this.type == ButtonType.RESET)
             {
-                this.gui.textField.setValue(this.gui.originalText);
-                this.gui.textField.setFocused(true);
+                this.gui.textField1.setValue(this.gui.originalText1);
+                this.gui.textField2.setValue(this.gui.originalText2);
+                this.gui.textField1.setFocused(true);
+                this.gui.selectedBox = 1;
             }
         }
     }

@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -17,6 +19,10 @@ public abstract class GuiTextInputBase extends GuiDialogBase
 {
     protected final GuiTextFieldGeneric textField;
     protected final String originalText;
+    protected final int textHeight;
+    protected final int buttonHeight;
+    protected final int totalHeight;
+    protected final int totalWidth;
 
     public GuiTextInputBase(int maxTextLength, String titleKey, String defaultText, @Nullable Screen parent)
     {
@@ -24,12 +30,15 @@ public abstract class GuiTextInputBase extends GuiDialogBase
         this.title = StringUtils.translate(titleKey);
         this.useTitleHierarchy = false;
         this.originalText = defaultText;
+        this.textHeight = 20;
+        this.buttonHeight = 20;
+        this.totalHeight = this.textHeight;
+        this.totalWidth = Math.min(maxTextLength * 10, 240);
 
-        this.setWidthAndHeight(260, 80);
+        this.setWidthAndHeight(this.totalWidth + 20, this.totalHeight + this.buttonHeight + 40);
         this.centerOnScreen();
 
-        int width = Math.min(maxTextLength * 10, 240);
-        this.textField = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 20, width, 20, this.font);
+        this.textField = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + this.buttonHeight, this.totalWidth, this.totalHeight, this.font);
         this.textField.setMaxLength(maxTextLength);
         this.textField.setFocused(true);
         this.textField.setValue(this.originalText);
@@ -39,7 +48,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     public void initGui()
     {
         int x = this.dialogLeft + 10;
-        int y = this.dialogTop + 50;
+        int y = this.dialogTop + this.totalHeight + this.buttonHeight + 10;
 
         x += this.createButton(x, y, ButtonType.OK) + 2;
         x += this.createButton(x, y, ButtonType.RESET) + 2;
@@ -48,7 +57,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
 
     protected int createButton(int x, int y, ButtonType type)
     {
-        ButtonGeneric button = new ButtonGeneric(x, y, -1, 20, type.getDisplayName());
+        ButtonGeneric button = new ButtonGeneric(x, y, -1, this.buttonHeight, type.getDisplayName());
         button.setWidth(Math.max(40, button.getWidth()));
         return this.addButton(button, this.createActionListener(type)).getWidth();
     }
@@ -130,6 +139,28 @@ public abstract class GuiTextInputBase extends GuiDialogBase
         }
 
         return super.onMouseClicked(click, doubleClick);
+    }
+
+    @Override
+    public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
+    {
+        if (this.textField.mouseDragged(click, dragXAmount, dragYAmount))
+        {
+            return true;
+        }
+
+        return super.onMouseDragged(click, dragXAmount, dragYAmount);
+    }
+
+    @Override
+    public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
+    {
+        if (this.textField.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+        {
+            return true;
+        }
+
+        return super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     protected ButtonListener createActionListener(ButtonType type)

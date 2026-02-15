@@ -19,42 +19,42 @@ public class GuiTextInputMultiLine extends GuiTextInputMultiLineBase implements 
     protected final IStringConsumer consumer;
     protected final IStringConsumerFeedback consumerFeedback;
 
-    public GuiTextInputMultiLine(int maxTextLength, int lines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumer consumer)
+    public GuiTextInputMultiLine(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumer consumer)
     {
-        this(maxTextLength, lines, titleKey, defaultText, parent, consumer, Color4f.WHITE, Color4f.WHITE, true, true, true);
+        this(maxTextLength, displayLines, maxLines, titleKey, defaultText, parent, consumer, Color4f.WHITE, Color4f.WHITE, true, true, true);
     }
 
-    public GuiTextInputMultiLine(int maxTextLength, int lines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumer consumer,
+    public GuiTextInputMultiLine(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumer consumer,
                                  Color4f textColor, boolean withShadow)
     {
-        this(maxTextLength, lines, titleKey, defaultText, parent, consumer, textColor, Color4f.WHITE, withShadow, true, true);
+        this(maxTextLength, displayLines, maxLines, titleKey, defaultText, parent, consumer, textColor, Color4f.WHITE, withShadow, true, true);
     }
 
-    public GuiTextInputMultiLine(int maxTextLength, int lines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumer consumer,
+    public GuiTextInputMultiLine(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumer consumer,
                                  Color4f textColor, Color4f cursorColor,
                                  boolean withShadow, boolean withBackground, boolean withDecorations)
     {
-        super(maxTextLength, lines, titleKey, defaultText, parent, textColor, cursorColor, withShadow, withBackground, withDecorations);
+        super(maxTextLength, displayLines, maxLines, titleKey, defaultText, parent, textColor, cursorColor, withShadow, withBackground, withDecorations);
 
         this.consumer = consumer;
         this.consumerFeedback = null;
     }
 
-    public GuiTextInputMultiLine(int maxTextLength, int lines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumerFeedback consumer)
+    public GuiTextInputMultiLine(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumerFeedback consumer)
     {
-        this(maxTextLength, lines, titleKey, defaultText, parent, consumer, Color4f.WHITE, Color4f.WHITE, true, true, true);
+        this(maxTextLength, displayLines, maxLines, titleKey, defaultText, parent, consumer, Color4f.WHITE, Color4f.WHITE, true, true, true);
     }
-    public GuiTextInputMultiLine(int maxTextLength, int lines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumerFeedback consumer,
+    public GuiTextInputMultiLine(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumerFeedback consumer,
                                  Color4f textColor, boolean withShadow)
     {
-        this(maxTextLength, lines, titleKey, defaultText, parent, consumer, textColor, Color4f.WHITE, withShadow, true, true);
+        this(maxTextLength, displayLines, maxLines, titleKey, defaultText, parent, consumer, textColor, Color4f.WHITE, withShadow, true, true);
     }
 
-    public GuiTextInputMultiLine(int maxTextLength, int lines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumerFeedback consumer,
+    public GuiTextInputMultiLine(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText, @Nullable Screen parent, IStringConsumerFeedback consumer,
                                  Color4f textColor, Color4f cursorColor,
                                  boolean withShadow, boolean withBackground, boolean withDecorations)
     {
-        super(maxTextLength, lines, titleKey, defaultText, parent, textColor,  cursorColor, withShadow, withBackground, withDecorations);
+        super(maxTextLength, displayLines, maxLines, titleKey, defaultText, parent, textColor,  cursorColor, withShadow, withBackground, withDecorations);
 
         this.consumer = null;
         this.consumerFeedback = consumer;

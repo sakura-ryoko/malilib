@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractScrollArea;
 import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.CharacterEvent;
@@ -24,10 +25,11 @@ public class GuiTextFieldMultiLine extends MultiLineEditBox
     protected int y;
     protected int width;
     protected int height;
+    protected boolean hasScrollbar;
 
     private GuiTextFieldMultiLine(int x, int y, int width, int height, String defaultText,
                                   Color4f textColor, Color4f cursorColor,
-                                  boolean shadow, boolean background, boolean decorations,
+                                  boolean shadow, boolean background, boolean decorations, boolean scrollbar,
                                   Font textRenderer)
     {
         super(textRenderer, x, y, width, height,
@@ -39,6 +41,7 @@ public class GuiTextFieldMultiLine extends MultiLineEditBox
         this.y = y;
         this.width = width;
         this.height = height;
+        this.hasScrollbar = scrollbar;
     }
 
     @Override
@@ -54,7 +57,6 @@ public class GuiTextFieldMultiLine extends MultiLineEditBox
             }
 
             this.setFocused(true);
-
             return true;
         }
         else
@@ -91,8 +93,13 @@ public class GuiTextFieldMultiLine extends MultiLineEditBox
 
     public boolean isMouseOver(int mouseX, int mouseY)
     {
-        return mouseX >= this.x && mouseX < this.x + this.width &&
+        return mouseX >= this.x && mouseX < this.x + (this.hasScrollbar() ? this.width + AbstractScrollArea.SCROLLBAR_WIDTH : this.width) &&
                mouseY >= this.y && mouseY < this.y + this.height;
+    }
+
+    public boolean hasScrollbar()
+    {
+        return this.hasScrollbar;
     }
 
 //    @Override
@@ -275,6 +282,7 @@ public class GuiTextFieldMultiLine extends MultiLineEditBox
         private boolean shadow = true;
         private boolean background = true;
         private boolean decorations = true;
+        private boolean scrollbar = false;
 
         public Builder setX(int x)
         {
@@ -330,11 +338,21 @@ public class GuiTextFieldMultiLine extends MultiLineEditBox
             return this;
         }
 
+        public Builder setScrollbar(boolean toggle)
+        {
+            this.scrollbar = toggle;
+            return this;
+        }
+
         public GuiTextFieldMultiLine build(Font textRenderer, String defaultText)
         {
+            if (this.scrollbar)
+            {
+                this.width = this.width - AbstractScrollArea.SCROLLBAR_WIDTH;
+            }
             return new GuiTextFieldMultiLine(this.x, this.y, this.width, this.height, defaultText,
                                              this.textColor, this.cursorColor,
-                                             this.shadow, this.background, this.decorations,
+                                             this.shadow, this.background, this.decorations, this.scrollbar,
                                              textRenderer);
         }
     }

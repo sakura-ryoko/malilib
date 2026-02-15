@@ -7,15 +7,22 @@ import net.minecraft.client.gui.screens.Screen;
 
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.IStringDualConsumerFeedback;
+import fi.dy.masa.malilib.util.data.Color4f;
 
 @ApiStatus.Experimental
-public class GuiTextDualInputFeedback extends GuiTextDualInputBase
+public class GuiTextInputStackedMultiLineFeedback extends GuiTextInputStackedMultiLineBase
 {
     protected final IStringDualConsumerFeedback consumer;
 
-    public GuiTextDualInputFeedback(int maxTextLength, String titleKey, String defaultText1, String defaultText2, @Nullable Screen parent, IStringDualConsumerFeedback consumer)
+	public GuiTextInputStackedMultiLineFeedback(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText1, String defaultText2, @Nullable Screen parent, IStringDualConsumerFeedback consumer)
+	{
+		this(maxTextLength, displayLines, maxLines, titleKey, defaultText1, defaultText2, parent, consumer, Color4f.WHITE, true);
+	}
+
+    public GuiTextInputStackedMultiLineFeedback(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText1, String defaultText2, @Nullable Screen parent, IStringDualConsumerFeedback consumer,
+                                                Color4f textColor, boolean withShadow)
     {
-        super(maxTextLength, titleKey, defaultText1, defaultText2, parent);
+        super(maxTextLength, displayLines, maxLines, titleKey, defaultText1, defaultText2, parent, textColor, withShadow);
 
         this.consumer = consumer;
     }

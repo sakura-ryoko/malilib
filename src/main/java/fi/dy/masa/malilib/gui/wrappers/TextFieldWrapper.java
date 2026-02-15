@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
+import org.jspecify.annotations.NonNull;
+
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -132,6 +134,36 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 			}
 
 			return true;
+		}
+
+		return false;
+	}
+
+	public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
+	{
+		if (this.textField.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+		{
+			return true;
+		}
+
+		if (this.textField.isMouseOver(mouseX, mouseY) == false)
+		{
+			this.textField.setFocused(false);
+		}
+
+		return false;
+	}
+
+	public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
+	{
+		if (this.textField.mouseDragged(click, dragXAmount, dragYAmount))
+		{
+			return true;
+		}
+
+		if (this.textField.isMouseOver(click.x(), click.y()) == false)
+		{
+			this.textField.setFocused(false);
 		}
 
 		return false;

@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.gui;
 import javax.annotation.Nullable;
 
 import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
@@ -26,6 +27,11 @@ public abstract class GuiTextDualInputBase extends GuiDialogBase
     protected final String originalText1;
     protected final String originalText2;
     protected int selectedBox;
+    protected final int text1Height;
+    protected final int text2Height;
+    protected final int buttonHeight;
+    protected final int totalHeight;
+    protected final int totalWidth;
 
     public GuiTextDualInputBase(int maxTextLength, String titleKey, String defaultText1, String defaultText2, @Nullable Screen parent)
     {
@@ -34,16 +40,20 @@ public abstract class GuiTextDualInputBase extends GuiDialogBase
         this.useTitleHierarchy = false;
         this.originalText1 = defaultText1;
         this.originalText2 = defaultText2;
+        this.text1Height = 20;
+        this.text2Height = 20;
+        this.buttonHeight = 20;
+        this.totalHeight = this.text1Height + this.text2Height + 2;
+        this.totalWidth = MathUtils.min(maxTextLength * 10, 240);
 
-        this.setWidthAndHeight(260, 102);
+        this.setWidthAndHeight(this.totalWidth + 20, this.totalHeight + this.buttonHeight + 40);
         this.centerOnScreen();
 
-        int width = MathUtils.min(maxTextLength * 10, 240);
-        this.textField1 = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 20, width, 20, this.font);
+        this.textField1 = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + this.buttonHeight, this.totalWidth, this.text1Height, this.font);
         this.textField1.setMaxLength(maxTextLength);
         this.textField1.setValue(this.originalText1);
 
-        this.textField2 = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + 42, width, 20, this.font);
+        this.textField2 = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + this.text1Height + this.buttonHeight + 2, this.totalWidth, this.text2Height, this.font);
         this.textField2.setMaxLength(maxTextLength);
         this.textField2.setValue(this.originalText2);
 
@@ -55,7 +65,7 @@ public abstract class GuiTextDualInputBase extends GuiDialogBase
     public void initGui()
     {
         int x = this.dialogLeft + 10;
-        int y = this.dialogTop + 72;
+        int y = this.dialogTop + this.totalHeight + this.buttonHeight + 10;
 
         x += this.createButton(x, y, ButtonType.OK) + 2;
         x += this.createButton(x, y, ButtonType.RESET) + 2;
@@ -64,7 +74,7 @@ public abstract class GuiTextDualInputBase extends GuiDialogBase
 
     protected int createButton(int x, int y, ButtonType type)
     {
-        ButtonGeneric button = new ButtonGeneric(x, y, -1, 20, type.getDisplayName());
+        ButtonGeneric button = new ButtonGeneric(x, y, -1, this.buttonHeight, type.getDisplayName());
         button.setWidth(Math.max(40, button.getWidth()));
         return this.addButton(button, this.createActionListener(type)).getWidth();
     }
@@ -185,6 +195,40 @@ public abstract class GuiTextDualInputBase extends GuiDialogBase
         }
 
         return super.onMouseClicked(click, doubleClick);
+    }
+
+    @Override
+    public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
+    {
+        if (this.textField1.mouseDragged(click, dragXAmount, dragYAmount))
+        {
+            this.selectedBox = 1;
+            return true;
+        }
+        else if (this.textField2.mouseDragged(click, dragXAmount, dragYAmount))
+        {
+            this.selectedBox = 2;
+            return true;
+        }
+
+        return super.onMouseDragged(click, dragXAmount, dragYAmount);
+    }
+
+    @Override
+    public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
+    {
+        if (this.textField1.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+        {
+            this.selectedBox = 1;
+            return true;
+        }
+        else if (this.textField2.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+        {
+            this.selectedBox = 2;
+            return true;
+        }
+
+        return super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     protected ButtonListener createActionListener(ButtonType type)
