@@ -38,6 +38,8 @@ public class DataConverterNbt
     @Nullable
     public static BaseData fromVanillaNbt(NBTBase vanillaTag)
     {
+        if (vanillaTag == null) return null;    // EmptyData.INSTANCE;
+
         switch (vanillaTag.getId())
         {
             case Constants.NBT.TAG_BYTE:        return new ByteData(((NBTTagByte) vanillaTag).getByte());
@@ -66,6 +68,7 @@ public class DataConverterNbt
             }
             default:
                 MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaCompound: Unknown NBT tag id {}", vanillaTag.getId());
+//                return EmptyData.INSTANCE;                // Return as EmptyData
         }
 
         return null;
@@ -74,6 +77,7 @@ public class DataConverterNbt
     @Nullable
     public static ListData fromVanillaList(NBTTagList vanillaList)
     {
+        if (vanillaList == null || vanillaList.isEmpty()) { return null; }  // new ListData(Constants.NBT.TAG_COMPOUND);
         ListData list = new ListData(vanillaList.getTagType());
 
         for (int index = 0; index < vanillaList.tagCount(); index++)
@@ -84,6 +88,7 @@ public class DataConverterNbt
             {
                 MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaList: Got TAG_End in a list at index {}", index);
                 return null;
+//                return list;
             }
 
             BaseData convertedTag = fromVanillaNbt(entry);
@@ -92,6 +97,7 @@ public class DataConverterNbt
             {
                 MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaList: Got a null tag in a list at index {}", index);
                 return null;
+//                continue;
             }
 
             list.add(convertedTag);
@@ -103,6 +109,7 @@ public class DataConverterNbt
     public static CompoundData fromVanillaCompound(NBTTagCompound vanillaCompound)
     {
         CompoundData data = new CompoundData();
+        if (vanillaCompound == null || vanillaCompound.isEmpty()) { return data; }
 
         for (String key : vanillaCompound.getKeySet())
         {
@@ -123,6 +130,8 @@ public class DataConverterNbt
     @Nullable
     public static NBTBase toVanillaNbt(BaseData data)
     {
+        if (data == null) { return null; }    // return new NBTTagList().get(-1);
+
         switch (data.getType())
         {
             case Constants.NBT.TAG_BYTE:        return new NBTTagByte(((ByteData) data).value);
@@ -139,6 +148,7 @@ public class DataConverterNbt
             case Constants.NBT.TAG_LIST:        return toVanillaList((ListData) data);
             default:
                 MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaNbt: Unknown NBT tag id {}", data.getType());
+//                return new NBTTagList().get(-1);   // Returns new NBTTagEnd()
         }
 
         return null;
@@ -148,6 +158,7 @@ public class DataConverterNbt
     public static NBTTagList toVanillaList(ListData listData)
     {
         NBTTagList list = new NBTTagList();
+        if (listData == null || listData.isEmpty()) { return list; }
 
         for (int index = 0; index < listData.size(); index++)
         {
@@ -157,6 +168,7 @@ public class DataConverterNbt
             {
                 MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaList: Got TAG_End in a list at index {}", index);
                 return null;
+//                return list;
             }
 
             NBTBase convertedTag = toVanillaNbt(entry);
@@ -165,6 +177,7 @@ public class DataConverterNbt
             {
                 MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaList: Got a null tag in a list at index {}", index);
                 return null;
+//                continue;
             }
 
             list.appendTag(convertedTag);
@@ -176,6 +189,7 @@ public class DataConverterNbt
     public static NBTTagCompound toVanillaCompound(CompoundData compoundData)
     {
         NBTTagCompound tag = new NBTTagCompound();
+        if (compoundData == null || compoundData.isEmpty()) { return tag; }
 
         for (String key : compoundData.getKeys())
         {

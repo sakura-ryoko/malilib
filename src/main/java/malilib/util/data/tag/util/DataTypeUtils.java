@@ -1,20 +1,25 @@
 package malilib.util.data.tag.util;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import malilib.util.data.Constants;
-import malilib.util.data.tag.BaseData;
-import malilib.util.data.tag.CompoundData;
-import malilib.util.data.tag.DataView;
-import malilib.util.data.tag.DoubleData;
-import malilib.util.data.tag.IntData;
-import malilib.util.data.tag.ListData;
+import malilib.util.data.tag.*;
+import malilib.util.data.tag.converter.DataConverterNbt;
+import malilib.util.nbt.NbtKeys;
 import malilib.util.position.BlockPos;
 import malilib.util.position.Vec3d;
 import malilib.util.position.Vec3i;
+
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.ITextComponent;
 
 public class DataTypeUtils
 {
@@ -44,6 +49,48 @@ public class DataTypeUtils
     {
         tag.putLong(keyM, uuid.getMostSignificantBits());
         tag.putLong(keyL, uuid.getLeastSignificantBits());
+    }
+
+    @Nullable
+    public static UUID readUuidFromIntArray(DataView tag)
+    {
+        return readUuidFromIntArray(tag, NbtKeys.UUID);
+    }
+
+    @Nullable
+    public static UUID readUuidFromIntArray(DataView tag, String key)
+    {
+        if (tag.contains(key, Constants.NBT.TAG_INT_ARRAY))
+        {
+            final int[] bits = tag.getIntArray(key);
+            return new UUID((long) bits[0] << 32 | bits[1] & 4294967295L, (long) bits[2] << 32 | bits[3] & 4294967295L);
+        }
+
+        return null;
+    }
+
+    public static void writeUuidToIntArray(CompoundData tag, UUID uuid)
+    {
+        writeUuidToIntArray(tag, uuid, NbtKeys.UUID);
+    }
+
+    public static void writeUuidToIntArray(CompoundData tag, UUID uuid, String key)
+    {
+        final long most = uuid.getMostSignificantBits();
+        final long least = uuid.getLeastSignificantBits();
+        tag.putIntArray(key, new int[]{(int) (most >> 32), (int) most, (int) (least >> 32), (int) least});
+    }
+
+    public static void writeUuidToByteArray(CompoundData tag, UUID uuid)
+    {
+        writeUuidToByteArray(tag, uuid, NbtKeys.UUID);
+    }
+
+    public static void writeUuidToByteArray(CompoundData tag, UUID uuid, String key)
+    {
+        byte[] bits = new byte[16];
+        ByteBuffer.wrap(bits).order(ByteOrder.BIG_ENDIAN).putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits());
+        tag.putByteArray(key, bits);
     }
 
     public static CompoundData getOrCreateCompound(CompoundData tagIn, String tagName)
@@ -269,5 +316,176 @@ public class DataTypeUtils
         }
 
         return null;
+    }
+
+    /**
+     * Read the "Block Attached" BlockPos from Data Tags.
+     *
+     * @param tag -
+     * @return -
+     */
+    @Nullable
+    public static BlockPos readAttachedPosFromTag(@Nonnull DataView tag)
+    {
+        return readPrefixedPosFromTag(tag, "Tile");
+    }
+
+    /**
+     * Write the "Block Attached" BlockPos to Data Tags.
+     *
+     * @param pos -
+     * @param tag -
+     * @return -
+     */
+    public static @Nonnull CompoundData writeAttachedPosToTag(@Nonnull BlockPos pos, @Nonnull CompoundData tag)
+    {
+        return writePrefixedPosToTag(pos, tag, "Tile");
+    }
+
+    /**
+     * Read a prefixed BlockPos from Data Tags.
+     *
+     * @param tag -
+     * @param pre -
+     * @return -
+     */
+    @Nullable
+    public static BlockPos readPrefixedPosFromTag(@Nonnull DataView tag, String pre)
+    {
+        if (tag.contains(pre+"X", Constants.NBT.TAG_INT) &&
+            tag.contains(pre+"Y", Constants.NBT.TAG_INT) &&
+            tag.contains(pre+"Z", Constants.NBT.TAG_INT))
+        {
+            return new BlockPos(tag.getInt(pre+"X"), tag.getInt(pre+"Y"), tag.getInt(pre+"Z"));
+        }
+
+        return null;
+    }
+
+    /**
+     * Write a prefixed BlockPos to Data Tags.
+     *
+     * @param pos -
+     * @param tag -
+     * @param pre -
+     * @return -
+     */
+    public static @Nonnull CompoundData writePrefixedPosToTag(@Nonnull BlockPos pos, @Nonnull CompoundData tag, String pre)
+    {
+        tag.putInt(pre+"X", pos.getX());
+        tag.putInt(pre+"Y", pos.getY());
+        tag.putInt(pre+"Z", pos.getZ());
+
+        return tag;
+    }
+
+    /**
+     * Deserialize an ItemStack from a Data tag
+     * @param data -
+     * @return -
+     * @implNote In the future, after ~1.21; the Registry / Data Ops is required here
+     */
+    public static Optional<ItemStack> toItemStack(@Nonnull CompoundData data)
+    // @Nonnull RegistryAccess registry
+    {
+        if (data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
+        {
+            return Optional.of(new ItemStack(DataConverterNbt.toVanillaCompound(data)));
+        }
+
+        return Optional.empty();
+    }
+
+    /**
+     * Serialize an ItemStack to a Data tag
+     * @param stack -
+     * @return -
+     * @implNote In the future, after ~1.21; the Registry / Data Ops is required here
+     */
+    public static CompoundData fromItemStack(@Nonnull ItemStack stack)
+    // @Nonnull RegistryAccess registry
+    {
+        CompoundData data = new CompoundData();
+
+        if (!stack.isEmpty())
+        {
+            data.combine(DataConverterNbt.fromVanillaCompound(stack.writeToNBT(new NBTTagCompound())));
+
+            if (data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
+            {
+                return data;
+            }
+        }
+
+        return new CompoundData();
+    }
+
+    /**
+     * Deserialize a Data Tag that contains a {@link ITextComponent} as a JSON String, utilizing a key.
+     * @param data -
+     * @param key -
+     * @return -
+     * @implNote In the future, after ~1.21; the Registry / Data Ops is required here
+     */
+    public static Optional<ITextComponent> toTextComponent(@Nonnull CompoundData data, String key)
+    // @Nonnull RegistryAccess registry
+    {
+        final String json =  data.getStringOrDefault(key, "");
+        if (json.isEmpty()) { return Optional.empty(); }
+
+        try
+        {
+            return Optional.ofNullable(ITextComponent.Serializer.jsonToComponent(json));
+        }
+        catch (Exception ignored) {}
+
+        return Optional.empty();
+    }
+
+    /**
+     * Deserialize a Data Tag that contains a {@link ITextComponent} as a JSON String.
+     * @param jsonStr -
+     * @return -
+     * @implNote In the future, after ~1.21; the Registry / Data Ops is required here
+     */
+    public static Optional<ITextComponent> toTextComponent(@Nonnull final String jsonStr)
+    // @Nonnull RegistryAccess registry
+    {
+        if (jsonStr.isEmpty()) { return Optional.empty(); }
+
+        try
+        {
+            return Optional.ofNullable(ITextComponent.Serializer.jsonToComponent(jsonStr));
+        }
+        catch (Exception ignored) {}
+
+        return Optional.empty();
+    }
+
+    /**
+     * Serialize a {@link ITextComponent} into a Data Tag with a key param, and optionally, a source Data Tag
+     * @param text -
+     * @param key -
+     * @param dataIn -
+     * @return -
+     * @implNote In the future, after ~1.21; the Registry / Data Ops is required here
+     */
+    public static CompoundData fromTextComponent(@Nonnull ITextComponent text, String key, @Nullable CompoundData dataIn)
+    // @Nonnull RegistryAccess registry
+    {
+        CompoundData data = dataIn != null ? dataIn.copy() : new CompoundData();
+
+        try
+        {
+            final String json = ITextComponent.Serializer.componentToJson(text);
+
+            if (!json.isEmpty())
+            {
+                data.putString(key, json);
+            }
+        }
+        catch (Exception ignored) {}
+
+        return data;
     }
 }

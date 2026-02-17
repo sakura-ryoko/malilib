@@ -52,6 +52,11 @@ public class CompoundData extends BaseData implements DataView
         return this.values.keySet();
     }
 
+    public Set<Map.Entry<String, BaseData>> entrySet()
+    {
+        return this.values.entrySet();
+    }
+
     @Override
     public boolean contains(String key, int requestedType)
     {
@@ -263,7 +268,6 @@ public class CompoundData extends BaseData implements DataView
         return data != null && data.getType() == Constants.NBT.TAG_LIST ? (ListData) data : new ListData(containedType);
     }
 
-
     public CompoundData putBoolean(String key, boolean value)
     {
         this.values.put(key, new ByteData(value ? (byte) 1 : 0));
@@ -356,6 +360,33 @@ public class CompoundData extends BaseData implements DataView
         }
 
         return copy;
+    }
+
+    // Primarily needed for DataOps, but can be utilized for other things
+    public CompoundData combine(CompoundData other)
+    {
+        if (other == null || other.isEmpty())
+        {
+            return this.copy();
+        }
+
+        for (String key : other.values.keySet())
+        {
+            BaseData data = other.values.get(key);
+
+            if (data.getType() == Constants.NBT.TAG_COMPOUND &&
+                this.values.containsKey(key) &&
+                this.values.get(key).getType() == Constants.NBT.TAG_COMPOUND)
+            {
+                CompoundData out = ((CompoundData) this.values.get(key)).combine((CompoundData) data);
+                this.values.put(key, out);
+                continue;
+            }
+
+            this.values.put(key, data);
+        }
+
+        return this.copy();
     }
 
     @Override
@@ -459,6 +490,28 @@ public class CompoundData extends BaseData implements DataView
         CompoundData other = (CompoundData) o;
 
         return Objects.equals(this.values, other.values);
+
+        // todo
+//        // Match any member of the compound using equals(),
+//        // in any insertion order.
+//        if (o instanceof CompoundData data)
+//        {
+//            boolean result = false;
+//
+//            for (String key : this.getKeys())
+//            {
+//                result = this.values.get(key).equals(data.values.get(key));
+//
+//                if (!result)
+//                {
+//                    break;
+//                }
+//            }
+//
+//            return result;
+//        }
+//
+//        return false;
     }
 
     @Override

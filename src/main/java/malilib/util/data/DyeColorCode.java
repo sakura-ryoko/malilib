@@ -1,5 +1,7 @@
 package malilib.util.data;
 
+import net.minecraft.item.EnumDyeColor;
+
 public enum DyeColorCode
 {
     WHITE       ( 0, "§f", "white"),
@@ -55,5 +57,23 @@ public enum DyeColorCode
         }
 
         return COLOR_CODES_BY_META[meta];
+    }
+
+    public static DyeColorCode fromStringOrDefault(String name, DyeColorCode defaultValue)
+    {
+        for (DyeColorCode color : COLOR_CODES_BY_META)
+        {
+            if (color.getName().equalsIgnoreCase(name))
+            {
+                return color;
+            }
+        }
+
+        return defaultValue;
+    }
+
+    public EnumDyeColor toVanilla()
+    {
+        return EnumDyeColor.byMetadata(this.meta);
     }
 }

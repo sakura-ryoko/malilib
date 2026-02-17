@@ -3,6 +3,7 @@ package malilib.util.data.tag;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Optional;
 
 import malilib.util.data.Constants;
 import malilib.util.data.tag.util.SizeTracker;
@@ -30,6 +31,15 @@ public abstract class BaseData
 
     public abstract BaseData copy();
 
+    public abstract String toString();
+
+    public abstract boolean isEmpty();
+
+    public Optional<Number> asNumber()
+    {
+        return Optional.empty();
+    }
+
     public abstract void write(DataOutput output) throws IOException;
 
     public static BaseData createTag(int tagType, DataInput input, int depth, SizeTracker sizeTracker) throws IOException
@@ -48,6 +58,7 @@ public abstract class BaseData
             case Constants.NBT.TAG_LONG_ARRAY:  return LongArrayData.read(input, depth, sizeTracker);
             case Constants.NBT.TAG_COMPOUND:    return CompoundData.read(input, depth, sizeTracker);
             case Constants.NBT.TAG_LIST:        return ListData.read(input, depth, sizeTracker);
+            case Constants.NBT.TAG_END:         return EmptyData.read(input, depth, sizeTracker);
             default:
                 throw new IOException("Unknown tag type " + tagType);
         }

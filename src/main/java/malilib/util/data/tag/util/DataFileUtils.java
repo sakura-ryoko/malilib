@@ -87,7 +87,7 @@ public class DataFileUtils
 
             if (tagType == Constants.NBT.TAG_END)
             {
-                return null;
+                return null;        // EmptData.INSTANCE
             }
 
             // Discard the name of the root tag

@@ -8,7 +8,8 @@ import java.util.Arrays;
 import malilib.util.data.Constants;
 import malilib.util.data.tag.util.SizeTracker;
 
-public class ByteArrayData extends BaseData
+public class ByteArrayData extends BaseData // implements ArrayData
+    // todo ArrayData
 {
     public static final String TAG_NAME = "TAG_ByteArray";
 
@@ -51,6 +52,83 @@ public class ByteArrayData extends BaseData
 
         return sb.append(']').toString();
     }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return this.value.length == 0;
+    }
+
+    // todo ArrayData
+//    @Override
+//    public void clear()
+//    {
+//        this.value = new byte[0];
+//    }
+//
+//    @Override
+//    public boolean set(int index, BaseData entry)
+//    {
+//        Optional<Number> opt = entry.asNumber();
+//
+//        if (index < this.size() &&
+//            index >= 0 &&
+//            opt.isPresent())
+//        {
+//            this.value[index] = opt.get().byteValue();
+//            return true;
+//        }
+//
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean add(int index, BaseData entry)
+//    {
+//        Optional<Number> opt = entry.asNumber();
+//
+//        if (index < this.size() &&
+//            index >= 0 &&
+//            opt.isPresent())
+//        {
+//            this.value = ArrayUtils.add(this.value, index, opt.get().byteValue());
+//            return true;
+//        }
+//
+//        return false;
+//    }
+//
+//    @Override
+//    @Nullable
+//    public ByteData remove(int index)
+//    {
+//        if (index < this.size() && index >= 0)
+//        {
+//            byte entry = this.value[index];
+//            this.value = ArrayUtils.remove(this.value, index);
+//            return new ByteData(entry);
+//        }
+//
+//        return null;
+//    }
+//
+//    @Override
+//    @Nullable
+//    public ByteData get(int index)
+//    {
+//        if (index < this.size() && index >= 0)
+//        {
+//            return new ByteData(this.value[index]);
+//        }
+//
+//        return null;
+//    }
+//
+//    @Override
+//    public int size()
+//    {
+//        return this.value.length;
+//    }
 
     @Override
     public void write(DataOutput output) throws IOException

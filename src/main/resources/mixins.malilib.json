@@ -9,6 +9,7 @@
 		"access.GuiContainerMixin",
 		"access.NBTBaseMixin",
 		"access.NBTTagLongArrayMixin",
+        "access.TileEntityMixin",
 		"command.GuiScreenMixin",
 		"command.TabCompleterMixin",
 		"event.MinecraftMixin",

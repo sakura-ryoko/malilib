@@ -30,6 +30,8 @@ public class MinecraftVersion
         return this.dataVersion == that.dataVersion;
     }
 
+    public static final MinecraftVersion MC_1_21_11 = new MinecraftVersion("1.21.11",  4671, 774);
+    public static final MinecraftVersion MC_1_21_10 = new MinecraftVersion("1.21.10",  4556, 773);
     public static final MinecraftVersion MC_1_21_8 = new MinecraftVersion("1.21.8",  4440, 772);
     public static final MinecraftVersion MC_1_21_7 = new MinecraftVersion("1.21.7",  4438, 772);
     public static final MinecraftVersion MC_1_21_6 = new MinecraftVersion("1.21.6",  4435, 771);

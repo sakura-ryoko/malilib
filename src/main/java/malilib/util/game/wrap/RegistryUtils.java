@@ -7,14 +7,17 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockJukebox;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 
+import malilib.mixin.access.TileEntityMixin;
 import malilib.util.data.Identifier;
 import malilib.util.world.BlockState;
 
@@ -85,6 +88,11 @@ public class RegistryUtils
         blocks.sort(Comparator.comparing(RegistryUtils::getBlockIdStr));
 
         return blocks;
+    }
+
+    public static boolean isBlockValid(ResourceLocation id)
+    {
+        return Block.REGISTRY.containsKey(id);
     }
 
     public static List<BlockState> getSortedBlockStatesList()
@@ -165,5 +173,50 @@ public class RegistryUtils
         items.sort(Comparator.comparing(RegistryUtils::getItemIdStr));
 
         return items;
+    }
+
+    public static boolean isItemValid(ResourceLocation id)
+    {
+        return Item.REGISTRY.containsKey(id);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends TileEntity> Class<T> getTileEntityById(ResourceLocation id)
+    {
+        TileEntity te = new BlockJukebox.TileEntityJukebox();
+
+        if (((TileEntityMixin) te).malilib_getTileEntityRegistry().containsKey(id))
+        {
+            return (Class<T>) ((TileEntityMixin) te).malilib_getTileEntityRegistry().getObject(id);
+        }
+
+        return null;
+    }
+
+    public static <T extends TileEntity> Class<T> getTileEntityByStr(String name)
+    {
+        return getTileEntityById(new ResourceLocation(name));
+    }
+
+    public static ResourceLocation getTileEntityId(TileEntity te)
+    {
+        return ((TileEntityMixin) te).malilib_getTileEntityRegistry().getNameForObject(te.getClass());
+    }
+
+    public static String getTileEntityIdStr(TileEntity te)
+    {
+        ResourceLocation id = getTileEntityId(te);
+        return id != null ? id.toString() : "?";
+    }
+
+    public static Collection<ResourceLocation> getRegisteredTileEntityIds()
+    {
+        TileEntity te = new BlockJukebox.TileEntityJukebox();
+        return ((TileEntityMixin) te).malilib_getTileEntityRegistry().getKeys();
+    }
+
+    public static boolean isTileEntityValid(ResourceLocation id)
+    {
+        return getRegisteredTileEntityIds().contains(id);
     }
 }

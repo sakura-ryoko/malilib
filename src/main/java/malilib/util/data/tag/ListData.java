@@ -11,7 +11,8 @@ import malilib.MaLiLib;
 import malilib.util.data.Constants;
 import malilib.util.data.tag.util.SizeTracker;
 
-public class ListData extends BaseData
+public class ListData extends BaseData // implements ArrayData
+    // todo ArrayData - 1.21.5+ or whenever Mojang adds the DFU packages
 {
     public static final String TAG_NAME = "TAG_List";
 
@@ -86,6 +87,62 @@ public class ListData extends BaseData
         return this.list.get(index);
     }
 
+    // todo ArrayData - 1.21.5+ or whenever Mojang adds the DFU packages
+//    @Override
+//    public boolean set(int index, BaseData entry)
+//    {
+//        int type = this.getContainedType();
+//
+//        if (type == Constants.NBT.TAG_END ||
+//                entry.getType() != type ||
+//                index < 0 ||
+//                index >= this.list.size())
+//        {
+//            return false;
+//        }
+//
+//        if (index < this.size())
+//        {
+//            this.list.set(index, entry);
+//            return true;
+//        }
+//
+//        return false;
+//    }
+//
+//    @Override
+//    public boolean add(int index, BaseData entry)
+//    {
+//        int type = this.getContainedType();
+//
+//        if (type == Constants.NBT.TAG_END ||
+//                entry.getType() != type ||
+//                index < 0 ||
+//                index >= this.list.size())
+//        {
+//            return false;
+//        }
+//
+//        if (index < this.size())
+//        {
+//            this.list.add(index, entry);
+//            return true;
+//        }
+//
+//        return false;
+//    }
+//
+//    @Override
+//    public BaseData remove(int index)
+//    {
+//        if (index < this.list.size())
+//        {
+//            return this.list.remove(index);
+//        }
+//
+//        return EmptyData.INSTANCE;
+//    }
+
     public byte getByteAt(int index)
     {
         if (this.containedType == Constants.NBT.TAG_BYTE)
@@ -146,6 +203,16 @@ public class ListData extends BaseData
         return 0.0;
     }
 
+    public String getStringAt(int index)
+    {
+        if (this.containedType == Constants.NBT.TAG_STRING)
+        {
+            return ((StringData) this.list.get(index)).value;
+        }
+
+        return "";
+    }
+
     public CompoundData getCompoundAt(int index)
     {
         if (this.containedType == Constants.NBT.TAG_COMPOUND)
@@ -185,6 +252,12 @@ public class ListData extends BaseData
         }
 
         return sb.append(']').toString();
+    }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return this.list.isEmpty();
     }
 
     @Override

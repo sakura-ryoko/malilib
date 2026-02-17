@@ -39,6 +39,12 @@ public class StringData extends BaseData
     }
 
     @Override
+    public boolean isEmpty()
+    {
+        return this.value.isEmpty();
+    }
+
+    @Override
     public void write(DataOutput output) throws IOException
     {
         output.writeUTF(this.value);

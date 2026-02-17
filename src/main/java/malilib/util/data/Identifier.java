@@ -1,5 +1,7 @@
 package malilib.util.data;
 
+import java.util.Optional;
+
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -22,5 +24,15 @@ public class Identifier extends ResourceLocation
     public Identifier(String namespaceIn, String pathIn)
     {
         super(namespaceIn, pathIn);
+    }
+
+    public static Identifier of(String resourceName)
+    {
+        return new Identifier(resourceName);
+    }
+
+    public static Identifier of(String namespaceIn, String pathIn)
+    {
+        return new Identifier(namespaceIn, pathIn);
     }
 }
