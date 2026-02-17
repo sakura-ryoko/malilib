@@ -18,7 +18,7 @@ public class StringData extends BaseData
     {
         super(Constants.NBT.TAG_STRING, TAG_NAME);
 
-        this.value = value;
+        this.value = value != null ? value : "";
     }
 
     public String getString()

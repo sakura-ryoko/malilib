@@ -18,7 +18,7 @@ public class ByteArrayData extends BaseData
     {
         super(Constants.NBT.TAG_BYTE_ARRAY, TAG_NAME);
 
-        this.value = value;
+        this.value = value != null ? value : new byte[0];
     }
 
     public byte[] getByteArray()

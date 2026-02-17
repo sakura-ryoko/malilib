@@ -18,7 +18,7 @@ public class LongArrayData extends BaseData
     {
         super(Constants.NBT.TAG_LONG_ARRAY, TAG_NAME);
 
-        this.value = value;
+        this.value = value != null ? value : new long[0];
     }
 
     public long[] getLongArray()

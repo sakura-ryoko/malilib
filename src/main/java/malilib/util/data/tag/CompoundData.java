@@ -332,7 +332,11 @@ public class CompoundData extends BaseData implements DataView
 
     public CompoundData put(String key, BaseData value)
     {
-        this.values.put(key, value);
+        if (value != null)
+        {
+            this.values.put(key, value);
+        }
+
         return this;
     }
 
@@ -343,7 +347,12 @@ public class CompoundData extends BaseData implements DataView
 
         for (Map.Entry<String, BaseData> entry : this.values.entrySet())
         {
-            copy.values.put(entry.getKey(), entry.getValue().copy());
+            BaseData val = entry.getValue();
+
+            if (val != null)
+            {
+                copy.values.put(entry.getKey(), val.copy());
+            }
         }
 
         return copy;

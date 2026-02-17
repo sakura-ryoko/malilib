@@ -47,11 +47,23 @@ public class DataConverterNbt
             case Constants.NBT.TAG_FLOAT:       return new FloatData(((NBTTagFloat) vanillaTag).getFloat());
             case Constants.NBT.TAG_DOUBLE:      return new DoubleData(((NBTTagDouble) vanillaTag).getDouble());
             case Constants.NBT.TAG_STRING:      return new StringData(((NBTTagString) vanillaTag).getString());
-            case Constants.NBT.TAG_BYTE_ARRAY:  return new ByteArrayData(((NBTTagByteArray) vanillaTag).getByteArray());
-            case Constants.NBT.TAG_INT_ARRAY:   return new IntArrayData(((NBTTagIntArray) vanillaTag).getIntArray());
-            case Constants.NBT.TAG_LONG_ARRAY:  return new LongArrayData(((NBTTagLongArrayMixin) vanillaTag).getArray());
             case Constants.NBT.TAG_COMPOUND:    return fromVanillaCompound((NBTTagCompound) vanillaTag);
             case Constants.NBT.TAG_LIST:        return fromVanillaList((NBTTagList) vanillaTag);
+            case Constants.NBT.TAG_BYTE_ARRAY:
+            {
+                byte[] arr = ((NBTTagByteArray) vanillaTag).getByteArray();
+                return arr != null ? new ByteArrayData(arr) : null;
+            }
+            case Constants.NBT.TAG_INT_ARRAY:
+            {
+                int[] arr = ((NBTTagIntArray) vanillaTag).getIntArray();
+                return arr != null ? new IntArrayData(arr) : null;
+            }
+            case Constants.NBT.TAG_LONG_ARRAY:
+            {
+                long[] arr = ((NBTTagLongArrayMixin) vanillaTag).getArray();
+                return arr != null ? new LongArrayData(arr) : null;
+            }
             default:
                 MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaCompound: Unknown NBT tag id {}", vanillaTag.getId());
         }
@@ -78,6 +90,7 @@ public class DataConverterNbt
 
             if (convertedTag == null)
             {
+                MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaList: Got a null tag in a list at index {}", index);
                 return null;
             }
 
@@ -95,10 +108,13 @@ public class DataConverterNbt
         {
             BaseData convertedTag = fromVanillaNbt(vanillaCompound.getTag(key));
 
-            if (convertedTag != null)
+            if (convertedTag == null)
             {
-                data.put(key, convertedTag);
+                MaLiLib.LOGGER.warn("DataConverterNbt.fromVanillaCompound: Got a null tag in a compound with key '{}'", key);
+                continue;
             }
+
+            data.put(key, convertedTag);
         }
 
         return data;
@@ -167,8 +183,8 @@ public class DataConverterNbt
 
             if (convertedTag == null)
             {
-                MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaCompound: Got a null tag in a compound with key {}", key);
-                return null;
+                MaLiLib.LOGGER.warn("DataConverterNbt.toVanillaCompound: Got a null tag in a compound with key '{}'", key);
+                continue;
             }
 
             tag.setTag(key, convertedTag);

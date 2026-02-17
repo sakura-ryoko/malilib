@@ -18,7 +18,7 @@ public class IntArrayData extends BaseData
     {
         super(Constants.NBT.TAG_INT_ARRAY, TAG_NAME);
 
-        this.value = value;
+        this.value = value != null ? value : new int[0];
     }
 
     public int[] getIntArray()
