@@ -10,41 +10,116 @@ import fi.dy.masa.malilib.util.MathUtils;
 // todo -- UNCOMMENT WHEN TESTING!  (Do not mess with threads when not in use)
 public class TestThreadDaemonAsyncHandler implements IThreadDaemonHandler<TestThreadTaskAsync>
 {
-//	private static final ThreadFactory THREAD_FACTORY = (new ThreadFactoryBuilder()).setNameFormat("MaLiLib Test Async Thread Daemon").setDaemon(true).build();
 	public static final TestThreadDaemonAsyncHandler INSTANCE = new TestThreadDaemonAsyncHandler();
-//	private final Thread thread;
-//	private final TestThreadDaemonExecutorAsync threadExecutor;
-
-//	private final Queue<TestThreadTaskAsync> queue = new ConcurrentLinkedQueue<>();
-	private final float taskInterval = 30.0f;
+	private static final int MAX_PLATFORM_THREADS = 1;
+//	private final int threadCount = this.calculateMaxThreads();
+	private boolean useVirtual = false;
+	private final String namePrefix = MaLiLibReference.MOD_NAME+" Test Async Thread ";
+//	private final ConcurrentHashMap<String, Thread> threadMap = this.builder();
+//	private final ConcurrentLinkedQueue<TestThreadTaskAsync> queue = new ConcurrentLinkedQueue<>();
+	private final float taskInterval = 10.0f;
 	private long lastTick;
+
+	private int calculateMaxThreads()
+	{
+		final int result = this.getThreadCountSafe();
+		if (result < 1) { this.useVirtual = true; }
+
+		return MathUtils.clamp(result, 1, MAX_PLATFORM_THREADS);
+	}
+
+//	private ConcurrentHashMap<String, Thread> builder()
+//	{
+//		ConcurrentHashMap<String, Thread> threads = new ConcurrentHashMap<>(this.threadCount, 0.9f, 1);
+//
+//		for (int i = 0; i < this.threadCount; i++)
+//		{
+//			final String name = this.namePrefix + (i+1);
+//			threads.put(name, this.threadFactory(name, this.useVirtual, new TestThreadDaemonExecutorAsync()));
+//		}
+//
+//		return threads;
+//	}
 
 	private TestThreadDaemonAsyncHandler()
 	{
 		this.lastTick = System.currentTimeMillis();
-//		this.threadExecutor = new TestThreadDaemonExecutorAsync();
-//		this.thread = THREAD_FACTORY.newThread(this.threadExecutor);
+	}
+
+	@Override
+	public String getName()
+	{
+		return this.namePrefix;
 	}
 
 	@Override
 	public void start()
 	{
-//		this.thread.start();
+//		MaLiLib.LOGGER.info("Starting [{}] Test Async threads", this.threadMap.size());
+//		Set<String> keys = this.threadMap.keySet();
+//
+//		for (String key : keys)
+//		{
+//			try
+//			{
+//				this.safeStart(this.threadMap.get(key));
+//			}
+//			catch (ConcurrentModificationException cme)
+//			{
+//				// Busy
+//			}
+//			catch (IllegalStateException is)
+//			{
+//				// Terminated
+//				Thread entry = this.threadFactory(key, this.useVirtual, new TestThreadDaemonExecutorAsync());
+//				entry.start();
+//
+//				synchronized (this.threadMap)
+//				{
+//					this.threadMap.replace(key, entry);
+//				}
+//			}
+//			catch (RuntimeException re)
+//			{
+//				// Already Running
+//			}
+//			catch (Exception ignored) {}
+//		}
 	}
 
 	@Override
 	public void stop()
 	{
-//		this.threadExecutor.stop();
-//		this.thread.interrupt();
+//		MaLiLib.LOGGER.info("Stopping [{}] Test Async threads", this.threadMap.size());
+//		Set<String> keys = this.threadMap.keySet();
+//
+//		for (String key : keys)
+//		{
+//			try
+//			{
+//				this.safeStop(this.threadMap.get(key));
+//			}
+//			catch (ConcurrentModificationException cme)
+//			{
+//				// Busy
+//				MaLiLib.LOGGER.warn("Thread [{}] is currently busy, and shouldn't be stopped", key);
+//			}
+//			catch (IllegalStateException is)
+//			{
+//				// Terminated already
+//			}
+//			catch (IllegalThreadStateException is)
+//			{
+//				// Never started
+//			}
+//			catch (Exception ignored) {}
+//		}
 	}
 
 	@Override
 	public void reset()
 	{
 //		this.queue.clear();
-		this.stop();
-		this.start();
 	}
 
 	@Override
@@ -54,10 +129,17 @@ public class TestThreadDaemonAsyncHandler implements IThreadDaemonHandler<TestTh
 	}
 
 	@Override
-	public TestThreadTaskAsync getNextTask()
+	public TestThreadTaskAsync getNextTask() throws InterruptedException
 	{
 //		return this.queue.poll();
 		return null;
+	}
+
+	@Override
+	public boolean hasTasks()
+	{
+//		return !this.queue.isEmpty();
+		return false;
 	}
 
 	@Override
@@ -75,7 +157,7 @@ public class TestThreadDaemonAsyncHandler implements IThreadDaemonHandler<TestTh
 
 			if ((now - this.lastTick) > this.getTaskInterval())
 			{
-				for (int i = 0; i < 3; i++)
+				for (int i = 0; i < 10; i++)
 				{
 					final int finalIndex = i;
 
@@ -85,22 +167,51 @@ public class TestThreadDaemonAsyncHandler implements IThreadDaemonHandler<TestTh
 				}
 
 //				System.out.printf("TestThreadDaemonAsyncHandler: taskQueue: [%02d]\n", this.queue.size());
+				this.ensureThreadsAreAlive();
 				this.lastTick = now;
 			}
 		}
-		else
-		{
+//		else
+//		{
 //			if (this.threadExecutor.isRunning())
 //			{
 //				this.stop();
 //			}
-		}
+//		}
+	}
+
+	// TODO -- is this even necessary?
+	private void ensureThreadsAreAlive()
+	{
+//		if (this.hasTasks())
+//		{
+//			Set<String> keySet = this.threadMap.keySet();
+//
+//			for (String key : keySet)
+//			{
+//				try
+//				{
+//					this.safeStart(this.threadMap.get(key));
+//				}
+//				catch (IllegalStateException is)
+//				{
+//					// Terminated (Replace)
+//					Thread entry = this.threadFactory(key, this.useVirtual, new TestThreadDaemonExecutorAsync());
+//					entry.start();
+//
+//					synchronized (this.threadMap)
+//					{
+//						this.threadMap.replace(key, entry);
+//					}
+//				}
+//				catch (RuntimeException ignored) {}
+//			}
+//		}
 	}
 
 	@Override
 	public void close() throws Exception
 	{
-//		this.queue.clear();
-		this.stop();
+		this.endAll();
 	}
 }

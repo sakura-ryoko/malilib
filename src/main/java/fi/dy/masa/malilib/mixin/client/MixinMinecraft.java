@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.mixin.client;
 
 import java.nio.file.Path;
+import com.llamalad7.mixinextras.sugar.Local;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.main.GameConfig;
@@ -8,7 +10,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.WorldStem;
 import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.world.level.storage.LevelStorageSource;
-import com.llamalad7.mixinextras.sugar.Local;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;

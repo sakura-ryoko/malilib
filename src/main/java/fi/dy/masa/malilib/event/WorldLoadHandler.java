@@ -3,12 +3,14 @@ package fi.dy.masa.malilib.event;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
-import fi.dy.masa.malilib.data.CachedTagManager;
-import org.jetbrains.annotations.ApiStatus;
+
 import fi.dy.masa.malilib.config.ConfigManager;
+import fi.dy.masa.malilib.data.CachedTagManager;
 import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
 import fi.dy.masa.malilib.util.game.RecipeBookUtils;
 
@@ -93,6 +95,12 @@ public class WorldLoadHandler implements IWorldLoadManager
             ((ConfigManager) ConfigManager.getInstance()).loadAllConfigs();
             InputEventHandler.getKeybindManager().updateUsedKeys();
             CachedTagManager.startCache();
+
+//            if (MaLiLibReference.DEBUG_MODE && MaLiLibReference.EXPERIMENTAL_MODE)
+//            {
+//                TestThreadDaemonDefaultHandler.INSTANCE.start();
+//                TestThreadDaemonAsyncHandler.INSTANCE.start();
+//            }
         }
 
         if (this.worldLoadPostHandlers.isEmpty() == false &&

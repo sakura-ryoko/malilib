@@ -55,6 +55,7 @@
         "screen.MixinInventoryScreen",
         "server.MixinIntegratedServer",
         "test.MixinClientPlayInteractionManager_testSelector",
+        "test.MixinMinecraft_test",
         "test.MixinMinecraft_testSelector"
     ],
     "server": [],

@@ -4,10 +4,23 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.interfaces.IThreadDaemonExecutor;
+import fi.dy.masa.malilib.util.MathUtils;
 
 public class TestThreadDaemonExecutorDefault implements IThreadDaemonExecutor<TestThreadTaskDefault>
 {
 	private final AtomicBoolean running = new AtomicBoolean(true);
+	private final AtomicBoolean paused = new AtomicBoolean(false);
+	private final long sleepTime;
+
+	public TestThreadDaemonExecutorDefault()
+	{
+		this.sleepTime = 50000L;
+	}
+
+	public TestThreadDaemonExecutorDefault(long sleepTime)
+	{
+		this.sleepTime = MathUtils.clamp(sleepTime, 500L, Long.MAX_VALUE);
+	}
 
 	@Override
 	public boolean isRunning()
@@ -16,49 +29,136 @@ public class TestThreadDaemonExecutorDefault implements IThreadDaemonExecutor<Te
 	}
 
 	@Override
+	public boolean isPaused()
+	{
+		return this.paused.get();
+	}
+
+	@Override
 	public void start()
 	{
-		this.running.set(true);
+		if (!this.isRunning())
+		{
+			MaLiLib.LOGGER.error("Executor: Starting");
+			if (this.isPaused())
+			{
+				this.paused.set(false);
+			}
+
+			this.running.set(true);
+		}
+
+		this.run();
+	}
+
+	@Override
+	public void interrupt(InterruptedException interrupt)
+	{
+		MaLiLib.LOGGER.error("Executor: Interrupt Signal: {}", interrupt.getLocalizedMessage());
+		if (this.isPaused())
+		{
+			this.resume();
+		}
+	}
+
+	@Override
+	public void pause()
+	{
+		this.paused.set(true);
+	}
+
+	@Override
+	public void resume()
+	{
+		if (this.isPaused())
+		{
+			MaLiLib.LOGGER.error("Executor: Resuming");
+			this.paused.set(false);
+		}
+
+		this.start();
 	}
 
 	@Override
 	public void stop()
 	{
-		this.running.set(false);
+		MaLiLib.LOGGER.error("Executor: Stopping");
+		if (!this.isPaused())
+		{
+			this.paused.set(true);
+		}
+		if (this.isRunning())
+		{
+			this.running.set(false);
+		}
+	}
+
+	@Override
+	public long sleepTime()
+	{
+		return this.sleepTime;
+	}
+
+	@Override
+	public String getName()
+	{
+		return TestThreadDaemonDefaultHandler.INSTANCE.getName();
+	}
+
+	@Override
+	public boolean hasTasks()
+	{
+		return TestThreadDaemonDefaultHandler.INSTANCE.hasTasks();
 	}
 
 	@Override
 	public void run()
 	{
+		if (!this.isCorrectThread()) { return; }
+		MaLiLib.LOGGER.error("Executor: Running: [{}/{}]", this.isRunning(), this.isPaused());
+
 		while (this.isRunning())
 		{
-			try
+			if (this.isPaused() && this.hasTasks())
 			{
-				TestThreadTaskDefault task = TestThreadDaemonDefaultHandler.INSTANCE.getNextTask();
-
-				if (task != null)
-				{
-					this.processTask(task);
-				}
+				this.resume();
 			}
-			catch (InterruptedException interrupt)
+			else if (!this.isPaused() && this.loopSafe())
 			{
-				MaLiLib.LOGGER.error("TestThreadDaemonExecutorDefault: Interrupted: {}", interrupt.getLocalizedMessage());
-				this.stop();
-				return;
-			}
-			catch (Exception err)
-			{
-				MaLiLib.LOGGER.error("TestThreadDaemonExecutorDefault: Exception: {}", err.getLocalizedMessage());
-				this.stop();
+				this.paused.set(true);
+				this.sleep();
 				return;
 			}
 		}
 	}
 
 	@Override
+	public boolean loopSafe()
+	{
+		try
+		{
+			TestThreadTaskDefault task = TestThreadDaemonDefaultHandler.INSTANCE.getNextTask();
+
+			if (task != null)
+			{
+				this.processTask(task);
+				return false;
+			}
+		}
+		catch (InterruptedException e)
+		{
+			this.interrupt(e);
+		}
+		catch (Exception err)
+		{
+			MaLiLib.LOGGER.error("loopSafe: Exception: {}", err.getLocalizedMessage());
+		}
+
+		return !this.hasTasks();
+	}
+
+	@Override
 	public void processTask(TestThreadTaskDefault task)
-			throws InterruptedException
 	{
 		try
 		{
@@ -66,10 +166,10 @@ public class TestThreadDaemonExecutorDefault implements IThreadDaemonExecutor<Te
 		}
 		catch (Exception err)
 		{
-			MaLiLib.LOGGER.error("TestThreadTaskDefault: completed with error: {}", err.getLocalizedMessage());
+			MaLiLib.LOGGER.error("processTask: completed with error: {}", err.getLocalizedMessage());
 			return;
 		}
 
-		MaLiLib.LOGGER.info("TestThreadTaskDefault: completed");
+		MaLiLib.LOGGER.info("processTask: completed");
 	}
 }

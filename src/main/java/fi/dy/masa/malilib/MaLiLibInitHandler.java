@@ -42,13 +42,11 @@ public class MaLiLibInitHandler implements IInitializationHandler
 //            {
 //                TickHandler.getInstance().registerClientTickHandler(TestThreadDaemonDefaultHandler.INSTANCE);
 //                TickHandler.getInstance().registerClientTickHandler(TestThreadDaemonAsyncHandler.INSTANCE);
-//                TestThreadDaemonDefaultHandler.INSTANCE.start();
-//                TestThreadDaemonAsyncHandler.INSTANCE.start();
 //            }
 //            else
 //            {
-//                TestThreadDaemonDefaultHandler.INSTANCE.stop();
-//                TestThreadDaemonAsyncHandler.INSTANCE.stop();
+//                TestThreadDaemonDefaultHandler.INSTANCE.endAll();
+//                TestThreadDaemonAsyncHandler.INSTANCE.endAll();
 //            }
         }
 
