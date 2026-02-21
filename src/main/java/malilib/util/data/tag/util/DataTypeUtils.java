@@ -9,17 +9,22 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.ITextComponent;
+
 import malilib.util.data.Constants;
-import malilib.util.data.tag.*;
+import malilib.util.data.tag.BaseData;
+import malilib.util.data.tag.CompoundData;
+import malilib.util.data.tag.DataView;
+import malilib.util.data.tag.DoubleData;
+import malilib.util.data.tag.IntData;
+import malilib.util.data.tag.ListData;
 import malilib.util.data.tag.converter.DataConverterNbt;
 import malilib.util.nbt.NbtKeys;
 import malilib.util.position.BlockPos;
 import malilib.util.position.Vec3d;
 import malilib.util.position.Vec3i;
-
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.ITextComponent;
 
 public class DataTypeUtils
 {
