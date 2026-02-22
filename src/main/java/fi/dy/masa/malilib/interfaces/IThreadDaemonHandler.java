@@ -8,17 +8,20 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.MathUtils;
 
 /**
- * Extend this to create a "Daemon" Instance class that manages a task queue for the Daemon.
+ * Extend this to create a "Daemon" Instance class that manages a task {@link java.util.Queue} for the Daemon.
  * @param <T> {@link IThreadTaskBase}
+ * <br>
+ * NOTE: In my experience; using a {@link java.util.concurrent.LinkedBlockingQueue} or using a
+ * {@link java.util.concurrent.ConcurrentLinkedQueue} should be considered first.
  */
 public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 		extends IClientTickHandler, AutoCloseable
 {
 	/**
-	 * Get a "Safe" Thread count; or 1/8 of your system's Core Count.
+	 * Get a "Safe" {@link Thread} count; or 1/8 of your system's Core Count.
 	 * Note that the number return might be 0, which means that you should
-	 * only be using 1 Virtual Thread Max if your CPU has less than 8 Cores.
-	 * @return ()
+	 * only be using 1 Virtual {@link Thread} Max if your CPU has less than 8 Cores.
+	 * @return -
 	 */
 	default int getThreadCountSafe()
 	{
@@ -28,11 +31,11 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	}
 
 	/**
-	 * Default wrapper around building a new {@link java.util.concurrent.ThreadFactory}
-	 * @param name -
-	 * @param useVirtual -
-	 * @param executor -
-	 * @return -
+	 * Default wrapper around building a new {@link Thread}
+	 * @param name The name of the new {@link Thread}
+	 * @param useVirtual Whether the {@link Thread} should be run Virtually by the JVM
+	 * @param executor The {@link IThreadDaemonExecutor} to utilize
+	 * @return The newly built {@link Thread}
 	 */
 	default Thread threadFactory(String name, boolean useVirtual, IThreadDaemonExecutor<T> executor)
 	{
@@ -46,9 +49,11 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	}
 
 	/**
-	 * Safely start the thread by checking the current state.
-	 * @param t ()
-	 * @throws RuntimeException ()
+	 * Safely start the {@link Thread} by checking the current state.
+	 * @param t The {@link Thread}
+	 * @throws RuntimeException The {@link Thread} is Null, or already Running
+	 * @throws ConcurrentModificationException The {@link Thread} is in the Blocking or Waiting state
+	 * @throws IllegalStateException The {@link Thread} was terminated, and needs to be replaced.
 	 */
 	default void safeStart(Thread t) throws RuntimeException
 	{
@@ -66,9 +71,12 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	}
 
 	/**
-	 * Safely Stop the thread by checking the current state.
-	 * @param t ()
-	 * @throws RuntimeException ()
+	 * Safely Stop the {@link Thread} by checking the current state.
+	 * @param t The {@link Thread}
+	 * @throws RuntimeException If the {@link Thread} is Null
+	 * @throws IllegalThreadStateException If the {@link Thread} is New and not yet started
+	 * @throws ConcurrentModificationException If the {@link Thread} is in a Blocking or Waiting state
+	 * @throws IllegalStateException If the {@link Thread} was Terminated
 	 */
 	default void safeStop(Thread t) throws RuntimeException
 	{
@@ -95,41 +103,43 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	}
 
 	/**
-	 * Return the Thread "Prefix" name.
-	 * @return ()
+	 * Return the {@link Thread} "Prefix" name; such as "MaLiLib Worker Thread ";
+	 * which usually ends with a number.  This is important for checking
+	 * the Current Running {@link Thread}'s name under {@link IThreadDaemonExecutor}
+	 * @return -
 	 */
 	String getName();
 
 	/**
-	 * Meant to delay the start of the thread
+	 * Start the {@link Thread}(s) -- Which should be done after Game login
 	 */
 	void start();
 
 	/**
-	 * Stop the thread
+	 * Stop the {@link Thread}(s) -- Which should only be done at Game exit
 	 */
 	void stop();
 
 	/**
-	 * Stop/Start
+	 * Clear any tasks remaining in the Queue
 	 */
 	void reset();
 
 	/**
-	 * Add a new task to process
+	 * Offer a new task to process
 	 * @param newTask {@link IThreadTaskBase}
 	 */
 	void addTask(T newTask);
 
 	/**
-	 * Pool the next free task, or NULL
+	 * Poll (or Take) the next free task, or NULL
 	 * @return {@link IThreadTaskBase}
 	 */
 	T getNextTask() throws InterruptedException;
 
 	/**
 	 * Return the tick interval for managing the queue
-	 * @return ()
+	 * @return -
 	 */
 	long getTaskInterval();
 

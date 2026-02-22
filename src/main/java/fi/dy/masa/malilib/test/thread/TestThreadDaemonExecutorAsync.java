@@ -155,11 +155,17 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 			MaLiLib.LOGGER.error("loopSafe: Exception: {}", err.getLocalizedMessage());
 		}
 
+		return this.shouldPause();
+	}
+
+	@Override
+	public boolean shouldPause()
+	{
 		return !this.hasTasks();
 	}
 
 	@Override
-	public void processTask(TestThreadTaskAsync task)
+	public void processTask(TestThreadTaskAsync task) throws InterruptedException
 	{
 		// CompletableFuture uses a ForkJoinPool
 		CompletableFuture<Void> result = task.runAsync();

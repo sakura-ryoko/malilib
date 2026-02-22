@@ -154,22 +154,19 @@ public class TestThreadDaemonExecutorDefault implements IThreadDaemonExecutor<Te
 			MaLiLib.LOGGER.error("loopSafe: Exception: {}", err.getLocalizedMessage());
 		}
 
+		return this.shouldPause();
+	}
+
+	@Override
+	public boolean shouldPause()
+	{
 		return !this.hasTasks();
 	}
 
 	@Override
-	public void processTask(TestThreadTaskDefault task)
+	public void processTask(TestThreadTaskDefault task) throws InterruptedException
 	{
-		try
-		{
-			task.run();
-		}
-		catch (Exception err)
-		{
-			MaLiLib.LOGGER.error("processTask: completed with error: {}", err.getLocalizedMessage());
-			return;
-		}
-
+		task.run();
 		MaLiLib.LOGGER.info("processTask: completed");
 	}
 }
