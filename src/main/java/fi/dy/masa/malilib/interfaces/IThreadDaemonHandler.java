@@ -36,7 +36,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	 */
 	default Thread threadFactory(String name, boolean useVirtual, IThreadDaemonExecutor<T> executor)
 	{
-		MaLiLib.debugLog("Executor#threadFactory: '{}' [useVirtual: {}]", name, useVirtual);
+		MaLiLib.debugLog("IThreadDaemonHandler#threadFactory: '{}' [useVirtual: {}]", name, useVirtual);
 		if (useVirtual)
 		{
 			return Thread.ofVirtual().name(name).unstarted(executor);
@@ -53,7 +53,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	default void safeStart(Thread t) throws RuntimeException
 	{
 		if (t == null) { throw new RuntimeException(); }
-		MaLiLib.debugLog("Executor#safeStart: '{}' [State: {}]", t.getName(), t.getState().name());
+		MaLiLib.debugLog("IThreadDaemonHandler#safeStart: '{}' [State: {}]", t.getName(), t.getState().name());
 
 		switch (t.getState())
 		{
@@ -73,7 +73,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	default void safeStop(Thread t) throws RuntimeException
 	{
 		if (t == null) { throw new RuntimeException(); }
-		MaLiLib.debugLog("Executor#safeStop: '{}' [State: {}]", t.getName(), t.getState().name());
+		MaLiLib.debugLog("IThreadDaemonHandler#safeStop: '{}' [State: {}]", t.getName(), t.getState().name());
 
 		switch (t.getState())
 		{
@@ -144,6 +144,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	 */
 	default void endAll()
 	{
+		MaLiLib.debugLog("IThreadDaemonHandler#endAll()");
 		this.reset();
 		this.stop();
 	}

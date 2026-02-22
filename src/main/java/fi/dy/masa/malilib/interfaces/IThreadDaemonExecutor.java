@@ -22,6 +22,15 @@ public interface IThreadDaemonExecutor<T extends IThreadTaskBase> extends Runnab
 	String getName();
 
 	/**
+	 * Get the "Current" Thread's name.
+	 * @return -
+	 */
+	default String currentThreadName()
+	{
+		return Thread.currentThread().getName();
+	}
+
+	/**
 	 * Return the "Running" status of the Thread (Use an {@link java.util.concurrent.atomic.AtomicBoolean})
 	 * @return ()
 	 */
@@ -84,7 +93,7 @@ public interface IThreadDaemonExecutor<T extends IThreadTaskBase> extends Runnab
 	 */
 	default boolean isCorrectThread()
 	{
-		return Thread.currentThread().getName().toLowerCase().contains(this.getName().toLowerCase());
+		return this.currentThreadName().toLowerCase().contains(this.getName().toLowerCase());
 	}
 
 	/**
@@ -101,7 +110,7 @@ public interface IThreadDaemonExecutor<T extends IThreadTaskBase> extends Runnab
 					this.pause();
 				}
 
-				MaLiLib.debugLog("Executor: sleeping: '{}' for [{}]", this.getName(), this.sleepTime());
+				MaLiLib.debugLog("IThreadDaemonExecutor#Executor: sleeping: '{}' for [{}]", this.currentThreadName(), this.sleepTime());
 				Thread.sleep(this.sleepTime());
 			}
 			catch (InterruptedException e)
