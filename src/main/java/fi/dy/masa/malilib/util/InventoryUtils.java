@@ -71,6 +71,32 @@ public class InventoryUtils
     private static final AnsiLogger LOGGER = new AnsiLogger(InventoryUtils.class);
     public static final Pattern PATTERN_ITEM_BASE = Pattern.compile("^(?<name>(?:[a-z0-9\\._-]+:)[a-z0-9\\._-]+)$");
 
+    private static boolean inventoryListHasNoSlotIds(@Nonnull ListTag list)
+    {
+        for (int i = 0; i < list.size(); ++i)
+        {
+            if (list.getCompound(i).map(tag -> tag.contains(NbtKeys.SLOT)).orElse(false))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static boolean inventoryListHasNoSlotIds(@Nonnull ListData list)
+    {
+        for (int i = 0; i < list.size(); ++i)
+        {
+            if (list.getCompoundAt(i).containsLenient(NbtKeys.SLOT))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * @return true if the stacks are identical, including their Components
      */
@@ -645,8 +671,8 @@ public class InventoryUtils
         {
 	        InventoryOverlayType type = InventoryOverlay.getInventoryType(DataConverterNbt.fromVanillaCompound(nbt));
 	        boolean isPlayer = type == InventoryOverlayType.PLAYER;
-
             ListTag list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
+            boolean noSlotId = list.isEmpty() ? !isPlayer : inventoryListHasNoSlotIds(list);
             if (slotCount < 0)
             {
                 // Doesn't use slots
@@ -655,7 +681,7 @@ public class InventoryUtils
 
             slotCount = NbtInventory.getAdjustedSize(slotCount);
 
-            NbtInventory nbtInv = NbtInventory.fromNbtList(list, !isPlayer, registry);
+            NbtInventory nbtInv = NbtInventory.fromNbtList(list, noSlotId, registry);
 
             if (nbtInv == null || nbtInv.isEmpty())
             {
@@ -790,6 +816,7 @@ public class InventoryUtils
 			boolean isPlayer = type == InventoryOverlayType.PLAYER;
 
 			ListData list = data.getList(NbtKeys.INVENTORY);
+			boolean noSlotId = list.isEmpty() ? !isPlayer : inventoryListHasNoSlotIds(list);
 			if (slotCount < 0)
 			{
 				// Doesn't use slots
@@ -798,7 +825,7 @@ public class InventoryUtils
 
 			slotCount = NbtInventory.getAdjustedSize(slotCount);
 
-			NbtInventory nbtInv = NbtInventory.fromDataList(list, !isPlayer, registry);
+			NbtInventory nbtInv = NbtInventory.fromDataList(list, noSlotId, registry);
 
 			if (nbtInv == null || nbtInv.isEmpty())
 			{
@@ -947,11 +974,12 @@ public class InventoryUtils
         {
 	        InventoryOverlayType type = InventoryOverlay.getInventoryType(DataConverterNbt.fromVanillaCompound(nbt));
 	        boolean isPlayer = type == InventoryOverlayType.PLAYER;
+            ListTag list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
+            boolean noSlotId = list.isEmpty() ? !isPlayer : inventoryListHasNoSlotIds(list);
 
             // Entities use this (Piglin, Villager, a few others)
             if (slotCount < 0)
             {
-                ListTag list = nbt.getListOrEmpty(NbtKeys.INVENTORY);
                 // Doesn't use slots
                 slotCount = list.size();
             }
@@ -959,7 +987,7 @@ public class InventoryUtils
             slotCount = NbtInventory.getAdjustedSize(slotCount);
 
             // "Inventory" tags might not include Slot ID's, but a Player will.
-            NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.INVENTORY, !isPlayer, registry);
+            NbtInventory nbtInv = NbtInventory.fromNbt(nbt, NbtKeys.INVENTORY, noSlotId, registry);
 
             if (nbtInv == null || nbtInv.isEmpty())
             {
@@ -1071,11 +1099,12 @@ public class InventoryUtils
 		{
 			InventoryOverlayType type = InventoryOverlay.getInventoryType(data);
 			boolean isPlayer = type == InventoryOverlayType.PLAYER;
+			ListData list = data.getList(NbtKeys.INVENTORY);
+			boolean noSlotId = list.isEmpty() ? !isPlayer : inventoryListHasNoSlotIds(list);
 
 			// Entities use this (Piglin, Villager, a few others)
 			if (slotCount < 0)
 			{
-				ListData list = data.getList(NbtKeys.INVENTORY);
 				// Doesn't use slots
 				slotCount = list.size();
 			}
@@ -1083,7 +1112,7 @@ public class InventoryUtils
 			slotCount = NbtInventory.getAdjustedSize(slotCount);
 
 			// "Inventory" tags might not include Slot ID's, but a Player will.
-			NbtInventory nbtInv = NbtInventory.fromData(data, NbtKeys.INVENTORY, !isPlayer, registry);
+			NbtInventory nbtInv = NbtInventory.fromData(data, NbtKeys.INVENTORY, noSlotId, registry);
 
 			if (nbtInv == null || nbtInv.isEmpty())
 			{
