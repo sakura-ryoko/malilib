@@ -138,6 +138,14 @@ public class GuiContext extends GuiGraphics
 	}
 
 	/**
+	 * Send 'up()' to GuiRenderState()
+	 */
+	public void elementUp()
+	{
+		this.guiRenderState.up();
+	}
+
+	/**
 	 * Add a Basic GUI Element
 	 * @param element ()
 	 */

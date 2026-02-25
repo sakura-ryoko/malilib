@@ -13,13 +13,13 @@ import fi.dy.masa.malilib.util.MathUtils;
 public class TestThreadDaemonDefaultHandler implements IThreadDaemonHandler<TestThreadTaskDefault>
 {
 	public static final TestThreadDaemonDefaultHandler INSTANCE = new TestThreadDaemonDefaultHandler();
-	private static final int MAX_PLATFORM_THREADS = 4;
+	private static final int MAX_PLATFORM_THREADS = 1;
 //	private final int threadCount = this.calculateMaxThreads();
 	private boolean useVirtual = false;
-	private final String namePrefix = MaLiLibReference.MOD_NAME+" Test Default Thread ";
+	private final String namePrefix = MaLiLibReference.MOD_NAME+" Test Default Thread";
+	private static final float TASK_INTERVAL = 15.0f;
 //	private final ConcurrentHashMap<String, Thread> threadMap = this.builder();
 //	private final LinkedBlockingQueue<TestThreadTaskDefault> queue = new LinkedBlockingQueue<>();
-	private final float taskInterval = 15.0f;
 	private long lastTick;
 
 	private int calculateMaxThreads()
@@ -36,7 +36,7 @@ public class TestThreadDaemonDefaultHandler implements IThreadDaemonHandler<Test
 //
 //		for (int i = 0; i < this.threadCount; i++)
 //		{
-//			final String name = this.namePrefix + (i+1);
+//			final String name = this.threadCount > 1 ? this.namePrefix+" "+ (i+1) : this.namePrefix;
 //			threads.put(name, this.threadFactory(name, this.useVirtual, new TestThreadDaemonExecutorDefault()));
 //		}
 //
@@ -148,7 +148,7 @@ public class TestThreadDaemonDefaultHandler implements IThreadDaemonHandler<Test
 	@Override
 	public long getTaskInterval()
 	{
-		return MathUtils.floor(this.taskInterval * 1000L);
+		return MathUtils.floor(TASK_INTERVAL * 1000L);
 	}
 
 	@Override

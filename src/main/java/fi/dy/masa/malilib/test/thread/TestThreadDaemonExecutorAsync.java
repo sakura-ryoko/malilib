@@ -12,15 +12,18 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	private final AtomicBoolean running = new AtomicBoolean(true);
 	private final AtomicBoolean paused = new AtomicBoolean(false);
 	private final long sleepTime;
+	private final float sleepDelay;
+	private long lastTaskTime;
 
 	public TestThreadDaemonExecutorAsync()
 	{
-		this.sleepTime = 50000L;
+		this(600000L);  // 10 min
 	}
 
 	public TestThreadDaemonExecutorAsync(long sleepTime)
 	{
-		this.sleepTime = MathUtils.clamp(sleepTime, 500L, Long.MAX_VALUE);
+		this.sleepTime = MathUtils.clamp(sleepTime, 60000L, Long.MAX_VALUE); // 1 min
+		this.sleepDelay = 15.0F;
 	}
 
 	@Override
@@ -116,6 +119,7 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	public void run()
 	{
 		if (!this.isCorrectThread()) { return; }
+		this.lastTaskTime = System.currentTimeMillis();
 		MaLiLib.LOGGER.error("Executor: Running: [{}/{}]", this.isRunning(), this.isPaused());
 
 		while (this.isRunning())
@@ -143,6 +147,7 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 			if (task != null)
 			{
 				this.processTask(task);
+				this.lastTaskTime = System.currentTimeMillis();
 				return false;
 			}
 		}
@@ -161,7 +166,8 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	@Override
 	public boolean shouldPause()
 	{
-		return !this.hasTasks();
+		if (this.hasTasks()) { return false; }
+		return (System.currentTimeMillis() - this.lastTaskTime) > (this.sleepDelay * 1000L);
 	}
 
 	@Override

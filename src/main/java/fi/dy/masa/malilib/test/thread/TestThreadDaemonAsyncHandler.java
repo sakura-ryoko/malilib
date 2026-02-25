@@ -14,10 +14,10 @@ public class TestThreadDaemonAsyncHandler implements IThreadDaemonHandler<TestTh
 	private static final int MAX_PLATFORM_THREADS = 1;
 //	private final int threadCount = this.calculateMaxThreads();
 	private boolean useVirtual = false;
-	private final String namePrefix = MaLiLibReference.MOD_NAME+" Test Async Thread ";
+	private final String namePrefix = MaLiLibReference.MOD_NAME+" Test Async Thread";
+	private static final float TASK_INTERVAL = 10.0f;
 //	private final ConcurrentHashMap<String, Thread> threadMap = this.builder();
 //	private final ConcurrentLinkedQueue<TestThreadTaskAsync> queue = new ConcurrentLinkedQueue<>();
-	private final float taskInterval = 10.0f;
 	private long lastTick;
 
 	private int calculateMaxThreads()
@@ -34,7 +34,7 @@ public class TestThreadDaemonAsyncHandler implements IThreadDaemonHandler<TestTh
 //
 //		for (int i = 0; i < this.threadCount; i++)
 //		{
-//			final String name = this.namePrefix + (i+1);
+//			final String name = this.threadCount > 1 ? this.namePrefix+" "+ (i+1) : this.namePrefix;
 //			threads.put(name, this.threadFactory(name, this.useVirtual, new TestThreadDaemonExecutorAsync()));
 //		}
 //
@@ -145,7 +145,7 @@ public class TestThreadDaemonAsyncHandler implements IThreadDaemonHandler<TestTh
 	@Override
 	public long getTaskInterval()
 	{
-		return MathUtils.floor(this.taskInterval * 1000L);
+		return MathUtils.floor(TASK_INTERVAL * 1000L);
 	}
 
 	@Override

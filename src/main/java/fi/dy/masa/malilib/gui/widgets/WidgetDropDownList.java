@@ -130,7 +130,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     @Override
     public boolean isMouseOver(int mouseX, int mouseY)
     {
-        int maxY = this.isOpen ? this.y + this.totalHeight : this.y + this.height;
+        int maxY = this.y + this.calculateVisibleHeight();
         return mouseX >= this.x && mouseX < this.x + this.width && mouseY >= this.y && mouseY < maxY;
     }
 
@@ -278,9 +278,6 @@ public class WidgetDropDownList<T> extends WidgetBase
         matrixStackIn.translate(0, 0);
         //RenderSystem.applyModelViewMatrix();
 
-        List<T> list = this.filteredEntries;
-        int visibleEntries = Math.min(this.maxVisibleEntries, list.size());
-
         RenderUtils.drawOutlinedBox(ctx, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
 
         String str = this.getDisplayString(this.getSelectedEntry());
@@ -289,45 +286,10 @@ public class WidgetDropDownList<T> extends WidgetBase
         // 100
         matrixStackIn.translate(0, 0);
         this.drawString(ctx, txtX, txtY, 0xFFE0E0E0, str);
-        txtY += this.height + 1;
-        int scrollWidth = 10;
 
         if (this.isOpen)
         {
-            if (this.searchBar.textField().getValue().isEmpty() == false)
-            {
-                this.searchBar.draw(ctx, mouseX, mouseY);
-            }
-
-            RenderUtils.drawOutline(ctx, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
-
-            int y = this.y + this.height + 1;
-            int startIndex = Math.max(0, this.scrollBar.getValue());
-            int max = Math.min(startIndex + this.maxVisibleEntries, list.size());
-
-            for (int i = startIndex; i < max; ++i)
-            {
-                int bg = (i & 0x1) != 0 ? 0x20FFFFFF : 0x30FFFFFF;
-
-                if (mouseX >= this.x && mouseX < this.x + this.width - scrollWidth &&
-                    mouseY >= y && mouseY < y + this.height)
-                {
-                    bg = 0x60FFFFFF;
-                }
-
-                RenderUtils.drawRect(ctx, this.x, y, this.width - scrollWidth, this.height, bg);
-                str = this.getDisplayString(list.get(i));
-                this.drawString(ctx, txtX, txtY, 0xFFE0E0E0, str);
-                y += this.height;
-                txtY += this.height;
-            }
-
-            int x = this.x + this.width - this.scrollbarWidth - 1;
-            y = this.y + this.height + 1;
-            int h = visibleEntries * this.height;
-            int totalHeight = Math.max(h, list.size() * this.height);
-
-            this.scrollBar.render(ctx, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
+            this.renderOpen(ctx, mouseX, mouseY, txtX, txtY);
 
             MaLiLibIcons i = MaLiLibIcons.ARROW_UP;
             RenderUtils.drawTexturedRect(ctx, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
@@ -342,6 +304,63 @@ public class WidgetDropDownList<T> extends WidgetBase
         matrixStackIn.popMatrix();
     }
 
+    private int calculateVisibleHeight()
+    {
+        if (this.isOpen)
+        {
+            final int visibleEntries = MathUtils.min(this.maxVisibleEntries, this.filteredEntries.size());
+            return visibleEntries * this.height;
+        }
+
+        return this.height;
+    }
+
+    private void renderOpen(GuiContext ctx, int mouseX, int mouseY, int txtX, int txtY)
+    {
+        List<T> list = this.filteredEntries;
+        int visibleEntries = MathUtils.min(this.maxVisibleEntries, list.size());
+        String str;
+
+        txtY += this.height + 1;
+        int scrollWidth = 10;
+
+        if (this.searchBar.textField().getValue().isEmpty() == false)
+        {
+            this.searchBar.draw(ctx, mouseX, mouseY);
+        }
+
+//        RenderUtils.drawOutline(ctx, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
+        RenderUtils.drawOutlinedBox(ctx, this.x + 1, this.y + this.height, this.width - 2, visibleEntries * this.height + 1, 0xFF101010, 0xFFE0E0E0);
+
+        int y = this.y + this.height + 1;
+        int startIndex = Math.max(0, this.scrollBar.getValue());
+        int max = Math.min(startIndex + this.maxVisibleEntries, list.size());
+
+        for (int i = startIndex; i < max; ++i)
+        {
+            int bg = (i & 0x1) != 0 ? 0x20FFFFFF : 0x30FFFFFF;
+
+            if (mouseX >= this.x && mouseX < this.x + this.width - scrollWidth &&
+                mouseY >= y && mouseY < y + this.height)
+            {
+                bg = 0x60FFFFFF;
+            }
+
+            RenderUtils.drawRect(ctx, this.x, y, this.width - scrollWidth, this.height, bg);
+            str = this.getDisplayString(list.get(i));
+            this.drawString(ctx, txtX, txtY, 0xFFE0E0E0, str);
+            y += this.height;
+            txtY += this.height;
+        }
+
+        int x = this.x + this.width - this.scrollbarWidth - 1;
+        y = this.y + this.height + 1;
+        int h = visibleEntries * this.height;
+        int totalHeight = Math.max(h, list.size() * this.height);
+
+        this.scrollBar.render(ctx, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
+    }
+
     @Override
     public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
@@ -350,7 +369,11 @@ public class WidgetDropDownList<T> extends WidgetBase
         // Draw it again to cover up other elements, when open
         if (this.isOpen)
         {
-            this.render(ctx, mouseX, mouseY, selected);
+            int txtX = this.x + 4;
+            int txtY = this.y + this.height / 2 - this.fontHeight / 2;
+
+            ctx.elementUp();
+            this.renderOpen(ctx, mouseX, mouseY, txtX, txtY);
         }
     }
 
