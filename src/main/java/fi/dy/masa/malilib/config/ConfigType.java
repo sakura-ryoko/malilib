@@ -19,6 +19,7 @@ public enum ConfigType implements StringRepresentable
     DOUBLE      ("double",          ConfigDouble.CODEC),
     FLOAT       ("float",           ConfigFloat.CODEC),
     COLOR       ("color",           ConfigColor.CODEC),
+    BLOCK_STATE ("block_state",     ConfigBlockState.CODEC),
     STRING      ("string",          ConfigString.CODEC),
     STRING_LIST ("string_list",     ConfigString.CODEC),
     LOCKED_LIST ("locked_list",     null),

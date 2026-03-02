@@ -1,15 +1,20 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
+import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.state.BlockState;
 
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.game.BlockUtils;
 
 public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 {
@@ -207,6 +212,45 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 				catch (Exception e)
 				{
 					this.textField.setHoverTooltip("malilib.gui.text_field.invalid_integer");
+				}
+			}
+			case BLOCK_ID ->
+			{
+				Identifier id = Identifier.tryParse(this.textField.getValue());
+
+				if (id != null && BuiltInRegistries.BLOCK.getOptional(id).isPresent())
+				{
+					this.textField.clearHoverTooltip();
+				}
+				else
+				{
+					this.textField.setHoverTooltip("malilib.gui.text_field.invalid_block_id");
+				}
+			}
+			case BLOCK_STATE ->
+			{
+				Optional<BlockState> opt = BlockUtils.getBlockStateFromString(this.textField.getValue());
+
+				if (opt.isPresent())
+				{
+					this.textField.clearHoverTooltip();
+				}
+				else
+				{
+					this.textField.setHoverTooltip("malilib.gui.text_field.invalid_block_state");
+				}
+			}
+			case VALID_STRING ->
+			{
+				final String val = this.textField.getValue();
+
+				if (!this.type.getValidStrings().isEmpty() && this.type.getValidStrings().contains(val))
+				{
+					this.textField.clearHoverTooltip();
+				}
+				else
+				{
+					this.textField.setHoverTooltip("malilib.gui.text_field.invalid_string", val);
 				}
 			}
 			default ->

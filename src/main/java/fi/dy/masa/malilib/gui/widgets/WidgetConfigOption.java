@@ -200,7 +200,8 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                  type == ConfigType.COLOR ||
                  type == ConfigType.INTEGER ||
                  type == ConfigType.DOUBLE ||
-                 type == ConfigType.FLOAT)
+                 type == ConfigType.FLOAT ||
+                 type == ConfigType.BLOCK_STATE)
         {
             int resetX = x + configWidth + 2;
 
@@ -208,7 +209,13 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             {
                 configWidth -= 22; // adjust the width to match other configs due to the color display
                 this.colorDisplayPosX = x + configWidth + 2;
-                this.addWidget(new WidgetColorIndicator(this.colorDisplayPosX, y + 1, 19, 19, (IConfigColor) config));
+                this.addWidget(new WidgetColorIndicator(this.colorDisplayPosX, y + 1, 18, 18, (IConfigColor) config));
+            }
+			else if (type == ConfigType.BLOCK_STATE)
+            {
+	            configWidth -= 22; // adjust the width to match other configs due to the block icon display
+	            this.colorDisplayPosX = x + configWidth + 2;
+	            this.addWidget(new WidgetBlockStateIcon(this.colorDisplayPosX, y + 1, 18, 18, (IConfigBlockState) config));
             }
             else if (type == ConfigType.INTEGER || type == ConfigType.DOUBLE || type == ConfigType.FLOAT)
             {
@@ -240,6 +247,10 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                 else if (type == ConfigType.COLOR)
                 {
                     textType = TextFieldType.STRING.setMaxLength(12);
+                }
+				else if (type == ConfigType.BLOCK_STATE)
+                {
+					textType = TextFieldType.BLOCK_STATE;
                 }
 
                 this.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, (IConfigValue) config, textType);

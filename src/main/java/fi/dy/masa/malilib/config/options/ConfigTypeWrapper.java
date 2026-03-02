@@ -1,7 +1,11 @@
 package fi.dy.masa.malilib.config.options;
 
+import java.util.Optional;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.*;
@@ -9,8 +13,9 @@ import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.game.BlockUtils;
 
-public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigDouble, IConfigFloat, IConfigInteger, IConfigOptionList, IHotkey, IConfigNotifiable<IConfigBase>
+public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigDouble, IConfigFloat, IConfigInteger, IConfigOptionList, IHotkey, IConfigNotifiable<IConfigBase>, IConfigBlockState
 {
     /*
     public static final Codec<ConfigTypeWrapper> CODEC = RecordCodecBuilder.create(
@@ -192,6 +197,7 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
             case COLOR -> String.format("#%08X", ((IConfigColor) this.wrappedConfig).getIntegerValue());
             case OPTION_LIST -> ((IConfigOptionList) this.wrappedConfig).getOptionListValue().getStringValue();
             case HOTKEY -> ((IHotkey) this.wrappedConfig).getKeybind().getStringValue();
+            case BLOCK_STATE -> ((IConfigBlockState) this.wrappedConfig).getBlockStateValue().toString();
             default -> ((IStringRepresentable) this.wrappedConfig).getStringValue();
         };
     }
@@ -208,6 +214,7 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
             case COLOR -> String.format("#%08X", ((IConfigColor) this.wrappedConfig).getDefaultIntegerValue());
             case OPTION_LIST -> ((IConfigOptionList) this.wrappedConfig).getDefaultOptionListValue().getStringValue();
             case HOTKEY -> ((IHotkey) this.wrappedConfig).getKeybind().getDefaultStringValue();
+            case BLOCK_STATE -> ((IConfigBlockState) this.wrappedConfig).getDefaultBlockStateValue().toString();
             default -> ((IStringRepresentable) this.wrappedConfig).getDefaultStringValue();
         };
     }
@@ -241,6 +248,11 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
                     break;
                 case COLOR:
                     ((IConfigColor) this.wrappedConfig).setValueFromString(value);
+                    break;
+                case BLOCK_STATE:
+                    BlockUtils.getBlockStateFromString(value).ifPresent(
+                            blockState ->
+                                    ((IConfigBlockState) this.wrappedConfig).setBlockStateValue(blockState));
                     break;
                 case OPTION_LIST:
                     IConfigOptionList option = (IConfigOptionList) this.wrappedConfig;
@@ -302,6 +314,11 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
                 IStringRepresentable config = (IStringRepresentable) this.wrappedConfig;
                 yield config.getStringValue().equals(config.getDefaultStringValue()) == false;
             }
+            case BLOCK_STATE ->
+            {
+                IConfigBlockState config = (IConfigBlockState) this.wrappedConfig;
+                yield config.getBlockStateValue().equals(config.getDefaultBlockStateValue()) == false;
+            }
             default -> false;
         };
     }
@@ -318,6 +335,7 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
             case INTEGER -> String.valueOf(((IConfigInteger) this.wrappedConfig).getIntegerValue()).equals(newValue) == false;
             case COLOR -> ((ConfigColor) this.wrappedConfig).getStringValue().equals(newValue) == false;
             case OPTION_LIST -> ((IConfigOptionList) this.wrappedConfig).getOptionListValue().getStringValue().equals(newValue) == false;
+            case BLOCK_STATE -> ((ConfigBlockState) this.wrappedConfig).getBlockStateValue().equals(newValue) == false;
             default -> ((IStringRepresentable) this.wrappedConfig).getStringValue().equals(newValue) == false;
         };
     }
@@ -368,6 +386,12 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
                 {
                     IConfigOptionList config = (IConfigOptionList) this.wrappedConfig;
                     config.setOptionListValue(config.getDefaultOptionListValue());
+                    break;
+                }
+                case BLOCK_STATE:
+                {
+                    IConfigBlockState config = (IConfigBlockState) this.wrappedConfig;
+                    config.setBlockStateValue(config.getDefaultBlockStateValue());
                     break;
                 }
                 case STRING:
@@ -590,6 +614,50 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     }
 
     @Override
+    public BlockState getBlockStateValue()
+    {
+        return this.wrappedType == ConfigType.BLOCK_STATE ? ((IConfigBlockState) this.wrappedConfig).getBlockStateValue() : Blocks.AIR.defaultBlockState();
+    }
+
+    @Override
+    public BlockState getDefaultBlockStateValue()
+    {
+        return this.wrappedType == ConfigType.BLOCK_STATE ? ((IConfigBlockState) this.wrappedConfig).getDefaultBlockStateValue() : Blocks.AIR.defaultBlockState();
+    }
+
+    @Override
+    public void setBlockStateValue(BlockState value)
+    {
+        final BlockState oldValue = this.getBlockStateValue();
+
+        if (this.wrappedType == ConfigType.BLOCK_STATE)
+        {
+            ((IConfigBlockState) this.wrappedConfig).setBlockStateValue(value);
+        }
+
+        if (oldValue != this.getBlockStateValue() || this.isDirty())
+        {
+            this.markClean();
+            this.onValueChanged();
+        }
+    }
+
+    @Override
+    public BlockState getLastBlockStateValue()
+    {
+        return this.wrappedType == ConfigType.BLOCK_STATE ? ((IConfigBlockState) this.wrappedConfig).getLastBlockStateValue() : ((IConfigBlockState) this.wrappedConfig).getBlockStateValue();
+    }
+
+    @Override
+    public void updateLastBlockStateValue()
+    {
+        if (this.wrappedType == ConfigType.BLOCK_STATE)
+        {
+            ((IConfigBlockState) this.wrappedConfig).updateLastBlockStateValue();
+        }
+    }
+
+    @Override
     public IConfigOptionListEntry getOptionListValue()
     {
         return this.wrappedType == ConfigType.OPTION_LIST ? ((IConfigOptionList) this.wrappedConfig).getOptionListValue() : null;
@@ -658,6 +726,9 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
                 case HOTKEY:
                     ((IHotkey) this.wrappedConfig).setValueFromJsonElement(element);
                     break;
+                case BLOCK_STATE:
+                    ((ConfigBlockState) this.wrappedConfig).setValueFromJsonElement(element);
+                    break;
                 default:
             }
 
@@ -687,6 +758,7 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
             case OPTION_LIST ->
                     new JsonPrimitive(((IConfigOptionList) this.wrappedConfig).getOptionListValue().getStringValue());
             case HOTKEY -> ((IHotkey) this.wrappedConfig).getAsJsonElement();
+            case BLOCK_STATE -> ((ConfigBlockState) this.wrappedConfig).getAsJsonElement();
             default -> new JsonPrimitive(this.getStringValue());
         };
     }

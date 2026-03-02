@@ -46,7 +46,12 @@ public class BlockUtils
     {
         int index = str.indexOf("["); // [prop=value]
         String blockName = index != -1 ? str.substring(0, index) : str;
-        Identifier id = Identifier.parse(blockName);
+        Identifier id = Identifier.tryParse(blockName);
+
+        if (id == null)
+        {
+            return Optional.empty();
+        }
 
         if (RegistryUtils.getBlockById(id) != null)
         {
