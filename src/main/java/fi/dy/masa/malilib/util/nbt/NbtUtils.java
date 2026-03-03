@@ -659,21 +659,32 @@ public class NbtUtils
 	public static void writeCompressedTest(@Nonnull CompoundTag tag, @Nonnull Path file)
 	{
 		try (OutputStream os = Files.newOutputStream(file,
-		                                             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING,
-		                                             StandardOpenOption.SYNC, StandardOpenOption.WRITE))
+		                                             StandardOpenOption.SYNC, StandardOpenOption.WRITE,
+		                                             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
 		{
 			try
 			{
-				NbtIo.write(tag, new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(os))));
+				BufferedOutputStream bos = new BufferedOutputStream(os);
+				NbtIo.write(tag, new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(bos))));
+				bos.close();
 			}
 			catch (Exception e)
 			{
-				MaLiLib.LOGGER.warn("writeCompressedTest: Failed to write NBT data to file; '{}'", file.toAbsolutePath());
+				MaLiLib.LOGGER.error("writeCompressedTest: Exception writing NBT data to file '{}'; {}", file.toAbsolutePath(), e.getLocalizedMessage());
+			}
+
+			if (os != null)
+			{
+				try
+				{
+					os.close();
+				}
+				catch (Exception ignore) {}
 			}
 		}
 		catch (Exception err)
 		{
-			MaLiLib.LOGGER.warn("writeCompressedTest: Failed to write NBT data to file");
+			MaLiLib.LOGGER.error("writeCompressedTest: Failed to write NBT data to file '{}'; {}", file.toAbsolutePath(), err.getLocalizedMessage());
 		}
 	}
 
