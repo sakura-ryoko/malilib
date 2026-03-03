@@ -656,6 +656,12 @@ public class NbtUtils
 	}
 
 	@ApiStatus.Experimental
+	public static boolean writeCompoundTagToCompressedFile(@Nonnull CompoundTag tag, @Nonnull Path file)
+	{
+		return writeCompoundTagToCompressedFile(tag, file, "");
+	}
+
+	@ApiStatus.Experimental
 	public static boolean writeCompoundTagToCompressedFile(@Nonnull CompoundTag tag, @Nonnull Path file, String tagName)
 	{
 		try (DataOutputStream os = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(Files.newOutputStream(file)))))
