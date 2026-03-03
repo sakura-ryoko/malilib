@@ -1,7 +1,5 @@
 package fi.dy.masa.malilib.test.thread;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import net.minecraft.client.Minecraft;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -17,7 +15,7 @@ public class TestThreadDaemonDefaultHandler implements IThreadDaemonHandler<Test
 //	private final int threadCount = this.calculateMaxThreads();
 	private boolean useVirtual = false;
 	private final String namePrefix = MaLiLibReference.MOD_NAME+" Test Default Thread";
-	private static final float TASK_INTERVAL = 15.0f;
+	private static final float TASK_INTERVAL = 20.0f;
 //	private final ConcurrentHashMap<String, Thread> threadMap = this.builder();
 //	private final LinkedBlockingQueue<TestThreadTaskDefault> queue = new LinkedBlockingQueue<>();
 	private long lastTick;
@@ -30,8 +28,8 @@ public class TestThreadDaemonDefaultHandler implements IThreadDaemonHandler<Test
 		return MathUtils.clamp(result, 1, MAX_PLATFORM_THREADS);
 	}
 
-	private ConcurrentHashMap<String, Thread> builder()
-	{
+//	private ConcurrentHashMap<String, Thread> builder()
+//	{
 //		ConcurrentHashMap<String, Thread> threads = new ConcurrentHashMap<>(this.threadCount, 0.9f, 1);
 //
 //		for (int i = 0; i < this.threadCount; i++)
@@ -41,8 +39,7 @@ public class TestThreadDaemonDefaultHandler implements IThreadDaemonHandler<Test
 //		}
 //
 //		return threads;
-		return null;
-	}
+//	}
 
 	private TestThreadDaemonDefaultHandler()
 	{
@@ -128,13 +125,20 @@ public class TestThreadDaemonDefaultHandler implements IThreadDaemonHandler<Test
 	@Override
 	public void addTask(TestThreadTaskDefault task)
 	{
+//		boolean wasEmpty = this.queue.isEmpty();
 //		this.queue.offer(task);
+//
+//		if (wasEmpty)
+//		{
+//			this.ensureThreadsAreAlive();
+//		}
 	}
 
 	@Override
 	public TestThreadTaskDefault getNextTask() throws InterruptedException
 	{
 //		return this.queue.take();
+//		return this.queue.poll();
 		return null;
 	}
 
@@ -160,17 +164,21 @@ public class TestThreadDaemonDefaultHandler implements IThreadDaemonHandler<Test
 
 			if ((now - this.lastTick) > this.getTaskInterval())
 			{
-				for (int i = 0; i < 10; i++)
+				if (mc.level != null)
 				{
-					final int finalIndex = i;
+					for (int i = 0; i < 5; i++)
+					{
+						final int finalIndex = i;
 
-					this.addTask(new TestThreadTaskDefault(() ->
-                                 MaLiLib.LOGGER.info("Running TestThreadTaskDefault as a Runnable, [{}]", finalIndex))
-					);
+						this.addTask(new TestThreadTaskDefault(() ->
+								                                       MaLiLib.LOGGER.info("Running TestThreadTaskDefault as a Runnable, [{}]", finalIndex))
+						);
+					}
+
+//					System.out.printf("TestThreadDaemonDefaultHandler: taskQueue: [%02d]\n", this.queue.size());
+					this.ensureThreadsAreAlive();
 				}
 
-//				System.out.printf("TestThreadDaemonDefaultHandler: taskQueue: [%02d]\n", this.queue.size());
-				this.ensureThreadsAreAlive();
 				this.lastTick = now;
 			}
 		}

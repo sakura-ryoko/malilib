@@ -78,7 +78,10 @@ public interface IThreadDaemonExecutor<T extends IThreadTaskBase> extends Runnab
 	 * Return whether the {@link Thread} should sleep.
 	 * @return -
 	 */
-	boolean shouldPause();
+	default boolean shouldPause()
+	{
+		return !this.hasTasks();
+	}
 
 	/**
 	 * Send the {@link IThreadDaemonExecutor} the "interrupt" signal.
@@ -108,6 +111,15 @@ public interface IThreadDaemonExecutor<T extends IThreadTaskBase> extends Runnab
 	 */
 	default void sleep()
 	{
+		this.sleep(this.sleepTime());
+	}
+
+	/**
+	 * Sleeps the current running {@link Thread}, if we are on the Correct {@link Thread},
+	 * and if it is Running for 'millis' milliseconds.
+	 */
+	default void sleep(long millis)
+	{
 		if (this.isCorrectThread() && this.isRunning())
 		{
 			try
@@ -118,7 +130,7 @@ public interface IThreadDaemonExecutor<T extends IThreadTaskBase> extends Runnab
 				}
 
 				MaLiLib.debugLog("IThreadDaemonExecutor#Executor: sleeping: '{}' for [{}]", this.currentThreadName(), this.sleepTime());
-				Thread.sleep(this.sleepTime());
+				Thread.sleep(millis);
 			}
 			catch (InterruptedException e)
 			{

@@ -125,7 +125,13 @@ public class TestThreadDaemonAsyncHandler implements IThreadDaemonHandler<TestTh
 	@Override
 	public void addTask(TestThreadTaskAsync task)
 	{
+//		boolean wasEmpty = this.queue.isEmpty();
 //		this.queue.offer(task);
+//
+//		if (wasEmpty)
+//		{
+//			this.ensureThreadsAreAlive();
+//		}
 	}
 
 	@Override
@@ -157,27 +163,24 @@ public class TestThreadDaemonAsyncHandler implements IThreadDaemonHandler<TestTh
 
 			if ((now - this.lastTick) > this.getTaskInterval())
 			{
-				for (int i = 0; i < 10; i++)
+				if (mc.level != null)
 				{
-					final int finalIndex = i;
+					for (int i = 0; i < 10; i++)
+					{
+						final int finalIndex = i;
 
-					this.addTask(new TestThreadTaskAsync(() ->
-                                 MaLiLib.LOGGER.info("Running TestThreadTaskAsync as a Runnable, [{}]", finalIndex))
-					);
+						this.addTask(new TestThreadTaskAsync(() ->
+								                                     MaLiLib.LOGGER.info("Running TestThreadTaskAsync as a Runnable, [{}]", finalIndex))
+						);
+					}
+
+//					System.out.printf("TestThreadDaemonAsyncHandler: taskQueue: [%02d]\n", this.queue.size());
+					this.ensureThreadsAreAlive();
 				}
 
-//				System.out.printf("TestThreadDaemonAsyncHandler: taskQueue: [%02d]\n", this.queue.size());
-				this.ensureThreadsAreAlive();
 				this.lastTick = now;
 			}
 		}
-//		else
-//		{
-//			if (this.threadExecutor.isRunning())
-//			{
-//				this.stop();
-//			}
-//		}
 	}
 
 	// TODO -- is this even necessary?
