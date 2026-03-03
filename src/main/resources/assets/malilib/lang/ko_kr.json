@@ -36,7 +36,7 @@
     "malilib.config.generic.comment.actionbarHudTicks": "액션바 메시지가 표시되는 틱 단위 시간입니다.",
     "malilib.config.generic.comment.enableActionbarMessages": "액션바 메시지를 표시할지 여부입니다.\n이 설정은 녹화나 스트리밍 목적으로 유용할 수 있습니다.\nSakura의 \"스트리머 모드\" 모드에서 영감을 받았습니다.",
     "malilib.config.generic.comment.enableConfigSwitcher": "오른쪽 상단의 \"설정 스위처\"를 활성화하여\n등록된 설정 화면 간 빠른 전환이 가능합니다.\n참고: 등록된 설정 화면이 없는 경우,\n자동으로 등록을 시도합니다.",
-    "malilib.config.generic.comment.enableStatusEffectsShift": "상태 효과가 활성화되어 있는 동안 오른쪽 상단에\n렌더링되는 텍스트 라인을 옮깁니다. 이것을\n비활성화하면 상태 효과가 오른쪽 상단의\n텍스트를 가릴 수 있습니다.\n이는 다양한 GUI 또는 인벤토리 모드가 바닐라\n상태 효과의 위치를 바꾸는 특수한 경우들을\n위해 만들어졌습니다.",
+    "malilib.config.generic.comment.enableStatusEffectsShift": "상태 효과가 활성화되어 있는 동안 오른쪽 상단에\n렌더링 되는 텍스트 라인을 옮깁니다. 이것을\n비활성화하면 상태 효과가 오른쪽 상단의\n텍스트를 가릴 수 있습니다.\n이는 다양한 GUI 또는 인벤토리 모드가 바닐라\n상태 효과의 위치를 바꾸는 특수한 경우들을\n위해 만들어졌습니다.",
     "malilib.config.generic.comment.ignoredKeys": "여기에 설정된 모든 키는 완전히 무시됩니다.",
     "malilib.config.generic.comment.inGameMessageTimeout": "게임 내 메시지가 표시되는 초 단위 시간입니다.",
     "malilib.config.generic.comment.openGuiConfigs": "게임 내 malilib 설정 GUI를 엽니다.",
