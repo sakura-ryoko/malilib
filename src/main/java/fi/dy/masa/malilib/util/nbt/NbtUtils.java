@@ -656,36 +656,48 @@ public class NbtUtils
 	}
 
 	@ApiStatus.Experimental
-	public static void writeCompressedTest(@Nonnull CompoundTag tag, @Nonnull Path file)
+	public static boolean writeCompoundTagToCompressedFile(@Nonnull CompoundTag tag, @Nonnull Path file, String tagName)
 	{
-		try (OutputStream os = Files.newOutputStream(file,
-		                                             StandardOpenOption.SYNC, StandardOpenOption.WRITE,
-		                                             StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING))
+		try (DataOutputStream os = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(Files.newOutputStream(file)))))
 		{
-			try
+//			NbtIo.write(tag, dos);
+			return writeToNbtStream(tag, os, tagName);
+		}
+		catch (Exception e)
+		{
+			MaLiLib.LOGGER.warn("writeCompressedTest: Failed to write NBT data to file '{}'; {}", file.toAbsolutePath(), e.getLocalizedMessage());
+		}
+
+		return false;
+	}
+
+	@ApiStatus.Experimental
+	public static boolean writeToNbtStream(@Nonnull Tag tag, @Nonnull DataOutput os)
+	{
+		return writeToNbtStream(tag, os, "");
+	}
+
+	@ApiStatus.Experimental
+	public static boolean writeToNbtStream(@Nonnull Tag tag, @Nonnull DataOutput os, String tagName)
+	{
+		try
+		{
+			os.writeByte(tag.getId());
+
+			if (tag.getId() != Constants.NBT.TAG_END)
 			{
-				BufferedOutputStream bos = new BufferedOutputStream(os);
-				NbtIo.write(tag, new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(bos))));
-				bos.close();
-			}
-			catch (Exception e)
-			{
-				MaLiLib.LOGGER.error("writeCompressedTest: Exception writing NBT data to file '{}'; {}", file.toAbsolutePath(), e.getLocalizedMessage());
+				os.writeUTF(tagName);
+				tag.write(os);
 			}
 
-			if (os != null)
-			{
-				try
-				{
-					os.close();
-				}
-				catch (Exception ignore) {}
-			}
+			return true;
 		}
-		catch (Exception err)
+		catch (Exception e)
 		{
-			MaLiLib.LOGGER.error("writeCompressedTest: Failed to write NBT data to file '{}'; {}", file.toAbsolutePath(), err.getLocalizedMessage());
+			MaLiLib.LOGGER.warn("writeToNbtStream: Exception while writing NBT data; {}", e.getLocalizedMessage());
 		}
+
+		return false;
 	}
 
 	// todo this must have been an older method for this that no longer works
