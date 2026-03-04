@@ -316,7 +316,7 @@ public class TestRenderHandler implements IRenderer
                     {
                         try (NbtInventory nbtInv = NbtInventory.fromInventory(inv))
                         {
-                            ListData list = nbtInv.toDataList(world.registryAccess());
+                            ListData list = nbtInv.sorted().toDataList(world.registryAccess());
                             CompoundData data = new CompoundData();
 
                             data.put(NbtKeys.ENDER_ITEMS, list);

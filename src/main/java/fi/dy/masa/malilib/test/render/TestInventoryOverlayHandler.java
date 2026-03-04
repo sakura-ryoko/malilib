@@ -320,15 +320,14 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 						inv = enderItems;
 					}
 
-//					MaLiLib.LOGGER.error("getTargetFromBlock: EnderItems [{}]", enderItems != null ? enderItems.size() : "<NULL>");
+					MaLiLib.LOGGER.error("getTargetFromBlock: EnderItems [{}]", enderItems != null ? enderItems.getContainerSize() : "<NULL>");
 				}
 			}
 		}
 
 		if (data != null && !data.isEmpty())
 		{
-//			MaLiLib.LOGGER.warn("getTargetFromBlock(): rawData: [{}]", data.toString());
-
+			MaLiLib.LOGGER.warn("getTargetFromBlock(): rawData: [{}]", data.toString());
 			Container inv2 = InventoryUtils.getDataInventory(data, inv != null ? inv.getContainerSize() : -1, world.registryAccess());
 
 			if (inv == null)
@@ -385,8 +384,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		if (!data.isEmpty())
 		{
 			Container inv2;
-
-//			MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): rawData: [{}]", data.toString());
+			MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): rawData: [{}]", data.toString());
 
 			// Fix for empty horse inv
 			if (inv != null &&

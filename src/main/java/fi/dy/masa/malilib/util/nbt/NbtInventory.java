@@ -1,9 +1,6 @@
 package fi.dy.masa.malilib.util.nbt;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
@@ -36,6 +33,7 @@ import fi.dy.masa.malilib.util.log.AnsiLogger;
 public class NbtInventory implements AutoCloseable
 {
     private static final AnsiLogger LOGGER = new AnsiLogger(NbtInventory.class, true, true);
+    public static final Comparator<ItemStackWithSlot> COMPARATOR = new StackWithSlotComparator();
     public static final int VILLAGER_SIZE = 8;
     public static final int DEFAULT_SIZE = 27;
     public static final int PLAYER_SIZE = 36;
@@ -69,6 +67,22 @@ public class NbtInventory implements AutoCloseable
         {
             this.items.add(new ItemStackWithSlot(i, ItemStack.EMPTY));
         }
+    }
+
+    /**
+     * Resort this {@link NbtInventory} by Slot ID.
+     */
+    public NbtInventory sorted()
+    {
+        if (this.size() > 0)
+        {
+            List<ItemStackWithSlot> sorted = new ArrayList<>(this.items);
+            sorted.sort(COMPARATOR);
+            this.items.clear();
+            this.items.addAll(sorted);
+        }
+
+        return this;
     }
 
     public boolean isEmpty()
@@ -733,5 +747,14 @@ public class NbtInventory implements AutoCloseable
     public void close() throws Exception
     {
         this.items.clear();
+    }
+
+    public static class StackWithSlotComparator implements Comparator<ItemStackWithSlot>
+    {
+        @Override
+        public int compare(ItemStackWithSlot o1, ItemStackWithSlot o2)
+        {
+            return Integer.compare(o1.slot(), o2.slot());
+        }
     }
 }
