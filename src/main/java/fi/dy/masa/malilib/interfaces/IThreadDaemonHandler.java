@@ -52,7 +52,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	 * Safely start the {@link Thread} by checking the current state.
 	 * @param t The {@link Thread}
 	 * @throws RuntimeException The {@link Thread} is Null, or already Running
-	 * @throws ConcurrentModificationException The {@link Thread} is in the Blocking or Waiting state
+	 * @throws ConcurrentModificationException The {@link Thread} is in the Blocking state
 	 * @throws IllegalStateException The {@link Thread} was terminated, and needs to be replaced.
 	 */
 	default void safeStart(Thread t) throws RuntimeException
@@ -63,9 +63,9 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 		switch (t.getState())
 		{
 			case NEW -> t.start();
-			case TIMED_WAITING -> t.interrupt();
+			case TIMED_WAITING, WAITING -> t.interrupt();
 			case RUNNABLE -> throw new RuntimeException();
-			case BLOCKED, WAITING -> throw new ConcurrentModificationException();
+			case BLOCKED -> throw new ConcurrentModificationException();
 			case TERMINATED -> throw new IllegalStateException();
 		}
 	}
@@ -75,7 +75,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	 * @param t The {@link Thread}
 	 * @throws RuntimeException If the {@link Thread} is Null
 	 * @throws IllegalThreadStateException If the {@link Thread} is New and not yet started
-	 * @throws ConcurrentModificationException If the {@link Thread} is in a Blocking or Waiting state
+	 * @throws ConcurrentModificationException If the {@link Thread} is in a Blocking state
 	 * @throws IllegalStateException If the {@link Thread} was Terminated
 	 */
 	default void safeStop(Thread t) throws RuntimeException
@@ -86,7 +86,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 		switch (t.getState())
 		{
 			case NEW -> throw new IllegalThreadStateException();
-			case BLOCKED, WAITING -> throw new ConcurrentModificationException();
+			case BLOCKED -> throw new ConcurrentModificationException();
 			case TERMINATED -> throw new IllegalStateException();
 			default ->
 			{
