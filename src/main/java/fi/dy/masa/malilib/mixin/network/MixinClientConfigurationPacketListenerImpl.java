@@ -18,8 +18,9 @@ public class MixinClientConfigurationPacketListenerImpl
                      target = "Lnet/minecraft/network/Connection;setupInboundProtocol(Lnet/minecraft/network/ProtocolInfo;Lnet/minecraft/network/PacketListener;)V"
             )
     )
-    private void malilib_onPlayLogin(ClientboundFinishConfigurationPacket packet, CallbackInfo ci, @Local RegistryAccess.Frozen immutable)
+    private void malilib_onPlayLogin(ClientboundFinishConfigurationPacket packet, CallbackInfo ci,
+                                     @Local(name = "registries") RegistryAccess.Frozen registries)
     {
-        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadImmutable(immutable);
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadImmutable(registries);
     }
 }

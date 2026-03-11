@@ -27,6 +27,7 @@
         "test.MixinSharedConstants"
     ],
     "client": [
+        "client.IMixinMinecraft",
         "client.MixinMinecraft",
         "hud.MixinGui",
         "input.IMixinKeyBinding",
@@ -41,11 +42,9 @@
         "render.IMixinBlockRenderDispatcher",
         "render.IMixinBufferBuilder",
         "render.IMixinGameRenderer",
-        "render.IMixinGuiGraphics",
         "render.IMixinGuiRenderer",
         "render.MixinGameRenderer",
-        "render.MixinGlDevice",
-        "render.MixinGuiGraphics",
+        "render.MixinGuiGraphicsExtractor",
         "render.MixinGuiRenderer",
         "render.MixinRenderPipelines",
         "render.MixinWorldRenderer",

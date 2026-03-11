@@ -11,11 +11,11 @@ import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.gui.render.state.*;
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.state.gui.*;
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -36,16 +36,16 @@ import fi.dy.masa.malilib.util.WorldUtils;
  * -
  * When you need a GuiGraphics, you can just use this in its place and move on.
  */
-public class GuiContext extends GuiGraphics
+public class GuiContext extends GuiGraphicsExtractor
 {
-	private GuiGraphics guiGraphics;
+	private GuiGraphicsExtractor guiGraphics;
 
 	public GuiContext(Minecraft client, GuiRenderState state, int mouseX, int mouseY)
 	{
 		super(client, state, mouseX, mouseY);
 	}
 
-	public GuiContext(Minecraft client, Matrix3x2fStack pose, GuiRenderState state, int mouseX, int mouseY)
+	public GuiContext(final Minecraft client, final Matrix3x2fStack pose, final GuiRenderState state, final int mouseX, final int mouseY)
 	{
 		super(client, pose, state, mouseX, mouseY);
 	}
@@ -55,7 +55,7 @@ public class GuiContext extends GuiGraphics
 	 * @param gui ()
 	 * @return ()
 	 */
-	public static GuiContext fromGuiGraphics(GuiGraphics gui)
+	public static GuiContext fromGuiGraphics(GuiGraphicsExtractor gui)
 	{
 		// Copy with Pose Stack
 		GuiContext ctx = new GuiContext(
@@ -78,14 +78,14 @@ public class GuiContext extends GuiGraphics
 	 * Get as GuiGraphics
 	 * @return ()
 	 */
-	public GuiGraphics getGuiGraphics()
+	public GuiGraphicsExtractor getGuiGraphics()
 	{
 		if (this.guiGraphics != null)
 		{
 			return this.guiGraphics;
 		}
 
-		return (GuiGraphics) this;
+		return (GuiGraphicsExtractor) this;
 	}
 
 	public Minecraft mc()
@@ -152,7 +152,7 @@ public class GuiContext extends GuiGraphics
 	public void addSimpleElement(GuiElementRenderState element)
 	{
 //		((IMixinGuiGraphics) this).malilib_getRenderState().submitGuiElement(element);
-		this.guiRenderState.submitGuiElement(element);
+		this.guiRenderState.addGuiElement(element);
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class GuiContext extends GuiGraphics
 	public void addSpecialElement(PictureInPictureRenderState specialElement)
 	{
 //		((IMixinGuiGraphics) this).malilib_getRenderState().submitPicturesInPictureState(specialElement);
-		this.guiRenderState.submitPicturesInPictureState(specialElement);
+		this.guiRenderState.addPicturesInPictureState(specialElement);
 	}
 
 	/**
@@ -172,7 +172,7 @@ public class GuiContext extends GuiGraphics
 	public void addItemElement(GuiItemRenderState itemElement)
 	{
 //		((IMixinGuiGraphics) this).malilib_getRenderState().submitItem(itemElement);
-		this.guiRenderState.submitItem(itemElement);
+		this.guiRenderState.addItem(itemElement);
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class GuiContext extends GuiGraphics
 	public void addTextElement(GuiTextRenderState textElement)
 	{
 //		((IMixinGuiGraphics) this).malilib_getRenderState().submitText(textElement);
-		this.guiRenderState.submitText(textElement);
+		this.guiRenderState.addText(textElement);
 	}
 
 	/**
@@ -192,7 +192,7 @@ public class GuiContext extends GuiGraphics
 	public void addPreparedTextElement(GuiElementRenderState element)
 	{
 //		((IMixinGuiGraphics) this).malilib_getRenderState().submitGlyphToCurrentLayer(element);
-		this.guiRenderState.submitGlyphToCurrentLayer(element);
+		this.guiRenderState.addGlyphToCurrentLayer(element);
 	}
 
 	/**
@@ -202,7 +202,7 @@ public class GuiContext extends GuiGraphics
 	public void addSimpleElementToCurrentLayer(BlitRenderState element)
 	{
 //		((IMixinGuiGraphics) this).malilib_getRenderState().submitBlitToCurrentLayer(element);
-		this.guiRenderState.submitBlitToCurrentLayer(element);
+		this.guiRenderState.addBlitToCurrentLayer(element);
 	}
 
 	/**

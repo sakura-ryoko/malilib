@@ -12,7 +12,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -196,7 +196,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
+    public void extractRenderState(@NotNull GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float partialTicks)
     {
 		GuiContext ctx = GuiContext.fromGuiGraphics(drawContext);
 	    ctx.nextStratum();
@@ -217,7 +217,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public void renderBackground(@NotNull GuiGraphics context, int mouseX, int mouseY, float deltaTicks)
+    public void extractBackground(@NotNull GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks)
     {
         // NO BLUR / MASKING
     }
@@ -765,11 +765,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         if (blur)
         {
-            super.renderBlurredBackground(ctx.getGuiGraphics());
+            super.extractBlurredBackground(ctx.getGuiGraphics());
         }
 
 //        RenderUtils.drawTexturedRect(ctx, GuiBase.BG_TEXTURE, topX, topY, 0, 0, width, height, true);
-        super.renderMenuBackground(ctx.getGuiGraphics(), topX, topY, width, height);
+        super.extractMenuBackground(ctx.getGuiGraphics(), topX, topY, width, height);
     }
 
     protected void drawTitle(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
@@ -869,12 +869,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public void drawString(GuiContext ctx, String text, int x, int y, int color)
     {
-	    ctx.drawString(ctx.fontRenderer(), text, x, y, color, false);
+	    ctx.text(ctx.fontRenderer(), text, x, y, color, false);
     }
 
     public void drawStringWithShadow(GuiContext ctx, String text, int x, int y, int color)
     {
-        ctx.drawString(ctx.fontRenderer(), text, x, y, color);
+        ctx.text(ctx.fontRenderer(), text, x, y, color);
     }
 
     public int getMaxPrettyNameLength(List<? extends IConfigBase> configs)

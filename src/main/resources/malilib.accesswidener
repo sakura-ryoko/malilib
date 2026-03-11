@@ -1,20 +1,22 @@
-accessWidener v2 named
-extendable class net/minecraft/client/gui/GuiGraphics
-accessible method net/minecraft/client/gui/GuiGraphics <init> (Lnet/minecraft/client/Minecraft;Lorg/joml/Matrix3x2fStack;Lnet/minecraft/client/gui/render/state/GuiRenderState;II)V
-accessible field net/minecraft/client/gui/GuiGraphics minecraft Lnet/minecraft/client/Minecraft;
-accessible field net/minecraft/client/gui/GuiGraphics pose Lorg/joml/Matrix3x2fStack;
-accessible field net/minecraft/client/gui/GuiGraphics materials Lnet/minecraft/client/resources/model/MaterialSet;
-accessible field net/minecraft/client/gui/GuiGraphics guiRenderState Lnet/minecraft/client/gui/render/state/GuiRenderState;
-accessible field net/minecraft/client/gui/GuiGraphics guiSprites Lnet/minecraft/client/renderer/texture/TextureAtlas;
-accessible field net/minecraft/client/gui/GuiGraphics pendingCursor Lcom/mojang/blaze3d/platform/cursor/CursorType;
-accessible field net/minecraft/client/gui/GuiGraphics mouseX I
-accessible field net/minecraft/client/gui/GuiGraphics mouseY I
-accessible field net/minecraft/client/gui/GuiGraphics deferredTooltip Ljava/lang/Runnable;
-accessible field net/minecraft/client/gui/GuiGraphics hoveredTextStyle Lnet/minecraft/network/chat/Style;
-accessible field net/minecraft/client/gui/GuiGraphics clickableTextStyle Lnet/minecraft/network/chat/Style;
+accessWidener v2 official
+extendable class net/minecraft/client/gui/GuiGraphicsExtractor
+accessible method net/minecraft/client/gui/GuiGraphicsExtractor <init> (Lnet/minecraft/client/Minecraft;Lorg/joml/Matrix3x2fStack;Lnet/minecraft/client/renderer/state/gui/GuiRenderState;II)V
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor minecraft Lnet/minecraft/client/Minecraft;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor pose Lorg/joml/Matrix3x2fStack;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor sprites Lnet/minecraft/client/resources/model/sprite/SpriteGetter;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor guiSprites Lnet/minecraft/client/renderer/texture/TextureAtlas;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor guiRenderState Lnet/minecraft/client/renderer/state/gui/GuiRenderState;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor pendingCursor Lcom/mojang/blaze3d/platform/cursor/CursorType;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor mouseX I
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor mouseY I
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor deferredTooltip Ljava/lang/Runnable;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor hoveredTextStyle Lnet/minecraft/network/chat/Style;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor clickableTextStyle Lnet/minecraft/network/chat/Style;
+accessible field net/minecraft/client/gui/GuiGraphicsExtractor preeditOverlay Lnet/minecraft/client/gui/components/Renderable;
 accessible method net/minecraft/client/gui/components/MultiLineEditBox <init> (Lnet/minecraft/client/gui/Font;IIIILnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/Component;IZIZZ)V
-transitive-accessible class net/minecraft/client/gui/GuiGraphics$ScissorStack
-transitive-accessible field net/minecraft/client/gui/GuiGraphics scissorStack Lnet/minecraft/client/gui/GuiGraphics$ScissorStack;
+transitive-accessible field net/minecraft/client/gui/GuiGraphicsExtractor scissorStack Lnet/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack;
+transitive-accessible class net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack
+transitive-accessible class net/minecraft/client/gui/GuiGraphicsExtractor$RenderingTextCollector
 transitive-accessible method net/minecraft/client/gui/components/EditBox getMaxLength ()I
 transitive-accessible field net/minecraft/client/gui/components/debug/DebugScreenEntries ENTRIES_BY_ID Ljava/util/Map;
 transitive-accessible method net/minecraft/client/gui/components/debug/DebugScreenEntries register (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/gui/components/debug/DebugScreenEntry;)Lnet/minecraft/resources/Identifier;

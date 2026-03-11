@@ -26,22 +26,17 @@ import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.gui.render.state.GuiElementRenderState;
-import net.minecraft.client.gui.render.state.GuiItemRenderState;
-import net.minecraft.client.gui.render.state.GuiTextRenderState;
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.Lightmap;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.block.model.BlockModelPart;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.MapRenderState;
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -81,8 +76,9 @@ import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
+import fi.dy.masa.malilib.mixin.client.IMixinMinecraft;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
-import fi.dy.masa.malilib.mixin.render.IMixinGuiGraphics;
+import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
 import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElementRenderer;
@@ -103,176 +99,6 @@ public class RenderUtils
 
     private static final SingleThreadedRandomSource RAND = new SingleThreadedRandomSource(0);
 
-	/**
-	 * @deprecated Please transition to using RenderPipelines
-	 */
-	@Deprecated(forRemoval = true)
-    public static void blend(boolean toggle)
-    {
-        //RenderSystem.enableBlend();
-        //RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
-
-        if (toggle)
-        {
-            GlStateManager._enableBlend();
-//            GlStateManager._blendFuncSeparate(770, 771, 1, 0);
-	        GlStateManager._blendFuncSeparate(
-					GlConst.toGl(SourceFactor.SRC_ALPHA),
-					GlConst.toGl(DestFactor.ONE_MINUS_SRC_ALPHA),
-					GlConst.toGl(SourceFactor.ONE),
-					GlConst.toGl(DestFactor.ZERO)
-	        );
-        }
-        else
-        {
-            GlStateManager._disableBlend();
-        }
-    }
-
-    /*
-    public static void setupBlendSimple()
-    {
-        //RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-    }
-     */
-
-	/**
-	 * @deprecated Please transition to using RenderPipelines
-	 */
-	@Deprecated(forRemoval = true)
-    public static void depthTest(boolean toggle)
-    {
-        if (toggle)
-        {
-            GlStateManager._enableDepthTest();
-        }
-        else
-        {
-            GlStateManager._disableDepthTest();
-        }
-    }
-
-	/**
-	 * @deprecated Please transition to using RenderPipelines
-	 */
-	@Deprecated(forRemoval = true)
-    public static void depthFunc(int depth)
-    {
-        GlStateManager._depthFunc(depth);
-    }
-
-	/**
-	 * @deprecated Please transition to using RenderPipelines
-	 */
-	@Deprecated(forRemoval = true)
-    public static void depthMask(boolean toggle)
-    {
-        GlStateManager._depthMask(toggle);
-    }
-
-	/**
-	 * @deprecated Please transition to using RenderPipelines
-	 */
-	@Deprecated(forRemoval = true)
-    public static void culling(boolean toggle)
-    {
-        if (toggle)
-        {
-            GlStateManager._enableCull();
-        }
-        else
-        {
-            GlStateManager._disableCull();
-        }
-    }
-
-	/**
-	 * @deprecated Please transition to using RenderPipelines
-	 */
-	@Deprecated(forRemoval = true)
-    public static void polygonOffset(boolean toggle)
-    {
-        if (toggle)
-        {
-            GlStateManager._enablePolygonOffset();
-        }
-        else
-        {
-            GlStateManager._disablePolygonOffset();
-        }
-    }
-
-	/**
-	 * @deprecated Please transition to using RenderPipelines
-	 */
-	@Deprecated(forRemoval = true)
-    public static void polygonOffset(float factor, float units)
-    {
-        GlStateManager._polygonOffset(factor, units);
-    }
-
-	/**
-	 * @deprecated Please transition to using RenderPipelines
-	 */
-    @Deprecated(forRemoval = true)
-    public static void fbStartDrawing()
-    {
-        RenderSystem.assertOnRenderThread();
-        GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, 0);
-    }
-
-    /**
-     * @deprecated Please Migrate to using {@link GuiContext}
-     */
-	@Deprecated(forRemoval = true)
-    public static @Nullable Pair<GpuTexture, GpuSampler> bindGpuTexture(Identifier texture)
-    {
-        AbstractTexture tex = (AbstractTexture) tex().getTexture(texture);
-
-        if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTexture() != null)
-        {
-            return Pair.of(tex.getTexture(), tex.getSampler());
-        }
-
-	    MaLiLib.LOGGER.error("bindGpuTexture: Result is null!");
-        return null;
-    }
-
-	/**
-	 * @deprecated Please Migrate to using {@link GuiContext}
-	 */
-	@Deprecated(forRemoval = true)
-	public static @Nullable Pair<GpuTextureView, GpuSampler> bindGpuTextureView(Identifier texture)
-	{
-		SimpleTexture tex = (SimpleTexture) tex().getTexture(texture);
-
-		if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTextureView() != null)
-		{
-			return Pair.of(tex.getTextureView(), tex.getSampler());
-		}
-
-		MaLiLib.LOGGER.error("bindGpuTextureView: Result is null!");
-		return null;
-	}
-
-	/**
-	 * @deprecated Please Migrate to using {@link GuiContext}
-	 */
-	@Deprecated(forRemoval = true)
-	public static void addSimpleElement(GuiGraphics drawContext, GuiElementRenderState simpleElement)
-	{
-		((IMixinGuiGraphics) drawContext).malilib_getRenderState().submitGuiElement(simpleElement);
-	}
-
-	/**
-	 * @deprecated Please Migrate to using {@link GuiContext}
-	 */
-    @Deprecated(forRemoval = true)
-    public static void addSpecialElement(GuiGraphics drawContext, PictureInPictureRenderState specialElement)
-    {
-        ((IMixinGuiGraphics) drawContext).malilib_getRenderState().submitPicturesInPictureState(specialElement);
-    }
-
     // FIXME
     @ApiStatus.Internal
     public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, MultiBufferSource.BufferSource immediate, Minecraft mc)
@@ -283,7 +109,10 @@ public class RenderUtils
         builder.putAll(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
 
         // Add Gui Block Model Renderer
-        builder.put(MaLiLibBlockStateGuiElement.class, new MaLiLibBlockStateGuiElementRenderer(immediate, mc.getBlockRenderer()));
+        builder.put(MaLiLibBlockStateGuiElement.class, new MaLiLibBlockStateGuiElementRenderer(immediate,
+                                                                                               ((IMixinMinecraft) mc).malilib_getBlockModelResolver(),
+                                                                                               mc.getBlockColors())
+        );
 
         // Event Callback
         ((RenderEventHandler) RenderEventHandler.getInstance()).onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
@@ -317,60 +146,6 @@ public class RenderUtils
         }
 
         System.out.print("DUMP END\n");
-    }
-
-	/**
-	 * @deprecated Please Migrate to using {@link GuiContext}
-	 */
-	@Deprecated(forRemoval = true)
-    public static void addItemElement(GuiGraphics drawContext, GuiItemRenderState itemElement)
-    {
-        ((IMixinGuiGraphics) drawContext).malilib_getRenderState().submitItem(itemElement);
-    }
-
-	/**
-	 * @deprecated Please Migrate to using {@link GuiContext}
-	 */
-	@Deprecated(forRemoval = true)
-    public static void addTextElement(GuiGraphics drawContext, GuiTextRenderState textElement)
-    {
-        ((IMixinGuiGraphics) drawContext).malilib_getRenderState().submitText(textElement);
-    }
-
-	/**
-	 * @deprecated Please Migrate to using {@link GuiContext}
-	 */
-	@Deprecated(forRemoval = true)
-    public static void pushScissor(GuiGraphics drawContext, @Nonnull ScreenRectangle rect)
-    {
-        ((IMixinGuiGraphics) drawContext).malilib_getScissorStack().push(rect);
-    }
-
-	/**
-	 * @deprecated Please Migrate to using {@link GuiContext}
-	 */
-	@Deprecated(forRemoval = true)
-    public static boolean containsScissor(GuiGraphics drawContext, int x, int y)
-    {
-        return ((IMixinGuiGraphics) drawContext).malilib_getScissorStack().containsPoint(x, y);
-    }
-
-	/**
-	 * @deprecated Please Migrate to using {@link GuiContext}
-	 */
-	@Deprecated(forRemoval = true)
-    public static ScreenRectangle peekLastScissor(GuiGraphics drawContext)
-    {
-        return ((IMixinGuiGraphics) drawContext).malilib_getScissorStack().peek();
-    }
-
-	/**
-	 * @deprecated Please Migrate to using {@link GuiContext}
-	 */
-	@Deprecated(forRemoval = true)
-    public static ScreenRectangle popScissor(GuiGraphics drawContext)
-    {
-        return ((IMixinGuiGraphics) drawContext).malilib_getScissorStack().pop();
     }
 
     public static void drawOutlinedBox(GuiContext ctx, int x, int y, int width, int height, int colorBg, int colorBorder)
@@ -899,7 +674,7 @@ public class RenderUtils
             for (int i = 0; i < textLines.size(); ++i)
             {
                 String str = textLines.get(i);
-	            ctx.drawString(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
+	            ctx.text(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
                 textStartY += lineHeight;
             }
 
@@ -991,7 +766,7 @@ public class RenderUtils
 	 */
     public static void drawCenteredString(GuiContext ctx, int x, int y, int color, String text)
     {
-	    ctx.drawCenteredString(mc().font, text, x, y, color);
+	    ctx.centeredText(mc().font, text, x, y, color);
     }
 
 	/**
@@ -1062,7 +837,7 @@ public class RenderUtils
 
         for (String line : parts)
         {
-	        ctx.drawString(textRenderer, line, x, y, color, true);
+	        ctx.text(textRenderer, line, x, y, color, true);
             y += textRenderer.lineHeight + 1;
         }
     }
@@ -1084,7 +859,7 @@ public class RenderUtils
 
             for (String line : lines)
             {
-	            ctx.drawString(textRenderer, line, x, y, color, false);
+	            ctx.text(textRenderer, line, x, y, color, false);
                 y += textRenderer.lineHeight + 2;
             }
         }
@@ -1201,7 +976,7 @@ public class RenderUtils
                 drawRect(ctx, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.lineHeight, bgColor);
             }
 
-	        ctx.drawString(fontRenderer, line, x, y, textColor, useShadow);
+	        ctx.text(fontRenderer, line, x, y, textColor, useShadow);
         }
 
         if (scaled)
@@ -2030,7 +1805,7 @@ public class RenderUtils
 
                 MapRenderState mapRenderState = new MapRenderState();
                 mc().getMapRenderer().extractRenderState(mapId, mapState, mapRenderState);
-	            ctx.submitMapRenderState(mapRenderState);
+	            ctx.map(mapRenderState);
 	            ctx.pose().popMatrix();
             }
         }
@@ -2724,9 +2499,9 @@ public class RenderUtils
         return mc().getTextureManager();
     }
 
-    public static LightTexture lightmap()
+    public static Lightmap lightmap()
     {
-        return mc().gameRenderer.lightTexture();
+        return ((IMixinGameRenderer) mc().gameRenderer).malilib_getLightmap();
     }
 
 	public static Font textRenderer()

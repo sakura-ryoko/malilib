@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.mixin.client;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import com.llamalad7.mixinextras.sugar.Local;
 
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,7 @@ import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.WorldStem;
 import net.minecraft.server.packs.repository.PackRepository;
+import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -32,11 +34,10 @@ public abstract class MixinMinecraft
     @Inject(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V",
             at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/level/storage/LevelStorageSource;parseValidator(Ljava/nio/file/Path;)Lnet/minecraft/world/level/validation/DirectoryValidator;"))
-    private void malilib_onPreGameInit(GameConfig args, CallbackInfo ci,
-                                       @Local Path runDir)
+    private void malilib_onPreGameInit(GameConfig gameConfig, CallbackInfo ci)
     {
         // Register all mod handlers
-        ((InitializationHandler) InitializationHandler.getInstance()).onPreGameInit(runDir);
+        ((InitializationHandler) InitializationHandler.getInstance()).onPreGameInit(gameConfig.location.gameDirectory.toPath());
     }
 
     @Inject(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V", at = @At("RETURN"))
@@ -49,10 +50,10 @@ public abstract class MixinMinecraft
     @Inject(method = "doWorldLoad",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/progress/LevelLoadListener;compose(Lnet/minecraft/server/level/progress/LevelLoadListener;Lnet/minecraft/server/level/progress/LevelLoadListener;)Lnet/minecraft/server/level/progress/LevelLoadListener;",
             shift = At.Shift.BEFORE))
-    private void malilib_onStartIntegratedServer(LevelStorageSource.LevelStorageAccess session, PackRepository dataPackManager, WorldStem saveLoader, boolean newWorld, CallbackInfo ci)
+    private void malilib_onStartIntegratedServer(LevelStorageSource.LevelStorageAccess levelSourceAccess, PackRepository packRepository, WorldStem worldStem, Optional<GameRules> gameRules, boolean newWorld, CallbackInfo ci)
     {
         MaLiLib.debugLog("malilib_onStartIntegratedServer(): Get DynamicRegistry from IntegratedServer");
-        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadImmutable(saveLoader.registries().compositeAccess());
+        ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadImmutable(worldStem.registries().compositeAccess());
     }
 
     @Inject(method = "tick()V", at = @At("RETURN"))

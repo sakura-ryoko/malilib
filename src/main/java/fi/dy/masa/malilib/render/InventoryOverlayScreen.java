@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.NonNullList;
@@ -72,13 +72,13 @@ public class InventoryOverlayScreen extends Screen implements Renderable
 	}
 
 	@Override
-    public void renderBackground(@NotNull GuiGraphics context, int mouseX, int mouseY, float deltaTicks)
+    public void extractBackground(@NotNull GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks)
     {
         // NO BLUR / MASKING
     }
 
     @Override
-    public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float delta)
+    public void extractRenderState(@NotNull GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float delta)
     {
 		if (this.previewData != null)
 	    {

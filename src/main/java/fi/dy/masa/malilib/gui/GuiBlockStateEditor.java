@@ -6,7 +6,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -316,14 +316,14 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	}
 
 	@Override
-	public void render(@NotNull GuiGraphics ctx, int mouseX, int mouseY, float partialTicks)
+	public void extractRenderState(@NotNull GuiGraphicsExtractor ctx, int mouseX, int mouseY, float partialTicks)
 	{
 		if (this.getParent() != null)
 		{
-			this.getParent().render(ctx, mouseX, mouseY, partialTicks);
+			this.getParent().extractRenderState(ctx, mouseX, mouseY, partialTicks);
 		}
 
-		super.render(ctx, mouseX, mouseY, partialTicks);
+		super.extractRenderState(ctx, mouseX, mouseY, partialTicks);
 		this.drawBlockStateInGui(GuiContext.fromGuiGraphics(ctx), mouseX, mouseY);
 	}
 

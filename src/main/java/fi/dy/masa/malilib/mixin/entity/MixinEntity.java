@@ -137,13 +137,13 @@ public abstract class MixinEntity implements INbtEntityInvoker
                 nbt.store(NbtKeys.CUSTOM_DATA, CustomData.CODEC, this.customData);
             }
 
-            // Ignore Passengers
             NbtView view = NbtView.getWriter(this.level.registryAccess());
 
             this.addAdditionalSaveData(view.getWriter());
             nbt.merge(Objects.requireNonNullElse(view.readNbt(), new CompoundTag()));
             nbt.putString(NbtKeys.ID, EntityType.getKey(this.type).toString());
 
+            // Ignore Passengers, It is broken.
             return Optional.of(nbt);
         }
         catch (Exception err)
