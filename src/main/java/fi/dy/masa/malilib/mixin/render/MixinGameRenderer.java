@@ -2,9 +2,7 @@ package fi.dy.masa.malilib.mixin.render;
 
 import com.llamalad7.mixinextras.sugar.Local;
 
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
@@ -18,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import fi.dy.masa.malilib.event.RenderEventHandler;
-import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 
 @Mixin(value = GameRenderer.class, priority = 990)
@@ -32,17 +28,5 @@ public class MixinGameRenderer
                                                   @Local(name = "bufferSource") MultiBufferSource.BufferSource bufferSource)
     {
         RenderUtils.registerSpecialGuiRenderers(this.guiRenderer, bufferSource, minecraft);
-    }
-
-    @Inject(method = "extractGui",
-            at = @At(value = "INVOKE",
-                     target = "Lnet/minecraft/client/gui/screens/Overlay;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V",
-                     shift = At.Shift.AFTER))
-    private void malilib_onExtractGuiOverlayPost(DeltaTracker deltaTracker, boolean shouldRenderLevel, boolean resourcesLoaded, CallbackInfo ci,
-                                              @Local(name = "graphics") GuiGraphicsExtractor graphics,
-                                              @Local(name = "xMouse") int mouseX,
-                                              @Local(name = "yMouse") int mouseY)
-    {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).runExtractGuiOverlayPost(GuiContext.fromGuiGraphics(graphics), mouseX, mouseY, deltaTracker.getGameTimeDeltaTicks());
     }
 }

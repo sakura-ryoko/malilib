@@ -4,17 +4,10 @@ public interface IRenderDispatcher
 {
     /**
      * Registers a renderer which will have its {@link IRenderer.onExtractInGameGuiPost}
-     * method called after the vanilla gui overlay extraction is done
+     * method called after the vanilla In Game Gui extraction is done
      * @param renderer ()
      */
     void registerInGameGuiRenderer(IRenderer renderer);
-
-    /**
-     * Registers a renderer which will have its {@link IRenderer.onExtractGuiOverlayPost}
-     * method called after the vanilla gui overlay extraction is done
-     * @param renderer ()
-     */
-    void registerGameOverlayRenderer(IRenderer renderer);
 
     /**
      * Registers a renderer which will have its {@link IRenderer.onRenderTooltipLast}
@@ -32,7 +25,7 @@ public interface IRenderDispatcher
 
     /**
      * Registers a renderer which will have its {@link IRenderer.onExtractWorldLast}
-     * method called after the vanilla rendering is done
+     * method called after the vanilla rendering is done except for debug
      * @param renderer ()
      */
     void registerWorldLastRenderer(IRenderer renderer);

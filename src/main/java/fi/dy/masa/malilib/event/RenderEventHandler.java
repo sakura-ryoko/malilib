@@ -44,7 +44,6 @@ public class RenderEventHandler implements IRenderDispatcher
     private static final RenderEventHandler INSTANCE = new RenderEventHandler();
 
     private final List<IRenderer> inGameGuiRenderers = new ArrayList<>();
-    private final List<IRenderer> guiOverlayRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
@@ -61,15 +60,6 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.inGameGuiRenderers.contains(renderer) == false)
         {
             this.inGameGuiRenderers.add(renderer);
-        }
-    }
-
-    @Override
-    public void registerGameOverlayRenderer(IRenderer renderer)
-    {
-        if (this.guiOverlayRenderers.contains(renderer) == false)
-        {
-            this.guiOverlayRenderers.add(renderer);
         }
     }
 
@@ -134,25 +124,6 @@ public class RenderEventHandler implements IRenderDispatcher
 
         InfoUtils.renderInGameMessages(ctx);
         profiler.pop();
-    }
-
-    @ApiStatus.Internal
-    public void runExtractGuiOverlayPost(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
-    {
-        if (this.guiOverlayRenderers.isEmpty() == false)
-        {
-            ProfilerFiller profiler = Profiler.get();
-            profiler.push(MaLiLibReference.MOD_ID+"_extract_gui_overlay_post");
-
-            for (IRenderer renderer : this.guiOverlayRenderers)
-            {
-                profiler.push(renderer.getProfilerSectionSupplier());
-                renderer.onExtractGuiOverlayPost(ctx, mouseX, mouseY, partialTicks, profiler);
-                profiler.pop();
-            }
-
-            profiler.pop();
-        }
     }
 
     @ApiStatus.Internal
@@ -298,7 +269,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
             for (IRenderer renderer : this.worldLastRenderers)
             {
-                renderer.onExtractWorldPreWeather(deltaTracker, camera, ticks, profiler);
+                renderer.onExtractWorldLast(deltaTracker, camera, ticks, profiler);
             }
 
             profiler.pop();

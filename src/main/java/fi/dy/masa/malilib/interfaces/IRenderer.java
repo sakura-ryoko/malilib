@@ -3,13 +3,11 @@ package fi.dy.masa.malilib.interfaces;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import com.google.common.collect.ImmutableMap;
-
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.pipeline.RenderTarget;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -24,19 +22,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+
 import fi.dy.masa.malilib.render.GuiContext;
 
 public interface IRenderer
 {
     /**
-     * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, profiler
+     * Called after the vanilla In Game Gui have been rendered, with advanced Parameters such as ticks, profiler
      */
     default void onExtractInGameGuiPost(GuiContext ctx, float partialTicks, ProfilerFiller profiler) {}
-
-    /**
-     * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, drawer, profiler
-     */
-    default void onExtractGuiOverlayPost(GuiContext ctx, int mouseX, int mouseY, float partialTicks, ProfilerFiller profiler) {}
 
     /**
      * Called during the Render Level "Extraction" phase

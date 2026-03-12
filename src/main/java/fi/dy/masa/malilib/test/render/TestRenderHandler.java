@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 
@@ -102,44 +101,6 @@ public class TestRenderHandler implements IRenderer
         }
     }
 
-    @Override
-    public void onExtractGuiOverlayPost(GuiContext ctx, int mouseX, int mouseY, float partialTicks, ProfilerFiller profiler)
-    {
-//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-//        {
-//            if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
-//                MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
-//            {
-//	            TestInventoryOverlayHandler.getInstance().getRenderContext(ctx, profiler);
-//            }
-//
-//            if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
-//            {
-//                List<String> list = new ArrayList<>();
-//                list.add("Test Line 1");
-//                list.add("Test Line 2");
-//                list.add("Test Line 3");
-//                list.add("Test Line 4");
-//                list.add("Test Line 5");
-//
-//                if (TickUtils.getInstance().isValid())
-//                {
-//                    String result = getMeasuredTPS();
-//                    list.addFirst(result);
-//                    list.removeLast();
-//                }
-//
-//                RenderUtils.renderText(ctx, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
-//            }
-//        }
-    }
-
-    @Override
-    public void onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
-    {
-        // TODO
-    }
-
     private static @Nonnull String getMeasuredTPS()
     {
         final float tickRate = TickUtils.getTickRate();
@@ -172,6 +133,12 @@ public class TestRenderHandler implements IRenderer
                              avgMspt, avgTps, actualTps,
                              sprintStr)
                 ;
+    }
+
+    @Override
+    public void onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
+    {
+        // TODO
     }
 
     @Override
