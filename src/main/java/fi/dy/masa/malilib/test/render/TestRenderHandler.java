@@ -73,12 +73,44 @@ public class TestRenderHandler implements IRenderer
     @Override
     public void onExtractInGameGuiPost(GuiContext ctx, float partialTicks, ProfilerFiller profiler)
     {
+        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+        {
+            if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
+                MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
+            {
+                TestInventoryOverlayHandler.getInstance().getRenderContext(ctx, profiler);
+            }
+
+            if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
+            {
+                List<String> list = new ArrayList<>();
+                list.add("Test Line 1");
+                list.add("Test Line 2");
+                list.add("Test Line 3");
+                list.add("Test Line 4");
+                list.add("Test Line 5");
+
+                if (TickUtils.getInstance().isValid())
+                {
+                    String result = getMeasuredTPS();
+                    list.addFirst(result);
+                    list.removeLast();
+                }
+
+                RenderUtils.renderText(ctx, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
+            }
+        }
+    }
+
+    @Override
+    public void onExtractGuiOverlayPost(GuiContext ctx, int mouseX, int mouseY, float partialTicks, ProfilerFiller profiler)
+    {
 //        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
 //        {
 //            if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
 //                MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
 //            {
-//                TestInventoryOverlayHandler.getInstance().getRenderContext(ctx, profiler);
+//	            TestInventoryOverlayHandler.getInstance().getRenderContext(ctx, profiler);
 //            }
 //
 //            if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
@@ -100,38 +132,6 @@ public class TestRenderHandler implements IRenderer
 //                RenderUtils.renderText(ctx, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
 //            }
 //        }
-    }
-
-    @Override
-    public void onExtractGuiOverlayPost(GuiContext ctx, int mouseX, int mouseY, float partialTicks, ProfilerFiller profiler)
-    {
-        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-        {
-            if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
-                MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
-            {
-	            TestInventoryOverlayHandler.getInstance().getRenderContext(ctx, profiler);
-            }
-
-            if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
-            {
-                List<String> list = new ArrayList<>();
-                list.add("Test Line 1");
-                list.add("Test Line 2");
-                list.add("Test Line 3");
-                list.add("Test Line 4");
-                list.add("Test Line 5");
-                
-                if (TickUtils.getInstance().isValid())
-                {
-                    String result = getMeasuredTPS();
-                    list.addFirst(result);
-                    list.removeLast();
-                }
-
-                RenderUtils.renderText(ctx, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
-            }
-        }
     }
 
     @Override
