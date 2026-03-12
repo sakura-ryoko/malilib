@@ -8,7 +8,7 @@ import com.google.gson.JsonPrimitive;
 
 import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.config.IStringRepresentable;
-import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.data.json.JsonUtils;
 
 public interface IKeybind extends IConfigResettable, IStringRepresentable
 {

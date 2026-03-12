@@ -3,9 +3,15 @@ package fi.dy.masa.malilib.interfaces;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import com.google.common.collect.ImmutableMap;
+
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector4f;
+
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
@@ -13,6 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.Item;
@@ -22,34 +29,34 @@ import fi.dy.masa.malilib.render.GuiContext;
 public interface IRenderer
 {
     /**
+     * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, profiler
+     */
+    default void onExtractInGameGuiPost(GuiContext ctx, float partialTicks, ProfilerFiller profiler) {}
+
+    /**
      * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, drawer, profiler
      */
-    default void onRenderGameOverlayPostAdvanced(GuiContext ctx, float partialTicks, ProfilerFiller profiler) {}
+    default void onExtractGuiOverlayPost(GuiContext ctx, int mouseX, int mouseY, float partialTicks, ProfilerFiller profiler) {}
 
     /**
-     * Called after the vanilla overlays have been rendered (Original)
+     * Called during the Render Level "Extraction" phase
      */
-    default void onRenderGameOverlayPost(GuiContext ctx) {}
-
-    /**
-     * Called after vanilla debug rendering (Chunk Borders, etc)
-     */
-//    default void onRenderWorldPostDebugRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera, Profiler profiler) {}
+    default void onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler) {}
 
     /**
      * Called before vanilla Weather rendering
      */
-    default void onRenderWorldPreWeather(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, RenderBuffers buffers, ProfilerFiller profiler) {}
+    default void onRenderWorldPreWeather(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler) {}
+
+    /**
+     * Called during the Render Level "Extraction" phase
+     */
+    default void onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler) {}
 
     /**
      * Called after vanilla world rendering, with advanced Parameters, such as Frustum, Camera, and Fog
      */
-    default void onRenderWorldLastAdvanced(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, RenderBuffers buffers, ProfilerFiller profiler) {}
-
-    /**
-     * Called after vanilla world rendering (Original)
-     */
-    default void onRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix) {}
+    default void onRenderWorldLast(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler) {}
 
     /**
      * Called only after the tooltip text adds the Item Name.

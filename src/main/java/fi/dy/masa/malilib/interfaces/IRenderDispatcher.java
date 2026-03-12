@@ -3,8 +3,15 @@ package fi.dy.masa.malilib.interfaces;
 public interface IRenderDispatcher
 {
     /**
-     * Registers a renderer which will have its {@link IRenderer.onRenderGameOverlayPost}
-     * method called after the vanilla rendering is done
+     * Registers a renderer which will have its {@link IRenderer.onExtractInGameGuiPost}
+     * method called after the vanilla gui overlay extraction is done
+     * @param renderer ()
+     */
+    void registerInGameGuiRenderer(IRenderer renderer);
+
+    /**
+     * Registers a renderer which will have its {@link IRenderer.onExtractGuiOverlayPost}
+     * method called after the vanilla gui overlay extraction is done
      * @param renderer ()
      */
     void registerGameOverlayRenderer(IRenderer renderer);
@@ -17,42 +24,14 @@ public interface IRenderDispatcher
     void registerTooltipLastRenderer(IRenderer renderer);
 
     /**
-     * Registers a renderer which will have its {@link IRenderer.onRenderWorldPreMain}
-     * method called before the vanilla Weather rendering is done
-     * @param renderer
-     */
-//    void registerWorldPreMainRenderer(IRenderer renderer);
-
-    /**
-     * Registers a renderer which will have its {@link IRenderer.onRenderWorldLayerPass}
-     * method called after the vanilla Debug rendering is done
-     * @param renderer ()
-     */
-//    void registerWorldLayerPassRenderer(IRenderer renderer);
-
-    /**
-     * Registers a renderer which will have its {@link IRenderer.onRenderWorldPostDebugRender}
-     * method called after the vanilla Debug rendering is done
-     * @param renderer ()
-     */
-    void registerWorldPostDebugRenderer(IRenderer renderer);
-
-    /**
-     * Registers a renderer which will have its {@link IRenderer.onRenderWorldPreParticle}
-     * method called before the vanilla Weather rendering is done
-     * @param renderer ()
-     */
-//    void registerWorldPreParticleRenderer(IRenderer renderer);
-
-    /**
-     * Registers a renderer which will have its {@link IRenderer.onRenderWorldPreWeather}
+     * Registers a renderer which will have its {@link IRenderer.onExtractWorldPreWeather}
      * method called before the vanilla Weather rendering is done
      * @param renderer ()
      */
     void registerWorldPreWeatherRenderer(IRenderer renderer);
 
     /**
-     * Registers a renderer which will have its {@link IRenderer.onRenderWorldPost}
+     * Registers a renderer which will have its {@link IRenderer.onExtractWorldLast}
      * method called after the vanilla rendering is done
      * @param renderer ()
      */

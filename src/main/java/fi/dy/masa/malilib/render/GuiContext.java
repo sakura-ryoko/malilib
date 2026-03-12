@@ -14,12 +14,15 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.renderer.state.gui.*;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -270,5 +273,91 @@ public class GuiContext extends GuiGraphicsExtractor
 		Pair<GpuTextureView, GpuSampler> pair = this.bindTexture(texture);
 		if (pair == null) return TextureSetup.noTexture();
 		return setupTexture(pair);
+	}
+
+	/**
+	 * ==========================================================================================>>>
+	 * WRAPPERS FOR PORTABILITY
+	 * ==========================================================================================>>>
+	 */
+
+	public void drawString(final Font font, @Nullable final String str, final int x, final int y, final int color)
+	{
+		this.text(font, str, x, y, color, true);
+	}
+
+	public void drawString(final Font font, @Nullable final String str, final int x, final int y, final int color, final boolean shadow)
+	{
+		this.text(font, str, x, y, color, shadow);
+	}
+
+	public void drawString(final Font font, final FormattedCharSequence str, final int x, final int y, final int color)
+	{
+		this.text(font, str, x, y, color, true);
+	}
+
+	public void drawString(final Font font, final FormattedCharSequence str, final int x, final int y, final int color, final boolean shadow)
+	{
+		this.text(font, str, x, y, color, shadow);
+	}
+
+	public void drawString(final Font font, final Component str, final int x, final int y, final int color)
+	{
+		this.text(font, str, x, y, color, true);
+	}
+
+	public void drawString(final Font font, final Component str, final int x, final int y, final int color, final boolean shadow)
+	{
+		this.text(font, str, x, y, color, shadow);
+	}
+
+	public void drawCenteredString(final Font font, final String str, final int x, final int y, final int color)
+	{
+		this.centeredText(font, str, x, y, color);
+	}
+
+	public void drawCenteredString(final Font font, final Component text, final int x, final int y, final int color)
+	{
+		this.centeredText(font, text, x, y, color);
+	}
+
+	public void drawCenteredString(final Font font, final FormattedCharSequence text, final int x, final int y, final int color)
+	{
+		this.centeredText(font, text, x, y, color);
+	}
+
+	public void renderItem(final ItemStack stack, final int x, final int y)
+	{
+		this.item(stack, x, y);
+	}
+
+	public void renderItemDecorations(final Font font, final ItemStack stack, final int x, final int y)
+	{
+		this.itemDecorations(font, stack, x, y);
+	}
+
+	public void renderTooltip(final Font font, final Component text, final int xo, final int yo)
+	{
+		this.setTooltipForNextFrame(font, text, xo, yo, null);
+	}
+
+	public void renderTooltip(final Font font, final Component text, final int xo, final int yo, @Nullable final Identifier style)
+	{
+		this.setTooltipForNextFrame(font, text, xo, yo, style);
+	}
+
+	public void renderTooltip(final Font font, final List<Component> lines, final int xo, final int yo)
+	{
+		this.setComponentTooltipForNextFrame(font, lines, xo, yo, null);
+	}
+
+	public void renderTooltip(final Font font, final List<Component> lines, final int xo, final int yo, @Nullable final Identifier style)
+	{
+		this.setComponentTooltipForNextFrame(font, lines, xo, yo, style);
+	}
+
+	public void renderTooltip(final Font font, final List<ClientTooltipComponent> lines, final int xo, final int yo, final ClientTooltipPositioner positioner, @Nullable final Identifier style)
+	{
+		this.tooltip(font, lines, xo, yo, positioner, style);
 	}
 }

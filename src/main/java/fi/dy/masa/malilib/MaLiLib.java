@@ -30,4 +30,13 @@ public class MaLiLib implements ModInitializer
             LOGGER.info(key, args);
         }
     }
+
+    // Just to increase visibility of messages
+    public static void debugLogError(String key, Object... args)
+    {
+        if (MaLiLibReference.DEBUG_MODE || MaLiLibConfigs.Debug.DEBUG_MESSAGES.getBooleanValue())
+        {
+            LOGGER.error(key, args);
+        }
+    }
 }

@@ -30,9 +30,6 @@ import fi.dy.masa.malilib.util.position.BlockMirror;
 import fi.dy.masa.malilib.util.position.BlockRotation;
 import fi.dy.masa.malilib.util.position.Vec3d;
 
-/**
- * Being moved to util/data/json sooner or later
- */
 public class JsonUtils
 {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();

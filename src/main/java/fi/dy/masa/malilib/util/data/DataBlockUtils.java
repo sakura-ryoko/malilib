@@ -67,7 +67,7 @@ public class DataBlockUtils
 	public static CompoundData setBlockEntityType(BlockEntityType<?> type, @Nullable CompoundData dataIn)
 	{
 		CompoundData data = new CompoundData();
-		Identifier id = BlockEntityType.getKey(type);
+		Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
 
 		if (id != null)
 		{

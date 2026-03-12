@@ -41,7 +41,6 @@ import net.minecraft.world.entity.animal.sheep.Sheep;
 import net.minecraft.world.entity.animal.wolf.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.EitherHolder;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -118,8 +117,8 @@ public class EntityUtils
      */
     public static @NotNull ResourceKey<@NotNull ChickenVariant> getChickenVariantFromComponents(@Nonnull Chicken entity)
     {
-        EitherHolder<@NotNull ChickenVariant> entry = entity.get(DataComponents.CHICKEN_VARIANT);
-        return entry != null ? entry.key().orElse(ChickenVariants.DEFAULT) : ChickenVariants.DEFAULT;
+        Holder<ChickenVariant> entry = entity.get(DataComponents.CHICKEN_VARIANT);
+        return entry != null ? entry.unwrapKey().orElse(ChickenVariants.DEFAULT) : ChickenVariants.DEFAULT;
     }
 
     /**

@@ -71,8 +71,8 @@ public class WidgetBlockStateIcon extends WidgetBase
 		ctx.pose().pushMatrix();
 		ctx.pose().translate(x + 1, y + 1);
 		ctx.pose().scale(1, 1);
-		ctx.renderItem(stack.copy(), 0, 0);
-		ctx.renderItemDecorations(ctx.fontRenderer(), stack.copy(), 0, 0);
+		ctx.item(stack.copy(), 0, 0);
+		ctx.itemDecorations(ctx.fontRenderer(), stack.copy(), 0, 0);
 		ctx.pose().popMatrix();
 	}
 }

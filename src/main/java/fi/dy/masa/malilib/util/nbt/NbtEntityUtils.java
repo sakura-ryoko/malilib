@@ -100,7 +100,7 @@ public class NbtEntityUtils
     public CompoundTag setEntityTypeToNbt(EntityType<?> type, @Nullable CompoundTag nbtIn)
     {
         CompoundTag nbt = new CompoundTag();
-        Identifier id = EntityType.getKey(type);
+        Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(type);
 
         if (id != null)
         {

@@ -8,12 +8,17 @@ import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector4f;
 
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.profiling.Profiler;
@@ -66,7 +71,39 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderGameOverlayPostAdvanced(GuiContext ctx, float partialTicks, ProfilerFiller profiler)
+    public void onExtractInGameGuiPost(GuiContext ctx, float partialTicks, ProfilerFiller profiler)
+    {
+//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+//        {
+//            if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
+//                MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
+//            {
+//                TestInventoryOverlayHandler.getInstance().getRenderContext(ctx, profiler);
+//            }
+//
+//            if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
+//            {
+//                List<String> list = new ArrayList<>();
+//                list.add("Test Line 1");
+//                list.add("Test Line 2");
+//                list.add("Test Line 3");
+//                list.add("Test Line 4");
+//                list.add("Test Line 5");
+//
+//                if (TickUtils.getInstance().isValid())
+//                {
+//                    String result = getMeasuredTPS();
+//                    list.addFirst(result);
+//                    list.removeLast();
+//                }
+//
+//                RenderUtils.renderText(ctx, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
+//            }
+//        }
+    }
+
+    @Override
+    public void onExtractGuiOverlayPost(GuiContext ctx, int mouseX, int mouseY, float partialTicks, ProfilerFiller profiler)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -95,6 +132,12 @@ public class TestRenderHandler implements IRenderer
                 RenderUtils.renderText(ctx, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
             }
         }
+    }
+
+    @Override
+    public void onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
+    {
+        // TODO
     }
 
     private static @Nonnull String getMeasuredTPS()
@@ -131,31 +174,8 @@ public class TestRenderHandler implements IRenderer
                 ;
     }
 
-//    @Override
-//    public void onRenderWorldPostDebugRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera, Profiler profiler)
-//    {
-//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-//        {
-//            MinecraftClient mc = MinecraftClient.getInstance();
-//
-//            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
-//
-//            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-//            {
-//                if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-//                {
-//                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
-//                }
-//
-//                TestWalls.INSTANCE.draw(camera, posMatrix, projMatrix, mc, profiler);
-//            }
-//
-//            profiler.pop();
-//        }
-//    }
-
     @Override
-    public void onRenderWorldPreWeather(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, RenderBuffers buffers, ProfilerFiller profiler)
+    public void onRenderWorldPreWeather(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
     {
 //        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
 //        {
@@ -178,7 +198,13 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderWorldLastAdvanced(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, RenderBuffers buffers, ProfilerFiller profiler)
+    public void onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
+    {
+        // TODO
+    }
+
+    @Override
+    public void onRenderWorldLast(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -188,24 +214,27 @@ public class TestRenderHandler implements IRenderer
             {
                 profiler.push(MaLiLibReference.MOD_ID + "_selector");
 
+                // TODO -- Move to extract ?
                 if (TestSelector.INSTANCE.shouldRender())
                 {
-                    TestSelector.INSTANCE.render(posMatrix, projMatrix, profiler, mc);
+                    TestSelector.INSTANCE.render(profiler, mc);
                 }
 
+                // TODO -- Move to extract ?
                 profiler.popPush(MaLiLibReference.MOD_ID + "_targeting_overlay");
-                this.renderTargetingOverlay(posMatrix, mc);
+                this.renderTargetingOverlay(mc);
 
                 profiler.popPush(MaLiLibReference.MOD_ID + "_test_walls");
 
                 if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
                 {
+                    // TODO -- Move to extract ?
                     if (TestRenderWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
                     {
-                        TestRenderWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+                        TestRenderWalls.INSTANCE.update(cameraState.pos, mc.getCameraEntity(), mc);
                     }
 
-                    TestRenderWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+                    TestRenderWalls.INSTANCE.render(cameraState.pos, mc, profiler);
                 }
 
                 profiler.pop();
@@ -335,7 +364,7 @@ public class TestRenderHandler implements IRenderer
         return () -> MaLiLibReference.MOD_ID + "_test";
     }
 
-    private void renderTargetingOverlay(Matrix4f posMatrix, Minecraft mc)
+    private void renderTargetingOverlay(Minecraft mc)
     {
         Entity entity = mc.getCameraEntity();
 
@@ -353,7 +382,7 @@ public class TestRenderHandler implements IRenderer
                     hitResult.getBlockPos(),
                     hitResult.getDirection(),
                     hitResult.getLocation(),
-                    color, posMatrix);
+                    color);
         }
     }
 }

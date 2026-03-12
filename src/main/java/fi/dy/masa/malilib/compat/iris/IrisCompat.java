@@ -207,11 +207,11 @@ public class IrisCompat
 
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.SOLID_BLOCK_MASA, IrisProgram.BLOCK);
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.CUTOUT_BLOCK_MASA, IrisProgram.TERRAIN_CUTOUT);
-	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TRIPWIRE_BLOCK_MASA, IrisProgram.BLOCK_TRANSLUCENT);
+	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TRANSLUCENT_BLOCK_MASA, IrisProgram.BLOCK_TRANSLUCENT);
 
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.SOLID_BLOCK_MASA_OFFSET, IrisProgram.BLOCK);
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.CUTOUT_BLOCK_MASA_OFFSET, IrisProgram.TERRAIN_CUTOUT);
-	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TRIPWIRE_BLOCK_MASA_OFFSET, IrisProgram.BLOCK_TRANSLUCENT);
+	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TRANSLUCENT_BLOCK_MASA_OFFSET, IrisProgram.BLOCK_TRANSLUCENT);
 
 			IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LEGACY_SOLID_TERRAIN_MASA, IrisProgram.TERRAIN_SOLID);
 			IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LEGACY_WIREFRAME_MASA, IrisProgram.LINES);

@@ -188,12 +188,12 @@ public abstract class WidgetBase
 
     public void drawStringWithShadow(GuiContext ctx, int x, int y, int color, String text)
     {
-	    ctx.drawString(this.textRenderer, text, x, y, color);
+	    ctx.text(this.textRenderer, text, x, y, color);
     }
 
     public void drawCenteredStringWithShadow(GuiContext ctx, int x, int y, int color, String text)
     {
-	    ctx.drawCenteredString(this.textRenderer, text, x, y, color);
+	    ctx.centeredText(this.textRenderer, text, x, y, color);
     }
 
     public void drawBackgroundMask(GuiContext ctx)

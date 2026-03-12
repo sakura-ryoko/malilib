@@ -19,7 +19,6 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.mixin.render.IMixinBlockRenderDispatcher;
 
 @ApiStatus.Experimental
 public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRenderer<@NotNull MaLiLibBlockStateGuiElement>

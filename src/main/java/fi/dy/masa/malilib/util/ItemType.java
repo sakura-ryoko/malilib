@@ -15,7 +15,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  *
  * @deprecated See {@link fi.dy.masa.malilib.util.data.ItemType}
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class ItemType
 {
     public static final Codec<ItemType> CODEC = RecordCodecBuilder.create(
@@ -82,11 +82,17 @@ public class ItemType
     public boolean equals(Object obj)
     {
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (this.getClass() != obj.getClass())
+        {
             return false;
+        }
 
         ItemType other = (ItemType) obj;
 

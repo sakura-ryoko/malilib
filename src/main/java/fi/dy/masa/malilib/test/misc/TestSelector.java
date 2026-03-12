@@ -100,7 +100,7 @@ public class TestSelector implements IClientTickHandler
                 this.posLookingAt == null;
     }
 
-    public void render(Matrix4f posMatrix, Matrix4f projMatrix, ProfilerFiller profiler, Minecraft mc)
+    public void render(ProfilerFiller profiler, Minecraft mc)
     {
         float expand = 0.001f;
         //float lineWidthBlockBox = 2.0f;
@@ -132,7 +132,7 @@ public class TestSelector implements IClientTickHandler
             RenderUtils.renderBlockOutline(this.posLookingAt, expand, lineWidthBlockBox, this.colorLooking, false);
         }
 
-        this.renderSelection(posMatrix, projMatrix, profiler, this.AREA_SELECTION, mc);
+        this.renderSelection(profiler, this.AREA_SELECTION, mc);
 
 //        RenderUtils.polygonOffset(0f, 0f);
 //        RenderUtils.polygonOffset(false);
@@ -141,7 +141,7 @@ public class TestSelector implements IClientTickHandler
         profiler.pop();
     }
 
-    public void renderSelection(Matrix4f posMatrix, Matrix4f projMatrix, ProfilerFiller profiler, Selection selection, Minecraft mc)
+    public void renderSelection(ProfilerFiller profiler, Selection selection, Minecraft mc)
     {
 
         BlockPos pos1 = selection.pos1;
@@ -164,14 +164,14 @@ public class TestSelector implements IClientTickHandler
             if (!pos1.equals(pos2))
             {
                 RenderUtils.renderAreaOutlineNoCorners(pos1, pos2, lineWidthArea, this.colorX, this.colorY, this.colorZ);
-                RenderUtils.renderAreaSides(pos1, pos2, this.sideColor, posMatrix, false);
+                RenderUtils.renderAreaSides(pos1, pos2, this.sideColor, false);
                 RenderUtils.renderBlockOutline(pos1, expand, lineWidthBlockBox, this.colorPos1, false);
                 RenderUtils.renderBlockOutline(pos2, expand, lineWidthBlockBox, this.colorPos2, false);
             }
             else
             {
                 RenderUtils.renderBlockOutlineOverlapping(pos1, expand, lineWidthBlockBox, this.colorPos1, this.colorPos2,
-                                                          this.colorOverlapping, posMatrix, false);
+                                                          this.colorOverlapping, false);
             }
         }
         else

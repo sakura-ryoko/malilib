@@ -99,7 +99,6 @@ public class RenderUtils
 
     private static final SingleThreadedRandomSource RAND = new SingleThreadedRandomSource(0);
 
-    // FIXME
     @ApiStatus.Internal
     public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, MultiBufferSource.BufferSource immediate, Minecraft mc)
     {
@@ -1476,7 +1475,7 @@ public class RenderUtils
     }
 
     public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3 hitVec,
-                                                   Color4f color, Matrix4f posMatrix)
+                                                   Color4f color)
     {
         Direction playerFacing = entity.getDirection();
         PositionUtils.HitPart part = PositionUtils.getHitPart(side, playerFacing, pos, hitVec);
@@ -2598,14 +2597,13 @@ public class RenderUtils
     }
 
     public static void renderBlockOutlineOverlapping(BlockPos pos, float expand, float lineWidth,
-                                                     Color4f color1, Color4f color2, Color4f color3,
-                                                     Matrix4f matrix4f)
+                                                     Color4f color1, Color4f color2, Color4f color3)
     {
-        renderBlockOutlineOverlapping(pos, expand, lineWidth, color1, color2, color3, matrix4f, false);
+        renderBlockOutlineOverlapping(pos, expand, lineWidth, color1, color2, color3, false);
     }
 
     public static void renderBlockOutlineOverlapping(BlockPos pos, float expand, float lineWidth,
-                                                     Color4f color1, Color4f color2, Color4f color3, Matrix4f matrix4f,
+                                                     Color4f color1, Color4f color2, Color4f color3,
                                                      boolean renderThrough)
     {
         Vec3 cameraPos = camPos();
@@ -2778,12 +2776,12 @@ public class RenderUtils
         buffer.addVertex(maxX, maxY, maxZ).setColor(color.r, color.g, color.b, color.a).setLineWidth(lineWidth);
     }
 
-    public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f)
+    public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color)
     {
-        renderAreaSides(pos1, pos2, color, matrix4f, false);
+        renderAreaSides(pos1, pos2, color, false);
     }
 
-    public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f, boolean shouldResort)
+    public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, boolean shouldResort)
     {
 	    boolean insideOf = isCameraInsideOf(pos1, pos2);
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL

@@ -23,7 +23,7 @@ import fi.dy.masa.malilib.test.config.ConfigTestLockedList;
 import fi.dy.masa.malilib.test.config.ConfigTestOptList;
 import fi.dy.masa.malilib.test.config.TestHotkeys;
 import fi.dy.masa.malilib.util.FileUtils;
-import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
@@ -222,7 +222,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
         if (Files.exists(configFile) && Files.isReadable(configFile))
         {
-            JsonElement element = JsonUtils.parseJsonFileAsPath(configFile);
+            JsonElement element = JsonUtils.parseJsonFile(configFile);
 
             if (element != null && element.isJsonObject())
             {
@@ -287,7 +287,7 @@ public class MaLiLibConfigs implements IConfigHandler
                 ConfigUtils.writeConfigBase(root, "Experimental", Experimental.OPTIONS);
             }
 
-            JsonUtils.writeJsonToFileAsPath(root, dir.resolve(CONFIG_FILE_NAME));
+            JsonUtils.writeJsonToFile(root, dir.resolve(CONFIG_FILE_NAME));
 
             /*
             if (JsonUtils.writeJsonToFileAsPath(root, config))

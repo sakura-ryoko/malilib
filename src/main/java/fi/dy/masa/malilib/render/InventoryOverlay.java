@@ -1135,8 +1135,8 @@ public class InventoryOverlay
         ctx.pose().pushMatrix();
 	    ctx.pose().translate(x, y);
 	    ctx.pose().scale(scale, scale);
-        ctx.renderItem(stack.copy(), 0, 0);
-	    ctx.renderItemDecorations(ctx.fontRenderer(), stack.copy(), 0, 0);
+        ctx.item(stack.copy(), 0, 0);
+	    ctx.itemDecorations(ctx.fontRenderer(), stack.copy(), 0, 0);
 	    ctx.pose().popMatrix();
 
         if (mouseX >= x && mouseX < x + 16 * scale && mouseY >= y && mouseY < y + 16 * scale)
@@ -1250,7 +1250,7 @@ public class InventoryOverlay
 			Optional<TooltipComponent> data = stack.getTooltipImage();
 
 			data.ifPresent(tooltipData -> list.add(list.isEmpty() ? 0 : 1, ClientTooltipComponent.create(tooltipData)));
-			ctx.renderTooltip(
+			ctx.tooltip(
 					ctx.fontRenderer(), list, x, y,
 					DefaultTooltipPositioner.INSTANCE,
 					stack.get(DataComponents.TOOLTIP_STYLE)

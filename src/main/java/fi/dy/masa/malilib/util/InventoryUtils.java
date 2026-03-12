@@ -15,6 +15,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.commands.arguments.item.ItemParser;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -60,6 +61,7 @@ import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data.tag.util.DataOps;
+import fi.dy.masa.malilib.util.data.ItemType;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
@@ -261,7 +263,7 @@ public class InventoryUtils
     public static void swapSlots(AbstractContainerMenu container, int slotNum, int hotbarSlot)
     {
         Minecraft mc = Minecraft.getInstance();
-        mc.gameMode.handleInventoryMouseClick(container.containerId, slotNum, hotbarSlot, ClickType.SWAP, mc.player);
+        mc.gameMode.handleContainerInput(container.containerId, slotNum, hotbarSlot, ContainerInput.SWAP, mc.player);
     }
 
     /**
@@ -371,7 +373,7 @@ public class InventoryUtils
             if (slot != -1)
             {
                 int currentHotbarSlot = player.getInventory().getSelectedSlot();
-                mc.gameMode.handleInventoryMouseClick(player.inventoryMenu.containerId, slot, currentHotbarSlot, ClickType.SWAP, mc.player);
+                mc.gameMode.handleContainerInput(player.inventoryMenu.containerId, slot, currentHotbarSlot, ContainerInput.SWAP, mc.player);
                 return true;
             }
         }
@@ -1420,8 +1422,8 @@ public class InventoryUtils
 
         if (container != null)
         {
-            Iterator<ItemStack> iter = container.nonEmptyStream().iterator();
-            NonNullList<ItemStack> items = NonNullList.createWithCapacity((int) container.nonEmptyStream().count());
+            Iterator<ItemStack> iter = container.nonEmptyItemCopyStream().iterator();
+            NonNullList<ItemStack> items = NonNullList.createWithCapacity((int) container.nonEmptyItemCopyStream().count());
             int i = 0;
 
             // Using 'container.copyTo(items)' will break Litematica's Material List
@@ -1453,7 +1455,7 @@ public class InventoryUtils
         // Using itemContainer.copyTo() does not preserve empty stacks.
         if (itemContainer != null)
         {
-            long defSlotCount = itemContainer.stream().count();
+            long defSlotCount = itemContainer.allItemsCopyStream().count();
 
             // ContainerComponent.MAX_SLOTS = 256
             if (slotCount < 1)
@@ -1466,7 +1468,7 @@ public class InventoryUtils
             }
 
             NonNullList<ItemStack> items = NonNullList.createWithCapacity(slotCount);
-            Iterator<ItemStack> iter = itemContainer.stream().iterator();
+            Iterator<ItemStack> iter = itemContainer.allItemsCopyStream().iterator();
 
             for (int i = 0; i < slotCount; i++)
             {
@@ -1522,7 +1524,7 @@ public class InventoryUtils
 
         if (bundleContainer != null)
         {
-            return bundleContainer.weight();
+            return bundleContainer.weight().getOrThrow();
         }
 
         return Fraction.ZERO;
@@ -1835,7 +1837,7 @@ public class InventoryUtils
     public static ItemStack getItemStackFromString(String stringIn, @Nonnull RegistryAccess registry)
     {
         ItemParser itemStringReader = new ItemParser(registry);
-        ItemParser.ItemResult results;
+	    ItemInput results;
 
         try
         {

@@ -108,7 +108,7 @@ public class DataEntityUtils
 	public CompoundData setEntityType(EntityType<?> type, @Nullable CompoundData dataIn)
 	{
 		CompoundData data = new CompoundData();
-		Identifier id = EntityType.getKey(type);
+		Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(type);
 
 		if (id != null)
 		{

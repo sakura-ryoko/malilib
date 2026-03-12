@@ -61,7 +61,7 @@ public class NbtBlockUtils
     public static CompoundTag setBlockEntityTypeToNbt(BlockEntityType<?> type, @Nullable CompoundTag nbtIn)
     {
         CompoundTag nbt = new CompoundTag();
-        Identifier id = BlockEntityType.getKey(type);
+        Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
 
         if (id != null)
         {

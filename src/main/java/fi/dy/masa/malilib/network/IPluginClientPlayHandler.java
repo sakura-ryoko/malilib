@@ -73,12 +73,12 @@ public interface IPluginClientPlayHandler<T extends CustomPacketPayload> extends
             {
                 switch (direction)
                 {
-                    case TO_SERVER, FROM_CLIENT -> PayloadTypeRegistry.playC2S().register(id, codec);
-                    case FROM_SERVER, TO_CLIENT -> PayloadTypeRegistry.playS2C().register(id, codec);
+                    case TO_SERVER, FROM_CLIENT -> PayloadTypeRegistry.serverboundPlay().register(id, codec);
+                    case FROM_SERVER, TO_CLIENT -> PayloadTypeRegistry.clientboundPlay().register(id, codec);
                     default ->
                     {
-                        PayloadTypeRegistry.playC2S().register(id, codec);
-                        PayloadTypeRegistry.playS2C().register(id, codec);
+                        PayloadTypeRegistry.clientboundPlay().register(id, codec);
+                        PayloadTypeRegistry.serverboundPlay().register(id, codec);
                     }
                 }
             }

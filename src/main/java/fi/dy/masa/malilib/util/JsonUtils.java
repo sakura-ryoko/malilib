@@ -14,11 +14,11 @@ import com.google.gson.*;
 import fi.dy.masa.malilib.MaLiLib;
 
 /**
- * Being moved to util/data/json sooner or later
+ * Being moved to util/data/json soon
  * <br>
  * See {@link fi.dy.masa.malilib.util.data.json.JsonUtils}
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class JsonUtils
 {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -177,7 +177,9 @@ public class JsonUtils
             {
                 return obj.get(name).getAsBoolean();
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return defaultValue;
@@ -191,7 +193,9 @@ public class JsonUtils
             {
                 return obj.get(name).getAsInt();
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return defaultValue;
@@ -205,7 +209,9 @@ public class JsonUtils
             {
                 return obj.get(name).getAsLong();
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return defaultValue;
@@ -219,7 +225,9 @@ public class JsonUtils
             {
                 return obj.get(name).getAsFloat();
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return defaultValue;
@@ -233,7 +241,9 @@ public class JsonUtils
             {
                 return obj.get(name).getAsDouble();
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return defaultValue;
@@ -248,7 +258,9 @@ public class JsonUtils
             {
                 return obj.get(name).getAsString();
             }
-            catch (Exception ignore) {}
+            catch (Exception ignore)
+            {
+            }
         }
 
         return defaultValue;

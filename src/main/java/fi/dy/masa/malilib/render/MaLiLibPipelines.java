@@ -216,12 +216,12 @@ public class MaLiLibPipelines
 	// BLOCK_MASA
 	public static RenderPipeline SOLID_BLOCK_MASA;
 	public static RenderPipeline CUTOUT_BLOCK_MASA;
-	public static RenderPipeline TRIPWIRE_BLOCK_MASA;
+	public static RenderPipeline TRANSLUCENT_BLOCK_MASA;
 
 	// BLOCK_MASA_OFFSET
 	public static RenderPipeline SOLID_BLOCK_MASA_OFFSET;
 	public static RenderPipeline CUTOUT_BLOCK_MASA_OFFSET;
-	public static RenderPipeline TRIPWIRE_BLOCK_MASA_OFFSET;
+	public static RenderPipeline TRANSLUCENT_BLOCK_MASA_OFFSET;
 
 	// todo LEGACY_TERRAIN Snippet
 	public static RenderPipeline.Snippet LEGACY_TERRAIN_STAGE;

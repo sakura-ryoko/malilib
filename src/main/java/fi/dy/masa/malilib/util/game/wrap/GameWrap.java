@@ -3,8 +3,8 @@ package fi.dy.masa.malilib.util.game.wrap;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-
 import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -20,7 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.flag.FeatureFlagSet;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.level.storage.LevelResource;
@@ -81,13 +81,13 @@ public class GameWrap
         return getClient().gameMode;
     }
 
-    public static void clickSlot(int syncId, int slotId, int mouseButton, ClickType clickType)
+    public static void clickSlot(int syncId, int slotId, int mouseButton, ContainerInput clickType)
     {
         MultiPlayerGameMode controller = getInteractionManager();
 
         if (controller != null)
         {
-            controller.handleInventoryMouseClick(syncId, slotId, mouseButton, clickType, getClientPlayer());
+            controller.handleContainerInput(syncId, slotId, mouseButton, clickType, getClientPlayer());
         }
     }
 
@@ -142,7 +142,7 @@ public class GameWrap
     {
         if (getClient().level != null)
         {
-            getClient().gui.getChat().addMessage(Component.nullToEmpty(msg));
+            getClient().gui.getChat().addClientSystemMessage(Component.nullToEmpty(msg));
         }
     }
 
@@ -160,7 +160,7 @@ public class GameWrap
 
         if (player != null)
         {
-            player.displayClientMessage(Component.nullToEmpty(command), false);
+            player.sendSystemMessage(Component.nullToEmpty(command));
             return true;
         }
 

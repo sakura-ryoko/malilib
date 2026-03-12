@@ -874,7 +874,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public void drawStringWithShadow(GuiContext ctx, String text, int x, int y, int color)
     {
-        ctx.text(ctx.fontRenderer(), text, x, y, color);
+        ctx.text(ctx.fontRenderer(), text, x, y, color, true);
     }
 
     public int getMaxPrettyNameLength(List<? extends IConfigBase> configs)

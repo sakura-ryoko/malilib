@@ -81,7 +81,7 @@ public class TestRenderWalls implements AutoCloseable
         this.needsUpdate = true;
     }
 
-    public void update(Camera camera, Entity entity, Minecraft mc)
+    public void update(Vec3 camPos, Entity entity, Minecraft mc)
     {
         if (mc.level == null || mc.player == null)
         {
@@ -90,7 +90,6 @@ public class TestRenderWalls implements AutoCloseable
 
         int radius = MaLiLibConfigs.Test.TEST_CONFIG_INTEGER.getIntegerValue();
         this.glLineWidth = 1.6f;
-        Vec3 vec = camera.position();
         BlockPos pos = entity.blockPosition();
         BlockPos testPos = pos.offset(2, 0, 2);
         Pair<BlockPos, BlockPos> corners = TestRenderUtils.getSpawnChunkCorners(testPos, radius, mc.level);
@@ -108,17 +107,17 @@ public class TestRenderWalls implements AutoCloseable
         }
 
         this.needsUpdate = false;
-        this.setUpdatePosition(vec);
+        this.setUpdatePosition(camPos);
     }
 
-    public void render(Camera camera, Matrix4f matrix4f, Matrix4f projMatrix, Minecraft mc, ProfilerFiller profiler)
+    public void render(Vec3 cameraPos, Minecraft mc, ProfilerFiller profiler)
     {
         profiler.push("render_test_walls");
 
         if (this.hasData && !this.boxes.isEmpty() && this.center != null)
         {
-            this.renderQuads(camera, mc, profiler);
-            this.renderOutlines(camera, mc, profiler);
+            this.renderQuads(cameraPos, mc, profiler);
+            this.renderOutlines(cameraPos, mc, profiler);
             this.boxes.clear();
             this.center = null;
             this.hasData = false;
@@ -127,7 +126,7 @@ public class TestRenderWalls implements AutoCloseable
         profiler.pop();
     }
 
-    private void renderQuads(Camera camera, Minecraft mc, ProfilerFiller profiler)
+    private void renderQuads(Vec3 cameraPos, Minecraft mc, ProfilerFiller profiler)
     {
         if (mc.level == null || mc.player == null ||
             !this.hasData || this.boxes.isEmpty())
@@ -137,7 +136,6 @@ public class TestRenderWalls implements AutoCloseable
 
         profiler.push("quads");
         final Color4f quadsColor = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
-        Vec3 cameraPos = camera.position();
 
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL
         RenderContext ctx = new RenderContext(() -> "malilib:TestWalls/quads", MaLiLibPipelines.MINIHUD_SHAPE_OFFSET_NO_CULL);
@@ -164,7 +162,7 @@ public class TestRenderWalls implements AutoCloseable
                 if (this.shouldResort)
                 {
                     ctx.upload(meshData, true);
-                    ctx.startResorting(meshData, ctx.createVertexSorter(camera));
+                    ctx.startResorting(meshData, ctx.createVertexSorter(cameraPos));
                 }
                 else
                 {
@@ -186,7 +184,7 @@ public class TestRenderWalls implements AutoCloseable
         profiler.pop();
     }
 
-    private void renderOutlines(Camera camera, Minecraft mc, ProfilerFiller profiler)
+    private void renderOutlines(Vec3 cameraPos, Minecraft mc, ProfilerFiller profiler)
     {
         if (mc.level == null || mc.player == null)
         {
@@ -198,7 +196,6 @@ public class TestRenderWalls implements AutoCloseable
         final Color4f linesColor = useColor
                                    ? Color4f.fromColor(MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor(), 0xFF)
                                    : Color4f.WHITE;
-        Vec3 cameraPos = camera.position();
 
         // RenderPipelines.LINES
         RenderContext ctx = new RenderContext(() -> "malilib:TestWalls/lines", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH);

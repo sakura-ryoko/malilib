@@ -21,7 +21,7 @@ public abstract class MixinGui implements IGameHud
     @Inject(method = "extractRenderState", at = @At("TAIL"))
     private void malilib_onGameOverlayPost(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderGameOverlayPost(GuiContext.fromGuiGraphics(graphics), deltaTracker.getGameTimeDeltaPartialTick(false));
+        ((RenderEventHandler) RenderEventHandler.getInstance()).runExtractInGameGuiPost(GuiContext.fromGuiGraphics(graphics), deltaTracker.getGameTimeDeltaPartialTick(false));
     }
 
     @Override

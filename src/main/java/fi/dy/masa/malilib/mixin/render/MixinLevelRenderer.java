@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.mixin.render;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 
@@ -29,11 +28,33 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 @Mixin(value = LevelRenderer.class, priority = 990)
-public abstract class MixinWorldRenderer
+public abstract class MixinLevelRenderer
 {
 	@Shadow @Final private Minecraft minecraft;
 	@Shadow @Final private LevelTargetBundle targets;
 	@Shadow @Final private RenderBuffers renderBuffers;
+
+	@Inject(method = "extractLevel",
+	        at = @At(value = "INVOKE",
+	                 target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
+	                 ordinal = 5
+	        ))
+	private void malilib_onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float deltaPartialTick, CallbackInfo ci,
+	                                              @Local(name = "profiler") ProfilerFiller profiler)
+	{
+		((RenderEventHandler) RenderEventHandler.getInstance()).runExtractWorldPreWeather(deltaTracker, camera, deltaPartialTick, profiler);
+	}
+
+	@Inject(method = "extractLevel",
+	        at = @At(value = "INVOKE",
+	                 target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
+	                 ordinal = 10
+	        ))
+	private void malilib_onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float deltaPartialTick, CallbackInfo ci,
+	                                        @Local(name = "profiler") ProfilerFiller profiler)
+	{
+		((RenderEventHandler) RenderEventHandler.getInstance()).runExtractWorldLast(deltaTracker, camera, deltaPartialTick, profiler);
+	}
 
 	@Inject(method = "renderLevel",
 	        at = @At(value = "INVOKE",
@@ -44,10 +65,10 @@ public abstract class MixinWorldRenderer
 	                                             GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky,
 	                                             ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci,
 	                                             @Local(name = "profiler") ProfilerFiller profiler,
-	                                             @Local(name = "cullFrustum") Frustum frustum,
+	                                             @Local(name = "cullFrustum") Frustum cullFrustum,
 	                                             @Local(name = "frame") FrameGraphBuilder frameGraphBuilder)
 	{
-		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(modelViewMatrix, projectionMatrix, this.minecraft, frameGraphBuilder, this.targets, frustum, camera, this.renderBuffers, profiler);
+		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(modelViewMatrix, this.minecraft, frameGraphBuilder, this.targets, cullFrustum, cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
 	}
 
 	@Inject(method = "renderLevel",
@@ -59,10 +80,10 @@ public abstract class MixinWorldRenderer
 	                                       GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky,
 	                                       ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci,
 	                                       @Local(name = "profiler") ProfilerFiller profiler,
-	                                       @Local(name = "cullFrustum") Frustum frustum,
+	                                       @Local(name = "cullFrustum") Frustum cullFrustum,
 	                                       @Local(name = "frame") FrameGraphBuilder frameGraphBuilder)
 	{
-		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(modelViewMatrix, projectionMatrix, this.minecraft, frameGraphBuilder, this.targets, frustum, camera, this.renderBuffers, profiler);
+		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(modelViewMatrix, this.minecraft, frameGraphBuilder, this.targets, cullFrustum, cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
 	}
 
 	@Inject(method = "allChanged", at = @At("HEAD"))

@@ -202,7 +202,7 @@ public class StringUtils
             .withStyle(net.minecraft.ChatFormatting.UNDERLINE)
             .withStyle((style) -> style.withClickEvent(new ClickEvent.OpenFile(file.getAbsolutePath())));
 
-        sender.displayClientMessage(Component.translatable(messageKey, name), false);
+        sender.sendSystemMessage(Component.translatable(messageKey, name));
     }
 
     public static void sendOpenFileChatMessage(Player sender, String messageKey, Path file)
@@ -211,7 +211,7 @@ public class StringUtils
                         .withStyle(net.minecraft.ChatFormatting.UNDERLINE)
                         .withStyle((style) -> style.withClickEvent(new ClickEvent.OpenFile(file.toAbsolutePath())));
 
-        sender.displayClientMessage(Component.translatable(messageKey, name), false);
+        sender.sendSystemMessage(Component.translatable(messageKey, name));
     }
 
     public static int getMaxStringRenderWidth(String... strings)

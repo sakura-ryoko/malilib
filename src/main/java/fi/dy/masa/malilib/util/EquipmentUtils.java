@@ -332,6 +332,7 @@ public class EquipmentUtils
 		return Objects.equals(getEquipmentSlot(stack), EquipmentSlotGroup.BODY);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static boolean isHorseArmor(ItemStack stack)
 	{
 		if (stack == null || stack.isEmpty()) return false;
@@ -355,13 +356,14 @@ public class EquipmentUtils
 					}
 				}
 
-				return bodySlot && (equip.canBeEquippedBy(EntityType.HORSE) || equip.canBeEquippedBy(EntityType.ZOMBIE_HORSE));
+				return bodySlot && (equip.canBeEquippedBy(EntityType.HORSE.builtInRegistryHolder()) || equip.canBeEquippedBy(EntityType.ZOMBIE_HORSE.builtInRegistryHolder()));
 			}
 		}
 
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static boolean isNautilusArmor(ItemStack stack)
 	{
 		if (stack == null || stack.isEmpty()) return false;
@@ -385,13 +387,14 @@ public class EquipmentUtils
 					}
 				}
 
-				return bodySlot && (equip.canBeEquippedBy(EntityType.NAUTILUS) || equip.canBeEquippedBy(EntityType.ZOMBIE_NAUTILUS));
+				return bodySlot && (equip.canBeEquippedBy(EntityType.NAUTILUS.builtInRegistryHolder()) || equip.canBeEquippedBy(EntityType.ZOMBIE_NAUTILUS.builtInRegistryHolder()));
 			}
 		}
 
 		return false;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static boolean isWolfArmor(ItemStack stack)
 	{
 		if (stack == null || stack.isEmpty()) return false;
@@ -415,7 +418,7 @@ public class EquipmentUtils
                     }
 				}
 
-				return bodySlot && equip.canBeEquippedBy(EntityType.WOLF);
+				return bodySlot && equip.canBeEquippedBy(EntityType.WOLF.builtInRegistryHolder());
 			}
 		}
 

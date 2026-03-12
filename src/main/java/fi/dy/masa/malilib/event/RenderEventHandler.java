@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
@@ -14,6 +15,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -21,7 +23,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+import org.joml.Vector4f;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
@@ -40,9 +43,9 @@ public class RenderEventHandler implements IRenderDispatcher
 {
     private static final RenderEventHandler INSTANCE = new RenderEventHandler();
 
-    private final List<IRenderer> overlayRenderers = new ArrayList<>();
+    private final List<IRenderer> inGameGuiRenderers = new ArrayList<>();
+    private final List<IRenderer> guiOverlayRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
-    private final List<IRenderer> worldPostDebugRenderers = new ArrayList<>();
     private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
     private final List<IRenderer> specialGuiRenderers = new ArrayList<>();
@@ -53,11 +56,20 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @Override
+    public void registerInGameGuiRenderer(IRenderer renderer)
+    {
+        if (this.inGameGuiRenderers.contains(renderer) == false)
+        {
+            this.inGameGuiRenderers.add(renderer);
+        }
+    }
+
+    @Override
     public void registerGameOverlayRenderer(IRenderer renderer)
     {
-        if (this.overlayRenderers.contains(renderer) == false)
+        if (this.guiOverlayRenderers.contains(renderer) == false)
         {
-            this.overlayRenderers.add(renderer);
+            this.guiOverlayRenderers.add(renderer);
         }
     }
 
@@ -67,15 +79,6 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.tooltipLastRenderers.contains(renderer) == false)
         {
             this.tooltipLastRenderers.add(renderer);
-        }
-    }
-
-    @Override
-    public void registerWorldPostDebugRenderer(IRenderer renderer)
-    {
-        if (this.worldPostDebugRenderers.contains(renderer) == false)
-        {
-            this.worldPostDebugRenderers.add(renderer);
         }
     }
 
@@ -107,26 +110,49 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void onRenderGameOverlayPost(GuiContext ctx, float partialTicks)
+    public void runExtractInGameGuiPost(GuiContext ctx, float partialTicks)
     {
         ProfilerFiller profiler = Profiler.get();
 
-        profiler.push(MaLiLibReference.MOD_ID+"_game_overlay");
-
-        if (this.overlayRenderers.isEmpty() == false)
+        if (this.inGameGuiRenderers.isEmpty() == false)
         {
-            for (IRenderer renderer : this.overlayRenderers)
+            profiler.push(MaLiLibReference.MOD_ID+"_extract_in_game_gui_post");
+
+            for (IRenderer renderer : this.inGameGuiRenderers)
             {
                 profiler.push(renderer.getProfilerSectionSupplier());
-                renderer.onRenderGameOverlayPostAdvanced(ctx, partialTicks, profiler);
-                renderer.onRenderGameOverlayPost(ctx);
+                renderer.onExtractInGameGuiPost(ctx, partialTicks, profiler);
                 profiler.pop();
             }
+
+            profiler.popPush(MaLiLibReference.MOD_ID+"_in_game_messages");
+        }
+        else
+        {
+            profiler.push(MaLiLibReference.MOD_ID+"_in_game_messages");
         }
 
-        profiler.popPush(MaLiLibReference.MOD_ID+"_game_messages");
         InfoUtils.renderInGameMessages(ctx);
         profiler.pop();
+    }
+
+    @ApiStatus.Internal
+    public void runExtractGuiOverlayPost(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
+    {
+        if (this.guiOverlayRenderers.isEmpty() == false)
+        {
+            ProfilerFiller profiler = Profiler.get();
+            profiler.push(MaLiLibReference.MOD_ID+"_extract_gui_overlay_post");
+
+            for (IRenderer renderer : this.guiOverlayRenderers)
+            {
+                profiler.push(renderer.getProfilerSectionSupplier());
+                renderer.onExtractGuiOverlayPost(ctx, mouseX, mouseY, partialTicks, profiler);
+                profiler.pop();
+            }
+
+            profiler.pop();
+        }
     }
 
     @ApiStatus.Internal
@@ -168,52 +194,47 @@ public class RenderEventHandler implements IRenderDispatcher
     @ApiStatus.Internal
     public void onRenderTooltipLast(GuiContext ctx, ItemStack stack, int x, int y)
     {
-        ProfilerFiller profiler = Profiler.get();
-
-        profiler.push(MaLiLibReference.MOD_ID+"_tooltip");
-
         if (this.tooltipLastRenderers.isEmpty() == false)
         {
+            ProfilerFiller profiler = Profiler.get();
+            profiler.push(MaLiLibReference.MOD_ID+"_tooltip");
+
             for (IRenderer renderer : this.tooltipLastRenderers)
             {
                 profiler.popPush(renderer.getProfilerSectionSupplier());
                 renderer.onRenderTooltipLast(ctx ,stack, x, y);
             }
-        }
 
-        profiler.pop();
+            profiler.pop();
+        }
     }
 
-//    @ApiStatus.Internal
-//    public void runRenderWorldPostDebug(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera)
-//    {
-//        Profiler profiler = Profilers.get();
-//
-//        profiler.push(MaLiLibReference.MOD_ID+"_post_debug");
-//
-//        if (this.worldPostDebugRenderers.isEmpty() == false)
-//        {
-//            for (IRenderer renderer : this.worldPostDebugRenderers)
-//            {
-//                profiler.push(renderer.getProfilerSectionSupplier());
-//                renderer.onRenderWorldPostDebugRender(matrices, frustum, immediate, camera, profiler);
-//                profiler.pop();
-//            }
-//        }
-//
-//        profiler.pop();
-//    }
-
     @ApiStatus.Internal
-    public void runRenderWorldPreWeather(Matrix4f posMatrix, Matrix4f projMatrix, Minecraft mc,
-                                         FrameGraphBuilder frameGraphBuilder, LevelTargetBundle fbSet,
-                                         Frustum frustum, Camera camera, RenderBuffers buffers,
-                                         ProfilerFiller profiler)
+    public void runExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
     {
-        profiler.push(MaLiLibReference.MOD_ID+"_pre_weather");
-
         if (this.worldPreWeatherRenderers.isEmpty() == false)
         {
+            profiler.push(MaLiLibReference.MOD_ID+"_extract_pre_weather");
+
+            for (IRenderer renderer : this.worldPreWeatherRenderers)
+            {
+                renderer.onExtractWorldPreWeather(deltaTracker, camera, ticks, profiler);
+            }
+
+            profiler.pop();
+        }
+    }
+
+    @ApiStatus.Internal
+    public void runRenderWorldPreWeather(Matrix4fc modelViewMatrix, Minecraft mc,
+                                         FrameGraphBuilder frameGraphBuilder, LevelTargetBundle fbSet,
+                                         Frustum cullFrustum, CameraRenderState cameraState, RenderBuffers buffers,
+                                         GpuBufferSlice terrainFog, Vector4f fogColor,
+                                         ProfilerFiller profiler)
+    {
+        if (this.worldPreWeatherRenderers.isEmpty() == false)
+        {
+            profiler.push(MaLiLibReference.MOD_ID+"_render_pre_weather");
             FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID+"_pre_weather");
 
 //            if (fbSet.weatherFramebuffer != null)
@@ -247,7 +268,7 @@ public class RenderEventHandler implements IRenderDispatcher
                 for (IRenderer renderer : this.worldPreWeatherRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreWeather(fb, posMatrix, projMatrix, frustum, camera, buffers, profiler);
+                    renderer.onRenderWorldPreWeather(fb, modelViewMatrix, cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
                     profiler.pop();
                 }
 
@@ -263,21 +284,37 @@ public class RenderEventHandler implements IRenderDispatcher
             {
                 pass.disableCulling();
             }
-        }
 
-        profiler.pop();
+            profiler.pop();
+        }
     }
 
     @ApiStatus.Internal
-    public void runRenderWorldLast(Matrix4f posMatrix, Matrix4f projMatrix, Minecraft mc,
-                                   FrameGraphBuilder frameGraphBuilder, LevelTargetBundle fbSet,
-                                   Frustum frustum, Camera camera, RenderBuffers buffers,
-                                   ProfilerFiller profiler)
+    public void runExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
     {
-        profiler.push(MaLiLibReference.MOD_ID+"_world_last");
-
         if (this.worldLastRenderers.isEmpty() == false)
         {
+            profiler.push(MaLiLibReference.MOD_ID+"_extract_world_last");
+
+            for (IRenderer renderer : this.worldLastRenderers)
+            {
+                renderer.onExtractWorldPreWeather(deltaTracker, camera, ticks, profiler);
+            }
+
+            profiler.pop();
+        }
+    }
+
+    @ApiStatus.Internal
+    public void runRenderWorldLast(Matrix4fc modelViewMatrix, Minecraft mc,
+                                   FrameGraphBuilder frameGraphBuilder, LevelTargetBundle fbSet,
+                                   Frustum cullFrustum, CameraRenderState cameraState, RenderBuffers buffers,
+                                   GpuBufferSlice terrainFog, Vector4f fogColor,
+                                   ProfilerFiller profiler)
+    {
+        if (this.worldLastRenderers.isEmpty() == false)
+        {
+            profiler.push(MaLiLibReference.MOD_ID+"_render_world_last");
             FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID+"_world_last");
 
 //            if (fbSet.entityOutlineFramebuffer != null)
@@ -311,8 +348,7 @@ public class RenderEventHandler implements IRenderDispatcher
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
                     // This really should be used either or, and never both in the same mod.
-                    renderer.onRenderWorldLastAdvanced(handleMain.get(), posMatrix, projMatrix, frustum, camera, buffers, profiler);
-                    renderer.onRenderWorldLast(posMatrix, projMatrix);
+                    renderer.onRenderWorldLast(handleMain.get(), modelViewMatrix, cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
                     profiler.pop();
                 }
 
@@ -328,9 +364,9 @@ public class RenderEventHandler implements IRenderDispatcher
             {
                 pass.disableCulling();
             }
-        }
 
-        profiler.pop();
+            profiler.pop();
+        }
     }
 
     @ApiStatus.Internal
