@@ -86,7 +86,7 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
     {
         if (this.getParent() != null)
         {
-            this.getParent().render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+            this.getParent().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
         }
 
 	    ctx.pose().pushMatrix();

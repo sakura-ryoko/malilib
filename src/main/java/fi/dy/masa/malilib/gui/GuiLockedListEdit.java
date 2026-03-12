@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.gui;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import fi.dy.masa.malilib.config.ConfigManager;
@@ -120,14 +120,14 @@ public class GuiLockedListEdit extends GuiListBase<String, WidgetLockedListEditE
     }
 
     @Override
-    public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
+    public void extractRenderState(@NotNull GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
-            this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
+            this.getParent().extractRenderState(drawContext, mouseX, mouseY, partialTicks);
         }
 
-        super.render(drawContext, mouseX, mouseY, partialTicks);
+        super.extractRenderState(drawContext, mouseX, mouseY, partialTicks);
     }
 
     @Override

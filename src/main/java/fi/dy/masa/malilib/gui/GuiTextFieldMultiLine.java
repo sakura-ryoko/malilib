@@ -4,7 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractScrollArea;
 import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.components.Tooltip;
@@ -236,9 +236,9 @@ public class GuiTextFieldMultiLine extends MultiLineEditBox
      * @param mouseY ()
      * @param delta ()
      */
-    public void renderWrapper(GuiGraphics context, int mouseX, int mouseY, float delta)
+    public void renderWrapper(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta)
     {
-        this.render(context, mouseX, mouseY, delta);
+        this.extractWidgetRenderState(context, mouseX, mouseY, delta);
     }
 
     /**

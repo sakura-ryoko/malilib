@@ -125,7 +125,7 @@ public class WidgetSearchBar extends WidgetBase
 
         if (this.searchOpen)
         {
-            this.searchBox.render(ctx.getGuiGraphics(), mouseX, mouseY, 0);
+            this.searchBox.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0);
         }
     }
 }

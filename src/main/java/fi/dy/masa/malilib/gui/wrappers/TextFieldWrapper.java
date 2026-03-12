@@ -79,7 +79,7 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 	// Using the GuiContext here breaks the Hover Text from working
 	public void draw(GuiContext ctx, int mouseX, int mouseY)
 	{
-		this.textField.render(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
+		this.textField.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
 	}
 
 	public boolean mouseClicked(MouseButtonEvent click, boolean doubleClick)

@@ -6,7 +6,7 @@ import org.joml.Matrix3x2fStack;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractWidget;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.input.CharacterEvent;
@@ -96,7 +96,7 @@ public class GuiTextFieldGeneric extends EditBox
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics context, int mouseX, int mouseY, float delta)
+    public void extractWidgetRenderState(@NotNull GuiGraphicsExtractor context, int mouseX, int mouseY, float delta)
     {
         if (this.zLevel != 0)
         {
@@ -105,13 +105,13 @@ public class GuiTextFieldGeneric extends EditBox
             // this.zLevel
             matrixStack.translate(0, 0);
 
-            super.renderWidget(context, mouseX, mouseY, delta);
+            super.extractWidgetRenderState(context, mouseX, mouseY, delta);
 
             matrixStack.popMatrix();
         }
         else
         {
-            super.renderWidget(context, mouseX, mouseY, delta);
+            super.extractWidgetRenderState(context, mouseX, mouseY, delta);
         }
     }
 
@@ -273,9 +273,9 @@ public class GuiTextFieldGeneric extends EditBox
      * @param mouseY ()
      * @param delta ()
      */
-    public void renderWrapper(GuiGraphics context, int mouseX, int mouseY, float delta)
+    public void renderWrapper(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta)
     {
-        this.render(context, mouseX, mouseY, delta);
+        this.extractRenderState(context, mouseX, mouseY, delta);
     }
 
     /**

@@ -33,7 +33,9 @@ import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.Lightmap;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
@@ -108,10 +110,7 @@ public class RenderUtils
         builder.putAll(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
 
         // Add Gui Block Model Renderer
-        builder.put(MaLiLibBlockStateGuiElement.class, new MaLiLibBlockStateGuiElementRenderer(immediate,
-                                                                                               ((IMixinMinecraft) mc).malilib_getBlockModelResolver(),
-                                                                                               mc.getBlockColors())
-        );
+        builder.put(MaLiLibBlockStateGuiElement.class, new MaLiLibBlockStateGuiElementRenderer(immediate, ((IMixinMinecraft) mc).malilib_getBlockModelResolver()));
 
         // Event Callback
         ((RenderEventHandler) RenderEventHandler.getInstance()).onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
@@ -2419,20 +2418,23 @@ public class RenderUtils
 
     public static boolean stateModelHasQuads(BlockState state)
     {
-        return modelHasQuads(Objects.requireNonNull(Minecraft.getInstance().getBlockRenderer().getBlockModel(state)));
+	    BlockStateModelSet modelSet = mc().getModelManager().getBlockStateModelSet();
+        return modelHasQuads(modelSet.get(state));
     }
 
     public static boolean modelHasQuads(@Nonnull BlockStateModel model)
     {
-        return hasQuads(model.collectParts(new SingleThreadedRandomSource(0)));
+	    List<BlockStateModelPart> parts = new ArrayList<>();
+	    model.collectParts(new SingleThreadedRandomSource(0), parts);
+        return hasQuads(parts);
     }
 
-    public static boolean hasQuads(List<BlockModelPart> modelParts)
+    public static boolean hasQuads(List<BlockStateModelPart> modelParts)
     {
         if (modelParts.isEmpty()) return false;
         int totalSize = 0;
 
-        for (BlockModelPart part : modelParts)
+        for (BlockStateModelPart part : modelParts)
         {
             for (Direction face : PositionUtils.ALL_DIRECTIONS)
             {

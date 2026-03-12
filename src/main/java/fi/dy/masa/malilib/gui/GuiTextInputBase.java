@@ -73,7 +73,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     {
         if (this.getParent() != null)
         {
-            this.getParent().render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+            this.getParent().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
         }
 
 	    ctx.pose().pushMatrix();
@@ -86,7 +86,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
         this.drawStringWithShadow(ctx, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
 
         //super.drawScreen(mouseX, mouseY, partialTicks);
-        this.textField.render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+        this.textField.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
 
         this.drawButtons(ctx, mouseX, mouseY, partialTicks);
 	    ctx.pose().popMatrix();

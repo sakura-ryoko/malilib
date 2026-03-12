@@ -2,7 +2,8 @@ package fi.dy.masa.malilib.gui;
 
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.client.gui.GuiGraphics;
+
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import com.google.common.collect.ImmutableList;
@@ -131,14 +132,14 @@ public class GuiKeybindSettings extends GuiDialogBase
     }
 
     @Override
-    public void render(@NotNull GuiGraphics drawContext, int mouseX, int mouseY, float partialTicks)
+    public void extractRenderState(@NotNull GuiGraphicsExtractor drawContext, int mouseX, int mouseY, float partialTicks)
     {
         if (this.getParent() != null)
         {
-            this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
+            this.getParent().extractRenderState(drawContext, mouseX, mouseY, partialTicks);
         }
 
-        super.render(drawContext, mouseX, mouseY, partialTicks);
+        super.extractRenderState(drawContext, mouseX, mouseY, partialTicks);
     }
 
     @Override

@@ -56,7 +56,7 @@ public class TextFieldMultiLineWrapper<T extends GuiTextFieldMultiLine>
 	// Using the GuiContext here breaks the Hover Text from working
 	public void draw(GuiContext ctx, int mouseX, int mouseY)
 	{
-		this.textField.renderWidget(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
+		this.textField.extractWidgetRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
 	}
 
 	public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)

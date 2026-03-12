@@ -80,7 +80,7 @@ public interface IInventoryOverlayHandler
 	{
 		Screen screen = new InventoryOverlayScreen(this.getModId(), context, shulkerBGColors, villagerBGColors);
 		screen.init(0, 0);
-		screen.render(ctx, 0, 0, 0);
+		screen.extractRenderState(ctx, 0, 0, 0);
 	}
 
 	default void renderInventoryOverlay(GuiContext ctx, InventoryOverlayContext context, boolean shulkerBGColors)

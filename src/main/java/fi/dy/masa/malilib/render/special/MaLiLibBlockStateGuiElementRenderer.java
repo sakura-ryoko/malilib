@@ -6,15 +6,15 @@ import org.jetbrains.annotations.NotNull;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.BlockModelResolver;
-import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.model.BlockDisplayContext;
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -23,16 +23,12 @@ import fi.dy.masa.malilib.MaLiLibReference;
 @ApiStatus.Experimental
 public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRenderer<@NotNull MaLiLibBlockStateGuiElement>
 {
-    private final BlockModelResolver blockModelResolver;
-	private final BlockColors blockColors;
+    private final BlockModelResolver modelResolver;
 
-    public MaLiLibBlockStateGuiElementRenderer(MultiBufferSource.BufferSource immediate,
-                                               BlockModelResolver blockModelResolver,
-                                               BlockColors blockColors)
+    public MaLiLibBlockStateGuiElementRenderer(MultiBufferSource.BufferSource immediate, BlockModelResolver modelResolver)
     {
         super(immediate);
-        this.blockModelResolver = blockModelResolver;
-		this.blockColors = blockColors;
+        this.modelResolver = modelResolver;
     }
 
     @Override
@@ -60,21 +56,24 @@ public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRendere
 
 	private void submitBlockStateModel(BlockState state, PoseStack matrices)
 	{
-		final int l = LightTexture.pack(15, 15);
+		final int l = LightCoordsUtil.pack(15, 15);
 		final int overlay = OverlayTexture.NO_OVERLAY;
-		final int blockColor = ((IMixinBlockRenderDispatcher) this.blockModelResolver).malilib_getBlockColors().getColor(state, null, null, 0);
-		float[] color = new float[] {
-				(blockColor >> 16 & 0xFF) / 255.0F,
-				(blockColor >> 16 & 0xFF) / 255.0F,
-				(blockColor & 0xFF) / 255.0F,
-				1.0F
-		};
+//		final int blockColor = this.blockColors.getColor(state, null, null, 0);
+//
+//		float[] color = new float[] {
+//				(blockColor >> 16 & 0xFF) / 255.0F,
+//				(blockColor >> 16 & 0xFF) / 255.0F,
+//				(blockColor & 0xFF) / 255.0F,
+//				1.0F
+//		};
 
 		FeatureRenderDispatcher featureRenderer = Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
 		SubmitNodeStorage nodeStorage = featureRenderer.getSubmitNodeStorage();
-		BlockStateModel model = this.blockModelResolver.getBlockModel(state);
+		BlockModelRenderState renderState = new BlockModelRenderState();
 
-		nodeStorage.submitBlockModel(matrices, RenderTypes.tripwireMovingBlock(), model, color[0], color[1], color[2], l, overlay, 0);
+		this.modelResolver.update(renderState, state, BlockDisplayContext.create());
+		renderState.submit(matrices, nodeStorage, l, overlay, -1);
+//		nodeStorage.submitBlockModel(matrices, RenderTypes.translucentMovingBlock(), parts, color[0], color[1], color[2], l, overlay, 0);
 		featureRenderer.renderAllFeatures();
 	}
 

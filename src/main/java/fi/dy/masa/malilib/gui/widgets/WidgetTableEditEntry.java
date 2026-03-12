@@ -435,7 +435,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		{
 			if (wrapper != null)
 			{
-				wrapper.textField().render(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
+				wrapper.textField().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
 			}
 		}
 		for (Tuple<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)

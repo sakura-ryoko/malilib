@@ -1,9 +1,6 @@
 package fi.dy.masa.malilib.test.command;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.jspecify.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -29,17 +26,17 @@ public class TestCommand implements IClientCommandListener
 
         if (op.equalsIgnoreCase("date") || op.equalsIgnoreCase("time"))
         {
-            mc.gui.getChat().addMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
+            mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
             return true;
         }
         else if (op.equalsIgnoreCase("duration"))
         {
-            mc.gui.getChat().addMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
+            mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
             return true;
         }
         else if (op.equalsIgnoreCase("mods"))
         {
-            mc.gui.getChat().addMessage(Component.nullToEmpty(this.getModList()));
+            mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(this.getModList()));
             return true;
         }
 

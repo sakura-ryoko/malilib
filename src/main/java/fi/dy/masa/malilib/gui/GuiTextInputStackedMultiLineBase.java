@@ -129,7 +129,7 @@ public abstract class GuiTextInputStackedMultiLineBase extends GuiDialogBase
     {
         if (this.getParent() != null)
         {
-            this.getParent().render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+            this.getParent().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
         }
 
 	    ctx.pose().pushMatrix();
@@ -142,8 +142,8 @@ public abstract class GuiTextInputStackedMultiLineBase extends GuiDialogBase
         this.drawStringWithShadow(ctx, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
 
         //super.drawScreen(mouseX, mouseY, partialTicks);
-        this.textField1.render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
-        this.textField2.render(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+        this.textField1.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+        this.textField2.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
 
         this.drawButtons(ctx, mouseX, mouseY, partialTicks);
 	    ctx.pose().popMatrix();

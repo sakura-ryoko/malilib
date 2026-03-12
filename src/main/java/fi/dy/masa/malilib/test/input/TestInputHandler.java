@@ -135,8 +135,8 @@ public class TestInputHandler implements IKeybindProvider
             }
             else if (key == TestHotkeys.TEST_RUN_DATETIME_TEST.getKeybind())
             {
-                mc.gui.getChat().addMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
-                mc.gui.getChat().addMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
+                mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
+                mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
                 return true;
             }
 
