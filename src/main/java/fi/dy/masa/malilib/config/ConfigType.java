@@ -14,19 +14,20 @@ import fi.dy.masa.malilib.config.options.table.ConfigTable;
 
 public enum ConfigType implements StringRepresentable
 {
-    BOOLEAN     ("boolean",         ConfigBoolean.CODEC),
-    INTEGER     ("integer",         ConfigInteger.CODEC),
-    DOUBLE      ("double",          ConfigDouble.CODEC),
-    FLOAT       ("float",           ConfigFloat.CODEC),
-    COLOR       ("color",           ConfigColor.CODEC),
-    BLOCK_STATE ("block_state",     ConfigBlockState.CODEC),
-    STRING      ("string",          ConfigString.CODEC),
-    STRING_LIST ("string_list",     ConfigString.CODEC),
-    LOCKED_LIST ("locked_list",     null),
-    COLOR_LIST  ("color_list",      ConfigColorList.CODEC),
-    OPTION_LIST ("option_list",     null),
-    HOTKEY      ("hotkey",          ConfigHotkey.CODEC),
-	TABLE       ("table",           ConfigTable.CODEC),
+    BOOLEAN                 ("boolean",                 ConfigBoolean.CODEC),
+    INTEGER                 ("integer",                 ConfigInteger.CODEC),
+    DOUBLE                  ("double",                  ConfigDouble.CODEC),
+    FLOAT                   ("float",                   ConfigFloat.CODEC),
+    COLOR                   ("color",                   ConfigColor.CODEC),
+    BLOCK_STATE             ("block_state",             ConfigBlockState.CODEC),
+    STRING                  ("string",                  ConfigString.CODEC),
+    STRING_LIST             ("string_list",             ConfigString.CODEC),
+    LOCKED_LIST             ("locked_list",             null),
+    COLOR_LIST              ("color_list",              ConfigColorList.CODEC),
+    OPTION_LIST             ("option_list",             null),
+    OPTION_VALUES           ("option_values",           null),
+    HOTKEY                  ("hotkey",                  ConfigHotkey.CODEC),
+	TABLE                   ("table",                   ConfigTable.CODEC),
     ;
 
     public static final StringRepresentable.EnumCodec<@NotNull ConfigType> CODEC = StringRepresentable.fromEnum(ConfigType::values);

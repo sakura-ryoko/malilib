@@ -20,6 +20,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.value.FileWriteType;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.util.FileUtils;
@@ -815,6 +817,11 @@ public class JsonUtils
         {
             try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8))
             {
+                if (MaLiLibReference.DEBUG_MODE)
+                {
+                    MaLiLib.debugLogError("parseJsonFile: '{}'", file.toAbsolutePath().toString());
+                }
+
                 return JsonParser.parseReader(reader);
             }
             catch (Exception e)
@@ -845,8 +852,7 @@ public class JsonUtils
     public static boolean writeJsonToFile(final JsonElement root, final Path file, final Gson gson)
     {
         return FileUtils.writeDataToFile(file, w -> writeJsonToWriter(root, file, w, gson),
-                                         FileWriteType.TEMP_AND_RENAME);
-//                                         MaLiLibConfigs.Generic.CONFIG_WRITE_METHOD.getValue());
+                                         (FileWriteType) MaLiLibConfigs.Generic.CONFIG_WRITE_METHOD.getOptionValue());
     }
 
     public static void writeJsonToWriter(JsonElement root, Path file, BufferedWriter writer, Gson gson)

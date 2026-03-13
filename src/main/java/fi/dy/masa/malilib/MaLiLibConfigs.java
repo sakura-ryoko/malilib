@@ -17,11 +17,13 @@ import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.config.options.table.ConfigTable;
 import fi.dy.masa.malilib.config.options.table.Label;
 import fi.dy.masa.malilib.config.options.table.TableRow;
+import fi.dy.masa.malilib.config.value.FileWriteType;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.test.config.ConfigTestLockedList;
 import fi.dy.masa.malilib.test.config.ConfigTestOptList;
 import fi.dy.masa.malilib.test.config.TestHotkeys;
+import fi.dy.masa.malilib.test.config.value.TestOptions;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
@@ -37,6 +39,8 @@ public class MaLiLibConfigs implements IConfigHandler
     private static final String GENERIC_KEY = MaLiLibReference.MOD_ID+".config.generic";
     public static class Generic
     {
+        public static final ConfigOptionValues<FileWriteType> CONFIG_WRITE_METHOD = new ConfigOptionValues<>("configWriteMethod", FileWriteType.TEMP_AND_RENAME, FileWriteType.VALUES).apply(GENERIC_KEY);
+
         public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
         public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_ACTIONBAR_MESSAGES   = new ConfigBooleanHotkeyed   ("enableActionbarMessages", true, "").apply(GENERIC_KEY);
@@ -47,6 +51,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
+                CONFIG_WRITE_METHOD,
                 IGNORED_KEYS,
                 OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
@@ -103,6 +108,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigFloat             TEST_CONFIG_FLOAT               = new ConfigFloat("testFloat", 0.5f, 0.0f, 1.0f, true, "Test Float").apply(TEST_KEY);
         public static final ConfigInteger           TEST_CONFIG_INTEGER             = new ConfigInteger("testInteger", 5, 1, 10, "Test Integer").apply(TEST_KEY);
         public static final ConfigOptionList        TEST_CONFIG_OPTIONS_LIST        = new ConfigOptionList("testOptionList", ConfigTestOptList.TEST1, "Test Option List").apply(TEST_KEY);
+        public static final ConfigOptionValues<TestOptions> TEST_CONFIG_OPTION_VALUES = new ConfigOptionValues<>("testConfigOptionValues", TestOptions.TEST_OPT_1, TestOptions.VALUES, "Test Option Values").apply(TEST_KEY);
         public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "testString", "Test String").apply(TEST_KEY);
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
@@ -173,6 +179,7 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_FLOAT,
                 TEST_CONFIG_INTEGER,
                 TEST_CONFIG_OPTIONS_LIST,
+                TEST_CONFIG_OPTION_VALUES,
                 TEST_CONFIG_STRING,
                 TEST_CONFIG_STRING_LIST,
                 TEST_CONFIG_LOCKED_LIST,

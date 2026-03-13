@@ -14,7 +14,7 @@ import com.google.gson.*;
 import fi.dy.masa.malilib.MaLiLib;
 
 /**
- * Being moved to util/data/json soon
+ * Being moved to util/data/json
  * <br>
  * See {@link fi.dy.masa.malilib.util.data.json.JsonUtils}
  */
