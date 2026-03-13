@@ -177,6 +177,11 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             ConfigButtonOptionList optionButton = new ConfigButtonOptionList(x, y, configWidth, configHeight, (IConfigOptionList) config);
             this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
         }
+        else if (type == ConfigType.OPTION_VALUES)
+        {
+	        ConfigButtonOptionValues optionButton = new ConfigButtonOptionValues(x, y, configWidth, configHeight, (IConfigOptionValues<?>) config);
+	        this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
+        }
         else if (type == ConfigType.STRING_LIST)
         {
             ConfigButtonStringList optionButton = new ConfigButtonStringList(x, y, configWidth, configHeight, (IConfigStringList) config, this.host, this.host.getDialogHandler());
