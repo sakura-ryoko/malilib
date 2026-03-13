@@ -852,7 +852,7 @@ public class JsonUtils
     public static boolean writeJsonToFile(final JsonElement root, final Path file, final Gson gson)
     {
         return FileUtils.writeDataToFile(file, w -> writeJsonToWriter(root, file, w, gson),
-                                         (FileWriteType) MaLiLibConfigs.Generic.CONFIG_WRITE_METHOD.getOptionValue());
+                                         MaLiLibConfigs.Generic.CONFIG_WRITE_METHOD.getOptionValue());
     }
 
     public static void writeJsonToWriter(JsonElement root, Path file, BufferedWriter writer, Gson gson)
