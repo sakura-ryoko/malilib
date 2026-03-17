@@ -26,11 +26,21 @@ public class FileUtils
 
     public static Path getConfigDirectoryAsPath()
     {
-//        return GameWrap.getClient().gameDirectory.toPath().resolve("config");
         return MaLiLibReference.CONFIG_DIR;
     }
 
     public static Path getMinecraftDirectoryAsPath()
+    {
+        return MaLiLibReference.GAME_DIR;
+    }
+
+    public static Path getConfigDirectory()
+    {
+//        return GameWrap.getClient().gameDirectory.toPath().resolve("config");
+        return MaLiLibReference.CONFIG_DIR;
+    }
+
+    public static Path getMinecraftDirectory()
     {
 //        return GameWrap.getClient().gameDirectory.toPath();
         return MaLiLibReference.GAME_DIR;
