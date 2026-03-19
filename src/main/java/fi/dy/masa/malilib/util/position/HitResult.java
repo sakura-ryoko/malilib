@@ -29,7 +29,7 @@ public record HitResult(Type type, @Nullable BlockPos blockPos,
     @Override
     public @NonNull String toString()
     {
-        return "HitResult{type=" + this.type + ", blockPos=" + this.blockPos + ", side=" + this.side +
+        return "HitResult:{type=" + this.type + ", blockPos=" + this.blockPos + ", side=" + this.side +
                 ", pos=" + this.pos + ", entity=" + this.entity + "}";
     }
 

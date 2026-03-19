@@ -397,7 +397,6 @@ public class PositionUtils
 		    case Y -> new Vec3(valueIn.x, valueIn.y + amount, valueIn.z);
 		    case Z -> new Vec3(valueIn.x, valueIn.y, valueIn.z + amount);
 	    };
-
     }
 
     public static BlockPos modifyValue(CoordinateType type, BlockPos valueIn, int amount)
@@ -408,7 +407,6 @@ public class PositionUtils
 		    case Y -> BlockPos.containing(valueIn.getX(), valueIn.getY() + amount, valueIn.getZ());
 		    case Z -> BlockPos.containing(valueIn.getX(), valueIn.getY(), valueIn.getZ() + amount);
 	    };
-
     }
 
     public static Vec3 setValue(CoordinateType type, Vec3 valueIn, double newValue)
@@ -419,7 +417,6 @@ public class PositionUtils
 		    case Y -> new Vec3(valueIn.x, newValue, valueIn.z);
 		    case Z -> new Vec3(valueIn.x, valueIn.y, newValue);
 	    };
-
     }
 
     public static BlockPos setValue(CoordinateType type, BlockPos valueIn, int newValue)
@@ -430,7 +427,26 @@ public class PositionUtils
 		    case Y -> BlockPos.containing(valueIn.getX(), newValue, valueIn.getZ());
 		    case Z -> BlockPos.containing(valueIn.getX(), valueIn.getY(), newValue);
 	    };
+    }
 
+    public static Vec3d modifyValue(CoordinateType type, Vec3d valueIn, double amount)
+    {
+        return switch (type)
+        {
+            case X -> new Vec3d(valueIn.x + amount, valueIn.y, valueIn.z);
+            case Y -> new Vec3d(valueIn.x, valueIn.y + amount, valueIn.z);
+            case Z -> new Vec3d(valueIn.x, valueIn.y, valueIn.z + amount);
+        };
+    }
+
+    public static Vec3d setValue(CoordinateType type, Vec3d valueIn, double newValue)
+    {
+        return switch (type)
+        {
+            case X -> new Vec3d(newValue, valueIn.y, valueIn.z);
+            case Y -> new Vec3d(valueIn.x, newValue, valueIn.z);
+            case Z -> new Vec3d(valueIn.x, valueIn.y, newValue);
+        };
     }
 
     /**

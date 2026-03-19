@@ -160,7 +160,7 @@ public class BlockPos extends Vec3i
     @Override
     public @NonNull String toString()
     {
-        return "BlockPos{x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + "}";
+        return "BlockPos:{x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + "}";
     }
 
     public static BlockPos fromPacked(long posLong)

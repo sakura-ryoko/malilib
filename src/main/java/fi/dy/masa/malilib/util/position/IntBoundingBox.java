@@ -16,6 +16,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.util.data.tag.IntArrayData;
 
 public class IntBoundingBox
 {
@@ -163,6 +164,11 @@ public class IntBoundingBox
     public IntArrayTag toNbtIntArray()
     {
         return new IntArrayTag(new int[]{this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
+    }
+
+    public IntArrayData toDataIntArray()
+    {
+        return new IntArrayData(new int[]{this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
     }
 
     public JsonArray toJson()

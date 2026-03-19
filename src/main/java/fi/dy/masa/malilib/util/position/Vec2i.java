@@ -102,6 +102,6 @@ public class Vec2i
     @Override
     public String toString()
     {
-        return "Vec2i{x=" + this.x + ", y=" + this.y + "}";
+        return "Vec2i:{x=" + this.x + ", y=" + this.y + "}";
     }
 }

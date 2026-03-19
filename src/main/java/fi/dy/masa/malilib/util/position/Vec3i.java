@@ -101,7 +101,7 @@ public class Vec3i extends net.minecraft.core.BlockPos
     @Override
     public @NonNull String toString()
     {
-        return "Vec3i{x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + "}";
+        return "Vec3i:{x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + "}";
     }
 
     /*

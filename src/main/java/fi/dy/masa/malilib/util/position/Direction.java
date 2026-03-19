@@ -326,6 +326,16 @@ public enum Direction implements StringRepresentable
             return this.isVertical;
         }
 
+        public double pick(final double x, final double y, final double z)
+        {
+            return switch (this)
+            {
+                case X -> x;
+                case Y -> y;
+                case Z -> z;
+            };
+        }
+
         public Axis cycle(boolean reverse)
         {
             return reverse ? this.cycleBackward() : this.cycleForward();

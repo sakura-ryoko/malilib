@@ -40,7 +40,6 @@ public record ChunkPos(int x, int z)
 		}
 	};
 
-
 	public static int getX(final long pos)
 	{
 		return (int) (pos & 4294967295L);
@@ -84,7 +83,7 @@ public record ChunkPos(int x, int z)
 	@Override
 	public @NonNull String toString()
 	{
-		return "ChunkPos{x=" + this.x + ", z=" + this.z + "}";
+		return "ChunkPos:{x=" + this.x + ", z=" + this.z + "}";
 	}
 
 	public BlockPos getWorldPosition()

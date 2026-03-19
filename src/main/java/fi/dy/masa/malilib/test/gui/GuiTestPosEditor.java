@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.interfaces.ICoordinateValueModifier;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.position.PositionUtils;
+import fi.dy.masa.malilib.util.position.Vec3d;
 
 public class GuiTestPosEditor extends GuiBase
 {
@@ -44,19 +45,19 @@ public class GuiTestPosEditor extends GuiBase
 
 	public static class TestVec3dSupplier
 	{
-		private Vec3 pos;
+		private Vec3d pos;
 
 		public TestVec3dSupplier()
 		{
-			this.pos = Vec3.ZERO;
+			this.pos = Vec3d.ZERO;
 		}
 
-		public Vec3 get()
+		public Vec3d get()
 		{
 			return this.pos;
 		}
 
-		public void set(Vec3 pos)
+		public void set(Vec3d pos)
 		{
 			this.pos = pos;
 			this.debug();
@@ -94,7 +95,7 @@ public class GuiTestPosEditor extends GuiBase
 		}
 	}
 
-	public record TestVec3dEditor(Supplier<Vec3> supplier, Consumer<Vec3> consumer, GuiTestPosEditor gui) implements ICoordinateValueModifier
+	public record TestVec3dEditor(Supplier<Vec3d> supplier, Consumer<Vec3d> consumer, GuiTestPosEditor gui) implements ICoordinateValueModifier
 	{
 		@Override
 		public boolean modifyValue(PositionUtils.CoordinateType type, int amount)

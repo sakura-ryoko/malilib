@@ -31,7 +31,7 @@ public class HitPosition
     @Override
     public String toString()
     {
-        return "HitPosition{blockPos=" + this.blockPos + ", exactPos=" + this.exactPos + ", direction=" + this.direction + "}";
+        return "HitPosition:{blockPos=" + this.blockPos + ", exactPos=" + this.exactPos + ", direction=" + this.direction + "}";
     }
 
     public static HitPosition of(BlockPos blockPos, Vec3d exactPos, Direction direction)

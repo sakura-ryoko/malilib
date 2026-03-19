@@ -103,6 +103,6 @@ public class Vec3f
     @Override
     public String toString()
     {
-        return "Vec3f{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
+        return "Vec3f:{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
     }
 }

@@ -161,7 +161,7 @@ public class DataEntityUtils
 			AttributeMap container = new AttributeMap(DefaultAttributes.getSupplier((EntityType<? extends LivingEntity>) type));
 			ListData list = data.getList(NbtKeys.ATTRIB);
 
-			container.apply(AttributeInstance.Packed.LIST_CODEC.parse(NbtOps.INSTANCE, DataConverterNbt.toVanillaList(list)).getPartialOrThrow());
+			container.apply(AttributeInstance.Packed.LIST_CODEC.parse(DataOps.INSTANCE, list).getPartialOrThrow());
 			return container;
 		}
 

@@ -129,7 +129,7 @@ public class Vec3d
     @Override
     public String toString()
     {
-        return "Vec3d{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
+        return "Vec3d:{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
     }
 
     @Override

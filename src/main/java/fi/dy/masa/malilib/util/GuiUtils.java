@@ -14,6 +14,7 @@ import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.interfaces.ICoordinateValueModifier;
 import fi.dy.masa.malilib.util.position.PositionUtils.CoordinateType;
+import fi.dy.masa.malilib.util.position.Vec3d;
 
 public class GuiUtils
 {
@@ -79,6 +80,14 @@ public class GuiUtils
         createVec3dInput(x, y + 34, textFieldWidth, CoordinateType.Z, pos, modifier, addButton, gui);
     }
 
+    public static void createVec3dInputsVertical(int x, int y, int textFieldWidth, Vec3d pos,
+                                                 ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
+    {
+        createVec3dInput(x, y     , textFieldWidth, CoordinateType.X, pos, modifier, addButton, gui);
+        createVec3dInput(x, y + 17, textFieldWidth, CoordinateType.Y, pos, modifier, addButton, gui);
+        createVec3dInput(x, y + 34, textFieldWidth, CoordinateType.Z, pos, modifier, addButton, gui);
+    }
+
     public static void createBlockPosInput(int x, int y, int textFieldWidth, CoordinateType type, BlockPos pos,
                                            ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
@@ -91,6 +100,17 @@ public class GuiUtils
     }
 
     public static void createVec3dInput(int x, int y, int textFieldWidth, CoordinateType type, Vec3 pos,
+                                        ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
+    {
+        x = addLabel(x, y, type, gui);
+
+        GuiTextFieldDouble textField = new GuiTextFieldDouble(x, y + 1, textFieldWidth, 14, Minecraft.getInstance().font);
+        textField.setValue(getCoordinateValueString(type, pos));
+
+        addTextFieldAndButton(x + textFieldWidth + 4, y, type, modifier, textField, addButton, gui, TextFieldType.DOUBLE);
+    }
+
+    public static void createVec3dInput(int x, int y, int textFieldWidth, CoordinateType type, Vec3d pos,
                                         ICoordinateValueModifier modifier, boolean addButton, GuiBase gui)
     {
         x = addLabel(x, y, type, gui);
@@ -127,6 +147,18 @@ public class GuiUtils
     }
 
     public static String getCoordinateValueString(CoordinateType type, Vec3 pos)
+    {
+        // Truncate to 2 decimal places
+        return switch (type)
+        {
+            case X -> String.format(Locale.US, "%.2f", pos.x);
+            case Y -> String.format(Locale.US, "%.2f", pos.y);
+            case Z -> String.format(Locale.US, "%.2f", pos.z);
+        };
+
+    }
+
+    public static String getCoordinateValueString(CoordinateType type, Vec3d pos)
     {
         // Truncate to 2 decimal places
         return switch (type)
