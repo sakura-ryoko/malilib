@@ -96,7 +96,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
             for (int i = 0; i < entries.size(); ++i)
             {
-                width = Math.max(width, this.getStringWidth(this.getDisplayString(entries.get(i))) + 20);
+                width = MathUtils.max(width, this.getStringWidth(this.getDisplayString(entries.get(i))) + 20);
             }
         }
 
@@ -130,7 +130,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     @Override
     public boolean isMouseOver(int mouseX, int mouseY)
     {
-        int maxY = this.y + this.calculateVisibleHeight();
+        int maxY = this.isOpen ? this.y + this.totalHeight : this.y + this.height;
         return mouseX >= this.x && mouseX < this.x + this.width && mouseY >= this.y && mouseY < maxY;
     }
 
@@ -302,17 +302,6 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         matrixStack.popMatrix();
         matrixStackIn.popMatrix();
-    }
-
-    private int calculateVisibleHeight()
-    {
-        if (this.isOpen)
-        {
-            final int visibleEntries = MathUtils.min(this.maxVisibleEntries, this.filteredEntries.size());
-            return visibleEntries * this.height;
-        }
-
-        return this.height;
     }
 
     private void renderOpen(GuiContext ctx, int mouseX, int mouseY, int txtX, int txtY)
