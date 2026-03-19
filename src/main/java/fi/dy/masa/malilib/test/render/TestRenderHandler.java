@@ -70,7 +70,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onExtractInGameGuiPost(GuiContext ctx, float partialTicks, ProfilerFiller profiler)
+    public void onExtractGuiOverlayPost(GuiContext ctx, float partialTicks, ProfilerFiller profiler)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
@@ -167,7 +167,23 @@ public class TestRenderHandler implements IRenderer
     @Override
     public void onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
     {
-        // TODO
+        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+        {
+            Minecraft mc = Minecraft.getInstance();
+
+            if (mc.player != null)
+            {
+                if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+                {
+                    if (TestRenderWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
+                    {
+                        profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
+                        TestRenderWalls.INSTANCE.update(camera.position(), mc.getCameraEntity(), mc);
+                        profiler.pop();
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -191,16 +207,10 @@ public class TestRenderHandler implements IRenderer
                 profiler.popPush(MaLiLibReference.MOD_ID + "_targeting_overlay");
                 this.renderTargetingOverlay(mc);
 
-                profiler.popPush(MaLiLibReference.MOD_ID + "_test_walls");
-
-                if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
+                if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue() &&
+                    TestRenderWalls.INSTANCE.hasData())
                 {
-                    // TODO -- Move to extract ?
-                    if (TestRenderWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-                    {
-                        TestRenderWalls.INSTANCE.update(cameraState.pos, mc.getCameraEntity(), mc);
-                    }
-
+                    profiler.popPush(MaLiLibReference.MOD_ID + "_test_walls");
                     TestRenderWalls.INSTANCE.render(cameraState.pos, mc, profiler);
                 }
 

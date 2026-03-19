@@ -100,18 +100,18 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void runExtractInGameGuiPost(GuiContext ctx, float partialTicks)
+    public void runExtractGuiOverlayPost(GuiContext ctx, float partialTicks)
     {
         ProfilerFiller profiler = Profiler.get();
 
         if (this.inGameGuiRenderers.isEmpty() == false)
         {
-            profiler.push(MaLiLibReference.MOD_ID+"_extract_in_game_gui_post");
+            profiler.push(MaLiLibReference.MOD_ID+"_extract_gui_overlay_post");
 
             for (IRenderer renderer : this.inGameGuiRenderers)
             {
                 profiler.push(renderer.getProfilerSectionSupplier());
-                renderer.onExtractInGameGuiPost(ctx, partialTicks, profiler);
+                renderer.onExtractGuiOverlayPost(ctx, partialTicks, profiler);
                 profiler.pop();
             }
 

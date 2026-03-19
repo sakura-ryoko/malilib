@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.MeshData;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -108,6 +106,11 @@ public class TestRenderWalls implements AutoCloseable
 
         this.needsUpdate = false;
         this.setUpdatePosition(camPos);
+    }
+
+    public boolean hasData()
+    {
+        return this.hasData;
     }
 
     public void render(Vec3 cameraPos, Minecraft mc, ProfilerFiller profiler)

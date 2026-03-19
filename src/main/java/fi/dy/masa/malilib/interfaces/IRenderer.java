@@ -28,9 +28,9 @@ import fi.dy.masa.malilib.render.GuiContext;
 public interface IRenderer
 {
     /**
-     * Called after the vanilla In Game Gui have been rendered, with advanced Parameters such as ticks, profiler
+     * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, profiler
      */
-    default void onExtractInGameGuiPost(GuiContext ctx, float partialTicks, ProfilerFiller profiler) {}
+    default void onExtractGuiOverlayPost(GuiContext ctx, float partialTicks, ProfilerFiller profiler) {}
 
     /**
      * Called during the Render Level "Extraction" phase
