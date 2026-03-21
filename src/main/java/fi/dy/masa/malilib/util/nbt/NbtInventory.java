@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.core.NonNullList;
@@ -43,6 +42,11 @@ public class NbtInventory implements AutoCloseable
 
     private NbtInventory() {}
 
+    /**
+     * Create a new NbtInventory of the specified size
+     * @param size -
+     * @return -
+     */
     public static NbtInventory create(int size)
     {
         NbtInventory newInv = new NbtInventory();
@@ -85,6 +89,10 @@ public class NbtInventory implements AutoCloseable
         return this;
     }
 
+    /**
+     * Return if this NbtInventory is Empty
+     * @return -
+     */
     public boolean isEmpty()
     {
         if (this.items == null || this.items.isEmpty())
@@ -107,6 +115,10 @@ public class NbtInventory implements AutoCloseable
         return bool.get();
     }
 
+    /**
+     * Return this NbtInventory size
+     * @return -
+     */
     public int size()
     {
         if (this.items == null)
@@ -302,6 +314,11 @@ public class NbtInventory implements AutoCloseable
         return new CompoundTag();
     }
 
+    /**
+     * Converts the first Inventory element to a single CompoundData.
+     * @return ()
+     * @throws RuntimeException ()
+     */
 	public CompoundData toDataSingle(@Nonnull RegistryAccess registry)
 	{
         if (this.size() > 1)
@@ -350,6 +367,11 @@ public class NbtInventory implements AutoCloseable
         return nbt;
     }
 
+    /**
+     * Converts this Inventory to a basic ListData with Slot information.
+     * @return ()
+     * @throws RuntimeException ()
+     */
 	public ListData toDataList(@Nonnull RegistryAccess registry)
 	{
         ListData list = new ListData();
@@ -408,7 +430,13 @@ public class NbtInventory implements AutoCloseable
         throw new RuntimeException("Unsupported Nbt Type!");
     }
 
-	@ApiStatus.Experimental
+    /**
+     * Writes this Inventory to a Data Type (List or Compound) using a key; with slot information.
+     * @param type ()
+     * @param key ()
+     * @return ()
+     * @throws RuntimeException ()
+     */
 	public CompoundData toData(int type, String key, @Nonnull RegistryAccess registry) throws RuntimeException
 	{
 		CompoundData data = new CompoundData();
@@ -461,7 +489,14 @@ public class NbtInventory implements AutoCloseable
         }
     }
 
-	@ApiStatus.Experimental
+    /**
+     * Creates a new NbtInventory from a Data Type (List or Compound) using a key; retains slot information.
+     * @param data ()
+     * @param key ()
+     * @param noSlotId (If the List doesn't include Slots, generate them using inventory index)
+     * @return ()
+     * @throws RuntimeException ()
+     */
 	public static @Nullable NbtInventory fromData(@Nonnull CompoundData data, String key, boolean noSlotId, @Nonnull RegistryAccess registry) throws RuntimeException
 	{
 		if (data.isEmpty() || !data.containsLenient(key))
@@ -507,7 +542,12 @@ public class NbtInventory implements AutoCloseable
         return newInv;
     }
 
-	@ApiStatus.Experimental
+    /**
+     * Creates a new NbtInventory from a single-member CompoundData containing a single item with a slot number.
+     * @param data ()
+     * @return ()
+     * @throws RuntimeException ()
+     */
 	public static @Nullable NbtInventory fromDataSingle(@Nonnull CompoundData data, @Nonnull RegistryAccess registry) throws RuntimeException
 	{
         if (data.isEmpty())
@@ -585,7 +625,13 @@ public class NbtInventory implements AutoCloseable
         return newInv;
     }
 
-	@ApiStatus.Experimental
+    /**
+     * Creates a new NbtInventory from an ListData; utilizing Slot information.
+     * @param list ()
+     * @param noSlotId (If the List doesn't include Slots, generate them using inventory index)
+     * @return ()
+     * @throws RuntimeException ()
+     */
 	public static @Nullable NbtInventory fromDataList(@Nonnull ListData list, boolean noSlotId, @Nonnull RegistryAccess registry)
             throws RuntimeException
 	{

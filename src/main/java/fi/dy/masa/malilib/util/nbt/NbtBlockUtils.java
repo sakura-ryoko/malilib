@@ -27,6 +27,10 @@ import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawnerStateData;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 
+/**
+ * @deprecated Please migrate to using the Data Tag system.
+ */
+@Deprecated
 public class NbtBlockUtils
 {
     /**

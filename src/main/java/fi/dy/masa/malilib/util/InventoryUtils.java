@@ -176,8 +176,9 @@ public class InventoryUtils
      * @param tag2        (NbtCompound tag2)
      * @param ignoredKeys (Keys to ignore) [OPTIONAL]
      * @return (result)
+     * @deprecated Please Migrate to using the Data Tag system.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static boolean areNbtEqualIgnoreKeys(@Nonnull CompoundTag tag1, @Nonnull CompoundTag tag2, @Nullable Set<String> ignoredKeys)
     {
         Set<String> keys1;
@@ -467,6 +468,7 @@ public class InventoryUtils
      * @param stack ()
      * @param registry ()
      * @return ()
+     * @deprecated Please Migrate to using the Data Tag system.
      */
     @Deprecated
     public static @Nullable CompoundTag stackHasNbtItems(ItemStack stack, @Nonnull RegistryAccess registry)
@@ -511,6 +513,7 @@ public class InventoryUtils
      *
      * @param nbt ()
      * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
      */
 	@Deprecated
     public static boolean hasNbtItems(CompoundTag nbt)
@@ -589,6 +592,7 @@ public class InventoryUtils
      *
      * @param nbt The item holding the inventory contents
      * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
      */
 	@Deprecated
     public static NonNullList<ItemStack> getNbtItems(@Nonnull CompoundTag nbt)
@@ -611,8 +615,9 @@ public class InventoryUtils
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
      * @param registry  the Dynamic Registry object
      * @return ()
+     * @deprecated Please Migrate to using the Data Tag system.
      */
-	@Deprecated
+    @Deprecated
     public static NonNullList<ItemStack> getNbtItems(@Nonnull CompoundTag nbt, int slotCount, @Nonnull RegistryAccess registry)
     {
         if (slotCount > NbtInventory.MAX_SIZE)
@@ -880,8 +885,9 @@ public class InventoryUtils
      *
      * @param nbt     The tag holding the inventory contents
      * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
      */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static Container getNbtInventory(@Nonnull CompoundTag nbt)
     {
         if (Minecraft.getInstance().level == null)
@@ -917,8 +923,9 @@ public class InventoryUtils
      * @param slotCount the maximum number of slots, and thus also the size of the list to create
      * @param registry  The Dynamic Registry object
      * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
      */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static Container getNbtInventory(@Nonnull CompoundTag nbt, int slotCount, @Nonnull RegistryAccess registry)
     {
         if (slotCount > NbtInventory.MAX_SIZE)
@@ -1189,8 +1196,9 @@ public class InventoryUtils
      * @param slotCount ()
      * @param registry ()
      * @return ()
+     * @deprecated Please Migrate to using the Data Tag system.
      */
-	@Deprecated
+    @Deprecated(forRemoval = true)
 	public static Container getNbtInventoryHorseFix(@Nonnull CompoundTag nbt, int slotCount, @Nonnull RegistryAccess registry)
     {
         NonNullList<ItemStack> horseEquipment = NbtEntityUtils.getHorseEquipmentFromNbt(nbt, registry);
@@ -1326,8 +1334,11 @@ public class InventoryUtils
         return null;
     }
 
+	/**
+	 * @deprecated Please Migrate to using the Data Tag system.
+	 */
     @Nullable
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static PlayerEnderChestContainer getPlayerEnderItemsFromNbt(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry)
     {
         if (nbt.contains(NbtKeys.ENDER_ITEMS))
@@ -1362,7 +1373,10 @@ public class InventoryUtils
 		return null;
 	}
 
-	@Deprecated
+	/**
+	 * @deprecated Please Migrate to using the Data Tag system.
+	 */
+	@Deprecated(forRemoval = true)
     public static NonNullList<ItemStack> getSellingItemsFromNbt(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry)
     {
         MerchantOffers offers = NbtEntityUtils.getTradeOffersFromNbt(nbt, registry);
@@ -1890,8 +1904,9 @@ public class InventoryUtils
      *
      * @param stack ()
      * @return ()
+     * @deprecated Please Migrate to using the Data Tag system.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static CompoundTag getStoredBlockEntityNbt(ItemStack stack)
     {
         if (stack.has(DataComponents.BLOCK_ENTITY_DATA))
@@ -1932,8 +1947,9 @@ public class InventoryUtils
 	 * Return an item stack from NBT, or Empty
 	 * @param tag ()
 	 * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static ItemStack fromNbtOrEmpty(@Nullable Tag tag)
     {
         Minecraft mc = Minecraft.getInstance();
@@ -1968,8 +1984,9 @@ public class InventoryUtils
 	 * @param nbt ()
 	 * @param key ()
 	 * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static ItemStack getStackCodec(@Nonnull CompoundTag nbt, String key)
     {
         Minecraft mc = Minecraft.getInstance();
@@ -2006,8 +2023,9 @@ public class InventoryUtils
 	 * @param stack ()
 	 * @param key ()
 	 * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static CompoundTag putStackCodec(@Nonnull CompoundTag nbt, @Nonnull ItemStack stack, String key)
     {
         Minecraft mc = Minecraft.getInstance();
@@ -2044,8 +2062,9 @@ public class InventoryUtils
 	 * @param tag ()
 	 * @param registry ()
 	 * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static ItemStack fromNbtOrEmpty(@Nonnull RegistryAccess registry, @Nullable Tag tag)
     {
         if (tag == null)
@@ -2100,8 +2119,9 @@ public class InventoryUtils
 	 * @param registry ()
 	 * @param key ()
 	 * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static ItemStack getStackCodec(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry, String key)
     {
         return nbt.read(key, ItemStack.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(ItemStack.EMPTY);
@@ -2126,8 +2146,9 @@ public class InventoryUtils
 	 * @param stack ()
 	 * @param key ()
 	 * @return ()
+	 * @deprecated Please Migrate to using the Data Tag system.
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static CompoundTag putStackCodec(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry, @Nonnull ItemStack stack, String key)
     {
         nbt.store(key, ItemStack.CODEC, registry.createSerializationContext(NbtOps.INSTANCE), stack);

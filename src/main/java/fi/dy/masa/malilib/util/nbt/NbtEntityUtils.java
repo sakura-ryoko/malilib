@@ -61,12 +61,17 @@ import net.minecraft.world.level.block.WeatheringCopper;
 
 import fi.dy.masa.malilib.MaLiLib;
 
+/**
+ * @deprecated Please migrate to using the Data Tag system.
+ */
+@Deprecated
 public class NbtEntityUtils
 {
     /**
      * Attempt to Invoke a custom version of writeData() without any passenger data.
+     *
      * @param entity ()
-     * @param id ()
+     * @param id     ()
      * @return ()
      */
     public static CompoundTag invokeEntityNbtDataNoPassengers(Entity entity, final int id)
@@ -74,7 +79,7 @@ public class NbtEntityUtils
         return ((INbtEntityInvoker) entity).malilib$getNbtDataWithId(id).orElseGet(CompoundTag::new);
     }
 
-	/**
+    /**
      * Get an EntityType from NBT.
      *
      * @param nbt ()
@@ -90,10 +95,10 @@ public class NbtEntityUtils
         return null;
     }
 
-	/**
+    /**
      * Write an EntityType to NBT
      *
-     * @param type ()
+     * @param type  ()
      * @param nbtIn ()
      * @return ()
      */
@@ -118,26 +123,26 @@ public class NbtEntityUtils
         return nbt;
     }
 
-	/**
-	 * Get EntityType Registry Reference
-	 *
-	 * @param id (id)
-	 * @param registry (registry)
-	 * @return ()
-	 */
-	public static Holder.Reference<@NotNull EntityType<?>> getEntityTypeEntry(Identifier id, @Nonnull RegistryAccess registry)
-	{
-		try
-		{
-			return registry.lookupOrThrow(BuiltInRegistries.ENTITY_TYPE.key()).get(id).orElseThrow();
-		}
-		catch (Exception e)
-		{
-			return null;
-		}
-	}
+    /**
+     * Get EntityType Registry Reference
+     *
+     * @param id       (id)
+     * @param registry (registry)
+     * @return ()
+     */
+    public static Holder.Reference<@NotNull EntityType<?>> getEntityTypeEntry(Identifier id, @Nonnull RegistryAccess registry)
+    {
+        try
+        {
+            return registry.lookupOrThrow(BuiltInRegistries.ENTITY_TYPE.key()).get(id).orElseThrow();
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+    }
 
-	/**
+    /**
      * Get the AttributeContainer from NBT
      *
      * @param nbt ()
@@ -171,9 +176,10 @@ public class NbtEntityUtils
         return -1;
     }
 
-    /** Get a specified Attribute Value from NBT
+    /**
+     * Get a specified Attribute Value from NBT
      *
-     * @param nbt ()
+     * @param nbt       ()
      * @param attribute ()
      * @return ()
      */
@@ -239,7 +245,7 @@ public class NbtEntityUtils
     /**
      * Read the CustomName from NBT
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -266,10 +272,10 @@ public class NbtEntityUtils
     /**
      * Write a CustomName to NBT.
      *
-     * @param name ()
+     * @param name     ()
      * @param registry ()
-     * @param nbtIn ()
-     * @param key ()
+     * @param nbtIn    ()
+     * @param key      ()
      * @return (Nbt Out)
      */
     public static CompoundTag setCustomNameToNbt(@Nonnull Component name, @Nonnull RegistryAccess registry, @Nullable CompoundTag nbtIn, String key)
@@ -325,53 +331,53 @@ public class NbtEntityUtils
         return statusEffects;
     }
 
-	/**
-	 * Decode Equipment Slot values from NBT.
-	 *
-	 * @param nbt ()
-	 * @param registry ()
-	 * @return ()
-	 */
-	public static @Nullable EntityEquipment getEquipmentSlotsFromNbt(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry)
-	{
-		if (nbt.contains(NbtKeys.EQUIPMENT))
-		{
-			return EntityEquipment.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), Objects.requireNonNull(nbt.get(NbtKeys.EQUIPMENT))).result().orElse(null);
+    /**
+     * Decode Equipment Slot values from NBT.
+     *
+     * @param nbt      ()
+     * @param registry ()
+     * @return ()
+     */
+    public static @Nullable EntityEquipment getEquipmentSlotsFromNbt(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry)
+    {
+        if (nbt.contains(NbtKeys.EQUIPMENT))
+        {
+            return EntityEquipment.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), Objects.requireNonNull(nbt.get(NbtKeys.EQUIPMENT))).result().orElse(null);
 
 //			if (opt.isPresent())
 //			{
 //				return opt.get();
 //			}
-		}
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Encode Equipment Slots to NBT.
-	 *
-	 * @param equipment ()
-	 * @param registry ()
-	 * @return ()
-	 */
-	public static @Nullable Tag setEquipmentSlotsToNbt(@Nonnull EntityEquipment equipment, @Nonnull RegistryAccess registry)
-	{
-		try
-		{
-			return EntityEquipment.CODEC.encodeStart(registry.createSerializationContext(NbtOps.INSTANCE), equipment).getOrThrow();
-		}
-		catch (Exception err)
-		{
-			MaLiLib.LOGGER.warn("setEquipmentSlotsToNbt(): Failed to parse Equipment Slots Object; {}", err.getMessage());
-			return null;
-		}
-	}
+    /**
+     * Encode Equipment Slots to NBT.
+     *
+     * @param equipment ()
+     * @param registry  ()
+     * @return ()
+     */
+    public static @Nullable Tag setEquipmentSlotsToNbt(@Nonnull EntityEquipment equipment, @Nonnull RegistryAccess registry)
+    {
+        try
+        {
+            return EntityEquipment.CODEC.encodeStart(registry.createSerializationContext(NbtOps.INSTANCE), equipment).getOrThrow();
+        }
+        catch (Exception err)
+        {
+            MaLiLib.LOGGER.warn("setEquipmentSlotsToNbt(): Failed to parse Equipment Slots Object; {}", err.getMessage());
+            return null;
+        }
+    }
 
-	/**
+    /**
      * Get a ItemStack List of all Equipped Hand Items.
      * 0/1 [{MainHand}, {OffHand}]
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -403,7 +409,7 @@ public class NbtEntityUtils
      * Get a ItemStack List of all Equipped Humanoid Armor Slots
      * 0/1/2/3 [{Head}, {Chest}, {Legs}, {Feet}]
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -447,7 +453,7 @@ public class NbtEntityUtils
      * Get a ItemStack List of all Equipped Horse/Wolf/Llama/Camel/Etc Slots
      * 0/1 [{BodyArmor}, {Saddle}]
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -477,11 +483,11 @@ public class NbtEntityUtils
 
     /**
      * Get a ItemStack List of all Equipment Slots
-     *   0/1   [{MainHand}, {OffHand}]
+     * 0/1   [{MainHand}, {OffHand}]
      * 2/3/4/5 [{Head}, {Chest}, {Legs}, {Feet}]
-     *   6/7   [{BodyArmor}, {Saddle}]
+     * 6/7   [{BodyArmor}, {Saddle}]
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -600,7 +606,7 @@ public class NbtEntityUtils
     /**
      * Get the Merchant Trade Offer's Object from NBT
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -712,6 +718,7 @@ public class NbtEntityUtils
 
     /**
      * Try to get the Leash Data from NBT using LeashData (Not Fake)
+     *
      * @param nbt ()
      * @return ()
      */
@@ -761,7 +768,7 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.FACING_2))
         {
-	        facing = NbtUtils.readDirectionFromTag(nbt, NbtKeys.FACING_2);
+            facing = NbtUtils.readDirectionFromTag(nbt, NbtKeys.FACING_2);
         }
         if (nbt.contains(NbtKeys.ITEM_ROTATION))
         {
@@ -774,7 +781,7 @@ public class NbtEntityUtils
     /**
      * Get a Painting's Direction and Variant from BNT.
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -785,13 +792,13 @@ public class NbtEntityUtils
 
         if (nbt.contains(NbtKeys.FACING))
         {
-			facing = NbtUtils.readDirectionFromTag(nbt, NbtKeys.FACING);
+            facing = NbtUtils.readDirectionFromTag(nbt, NbtKeys.FACING);
         }
         if (nbt.contains(NbtKeys.VARIANT))
         {
             variant = PaintingVariant.CODEC.fieldOf(NbtKeys.VARIANT).codec()
-                                     .parse(registry.createSerializationContext(NbtOps.INSTANCE), nbt)
-                                     .resultOrPartial().orElse(null);
+                                           .parse(registry.createSerializationContext(NbtOps.INSTANCE), nbt)
+                                           .resultOrPartial().orElse(null);
         }
 
         return Pair.of(facing, variant != null ? variant.value() : null);
@@ -817,7 +824,7 @@ public class NbtEntityUtils
     /**
      * Get a Cat's Variant, and Collar Color from NBT.
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -857,7 +864,7 @@ public class NbtEntityUtils
     /**
      * Get a Chicken's Variant from NBT.
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -879,7 +886,7 @@ public class NbtEntityUtils
     /**
      * Get a Cow's Variant from NBT.
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -917,7 +924,7 @@ public class NbtEntityUtils
     /**
      * Get a Frog's Variant from NBT.
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -939,7 +946,7 @@ public class NbtEntityUtils
     /**
      * Get a Zombie Nautilus's Variant from NBT.
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -960,6 +967,7 @@ public class NbtEntityUtils
 
     /**
      * Get a Horse's Variant (Color, Markings) from NBT.
+     *
      * @param nbt ()
      * @return ()
      */
@@ -1015,27 +1023,27 @@ public class NbtEntityUtils
         return null;
     }
 
-	/**
-	 * Get a Tropical Fish Pattern from NBT.
-	 *
-	 * @param nbt ()
-	 * @return ()
-	 */
-	public static @Nullable TropicalFish.Pattern getFishPatternFromNbt(@Nonnull CompoundTag nbt)
-	{
-		if (nbt.contains(NbtKeys.VARIANT_2))
-		{
-			return nbt.read(NbtKeys.VARIANT_2, TropicalFish.Variant.CODEC).orElse(TropicalFish.DEFAULT_VARIANT).pattern();
-		}
-		else if (nbt.contains(NbtKeys.BUCKET_VARIANT))
-		{
-			return TropicalFish.Pattern.byId(nbt.getIntOr(NbtKeys.BUCKET_VARIANT, 0) & '\uffff');
-		}
+    /**
+     * Get a Tropical Fish Pattern from NBT.
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static @Nullable TropicalFish.Pattern getFishPatternFromNbt(@Nonnull CompoundTag nbt)
+    {
+        if (nbt.contains(NbtKeys.VARIANT_2))
+        {
+            return nbt.read(NbtKeys.VARIANT_2, TropicalFish.Variant.CODEC).orElse(TropicalFish.DEFAULT_VARIANT).pattern();
+        }
+        else if (nbt.contains(NbtKeys.BUCKET_VARIANT))
+        {
+            return TropicalFish.Pattern.byId(nbt.getIntOr(NbtKeys.BUCKET_VARIANT, 0) & '\uffff');
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
+    /**
      * Get a Wolves' Variant and Collar Color from NBT.
      *
      * @param nbt ()
@@ -1084,16 +1092,18 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.SOUND_VARIANT))
         {
-			try
-			{
-	            Holder.Reference<@NotNull WolfSoundVariant> soundVariant = registry.lookupOrThrow(Registries.WOLF_SOUND_VARIANT).get(Objects.requireNonNull(Identifier.tryParse(nbt.getStringOr(NbtKeys.SOUND_VARIANT, "")))).orElse(null);
+            try
+            {
+                Holder.Reference<@NotNull WolfSoundVariant> soundVariant = registry.lookupOrThrow(Registries.WOLF_SOUND_VARIANT).get(Objects.requireNonNull(Identifier.tryParse(nbt.getStringOr(NbtKeys.SOUND_VARIANT, "")))).orElse(null);
 
-	            if (soundVariant != null)
-	            {
-	                return soundVariant.key();
-	            }
-			}
-			catch (Exception ignored) { }
+                if (soundVariant != null)
+                {
+                    return soundVariant.key();
+                }
+            }
+            catch (Exception ignored)
+            {
+            }
         }
 
         return null;
@@ -1161,7 +1171,7 @@ public class NbtEntityUtils
     /**
      * Get a Pig's Variant type from NBT.
      *
-     * @param nbt ()
+     * @param nbt      ()
      * @param registry ()
      * @return ()
      */
@@ -1169,13 +1179,15 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VARIANT))
         {
-			try
-			{
-				Optional<Holder.Reference<@NotNull PigVariant>> opt = registry.lookupOrThrow(Registries.PIG_VARIANT).get(Objects.requireNonNull(Identifier.tryParse(nbt.getStringOr(NbtKeys.VARIANT, ""))));
+            try
+            {
+                Optional<Holder.Reference<@NotNull PigVariant>> opt = registry.lookupOrThrow(Registries.PIG_VARIANT).get(Objects.requireNonNull(Identifier.tryParse(nbt.getStringOr(NbtKeys.VARIANT, ""))));
 
-				return opt.map(Holder.Reference::key).orElse(PigVariants.DEFAULT);
-			}
-			catch (Exception ignored) { }
+                return opt.map(Holder.Reference::key).orElse(PigVariants.DEFAULT);
+            }
+            catch (Exception ignored)
+            {
+            }
         }
 
         return null;
@@ -1288,7 +1300,8 @@ public class NbtEntityUtils
 
     /**
      * Get a Players' Unlocked Recipe Book from NBT.  (Server Side only)
-     * @param nbt ()
+     *
+     * @param nbt     ()
      * @param manager ()
      * @return ()
      */
@@ -1300,8 +1313,8 @@ public class NbtEntityUtils
         {
             book = new ServerRecipeBook(manager::listDisplaysForRecipe);
             book.loadUntrusted(ServerRecipeBook.Packed.CODEC
-                                .parse(NbtOps.INSTANCE, nbt.getCompoundOrEmpty(NbtKeys.RECIPE_BOOK)).getOrThrow(),
-                        (key) -> manager.byKey(key).isPresent()
+                                       .parse(NbtOps.INSTANCE, nbt.getCompoundOrEmpty(NbtKeys.RECIPE_BOOK)).getOrThrow(),
+                               (key) -> manager.byKey(key).isPresent()
             );
 
 //            book.readNbt(nbt.getCompoundOrEmpty(NbtKeys.RECIPE_BOOK), (key) -> manager.get(key).isPresent());
@@ -1312,6 +1325,7 @@ public class NbtEntityUtils
 
     /**
      * Get a Mob's Home Pos and Radius from NBT
+     *
      * @param nbt ()
      * @return ()
      */
@@ -1333,26 +1347,27 @@ public class NbtEntityUtils
         return Pair.of(pos, radius);
     }
 
-	/**
-	 * Get a Copper Golem's Weathering Data from NBT
-	 * @param nbt ()
-	 * @return ()
-	 */
-	public static Pair<WeatheringCopper.WeatherState, Long> getWeatheringDataFromNbt(@Nonnull CompoundTag nbt)
-	{
-		WeatheringCopper.WeatherState level = WeatheringCopper.WeatherState.UNAFFECTED;
-		long age = -1L;
+    /**
+     * Get a Copper Golem's Weathering Data from NBT
+     *
+     * @param nbt ()
+     * @return ()
+     */
+    public static Pair<WeatheringCopper.WeatherState, Long> getWeatheringDataFromNbt(@Nonnull CompoundTag nbt)
+    {
+        WeatheringCopper.WeatherState level = WeatheringCopper.WeatherState.UNAFFECTED;
+        long age = -1L;
 
-		if (nbt.contains(NbtKeys.WEATHER_STATE))
-		{
-			level = nbt.read(NbtKeys.WEATHER_STATE, WeatheringCopper.WeatherState.CODEC).orElse(WeatheringCopper.WeatherState.UNAFFECTED);
-		}
+        if (nbt.contains(NbtKeys.WEATHER_STATE))
+        {
+            level = nbt.read(NbtKeys.WEATHER_STATE, WeatheringCopper.WeatherState.CODEC).orElse(WeatheringCopper.WeatherState.UNAFFECTED);
+        }
 
-		if (nbt.contains(NbtKeys.NEXT_WEATHER_AGE))
-		{
-			age = nbt.getLongOr(NbtKeys.NEXT_WEATHER_AGE, -1L);
-		}
+        if (nbt.contains(NbtKeys.NEXT_WEATHER_AGE))
+        {
+            age = nbt.getLongOr(NbtKeys.NEXT_WEATHER_AGE, -1L);
+        }
 
-		return Pair.of(level, age);
-	}
+        return Pair.of(level, age);
+    }
 }

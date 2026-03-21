@@ -11,14 +11,9 @@ import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Quaternionf;
 
-import com.mojang.blaze3d.opengl.GlConst;
-import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.platform.DestFactor;
-import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuSampler;
-import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
@@ -26,7 +21,6 @@ import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
@@ -39,8 +33,6 @@ import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.core.BlockPos;
@@ -79,18 +71,17 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
 import fi.dy.masa.malilib.mixin.client.IMixinMinecraft;
-import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
 import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
-import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElementRenderer;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElement;
+import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElementRenderer;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.data.DataBlockUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
-import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.position.PositionUtils;
 
 public class RenderUtils
@@ -199,7 +190,7 @@ public class RenderUtils
 	 * @param height
 	 * @param color
 	 */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color)
     {
         drawRect(x, y, width, height, color, 0f);
@@ -215,7 +206,7 @@ public class RenderUtils
 	 * @param color
 	 * @param depthMask
 	 */
-    @Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color, boolean depthMask)
     {
         drawRect(x, y, width, height, color, 0f, 1.0f, depthMask);
@@ -231,7 +222,7 @@ public class RenderUtils
 	 * @param color
 	 * @param zLevel
 	 */
-    @Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel)
     {
         drawRect(x, y, width, height, color, zLevel, 1.0f, false);
@@ -248,7 +239,7 @@ public class RenderUtils
 	 * @param zLevel
 	 * @param depthMask
 	 */
-    @Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel, boolean depthMask)
     {
         drawRect(x, y, width, height, color, zLevel, 1.0f, depthMask);
@@ -266,7 +257,7 @@ public class RenderUtils
 	 * @param scale
 	 * @param depthMask
 	 */
-    @Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel, float scale, boolean depthMask)
     {
         float a = (float) (color >> 24 & 255) / 255.0F;
@@ -362,7 +353,7 @@ public class RenderUtils
 	 * @param height
 	 * @param buffer
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
     {
         drawTexturedRect(posMatrix, x, y, u, v, width, height, 0f, -1, buffer);
@@ -381,7 +372,7 @@ public class RenderUtils
 	 * @param color
 	 * @param buffer
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, int color, VertexConsumer buffer)
     {
         drawTexturedRect(posMatrix, x, y, u, v, width, height, 0f, color, buffer);
@@ -401,7 +392,7 @@ public class RenderUtils
 	 * @param color
 	 * @param buffer
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, float zLevel, int color, VertexConsumer buffer)
     {
         float pixelWidth = 0.00390625F;
@@ -496,7 +487,7 @@ public class RenderUtils
 	 * @param height
 	 * @param buffer
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
     {
         drawTexturedRectBatched(x, y, u, v, width, height, 0, -1, buffer);
@@ -514,7 +505,7 @@ public class RenderUtils
 	 * @param argb
 	 * @param buffer
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, int argb, VertexConsumer buffer)
     {
         drawTexturedRectBatched(x, y, u, v, width, height, 0, argb, buffer);
@@ -533,7 +524,7 @@ public class RenderUtils
 	 * @param argb
 	 * @param buffer
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, float zLevel, int argb, VertexConsumer buffer)
     {
         float pixelWidth = 0.00390625F;
@@ -714,7 +705,7 @@ public class RenderUtils
 	 * @param startColor
 	 * @param endColor
 	 */
-    @Deprecated
+	@Deprecated(forRemoval = true)
     public static void drawGradientRect(float left, float top, float right, float bottom, float zLevel, int startColor, int endColor)
     {
         int sa = (startColor >> 24 & 0xFF);
@@ -1334,7 +1325,7 @@ public class RenderUtils
 	 * @param z     zPos
 	 * @param scale FontScale
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
 	public static void drawTextPlate(List<String> text, double x, double y, double z, float scale)
 	{
 		Entity entity = mc().getCameraEntity();
@@ -1824,7 +1815,7 @@ public class RenderUtils
                 return;
             }
 
-            CompoundTag nbt = InventoryUtils.getStoredBlockEntityNbt(stack);
+            CompoundData data = InventoryUtils.getStoredBlockEntityDataTag(stack);
             Set<Integer> lockedSlots = new HashSet<>();
             Container inv = InventoryUtils.getAsInventory(items);
             InventoryOverlayType type = InventoryOverlay.getInventoryType(stack);
@@ -1858,9 +1849,9 @@ public class RenderUtils
                 InventoryOverlay.renderBrewerBackgroundSlots(ctx, inv, x, y);
             }
 
-            if (type == InventoryOverlayType.CRAFTER && !nbt.isEmpty())
+            if (type == InventoryOverlayType.CRAFTER && !data.isEmpty())
             {
-                lockedSlots = NbtBlockUtils.getDisabledSlotsFromNbt(nbt);
+                lockedSlots = DataBlockUtils.getDisabledSlots(data);
                 InventoryOverlay.renderInventoryStacks(ctx, type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, lockedSlots);
             }
             else
@@ -1935,7 +1926,8 @@ public class RenderUtils
 	 * @param baseY
 	 * @param useBgColors
 	 */
-	@Deprecated
+	@Deprecated(forRemoval = true)
+	@SuppressWarnings("deprecation")
 	public static void renderNbtItemsPreview(GuiContext ctx,
 	                                         ItemStack stackIn, @Nonnull CompoundTag itemsTag,
 	                                         int baseX, int baseY, boolean useBgColors)
@@ -2337,82 +2329,6 @@ public class RenderUtils
 
 //		return 0xFF32CD32;              // Lime
 		return 0xFF4EB349;              // Lime + hint of gray
-	}
-
-	// todo - return real colors based on the Villager, not Dye Colors
-	@Deprecated(forRemoval = true)
-	public static DyeColor getVillagerColor(Holder<VillagerProfession> profession)
-	{
-		if (profession == null)
-		{
-			return null;
-		}
-
-		if (profession.equals(VillagerProfession.NONE))
-		{
-			return DyeColor.BLUE;           // 0xFFBE886C (Skin-Like Color)
-		}
-		else if (profession.is(VillagerProfession.ARMORER))
-		{
-			return DyeColor.GRAY;           // 0xFF5C5A57
-		}
-		else if (profession.is(VillagerProfession.BUTCHER))
-		{
-			return DyeColor.PINK;           // 0xFFAE574F
-		}
-		else if (profession.is(VillagerProfession.CARTOGRAPHER))
-		{
-			return DyeColor.LIGHT_BLUE;     // 0xFF97CAF6
-		}
-		else if (profession.is(VillagerProfession.CLERIC))
-		{
-			return DyeColor.PURPLE;         // 0xFF864E6A
-		}
-		else if (profession.is(VillagerProfession.FARMER))
-		{
-			return DyeColor.YELLOW;         // 0xFFDBC549
-		}
-		else if (profession.is(VillagerProfession.FISHERMAN))
-		{
-			return DyeColor.CYAN;           // 0xFF6B9F93
-		}
-		else if (profession.is(VillagerProfession.FLETCHER))
-		{
-			return DyeColor.ORANGE;         // 0xFFC26A44
-		}
-		else if (profession.is(VillagerProfession.LEATHERWORKER))
-		{
-			return DyeColor.BROWN;          // 0xFF855636
-		}
-		else if (profession.is(VillagerProfession.LIBRARIAN))
-		{
-			return DyeColor.RED;            // 0xFF9A2323
-		}
-		else if (profession.is(VillagerProfession.MASON))
-		{
-			return DyeColor.MAGENTA;        // 0xFF989696
-		}
-		else if (profession.is(VillagerProfession.NITWIT))
-		{
-			return DyeColor.GREEN;          // 0xFF5D744F
-		}
-		else if (profession.is(VillagerProfession.SHEPHERD))
-		{
-			return DyeColor.WHITE;          // 0xFFE5E0CB
-		}
-		else if (profession.is(VillagerProfession.TOOLSMITH))
-		{
-			return DyeColor.LIGHT_GRAY;     // 0xFFA29C91
-		}
-		else if (profession.is(VillagerProfession.WEAPONSMITH))
-		{
-			return DyeColor.BLACK;          // 0xFF191919
-		}
-		else
-		{
-			// Unhandled Profession
-			return DyeColor.LIME;
-		}
 	}
 
     public static boolean stateModelHasQuads(BlockState state)
