@@ -13,8 +13,6 @@ import java.util.zip.GZIPOutputStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
@@ -25,6 +23,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.*;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 
@@ -544,16 +543,16 @@ public class NbtUtils
 		return readNbtFromFile(file, NbtAccounter.unlimitedHeap());
 	}
 
+	/**
+	 * @deprecated Please migrate to using 'readNbtFromFile' again
+	 */
+	@Deprecated(forRemoval = true)
 	@Nullable
 	public static CompoundTag readNbtFromFileAsPath(@Nonnull Path file)
 	{
 		return readNbtFromFileAsPath(file, NbtAccounter.unlimitedHeap());
 	}
 
-	/**
-	 * See {@link #readNbtFromFileAsPath}
-	 */
-	@ApiStatus.Experimental
 	@Nullable
 	public static CompoundTag readNbtFromFile(@Nonnull Path file, NbtAccounter tracker)
 	{
@@ -608,6 +607,10 @@ public class NbtUtils
 		return nbt;
 	}
 
+	/**
+	 * @deprecated Please migrate to using 'readNbtFromFile' again
+	 */
+	@Deprecated(forRemoval = true)
 	@Nullable
 	public static CompoundTag readNbtFromFileAsPath(@Nonnull Path file, NbtAccounter tracker)
 	{
@@ -629,8 +632,9 @@ public class NbtUtils
 	}
 
 	/**
-	 * Write the compound tag, gzipped, to the output stream.
+	 * @deprecated Please migrate to using 'writeCompoundTagToCompressedFile' again
 	 */
+	@Deprecated(forRemoval = true)
 	public static void writeCompressed(@Nonnull CompoundTag tag, @Nonnull OutputStream outputStream)
     {
 		try
@@ -643,6 +647,10 @@ public class NbtUtils
 		}
 	}
 
+	/**
+	 * @deprecated Please migrate to using 'writeCompoundTagToCompressedFile' again
+	 */
+	@Deprecated(forRemoval = true)
 	public static void writeCompressed(@Nonnull CompoundTag tag, @Nonnull Path file)
 	{
 		try
@@ -655,13 +663,11 @@ public class NbtUtils
 		}
 	}
 
-	@ApiStatus.Experimental
 	public static boolean writeCompoundTagToCompressedFile(@Nonnull CompoundTag tag, @Nonnull Path file)
 	{
 		return writeCompoundTagToCompressedFile(tag, file, "");
 	}
 
-	@ApiStatus.Experimental
 	public static boolean writeCompoundTagToCompressedFile(@Nonnull CompoundTag tag, @Nonnull Path file, String tagName)
 	{
 		try (DataOutputStream os = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(Files.newOutputStream(file)))))
@@ -677,13 +683,11 @@ public class NbtUtils
 		return false;
 	}
 
-	@ApiStatus.Experimental
 	public static boolean writeToNbtStream(@Nonnull Tag tag, @Nonnull DataOutput os)
 	{
 		return writeToNbtStream(tag, os, "");
 	}
 
-	@ApiStatus.Experimental
 	public static boolean writeToNbtStream(@Nonnull Tag tag, @Nonnull DataOutput os, String tagName)
 	{
 		try
@@ -705,29 +709,6 @@ public class NbtUtils
 
 		return false;
 	}
-
-	// todo this must have been an older method for this that no longer works
-	/*
-	public static void writeCompressed(@Nonnull NbtCompound tag, String tagName, @Nonnull OutputStream outputStream)
-    {
-		try
-		{
-			DataOutputStream output = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(outputStream)));
-			int typeId = NbtWrap.getTypeId(tag);
-			output.writeByte(typeId);
-
-			if (typeId != 0)
-			{
-				output.writeUTF(tagName);
-				tag.write(output);
-			}
-		}
-		catch (Exception err)
-		{
-			MaLiLib.LOGGER.warn("writeCompressed: Failed to write NBT data to file");
-		}
-	}
-	 */
 
 	/**
 	 * Reads in a Flat Map from NBT -- this way we don't need Mojang's code complexity

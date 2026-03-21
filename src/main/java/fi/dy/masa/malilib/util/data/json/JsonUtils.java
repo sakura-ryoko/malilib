@@ -22,7 +22,6 @@ import net.minecraft.core.Vec3i;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.config.value.FileWriteType;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -491,6 +490,16 @@ public class JsonUtils
         }
     }
 
+    /**
+     * @deprecated Please migrate to using 'getBlockPos'
+     */
+    @Deprecated(forRemoval = true)
+    @Nullable
+    public static BlockPos blockPosFromJson(JsonObject obj, String name)
+    {
+        return getBlockPos(obj, name);
+    }
+
     @Nullable
     public static BlockPos getBlockPos(JsonObject obj, String name)
     {
@@ -810,6 +819,16 @@ public class JsonUtils
         return null;
     }
 
+    /**
+     * @deprecated Please migrate to using 'parseJsonFile' again
+     */
+    @Deprecated(forRemoval = true)
+    @Nullable
+    public static JsonElement parseJsonFileAsPath(Path file)
+    {
+        return parseJsonFile(file);
+    }
+
     @Nullable
     public static JsonElement parseJsonFile(Path file)
     {
@@ -842,6 +861,15 @@ public class JsonUtils
     {
         Gson gson = compact ? new Gson() : GSON;
         return gson.toJson(element);
+    }
+
+    /**
+     * @deprecated Please migrate to using 'writeJsonToFile'
+     */
+    @Deprecated(forRemoval = true)
+    public static boolean writeJsonToFileAsPath(JsonObject root, Path file)
+    {
+        return writeJsonToFile(root, file);
     }
 
     public static boolean writeJsonToFile(JsonElement root, Path file)

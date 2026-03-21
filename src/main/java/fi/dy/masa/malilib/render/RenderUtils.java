@@ -1632,8 +1632,7 @@ public class RenderUtils
         global4fStack.popMatrix();
     }
 
-    public static void renderBlockTargetingOverlaySimple(Entity entity, BlockPos pos, Direction side,
-                                                         Color4f color, Matrix4f posMatrix)
+    public static void renderBlockTargetingOverlaySimple(Entity entity, BlockPos pos, Direction side, Color4f color)
     {
         Direction playerFacing = entity.getDirection();
         Vec3 cameraPos = camPos();
