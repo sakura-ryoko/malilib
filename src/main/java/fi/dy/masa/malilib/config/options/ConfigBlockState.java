@@ -5,6 +5,14 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.gui.MaLiLibIcons;
+import fi.dy.masa.malilib.gui.button.*;
+import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
+import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.gui.widgets.WidgetBlockStateIcon;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.serialization.Codec;
@@ -12,12 +20,9 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigBlockState;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.game.BlockUtils;
 
@@ -185,5 +190,51 @@ public class ConfigBlockState extends ConfigBase<ConfigBlockState> implements IC
 	public JsonElement getAsJsonElement()
 	{
 		return BlockState.CODEC.encodeStart(JsonOps.INSTANCE, this.value).result().orElse(new JsonObject());
+	}
+	
+	@Override public void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption) {
+		
+		y += 1;
+		int configHeight = 20;
+		
+		String configName = getConfigGuiDisplayName();
+		
+		configOption.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+		
+		String comment;
+		IConfigInfoProvider infoProvider = configOption.host.getHoverInfoProvider();
+		
+		if (infoProvider != null)
+		{
+			comment = infoProvider.getHoverInfo(this);
+		}
+		else
+		{
+			comment = getComment();
+		}
+		
+		if (comment != null)
+		{
+			configOption.addConfigComment(x, y + 5, labelWidth, 12, comment);
+		}
+		
+		x += labelWidth + 10;
+		
+		int resetX = x + configWidth + 2;
+		
+		configWidth -= 22; // adjust the width to match other configs due to the block icon display
+		configOption.colorDisplayPosX = x + configWidth + 2;
+		configOption.addWidget(new WidgetBlockStateIcon(configOption.colorDisplayPosX, y + 1, 18, 18, this));
+		
+		TextFieldType.STRING.setMaxLength(configOption.maxTextfieldTextLength);
+		
+		configOption.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, this, TextFieldType.BLOCK_STATE);
+		
+		if (this instanceof IConfigSlider)
+		{
+			IGuiIcon icon = ((IConfigSlider) this).shouldUseSlider() ? MaLiLibIcons.BTN_TXTFIELD : MaLiLibIcons.BTN_SLIDER;
+			ButtonGeneric toggleBtn = new ButtonGeneric(configOption.colorDisplayPosX, y + 2, icon);
+			configOption.addButton(toggleBtn, new WidgetConfigOption.ListenerSliderToggle((IConfigSlider) this));
+		}
 	}
 }

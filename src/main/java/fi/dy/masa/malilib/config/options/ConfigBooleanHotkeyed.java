@@ -2,6 +2,10 @@ package fi.dy.masa.malilib.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
+import fi.dy.masa.malilib.hotkeys.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.serialization.Codec;
@@ -9,11 +13,6 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.IHotkeyTogglable;
-import fi.dy.masa.malilib.hotkeys.IKeybind;
-import fi.dy.masa.malilib.hotkeys.KeyCallbackToggleBooleanConfigWithMessage;
-import fi.dy.masa.malilib.hotkeys.KeybindMulti;
-import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -255,4 +254,35 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
         obj.add("hotkey", this.getKeybind().getAsJsonElement());
         return obj;
     }
+    
+    @Override public void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption) {
+		
+		y += 1;
+		
+		String configName = getConfigGuiDisplayName();
+        
+        configOption.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+        
+        String comment;
+        IConfigInfoProvider infoProvider = configOption.host.getHoverInfoProvider();
+        
+        if (infoProvider != null)
+        {
+            comment = infoProvider.getHoverInfo(this);
+        }
+        else
+        {
+            comment = getComment();
+        }
+        
+        if (comment != null)
+        {
+            configOption.addConfigComment(x, y + 5, labelWidth, 12, comment);
+        }
+        
+        x += labelWidth + 10;
+		
+		IKeybind keybind = this.getKeybind();
+		configOption.addBooleanAndHotkeyWidgets(x, y, configWidth, this, this, keybind);
+	}
 }

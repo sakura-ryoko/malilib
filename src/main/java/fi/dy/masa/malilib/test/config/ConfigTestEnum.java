@@ -5,6 +5,10 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
+import fi.dy.masa.malilib.hotkeys.*;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -14,14 +18,7 @@ import net.minecraft.util.StringRepresentable;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigBoolean;
-import fi.dy.masa.malilib.config.IEnumBooleanHotkey;
 import fi.dy.masa.malilib.gui.GuiBase;
-import fi.dy.masa.malilib.hotkeys.IKeybind;
-import fi.dy.masa.malilib.hotkeys.KeyCallbackToggleBooleanConfigWithMessage;
-import fi.dy.masa.malilib.hotkeys.KeybindMulti;
-import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
 import fi.dy.masa.malilib.test.render.TestRenderWalls;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -432,4 +429,37 @@ public enum ConfigTestEnum implements IEnumBooleanHotkey, StringRepresentable
             MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
         }
     }
+    
+    @Override public void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption) {
+        
+        final ConfigType type = ConfigType.HOTKEY;
+        
+        y += 1;
+        int configHeight = 20;
+        
+        String configName = getConfigGuiDisplayName();
+        
+        configOption.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+        
+        String comment;
+        IConfigInfoProvider infoProvider = configOption.host.getHoverInfoProvider();
+        
+        if (infoProvider != null)
+        {
+            comment = infoProvider.getHoverInfo(this);
+        }
+        else
+        {
+            comment = getComment();
+        }
+        
+        if (comment != null)
+        {
+            configOption.addConfigComment(x, y + 5, labelWidth, 12, comment);
+        }
+        
+        x += labelWidth + 10;
+		
+		configOption.addHotkeyConfigElements(x, y, configWidth, getName(), this);
+	}
 }

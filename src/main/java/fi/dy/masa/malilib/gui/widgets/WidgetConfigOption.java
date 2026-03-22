@@ -13,10 +13,7 @@ import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase.ConfigOptionWrapper;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
-import fi.dy.masa.malilib.gui.MaLiLibIcons;
 import fi.dy.masa.malilib.gui.button.*;
-import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
-import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
@@ -29,10 +26,10 @@ import fi.dy.masa.malilib.util.GuiUtils;
 public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapper>
 {
     protected final ConfigOptionWrapper wrapper;
-    protected final IKeybindConfigGui host;
+    public final IKeybindConfigGui host;
     @Nullable protected final KeybindSettings initialKeybindSettings;
     @Nullable protected ImmutableList<@NotNull String> initialStringList;
-    protected int colorDisplayPosX;
+    public int colorDisplayPosX;
     private boolean initialBoolean;
 
     public WidgetConfigOption(int x, int y, int width, int height, int labelWidth, int configWidth,
@@ -82,7 +79,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
 
 			if (config != null)
 			{
-				this.addConfigOption(x, y, labelWidth, configWidth, config);
+				config.addConfigOption(x, y, labelWidth, configWidth, this);
 			}
         }
         else
@@ -92,186 +89,6 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             this.initialKeybindSettings = null;
 
             this.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, wrapper.getLabel());
-        }
-    }
-
-    protected void addConfigOption(int x, int y, int labelWidth, int configWidth, IConfigBase config)
-    {
-        ConfigType type = config.getType();
-
-        y += 1;
-        int configHeight = 20;
-
-        String configName = config.getConfigGuiDisplayName();
-
-        // DEBUG ONLY
-        /*
-        if (config.getConfigGuiDisplayName().contains(".config"))
-        {
-            configName = StringUtils.getTranslatedOrFallback(config.getConfigGuiDisplayName(), config.getConfigGuiDisplayName());
-
-            if (configName != null)
-            {
-                int calc = super.getWidth() - configName.length();
-
-                MaLiLib.logger.error("addConfigOption(): configName [{}] (length: {}) // super.width [{}] // calc [{}] // old labelWidth [{}]", configName, configName.length(), super.getWidth(), calc, labelWidth);
-
-                if (labelWidth > super.getWidth() && configName.length() <= calc)
-                {
-                    labelWidth = Math.max(calc, this.getStringWidth(configName));
-                }
-
-                MaLiLib.logger.error("addConfigOption(): configName [{}] (length: {}) // new labelWidth [{}]", configName, configName.length(), labelWidth);
-            }
-            else
-            {
-                configName = config.getConfigGuiDisplayName();
-            }
-        }
-        else
-        {
-            configName = config.getConfigGuiDisplayName();
-        }
-        MaLiLib.logger.error("addConfigOption(): configName [{}] (width: {}), labelWidth [{}]", configName, configName.length(), labelWidth);
-         */
-
-        this.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
-
-        String comment;
-        IConfigInfoProvider infoProvider = this.host.getHoverInfoProvider();
-
-        if (infoProvider != null)
-        {
-            comment = infoProvider.getHoverInfo(config);
-        }
-        else
-        {
-            comment = config.getComment();
-        }
-
-        if (comment != null)
-        {
-            this.addConfigComment(x, y + 5, labelWidth, 12, comment);
-        }
-
-        x += labelWidth + 10;
-
-        if (config instanceof BooleanHotkeyGuiWrapper wrapper)
-        {
-            IConfigBoolean booleanConfig = wrapper.getBooleanConfig();
-            IKeybind keybind = wrapper.getKeybind();
-            this.addBooleanAndHotkeyWidgets(x, y, configWidth, wrapper, booleanConfig, keybind);
-        }
-        else if (config instanceof ConfigBooleanHotkeyed hotkeyedBoolean)
-        {
-            IKeybind keybind = hotkeyedBoolean.getKeybind();
-            this.addBooleanAndHotkeyWidgets(x, y, configWidth, hotkeyedBoolean, hotkeyedBoolean, keybind);
-        }
-        else if (type == ConfigType.BOOLEAN)
-        {
-            ConfigButtonBoolean optionButton = new ConfigButtonBoolean(x, y, configWidth, configHeight, (IConfigBoolean) config);
-            this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
-        }
-        else if (type == ConfigType.OPTION_LIST)
-        {
-            ConfigButtonOptionList optionButton = new ConfigButtonOptionList(x, y, configWidth, configHeight, (IConfigOptionList) config);
-            this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
-        }
-        else if (type == ConfigType.OPTION_VALUES)
-        {
-	        ConfigButtonOptionValues optionButton = new ConfigButtonOptionValues(x, y, configWidth, configHeight, (IConfigOptionValues<?>) config);
-	        this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
-        }
-        else if (type == ConfigType.STRING_LIST)
-        {
-            ConfigButtonStringList optionButton = new ConfigButtonStringList(x, y, configWidth, configHeight, (IConfigStringList) config, this.host, this.host.getDialogHandler());
-            this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
-        }
-        else if (type == ConfigType.LOCKED_LIST)
-        {
-            ConfigButtonLockedList optionButton = new ConfigButtonLockedList(x, y, configWidth, configHeight, (IConfigLockedList) config, this.host, this.host.getDialogHandler());
-            this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
-        }
-        else if (type == ConfigType.COLOR_LIST)
-        {
-            ConfigButtonColorList optionButton = new ConfigButtonColorList(x, y, configWidth, configHeight, (IConfigColorList) config, this.host, this.host.getDialogHandler());
-            this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
-        }
-        else if (type == ConfigType.HOTKEY)
-        {
-            this.addHotkeyConfigElements(x, y, configWidth, config.getName(), (IHotkey) config);
-        }
-        else if (type == ConfigType.STRING ||
-                 type == ConfigType.COLOR ||
-                 type == ConfigType.INTEGER ||
-                 type == ConfigType.DOUBLE ||
-                 type == ConfigType.FLOAT ||
-                 type == ConfigType.BLOCK_STATE)
-        {
-            int resetX = x + configWidth + 2;
-
-            if (type == ConfigType.COLOR)
-            {
-                configWidth -= 22; // adjust the width to match other configs due to the color display
-                this.colorDisplayPosX = x + configWidth + 2;
-                this.addWidget(new WidgetColorIndicator(this.colorDisplayPosX, y + 1, 18, 18, (IConfigColor) config));
-            }
-			else if (type == ConfigType.BLOCK_STATE)
-            {
-	            configWidth -= 22; // adjust the width to match other configs due to the block icon display
-	            this.colorDisplayPosX = x + configWidth + 2;
-	            this.addWidget(new WidgetBlockStateIcon(this.colorDisplayPosX, y + 1, 18, 18, (IConfigBlockState) config));
-            }
-            else if (type == ConfigType.INTEGER || type == ConfigType.DOUBLE || type == ConfigType.FLOAT)
-            {
-                configWidth -= 18;
-                this.colorDisplayPosX = x + configWidth + 2;
-            }
-
-            if ((type == ConfigType.INTEGER || type == ConfigType.DOUBLE || type == ConfigType.FLOAT) &&
-                config instanceof IConfigSlider && ((IConfigSlider) config).shouldUseSlider())
-            {
-                this.addConfigSliderEntry(x, y, resetX, configWidth, configHeight, (IConfigSlider) config);
-            }
-            else
-            {
-                TextFieldType textType = TextFieldType.STRING.setMaxLength(this.maxTextfieldTextLength);
-
-                if (type == ConfigType.INTEGER)
-                {
-                    textType = TextFieldType.INTEGER;
-                }
-                else if (type == ConfigType.DOUBLE)
-                {
-                    textType = TextFieldType.DOUBLE;
-                }
-                else if (type == ConfigType.FLOAT)
-                {
-                    textType = TextFieldType.FLOAT;
-                }
-                else if (type == ConfigType.COLOR)
-                {
-                    textType = TextFieldType.STRING.setMaxLength(12);
-                }
-				else if (type == ConfigType.BLOCK_STATE)
-                {
-					textType = TextFieldType.BLOCK_STATE;
-                }
-
-                this.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, (IConfigValue) config, textType);
-            }
-
-            if (type != ConfigType.COLOR && config instanceof IConfigSlider)
-            {
-                IGuiIcon icon = ((IConfigSlider) config).shouldUseSlider() ? MaLiLibIcons.BTN_TXTFIELD : MaLiLibIcons.BTN_SLIDER;
-                ButtonGeneric toggleBtn = new ButtonGeneric(this.colorDisplayPosX, y + 2, icon);
-                this.addButton(toggleBtn, new ListenerSliderToggle((IConfigSlider) config));
-            }
-        }
-		else if (type == ConfigType.TABLE || config instanceof IConfigTable)
-        {
-			ConfigButtonTable optionButton = new ConfigButtonTable(x, y, configWidth, configHeight, (IConfigTable) config, this.host, this.host.getDialogHandler());
-	        this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
         }
     }
 
@@ -346,13 +163,13 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             this.lastAppliedValue = config.getStringValue();
         }
     }
-
-    protected void addConfigComment(int x, int y, int width, int height, String comment)
+	
+	public void addConfigComment(int x, int y, int width, int height, String comment)
     {
         this.addWidget(new WidgetHoverInfo(x, y, width, height, comment));
     }
-
-    protected void addHotkeyConfigElements(int x, int y, int configWidth, String configName, IHotkey hotkey)
+	
+	public void addHotkeyConfigElements(int x, int y, int configWidth, String configName, IHotkey hotkey)
     {
         configWidth -= 22; // adjust the width to match other configs due to the settings widget
         IKeybind keybind = hotkey.getKeybind();
@@ -365,8 +182,8 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addButton(keybindButton, this.host.getButtonPressListener());
         this.addKeybindResetButton(x, y, keybind, keybindButton);
     }
-
-    protected void addBooleanAndHotkeyWidgets(int x, int y, int configWidth,
+	
+	public void addBooleanAndHotkeyWidgets(int x, int y, int configWidth,
                                               IConfigResettable resettableConfig,
                                               IConfigBoolean booleanConfig,
                                               IKeybind keybind)
@@ -393,8 +210,8 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addButton(keybindButton, this.host.getButtonPressListener());
         this.addButton(resetButton, resetListener);
     }
-
-    protected void addConfigButtonEntry(int xReset, int yReset, IConfigResettable config, ButtonBase optionButton)
+	
+	public void addConfigButtonEntry(int xReset, int yReset, IConfigResettable config, ButtonBase optionButton)
     {
         ButtonGeneric resetButton = this.createResetButton(xReset, yReset, config);
         ConfigOptionChangeListenerButton listenerChange = new ConfigOptionChangeListenerButton(config, resetButton, null);
@@ -404,7 +221,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addButton(resetButton, listenerReset);
     }
 
-    protected void addConfigTextFieldEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigValue config, TextFieldType type)
+    public void addConfigTextFieldEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigValue config, TextFieldType type)
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
         field.setMaxLength(type.getMaxLength() > 0 ? type.getMaxLength() : this.maxTextfieldTextLength);
@@ -418,7 +235,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addButton(resetButton, listenerReset);
     }
 
-    protected void addConfigSliderEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigSlider config)
+    public void addConfigSliderEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigSlider config)
     {
         ButtonGeneric resetButton = this.createResetButton(resetX, y, config);
         ISliderCallback callback;

@@ -19,7 +19,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     protected final WidgetListConfigOptionsBase<?, ?> parent;
     @Nullable protected TextFieldWrapper<? extends GuiTextFieldGeneric> textField = null;
     @Nullable protected String initialStringValue;
-    protected int maxTextfieldTextLength = 65535;
+    public int maxTextfieldTextLength = 65535;
     /**
      * The last applied value for any textfield-based configs.
      * Button based (boolean, option-list) values get applied immediately upon clicking the button.

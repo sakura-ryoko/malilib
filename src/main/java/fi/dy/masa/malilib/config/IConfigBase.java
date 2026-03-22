@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.config;
 import java.util.Locale;
 import javax.annotation.Nullable;
 import com.google.gson.JsonElement;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
 
 public interface IConfigBase
 {
@@ -118,4 +119,9 @@ public interface IConfigBase
      * @return ()
      */
     JsonElement getAsJsonElement();
+	
+	/**
+	 * Customize config option buttons
+	 */
+	void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption);
 }

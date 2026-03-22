@@ -8,6 +8,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.gui.button.*;
+import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,8 +23,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.ExtraCodecs;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.table.type.*;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -713,5 +715,37 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
 			return new ConfigTable(this.name, this.comment, this.prettyName, this.translatedName, this.displayString, this.defaultValue, this.labels, this.showEntryNumbers, this.allowAddNewEntry, this.types);
 		}
+	}
+	
+	@Override public void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption) {
+		
+		y += 1;
+		int configHeight = 20;
+		
+		String configName = getConfigGuiDisplayName();
+		
+		configOption.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+		
+		String comment;
+		IConfigInfoProvider infoProvider = configOption.host.getHoverInfoProvider();
+		
+		if (infoProvider != null)
+		{
+			comment = infoProvider.getHoverInfo(this);
+		}
+		else
+		{
+			comment = getComment();
+		}
+		
+		if (comment != null)
+		{
+			configOption.addConfigComment(x, y + 5, labelWidth, 12, comment);
+		}
+		
+		x += labelWidth + 10;
+		
+		ConfigButtonTable optionButton = new ConfigButtonTable(x, y, configWidth, configHeight, this, configOption.host, configOption.host.getDialogHandler());
+		configOption.addConfigButtonEntry(x + configWidth + 2, y, this, optionButton);
 	}
 }

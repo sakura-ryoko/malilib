@@ -3,12 +3,19 @@ package fi.dy.masa.malilib.config.options;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
+import fi.dy.masa.malilib.gui.MaLiLibIcons;
+import fi.dy.masa.malilib.gui.button.*;
+import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
+import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.gui.widgets.WidgetBlockStateIcon;
+import fi.dy.masa.malilib.gui.widgets.WidgetColorIndicator;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.*;
-import fi.dy.masa.malilib.config.value.OptionListConfigValue;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
@@ -882,5 +889,143 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
             case BLOCK_STATE -> ((ConfigBlockState) this.wrappedConfig).getAsJsonElement();
             default -> new JsonPrimitive(this.getStringValue());
         };
+    }
+    
+    @Override public void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption) {
+        
+        final ConfigType type = getType();
+        
+        y += 1;
+        int configHeight = 20;
+        
+        String configName = getConfigGuiDisplayName();
+        
+        configOption.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+        
+        String comment;
+        IConfigInfoProvider infoProvider = configOption.host.getHoverInfoProvider();
+        
+        if (infoProvider != null)
+        {
+            comment = infoProvider.getHoverInfo(this);
+        }
+        else
+        {
+            comment = getComment();
+        }
+        
+        if (comment != null)
+        {
+            configOption.addConfigComment(x, y + 5, labelWidth, 12, comment);
+        }
+        
+        x += labelWidth + 10;
+        
+        if (type == ConfigType.BOOLEAN)
+        {
+            ConfigButtonBoolean optionButton = new ConfigButtonBoolean(x, y, configWidth, configHeight, (IConfigBoolean) this);
+            configOption.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) this, optionButton);
+        }
+        else if (type == ConfigType.OPTION_LIST)
+        {
+            ConfigButtonOptionList optionButton = new ConfigButtonOptionList(x, y, configWidth, configHeight, (IConfigOptionList) this);
+            configOption.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) this, optionButton);
+        }
+        else if (type == ConfigType.OPTION_VALUES)
+        {
+            ConfigButtonOptionValues optionButton = new ConfigButtonOptionValues(x, y, configWidth, configHeight, (IConfigOptionValues<?>) this);
+            configOption.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) this, optionButton);
+        }
+        else if (type == ConfigType.STRING_LIST)
+        {
+            ConfigButtonStringList optionButton = new ConfigButtonStringList(x, y, configWidth, configHeight, (IConfigStringList) this, configOption.host, configOption.host.getDialogHandler());
+            configOption.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) this, optionButton);
+        }
+        else if (type == ConfigType.LOCKED_LIST)
+        {
+            ConfigButtonLockedList optionButton = new ConfigButtonLockedList(x, y, configWidth, configHeight, (IConfigLockedList) this, configOption.host, configOption.host.getDialogHandler());
+            configOption.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) this, optionButton);
+        }
+        else if (type == ConfigType.COLOR_LIST)
+        {
+            ConfigButtonColorList optionButton = new ConfigButtonColorList(x, y, configWidth, configHeight, (IConfigColorList) this, configOption.host, configOption.host.getDialogHandler());
+            configOption.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) this, optionButton);
+        }
+        else if (type == ConfigType.HOTKEY)
+        {
+            configOption.addHotkeyConfigElements(x, y, configWidth, getName(), (IHotkey) this);
+        }
+        else if (type == ConfigType.STRING ||
+            type == ConfigType.COLOR ||
+            type == ConfigType.INTEGER ||
+            type == ConfigType.DOUBLE ||
+            type == ConfigType.FLOAT ||
+            type == ConfigType.BLOCK_STATE)
+        {
+            int resetX = x + configWidth + 2;
+            
+            if (type == ConfigType.COLOR)
+            {
+                configWidth -= 22; // adjust the width to match other configs due to the color display
+                configOption.colorDisplayPosX = x + configWidth + 2;
+                configOption.addWidget(new WidgetColorIndicator(configOption.colorDisplayPosX, y + 1, 18, 18, (IConfigColor) this));
+            }
+            else if (type == ConfigType.BLOCK_STATE)
+            {
+                configWidth -= 22; // adjust the width to match other configs due to the block icon display
+                configOption.colorDisplayPosX = x + configWidth + 2;
+                configOption.addWidget(new WidgetBlockStateIcon(configOption.colorDisplayPosX, y + 1, 18, 18, (IConfigBlockState) this));
+            }
+            else if (type == ConfigType.INTEGER || type == ConfigType.DOUBLE || type == ConfigType.FLOAT)
+            {
+                configWidth -= 18;
+                configOption.colorDisplayPosX = x + configWidth + 2;
+            }
+            
+            if ((type == ConfigType.INTEGER || type == ConfigType.DOUBLE || type == ConfigType.FLOAT) &&
+                this instanceof IConfigSlider && ((IConfigSlider) this).shouldUseSlider())
+            {
+                configOption.addConfigSliderEntry(x, y, resetX, configWidth, configHeight, (IConfigSlider) this);
+            }
+            else
+            {
+                TextFieldType textType = TextFieldType.STRING.setMaxLength(configOption.maxTextfieldTextLength);
+                
+                if (type == ConfigType.INTEGER)
+                {
+                    textType = TextFieldType.INTEGER;
+                }
+                else if (type == ConfigType.DOUBLE)
+                {
+                    textType = TextFieldType.DOUBLE;
+                }
+                else if (type == ConfigType.FLOAT)
+                {
+                    textType = TextFieldType.FLOAT;
+                }
+                else if (type == ConfigType.COLOR)
+                {
+                    textType = TextFieldType.STRING.setMaxLength(12);
+                }
+                else if (type == ConfigType.BLOCK_STATE)
+                {
+                    textType = TextFieldType.BLOCK_STATE;
+                }
+                
+                configOption.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, (IConfigValue) this, textType);
+            }
+            
+            if (type != ConfigType.COLOR && this instanceof IConfigSlider)
+            {
+                IGuiIcon icon = ((IConfigSlider) this).shouldUseSlider() ? MaLiLibIcons.BTN_TXTFIELD : MaLiLibIcons.BTN_SLIDER;
+                ButtonGeneric toggleBtn = new ButtonGeneric(configOption.colorDisplayPosX, y + 2, icon);
+                configOption.addButton(toggleBtn, new WidgetConfigOption.ListenerSliderToggle((IConfigSlider) this));
+            }
+        }
+        else if (type == ConfigType.TABLE || this instanceof IConfigTable)
+        {
+            ConfigButtonTable optionButton = new ConfigButtonTable(x, y, configWidth, configHeight, (IConfigTable) this, configOption.host, configOption.host.getDialogHandler());
+            configOption.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) this, optionButton);
+        }
     }
 }

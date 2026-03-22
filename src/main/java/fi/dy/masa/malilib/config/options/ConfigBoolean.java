@@ -8,8 +8,10 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigBoolean;
+import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.gui.button.*;
+import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigBoolean
@@ -181,5 +183,37 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
     public JsonElement getAsJsonElement()
     {
         return new JsonPrimitive(this.value);
+    }
+    
+    @Override public void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption) {
+		
+		y += 1;
+        int configHeight = 20;
+        
+        String configName = getConfigGuiDisplayName();
+        
+        configOption.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+        
+        String comment;
+        IConfigInfoProvider infoProvider = configOption.host.getHoverInfoProvider();
+        
+        if (infoProvider != null)
+        {
+            comment = infoProvider.getHoverInfo(this);
+        }
+        else
+        {
+            comment = getComment();
+        }
+        
+        if (comment != null)
+        {
+            configOption.addConfigComment(x, y + 5, labelWidth, 12, comment);
+        }
+        
+        x += labelWidth + 10;
+        
+        ConfigButtonBoolean optionButton = new ConfigButtonBoolean(x, y, configWidth, configHeight, this);
+        configOption.addConfigButtonEntry(x + configWidth + 2, y, this, optionButton);
     }
 }

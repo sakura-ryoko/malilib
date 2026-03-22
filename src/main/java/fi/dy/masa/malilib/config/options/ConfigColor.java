@@ -8,8 +8,11 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigColor;
+import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
+import fi.dy.masa.malilib.gui.widgets.WidgetColorIndicator;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
@@ -265,4 +268,46 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
     {
         return new JsonPrimitive(this.getStringValue());
     }
+    
+    @Override public void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption) {
+        
+        final ConfigType type = ConfigType.COLOR;
+        
+        y += 1;
+        int configHeight = 20;
+        
+        String configName = getConfigGuiDisplayName();
+        
+        configOption.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+        
+        String comment;
+        IConfigInfoProvider infoProvider = configOption.host.getHoverInfoProvider();
+        
+        if (infoProvider != null)
+        {
+            comment = infoProvider.getHoverInfo(this);
+        }
+        else
+        {
+            comment = getComment();
+        }
+        
+        if (comment != null)
+        {
+            configOption.addConfigComment(x, y + 5, labelWidth, 12, comment);
+        }
+        
+        x += labelWidth + 10;
+		
+		int resetX = x + configWidth + 2;
+		
+		configWidth -= 22; // adjust the width to match other configs due to the color display
+		configOption.colorDisplayPosX = x + configWidth + 2;
+		configOption.addWidget(new WidgetColorIndicator(configOption.colorDisplayPosX, y + 1, 18, 18, this));
+		
+		TextFieldType textType = TextFieldType.STRING.setMaxLength(12);
+		
+		configOption.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, this, textType);
+		
+	}
 }

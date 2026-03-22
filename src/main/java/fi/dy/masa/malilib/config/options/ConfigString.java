@@ -7,9 +7,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigString;
-import fi.dy.masa.malilib.config.IConfigValue;
+import fi.dy.masa.malilib.config.*;
+import fi.dy.masa.malilib.gui.MaLiLibIcons;
+import fi.dy.masa.malilib.gui.button.*;
+import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
+import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigString extends ConfigBase<ConfigString> implements IConfigValue, IConfigString
@@ -163,4 +167,48 @@ public class ConfigString extends ConfigBase<ConfigString> implements IConfigVal
     {
         return new JsonPrimitive(this.value);
     }
+    
+    @Override public void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption) {
+        
+        final ConfigType type = ConfigType.STRING;
+        
+        y += 1;
+        int configHeight = 20;
+        
+        String configName = getConfigGuiDisplayName();
+        
+        configOption.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+        
+        String comment;
+        IConfigInfoProvider infoProvider = configOption.host.getHoverInfoProvider();
+        
+        if (infoProvider != null)
+        {
+            comment = infoProvider.getHoverInfo(this);
+        }
+        else
+        {
+            comment = getComment();
+        }
+        
+        if (comment != null)
+        {
+            configOption.addConfigComment(x, y + 5, labelWidth, 12, comment);
+        }
+        
+        x += labelWidth + 10;
+		
+		int resetX = x + configWidth + 2;
+		
+		TextFieldType textType = TextFieldType.STRING.setMaxLength(configOption.maxTextfieldTextLength);
+		
+		configOption.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, this, textType);
+		
+		if (this instanceof IConfigSlider)
+		{
+			IGuiIcon icon = ((IConfigSlider) this).shouldUseSlider() ? MaLiLibIcons.BTN_TXTFIELD : MaLiLibIcons.BTN_SLIDER;
+			ButtonGeneric toggleBtn = new ButtonGeneric(configOption.colorDisplayPosX, y + 2, icon);
+			configOption.addButton(toggleBtn, new WidgetConfigOption.ListenerSliderToggle((IConfigSlider) this));
+		}
+	}
 }

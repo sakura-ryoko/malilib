@@ -8,11 +8,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigOptionValues;
-import fi.dy.masa.malilib.config.IStringRepresentable;
+import fi.dy.masa.malilib.config.*;
 import fi.dy.masa.malilib.config.value.BaseOptionListConfigValue;
 import fi.dy.masa.malilib.config.value.OptionListConfigValue;
+import fi.dy.masa.malilib.gui.button.*;
+import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
+import fi.dy.masa.malilib.gui.widgets.WidgetConfigOption;
 import fi.dy.masa.malilib.util.ListUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.ImmutableCopy;
@@ -249,5 +250,39 @@ public class ConfigOptionValues<T extends OptionListConfigValue> extends ConfigB
 	public JsonElement getAsJsonElement()
 	{
 		return new JsonPrimitive(this.getStringValue());
+	}
+	
+	@Override public void addConfigOption(int x, int y, int labelWidth, int configWidth, WidgetConfigOption configOption) {
+		
+		final ConfigType type = ConfigType.OPTION_VALUES;
+		
+		y += 1;
+		int configHeight = 20;
+		
+		String configName = getConfigGuiDisplayName();
+		
+		configOption.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
+		
+		String comment;
+		IConfigInfoProvider infoProvider = configOption.host.getHoverInfoProvider();
+		
+		if (infoProvider != null)
+		{
+			comment = infoProvider.getHoverInfo(this);
+		}
+		else
+		{
+			comment = getComment();
+		}
+		
+		if (comment != null)
+		{
+			configOption.addConfigComment(x, y + 5, labelWidth, 12, comment);
+		}
+		
+		x += labelWidth + 10;
+		
+		ConfigButtonOptionValues optionButton = new ConfigButtonOptionValues(x, y, configWidth, configHeight, this);
+		configOption.addConfigButtonEntry(x + configWidth + 2, y, this, optionButton);
 	}
 }

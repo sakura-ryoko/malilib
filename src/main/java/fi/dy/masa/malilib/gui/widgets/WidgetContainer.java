@@ -19,15 +19,15 @@ public abstract class WidgetContainer extends WidgetBase
     {
         super(x, y, width, height);
     }
-
-    protected <T extends WidgetBase> T addWidget(T widget)
+    
+    public <T extends WidgetBase> T addWidget(T widget)
     {
         this.subWidgets.add(widget);
 
         return widget;
     }
 
-    protected <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)
+    public <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)
     {
         button.setActionListener(listener);
         this.addWidget(button);
@@ -35,7 +35,7 @@ public abstract class WidgetContainer extends WidgetBase
         return button;
     }
 
-    protected void addLabel(int x, int y, int width, int height, int textColor, String... lines)
+    public void addLabel(int x, int y, int width, int height, int textColor, String... lines)
     {
         if (lines != null && lines.length >= 1)
         {
