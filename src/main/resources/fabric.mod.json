@@ -33,18 +33,18 @@
 	"accessWidener": "malilib.accesswidener",
 
 	"depends": {
-		"minecraft": "26.1-rc.2",
-		"fabric-networking-api-v1": ">=6.2.4",
+		"minecraft": "26.1",
+		"fabric-networking-api-v1": ">=6.3.0",
         "fabric-resource-loader-v1": "*"
 	},
     "suggests": {
-        "sodium": ">=0.8.4-",
-        "iris": ">=1.10.5-"
+        "sodium": ">=0.8.7-",
+        "iris": ">=1.10.7-"
     },
 	"breaks": {
-        "sodium": "<0.8.4-",
-		"iris": "<1.10.5-",
-		"litematica": "<0.25.4-",
-		"tweakeroo": "<0.27.5-"
+        "sodium": "<0.8.7-",
+		"iris": "<1.10.7-",
+		"litematica": "<0.27.0-",
+		"tweakeroo": "<0.28.0-"
 	}
 }
