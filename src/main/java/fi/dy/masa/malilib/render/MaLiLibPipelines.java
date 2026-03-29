@@ -192,53 +192,52 @@ public class MaLiLibPipelines
 	// todo TERRAIN Snippet
 	public static RenderPipeline.Snippet TERRAIN_STAGE;
 	public static RenderPipeline.Snippet TERRAIN_TRANSLUCENT_STAGE;
-	public static RenderPipeline.Snippet TERRAIN_MASA_STAGE;
 
-	// TERRAIN_MASA
-	public static RenderPipeline SOLID_TERRAIN_MASA;
-	public static RenderPipeline WIREFRAME_MASA;
-	public static RenderPipeline CUTOUT_TERRAIN_MASA;
-	public static RenderPipeline TRANSLUCENT_MASA;
-//	public static RenderPipeline TRIPWIRE_TERRAIN_MASA;
+	// TERRAIN
+	public static RenderPipeline SOLID_TERRAIN;
+	public static RenderPipeline WIREFRAME;
+	public static RenderPipeline CUTOUT_TERRAIN;
 
-	// TERRAIN_MASA_OFFSET
-	public static RenderPipeline SOLID_TERRAIN_MASA_OFFSET;
-	public static RenderPipeline WIREFRAME_MASA_OFFSET;
-	public static RenderPipeline CUTOUT_TERRAIN_MASA_OFFSET;
-	public static RenderPipeline TRANSLUCENT_MASA_OFFSET;
-//	public static RenderPipeline TRIPWIRE_TERRAIN_MASA_OFFSET;
+	// TERRAIN_OFFSET
+	public static RenderPipeline SOLID_TERRAIN_OFFSET;
+	public static RenderPipeline WIREFRAME_OFFSET;
+	public static RenderPipeline CUTOUT_TERRAIN_OFFSET;
+
+	// TERRAIN_TRANSLUCENT
+	public static RenderPipeline TRANSLUCENT;
+	public static RenderPipeline TRANSLUCENT_OFFSET;
 
 	// todo BLOCK Snippet
 	public static RenderPipeline.Snippet BLOCK_STAGE;
 	public static RenderPipeline.Snippet BLOCK_TRANSLUCENT_STAGE;
-	public static RenderPipeline.Snippet BLOCK_MASA_STAGE;
 
-	// BLOCK_MASA
-	public static RenderPipeline SOLID_BLOCK_MASA;
-	public static RenderPipeline CUTOUT_BLOCK_MASA;
-	public static RenderPipeline TRANSLUCENT_BLOCK_MASA;
+	// BLOCK
+	public static RenderPipeline SOLID_BLOCK;
+	public static RenderPipeline CUTOUT_BLOCK;
 
-	// BLOCK_MASA_OFFSET
-	public static RenderPipeline SOLID_BLOCK_MASA_OFFSET;
-	public static RenderPipeline CUTOUT_BLOCK_MASA_OFFSET;
-	public static RenderPipeline TRANSLUCENT_BLOCK_MASA_OFFSET;
+	// BLOCK_OFFSET
+	public static RenderPipeline SOLID_BLOCK_OFFSET;
+	public static RenderPipeline CUTOUT_BLOCK_OFFSET;
+
+	// BLOCK_TRANSLUCENT
+	public static RenderPipeline TRANSLUCENT_BLOCK;
+	public static RenderPipeline TRANSLUCENT_BLOCK_OFFSET;
 
 	// todo LEGACY_TERRAIN Snippet
 	public static RenderPipeline.Snippet LEGACY_TERRAIN_STAGE;
 	public static RenderPipeline.Snippet LEGACY_TERRAIN_TRANSLUCENT_STAGE;
-	public static RenderPipeline.Snippet LEGACY_TERRAIN_MASA_STAGE;
 
-	// LEGACY_TERRAIN_MASA
-	public static RenderPipeline LEGACY_SOLID_TERRAIN_MASA;
-	public static RenderPipeline LEGACY_WIREFRAME_MASA;
-	public static RenderPipeline LEGACY_CUTOUT_TERRAIN_MASA;
-	public static RenderPipeline LEGACY_TRANSLUCENT_MASA;
-//	public static RenderPipeline LEGACY_TRIPWIRE_TERRAIN_MASA;
+	// LEGACY_TERRAIN
+	public static RenderPipeline LEGACY_SOLID_TERRAIN;
+	public static RenderPipeline LEGACY_WIREFRAME;
+	public static RenderPipeline LEGACY_CUTOUT_TERRAIN;
 
-	// LEGACY_TERRAIN_MASA_OFFSET
-	public static RenderPipeline LEGACY_SOLID_TERRAIN_MASA_OFFSET;
-	public static RenderPipeline LEGACY_WIREFRAME_MASA_OFFSET;
-	public static RenderPipeline LEGACY_CUTOUT_TERRAIN_MASA_OFFSET;
-	public static RenderPipeline LEGACY_TRANSLUCENT_MASA_OFFSET;
-//	public static RenderPipeline LEGACY_TRIPWIRE_TERRAIN_MASA_OFFSET;
+	// LEGACY_TERRAIN_OFFSET
+	public static RenderPipeline LEGACY_SOLID_TERRAIN_OFFSET;
+	public static RenderPipeline LEGACY_WIREFRAME_OFFSET;
+	public static RenderPipeline LEGACY_CUTOUT_TERRAIN_OFFSET;
+
+	// LEGACY_TERRAIN_TRANSLUCENT
+	public static RenderPipeline LEGACY_TRANSLUCENT;
+	public static RenderPipeline LEGACY_TRANSLUCENT_OFFSET;
 }

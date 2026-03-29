@@ -1000,231 +1000,194 @@ public abstract class MixinRenderPipelines
 			                  .withFragmentShader("core/terrain")
 			                  .withUniform("Projection", UniformType.UNIFORM_BUFFER)
 			                  .withUniform("ChunkSection", UniformType.UNIFORM_BUFFER)
-//			                  .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
+			                  .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
 			                  .buildSnippet();
 
+	    // todo TERRAIN --> PRE-REGISTER
+	    MaLiLibPipelines.SOLID_TERRAIN =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/solid_terrain"))
+			                           .build());
+
+	    MaLiLibPipelines.WIREFRAME =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/wireframe"))
+			                           .withPolygonMode(PolygonMode.WIREFRAME)
+			                           .build());
+
+	    MaLiLibPipelines.CUTOUT_TERRAIN =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/cutout_terrain"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .build());
+
+	    // todo TERRAIN_OFFSET --> PRE-REGISTER
+	    MaLiLibPipelines.SOLID_TERRAIN_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/solid_terrain/offset"))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
+
+	    MaLiLibPipelines.WIREFRAME_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/wireframe/offset"))
+			                           .withPolygonMode(PolygonMode.WIREFRAME)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
+
+	    MaLiLibPipelines.CUTOUT_TERRAIN_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/cutout_terrain/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
+
+	    // todo TERRAIN_TRANSLUCENT Snippet
 	    MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE =
 			    RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
 			                  .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
 			                  .buildSnippet();
 
-	    MaLiLibPipelines.TERRAIN_MASA_STAGE =
-			    RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
-			                  .withColorTargetState(new ColorTargetState(MASA_BLEND))
-			                  .buildSnippet();
-
-	    // todo TERRAIN_MASA --> PRE-REGISTER
-        MaLiLibPipelines.SOLID_TERRAIN_MASA =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
-                              .withLocation(getId("pipeline/solid_terrain/masa"))
-                              .build());
-
-	    MaLiLibPipelines.WIREFRAME_MASA =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
-                              .withLocation(getId("pipeline/wireframe/masa"))
-                              .withPolygonMode(PolygonMode.WIREFRAME)
-                              .build());
-
-        MaLiLibPipelines.CUTOUT_TERRAIN_MASA =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
-                              .withLocation(getId("pipeline/cutout_terrain/masa"))
-                              .withShaderDefine("ALPHA_CUTOUT", 0.5F)
-                              .build());
-
-        MaLiLibPipelines.TRANSLUCENT_MASA =
-                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
-                              .withLocation(getId("pipeline/translucent/masa"))
-                               .withShaderDefine("ALPHA_CUTOUT", 0.01F)
-                              .build());
-
-		// Removed
-//        MaLiLibPipelines.TRIPWIRE_TERRAIN_MASA =
-//                register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
-//                              .withLocation(getId("pipeline/tripwire_terran/masa"))
-//                              .withShaderDefine("ALPHA_CUTOUT", 0.1F)
-//                              .build());
-
-	    // todo TERRAIN_MASA_OFFSET --> PRE-REGISTER
-	    MaLiLibPipelines.SOLID_TERRAIN_MASA_OFFSET =
-			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
-			                           .withLocation(getId("pipeline/solid_terrain/masa/offset"))
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-			                           .build());
-
-	    MaLiLibPipelines.WIREFRAME_MASA_OFFSET =
-			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
-			                           .withLocation(getId("pipeline/wireframe/masa/offset"))
-			                           .withPolygonMode(PolygonMode.WIREFRAME)
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-			                           .build());
-
-	    MaLiLibPipelines.CUTOUT_TERRAIN_MASA_OFFSET =
-			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_MASA_STAGE)
-			                           .withLocation(getId("pipeline/cutout_terrain/masa/offset"))
-			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-			                           .build());
-
-	    MaLiLibPipelines.TRANSLUCENT_MASA_OFFSET =
+	    // todo TERRAIN_TRANSLUCENT
+	    MaLiLibPipelines.TRANSLUCENT =
 			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
-			                           .withLocation(getId("pipeline/translucent/masa/offset"))
+			                           .withLocation(getId("pipeline/translucent"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
 			                           .build());
 
-		// Removed
-//	    MaLiLibPipelines.TRIPWIRE_TERRAIN_MASA_OFFSET =
-//			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
-//			                           .withLocation(getId("pipeline/tripwire_terrain/masa/offset"))
-//			                           .withShaderDefine("ALPHA_CUTOUT", 0.1F)
-//			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-//			                           .build());
+	    MaLiLibPipelines.TRANSLUCENT_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
+			                           .withLocation(getId("pipeline/translucent/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
 
-		// todo BLOCK Snippet
+	    // todo BLOCK Snippet
 	    MaLiLibPipelines.BLOCK_STAGE =
 			    RenderPipeline.builder(GENERIC_BLOCKS_SNIPPET, MATRICES_PROJECTION_SNIPPET)
 			                  .withVertexShader("core/block")
 			                  .withFragmentShader("core/block")
 //			                  .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
-			                  .buildSnippet();
+                              .buildSnippet();
 
+	    // todo BLOCK
+	    MaLiLibPipelines.SOLID_BLOCK =
+			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_STAGE)
+			                           .withLocation(getId("pipeline/solid_block/masa"))
+			                           .build());
+
+	    MaLiLibPipelines.CUTOUT_BLOCK =
+			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_STAGE)
+			                           .withLocation(getId("pipeline/cutout_block/masa"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .build());
+
+	    // todo BLOCK_OFFSET
+	    MaLiLibPipelines.SOLID_BLOCK_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_STAGE)
+			                           .withLocation(getId("pipeline/solid_block/offset"))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
+
+	    MaLiLibPipelines.CUTOUT_BLOCK_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_STAGE)
+			                           .withLocation(getId("pipeline/cutout_block/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
+
+	    // todo BLOCK_TRANSLUCENT Snippet
 	    MaLiLibPipelines.BLOCK_TRANSLUCENT_STAGE =
 			    RenderPipeline.builder(MaLiLibPipelines.BLOCK_STAGE)
 			                  .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
 			                  .buildSnippet();
 
-	    MaLiLibPipelines.BLOCK_MASA_STAGE =
-			    RenderPipeline.builder(MaLiLibPipelines.BLOCK_STAGE)
-//			                  .withColorTargetState(new ColorTargetState(MASA_BLEND))
-			                  .buildSnippet();
-
-		// todo BLOCK
-	    MaLiLibPipelines.SOLID_BLOCK_MASA =
-			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_MASA_STAGE)
-			                           .withLocation(getId("pipeline/solid_block/masa"))
-			                           .build());
-
-	    MaLiLibPipelines.CUTOUT_BLOCK_MASA =
-			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_MASA_STAGE)
-			                           .withLocation(getId("pipeline/cutout_block/masa"))
-			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
-			                           .build());
-
-	    MaLiLibPipelines.TRANSLUCENT_BLOCK_MASA =
+	    // todo BLOCK_TRANSLUCENT
+	    MaLiLibPipelines.TRANSLUCENT_BLOCK =
 			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_TRANSLUCENT_STAGE)
-			                           .withLocation(getId("pipeline/translucent_block/masa"))
+			                           .withLocation(getId("pipeline/translucent_block"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
 			                           .withDepthStencilState(DepthStencilState.DEFAULT)
 			                           .build());
 
-	    // todo BLOCK_OFFSET
-	    MaLiLibPipelines.SOLID_BLOCK_MASA_OFFSET =
-			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_MASA_STAGE)
-			                           .withLocation(getId("pipeline/solid_block/masa/offset"))
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-			                           .build());
-
-	    MaLiLibPipelines.CUTOUT_BLOCK_MASA_OFFSET =
-			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_MASA_STAGE)
-			                           .withLocation(getId("pipeline/cutout_block/masa/offset"))
-			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-			                           .build());
-
-	    MaLiLibPipelines.TRANSLUCENT_BLOCK_MASA_OFFSET =
+	    MaLiLibPipelines.TRANSLUCENT_BLOCK_OFFSET =
 			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_TRANSLUCENT_STAGE)
-			                           .withLocation(getId("pipeline/translucent_block/masa/offset"))
+			                           .withLocation(getId("pipeline/translucent_block/offset"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
 			                           .build());
 
-		// todo LEGACY_TERRAIN Snippet
-		MaLiLibPipelines.LEGACY_TERRAIN_STAGE =
-				RenderPipeline.builder(MATRICES_FOG_SNIPPET)
-							  .withVertexShader(getId("legacy_terrain"))
-							  .withFragmentShader(getId("legacy_terrain"))
-							  .withSampler("Sampler0")
-							  .withSampler("Sampler2")
-							  .withUniform("ChunkFix", UniformType.UNIFORM_BUFFER)
-							  .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
-							  .buildSnippet();
+	    // todo LEGACY_TERRAIN Snippet
+	    MaLiLibPipelines.LEGACY_TERRAIN_STAGE =
+			    RenderPipeline.builder(MATRICES_FOG_SNIPPET)
+			                  .withVertexShader(getId("legacy_terrain"))
+			                  .withFragmentShader(getId("legacy_terrain"))
+			                  .withSampler("Sampler0")
+			                  .withSampler("Sampler2")
+			                  .withUniform("ChunkFix", UniformType.UNIFORM_BUFFER)
+			                  .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN, true))
+			                  .buildSnippet();
 
-		MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE =
-				RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
-//							  .withColorTargetState(new ColorTargetState(MASA_BLEND))
-							  .buildSnippet();
+	    // todo LEGACY_TERRAIN
+	    MaLiLibPipelines.LEGACY_SOLID_TERRAIN =
+			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/legacy/solid"))
+			                           .build());
 
-		MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE =
-				RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
-							  .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-							  .buildSnippet();
+	    MaLiLibPipelines.LEGACY_WIREFRAME =
+			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/legacy/wireframe"))
+			                           .withPolygonMode(PolygonMode.WIREFRAME)
+			                           .build());
 
-		// todo LEGACY_TERRAIN_MASA --> PRE-REGISTER
-		MaLiLibPipelines.LEGACY_SOLID_TERRAIN_MASA =
-				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
-									   .withLocation(getId("pipeline/legacy/solid/masa"))
-									   .build());
+	    MaLiLibPipelines.LEGACY_CUTOUT_TERRAIN =
+			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/legacy/cutout"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .build());
 
-		MaLiLibPipelines.LEGACY_WIREFRAME_MASA =
-				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
-									   .withLocation(getId("pipeline/legacy/wireframe/masa"))
-									   .withPolygonMode(PolygonMode.WIREFRAME)
-									   .build());
+	    // todo LEGACY_TERRAIN_OFFSET --> PRE-REGISTER
+	    MaLiLibPipelines.LEGACY_SOLID_TERRAIN_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/legacy/solid/masa/offset"))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
 
-		MaLiLibPipelines.LEGACY_CUTOUT_TERRAIN_MASA =
-				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
-									   .withLocation(getId("pipeline/legacy/cutout/masa"))
-									   .withShaderDefine("ALPHA_CUTOUT", 0.5F)
-									   .build());
+	    MaLiLibPipelines.LEGACY_WIREFRAME_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/legacy/wireframe/offset"))
+			                           .withPolygonMode(PolygonMode.WIREFRAME)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
 
-		MaLiLibPipelines.LEGACY_TRANSLUCENT_MASA =
-				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
-									   .withLocation(getId("pipeline/legacy/translucent/masa"))
-									   .withShaderDefine("ALPHA_CUTOUT", 0.01F)
-				                       .build());
+	    MaLiLibPipelines.LEGACY_CUTOUT_TERRAIN_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
+			                           .withLocation(getId("pipeline/legacy/cutout/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
 
-		// Removed
-//		MaLiLibPipelines.LEGACY_TRIPWIRE_TERRAIN_MASA =
-//				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
-//									   .withLocation(getId("pipeline/legacy/tripwire/masa"))
-//									   .withShaderDefine("ALPHA_CUTOUT", 0.1F)
-//									   .build());
+	    // todo LEGACY_TERRAIN_TRANSLUCENT Snippet
+	    MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE =
+			    RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
+			                  .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
+			                  .buildSnippet();
 
-		// todo LEGACY_TERRAIN_MASA_OFFSET --> PRE-REGISTER
-		MaLiLibPipelines.LEGACY_SOLID_TERRAIN_MASA_OFFSET =
-				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
-									   .withLocation(getId("pipeline/legacy/solid/masa/offset"))
-									   .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-									   .build());
+	    // todo LEGACY_TERRAIN_TRANSLUCENT
+	    MaLiLibPipelines.LEGACY_TRANSLUCENT =
+			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
+			                           .withLocation(getId("pipeline/legacy/translucent"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
+			                           .build());
 
-		MaLiLibPipelines.LEGACY_WIREFRAME_MASA_OFFSET =
-				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
-									   .withLocation(getId("pipeline/legacy/wireframe/masa/offset"))
-									   .withPolygonMode(PolygonMode.WIREFRAME)
-									   .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-									   .build());
-
-		MaLiLibPipelines.LEGACY_CUTOUT_TERRAIN_MASA_OFFSET =
-				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_MASA_STAGE)
-									   .withLocation(getId("pipeline/legacy/cutout/masa/offset"))
-									   .withShaderDefine("ALPHA_CUTOUT", 0.5F)
-									   .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-									   .build());
-
-		MaLiLibPipelines.LEGACY_TRANSLUCENT_MASA_OFFSET =
-				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
-									   .withLocation(getId("pipeline/legacy/translucent/masa/offset"))
-									   .withShaderDefine("ALPHA_CUTOUT", 0.01F)
-									   .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-									   .build());
-
-		// Removed
-//		MaLiLibPipelines.LEGACY_TRIPWIRE_TERRAIN_MASA_OFFSET =
-//				register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
-//									   .withLocation(getId("pipeline/legacy/tripwire/masa/offset"))
-//									   .withShaderDefine("ALPHA_CUTOUT", 0.1F)
-//									   .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, false, -0.3f, -0.6f))
-//									   .build());
+	    MaLiLibPipelines.LEGACY_TRANSLUCENT_OFFSET =
+			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
+			                           .withLocation(getId("pipeline/legacy/translucent/offset"))
+			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .build());
 
 		// Try registering with Iris.
         IrisCompat.registerPipelines();

@@ -11,6 +11,7 @@ import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import fi.dy.masa.malilib.interfaces.IRenderer;
+import fi.dy.masa.malilib.render.OnDemandRenderer;
 import fi.dy.masa.malilib.test.command.TestCommand;
 import fi.dy.masa.malilib.test.input.TestInputHandler;
 import fi.dy.masa.malilib.test.misc.TestSelector;
@@ -50,6 +51,8 @@ public class MaLiLibInitHandler implements IInitializationHandler
 //            }
         }
 
+        RenderEventHandler.getInstance().registerWorldLastRenderer(OnDemandRenderer.getInstance());
+        TickHandler.getInstance().registerClientTickHandler(OnDemandRenderer.getInstance());
         MaLiLibCallbacks.init();
     }
 
