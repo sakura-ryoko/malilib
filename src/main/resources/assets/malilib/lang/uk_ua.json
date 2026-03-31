@@ -176,7 +176,7 @@
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "Видалити файл або каталог",
     "malilib.gui.button.hover.directory_widget.root": "До кореневого/базового каталогу",
     "malilib.gui.button.hover.directory_widget.up": "До батьківського каталогу",
-    "malilib.gui.button.hover.hold_shift_for_info": "§oУтримуйте Shift для поднобиць.§r",
+    "malilib.gui.button.hover.hold_shift_for_info": "§oУтримуйте Shift для подробиць.§r",
     "malilib.gui.button.hover.plus_minus_tip": "Натисніть ЛКМ, щоб збільшити.\nПКМ, щоб зменшити.\nShift та/або Alt, щоб збільшити розмір кроку.",
     "malilib.gui.button.hover.search_bar_hotkey": "Уведіть рядок пошуку або використовуйте гарячу клавішу як параметр пошуку",
     "malilib.gui.button.hovertext.add": "Додати",
