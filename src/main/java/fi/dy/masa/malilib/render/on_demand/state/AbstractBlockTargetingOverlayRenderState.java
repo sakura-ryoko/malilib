@@ -1,18 +1,14 @@
 package fi.dy.masa.malilib.render.on_demand.state;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderState;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.position.PositionUtils;
 
-public abstract class AbstractMaLiLibBlockTargetingOverlayRenderState implements IOnDemandRenderState
+public abstract class AbstractBlockTargetingOverlayRenderState implements IOnDemandRenderState
 {
 	protected BlockPos pos;
 	protected Vec3 camPos;
@@ -23,13 +19,14 @@ public abstract class AbstractMaLiLibBlockTargetingOverlayRenderState implements
 	protected Direction facing;
 	protected PositionUtils.HitPart part;
 
-	public AbstractMaLiLibBlockTargetingOverlayRenderState(BlockPos pos,
-	                                                       Vec3 camPos,
-	                                                       Color4f sideColor, Color4f lineColor,
-	                                                       float lineWidth,
-	                                                       Direction side,
-	                                                       Direction facing,
-	                                                       PositionUtils.HitPart part)
+	public AbstractBlockTargetingOverlayRenderState(BlockPos pos,
+	                                                Vec3 camPos,
+	                                                Color4f sideColor,
+	                                                Color4f lineColor,
+	                                                float lineWidth,
+	                                                Direction side,
+	                                                Direction facing,
+	                                                PositionUtils.HitPart part)
 	{
 		this.pos = pos;
 		this.camPos = camPos;
@@ -61,36 +58,6 @@ public abstract class AbstractMaLiLibBlockTargetingOverlayRenderState implements
 	public Direction facing() {return this.facing;}
 
 	public PositionUtils.HitPart part() {return this.part;}
-
-	@Override
-	public @Nullable Identifier texture()
-	{
-		return null;
-	}
-
-	@Override
-	public int textureId()
-	{
-		return 0;
-	}
-
-	@Override
-	public int textureWidth()
-	{
-		return 0;
-	}
-
-	@Override
-	public int textureHeight()
-	{
-		return 0;
-	}
-
-	@Override
-	public float @NonNull [] offset()
-	{
-		return new float[0];
-	}
 
 	public void updateCameraOffset(Vec3 cameraPos)
 	{

@@ -29,54 +29,58 @@ import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderer;
 import fi.dy.masa.malilib.render.RenderContext;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.render.on_demand.state.AbstractMaLiLibBlockTargetingOverlayRenderState;
-import fi.dy.masa.malilib.render.on_demand.state.MaLiLibBlockTargetingOverlayCenterRenderState;
-import fi.dy.masa.malilib.render.on_demand.state.MaLiLibBlockTargetingOverlayEdgesRenderState;
-import fi.dy.masa.malilib.render.on_demand.state.MaLiLibBlockTargetingOverlaySideRenderState;
+import fi.dy.masa.malilib.render.on_demand.state.AbstractBlockTargetingOverlayRenderState;
+import fi.dy.masa.malilib.render.on_demand.state.BlockTargetingOverlayCenterRenderState;
+import fi.dy.masa.malilib.render.on_demand.state.BlockTargetingOverlayEdgesRenderState;
+import fi.dy.masa.malilib.render.on_demand.state.BlockTargetingOverlaySideRenderState;
 import fi.dy.masa.malilib.util.MathUtils;
-import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.position.PositionUtils;
 
+/**
+ * Works, but a bit "slow" on the update speed; using no tick rate would be best.
+ */
 @ApiStatus.Experimental
-public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<AbstractMaLiLibBlockTargetingOverlayRenderState>
+public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<AbstractBlockTargetingOverlayRenderState>
 {
-	private final static float TICK_RATE = 0.5F;
 	private final IConfigBoolean config;
 	private final @Nullable IKeybind keybind;
 	private final boolean useCtrl;
 	private final boolean useAlt;
-	private final Color4f targetColor;
+	private Color4f targetColor;
 	private Color4f lineColor;
 	private float lineWidth;
-	private long lastTick;
 
+	//	private final static float TICK_RATE = 0.07F;
 	private Target currentTarget;
+	private Target lastTarget;
 	private Entry currentEntry;
 	private RenderContext renderSides;
 	private RenderContext renderCenter;
 	private RenderContext renderEdges;
+//	private long lastTick;
+	private boolean dirty;
 
-	public MaLiLibBlockTargetingOverlayRenderer(IConfigBoolean config, boolean useCtrl, boolean useAlt)
+	public BlockTargetingOverlayRenderer(IConfigBoolean config, boolean useCtrl, boolean useAlt)
 	{
-		this(Color4f.fromColor(StringUtils.getColor("#C03030F0", 0)), config, useCtrl, useAlt, null);
+		this(Color4f.fromColor(0xC03030F0), config, useCtrl, useAlt, null);
 	}
 
-	public MaLiLibBlockTargetingOverlayRenderer(IConfigBoolean config, boolean useCtrl, boolean useAlt, @Nullable IKeybind keybind)
+	public BlockTargetingOverlayRenderer(IConfigBoolean config, boolean useCtrl, boolean useAlt, @Nullable IKeybind keybind)
 	{
-		this(Color4f.fromColor(StringUtils.getColor("#C03030F0", 0)), config, useCtrl, useAlt, keybind);
+		this(Color4f.fromColor(0xC03030F0), config, useCtrl, useAlt, keybind);
 	}
 
-	public MaLiLibBlockTargetingOverlayRenderer(Color4f targetColor, IConfigBoolean config, boolean useCtrl, boolean useAlt, @Nullable IKeybind keybind)
+	public BlockTargetingOverlayRenderer(Color4f targetColor, IConfigBoolean config, boolean useCtrl, boolean useAlt, @Nullable IKeybind keybind)
 	{
 		this.targetColor = targetColor;
 		this.config = config;
 		this.useCtrl = useCtrl;
 		this.useAlt = useAlt;
 		this.keybind = keybind;
-		this.lastTick = System.currentTimeMillis();
 		this.lineColor = Color4f.WHITE;
 		this.lineWidth = 1.6F;
+//		this.lastTick = System.currentTimeMillis();
 	}
 
 	@Override
@@ -89,6 +93,17 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 	public boolean shouldDrawColor()
 	{
 		return true;
+	}
+
+	@Override
+	public boolean shouldUseRenderContext()
+	{
+		return false;
+	}
+
+	public void setTargetColor(final Color4f targetColor)
+	{
+		this.targetColor = targetColor;
 	}
 
 	public void setLineColor(final Color4f lineColor)
@@ -104,19 +119,20 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 	@Override
 	public void tick(Minecraft mc)
 	{
-		final long now = System.currentTimeMillis();
+//		final long now = System.currentTimeMillis();
 
-		if ((now - this.lastTick) > this.calcTickRate())
-		{
+		// Perform Every tick
+//		if ((now - this.lastTick) >= this.tickRate())
+//		{
 			this.checkConfigAndTarget(mc);
-			this.lastTick = now;
-		}
+//			this.lastTick = now;
+//		}
 	}
 
-	private long calcTickRate()
-	{
-		return (long) (TICK_RATE * 1000L);
-	}
+//	private long tickRate()
+//	{
+//		return (long) (MathUtils.clamp((TICK_RATE * 1000L), 50L, 1000L));
+//	}
 
 	private void checkConfigAndTarget(Minecraft mc)
 	{
@@ -129,26 +145,44 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 		{
 			BlockHitResult hitResult = (BlockHitResult) mc.hitResult;
 
-			if (this.keybind != null && this.keybind.isKeybindHeld())
+			if (this.keybind != null)
 			{
-				this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), hitResult.getLocation());
+				if (this.keybind.isKeybindHeld())
+				{
+					this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), hitResult.getLocation());
+				}
+				else { this.reset(); }
 			}
-			else if (this.useCtrl && GuiBase.isCtrlDown())
+			else if (this.useCtrl)
 			{
-				this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), hitResult.getLocation());
+				if (GuiBase.isCtrlDown())
+				{
+					this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), hitResult.getLocation());
+				}
+				else { this.reset(); }
 			}
-			else if (this.useAlt && GuiBase.isAltDown())
+			else if (this.useAlt)
 			{
-				this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), hitResult.getLocation());
+				if (GuiBase.isAltDown())
+				{
+					this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), hitResult.getLocation());
+				}
+				else { this.reset(); }
 			}
 		}
+		else { this.reset(); }
 	}
 
 	private void scheduleTarget(Direction facing, BlockPos pos, Direction side, Vec3 hitVec)
 	{
-		if (this.currentTarget == null)
+		Target newTarget = new Target(facing, pos, side, hitVec);
+
+		if (this.currentTarget == null || !this.currentTarget.equals(newTarget))
 		{
-			this.currentTarget = new Target(facing, pos, side, hitVec);
+			this.reset();
+			this.lastTarget = this.currentTarget;
+			this.currentTarget = newTarget;
+			this.dirty = true;
 		}
 	}
 
@@ -162,13 +196,13 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 	{
 		PositionUtils.HitPart part = PositionUtils.getHitPart(side, facing, pos, hitVec);
 
-		MaLiLibBlockTargetingOverlaySideRenderState sideState       = new MaLiLibBlockTargetingOverlaySideRenderState(
+		BlockTargetingOverlaySideRenderState sideState       = new BlockTargetingOverlaySideRenderState(
 				pos, camPos, this.targetColor, this.lineColor, this.lineWidth, side, facing, part
 		);
-		MaLiLibBlockTargetingOverlayCenterRenderState centerState   = new MaLiLibBlockTargetingOverlayCenterRenderState(
+		BlockTargetingOverlayCenterRenderState centerState   = new BlockTargetingOverlayCenterRenderState(
 				pos, camPos, this.targetColor, this.lineColor, this.lineWidth, side, facing, part
 		);
-		MaLiLibBlockTargetingOverlayEdgesRenderState edgesState     = new MaLiLibBlockTargetingOverlayEdgesRenderState(
+		BlockTargetingOverlayEdgesRenderState edgesState     = new BlockTargetingOverlayEdgesRenderState(
 				pos, camPos, this.targetColor, this.lineColor, this.lineWidth, side, facing, part
 		);
 
@@ -208,15 +242,15 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 		{
 			if (this.renderSides != null && !this.renderSides.isUploaded())
 			{
-				BufferBuilder buffer = this.renderSides.getBuilder();
+				BufferBuilder buffer = this.renderSides.start(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/side", this.currentEntry.sideState().pipeline());
 				this.currentEntry.sideState().update(buffer);
 
 				try (MeshData meshData = buffer.build())
 				{
 					if (meshData != null)
 					{
-						this.renderSides.color(this.targetColor.getIntValue());
-						this.renderSides.upload(buffer, false);
+						this.renderSides.upload(meshData, false);
+						meshData.close();
 					}
 				}
 				catch (Exception err)
@@ -226,7 +260,7 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 			}
 			if (this.renderCenter != null && !this.renderCenter.isUploaded())
 			{
-				BufferBuilder buffer = this.renderCenter.getBuilder();
+				BufferBuilder buffer = this.renderCenter.start(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/center", this.currentEntry.centerState().pipeline());
 				this.currentEntry.centerState().update(buffer);
 
 				try (MeshData meshData = buffer.build())
@@ -234,7 +268,8 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 					if (meshData != null)
 					{
 						this.renderCenter.color(this.lineColor.getIntValue());
-						this.renderCenter.upload(buffer, false);
+						this.renderCenter.upload(meshData, false);
+						meshData.close();
 					}
 				}
 				catch (Exception err)
@@ -244,7 +279,7 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 			}
 			if (this.renderEdges != null && !this.renderEdges.isUploaded())
 			{
-				BufferBuilder buffer = this.renderEdges.getBuilder();
+				BufferBuilder buffer = this.renderEdges.start(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/edges", this.currentEntry.edgesState().pipeline());
 				this.currentEntry.edgesState().update(buffer);
 
 				try (MeshData meshData = buffer.build())
@@ -252,7 +287,8 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 					if (meshData != null)
 					{
 						this.renderEdges.color(this.lineColor.getIntValue());
-						this.renderEdges.upload(buffer, false);
+						this.renderEdges.upload(meshData, false);
+						meshData.close();
 					}
 				}
 				catch (Exception err)
@@ -274,7 +310,7 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 		{
 			if (this.renderSides != null && this.renderSides.isUploaded())
 			{
-				this.renderSides.drawPost(true);
+				this.renderSides.drawPost();
 			}
 			if (this.renderCenter != null && this.renderCenter.isUploaded())
 			{
@@ -290,7 +326,9 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 	private void reset()
 	{
 		this.currentTarget = null;
+		this.lastTarget = null;
 		this.currentEntry = null;
+		this.dirty = true;
 
 		if (this.renderSides != null)
 		{
@@ -307,45 +345,61 @@ public class MaLiLibBlockTargetingOverlayRenderer implements IOnDemandRenderer<A
 	}
 
 	@Override
-	public @Nullable AbstractMaLiLibBlockTargetingOverlayRenderState updatePre(Camera camera, DeltaTracker tracker, ProfilerFiller profiler)
+	public @Nullable AbstractBlockTargetingOverlayRenderState updatePre(Camera camera, DeltaTracker tracker, ProfilerFiller profiler)
 	{
-		if (this.hasData())
+		if (this.hasData() && this.dirty)
 		{
-			Target target = this.currentTarget;
-
-			if (target != null)
+			if (this.currentEntry == null ||
+				this.lastTarget == null ||
+				!this.lastTarget.equals(this.currentTarget))
 			{
-				this.currentEntry = this.buildEntry(camera.position(), target.facing(), target.pos(), target.side(), target.hitVec());
+				this.lastTarget = this.currentTarget;
+				this.currentEntry = this.buildEntry(camera.position(), this.currentTarget.facing(), this.currentTarget.pos(), this.currentTarget.side(), this.currentTarget.hitVec());
 				this.setupRenderContext();
 				this.uploadBuffers();
-				this.currentTarget = null;
 			}
+
+			this.dirty = false;
 		}
 
 		return null;
 	}
 
 	@Override
-	public @Nullable AbstractMaLiLibBlockTargetingOverlayRenderState drawPre(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
+	public @Nullable AbstractBlockTargetingOverlayRenderState drawPre(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
 	{
 		if (this.hasEntry())
 		{
-			MaLiLibBlockTargetingOverlaySideRenderState state = this.currentEntry.sideState();
+			BlockTargetingOverlaySideRenderState state = this.currentEntry.sideState();
 			Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
+
 			global4fStack.pushMatrix();
 			RenderUtils.blockTargetingOverlayTranslations(state.x(), state.y(), state.z(), state.side(), state.facing(), global4fStack);
-
 			this.drawBuffers();
 			global4fStack.popMatrix();
 		}
 
-		this.reset();
 		return null;
 	}
 
-	public record Target(Direction facing, BlockPos pos, Direction side, Vec3 hitVec) {}
+	public record Target(Direction facing, BlockPos pos, Direction side, Vec3 hitVec)
+	{
+		@Override
+		public boolean equals(Object o)
+		{
+			if (this == o) { return true; }
+			if (o == null || this.getClass() != o.getClass()) { return false; }
 
-	public record Entry(MaLiLibBlockTargetingOverlaySideRenderState sideState,
-	                    MaLiLibBlockTargetingOverlayCenterRenderState centerState,
-	                    MaLiLibBlockTargetingOverlayEdgesRenderState edgesState) {}
+			Target other = (Target) o;
+
+			return  this.facing().equals(other.facing()) &&
+					this.pos().equals(other.pos()) &&
+					this.side().equals(other.side()) &&
+					this.hitVec().equals(other.hitVec());
+		}
+	}
+
+	public record Entry(BlockTargetingOverlaySideRenderState sideState,
+	                    BlockTargetingOverlayCenterRenderState centerState,
+	                    BlockTargetingOverlayEdgesRenderState edgesState) {}
 }

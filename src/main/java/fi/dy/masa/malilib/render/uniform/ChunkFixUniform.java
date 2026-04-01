@@ -11,12 +11,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.TextureFilteringMethod;
 import net.minecraft.client.renderer.MappableRingBuffer;
 
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.compat.iris.IrisCompat;
 
 public class ChunkFixUniform implements AutoCloseable
 {
 	private static final int UBO_SIZE = new Std140SizeCalculator().putIVec2().putFloat().putInt().putInt().get();
-	private final MappableRingBuffer ubo = new MappableRingBuffer(() -> "ChunkFix UBO", 130, UBO_SIZE);
+	private final MappableRingBuffer ubo = new MappableRingBuffer(() -> MaLiLibReference.MOD_NAME+" ChunkFix UBO", 130, UBO_SIZE);
 
 	/**
 	 * Fill the UBO Buffer
@@ -36,7 +37,8 @@ public class ChunkFixUniform implements AutoCloseable
 		final int useRGSS = Minecraft.getInstance().options.textureFiltering().get() == TextureFilteringMethod.RGSS ? 1 : 0;
 		final int hasShadersOn = IrisCompat.isShaderActive() ? 1 : 0;
 
-		try (GpuBuffer.MappedView mappedView = RenderSystem.getDevice().createCommandEncoder()
+		try (GpuBuffer.MappedView mappedView = RenderSystem.getDevice()
+		                                                   .createCommandEncoder()
 		                                                   .mapBuffer(this.ubo.currentBuffer(), false, true))
 		{
 			Std140Builder.intoBuffer(mappedView.data()).putIVec2(atlasWidth, atlasHeight).putFloat(chunkVisibility).putInt(useRGSS).putInt(hasShadersOn);

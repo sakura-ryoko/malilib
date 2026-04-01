@@ -14,15 +14,16 @@ import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.position.PositionUtils;
 
 @ApiStatus.Experimental
-public class MaLiLibBlockTargetingOverlaySideRenderState extends AbstractMaLiLibBlockTargetingOverlayRenderState
+public class BlockTargetingOverlaySideRenderState extends AbstractBlockTargetingOverlayRenderState
 {
-	public MaLiLibBlockTargetingOverlaySideRenderState(BlockPos pos,
-	                                                   Vec3 camPos,
-	                                                   Color4f sideColor, Color4f lineColor,
-	                                                   float lineWidth,
-	                                                   Direction side,
-	                                                   Direction facing,
-	                                                   PositionUtils.HitPart part)
+	public BlockTargetingOverlaySideRenderState(BlockPos pos,
+	                                            Vec3 camPos,
+	                                            Color4f sideColor,
+	                                            Color4f lineColor,
+	                                            float lineWidth,
+	                                            Direction side,
+	                                            Direction facing,
+	                                            PositionUtils.HitPart part)
 	{
 		super(pos, camPos, sideColor, lineColor, lineWidth, side, facing, part);
 	}
@@ -59,7 +60,7 @@ public class MaLiLibBlockTargetingOverlaySideRenderState extends AbstractMaLiLib
 		buffer.addVertex((float) (x + 0.5), (float) (y + 0.5), (float) z).setColor(c, c, c, quadAlpha);
 		buffer.addVertex((float) (x - 0.5), (float) (y + 0.5), (float) z).setColor(c, c, c, quadAlpha);
 
-		// Hit Part Side
+		// (Blue?) Hit Part Side
 		switch (this.part())
 		{
 			case CENTER:

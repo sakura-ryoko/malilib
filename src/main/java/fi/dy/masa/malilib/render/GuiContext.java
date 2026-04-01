@@ -109,7 +109,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	public Pair<GpuTextureView, GpuSampler> bindTexture(@Nullable Identifier id)
 	{
 		if (id == null) return null;
-		AbstractTexture tex = (AbstractTexture) this.mc().getTextureManager().getTexture(id);
+		AbstractTexture tex = this.mc().getTextureManager().getTexture(id);
 
 		if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTextureView() != null)
 		{
@@ -127,7 +127,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public List<Component> itemTooltips(ItemStack stack)
 	{
-//		return stack.getTooltip(ctx, mc.player, mc.options.advancedItemTooltips ? TooltipType.ADVANCED : TooltipType.BASIC);
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null || mc.player == null) return List.of();
 		Item.TooltipContext ctx = Item.TooltipContext.of(WorldUtils.getBestWorld(mc));
@@ -154,7 +153,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addSimpleElement(GuiElementRenderState element)
 	{
-//		((IMixinGuiGraphics) this).malilib_getRenderState().submitGuiElement(element);
 		this.guiRenderState.addGuiElement(element);
 	}
 
@@ -164,7 +162,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addSpecialElement(PictureInPictureRenderState specialElement)
 	{
-//		((IMixinGuiGraphics) this).malilib_getRenderState().submitPicturesInPictureState(specialElement);
 		this.guiRenderState.addPicturesInPictureState(specialElement);
 	}
 
@@ -174,7 +171,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addItemElement(GuiItemRenderState itemElement)
 	{
-//		((IMixinGuiGraphics) this).malilib_getRenderState().submitItem(itemElement);
 		this.guiRenderState.addItem(itemElement);
 	}
 
@@ -184,7 +180,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addTextElement(GuiTextRenderState textElement)
 	{
-//		((IMixinGuiGraphics) this).malilib_getRenderState().submitText(textElement);
 		this.guiRenderState.addText(textElement);
 	}
 
@@ -194,7 +189,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addPreparedTextElement(GuiElementRenderState element)
 	{
-//		((IMixinGuiGraphics) this).malilib_getRenderState().submitGlyphToCurrentLayer(element);
 		this.guiRenderState.addGlyphToCurrentLayer(element);
 	}
 
@@ -204,7 +198,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addSimpleElementToCurrentLayer(BlitRenderState element)
 	{
-//		((IMixinGuiGraphics) this).malilib_getRenderState().submitBlitToCurrentLayer(element);
 		this.guiRenderState.addBlitToCurrentLayer(element);
 	}
 
@@ -214,7 +207,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void pushScissor(@Nonnull ScreenRectangle rect)
 	{
-//		((IMixinGuiGraphics) this).malilib_getScissorStack().push(rect);
 		this.scissorStack.push(rect);
 	}
 
@@ -226,7 +218,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public boolean containsScissor(int x, int y)
 	{
-//		return ((IMixinGuiGraphics) this).malilib_getScissorStack().containsPoint(x, y);
 		return this.scissorStack.containsPoint(x, y);
 	}
 
@@ -236,7 +227,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public ScreenRectangle peekLastScissor()
 	{
-//		return ((IMixinGuiGraphics) this).malilib_getScissorStack().peek();
 		return this.scissorStack.peek();
 	}
 
@@ -246,7 +236,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public ScreenRectangle popScissor()
 	{
-//		return ((IMixinGuiGraphics) this).malilib_getScissorStack().pop();
 		return this.scissorStack.pop();
 	}
 

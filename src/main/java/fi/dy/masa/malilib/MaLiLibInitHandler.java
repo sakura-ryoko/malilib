@@ -12,6 +12,7 @@ import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.render.OnDemandRenderer;
+import fi.dy.masa.malilib.render.on_demand.BlockTargetingOverlayRenderer;
 import fi.dy.masa.malilib.test.command.TestCommand;
 import fi.dy.masa.malilib.test.input.TestInputHandler;
 import fi.dy.masa.malilib.test.misc.TestSelector;
@@ -49,6 +50,14 @@ public class MaLiLibInitHandler implements IInitializationHandler
 //                TestThreadDaemonDefaultHandler.INSTANCE.endAll();
 //                TestThreadDaemonAsyncHandler.INSTANCE.endAll();
 //            }
+
+            if (MaLiLibReference.EXPERIMENTAL_MODE)
+            {
+                OnDemandRenderer.getInstance().registerOnDemandRenderer(
+                        MaLiLibReference.MOD_ID+"_block_targeting_overlay",
+                        new BlockTargetingOverlayRenderer(MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN, true, false)
+                );
+            }
         }
 
         RenderEventHandler.getInstance().registerWorldLastRenderer(OnDemandRenderer.getInstance());

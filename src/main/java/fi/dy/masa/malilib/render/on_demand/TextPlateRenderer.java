@@ -22,13 +22,16 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderState;
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderer;
-import fi.dy.masa.malilib.render.on_demand.state.MaLiLibTextPlateBackgroundRenderState;
+import fi.dy.masa.malilib.render.on_demand.state.TextPlateBackgroundRenderState;
 
+/**
+ * WARNING!!! Not tested!
+ */
 @ApiStatus.Experimental
-public class MaLiLibTextPlateRenderer implements IOnDemandRenderer<MaLiLibTextPlateBackgroundRenderState>
+public class TextPlateRenderer implements IOnDemandRenderer<TextPlateBackgroundRenderState>
 {
-	private final CopyOnWriteArrayList<MaLiLibTextPlateBackgroundRenderState> states = new CopyOnWriteArrayList<>();
-	private MaLiLibTextPlateBackgroundRenderState currentState;
+	private final CopyOnWriteArrayList<TextPlateBackgroundRenderState> states = new CopyOnWriteArrayList<>();
+	private TextPlateBackgroundRenderState currentState;
 
 	@Override
 	public Supplier<String> name()
@@ -37,7 +40,7 @@ public class MaLiLibTextPlateRenderer implements IOnDemandRenderer<MaLiLibTextPl
 	}
 
 	@Override
-	public void schedule(MaLiLibTextPlateBackgroundRenderState state)
+	public void schedule(TextPlateBackgroundRenderState state)
 	{
 		synchronized (this.states)
 		{
@@ -55,7 +58,7 @@ public class MaLiLibTextPlateRenderer implements IOnDemandRenderer<MaLiLibTextPl
 	}
 
 	@Override
-	public @Nullable MaLiLibTextPlateBackgroundRenderState updatePre(Camera camera, DeltaTracker tracker, ProfilerFiller profiler)
+	public @Nullable TextPlateBackgroundRenderState updatePre(Camera camera, DeltaTracker tracker, ProfilerFiller profiler)
 	{
 		if (this.hasData())
 		{
@@ -71,20 +74,20 @@ public class MaLiLibTextPlateRenderer implements IOnDemandRenderer<MaLiLibTextPl
 	@Override
 	public void onUpdatePost(IOnDemandRenderState state)
 	{
-		this.currentState = (MaLiLibTextPlateBackgroundRenderState) state;
+		this.currentState = (TextPlateBackgroundRenderState) state;
 	}
 
 	@Override
-	public @Nullable MaLiLibTextPlateBackgroundRenderState drawPre(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
+	public @Nullable TextPlateBackgroundRenderState drawPre(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
 	{
 		if (this.currentState != null)
 		{
-			double cx = cameraState.pos.x;
-			double cy = cameraState.pos.y;
-			double cz = cameraState.pos.z;
+			double cx = cameraState.pos.x();
+			double cy = cameraState.pos.y();
+			double cz = cameraState.pos.z();
 
 			Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
-			MaLiLibTextPlateBackgroundRenderState state = this.currentState;
+			TextPlateBackgroundRenderState state = this.currentState;
 
 			global4fStack.pushMatrix();
 			global4fStack.translate((float) (state.x() - cx), (float) (state.y() - cy), (float) (state.z() - cz));
@@ -100,7 +103,7 @@ public class MaLiLibTextPlateRenderer implements IOnDemandRenderer<MaLiLibTextPl
 	@Override
 	public void onDrawPost(IOnDemandRenderState state)
 	{
-		MaLiLibTextPlateBackgroundRenderState st = (MaLiLibTextPlateBackgroundRenderState) state;
+		TextPlateBackgroundRenderState st = (TextPlateBackgroundRenderState) state;
 		Font font = Minecraft.getInstance().font;
 		final int textColor = st.textColor().getIntValue();
 		int textY = 0;

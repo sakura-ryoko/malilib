@@ -1,6 +1,5 @@
 package fi.dy.masa.malilib.render.special;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
@@ -8,7 +7,6 @@ import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.world.level.block.state.BlockState;
 
-@ApiStatus.Experimental
 public record MaLiLibBlockStateGuiElement(
         BlockState state,
         Quaternionf rotation,

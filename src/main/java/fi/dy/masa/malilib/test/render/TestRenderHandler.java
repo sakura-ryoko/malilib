@@ -203,9 +203,12 @@ public class TestRenderHandler implements IRenderer
                     TestSelector.INSTANCE.render(profiler, mc);
                 }
 
-                // TODO -- Move to extract ?
-                profiler.popPush(MaLiLibReference.MOD_ID + "_targeting_overlay");
-                this.renderTargetingOverlay(mc);
+                // TODO
+                if (!MaLiLibReference.EXPERIMENTAL_MODE)
+                {
+                    profiler.popPush(MaLiLibReference.MOD_ID + "_targeting_overlay");
+                    this.renderTargetingOverlay(mc);
+                }
 
                 if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue() &&
                     TestRenderWalls.INSTANCE.hasData())

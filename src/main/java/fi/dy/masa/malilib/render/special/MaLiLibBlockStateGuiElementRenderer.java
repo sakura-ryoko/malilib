@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.render.special;
 
 import javax.annotation.Nonnull;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -20,7 +19,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 
-@ApiStatus.Experimental
 public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRenderer<@NotNull MaLiLibBlockStateGuiElement>
 {
     private final BlockModelResolver modelResolver;
@@ -58,14 +56,6 @@ public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRendere
 	{
 		final int l = LightCoordsUtil.pack(15, 15);
 		final int overlay = OverlayTexture.NO_OVERLAY;
-//		final int blockColor = this.blockColors.getColor(state, null, null, 0);
-//
-//		float[] color = new float[] {
-//				(blockColor >> 16 & 0xFF) / 255.0F,
-//				(blockColor >> 16 & 0xFF) / 255.0F,
-//				(blockColor & 0xFF) / 255.0F,
-//				1.0F
-//		};
 
 		FeatureRenderDispatcher featureRenderer = Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
 		SubmitNodeStorage nodeStorage = featureRenderer.getSubmitNodeStorage();
@@ -73,7 +63,6 @@ public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRendere
 
 		this.modelResolver.update(renderState, state, BlockDisplayContext.create());
 		renderState.submit(matrices, nodeStorage, l, overlay, -1);
-//		nodeStorage.submitBlockModel(matrices, RenderTypes.translucentMovingBlock(), parts, color[0], color[1], color[2], l, overlay, 0);
 		featureRenderer.renderAllFeatures();
 	}
 

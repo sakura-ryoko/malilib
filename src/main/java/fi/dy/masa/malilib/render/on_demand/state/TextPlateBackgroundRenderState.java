@@ -3,13 +3,11 @@ package fi.dy.masa.malilib.render.on_demand.state;
 import java.util.List;
 import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.resources.Identifier;
 
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderState;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
@@ -17,7 +15,7 @@ import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 
 @ApiStatus.Experimental
-public record MaLiLibTextPlateBackgroundRenderState(
+public record TextPlateBackgroundRenderState(
 		List<String> text,
 		double x, double y, double z,
 		float yaw, float pitch, float scale,
@@ -34,39 +32,9 @@ public record MaLiLibTextPlateBackgroundRenderState(
 	}
 
 	@Override
-	public @Nullable Identifier texture()
-	{
-		return null;
-	}
-
-	@Override
-	public int textureId()
-	{
-		return 0;
-	}
-
-	@Override
-	public int textureWidth()
-	{
-		return 0;
-	}
-
-	@Override
-	public int textureHeight()
-	{
-		return 0;
-	}
-
-	@Override
 	public @NonNull Color4f color()
 	{
 		return this.backgroundColor();
-	}
-
-	@Override
-	public float @NonNull [] offset()
-	{
-		return new float[0];
 	}
 
 	public int strLenHalf()

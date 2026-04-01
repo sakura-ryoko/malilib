@@ -15,17 +15,17 @@ public interface IOnDemandRenderState
 {
 	@Nonnull RenderPipeline pipeline();
 
-	@Nullable Identifier texture();
+	default @Nullable Identifier texture() { return null;}
 
-	int textureId();
+	default int textureId() { return -1; }
 
-	int textureWidth();
+	default int textureWidth() {return -1; }
 
-	int textureHeight();
+	default int textureHeight() { return -1; }
 
-	@Nonnull Color4f color();
+	default @Nonnull Color4f color() { return Color4f.WHITE; }
 
-	@Nonnull float[] offset();
+	default @Nonnull float[] offset() { return new float[0]; }
 
 	double x();
 

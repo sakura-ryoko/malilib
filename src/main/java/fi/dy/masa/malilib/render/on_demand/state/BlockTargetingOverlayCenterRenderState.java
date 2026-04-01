@@ -14,15 +14,16 @@ import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.position.PositionUtils;
 
 @ApiStatus.Experimental
-public class MaLiLibBlockTargetingOverlayCenterRenderState extends AbstractMaLiLibBlockTargetingOverlayRenderState
+public class BlockTargetingOverlayCenterRenderState extends AbstractBlockTargetingOverlayRenderState
 {
-	public MaLiLibBlockTargetingOverlayCenterRenderState(BlockPos pos,
-	                                                     Vec3 camPos,
-	                                                     Color4f sideColor, Color4f lineColor,
-	                                                     float lineWidth,
-	                                                     Direction side,
-	                                                     Direction facing,
-	                                                     PositionUtils.HitPart part)
+	public BlockTargetingOverlayCenterRenderState(BlockPos pos,
+	                                              Vec3 camPos,
+	                                              Color4f sideColor,
+	                                              Color4f lineColor,
+	                                              float lineWidth,
+	                                              Direction side,
+	                                              Direction facing,
+	                                              PositionUtils.HitPart part)
 	{
 		super(pos, camPos, sideColor, lineColor, lineWidth, side, facing, part);
 	}

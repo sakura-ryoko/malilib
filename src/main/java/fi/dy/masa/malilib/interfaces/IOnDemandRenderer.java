@@ -24,6 +24,8 @@ public interface IOnDemandRenderer<T extends IOnDemandRenderState>
 
 	default boolean shouldUseOffset() { return false; }
 
+	default boolean shouldUseRenderContext() { return true; }
+
 	default void tick(Minecraft mc) {}
 
 	default void schedule(T state) {}

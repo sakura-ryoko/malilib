@@ -24,27 +24,41 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.interfaces.*;
 
+/**
+ * This is a new Experimental "update / extract / draw" three-stage callback system with a single
+ * Integrated RenderContext; such that a Downstream mod will not need to utilize {@link IRenderer} if this is used; and
+ * to be able to properly split a basic "Press a Keybind to simply render something" into this 3-part methodology.
+ * Downstream mods will ONLY need to register a new instance of each State Renderer by utilizing a Renderer 'key'
+ */
 @ApiStatus.Experimental
 public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHandler, IRenderer
 {
 	private static final OnDemandRenderer INSTANCE = new OnDemandRenderer();
 	public static OnDemandRenderer getInstance() { return INSTANCE; }
-	private final ConcurrentHashMap<Class<?>, IOnDemandRenderer<?>> rendererMap;
-	private final ConcurrentHashMap<Class<?>, RenderContext> renderContextMap;
+
+	private static final int INITIAL_CAPACITY = 16;
+	private final ConcurrentHashMap<String, IOnDemandRenderer<?>> rendererMap;
+	private final ConcurrentHashMap<String, RenderContext> renderContextMap;
 	private final ReentrantLock lock = new ReentrantLock();
 
 	private OnDemandRenderer()
 	{
-		this.rendererMap = new ConcurrentHashMap<>(8, 0.9f, 1);
-		this.renderContextMap = new ConcurrentHashMap<>(8, 0.9f, 1);
+		this.rendererMap = new ConcurrentHashMap<>(INITIAL_CAPACITY, 0.9f, 1);
+		this.renderContextMap = new ConcurrentHashMap<>(INITIAL_CAPACITY, 0.9f, 1);
 	}
 
 	@Override
-	public <T extends IOnDemandRenderState> void registerOnDemandRenderer(IOnDemandRenderer<T> renderer, Class<T> clazz)
+	public <T extends IOnDemandRenderState> void registerOnDemandRenderer(String key, IOnDemandRenderer<T> renderer)
+			throws RuntimeException
 	{
+		if (this.rendererMap.containsKey(key))
+		{
+			throw new RuntimeException("OnDemandRenderer: Duplicate renderer key: '"+key+"' provided");
+		}
+
 		synchronized (this.rendererMap)
 		{
-			this.rendererMap.putIfAbsent(clazz, renderer);
+			this.rendererMap.putIfAbsent(key, renderer);
 		}
 	}
 
@@ -80,9 +94,9 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 	{
 		synchronized (this.rendererMap)
 		{
-			Set<Class<?>> keys = this.rendererMap.keySet();
+			Set<String> keys = this.rendererMap.keySet();
 
-			for (Class<?> key : keys)
+			for (String key : keys)
 			{
 				IOnDemandRenderer<?> renderer = this.rendererMap.get(key);
 
@@ -95,14 +109,14 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 	}
 
 	@ApiStatus.Internal
-	private void onUpdateEachState(Class<?> key, IOnDemandRenderer<?> renderer, Camera camera, DeltaTracker deltaTracker, ProfilerFiller profiler)
+	private void onUpdateEachState(String key, IOnDemandRenderer<?> renderer, Camera camera, DeltaTracker deltaTracker, ProfilerFiller profiler)
 	{
 		this.lock.lock();
 		try
 		{
 			IOnDemandRenderState state = renderer.updatePre(camera, deltaTracker, profiler);
 
-			if (state != null)
+			if (state != null && renderer.shouldUseRenderContext())
 			{
 				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline());
 
@@ -141,9 +155,15 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 						{
 							ctx.upload(meshData, false);
 						}
+
+						meshData.close();
 					}
 				}
 				catch (Throwable ignored) {}
+			}
+			else if (!renderer.shouldUseRenderContext())
+			{
+				renderer.onUpdatePost(state);
 			}
 		}
 		finally
@@ -153,7 +173,7 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 	}
 
 	@ApiStatus.Internal
-	private RenderContext getRenderContext(Class<?> key, Supplier<String> name, RenderPipeline pipeline)
+	private RenderContext getRenderContext(String key, Supplier<String> name, RenderPipeline pipeline)
 	{
 		synchronized (this.renderContextMap)
 		{
@@ -178,9 +198,9 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 	{
 		synchronized (this.rendererMap)
 		{
-			Set<Class<?>> keys = this.rendererMap.keySet();
+			Set<String> keys = this.rendererMap.keySet();
 
-			for (Class<?> key : keys)
+			for (String key : keys)
 			{
 				IOnDemandRenderer<?> renderer = this.rendererMap.get(key);
 
@@ -193,14 +213,14 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 	}
 
 	@ApiStatus.Internal
-	private void onDrawEachState(Class<?> key, IOnDemandRenderer<?> renderer, Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
+	private void onDrawEachState(String key, IOnDemandRenderer<?> renderer, Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
 	{
 		this.lock.lock();
 		try
 		{
 			IOnDemandRenderState state = renderer.drawPre(modelViewMatrix, cameraState, profiler);
 
-			if (state != null)
+			if (state != null && renderer.shouldUseRenderContext())
 			{
 				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline());
 
@@ -241,6 +261,10 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 					ctx.reset();
 				}
 
+				renderer.onDrawPost(state);
+			}
+			else if (!renderer.shouldUseRenderContext())
+			{
 				renderer.onDrawPost(state);
 			}
 		}
