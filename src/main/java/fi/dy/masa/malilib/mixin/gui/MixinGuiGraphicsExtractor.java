@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin.render;
+package fi.dy.masa.malilib.mixin.gui;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -11,12 +11,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.render.GuiContext;
 
-@Mixin(value = GuiGraphicsExtractor.class, priority = 999)
+@Mixin(value = GuiGraphicsExtractor.class, priority = 900)
 public abstract class MixinGuiGraphicsExtractor
 {
     @Inject(method = "setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;II)V", at = @At(value = "TAIL"))
-    private void malilib_onRenderTooltip(Font textRenderer, ItemStack stack, int x, int y, CallbackInfo ci)
+    private void malilib_onRenderTooltip(Font font, ItemStack itemStack, int xo, int yo, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(GuiContext.fromGuiGraphics((GuiGraphicsExtractor) (Object) this), stack, x, y);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(GuiContext.fromGuiGraphics((GuiGraphicsExtractor) (Object) this), itemStack, xo, yo);
     }
 }

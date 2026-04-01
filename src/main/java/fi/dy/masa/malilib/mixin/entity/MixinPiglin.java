@@ -27,7 +27,7 @@ public abstract class MixinPiglin extends Entity
             method = "<init>",
             at = @At("RETURN")
     )
-    private void malilib$onNewInventory(EntityType<?> entityType, Level world, CallbackInfo ci)
+    private void malilib$onNewInventory(EntityType<?> type, Level level, CallbackInfo ci)
     {
         ((IEntityOwnedInventory) this.inventory).malilib$setEntityOwner(this);
     }

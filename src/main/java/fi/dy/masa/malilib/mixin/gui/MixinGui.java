@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.mixin.hud;
+package fi.dy.masa.malilib.mixin.gui;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
@@ -13,7 +13,7 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.game.IGameHud;
 
-@Mixin(value = Gui.class, priority = 990)
+@Mixin(value = Gui.class, priority = 900)
 public abstract class MixinGui implements IGameHud
 {
     @Shadow private int overlayMessageTime;

@@ -7,15 +7,6 @@ import org.joml.Vector4f;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.event.RenderEventHandler;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -26,8 +17,16 @@ import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = LevelRenderer.class, priority = 990)
+import fi.dy.masa.malilib.event.RenderEventHandler;
+
+@Mixin(value = LevelRenderer.class, priority = 900)
 public abstract class MixinLevelRenderer
 {
 	@Shadow @Final private Minecraft minecraft;
@@ -39,7 +38,8 @@ public abstract class MixinLevelRenderer
 	                 target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
 	                 ordinal = 5
 	        ))
-	private void malilib_onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float deltaPartialTick, CallbackInfo ci,
+	private void malilib_onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera,
+	                                              float deltaPartialTick, CallbackInfo ci,
 	                                              @Local(name = "profiler") ProfilerFiller profiler)
 	{
 		((RenderEventHandler) RenderEventHandler.getInstance()).runExtractWorldPreWeather(deltaTracker, camera, deltaPartialTick, profiler);
@@ -48,9 +48,11 @@ public abstract class MixinLevelRenderer
 	@Inject(method = "extractLevel",
 	        at = @At(value = "INVOKE",
 	                 target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
-	                 ordinal = 10
+	                 ordinal = 10,
+	                 shift = At.Shift.BEFORE
 	        ))
-	private void malilib_onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float deltaPartialTick, CallbackInfo ci,
+	private void malilib_onExtractWorldLast(DeltaTracker deltaTracker, Camera camera,
+	                                        float deltaPartialTick, CallbackInfo ci,
 	                                        @Local(name = "profiler") ProfilerFiller profiler)
 	{
 		((RenderEventHandler) RenderEventHandler.getInstance()).runExtractWorldLast(deltaTracker, camera, deltaPartialTick, profiler);
@@ -66,9 +68,9 @@ public abstract class MixinLevelRenderer
 	                                             ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci,
 	                                             @Local(name = "profiler") ProfilerFiller profiler,
 	                                             @Local(name = "cullFrustum") Frustum cullFrustum,
-	                                             @Local(name = "frame") FrameGraphBuilder frameGraphBuilder)
+	                                             @Local(name = "frame") FrameGraphBuilder frame)
 	{
-		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(modelViewMatrix, this.minecraft, frameGraphBuilder, this.targets, cullFrustum, cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
+		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(modelViewMatrix, this.minecraft, frame, this.targets, cullFrustum, cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
 	}
 
 	@Inject(method = "renderLevel",
@@ -82,18 +84,8 @@ public abstract class MixinLevelRenderer
 	                                       ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci,
 	                                       @Local(name = "profiler") ProfilerFiller profiler,
 	                                       @Local(name = "cullFrustum") Frustum cullFrustum,
-	                                       @Local(name = "frame") FrameGraphBuilder frameGraphBuilder)
+	                                       @Local(name = "frame") FrameGraphBuilder frame)
 	{
-		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(modelViewMatrix, this.minecraft, frameGraphBuilder, this.targets, cullFrustum, cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
-	}
-
-	@Inject(method = "allChanged", at = @At("HEAD"))
-	private void malilib_verifyRenderTransparencyFix(CallbackInfo ci)
-	{
-		if (MaLiLibConfigs.Generic.RENDER_TRANSPARENCY_FIX.getBooleanValue() &&
-			this.minecraft.options.improvedTransparency().get())
-		{
-			this.minecraft.options.improvedTransparency().set(false);
-		}
+		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(modelViewMatrix, this.minecraft, frame, this.targets, cullFrustum, cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
 	}
 }

@@ -14,10 +14,10 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 
 @Mixin(value = BundleItem.class, priority = 1001)
-public class MixinBundleItem
+public class MixinBundleItem_test
 {
     @Inject(method = "getTooltipImage", at = @At("HEAD"), cancellable = true)
-    private void malilib_getTooltipData(ItemStack stack, CallbackInfoReturnable<Optional<TooltipComponent>> cir)
+    private void malilib_getTooltipData(ItemStack bundle, CallbackInfoReturnable<Optional<TooltipComponent>> cir)
     {
         if (!MaLiLibReference.DEBUG_MODE) return;
 

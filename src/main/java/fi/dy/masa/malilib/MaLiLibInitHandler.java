@@ -53,7 +53,6 @@ public class MaLiLibInitHandler implements IInitializationHandler
 
         RenderEventHandler.getInstance().registerWorldLastRenderer(OnDemandRenderer.getInstance());
         TickHandler.getInstance().registerClientTickHandler(OnDemandRenderer.getInstance());
-        MaLiLibCallbacks.init();
     }
 
     private static class CallbackOpenConfigGui implements IHotkeyCallback

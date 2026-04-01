@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-@Mixin(value = ChatScreen.class, priority = 999)
+@Mixin(value = ChatScreen.class, priority = 980)
 public abstract class MixinChatScreen extends Screen
 {
     private MixinChatScreen(Component title)
@@ -19,7 +19,7 @@ public abstract class MixinChatScreen extends Screen
     }
 
     @Inject(method = "handleChatInput", at = @At("HEAD"), cancellable = true)
-    private void malilib_onSendChatMessage(String msg, boolean addToHistory, CallbackInfo ci)
+    private void malilib_onSendChatMessage(String msg, boolean addToRecent, CallbackInfo ci)
     {
         if (!msg.isEmpty() && ClientCommandHandler.INSTANCE.onSendClientMessage(msg, this.minecraft))
         {

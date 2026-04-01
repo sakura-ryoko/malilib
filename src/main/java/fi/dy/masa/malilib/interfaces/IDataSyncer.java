@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
@@ -211,15 +212,45 @@ public interface IDataSyncer
 
 		if (world.getBlockState(pos).getBlock() instanceof EntityBlock)
 		{
-			BlockEntity be = world.getChunkAt(pos).getBlockEntity(pos);
-
-			if (be != null)
+			if (this.requestBlockEntityFromLocalServer(Minecraft.getInstance(), world, pos))
 			{
-				return Pair.of(be, DataConverterNbt.fromVanillaCompound(be.saveWithFullMetadata(world.registryAccess())));
+				BlockEntity be = world.getChunkAt(pos).getBlockEntity(pos);
+
+				if (be != null)
+				{
+					return Pair.of(be, DataConverterNbt.fromVanillaCompound(be.saveWithFullMetadata(world.registryAccess())));
+				}
 			}
 		}
 
 		return null;
+	}
+
+	/**
+	 * Request the Block Entity NBT data from a local server; via it's Thread Executor, and then have it call `handleBlockEntityData()`
+	 * @param mc -
+	 * @param world -
+	 * @param pos -
+	 * @return Return if the Request should proceed.
+	 */
+	default boolean requestBlockEntityFromLocalServer(Minecraft mc, Level world, BlockPos pos)
+	{
+		if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null &&
+			!Thread.currentThread().getName().contains("Server"))
+		{
+			mc.getSingleplayerServer().execute(() ->
+			                                   {
+				                                   Pair<BlockEntity, CompoundData> pair = this.requestBlockEntity(world, pos);
+
+												   if (pair != null && !pair.getRight().isEmpty())
+												   {
+													   this.handleBlockEntityData(pos, pair.getRight(), BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(pair.getLeft().getType()));
+												   }
+											   });
+			return false;
+		}
+
+		return true;
 	}
 
 	@Nullable
@@ -251,14 +282,45 @@ public interface IDataSyncer
 
 		if (world == null) return null;
 
-		Entity entity = world.getEntity(entityId);
-
-		if (entity != null)
+		if (this.requestEntityFromLocalServer(Minecraft.getInstance(), world, entityId))
 		{
-			return Pair.of(entity, DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entityId));
+			Entity entity = world.getEntity(entityId);
+
+			if (entity != null)
+			{
+				return Pair.of(entity, DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entityId));
+			}
 		}
 
 		return null;
+	}
+
+	/**
+	 * Request the Entity NBT data from a local server; via it's Thread Executor, and then have it call `handleEntityData()`
+	 * @param mc -
+	 * @param world -
+	 * @param entityId -
+	 * @return Return if the Request should proceed.
+	 */
+	default boolean requestEntityFromLocalServer(Minecraft mc, Level world, int entityId)
+	{
+		if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null &&
+			!Thread.currentThread().getName().contains("Server"))
+		{
+			mc.getSingleplayerServer().execute(() ->
+			                                   {
+				                                   Pair<Entity, CompoundData> pair = this.requestEntity(world, entityId);
+
+												   if (pair != null && !pair.getRight().isEmpty())
+												   {
+													   this.handleEntityData(entityId, pair.getRight());
+												   }
+											   });
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -451,7 +513,7 @@ public interface IDataSyncer
     }
 
 	/**
-	 * Used by your Packet Receiver to hande incoming data from BlockPos and the Server Side NBT tags.
+	 * Used by your Packet Receiver to handle incoming data from BlockPos and the Server Side NBT tags.
 	 * @param pos ()
 	 * @param data ()
 	 * @param type (Optional)
@@ -460,7 +522,7 @@ public interface IDataSyncer
 	default BlockEntity handleBlockEntityData(BlockPos pos, CompoundData data, @Nullable Identifier type) { return null; }
 
 	/**
-	 * Used by your Packet Receiver to hande incoming data from the entityId and the Server Side NBT tags.
+	 * Used by your Packet Receiver to handle incoming data from the entityId and the Server Side NBT tags.
 	 * @param data ()
 	 * @return (Entity|Null)
 	 */

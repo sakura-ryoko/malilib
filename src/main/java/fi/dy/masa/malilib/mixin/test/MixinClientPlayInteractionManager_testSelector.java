@@ -16,7 +16,7 @@ import net.minecraft.core.Direction;
 public class MixinClientPlayInteractionManager_testSelector
 {
     @Inject(method = "startDestroyBlock", at = @At("HEAD"), cancellable = true)
-    private void malilib_handleBreakingRestriction1(BlockPos pos, Direction side, CallbackInfoReturnable<Boolean> cir)
+    private void malilib_handleBreakingRestriction1(BlockPos pos, Direction direction, CallbackInfoReturnable<Boolean> cir)
     {
         if (MaLiLibReference.DEBUG_MODE &&
             MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue() &&

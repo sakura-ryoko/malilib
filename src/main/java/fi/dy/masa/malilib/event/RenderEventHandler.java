@@ -208,38 +208,32 @@ public class RenderEventHandler implements IRenderDispatcher
             profiler.push(MaLiLibReference.MOD_ID+"_render_pre_weather");
             FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID+"_pre_weather");
 
-//            if (fbSet.weatherFramebuffer != null)
+            fbSet.main = pass.readsAndWrites(fbSet.main);
+
+//            if (fbSet.translucent != null)
 //            {
-//                fbSet.weatherFramebuffer = pass.transfer(fbSet.weatherFramebuffer);
-//                pass.dependsOn(fbSet.mainFramebuffer);
-//            }
-//            else
-//            {
-                fbSet.main = pass.readsAndWrites(fbSet.main);
+//                fbSet.translucent = pass.readsAndWrites(fbSet.translucent);
 //            }
 
             ResourceHandle<@NotNull RenderTarget> handleMain = fbSet.main;
-//            Handle<Framebuffer> handleWeather = fbSet.weatherFramebuffer;
+//            ResourceHandle<RenderTarget> handleTranslucent = fbSet.translucent;
 
             pass.executes(() ->
             {
                 GpuBufferSlice fog = RenderSystem.getShaderFog();
-//                RenderSystem.setShaderFog(Fog.DUMMY);
 
-//                if (handleWeather != null)
+//                if (handleTranslucent != null)
 //                {
-//                    handleWeather.get().copyDepthFrom(handleMain.get());
+//                    handleTranslucent.get().copyDepthFrom(handleMain.get());
 //                }
-
-//                Framebuffer fb = handleWeather != null ? handleWeather.get() : handleMain.get();
-                RenderTarget fb = handleMain.get();
-                //handleMain.get().beginWrite(false);
-                //RenderUtils.fbStartDrawing();
 
                 for (IRenderer renderer : this.worldPreWeatherRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreWeather(fb, modelViewMatrix, cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
+                    renderer.onRenderWorldPreWeather(
+//                            handleTranslucent != null ? handleTranslucent.get() : handleMain.get(),
+                            handleMain.get(),
+                            modelViewMatrix, cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
                     profiler.pop();
                 }
 
@@ -288,38 +282,32 @@ public class RenderEventHandler implements IRenderDispatcher
             profiler.push(MaLiLibReference.MOD_ID+"_render_world_last");
             FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID+"_world_last");
 
-//            if (fbSet.entityOutlineFramebuffer != null)
+            fbSet.main = pass.readsAndWrites(fbSet.main);
+
+//            if (fbSet.translucent != null)
 //            {
-//                fbSet.entityOutlineFramebuffer = pass.transfer(fbSet.entityOutlineFramebuffer);
-//                pass.dependsOn(fbSet.mainFramebuffer);
-//            }
-//            else
-//            {
-                fbSet.main = pass.readsAndWrites(fbSet.main);
+//                fbSet.translucent = pass.readsAndWrites(fbSet.translucent);
 //            }
 
             ResourceHandle<@NotNull RenderTarget> handleMain = fbSet.main;
-//            Handle<Framebuffer> handleOutlines = fbSet.entityOutlineFramebuffer;
+//            ResourceHandle<RenderTarget> handleTranslucent = fbSet.translucent;
 
             pass.executes(() ->
             {
                 GpuBufferSlice fog = RenderSystem.getShaderFog();
-//                RenderSystem.setShaderFog(Fog.DUMMY);
 
-//                if (handleOutlines != null)
+//                if (handleTranslucent != null)
 //                {
-//                    handleOutlines.get().copyDepthFrom(handleMain.get());
+//                    handleTranslucent.get().copyDepthFrom(handleMain.get());
 //                }
-//
-//                Framebuffer fb = handleOutlines != null ? handleOutlines.get() : handleMain.get();
-                //handleMain.get().beginWrite(false);
-                //RenderUtils.fbStartDrawing();
 
                 for (IRenderer renderer : this.worldLastRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
-                    // This really should be used either or, and never both in the same mod.
-                    renderer.onRenderWorldLast(handleMain.get(), modelViewMatrix, cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
+                    renderer.onRenderWorldLast(
+//                            handleTranslucent != null ? handleTranslucent.get() : handleMain.get(),
+                            handleMain.get(),
+                            modelViewMatrix, cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
                     profiler.pop();
                 }
 

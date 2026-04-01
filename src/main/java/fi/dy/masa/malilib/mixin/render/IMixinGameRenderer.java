@@ -26,4 +26,7 @@ public interface IMixinGameRenderer
 
     @Accessor("lightmap")
     Lightmap malilib_getLightmap();
+
+    @Accessor("renderBlockOutline")
+    boolean malilib_isBlockOutlineEnabled();
 }

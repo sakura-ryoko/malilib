@@ -10,7 +10,7 @@ import net.minecraft.client.multiplayer.ClientConfigurationPacketListenerImpl;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.protocol.configuration.ClientboundFinishConfigurationPacket;
 
-@Mixin(value = ClientConfigurationPacketListenerImpl.class, priority = 990)
+@Mixin(value = ClientConfigurationPacketListenerImpl.class, priority = 900)
 public class MixinClientConfigurationPacketListenerImpl
 {
     @Inject(method = "handleConfigurationFinished",

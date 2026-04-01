@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.gui;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
 
-import fi.dy.masa.malilib.mixin.render.IMixinAbstractWidget;
+import fi.dy.masa.malilib.mixin.gui.IMixinAbstractWidget;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

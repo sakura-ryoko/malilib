@@ -72,7 +72,7 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
 import fi.dy.masa.malilib.mixin.client.IMixinMinecraft;
 import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
-import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
+import fi.dy.masa.malilib.mixin.gui.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElement;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElementRenderer;
@@ -961,7 +961,7 @@ public class RenderUtils
 
             if (useBackground)
             {
-//                drawRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) (scale * 2));
+//                drawRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, backgroundColor, (float) (scale * 2));
                 drawRect(ctx, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.lineHeight, bgColor);
             }
 
@@ -1443,7 +1443,7 @@ public class RenderUtils
 	        // g = y
 	        // i = color
 	        // bl = shadow
-	        // j = bgColor
+	        // j = backgroundColor
 	        // k = light
 	        // bl2 = incl empty
 
@@ -1705,8 +1705,8 @@ public class RenderUtils
      * Matrix4f rotation adds direct values without adding these numbers.
      * (angle * 0.017453292F) --> easy fix with matrix4fRotateFix()
      */
-    private static void blockTargetingOverlayTranslations(double x, double y, double z,
-                                                          Direction side, Direction playerFacing, Matrix4fStack matrix4fStack)
+    public static void blockTargetingOverlayTranslations(double x, double y, double z,
+                                                         Direction side, Direction playerFacing, Matrix4fStack matrix4fStack)
     {
         matrix4fStack.translate((float) x, (float) y, (float) z);
 

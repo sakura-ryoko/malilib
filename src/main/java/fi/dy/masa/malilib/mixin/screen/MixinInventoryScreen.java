@@ -11,18 +11,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.render.GuiContext;
 
-@Mixin(value = InventoryScreen.class, priority = 990)
+@Mixin(value = InventoryScreen.class, priority = 900)
 public abstract class MixinInventoryScreen
 {
 	// Fix the Status Effects from overtaking the Tooltip rendering (Shulker Box Preview, etc.)
     @Inject(method = "extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIF)V", at = @At("TAIL"))
-    private void malilib_onPostInventoryStatusEffects(GuiGraphicsExtractor context, int x, int y, float delta, CallbackInfo ci)
+    private void malilib_onPostInventoryStatusEffects(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a, CallbackInfo ci)
     {
-        Slot focused = ((IMixinHandledScreen) this).malilib_getFocusedSlot();
+        Slot focused = ((IMixinAbstractContainerScreen) this).malilib_getFocusedSlot();
 
         if (focused != null && focused.hasItem())
         {
-            ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(GuiContext.fromGuiGraphics(context), focused.getItem(), x, y);
+            ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipLast(GuiContext.fromGuiGraphics(graphics), focused.getItem(), mouseX, mouseY);
         }
     }
 }

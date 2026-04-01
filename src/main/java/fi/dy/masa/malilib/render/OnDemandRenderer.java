@@ -63,7 +63,7 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 		{
 			for (IOnDemandRenderer<?> renderer : this.rendererMap.values())
 			{
-				renderer.tick();
+				renderer.tick(mc);
 			}
 		}
 	}

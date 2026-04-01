@@ -14,7 +14,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
-import fi.dy.masa.malilib.mixin.render.IMixinAbstractWidget;
+import fi.dy.masa.malilib.mixin.gui.IMixinAbstractWidget;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 

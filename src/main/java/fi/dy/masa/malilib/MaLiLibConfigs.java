@@ -47,7 +47,6 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigInteger           ACTIONBAR_HUD_TICKS         = new ConfigInteger           ("actionbarHudTicks",       60, 1, 240).apply(GENERIC_KEY);
         public static final ConfigFloat             IN_GAME_MESSAGE_TIMEOUT     = new ConfigFloat             ("inGameMessageTimeout",    5.0f, 0.5f, 15.0f).apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
-        public static final ConfigBooleanHotkeyed   RENDER_TRANSPARENCY_FIX     = new ConfigBooleanHotkeyed   ("renderTransparencyFix",   false, "").apply(GENERIC_KEY);
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
 
         public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
@@ -58,7 +57,6 @@ public class MaLiLibConfigs implements IConfigHandler
                 ACTIONBAR_HUD_TICKS,
                 IN_GAME_MESSAGE_TIMEOUT,
                 ENABLE_CONFIG_SWITCHER,
-                RENDER_TRANSPARENCY_FIX,
                 REALMS_COMMON_CONFIG
         );
 
@@ -66,8 +64,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
                 OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
-                ENABLE_CONFIG_SWITCHER,
-                RENDER_TRANSPARENCY_FIX
+                ENABLE_CONFIG_SWITCHER
         );
     }
 
@@ -248,12 +245,6 @@ public class MaLiLibConfigs implements IConfigHandler
                 if (MaLiLibReference.EXPERIMENTAL_MODE)
                 {
                     ConfigUtils.readConfigBase(root, "Experimental", Experimental.OPTIONS);
-                }
-
-                // TODO remove this default change after next version
-                if (Generic.RENDER_TRANSPARENCY_FIX.getBooleanValue())
-                {
-                    Generic.RENDER_TRANSPARENCY_FIX.setBooleanValue(false);
                 }
 
                 if (MaLiLibReference.DEBUG_MODE)
