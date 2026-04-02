@@ -53,6 +53,7 @@ public abstract class MixinRenderPipelines
     @Shadow @Final private static RenderPipeline.Snippet OUTLINE_SNIPPET;                      // RENDERTYPE_OUTLINE
     @Shadow @Final public  static RenderPipeline.Snippet POST_PROCESSING_SNIPPET;              // POST_PROCESSOR
 
+	// AKA, the legacy Vanilla "default blend mode".
     @Unique private static final BlendFunction MASA_BLEND = new BlendFunction(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA, SourceFactor.ONE, DestFactor.ZERO);
     @Unique private static final BlendFunction MASA_BLEND_SIMPLE = new BlendFunction(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 

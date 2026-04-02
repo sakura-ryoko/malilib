@@ -24,6 +24,7 @@ public enum Schema implements IEnumCodecProvider
     // TODO --> Add Schema Versions to this as versions get released
     // Minecraft Data Versions
     SCHEMA_FUTURE  (9999, "FUTURE"),
+    SCHEMA_26W14A  (5000, "26w14a"),        // Herd craft April Fools update
     SCHEMA_26_1_1  (4788, "26.1.1"),
     SCHEMA_26_1    (4786, "26.1"),
     SCHEMA_26_1_SS6(4774, "26.1-snapshot-6"),
@@ -41,6 +42,8 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_25W21A  (4429, "25w21a"),
     SCHEMA_25W16A  (4423, "25w16a"),
     SCHEMA_1_21_05 (4325, "1.21.5"),
+    SCHEMA_1_21_5C2(4324, "1.21.5-rc2"),
+    SCHEMA_25W14C  (4323, "25w14craftmine"),    // Craft mine April fools update (RC1 Schema?)
     SCHEMA_25W10A  (4319, "25w10a"),
     SCHEMA_25W03A  (4304, "25w03a"), // Entity Data Components ( https://www.minecraft.net/en-us/article/minecraft-snapshot-25w03a )
     SCHEMA_25W02A  (4298, "25w02a"),
@@ -60,7 +63,8 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_1_20_05 (3837, "1.20.5"),
     SCHEMA_24W14A  (3827, "24w14a"),
     SCHEMA_24W13A  (3826, "24w13a"),
-    SCHEMA_24W12A  (3824, "24w12a"),
+    SCHEMA_24W14P  (3824, "24w14potato"),    // Potato April Fools (Schema of 12a?)
+    SCHEMA_24W11A  (3823, "24w11a"),
     SCHEMA_24W10A  (3821, "24w10a"),
     SCHEMA_24W09A  (3819, "24w09a"), // Data Components ( https://minecraft.wiki/w/Data_component_format )
     SCHEMA_24W07A  (3817, "24w07a"),
@@ -77,6 +81,9 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_1_20_00 (3463, "1.20"),
     SCHEMA_23W18A  (3453, "23w18a"),
     SCHEMA_23W16A  (3449, "23w16a"),
+    SCHEMA_23W15A  (3445, "23w15a"),
+    SCHEMA_23W14AB (3444, "23w14a_or_b"),   // Vote April fools update
+    SCHEMA_23W13A  (3443, "23w13a"),
     SCHEMA_23W12A  (3442, "23w12a"),
     SCHEMA_1_19_04 (3337, "1.19.4"),
     SCHEMA_1_19_03 (3218, "1.19.3"),
@@ -86,6 +93,8 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_22W19A  (3096, "22w19a"),
     SCHEMA_22W16A  (3091, "22w16a"),
     SCHEMA_22W11A  (3080, "22w11a"),
+    SCHEMA_22W13o  (3076, "22w13oneBlockAtATime"),  // One Block April fools update
+    SCHEMA_22W12A  (3066, "22w12a_deep_dark"),  // Deep Dark Experiment Snap 1
     SCHEMA_1_18_02 (2975, "1.18.2"),
     SCHEMA_1_18_01 (2865, "1.18.1"),
     SCHEMA_1_18_00 (2860, "1.18"),
@@ -108,6 +117,7 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_1_16_00 (2566, "1.16"),
     SCHEMA_20W22A  (2555, "20w22a"),
     SCHEMA_20W15A  (2525, "20w15a"),
+    SCHEMA_20W14X  (2522, "20w14~"),    // Infinity April fools update
     SCHEMA_20W06A  (2504, "20w06a"),
     SCHEMA_1_15_02 (2230, "1.15.2"),
     SCHEMA_1_15_01 (2227, "1.15.1"),
@@ -121,6 +131,7 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_1_14_01 (1957, "1.14.1"),
     SCHEMA_1_14_00 (1952, "1.14"),
     SCHEMA_19W14B  (1945, "19w14b"),
+    SCHEMA_19W13S  (1943, "19w13_3d_shareware_v1.34"),    // 3D Shareware April fools update
     SCHEMA_19W08B  (1934, "19w08b"),
     SCHEMA_18W50A  (1919, "18w50a"),
     SCHEMA_18W43A  (1901, "18w43a"),
@@ -142,8 +153,11 @@ public enum Schema implements IEnumCodecProvider
     SCHEMA_1_10_02 (512,  "1.10.2"),
     SCHEMA_1_10_00 (510,  "1.10"),
     SCHEMA_1_09_04 (184,  "1.9.4"),
+    SCHEMA_16W13R  (173,  "16w13_1.RV-Pre1"),   // 1.RV-Pre1 April Fools update
     SCHEMA_1_09_00 (169,  "1.9"),
-    SCHEMA_15W32A  (100,  "15w32a");
+    SCHEMA_15W32A  (100,  "15w32a"),
+    SCHEMA_15W14A  (90,   "15w14a"),    // Love and Hugs April fools update (Doesn't really have a schema ID)
+    ;
 
     public static final EnumCodec<@NotNull Schema> CODEC = StringRepresentable.fromEnum(Schema::sorted);
     public static final StreamCodec<@NotNull ByteBuf, @NotNull Schema> PACKET_CODEC = new StreamCodec<>()

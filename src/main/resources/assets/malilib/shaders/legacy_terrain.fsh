@@ -89,7 +89,6 @@ vec4 sampleRGSS(sampler2D source, vec2 uv, vec2 pixelSize) {
 void main() {
     vec4 color = vec4(1, 1, 1, 1);
     if (hasShadersOn == 1) {
-//      color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
       color = sampleNearest(Sampler0, texCoord0, 1.0f / TextureSize) * vertexColor * ColorModulator;
     } else {
       color = (UseRgss == 1 ? sampleRGSS(Sampler0, texCoord0, 1.0f / TextureSize) : sampleNearest(Sampler0, texCoord0, 1.0f / TextureSize)) * vertexColor * ColorModulator;
