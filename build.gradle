@@ -4,10 +4,10 @@ plugins {
 }
 
 repositories {
-//	maven {url = "https://masa.dy.fi/maven/sakura-ryoko"
-//		content {includeGroupAndSubgroups("fi.dy.masa")}
-//	}
-	maven {url = 'https://maven.fallenbreath.me/releases'
+	maven { url = "https://masa.dy.fi/maven/sakura-ryoko"
+		content {includeGroupAndSubgroups("fi.dy.masa")}
+	}
+	maven { url = 'https://maven.fallenbreath.me/releases'
 		content {includeGroupAndSubgroups("me.fallenbreath")}
 	}
 	maven { url = 'https://maven.terraformersmc.com/releases/'

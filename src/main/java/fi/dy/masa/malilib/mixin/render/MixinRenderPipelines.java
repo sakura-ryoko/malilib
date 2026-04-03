@@ -1008,18 +1008,21 @@ public abstract class MixinRenderPipelines
 	    MaLiLibPipelines.SOLID_TERRAIN =
 			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
 			                           .withLocation(getId("pipeline/solid_terrain"))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			                           .build());
 
 	    MaLiLibPipelines.WIREFRAME =
 			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
 			                           .withLocation(getId("pipeline/wireframe"))
 			                           .withPolygonMode(PolygonMode.WIREFRAME)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			                           .build());
 
 	    MaLiLibPipelines.CUTOUT_TERRAIN =
 			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_STAGE)
 			                           .withLocation(getId("pipeline/cutout_terrain"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			                           .build());
 
 	    // todo TERRAIN_OFFSET --> PRE-REGISTER
@@ -1054,6 +1057,7 @@ public abstract class MixinRenderPipelines
 			    register(RenderPipeline.builder(MaLiLibPipelines.TERRAIN_TRANSLUCENT_STAGE)
 			                           .withLocation(getId("pipeline/translucent"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			                           .build());
 
 	    MaLiLibPipelines.TRANSLUCENT_OFFSET =
@@ -1069,18 +1073,20 @@ public abstract class MixinRenderPipelines
 			                  .withVertexShader("core/block")
 			                  .withFragmentShader("core/block")
 //			                  .withVertexFormat(DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS)
-                              .buildSnippet();
+			                  .buildSnippet();
 
 	    // todo BLOCK
 	    MaLiLibPipelines.SOLID_BLOCK =
 			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_STAGE)
 			                           .withLocation(getId("pipeline/solid_block/masa"))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			                           .build());
 
 	    MaLiLibPipelines.CUTOUT_BLOCK =
 			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_STAGE)
 			                           .withLocation(getId("pipeline/cutout_block/masa"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			                           .build());
 
 	    // todo BLOCK_OFFSET
@@ -1108,7 +1114,7 @@ public abstract class MixinRenderPipelines
 			    register(RenderPipeline.builder(MaLiLibPipelines.BLOCK_TRANSLUCENT_STAGE)
 			                           .withLocation(getId("pipeline/translucent_block"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
-			                           .withDepthStencilState(DepthStencilState.DEFAULT)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			                           .build());
 
 	    MaLiLibPipelines.TRANSLUCENT_BLOCK_OFFSET =
@@ -1173,7 +1179,6 @@ public abstract class MixinRenderPipelines
 	    MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE =
 			    RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
 			                  .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			                  .buildSnippet();
 
 	    // todo LEGACY_TERRAIN_TRANSLUCENT
@@ -1181,6 +1186,7 @@ public abstract class MixinRenderPipelines
 			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
 			                           .withLocation(getId("pipeline/legacy/translucent"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.01F)
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.LESS_THAN_OR_EQUAL, true))
 			                           .build());
 
 	    MaLiLibPipelines.LEGACY_TRANSLUCENT_OFFSET =
