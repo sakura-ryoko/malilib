@@ -49,8 +49,6 @@ public class MaLiLibInitHandler implements IInitializationHandler
 //                TestThreadDaemonAsyncHandler.INSTANCE.endAll();
 //            }
         }
-
-        MaLiLibCallbacks.init();
     }
 
     private static class CallbackOpenConfigGui implements IHotkeyCallback

@@ -7,15 +7,6 @@ import org.joml.Vector4f;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.event.RenderEventHandler;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -24,6 +15,14 @@ import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import fi.dy.masa.malilib.event.RenderEventHandler;
 
 @Mixin(value = LevelRenderer.class, priority = 990)
 public abstract class MixinWorldRenderer
@@ -46,9 +45,11 @@ public abstract class MixinWorldRenderer
 		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(matrix4f, projectionMatrix, this.minecraft, frameGraphBuilder, this.targets, frustum, camera, this.renderBuffers, profiler);
 	}
 
+	// Inject before lateDebug
 	@Inject(method = "renderLevel",
 	        at = @At(value = "INVOKE",
-	                 target = "Lnet/minecraft/client/renderer/LevelRenderer;addWeatherPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V"
+	                 target = "Lnet/minecraft/client/renderer/LevelRenderer;addLateDebugPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/state/CameraRenderState;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Matrix4f;)V",
+	                 shift = At.Shift.BEFORE
 	        ))
 	private void malilib_onRenderWorldLast(GraphicsResourceAllocator allocator, DeltaTracker tickCounter, boolean renderBlockOutline, Camera camera,
 	                                       Matrix4f positionMatrix, Matrix4f matrix4f, Matrix4f projectionMatrix,
@@ -60,13 +61,13 @@ public abstract class MixinWorldRenderer
 		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(matrix4f, projectionMatrix, this.minecraft, frameGraphBuilder, this.targets, frustum, camera, this.renderBuffers, profiler);
 	}
 
-	@Inject(method = "allChanged", at = @At("HEAD"))
-	private void malilib_verifyRenderTransparencyFix(CallbackInfo ci)
-	{
-		if (MaLiLibConfigs.Generic.RENDER_TRANSPARENCY_FIX.getBooleanValue() &&
-				this.minecraft.options.improvedTransparency().get())
-		{
-			this.minecraft.options.improvedTransparency().set(false);
-		}
-	}
+//	@Inject(method = "allChanged", at = @At("HEAD"))
+//	private void malilib_verifyRenderTransparencyFix(CallbackInfo ci)
+//	{
+//		if (MaLiLibConfigs.Generic.RENDER_TRANSPARENCY_FIX.getBooleanValue() &&
+//			this.minecraft.options.improvedTransparency().get())
+//		{
+//			this.minecraft.options.improvedTransparency().set(false);
+//		}
+//	}
 }

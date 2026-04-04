@@ -92,7 +92,8 @@ void main() {
 //      color = texture(Sampler0, texCoord0) * vertexColor * ColorModulator;
       color = sampleNearest(Sampler0, texCoord0, 1.0f / TextureSize) * vertexColor * ColorModulator;
     } else {
-      color = (UseRgss == 1 ? sampleRGSS(Sampler0, texCoord0, 1.0f / TextureSize) : sampleNearest(Sampler0, texCoord0, 1.0f / TextureSize)) * vertexColor * ColorModulator;
+//      color = (UseRgss == 1 ? sampleRGSS(Sampler0, texCoord0, 1.0f / TextureSize) : sampleNearest(Sampler0, texCoord0, 1.0f / TextureSize)) * vertexColor * ColorModulator;
+      color = sampleNearest(Sampler0, texCoord0, 1.0f / TextureSize) * vertexColor * ColorModulator;
       color = mix(FogColor * vec4(1, 1, 1, color.a), color, ChunkVisibility);
     }
 #ifdef ALPHA_CUTOUT
