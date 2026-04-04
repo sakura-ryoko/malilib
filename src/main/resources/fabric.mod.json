@@ -40,7 +40,7 @@
 	"breaks": {
         "sodium": "<0.8.7-",
 		"iris": "<1.10.7-",
-		"litematica": "<0.26.3-",
+		"litematica": "<0.25.4-",
 		"tweakeroo": "<0.27.5-"
 	}
 }
