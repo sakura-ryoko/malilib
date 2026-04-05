@@ -913,7 +913,7 @@ public class NbtInventory implements AutoCloseable
             catch (Exception e)
             {
                 MaLiLib.LOGGER.error("EntrySlot#toData: Exception Serializing Item: [{}]; {}", this.stack.getItem().getName().getString(), e.getLocalizedMessage());
-                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparseable");
+                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable");
                 ItemLore lore = new ItemLore(List.of(text));
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
@@ -937,7 +937,7 @@ public class NbtInventory implements AutoCloseable
             catch (Exception e)
             {
                 MaLiLib.LOGGER.error("EntrySlot#fromData: Exception Deserializing Item: [{}]; {}", data.toString(), e.getLocalizedMessage());
-                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparseable");
+                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable");
                 ItemLore lore = new ItemLore(List.of(text));
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
@@ -960,7 +960,7 @@ public class NbtInventory implements AutoCloseable
             catch (Exception e)
             {
                 MaLiLib.LOGGER.error("EntrySlot#toNbt: Exception Serializing Item: [{}]; {}", this.stack.getItem().getName().getString(), e.getLocalizedMessage());
-                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparseable");
+                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable");
                 ItemLore lore = new ItemLore(List.of(text));
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
@@ -984,7 +984,7 @@ public class NbtInventory implements AutoCloseable
             catch (Exception e)
             {
                 MaLiLib.LOGGER.error("EntrySlot#fromNbt: Exception Deserializing Item: [{}]; {}", data.toString(), e.getLocalizedMessage());
-                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparseable");
+                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable");
                 ItemLore lore = new ItemLore(List.of(text));
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
