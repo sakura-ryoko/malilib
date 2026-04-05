@@ -285,6 +285,7 @@
     "malilib.gui.title.test_stacked_multi_line_text_editor": "Test Stacked Multi Line Text Editor",
     "malilib.gui.title.test_text_fields": "Test Text Fields",
     "malilib.gui.title.test_widget_list": "Test Lista de Widgets",
+    "malilib.gui.tooltip.nbt.unparsable": "§cUnparsable/Invalid Item§r",
     "malilib.gui.tooltip.test.first": "§eInformación sobre herramientas de la primera prueba§r",
     "malilib.gui.tooltip.test.last": "§6Información sobre herramientas de la última prueba§r",
     "malilib.gui.tooltip.test.middle": "§3Información sobre herramientas de la prueba intermedia§r",
