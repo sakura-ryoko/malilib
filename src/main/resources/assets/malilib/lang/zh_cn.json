@@ -286,6 +286,7 @@
     "malilib.gui.title.test_text_fields": "测试Text Fields",
     "malilib.gui.title.test_widget_list": "测试小部件列表",
     "malilib.gui.tooltip.nbt.unparsable": "§cUnparsable/Invalid Item§r",
+    "malilib.gui.tooltip.nbt.unparsable.id": "§cUnparsable/Invalid Item: '%s'§r",
     "malilib.gui.tooltip.test.first": "§e首个测试提示§r",
     "malilib.gui.tooltip.test.last": "§6最终测试提示§r",
     "malilib.gui.tooltip.test.middle": "§3中间测试提示§r",
