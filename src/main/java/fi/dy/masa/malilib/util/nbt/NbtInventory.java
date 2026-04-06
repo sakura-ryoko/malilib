@@ -905,7 +905,10 @@ public class NbtInventory implements AutoCloseable
             catch (Exception e)
             {
                 MaLiLib.LOGGER.error("EntrySlot#toData: Exception Serializing Item: [{}]; {}", this.stack.getItem().getName().getString(), e.getLocalizedMessage());
-                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable");
+                final String id = this.stack.getItemName().getString();
+                final Component text = id.isEmpty()
+                                       ? StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable")
+                                       : StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable.id", id);
                 ItemLore lore = new ItemLore(List.of(text));
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
@@ -929,7 +932,10 @@ public class NbtInventory implements AutoCloseable
             catch (Exception e)
             {
                 MaLiLib.LOGGER.error("EntrySlot#fromData: Exception Deserializing Item: [{}]; {}", data.toString(), e.getLocalizedMessage());
-                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable");
+                final String id = data.getStringOrDefault(NbtKeys.ID, "");
+                final Component text = id.isEmpty()
+                                       ? StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable")
+                                       : StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable.id", id);
                 ItemLore lore = new ItemLore(List.of(text));
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
@@ -942,41 +948,47 @@ public class NbtInventory implements AutoCloseable
 
         public CompoundTag toNbt(@Nonnull RegistryAccess registry)
         {
-            CompoundTag data;
+            CompoundTag nbt;
             DynamicOps<Tag> ops = registry.createSerializationContext(NbtOps.INSTANCE);
 
             try
             {
-                data = (CompoundTag) ItemStack.CODEC.encodeStart(ops, this.stack).getOrThrow();
+                nbt = (CompoundTag) ItemStack.CODEC.encodeStart(ops, this.stack).getOrThrow();
             }
             catch (Exception e)
             {
                 MaLiLib.LOGGER.error("EntrySlot#toNbt: Exception Serializing Item: [{}]; {}", this.stack.getItem().getName().getString(), e.getLocalizedMessage());
-                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable");
+                final String id = this.stack.getItemName().getString();
+                final Component text = id.isEmpty()
+                                       ? StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable")
+                                       : StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable.id", id);
                 ItemLore lore = new ItemLore(List.of(text));
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
                 ItemStack fallback = new ItemStack(BuiltInRegistries.ITEM.wrapAsHolder(Items.BARRIER), 1, builder.build());
-                data = (CompoundTag) ItemStack.CODEC.encodeStart(ops, fallback).getOrThrow();
+                nbt = (CompoundTag) ItemStack.CODEC.encodeStart(ops, fallback).getOrThrow();
             }
 
-            data.putByte(NbtKeys.SLOT, (byte) this.slot);
-            return data;
+            nbt.putByte(NbtKeys.SLOT, (byte) this.slot);
+            return nbt;
         }
 
-        public static EntrySlot fromNbt(CompoundTag data, @Nonnull RegistryAccess registry)
+        public static EntrySlot fromNbt(CompoundTag nbt, @Nonnull RegistryAccess registry)
         {
-            final int slot = data.getByteOr(NbtKeys.SLOT, (byte) 0) & 0xFF;
+            final int slot = nbt.getByteOr(NbtKeys.SLOT, (byte) 0) & 0xFF;
             ItemStack stack;
 
             try
             {
-                stack = ItemStack.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), data).getOrThrow();
+                stack = ItemStack.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), nbt).getOrThrow();
             }
             catch (Exception e)
             {
-                MaLiLib.LOGGER.error("EntrySlot#fromNbt: Exception Deserializing Item: [{}]; {}", data.toString(), e.getLocalizedMessage());
-                final Component text = StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable");
+                MaLiLib.LOGGER.error("EntrySlot#fromNbt: Exception Deserializing Item: [{}]; {}", nbt.toString(), e.getLocalizedMessage());
+                final String id = nbt.getStringOr(NbtKeys.ID, "");
+                final Component text = id.isEmpty()
+                                       ? StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable")
+                                       : StringUtils.translateAsText("malilib.gui.tooltip.nbt.unparsable.id", id);
                 ItemLore lore = new ItemLore(List.of(text));
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
