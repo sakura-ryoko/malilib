@@ -48,6 +48,7 @@ import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.DataBlockUtils;
 import fi.dy.masa.malilib.util.data.DataEntityUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.game.RayTraceUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
@@ -327,21 +328,23 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 		if (data != null && !data.isEmpty())
 		{
-//			// TEST ONLY
-//			ListData test = data.getList(NbtKeys.ITEMS);
-//
-//			if (test != null && test.size() < 2)
-//			{
-//				CompoundData itemData = new CompoundData();
-//
-//				itemData.putByte(NbtKeys.SLOT, (byte) 5);
-//				itemData.putInt(NbtKeys.COUNT, 1);
-//				itemData.putString(NbtKeys.ID, "restart_detector:restart_detector");
-//				test.add(itemData);
-//
-//				data.remove(NbtKeys.ITEMS);
-//				data.put(NbtKeys.ITEMS, test);
-//			}
+			if (MaLiLibReference.EXPERIMENTAL_MODE)
+			{
+				ListData test = data.getList(NbtKeys.ITEMS);
+
+				if (test != null && test.isEmpty())
+				{
+					CompoundData itemData = new CompoundData();
+
+					itemData.putByte(NbtKeys.SLOT, (byte) 13);
+					itemData.putInt(NbtKeys.COUNT, 1);
+					itemData.putString(NbtKeys.ID, "restart_detector:restart_detector");
+					test.add(itemData);
+
+					data.remove(NbtKeys.ITEMS);
+					data.put(NbtKeys.ITEMS, test);
+				}
+			}
 
 			MaLiLib.LOGGER.warn("getTargetFromBlock(): rawData: [{}]", data.toString());
 			Container inv2 = InventoryUtils.getDataInventory(data, inv != null ? inv.getContainerSize() : -1, world.registryAccess());
@@ -351,8 +354,10 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 				inv = inv2;
 			}
 
-//			// TEST ONLY
-//			inv = inv2;
+			if (MaLiLibReference.EXPERIMENTAL_MODE)
+			{
+				inv = inv2;
+			}
 		}
 
 		MaLiLib.LOGGER.warn("getTargetFromBlock():3: pos [{}], inv [{}], be [{}], data [{}]", pos.toShortString(), inv != null, be != null, data != null ? data.getString("id") : new CompoundData());
