@@ -290,6 +290,7 @@
     "malilib.gui.tooltip.test.middle": "§3Middle Test Tooltip§r",
     "malilib.gui.tooltip.test.title": "§6Title Test Tooltip§r",
     "malilib.gui.tooltip.nbt.unparsable": "§cUnparsable/Invalid Item§r",
+    "malilib.gui.tooltip.nbt.unparsable.id": "§cUnparsable/Invalid Item: '%s'§r",
     "malilib.hotkeys.category.debug_hotkeys": "Debug hotkeys",
     "malilib.hotkeys.category.generic_hotkeys": "Generic hotkeys",
     "malilib.hotkeys.category.test_enum_hotkeys": "Test Enum hotkeys",
