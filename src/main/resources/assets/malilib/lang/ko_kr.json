@@ -286,7 +286,7 @@
     "malilib.gui.title.test_text_fields": "테스트 텍스트 필드",
     "malilib.gui.title.test_widget_list": "테스트 위젯 목록",
     "malilib.gui.tooltip.nbt.unparsable": "§c구문 분석 불가/유효하지 않은 아이템§r",
-    "malilib.gui.tooltip.nbt.unparsable.id": "§cUnparsable/Invalid Item: '%s'§r",
+    "malilib.gui.tooltip.nbt.unparsable.id": "§c구문 분석 불가/유효하지 않은 아이템: '%s'§r",
     "malilib.gui.tooltip.test.first": "§e첫 번째 테스트 툴팁§r",
     "malilib.gui.tooltip.test.last": "§6마지막 테스트 툴팁§r",
     "malilib.gui.tooltip.test.middle": "§3중간 테스트 툴팁§r",
