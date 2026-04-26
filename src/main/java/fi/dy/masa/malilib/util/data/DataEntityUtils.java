@@ -1056,7 +1056,7 @@ public class DataEntityUtils
 	@SuppressWarnings("deprecation")
 	public static @Nullable DyeColor getSheepColor(@Nonnull CompoundData data)
 	{
-		if (data.contains(NbtKeys.COLOR, Constants.NBT.TAG_INT))
+		if (data.contains(NbtKeys.COLOR, Constants.NBT.TAG_BYTE))
 		{
 			return data.getCodec(NbtKeys.COLOR, DyeColor.LEGACY_ID_CODEC).orElse(DyeColor.WHITE);
 		}
