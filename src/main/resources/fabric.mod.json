@@ -38,8 +38,8 @@
         "fabric-resource-loader-v1": "*"
 	},
 	"breaks": {
-        "sodium": "<0.8.7-",
-		"iris": "<1.10.7-",
+        "sodium": "<0.8.9-",
+		"iris": "<1.10.9-",
 		"litematica": "<0.27.1-",
 		"minihud": "<0.39.1-",
 		"tweakeroo": "<0.28.1-"
