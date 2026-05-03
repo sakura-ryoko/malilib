@@ -12,3 +12,4 @@ Task
 run/
 libs/
 /src/main/generated/.cache/
+temp_classes/

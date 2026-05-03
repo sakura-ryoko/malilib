@@ -26,17 +26,17 @@ public class TestCommand implements IClientCommandListener
 
         if (op.equalsIgnoreCase("date") || op.equalsIgnoreCase("time"))
         {
-            mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
+            mc.gui.hud.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
             return true;
         }
         else if (op.equalsIgnoreCase("duration"))
         {
-            mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
+            mc.gui.hud.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
             return true;
         }
         else if (op.equalsIgnoreCase("mods"))
         {
-            mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(this.getModList()));
+            mc.gui.hud.getChat().addClientSystemMessage(Component.nullToEmpty(this.getModList()));
             return true;
         }
 

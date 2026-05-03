@@ -202,7 +202,7 @@ public class InfoUtils
 
         if (world != null)
         {
-            mc.gui.setOverlayMessage(message, false);
+            mc.gui.hud.setOverlayMessage(message, false);
 
             if (MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.isModified())
             {

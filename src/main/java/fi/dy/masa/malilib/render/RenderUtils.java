@@ -25,7 +25,6 @@ import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.Lightmap;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
@@ -41,6 +40,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
@@ -70,7 +70,7 @@ import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
-import fi.dy.masa.malilib.mixin.client.IMixinMinecraft;
+import fi.dy.masa.malilib.mixin.client.IMixinEntityRenderDispatcher;
 import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
 import fi.dy.masa.malilib.mixin.gui.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
@@ -93,7 +93,7 @@ public class RenderUtils
     private static final SingleThreadedRandomSource RAND = new SingleThreadedRandomSource(0);
 
     @ApiStatus.Internal
-    public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, MultiBufferSource.BufferSource immediate, Minecraft mc)
+    public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, Minecraft mc)
     {
         ImmutableMap.Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder = new ImmutableMap.Builder<>();
 
@@ -101,10 +101,10 @@ public class RenderUtils
         builder.putAll(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
 
         // Add Gui Block Model Renderer
-        builder.put(MaLiLibBlockStateGuiElement.class, new MaLiLibBlockStateGuiElementRenderer(immediate, ((IMixinMinecraft) mc).malilib_getBlockModelResolver()));
+        builder.put(MaLiLibBlockStateGuiElement.class, new MaLiLibBlockStateGuiElementRenderer(((IMixinEntityRenderDispatcher) mc.getEntityRenderDispatcher()).malilib_getBlockModelResolver()));
 
         // Event Callback
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRegisterSpecialGuiRenderer(guiRenderer, mc, builder);
 
         // Invoke / Update
         ((IGuiRendererInvoker) guiRenderer).malilib$replaceSpecialGuiRenderers(builder.buildOrThrow());
@@ -1439,24 +1439,6 @@ public class RenderUtils
 
         for (String line : text)
         {
-			// f = x
-	        // g = y
-	        // i = color
-	        // bl = shadow
-	        // j = backgroundColor
-	        // k = light
-	        // bl2 = incl empty
-
-            MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
-
-            textRenderer.drawInBatch(line, -strLenHalf, textY,
-                                     disableDepth ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
-                                     false, modelMatrix, immediate,
-                                     disableDepth ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
-                                     0, 15728880
-            );
-
-            immediate.endBatch();
             textY += textRenderer.lineHeight;
         }
 
@@ -2086,74 +2068,34 @@ public class RenderUtils
         {
             return CommonColors.WHITE;
         }
-        if (item.equals(Items.WHITE_BUNDLE))            // 	#ffe6e6e6
+
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
+
+        if (itemId != null && itemId.getNamespace().equals(Identifier.DEFAULT_NAMESPACE))
         {
-            return 0xFFE6E6E6;
+            return switch (itemId.getPath())
+            {
+                case "white_bundle" ->      0xFFE6E6E6; // #FFE6E6E6
+                case "orange_bundle" ->     0xFFFB9320; // #FFFB9320
+                case "magenta_bundle" ->    0xFFCC49B9; // #FFCC49B9
+                case "light_blue_bundle" -> 0xFF30AFE5; // #FF30AFE5
+                case "yellow_bundle" ->     0xFFF2C705; // #FFF2C705
+                case "lime_bundle" ->       0xFF9BDF39; // #FF9BDF39
+                case "pink_bundle" ->       0xFFF8A6BD; // #FFF8A6BD
+                case "gray_bundle" ->       0xFF6C7B83; // #FF6C7B83
+                case "light_gray_bundle" -> 0xFFB1ACA3; // #FFB1ACA3
+                case "cyan_bundle" ->       0xFF14B4B4; // #FF14B4B4
+                case "blue_bundle" ->       0xFF4573C7; // #FF4573C7
+                case "brown_bundle" ->      0xFFD18A59; // #FFD18A59
+                case "green_bundle" ->      0xFF77A119; // #FF77A119
+                case "red_bundle" ->        0xFFD2382E; // #FFD2382E
+                case "black_bundle" ->      0xFF38364F; // #FF38364F
+                case "purple_bundle" ->     0xFF942ACA; // #FF942ACA
+                default ->                  0xFFA6572C; // #FFA6572C
+            };
         }
-        else if (item.equals(Items.ORANGE_BUNDLE))      //	#fffb9320
-        {
-            return 0xFFFB9320;
-        }
-        else if (item.equals(Items.MAGENTA_BUNDLE))     // 	#ffcc49b9
-        {
-            return 0xFFCC49B9;
-        }
-        else if (item.equals(Items.LIGHT_BLUE_BUNDLE))  // 	#ff30afe5
-        {
-            return 0xFF30AFE5;
-        }
-        else if (item.equals(Items.YELLOW_BUNDLE))      //	#fff2c705
-        {
-            return 0xFFF2C705;
-        }
-        else if (item.equals(Items.LIME_BUNDLE))        // 	#ff9bdf39
-        {
-            return 0xFF9BDF39;
-        }
-        else if (item.equals(Items.PINK_BUNDLE))        //	#fff8a6bd
-        {
-            return 0xFFF8A6BD;
-        }
-        else if (item.equals(Items.GRAY_BUNDLE))        // 	#ff6c7b83
-        {
-            return 0xFF6C7B83;
-        }
-        else if (item.equals(Items.LIGHT_GRAY_BUNDLE))  // 	#ffb1aca3
-        {
-            return 0xFFB1ACA3;
-        }
-        else if (item.equals(Items.CYAN_BUNDLE))        //  #ff14b4b4
-        {
-            return 0xFF14B4B4;
-        }
-        else if (item.equals(Items.BLUE_BUNDLE))        //  #ff4573c7
-        {
-            return 0xFF4573C7;
-        }
-        else if (item.equals(Items.BROWN_BUNDLE))       // 	#ffd18a59
-        {
-            return 0xFFD18A59;
-        }
-        else if (item.equals(Items.GREEN_BUNDLE))       // 	#ff77a119
-        {
-            return 0xFF77A119;
-        }
-        else if (item.equals(Items.RED_BUNDLE))         //	#ffd2382e
-        {
-            return 0xFFD2382E;
-        }
-        else if (item.equals(Items.BLACK_BUNDLE))       //  #ff38364f
-        {
-            return 0xFF38364F;
-        }
-        else if (item.equals(Items.PURPLE_BUNDLE))      // 	#ff942aca
-        {
-            return 0xFF942ACA;
-        }
-        else
-        {
-            return 0xFFA6572C;                          // #FFA6572C
-        }
+
+        return 0xFFA6572C; // #FFA6572C
     }
 
     public static int setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
@@ -2402,12 +2344,12 @@ public class RenderUtils
 
     public static RenderTarget fb()
     {
-        return mc().getMainRenderTarget();
+        return mc().gameRenderer.mainRenderTarget();
     }
 
     public static Vec3 camPos()
     {
-        return mc().gameRenderer.getMainCamera().position();
+        return mc().gameRenderer.mainCamera().position();
     }
 
     public static TextureManager tex()

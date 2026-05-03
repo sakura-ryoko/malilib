@@ -142,7 +142,7 @@ public class GameWrap
     {
         if (getClient().level != null)
         {
-            getClient().gui.getChat().addClientSystemMessage(Component.nullToEmpty(msg));
+            getClient().gui.hud.getChat().addClientSystemMessage(Component.nullToEmpty(msg));
         }
     }
 
@@ -150,7 +150,7 @@ public class GameWrap
     {
         if (getClient().level != null)
         {
-            getClient().gui.setOverlayMessage(Component.nullToEmpty(msg), false);
+            getClient().gui.hud.setOverlayMessage(Component.nullToEmpty(msg), false);
         }
     }
 
@@ -233,7 +233,7 @@ public class GameWrap
 
     public static boolean isHideGui()
     {
-        return getOptions().hideGui;
+        return getClient().gui.hud.isHidden();
     }
 
     public static void scheduleToClientThread(Runnable task)

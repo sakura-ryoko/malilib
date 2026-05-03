@@ -4,14 +4,11 @@ import javax.annotation.Nonnull;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockModelRenderState;
 import net.minecraft.client.renderer.block.BlockModelResolver;
 import net.minecraft.client.renderer.block.model.BlockDisplayContext;
-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.LightCoordsUtil;
 import net.minecraft.world.level.block.RenderShape;
@@ -23,9 +20,9 @@ public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRendere
 {
     private final BlockModelResolver modelResolver;
 
-    public MaLiLibBlockStateGuiElementRenderer(MultiBufferSource.BufferSource immediate, BlockModelResolver modelResolver)
+    public MaLiLibBlockStateGuiElementRenderer(BlockModelResolver modelResolver)
     {
-        super(immediate);
+        super();
         this.modelResolver = modelResolver;
     }
 
@@ -36,34 +33,30 @@ public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRendere
     }
 
 	@Override
-    protected void renderToTexture(MaLiLibBlockStateGuiElement state, @NotNull PoseStack matrices)
+    protected void renderToTexture(MaLiLibBlockStateGuiElement state, @NotNull PoseStack matrices, SubmitNodeCollector submitNodeCollector)
     {
         if (state.state().getRenderShape() == RenderShape.MODEL)
         {
 	        matrices.pushPose();
 	        matrices.scale(state.size(), -state.size(), state.size());
 
-			matrices.mulPose(state.rotation());
+	        matrices.mulPose(state.rotation());
 	        matrices.scale(state.scale(), state.scale(), state.scale());
 	        matrices.translate(-0.5F, (0.5F + state.yOffset()), -0.5F);
 
-	        this.submitBlockStateModel(state.state(), matrices);
+	        this.submitBlockStateModel(state.state(), matrices, submitNodeCollector);
 	        matrices.popPose();
         }
     }
 
-	private void submitBlockStateModel(BlockState state, PoseStack matrices)
+	private void submitBlockStateModel(BlockState state, PoseStack matrices, SubmitNodeCollector submitNodeCollector)
 	{
 		final int l = LightCoordsUtil.pack(15, 15);
 		final int overlay = OverlayTexture.NO_OVERLAY;
-
-		FeatureRenderDispatcher featureRenderer = Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
-		SubmitNodeStorage nodeStorage = featureRenderer.getSubmitNodeStorage();
 		BlockModelRenderState renderState = new BlockModelRenderState();
 
 		this.modelResolver.update(renderState, state, BlockDisplayContext.create());
-		renderState.submit(matrices, nodeStorage, l, overlay, -1);
-		featureRenderer.renderAllFeatures();
+		renderState.submit(matrices, submitNodeCollector, l, overlay, -1);
 	}
 
     @Override

@@ -88,24 +88,7 @@ public class CachedTagManager
     private static List<String> buildConcreteCache()
     {
         List<String> list = new ArrayList<>();
-
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.BLACK_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.BLUE_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.BROWN_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.CYAN_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.GRAY_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.GREEN_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LIGHT_BLUE_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LIGHT_GRAY_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LIME_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.MAGENTA_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.ORANGE_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.PINK_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.PURPLE_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.RED_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.YELLOW_CONCRETE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.WHITE_CONCRETE).toString());
-
+        list.add("#minecraft:concrete");
         return list;
     }
 
@@ -113,23 +96,23 @@ public class CachedTagManager
     {
         List<String> list = new ArrayList<>();
 
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.BLACK_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.BLUE_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.BROWN_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.CYAN_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.GRAY_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.GREEN_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LIGHT_BLUE_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LIGHT_GRAY_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LIME_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.MAGENTA_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.ORANGE_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.PINK_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.PURPLE_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.RED_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.YELLOW_STAINED_GLASS_PANE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.WHITE_STAINED_GLASS_PANE).toString());
+        list.add("minecraft:glass_pane");
+        list.add("minecraft:black_stained_glass_pane");
+        list.add("minecraft:blue_stained_glass_pane");
+        list.add("minecraft:brown_stained_glass_pane");
+        list.add("minecraft:cyan_stained_glass_pane");
+        list.add("minecraft:gray_stained_glass_pane");
+        list.add("minecraft:green_stained_glass_pane");
+        list.add("minecraft:light_blue_stained_glass_pane");
+        list.add("minecraft:light_gray_stained_glass_pane");
+        list.add("minecraft:lime_stained_glass_pane");
+        list.add("minecraft:magenta_stained_glass_pane");
+        list.add("minecraft:orange_stained_glass_pane");
+        list.add("minecraft:pink_stained_glass_pane");
+        list.add("minecraft:purple_stained_glass_pane");
+        list.add("minecraft:red_stained_glass_pane");
+        list.add("minecraft:yellow_stained_glass_pane");
+        list.add("minecraft:white_stained_glass_pane");
 
         return list;
     }
@@ -137,24 +120,7 @@ public class CachedTagManager
     private static List<String> buildGlazedTerracottaCache()
     {
         List<String> list = new ArrayList<>();
-
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.BLACK_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.BLUE_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.BROWN_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.CYAN_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.GRAY_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.GREEN_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LIGHT_BLUE_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LIGHT_GRAY_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LIME_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.MAGENTA_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.ORANGE_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.PINK_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.PURPLE_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.RED_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.YELLOW_GLAZED_TERRACOTTA).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.WHITE_GLAZED_TERRACOTTA).toString());
-
+        list.add("#minecraft:glazed_terracotta");
         return list;
     }
 
@@ -182,7 +148,7 @@ public class CachedTagManager
         list.add("#"+BlockTags.CANDLE_CAKES.location().toString());
         list.add("#"+BlockTags.CANDLES.location().toString());
         list.add("#"+BlockTags.CEILING_HANGING_SIGNS.location().toString());
-        list.add("#"+BlockTags.CONCRETE_POWDER.location().toString());
+        list.add("#minecraft:concrete_powders");
         list.add("#"+BlockTags.CORAL_PLANTS.location().toString());
         list.add("#"+BlockTags.DOORS.location().toString());
         list.add("#"+BlockTags.FENCE_GATES.location().toString());
@@ -193,7 +159,7 @@ public class CachedTagManager
         list.add("#"+BlockTags.LOGS.location().toString());
         list.add("#"+BlockTags.PLANKS.location().toString());
         list.add("#"+BlockTags.PRESSURE_PLATES.location().toString());
-        list.add("#"+BlockTags.SAPLINGS.location().toString());
+        list.add("#minecraft:saplings");
         list.add("#"+BlockTags.SHULKER_BOXES.location().toString());
         list.add("#"+BlockTags.SLABS.location().toString());
         list.add("#"+BlockTags.STAIRS.location().toString());

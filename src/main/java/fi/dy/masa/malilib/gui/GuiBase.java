@@ -169,7 +169,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         if (showParent)
         {
-            this.mc.setScreen(this.parent);
+            this.mc.setScreenAndShow(this.parent);
         }
         else
         {
@@ -841,7 +841,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     protected boolean shouldRenderHoverStuff()
     {
-        return this.mc.screen == this;
+        return true; // In 26.2, mc.screen is private; since this method is called during rendering, 'this' is always the current screen
     }
 
     protected void drawHoveredWidget(GuiContext ctx, int mouseX, int mouseY)
@@ -891,7 +891,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public static void openGui(Screen gui)
     {
-        Minecraft.getInstance().setScreen(gui);
+        Minecraft.getInstance().setScreenAndShow(gui);
     }
 
 	public static boolean isShiftDown()

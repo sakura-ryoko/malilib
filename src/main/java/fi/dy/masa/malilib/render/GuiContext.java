@@ -232,11 +232,10 @@ public class GuiContext extends GuiGraphicsExtractor
 
 	/**
 	 * Pop the last Scissor Stack
-	 * @return ()
 	 */
-	public ScreenRectangle popScissor()
+	public void popScissor()
 	{
-		return this.scissorStack.pop();
+		this.scissorStack.pop();
 	}
 
 	/**

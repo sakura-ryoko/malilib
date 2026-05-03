@@ -36,7 +36,7 @@ public abstract class MixinMouse
     }
 
     @Inject(method = "onScroll", cancellable = true,
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getOverlay()Lnet/minecraft/client/gui/screens/Overlay;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;overlay()Lnet/minecraft/client/gui/screens/Overlay;",
                     ordinal = 0,
                      shift = At.Shift.AFTER))
     private void malilib_hookOnMouseScroll(long handle, double xOffset, double yOffset, CallbackInfo ci)

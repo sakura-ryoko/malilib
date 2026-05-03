@@ -106,7 +106,7 @@ public interface IInventoryOverlayHandler
 
         if (!this.isEmpty())
         {
-			mc.setScreen(new InventoryOverlayScreen(this.getModId(), this.getRenderContextNullable(), shulkerBGColors, villagerBGColors));
+			mc.setScreenAndShow(new InventoryOverlayScreen(this.getModId(), this.getRenderContextNullable(), shulkerBGColors, villagerBGColors));
         }
     }
 

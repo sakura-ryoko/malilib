@@ -96,7 +96,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                     if (this.selectedEntry != null && minecraft != null &&
 						this.selectedEntry.configScreenSupplier() != null)
                     {
-                        minecraft.setScreen(this.selectedEntry.configScreenSupplier().get());
+                        minecraft.setScreenAndShow(this.selectedEntry.configScreenSupplier().get());
                     }
                 }
 

@@ -1,8 +1,11 @@
 package fi.dy.masa.malilib.mixin.gui;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,10 +19,18 @@ import fi.dy.masa.malilib.util.game.IGameHud;
 @Mixin(value = Gui.class, priority = 900)
 public abstract class MixinGui implements IGameHud
 {
-    @Shadow private int overlayMessageTime;
+    @Shadow @Final public Hud hud;
 
-    @Inject(method = "extractRenderState", at = @At("TAIL"))
-    private void malilib_onGameOverlayPost(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci)
+    /*
+     * 26.2 changed Gui.extractRenderState from taking GuiGraphicsExtractor as a parameter
+     * to constructing it locally. Inject before applyCursor(...) and capture that local.
+     */
+    @Inject(method = "extractRenderState",
+            at = @At(value = "INVOKE",
+                     target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;applyCursor(Lcom/mojang/blaze3d/platform/Window;)V",
+                     shift = At.Shift.BEFORE))
+    private void malilib_onGameOverlayPost(DeltaTracker deltaTracker, boolean renderHud, boolean renderScreen, CallbackInfo ci,
+                                           @Local(ordinal = 0) GuiGraphicsExtractor graphics)
     {
         ((RenderEventHandler) RenderEventHandler.getInstance()).runExtractGuiOverlayPost(GuiContext.fromGuiGraphics(graphics), deltaTracker.getGameTimeDeltaPartialTick(false));
     }
@@ -27,6 +38,6 @@ public abstract class MixinGui implements IGameHud
     @Override
     public void malilib$setOverlayRemaining(int ticks)
     {
-        this.overlayMessageTime = ticks;
+        ((IMixinHud) this.hud).malilib_setOverlayMessageTime(ticks);
     }
 }

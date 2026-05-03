@@ -704,7 +704,7 @@ public class RenderContext implements AutoCloseable
 
             GpuBufferSlice gpuSlice = RenderSystem.getDynamicUniforms()
                                                         .writeTransform(
-                                                                RenderSystem.getModelViewMatrix(),
+                                                                RenderSystem.getModelViewMatrixCopy(),
                                                                 colorMod,
                                                                 modelOffset,
                                                                 texMatrix);

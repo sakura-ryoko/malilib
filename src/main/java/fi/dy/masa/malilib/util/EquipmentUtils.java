@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.EntityType;
@@ -356,7 +357,9 @@ public class EquipmentUtils
 					}
 				}
 
-				return bodySlot && (equip.canBeEquippedBy(EntityType.HORSE.builtInRegistryHolder()) || equip.canBeEquippedBy(EntityType.ZOMBIE_HORSE.builtInRegistryHolder()));
+				return bodySlot &&
+					   (canBeEquippedByEntityId(equip, "horse") ||
+					    canBeEquippedByEntityId(equip, "zombie_horse"));
 			}
 		}
 
@@ -387,7 +390,9 @@ public class EquipmentUtils
 					}
 				}
 
-				return bodySlot && (equip.canBeEquippedBy(EntityType.NAUTILUS.builtInRegistryHolder()) || equip.canBeEquippedBy(EntityType.ZOMBIE_NAUTILUS.builtInRegistryHolder()));
+				return bodySlot &&
+					   (canBeEquippedByEntityId(equip, "nautilus") ||
+					    canBeEquippedByEntityId(equip, "zombie_nautilus"));
 			}
 		}
 
@@ -418,7 +423,7 @@ public class EquipmentUtils
                     }
 				}
 
-				return bodySlot && equip.canBeEquippedBy(EntityType.WOLF.builtInRegistryHolder());
+				return bodySlot && canBeEquippedByEntityId(equip, "wolf");
 			}
 		}
 
@@ -447,6 +452,16 @@ public class EquipmentUtils
 		}
 
 		return null;
+	}
+
+	private static boolean canBeEquippedByEntityId(Equippable equippable, String entityIdPath)
+	{
+		Holder<EntityType<?>> holder = BuiltInRegistries.ENTITY_TYPE
+				.getOptional(Identifier.withDefaultNamespace(entityIdPath))
+				.map(EntityType::builtInRegistryHolder)
+				.orElse(null);
+
+		return holder != null && equippable.canBeEquippedBy(holder);
 	}
 
 	public static int getEnchantmentLevel(ItemStack stack, @Nonnull ResourceKey<@NotNull Enchantment> enchantment)

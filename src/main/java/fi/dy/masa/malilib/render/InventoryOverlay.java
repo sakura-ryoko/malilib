@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
@@ -597,10 +598,13 @@ public class InventoryOverlay
 
 		if (blockType != null)
 		{
-			if (blockType.equals(BlockEntityType.SHULKER_BOX) ||
-				blockType.equals(BlockEntityType.BARREL) ||
-				blockType.equals(BlockEntityType.CHEST) ||
-				blockType.equals(BlockEntityType.TRAPPED_CHEST))
+			Identifier blockTypeId = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockType);
+
+			if (isVanillaRegistryId(blockTypeId,
+									 "shulker_box",
+									 "barrel",
+									 "chest",
+									 "trapped_chest"))
 			{
 				if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
 				{
@@ -614,44 +618,47 @@ public class InventoryOverlay
 
 				return InventoryOverlayType.FIXED_27;
 			}
-			else if (blockType.equals(BlockEntityType.FURNACE) ||
-					blockType.equals(BlockEntityType.BLAST_FURNACE) ||
-					blockType.equals(BlockEntityType.SMOKER))
+			else if (isVanillaRegistryId(blockTypeId,
+										 "furnace",
+										 "blast_furnace",
+										 "smoker"))
 			{
 				return InventoryOverlayType.FURNACE;
 			}
-			else if (blockType.equals(BlockEntityType.DISPENSER) ||
-					blockType.equals(BlockEntityType.DROPPER))
+			else if (isVanillaRegistryId(blockTypeId,
+										 "dispenser",
+										 "dropper"))
 			{
 				return InventoryOverlayType.DISPENSER;
 			}
-			else if (blockType.equals(BlockEntityType.HOPPER))
+			else if (isVanillaRegistryId(blockTypeId, "hopper"))
 			{
 				return InventoryOverlayType.HOPPER;
 			}
-			else if (blockType.equals(BlockEntityType.BREWING_STAND))
+			else if (isVanillaRegistryId(blockTypeId, "brewing_stand"))
 			{
 				return InventoryOverlayType.BREWING_STAND;
 			}
-			else if (blockType.equals(BlockEntityType.CRAFTER))
+			else if (isVanillaRegistryId(blockTypeId, "crafter"))
 			{
 				return InventoryOverlayType.CRAFTER;
 			}
-			else if (blockType.equals(BlockEntityType.DECORATED_POT) ||
-					blockType.equals(BlockEntityType.JUKEBOX) ||
-					blockType.equals(BlockEntityType.LECTERN))
+			else if (isVanillaRegistryId(blockTypeId,
+										 "decorated_pot",
+										 "jukebox",
+										 "lectern"))
 			{
 				return InventoryOverlayType.SINGLE_ITEM;
 			}
-			else if (blockType.equals(BlockEntityType.CHISELED_BOOKSHELF))
+			else if (isVanillaRegistryId(blockTypeId, "chiseled_bookshelf"))
 			{
 				return InventoryOverlayType.BOOKSHELF;
 			}
-			else if (blockType.equals(BlockEntityType.SHELF))
+			else if (isVanillaRegistryId(blockTypeId, "shelf"))
 			{
 				return InventoryOverlayType.WALL_SHELF;
 			}
-			else if (blockType.equals(BlockEntityType.ENDER_CHEST))
+			else if (isVanillaRegistryId(blockTypeId, "ender_chest"))
 			{
 				return InventoryOverlayType.ENDER_CHEST;
 			}
@@ -661,70 +668,77 @@ public class InventoryOverlay
 
 		if (entityType != null)
 		{
-			if (entityType.equals(EntityType.CHEST_MINECART) ||
-				entityType.equals(EntityType.ACACIA_CHEST_BOAT) ||
-				entityType.equals(EntityType.BAMBOO_CHEST_RAFT) ||
-				entityType.equals(EntityType.BIRCH_CHEST_BOAT) ||
-				entityType.equals(EntityType.CHERRY_CHEST_BOAT) ||
-				entityType.equals(EntityType.DARK_OAK_CHEST_BOAT) ||
-				entityType.equals(EntityType.JUNGLE_CHEST_BOAT) ||
-				entityType.equals(EntityType.MANGROVE_CHEST_BOAT) ||
-				entityType.equals(EntityType.OAK_CHEST_BOAT) ||
-				entityType.equals(EntityType.PALE_OAK_CHEST_BOAT) ||
-				entityType.equals(EntityType.SPRUCE_CHEST_BOAT))
+			Identifier entityTypeId = BuiltInRegistries.ENTITY_TYPE.getKey(entityType);
+
+			if (isVanillaRegistryId(entityTypeId,
+									 "chest_minecart",
+									 "acacia_chest_boat",
+									 "bamboo_chest_raft",
+									 "birch_chest_boat",
+									 "cherry_chest_boat",
+									 "dark_oak_chest_boat",
+									 "jungle_chest_boat",
+									 "mangrove_chest_boat",
+									 "oak_chest_boat",
+									 "pale_oak_chest_boat",
+									 "spruce_chest_boat"))
 			{
 				return InventoryOverlayType.FIXED_27;
 			}
-			else if (entityType.equals(EntityType.HOPPER_MINECART))
+			else if (isVanillaRegistryId(entityTypeId, "hopper_minecart"))
 			{
 				return InventoryOverlayType.HOPPER;
 			}
-			else if (entityType.equals(EntityType.HORSE) ||
-					entityType.equals(EntityType.DONKEY) ||
-					entityType.equals(EntityType.MULE) ||
-					entityType.equals(EntityType.CAMEL) ||
-					entityType.equals(EntityType.SKELETON_HORSE) ||
-					entityType.equals(EntityType.CAMEL_HUSK) ||
-					entityType.equals(EntityType.ZOMBIE_HORSE))
+			else if (isVanillaRegistryId(entityTypeId,
+										 "horse",
+										 "donkey",
+										 "mule",
+										 "camel",
+										 "skeleton_horse",
+										 "camel_husk",
+										 "zombie_horse"))
 			{
 				return InventoryOverlayType.HORSE;
 			}
-			else if (entityType.equals(EntityType.LLAMA) ||
-					entityType.equals(EntityType.TRADER_LLAMA))
+			else if (isVanillaRegistryId(entityTypeId,
+										 "llama",
+										 "trader_llama"))
 			{
 				return InventoryOverlayType.LLAMA;
 			}
-			else if (entityType.equals(EntityType.NAUTILUS) ||
-					entityType.equals(EntityType.ZOMBIE_NAUTILUS))
+			else if (isVanillaRegistryId(entityTypeId,
+										 "nautilus",
+										 "zombie_nautilus"))
 			{
 				return InventoryOverlayType.NAUTILUS;
 			}
-			else if (entityType.equals(EntityType.WOLF))
+			else if (isVanillaRegistryId(entityTypeId, "wolf"))
 			{
 				return InventoryOverlayType.WOLF;
 			}
-			else if (entityType.equals(EntityType.HAPPY_GHAST))
+			else if (isVanillaRegistryId(entityTypeId, "happy_ghast"))
 			{
 				return InventoryOverlayType.HAPPY_GHAST;
 			}
-			else if (entityType.equals(EntityType.COPPER_GOLEM))
+			else if (isVanillaRegistryId(entityTypeId, "copper_golem"))
 			{
 				return InventoryOverlayType.COPPER_GOLEM;
 			}
-			else if (entityType.equals(EntityType.VILLAGER) ||
-					entityType.equals(EntityType.ALLAY) ||
-					entityType.equals(EntityType.PILLAGER) ||
-					entityType.equals(EntityType.PIGLIN) ||
-					entityType.equals(EntityType.WANDERING_TRADER) ||
-					entityType.equals(EntityType.ZOMBIE_VILLAGER))
+			else if (isVanillaRegistryId(entityTypeId,
+										 "villager",
+										 "allay",
+										 "pillager",
+										 "piglin",
+										 "wandering_trader",
+										 "zombie_villager"))
 			{
 				return InventoryOverlayType.VILLAGER;
 			}
-			else if (entityType.equals(EntityType.PLAYER))
+			else if (isVanillaRegistryId(entityTypeId, "player"))
 			{
 				return InventoryOverlayType.PLAYER;
 			}
-			else if (entityType.equals(EntityType.ARMOR_STAND))
+			else if (isVanillaRegistryId(entityTypeId, "armor_stand"))
 			{
 				return InventoryOverlayType.ARMOR_STAND;
 			}
@@ -755,6 +769,26 @@ public class InventoryOverlay
 		}
 
 		return i;
+	}
+
+	private static boolean isVanillaRegistryId(@Nullable Identifier id, String... paths)
+	{
+		if (id == null || id.getNamespace().equals(Identifier.DEFAULT_NAMESPACE) == false)
+		{
+			return false;
+		}
+
+		String path = id.getPath();
+
+		for (String expected : paths)
+		{
+			if (expected.equals(path))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

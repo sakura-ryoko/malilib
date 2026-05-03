@@ -41,7 +41,7 @@ public class GuiUtils
     @Nullable
     public static Screen getCurrentScreen()
     {
-        return Minecraft.getInstance().screen;
+        return Minecraft.getInstance().gui.screen();
     }
 
     public static int getCurrentScreenHeight()

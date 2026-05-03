@@ -3,19 +3,13 @@ package fi.dy.masa.malilib.render.on_demand;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.ProfilerFiller;
 
@@ -103,30 +97,10 @@ public class TextPlateRenderer implements IOnDemandRenderer<TextPlateBackgroundR
 	@Override
 	public void onDrawPost(IOnDemandRenderState state)
 	{
-		TextPlateBackgroundRenderState st = (TextPlateBackgroundRenderState) state;
-		Font font = Minecraft.getInstance().font;
-		final int textColor = st.textColor().getIntValue();
-		int textY = 0;
-		Matrix4f modelMatrix = new Matrix4f();
-		modelMatrix.identity();
-		ByteBufferBuilder allocator = new ByteBufferBuilder(RenderType.TRANSIENT_BUFFER_SIZE);
-
-		for (String line : st.text())
-		{
-			MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
-
-			font.drawInBatch(line, -st.strLenHalf(), textY,
-			                 st.disableDepth() ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
-			                 false, modelMatrix, immediate,
-			                 st.disableDepth() ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
-			                 0, 15728880
-			);
-
-			immediate.endBatch();
-			textY += font.lineHeight;
-		}
-
-		allocator.close();
+		// TODO: Port to 26.2 rendering paradigm.
+		//  MultiBufferSource.immediate() and Font.drawInBatch() were removed.
+		//  Text rendering now uses SubmitNodeCollector.submitText() which requires
+		//  a collector context not available here. This needs architectural rework.
 		RenderSystem.getModelViewStack().popMatrix();
 		this.currentState = null;
 	}

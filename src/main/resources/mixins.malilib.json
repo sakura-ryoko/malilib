@@ -28,7 +28,9 @@
     ],
     "client": [
         "client.IMixinMinecraft",
+        "client.IMixinEntityRenderDispatcher",
         "client.MixinMinecraft",
+        "gui.IMixinHud",
         "gui.IMixinAbstractWidget",
         "gui.IMixinGuiRenderer",
         "gui.MixinGui",

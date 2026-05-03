@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.Container;
@@ -293,8 +295,9 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 		MaLiLib.LOGGER.error("getTargetFromBlock: inv [{}], data [{}]", inv != null ? inv.getContainerSize() : "<NULL>", data != null ? data.toString() : "<NULL>");
 		BlockEntityType<?> beType = data != null ? DataBlockUtils.getBlockEntityType(data) : null;
+		Identifier beTypeId = beType != null ? BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(beType) : null;
 
-		if ((beType != null && beType.equals(BlockEntityType.ENDER_CHEST)) ||
+		if ((beTypeId != null && Identifier.DEFAULT_NAMESPACE.equals(beTypeId.getNamespace()) && "ender_chest".equals(beTypeId.getPath())) ||
 			be instanceof EnderChestBlockEntity)
 		{
 			if (Minecraft.getInstance().player != null)
