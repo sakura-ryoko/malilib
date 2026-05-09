@@ -91,6 +91,11 @@ public class FileUtils
             return false;
         }
 
+        if (MaLiLibReference.DEBUG_MODE)
+        {
+            MaLiLib.LOGGER.warn("createDirectoriesIfMissing: '{}'", dir.toAbsolutePath().toString());
+        }
+
         return Files.isDirectory(dir);
     }
 
@@ -104,6 +109,12 @@ public class FileUtils
         try
         {
             Files.createFile(file);
+
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("createFile: '{}'", file.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)
@@ -146,6 +157,11 @@ public class FileUtils
                 Files.copy(srcFile, dstFile, StandardCopyOption.COPY_ATTRIBUTES);
             }
 
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("copy: '{}' -> '{}'", srcFile.toAbsolutePath().toString(), dstFile.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)
@@ -184,6 +200,11 @@ public class FileUtils
                 Files.move(srcFile, dstFile);
             }
 
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("move: '{}' -> '{}'", srcFile.toAbsolutePath().toString(), dstFile.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)
@@ -204,6 +225,12 @@ public class FileUtils
         try
         {
             Files.delete(file);
+
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("delete: '{}'", file.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)
@@ -449,6 +476,12 @@ public class FileUtils
         {
             dataWriter.accept(writer);
             writer.close();
+
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("writeDataToExactFile: '{}'", file.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)

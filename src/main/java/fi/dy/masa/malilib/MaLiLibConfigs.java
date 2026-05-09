@@ -25,6 +25,7 @@ import fi.dy.masa.malilib.test.config.TestHotkeys;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.i18n.i18nConfig;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
 
@@ -37,6 +38,8 @@ public class MaLiLibConfigs implements IConfigHandler
     private static final String GENERIC_KEY = MaLiLibReference.MOD_ID+".config.generic";
     public static class Generic
     {
+//        public static final ConfigOptionList        MOD_LANGUAGE                = new ConfigOptionList        ("modLanguage",       new i18nConfig(MaLiLib.LANG)).apply(GENERIC_KEY);
+
         public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
         public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_ACTIONBAR_MESSAGES   = new ConfigBooleanHotkeyed   ("enableActionbarMessages", true, "").apply(GENERIC_KEY);
@@ -45,7 +48,8 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
 
-        public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
+        public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
+//                MOD_LANGUAGE,
                 IGNORED_KEYS,
                 OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
@@ -240,19 +244,20 @@ public class MaLiLibConfigs implements IConfigHandler
                     ConfigUtils.readConfigBase(root, "Experimental", Experimental.OPTIONS);
                 }
 
-                //MaLiLib.debugLog("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
+                if (MaLiLibReference.DEBUG_MODE)
+                {
+                    MaLiLib.LOGGER.warn("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
+                }
             }
             else
             {
                 MaLiLib.LOGGER.error("loadFromFile(): Failed to parse config file '{}' as a JSON element.", configFile.toAbsolutePath());
             }
         }
-        /*
         else
         {
             MaLiLib.LOGGER.error("loadFromFile(): Failed to load config file '{}'.", configFile.toAbsolutePath());
         }
-         */
     }
 
     public static void saveToFile()
@@ -262,7 +267,11 @@ public class MaLiLibConfigs implements IConfigHandler
         if (!Files.exists(dir))
         {
             FileUtils.createDirectoriesIfMissing(dir);
-            //MaLiLib.debugLog("saveToFile(): Creating directory '{}'.", dir.toAbsolutePath());
+
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("saveToFile(): Creating directory '{}'.", dir.toAbsolutePath());
+            }
         }
 
         if (Files.isDirectory(dir))
@@ -289,7 +298,10 @@ public class MaLiLibConfigs implements IConfigHandler
             /*
             if (JsonUtils.writeJsonToFileAsPath(root, config))
             {
-                MaLiLib.debugLog("saveToFile(): Successfully saved config file '{}'.", config.toAbsolutePath());
+                if (MaLiLibReference.DEBUG_MODE)
+                {
+                    MaLiLib.LOGGER.warn("saveToFile(): Successfully saved config file '{}'.", config.toAbsolutePath());
+                }
             }
             else
             {

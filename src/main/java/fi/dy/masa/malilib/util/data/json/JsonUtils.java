@@ -811,6 +811,16 @@ public class JsonUtils
         return null;
     }
 
+    /**
+     * @deprecated Please migrate to using 'parseJsonFile' again
+     */
+    @Deprecated(forRemoval = true)
+    @Nullable
+    public static JsonElement parseJsonFileAsPath(Path file)
+    {
+        return parseJsonFile(file);
+    }
+
     @Nullable
     public static JsonElement parseJsonFile(Path file)
     {
@@ -818,6 +828,11 @@ public class JsonUtils
         {
             try (BufferedReader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8))
             {
+                if (MaLiLibReference.DEBUG_MODE)
+                {
+                    MaLiLib.LOGGER.warn("parseJsonFile: '{}'", file.toAbsolutePath().toString());
+                }
+
                 return JsonParser.parseReader(reader);
             }
             catch (Exception e)
@@ -838,6 +853,15 @@ public class JsonUtils
     {
         Gson gson = compact ? new Gson() : GSON;
         return gson.toJson(element);
+    }
+
+    /**
+     * @deprecated Please migrate to using 'writeJsonToFile'
+     */
+    @Deprecated(forRemoval = true)
+    public static boolean writeJsonToFileAsPath(JsonObject root, Path file)
+    {
+        return writeJsonToFile(root, file);
     }
 
     public static boolean writeJsonToFile(JsonElement root, Path file)
