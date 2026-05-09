@@ -111,7 +111,7 @@ public class FileUtils
 
         if (MaLiLibReference.DEBUG_MODE)
         {
-            MaLiLib.debugLogError("createDirectoriesIfMissing: '{}'", dir.toAbsolutePath().toString());
+            MaLiLib.LOGGER.warn("createDirectoriesIfMissing: '{}'", dir.toAbsolutePath().toString());
         }
 
         return Files.isDirectory(dir);
@@ -130,7 +130,7 @@ public class FileUtils
 
             if (MaLiLibReference.DEBUG_MODE)
             {
-                MaLiLib.debugLogError("createFile: '{}'", file.toAbsolutePath().toString());
+                MaLiLib.LOGGER.warn("createFile: '{}'", file.toAbsolutePath().toString());
             }
 
             return true;
@@ -177,7 +177,7 @@ public class FileUtils
 
             if (MaLiLibReference.DEBUG_MODE)
             {
-                MaLiLib.debugLogError("copy: '{}' -> '{}'", srcFile.toAbsolutePath().toString(), dstFile.toAbsolutePath().toString());
+                MaLiLib.LOGGER.warn("copy: '{}' -> '{}'", srcFile.toAbsolutePath().toString(), dstFile.toAbsolutePath().toString());
             }
 
             return true;
@@ -220,7 +220,7 @@ public class FileUtils
 
             if (MaLiLibReference.DEBUG_MODE)
             {
-                MaLiLib.debugLogError("move: '{}' -> '{}'", srcFile.toAbsolutePath().toString(), dstFile.toAbsolutePath().toString());
+                MaLiLib.LOGGER.warn("move: '{}' -> '{}'", srcFile.toAbsolutePath().toString(), dstFile.toAbsolutePath().toString());
             }
 
             return true;
@@ -246,7 +246,7 @@ public class FileUtils
 
             if (MaLiLibReference.DEBUG_MODE)
             {
-                MaLiLib.debugLogError("delete: '{}'", file.toAbsolutePath().toString());
+                MaLiLib.LOGGER.warn("delete: '{}'", file.toAbsolutePath().toString());
             }
 
             return true;
@@ -497,7 +497,7 @@ public class FileUtils
 
             if (MaLiLibReference.DEBUG_MODE)
             {
-                MaLiLib.debugLogError("writeDataToExactFile: '{}'", file.toAbsolutePath().toString());
+                MaLiLib.LOGGER.warn("writeDataToExactFile: '{}'", file.toAbsolutePath().toString());
             }
 
             return true;

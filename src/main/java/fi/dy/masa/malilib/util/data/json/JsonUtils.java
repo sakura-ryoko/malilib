@@ -838,7 +838,7 @@ public class JsonUtils
             {
                 if (MaLiLibReference.DEBUG_MODE)
                 {
-                    MaLiLib.debugLogError("parseJsonFile: '{}'", file.toAbsolutePath().toString());
+                    MaLiLib.LOGGER.warn("parseJsonFile: '{}'", file.toAbsolutePath().toString());
                 }
 
                 return JsonParser.parseReader(reader);

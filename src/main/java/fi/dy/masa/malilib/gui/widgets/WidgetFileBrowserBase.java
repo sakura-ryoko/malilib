@@ -415,5 +415,4 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
             }
         }
     }
-
 }

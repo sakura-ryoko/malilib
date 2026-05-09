@@ -1,0 +1,262 @@
+package fi.dy.masa.malilib.util.i18n;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.regex.Pattern;
+
+import net.minecraft.network.chat.Component;
+
+import fi.dy.masa.malilib.MaLiLib;
+
+public class i18nManager
+{
+	public static final i18nFileFilter FILE_FILTER = new i18nFileFilter();
+	public static final String DEFAULT_LANG = "en_us";
+	private final List<String> keys;
+	private final List<i18nOption> options;
+	private final i18nLang defaultLang;
+	private final String modId;
+	private final String baseString;
+	private i18nLang lang;
+
+	private i18nManager(String modId) throws IOException
+	{
+		this.modId = modId;
+		this.keys = new ArrayList<>();
+		this.options = new ArrayList<>();
+		this.baseString = "assets/"+this.modId+"/lang";
+		this.defaultLang = i18nLang.load(this.baseString, DEFAULT_LANG);
+		this.lang = null;
+		this.readKeys();
+	}
+
+	public static i18nManager create(String modId) throws IOException
+	{
+		i18nManager result = new i18nManager(modId);
+
+		if (result.defaultLang == null)
+		{
+			MaLiLib.LOGGER.error("i18nOptionManager: Default language: '{}' not found!", DEFAULT_LANG);
+			throw new IOException("i18nOptionManager: Default language: '"+DEFAULT_LANG+"' not found!");
+		}
+
+		return result;
+	}
+
+	private void readKeys() throws IOException
+	{
+		InputStream is = i18nManager.class.getClassLoader().getResourceAsStream(this.baseString);
+
+		try
+		{
+			if (is != null)
+			{
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+				String line;
+				this.keys.clear();
+
+				while ((line = reader.readLine()) != null)
+				{
+					Path filePath = Path.of(line);
+					Path file = filePath.getFileName();
+
+					if (FILE_FILTER.accept(file))
+					{
+						final String fileName = file.toString();
+						final String nameOnly = fileName.split("\\.")[0];
+
+						this.keys.add(nameOnly);
+					}
+					else
+					{
+						MaLiLib.LOGGER.warn("i18nOptionManager#readKeys(): Ignoring file/directory '{}'", line);
+					}
+				}
+
+				is.close();
+
+				this.buildLanguageOptions();
+				MaLiLib.LOGGER.info("i18nOptionManager#readKeys(): keys read from assets folder: {}", this.keys.toString());
+			}
+			else
+			{
+				MaLiLib.LOGGER.error("i18nOptionManager: Could not find resource '{}'!", this.baseString);
+				throw new IOException("i18nOptionManager: Could not find resource '" + this.baseString + "'!");
+			}
+		}
+		catch (Throwable t1)
+		{
+			if (is != null)
+			{
+				try
+				{
+					is.close();
+				}
+				catch (Throwable t2)
+				{
+					t1.addSuppressed(t2);
+				}
+			}
+
+			throw t1;
+		}
+	}
+
+	private void buildLanguageOptions()
+	{
+		this.options.clear();
+
+		for (String key : this.keys)
+		{
+			i18nOption opt = i18nOption.fromString(key);
+
+			if (opt != null)
+			{
+				this.options.add(opt);
+			}
+			else
+			{
+				MaLiLib.LOGGER.warn("i18nOptionManager#buildLanguageOptions({}): Language file: '{}' not matched", this.getModId(), key);
+			}
+		}
+
+		MaLiLib.LOGGER.warn("i18nOptionManager#buildLanguageOptions({}): Detected [{}] available options.", this.getModId(), this.options.size());
+	}
+
+	public String getModId()
+	{
+		return this.modId;
+	}
+
+	public String getBaseString()
+	{
+		return this.baseString;
+	}
+
+	public i18nLang getDefaultLang()
+	{
+		return this.defaultLang;
+	}
+
+	public i18nLang getLang()
+	{
+		this.ensureLang();
+		return this.lang;
+	}
+
+	public void setLang(i18nConfig config)
+	{
+		if (this.lang != null && Objects.equals(this.lang.getLangCode(), config.getStringValue()))
+		{
+			// Already matches
+			return;
+		}
+
+		// Change
+		this.lang = null;
+
+		try
+		{
+			this.lang = i18nLang.load(this.baseString, config.getStringValue());
+			MaLiLib.LOGGER.info("i18nOptionManager#setLang({}): Language: '{}' [{}] - has been loaded successfully.", this.getModId(), config.getStringValue(), config.getDisplayName());
+		}
+		catch (IOException e)
+		{
+			this.ensureLang();
+			MaLiLib.LOGGER.error("i18nOptionManager#setLang(): Exception loading language: '{}'; {}", config.getStringValue(), e.getLocalizedMessage());
+		}
+	}
+
+	public List<i18nOption> getLanguageOptions()
+	{
+		this.ensureLang();
+		return this.options;
+	}
+
+	private void ensureLang()
+	{
+		if (this.lang == null)
+		{
+			this.lang = this.defaultLang;
+		}
+	}
+
+	public boolean hasTranslation(String key)
+	{
+		this.ensureLang();
+		return this.lang.hasTranslation(key);
+	}
+
+	public String translateOrFallback(String key, String fallback)
+	{
+		this.ensureLang();
+
+		if (this.lang.hasTranslation(key))
+		{
+			return this.translate(key);
+		}
+
+		return fallback;
+	}
+
+	public String translate(String key, Object... args)
+	{
+		this.ensureLang();
+		String result = this.lang.getOrDefault(key, key);
+
+		try
+		{
+			return String.format(Locale.ROOT, result, args);
+		}
+		catch (Exception e)
+		{
+			MaLiLib.LOGGER.error("i18nOptionManager#translate: Formatting exception for key: {}; {}", key, e.getLocalizedMessage());
+			return "Format Error: "+result;
+		}
+	}
+
+	public Component translateAsText(String key, Object... args)
+	{
+		this.ensureLang();
+		return this.lang.translate(key, args);
+	}
+
+	// matches 'en_us.json'; for example.
+	public static class i18nFileFilter implements DirectoryStream.Filter<Path>
+	{
+		private final Pattern pattern1 = Pattern.compile("^[a-z]{2,4}_[a-z]{2,4}$");
+		private final Pattern pattern2 = Pattern.compile("^[a-z]{3,4}$");
+
+		@Override
+		public boolean accept(Path entry) throws IOException
+		{
+			try
+			{
+				final String fullName = entry.getFileName().toString();
+
+				if (fullName.endsWith(".json"))
+				{
+					final String nameOnly = fullName.split("\\.")[0];
+
+					return  this.pattern1.matcher(nameOnly).matches() ||
+							this.pattern2.matcher(nameOnly).matches();
+				}
+
+				return false;
+			}
+			catch (Exception err)
+			{
+				throw new IOException(err.getLocalizedMessage());
+			}
+		}
+	}
+}

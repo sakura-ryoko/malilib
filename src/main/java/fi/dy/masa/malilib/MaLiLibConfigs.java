@@ -27,6 +27,7 @@ import fi.dy.masa.malilib.test.config.value.TestOptions;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.i18n.i18nConfig;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
 
@@ -40,6 +41,7 @@ public class MaLiLibConfigs implements IConfigHandler
     public static class Generic
     {
         public static final ConfigOptionValues<FileWriteType> CONFIG_WRITE_METHOD = new ConfigOptionValues<>("configWriteMethod", FileWriteType.TEMP_AND_RENAME, FileWriteType.VALUES).apply(GENERIC_KEY);
+//        public static final ConfigOptionList        MOD_LANGUAGE                = new ConfigOptionList        ("modLanguage",       new i18nConfig(MaLiLib.LANG)).apply(GENERIC_KEY);
 
         public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
         public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
@@ -49,8 +51,9 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
 
-        public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
+        public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 CONFIG_WRITE_METHOD,
+//                MOD_LANGUAGE,
                 IGNORED_KEYS,
                 OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
@@ -249,7 +252,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
                 if (MaLiLibReference.DEBUG_MODE)
                 {
-                    MaLiLib.debugLogError("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
+                    MaLiLib.LOGGER.warn("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
                 }
             }
             else
@@ -273,7 +276,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
             if (MaLiLibReference.DEBUG_MODE)
             {
-                MaLiLib.debugLogError("saveToFile(): Creating directory '{}'.", dir.toAbsolutePath());
+                MaLiLib.LOGGER.warn("saveToFile(): Creating directory '{}'.", dir.toAbsolutePath());
             }
         }
 
@@ -302,7 +305,7 @@ public class MaLiLibConfigs implements IConfigHandler
             {
                 if (MaLiLibReference.DEBUG_MODE)
                 {
-                    MaLiLib.debugLogError("saveToFile(): Successfully saved config file '{}'.", config.toAbsolutePath());
+                    MaLiLib.LOGGER.warn("saveToFile(): Successfully saved config file '{}'.", config.toAbsolutePath());
                 }
             }
             else
