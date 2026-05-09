@@ -58,6 +58,7 @@ public abstract class MixinLevelRenderer
 		((RenderEventHandler) RenderEventHandler.getInstance()).runExtractWorldLast(deltaTracker, camera, deltaPartialTick, profiler);
 	}
 
+	// Effected by Improved Transparency
 	@Inject(method = "renderLevel",
 	        at = @At(value = "INVOKE",
 	                 target = "Lnet/minecraft/client/renderer/LevelRenderer;addWeatherPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V"
@@ -73,10 +74,11 @@ public abstract class MixinLevelRenderer
 		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(modelViewMatrix, this.minecraft, frame, this.targets, cullFrustum, cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
 	}
 
+	// 'addLateDebugPass' clears the Depth Texture
 	@Inject(method = "renderLevel",
 	        at = @At(value = "INVOKE",
 	                 target = "Lnet/minecraft/client/renderer/LevelRenderer;addLateDebugPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Matrix4fc;)V",
-	                 shift = At.Shift.AFTER
+	                 shift = At.Shift.BEFORE
 	        ))
 	private void malilib_onRenderWorldLast(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker,
 	                                       boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix,
