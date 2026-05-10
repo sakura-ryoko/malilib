@@ -77,6 +77,11 @@ public enum i18nOption
 
 	public String getTranslatedName()
 	{
+		if (!this.description.isEmpty())
+		{
+			return this.description;
+		}
+
 		return translatedName;
 	}
 

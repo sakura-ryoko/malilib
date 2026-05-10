@@ -41,7 +41,8 @@ public class MaLiLibConfigs implements IConfigHandler
     public static class Generic
     {
         public static final ConfigOptionValues<FileWriteType> CONFIG_WRITE_METHOD = new ConfigOptionValues<>("configWriteMethod", FileWriteType.TEMP_AND_RENAME, FileWriteType.VALUES).apply(GENERIC_KEY);
-//        public static final ConfigOptionList        MOD_LANGUAGE                = new ConfigOptionList        ("modLanguage",       new i18nConfig(MaLiLib.LANG)).apply(GENERIC_KEY);
+        public static final ConfigOptionList        TRANSLATION_LANGUAGE        = new ConfigOptionList        ("translationLanguage", new i18nConfig(MaLiLib.LANG)).apply(GENERIC_KEY);
+        public static final ConfigBooleanHotkeyed   TRANSLATION_OVERRIDES       = new ConfigBooleanHotkeyed   ("translationOverrides", true, "").apply(GENERIC_KEY);
 
         public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
         public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
@@ -53,7 +54,9 @@ public class MaLiLibConfigs implements IConfigHandler
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 CONFIG_WRITE_METHOD,
-//                MOD_LANGUAGE,
+                TRANSLATION_LANGUAGE,
+                TRANSLATION_OVERRIDES,
+
                 IGNORED_KEYS,
                 OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
@@ -66,6 +69,7 @@ public class MaLiLibConfigs implements IConfigHandler
         // Can't add OPEN_GUI_CONFIGS here, because things will break
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
                 OPEN_GUI_CONFIGS,
+                TRANSLATION_OVERRIDES,
                 ENABLE_ACTIONBAR_MESSAGES,
                 ENABLE_CONFIG_SWITCHER
         );
