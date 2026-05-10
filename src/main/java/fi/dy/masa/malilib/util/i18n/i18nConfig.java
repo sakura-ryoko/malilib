@@ -38,6 +38,18 @@ public class i18nConfig implements IConfigOptionListEntry, StringRepresentable
 		}
 	}
 
+	public boolean isModified()
+	{
+		return !this.getManager().getDefaultLang().getLangCode().equalsIgnoreCase(this.getManager().getLang().getLangCode());
+	}
+
+	public void resetToDefault()
+	{
+		this.manager.resetLangToDefault();
+		this.selectedOption = manager.getLang().toOption();
+		this.calculateIndex();
+	}
+
 	public i18nManager getManager()
 	{
 		return this.manager;

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +15,7 @@ import java.util.regex.Pattern;
 import net.minecraft.network.chat.Component;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
 
 public class i18nManager
 {
@@ -45,8 +45,8 @@ public class i18nManager
 
 		if (result.defaultLang == null)
 		{
-			MaLiLib.LOGGER.error("i18nOptionManager: Default language: '{}' not found!", DEFAULT_LANG);
-			throw new IOException("i18nOptionManager: Default language: '"+DEFAULT_LANG+"' not found!");
+			MaLiLib.LOGGER.error("i18nOptionManager#create({}): Default language: '{}' not found!", modId, DEFAULT_LANG);
+			throw new IOException("i18nOptionManager#create("+modId+"): Default language: '"+DEFAULT_LANG+"' not found!");
 		}
 
 		return result;
@@ -78,19 +78,26 @@ public class i18nManager
 					}
 					else
 					{
-						MaLiLib.LOGGER.warn("i18nOptionManager#readKeys(): Ignoring file/directory '{}'", line);
+						if (MaLiLibReference.DEBUG_MODE)
+						{
+							MaLiLib.LOGGER.warn("i18nOptionManager#readKeys({}): Ignoring file/directory '{}'", this.getModId(), line);
+						}
 					}
 				}
 
 				is.close();
 
 				this.buildLanguageOptions();
-				MaLiLib.LOGGER.info("i18nOptionManager#readKeys(): keys read from assets folder: {}", this.keys.toString());
+
+				if (MaLiLibReference.DEBUG_MODE)
+				{
+					MaLiLib.LOGGER.info("i18nOptionManager#readKeys({}): keys read from assets folder: {}", this.getModId(), this.keys.toString());
+				}
 			}
 			else
 			{
-				MaLiLib.LOGGER.error("i18nOptionManager: Could not find resource '{}'!", this.baseString);
-				throw new IOException("i18nOptionManager: Could not find resource '" + this.baseString + "'!");
+				MaLiLib.LOGGER.error("i18nOptionManager#readKeys({}): Could not find resource '{}'!", this.getModId(), this.baseString);
+				throw new IOException("i18nOptionManager#readKeys("+this.getModId()+"): Could not find resource '"+this.baseString+"'!");
 			}
 		}
 		catch (Throwable t1)
@@ -153,6 +160,11 @@ public class i18nManager
 		return this.lang;
 	}
 
+	public void resetLangToDefault()
+	{
+		this.lang = this.defaultLang;
+	}
+
 	public void setLang(i18nConfig config)
 	{
 		if (this.lang != null && Objects.equals(this.lang.getLangCode(), config.getStringValue()))
@@ -172,7 +184,7 @@ public class i18nManager
 		catch (IOException e)
 		{
 			this.ensureLang();
-			MaLiLib.LOGGER.error("i18nOptionManager#setLang(): Exception loading language: '{}'; {}", config.getStringValue(), e.getLocalizedMessage());
+			MaLiLib.LOGGER.error("i18nOptionManager#setLang({}): Exception loading language: '{}'; {}", this.getModId(), config.getStringValue(), e.getLocalizedMessage());
 		}
 	}
 
@@ -219,7 +231,7 @@ public class i18nManager
 		}
 		catch (Exception e)
 		{
-			MaLiLib.LOGGER.error("i18nOptionManager#translate: Formatting exception for key: {}; {}", key, e.getLocalizedMessage());
+			MaLiLib.debugLog("i18nOptionManager#translate({}): Formatting exception for key: {}; {}", this.getModId(), key, e.getLocalizedMessage());
 			return "Format Error: "+result;
 		}
 	}

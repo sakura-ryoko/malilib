@@ -38,7 +38,9 @@ public class MaLiLibConfigs implements IConfigHandler
     private static final String GENERIC_KEY = MaLiLibReference.MOD_ID+".config.generic";
     public static class Generic
     {
-//        public static final ConfigOptionList        MOD_LANGUAGE                = new ConfigOptionList        ("modLanguage",       new i18nConfig(MaLiLib.LANG)).apply(GENERIC_KEY);
+//        public static final ConfigOptionValues<FileWriteType> CONFIG_WRITE_METHOD = new ConfigOptionValues<>("configWriteMethod", FileWriteType.TEMP_AND_RENAME, FileWriteType.VALUES).apply(GENERIC_KEY);
+        public static final ConfigOptionList        TRANSLATION_LANGUAGE        = new ConfigOptionList        ("translationLanguage", new i18nConfig(MaLiLib.LANG)).apply(GENERIC_KEY);
+        public static final ConfigBooleanHotkeyed   TRANSLATION_OVERRIDES       = new ConfigBooleanHotkeyed   ("translationOverrides", true, "").apply(GENERIC_KEY);
 
         public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
         public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
@@ -49,7 +51,10 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-//                MOD_LANGUAGE,
+//                CONFIG_WRITE_METHOD,
+                TRANSLATION_LANGUAGE,
+                TRANSLATION_OVERRIDES,
+
                 IGNORED_KEYS,
                 OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
@@ -62,6 +67,7 @@ public class MaLiLibConfigs implements IConfigHandler
         // Can't add OPEN_GUI_CONFIGS here, because things will break
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
                 OPEN_GUI_CONFIGS,
+                TRANSLATION_OVERRIDES,
                 ENABLE_ACTIONBAR_MESSAGES,
                 ENABLE_CONFIG_SWITCHER
         );
@@ -104,6 +110,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigFloat             TEST_CONFIG_FLOAT               = new ConfigFloat("testFloat", 0.5f, 0.0f, 1.0f, true, "Test Float").apply(TEST_KEY);
         public static final ConfigInteger           TEST_CONFIG_INTEGER             = new ConfigInteger("testInteger", 5, 1, 10, "Test Integer").apply(TEST_KEY);
         public static final ConfigOptionList        TEST_CONFIG_OPTIONS_LIST        = new ConfigOptionList("testOptionList", ConfigTestOptList.TEST1, "Test Option List").apply(TEST_KEY);
+//        public static final ConfigOptionValues<TestOptions> TEST_CONFIG_OPTION_VALUES = new ConfigOptionValues<>("testConfigOptionValues", TestOptions.TEST_OPT_1, TestOptions.VALUES, "Test Option Values").apply(TEST_KEY);
         public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "testString", "Test String").apply(TEST_KEY);
         public static final ConfigStringList        TEST_CONFIG_STRING_LIST         = new ConfigStringList("testStringList", ImmutableList.of("testString1", "testString2"), "Test String List").apply(TEST_KEY);
         public static final ConfigLockedList        TEST_CONFIG_LOCKED_LIST         = new ConfigLockedList("testLockedConfigList", ConfigTestLockedList.INSTANCE, "Test Locked List").apply(TEST_KEY);
@@ -174,6 +181,7 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_FLOAT,
                 TEST_CONFIG_INTEGER,
                 TEST_CONFIG_OPTIONS_LIST,
+//                TEST_CONFIG_OPTION_VALUES,
                 TEST_CONFIG_STRING,
                 TEST_CONFIG_STRING_LIST,
                 TEST_CONFIG_LOCKED_LIST,
@@ -219,11 +227,11 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static void loadFromFile()
     {
-        Path configFile = FileUtils.getConfigDirectoryAsPath().resolve(CONFIG_FILE_NAME);
+        Path configFile = FileUtils.getConfigDirectory().resolve(CONFIG_FILE_NAME);
 
         if (Files.exists(configFile) && Files.isReadable(configFile))
         {
-            JsonElement element = JsonUtils.parseJsonFileAsPath(configFile);
+            JsonElement element = JsonUtils.parseJsonFile(configFile);
 
             if (element != null && element.isJsonObject())
             {
@@ -262,7 +270,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static void saveToFile()
     {
-        Path dir = FileUtils.getConfigDirectoryAsPath();
+        Path dir = FileUtils.getConfigDirectory();
 
         if (!Files.exists(dir))
         {
@@ -293,10 +301,9 @@ public class MaLiLibConfigs implements IConfigHandler
                 ConfigUtils.writeConfigBase(root, "Experimental", Experimental.OPTIONS);
             }
 
-            JsonUtils.writeJsonToFileAsPath(root, dir.resolve(CONFIG_FILE_NAME));
+            Path config = dir.resolve(CONFIG_FILE_NAME);
 
-            /*
-            if (JsonUtils.writeJsonToFileAsPath(root, config))
+            if (JsonUtils.writeJsonToFile(root, config))
             {
                 if (MaLiLibReference.DEBUG_MODE)
                 {
@@ -307,14 +314,11 @@ public class MaLiLibConfigs implements IConfigHandler
             {
                 MaLiLib.LOGGER.error("saveToFile(): Failed to save config file '{}'.", config.toAbsolutePath());
             }
-             */
         }
-        /*
         else
         {
             MaLiLib.LOGGER.error("saveToFile(): Config Folder '{}' does not exist!", dir.toAbsolutePath());
         }
-         */
     }
 
     @Override

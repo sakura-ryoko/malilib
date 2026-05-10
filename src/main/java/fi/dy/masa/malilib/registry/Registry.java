@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.registry;
 
 import fi.dy.masa.malilib.gui.config.registry.ConfigScreenRegistry;
 import fi.dy.masa.malilib.interoperation.BlockPlacementPositionHandler;
+import fi.dy.masa.malilib.util.i18n.i18nRegistry;
 
 /**
  * Post-ReWrite code
@@ -15,4 +16,7 @@ public class Registry
     // Event dispatchers and handlers
     public static final BlockPlacementPositionHandler BLOCK_PLACEMENT_POSITION_HANDLER = new BlockPlacementPositionHandler();
     public static final ConfigScreenRegistry CONFIG_SCREEN = new ConfigScreenRegistry();
+
+    // i18n Registry
+    public static final i18nRegistry TRANSLATION_OVERRIDE_MANAGER = new i18nRegistry();
 }
