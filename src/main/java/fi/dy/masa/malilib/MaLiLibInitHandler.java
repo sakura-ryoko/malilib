@@ -22,7 +22,10 @@ public class MaLiLibInitHandler implements IInitializationHandler
     public void registerModHandlers()
     {
         ConfigManager.getInstance().registerConfigHandler(MaLiLibReference.MOD_ID, new MaLiLibConfigs());
-
+	    MaLiLibConfigs.LANG.ifPresent(
+                i18nManager ->
+                        Registry.TRANSLATION_OVERRIDE_MANAGER.registerTranslationManager(MaLiLibReference.MOD_ID, i18nManager)
+        );
         InputEventHandler.getKeybindManager().registerKeybindProvider(MaLiLibInputHandler.getInstance());
         MaLiLibConfigs.Generic.OPEN_GUI_CONFIGS.getKeybind().setCallback(new CallbackOpenConfigGui());
 
@@ -48,7 +51,20 @@ public class MaLiLibInitHandler implements IInitializationHandler
 //                TestThreadDaemonDefaultHandler.INSTANCE.endAll();
 //                TestThreadDaemonAsyncHandler.INSTANCE.endAll();
 //            }
+
+            /*
+            if (MaLiLibReference.EXPERIMENTAL_MODE)
+            {
+                OnDemandRenderer.getInstance().registerOnDemandRenderer(
+                        MaLiLibReference.MOD_ID+"_block_targeting_overlay",
+                        new BlockTargetingOverlayRenderer(MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN, true, false)
+                );
+            }
+            */
         }
+
+//        RenderEventHandler.getInstance().registerWorldLastRenderer(OnDemandRenderer.getInstance());
+//        TickHandler.getInstance().registerClientTickHandler(OnDemandRenderer.getInstance());
     }
 
     private static class CallbackOpenConfigGui implements IHotkeyCallback

@@ -12,6 +12,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import net.minecraft.network.chat.Component;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -39,17 +41,26 @@ public class i18nManager
 		this.readKeys();
 	}
 
-	public static i18nManager create(String modId) throws IOException
+	@Nullable
+	public static i18nManager create(String modId)
 	{
-		i18nManager result = new i18nManager(modId);
-
-		if (result.defaultLang == null)
+		try
 		{
-			MaLiLib.LOGGER.error("i18nOptionManager#create({}): Default language: '{}' not found!", modId, DEFAULT_LANG);
-			throw new IOException("i18nOptionManager#create("+modId+"): Default language: '"+DEFAULT_LANG+"' not found!");
+			i18nManager result = new i18nManager(modId);
+
+			if (result.defaultLang == null)
+			{
+				MaLiLib.LOGGER.error("i18nOptionManager#create({}): Default language: '{}' not found!", modId, DEFAULT_LANG);
+			}
+
+			return result;
+		}
+		catch (IOException e)
+		{
+			MaLiLib.LOGGER.error("i18nOptionManager#create({}): Exception building i18nManager; {}", modId, e.getLocalizedMessage());
 		}
 
-		return result;
+		return null;
 	}
 
 	private void readKeys() throws IOException

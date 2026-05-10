@@ -5,6 +5,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import com.google.common.collect.ImmutableList;
 
+import fi.dy.masa.malilib.MaLiLibReference;
+
 public class i18nRegistry
 {
 	private final HashMap<String, i18nManager> translationManagerMap;
@@ -22,6 +24,17 @@ public class i18nRegistry
 		ArrayList<i18nManager> list = new ArrayList<>(this.translationManagerMap.values());
 		list.sort(Comparator.comparing(i18nManager::getModId));
 		this.translationManagers = ImmutableList.copyOf(list);
+	}
+
+	// Return MaLiLib's configured Language Code.
+	public String getBaseLanguageCode()
+	{
+		if (this.translationManagerMap.containsKey(MaLiLibReference.MOD_ID))
+		{
+			return this.translationManagerMap.get(MaLiLibReference.MOD_ID).getLang().getLangCode();
+		}
+
+		return i18nManager.DEFAULT_LANG;
 	}
 
 	public int size()
