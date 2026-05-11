@@ -12,15 +12,22 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	private final AtomicBoolean running = new AtomicBoolean(true);
 	private final AtomicBoolean paused = new AtomicBoolean(false);
 	private final long sleepTime;
+	private final float sleepDelay;
+	private final long maxTicks;
+	private long lastTaskTime;
+	private long ticks;
 
 	public TestThreadDaemonExecutorAsync()
 	{
-		this(600000L);  // 10 min
+		this(1800000L);  // 30 min
 	}
 
 	public TestThreadDaemonExecutorAsync(long sleepTime)
 	{
 		this.sleepTime = MathUtils.clamp(sleepTime, 60000L, Long.MAX_VALUE); // 1 min
+		this.sleepDelay = 0.75F;        // <1-second sleep delay (Must not be < 1/2 the tick rate)
+		this.maxTicks = 32L;           // Cap how many ticks per an interrupt cycle without tasks to do
+		this.ticks = 0L;
 	}
 
 	@Override
@@ -46,17 +53,18 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 				this.paused.set(false);
 			}
 
-			this.running.set(true);
+			this.run();
 		}
-
-		this.run();
 	}
 
 	@Override
 	public void interrupt(InterruptedException interrupt)
 	{
-		MaLiLib.LOGGER.error("Executor: Interrupt Signal: {}", interrupt.getLocalizedMessage());
-		if (this.isPaused())
+		MaLiLib.LOGGER.error("Executor: Interrupt Signal: {}",
+		                     interrupt.getLocalizedMessage() != null
+		                     ? interrupt.getLocalizedMessage()  // This is null sometimes?
+		                     : "received interrupt signal");
+		if (this.isPaused() || !this.isRunning())
 		{
 			this.resume();
 		}
@@ -65,6 +73,7 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	@Override
 	public void pause()
 	{
+		MaLiLib.LOGGER.error("Executor: Pausing");
 		this.paused.set(true);
 	}
 
@@ -77,7 +86,7 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 			this.paused.set(false);
 		}
 
-		this.start();
+//		this.start();
 	}
 
 	@Override
@@ -116,6 +125,10 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	public void run()
 	{
 		if (!this.isCorrectThread()) { return; }
+
+		this.running.set(true);
+		this.lastTaskTime = System.currentTimeMillis();
+		this.ticks = 0L;
 		MaLiLib.LOGGER.error("Executor: Running: [{}/{}]", this.isRunning(), this.isPaused());
 
 		while (this.isRunning())
@@ -127,8 +140,16 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 			else if (!this.isPaused() && this.loopSafe())
 			{
 				this.paused.set(true);
-				this.sleep();
-				return;
+				this.ticks = 0L;
+
+				if (this.hasTasks())
+				{
+					this.sleep(50L);
+				}
+				else
+				{
+					this.sleep();
+				}
 			}
 		}
 	}
@@ -136,14 +157,16 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	@Override
 	public boolean loopSafe()
 	{
+		this.ticks++;
+
 		try
 		{
-			TestThreadTaskAsync task = TestThreadDaemonAsyncHandler.INSTANCE.getNextTask();
+			TestThreadTaskAsync task = this.takeNextTask();
 
 			if (task != null)
 			{
 				this.processTask(task);
-				return false;
+				this.lastTaskTime = System.currentTimeMillis();
 			}
 		}
 		catch (InterruptedException e)
@@ -156,6 +179,19 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 		}
 
 		return this.shouldPause();
+	}
+
+	@Override
+	public boolean shouldPause()
+	{
+		if (this.ticks > this.maxTicks) { return true; }
+		if (this.hasTasks()) { return false; }
+		return (System.currentTimeMillis() - this.lastTaskTime) > (this.sleepDelay * 1000L);
+	}
+
+	private TestThreadTaskAsync takeNextTask() throws InterruptedException
+	{
+		return TestThreadDaemonAsyncHandler.INSTANCE.getNextTask();
 	}
 
 	@Override

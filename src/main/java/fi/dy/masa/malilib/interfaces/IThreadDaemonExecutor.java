@@ -136,10 +136,10 @@ public interface IThreadDaemonExecutor<T extends IThreadTaskBase> extends Runnab
 			{
 				this.interrupt(e);
 			}
-			finally
-			{
-				this.resume();
-			}
+//			finally
+//			{
+//				this.resume();
+//			}
 		}
 	}
 }

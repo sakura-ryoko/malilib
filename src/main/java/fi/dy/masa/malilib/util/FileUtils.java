@@ -24,13 +24,31 @@ public class FileUtils
     public static final Predicate<Path> ANY_FILE_FILEFILTER = Files::isRegularFile;
     public static final Predicate<Path> JSON_FILEFILTER = (f) -> Files.isRegularFile(f) && f.getFileName().toString().endsWith(".json");
 
+    /**
+     * @deprecated Please migrate to using 'getConfigDirectory' again
+     */
+    @Deprecated
     public static Path getConfigDirectoryAsPath()
+    {
+        return MaLiLibReference.CONFIG_DIR;
+    }
+
+    /**
+     * @deprecated Please migrate to using 'getMinecraftDirectory' again
+     */
+    @Deprecated
+    public static Path getMinecraftDirectoryAsPath()
+    {
+        return MaLiLibReference.GAME_DIR;
+    }
+
+    public static Path getConfigDirectory()
     {
 //        return GameWrap.getClient().gameDirectory.toPath().resolve("config");
         return MaLiLibReference.CONFIG_DIR;
     }
 
-    public static Path getMinecraftDirectoryAsPath()
+    public static Path getMinecraftDirectory()
     {
 //        return GameWrap.getClient().gameDirectory.toPath();
         return MaLiLibReference.GAME_DIR;
