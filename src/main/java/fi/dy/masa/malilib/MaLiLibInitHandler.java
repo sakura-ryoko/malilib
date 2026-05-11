@@ -18,8 +18,6 @@ import fi.dy.masa.malilib.test.command.TestCommand;
 import fi.dy.masa.malilib.test.input.TestInputHandler;
 import fi.dy.masa.malilib.test.misc.TestSelector;
 import fi.dy.masa.malilib.test.render.TestRenderHandler;
-import fi.dy.masa.malilib.test.thread.TestThreadDaemonAsyncHandler;
-import fi.dy.masa.malilib.test.thread.TestThreadDaemonDefaultHandler;
 
 public class MaLiLibInitHandler implements IInitializationHandler
 {
@@ -46,16 +44,14 @@ public class MaLiLibInitHandler implements IInitializationHandler
             ClientCommandHandler.INSTANCE.registerCommand(new TestCommand());
             TickHandler.getInstance().registerClientTickHandler(TestSelector.INSTANCE);
 
-            if (MaLiLibReference.EXPERIMENTAL_MODE)
-            {
-                TickHandler.getInstance().registerClientTickHandler(TestThreadDaemonDefaultHandler.INSTANCE);
-                TickHandler.getInstance().registerClientTickHandler(TestThreadDaemonAsyncHandler.INSTANCE);
-            }
-            else
-            {
-                TestThreadDaemonDefaultHandler.INSTANCE.endAll();
-                TestThreadDaemonAsyncHandler.INSTANCE.endAll();
-            }
+//            if (MaLiLibReference.EXPERIMENTAL_MODE)
+//            {
+//                TickHandler.getInstance().registerClientTickHandler(TestThreadDaemonHandler.INSTANCE);
+//            }
+//            else
+//            {
+//                TestThreadDaemonHandler.INSTANCE.endAll();
+//            }
 
             if (MaLiLibReference.EXPERIMENTAL_MODE)
             {

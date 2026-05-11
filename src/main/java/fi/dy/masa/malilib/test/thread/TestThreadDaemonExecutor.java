@@ -1,13 +1,12 @@
 package fi.dy.masa.malilib.test.thread;
 
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.interfaces.IThreadDaemonExecutor;
 import fi.dy.masa.malilib.util.MathUtils;
 
-public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<TestThreadTaskAsync>
+public class TestThreadDaemonExecutor implements IThreadDaemonExecutor<TestThreadTask>
 {
 	private final AtomicBoolean running = new AtomicBoolean(true);
 	private final AtomicBoolean paused = new AtomicBoolean(false);
@@ -17,12 +16,12 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	private long lastTaskTime;
 	private long ticks;
 
-	public TestThreadDaemonExecutorAsync()
+	public TestThreadDaemonExecutor()
 	{
 		this(1800000L);  // 30 min
 	}
 
-	public TestThreadDaemonExecutorAsync(long sleepTime)
+	public TestThreadDaemonExecutor(long sleepTime)
 	{
 		this.sleepTime = MathUtils.clamp(sleepTime, 60000L, Long.MAX_VALUE); // 1 min
 		this.sleepDelay = 0.75F;        // <1-second sleep delay (Must not be < 1/2 the tick rate)
@@ -61,9 +60,9 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	public void interrupt(InterruptedException interrupt)
 	{
 		MaLiLib.LOGGER.error("Executor: Interrupt Signal: {}",
-		                     interrupt.getLocalizedMessage() != null
-		                     ? interrupt.getLocalizedMessage()  // This is null sometimes?
-		                     : "received interrupt signal");
+		                    interrupt.getLocalizedMessage() != null
+		                    ? interrupt.getLocalizedMessage()  // This is null sometimes?
+		                    : "received interrupt signal");
 		if (this.isPaused() || !this.isRunning())
 		{
 			this.resume();
@@ -112,13 +111,13 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 	@Override
 	public String getName()
 	{
-		return TestThreadDaemonAsyncHandler.INSTANCE.getName();
+		return TestThreadDaemonHandler.INSTANCE.getName();
 	}
 
 	@Override
 	public boolean hasTasks()
 	{
-		return TestThreadDaemonAsyncHandler.INSTANCE.hasTasks();
+		return TestThreadDaemonHandler.INSTANCE.hasTasks();
 	}
 
 	@Override
@@ -161,7 +160,7 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 
 		try
 		{
-			TestThreadTaskAsync task = this.takeNextTask();
+			TestThreadTask task = this.takeNextTask();
 
 			if (task != null)
 			{
@@ -189,26 +188,15 @@ public class TestThreadDaemonExecutorAsync implements IThreadDaemonExecutor<Test
 		return (System.currentTimeMillis() - this.lastTaskTime) > (this.sleepDelay * 1000L);
 	}
 
-	private TestThreadTaskAsync takeNextTask() throws InterruptedException
+	private TestThreadTask takeNextTask() throws InterruptedException
 	{
-		return TestThreadDaemonAsyncHandler.INSTANCE.getNextTask();
+		return TestThreadDaemonHandler.INSTANCE.getNextTask();
 	}
 
 	@Override
-	public void processTask(TestThreadTaskAsync task) throws InterruptedException
+	public void processTask(TestThreadTask task) throws InterruptedException
 	{
-		// CompletableFuture uses a ForkJoinPool
-		CompletableFuture<Void> result = task.runAsync();
-
-		result.whenComplete((res, err) ->
-		                    {
-								if (err != null)
-								{
-									MaLiLib.LOGGER.error("processTask: completed with error: {}", err.getLocalizedMessage());
-									return;
-								}
-
-								MaLiLib.LOGGER.info("processTask: completed");
-		                    });
+		task.run();
+		MaLiLib.LOGGER.info("processTask: completed");
 	}
 }
