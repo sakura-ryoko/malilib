@@ -9,12 +9,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 
-import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.data.CachedTagManager;
 import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
-import fi.dy.masa.malilib.test.thread.TestThreadDaemonAsyncHandler;
-import fi.dy.masa.malilib.test.thread.TestThreadDaemonDefaultHandler;
 import fi.dy.masa.malilib.util.game.RecipeBookUtils;
 
 public class WorldLoadHandler implements IWorldLoadManager
@@ -99,11 +96,10 @@ public class WorldLoadHandler implements IWorldLoadManager
             InputEventHandler.getKeybindManager().updateUsedKeys();
             CachedTagManager.startCache();
 
-            if (MaLiLibReference.DEBUG_MODE && MaLiLibReference.EXPERIMENTAL_MODE)
-            {
-                TestThreadDaemonDefaultHandler.INSTANCE.start();
-                TestThreadDaemonAsyncHandler.INSTANCE.start();
-            }
+//            if (MaLiLibReference.DEBUG_MODE && MaLiLibReference.EXPERIMENTAL_MODE)
+//            {
+//                TestThreadDaemonHandler.INSTANCE.start();
+//            }
         }
 
         if (this.worldLoadPostHandlers.isEmpty() == false &&

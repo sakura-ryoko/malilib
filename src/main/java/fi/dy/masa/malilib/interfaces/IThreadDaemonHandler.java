@@ -6,7 +6,7 @@ import org.apache.commons.lang3.math.Fraction;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.MathUtils;
-import fi.dy.masa.malilib.util.data.ThreadExecutorPair;
+import fi.dy.masa.malilib.util.thread.ThreadExecutorPair;
 
 /**
  * Extend this to create a "Daemon" Instance class that manages a task {@link java.util.Queue} for the Daemon.

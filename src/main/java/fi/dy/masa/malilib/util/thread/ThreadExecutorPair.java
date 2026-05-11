@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.util.data;
+package fi.dy.masa.malilib.util.thread;
 
 import fi.dy.masa.malilib.interfaces.IThreadDaemonExecutor;
 import fi.dy.masa.malilib.interfaces.IThreadTaskBase;
