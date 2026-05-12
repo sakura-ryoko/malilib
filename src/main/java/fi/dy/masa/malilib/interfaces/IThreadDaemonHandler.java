@@ -19,16 +19,25 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 		extends IClientTickHandler, AutoCloseable
 {
 	/**
-	 * Get a "Safe" {@link Thread} count; or 1/8 of your system's Core Count.
+	 * Get a "Safe" {@link Thread} count; or 1/4 of your system's Core Count.
 	 * Note that the number return might be 0, which means that you should
-	 * only be using 1 Virtual {@link Thread} Max if your CPU has less than 8 Cores.
+	 * only be using 1 Virtual {@link Thread} Max if your CPU has less than 4 Cores.
 	 * @return -
 	 */
 	default int getThreadCountSafe()
 	{
 		final int maxThreads = Runtime.getRuntime().availableProcessors();
-		final Fraction calc = Fraction.getFraction(maxThreads, 8);
+		final Fraction calc = Fraction.getFraction(maxThreads, 4);
 		return MathUtils.clamp(calc.intValue(), 0, maxThreads);
+	}
+
+	/**
+	 * Get a "Max" {@link Thread} count; or 1/2 of your system's Core Count.
+	 * @return -
+	 */
+	default int getThreadCountMax()
+	{
+		return MathUtils.max(Runtime.getRuntime().availableProcessors() / 2, 1);
 	}
 
 	/**
@@ -36,7 +45,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	 * @param name The name of the new {@link Thread}
 	 * @param useVirtual Whether the {@link Thread} should be run Virtually by the JVM
 	 * @param executor The {@link IThreadDaemonExecutor} to utilize
-	 * @return The newly built {@link Thread}
+	 * @return The newly built {@link ThreadExecutorPair}
 	 */
 	default ThreadExecutorPair<T> threadFactory(String name, boolean useVirtual, IThreadDaemonExecutor<T> executor)
 	{
@@ -50,8 +59,8 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	}
 
 	/**
-	 * Safely start the {@link Thread} by checking the current state.
-	 * @param t The {@link Thread}
+	 * Safely start the {@link ThreadExecutorPair} by checking the current state.
+	 * @param t The {@link ThreadExecutorPair}
 	 * @throws RuntimeException The {@link Thread} is Null, or already Running
 	 * @throws ConcurrentModificationException The {@link Thread} is in the Blocking state
 	 * @throws IllegalStateException The {@link Thread} was terminated, and needs to be replaced.
@@ -72,8 +81,8 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	}
 
 	/**
-	 * Safely Stop the {@link Thread} by checking the current state.
-	 * @param t The {@link Thread}
+	 * Safely Stop the {@link ThreadExecutorPair} by checking the current state.
+	 * @param t The {@link ThreadExecutorPair}
 	 * @throws RuntimeException If the {@link Thread} is Null
 	 * @throws IllegalThreadStateException If the {@link Thread} is New and not yet started
 	 * @throws ConcurrentModificationException If the {@link Thread} is in a Blocking state
