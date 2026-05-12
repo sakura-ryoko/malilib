@@ -129,7 +129,7 @@ public interface IThreadDaemonExecutor<T extends IThreadTaskBase> extends Runnab
 					this.pause();
 				}
 
-				MaLiLib.debugLog("IThreadDaemonExecutor#Executor: sleeping: '{}' for [{}]", this.currentThreadName(), this.sleepTime());
+				MaLiLib.debugLog("IThreadDaemonExecutor#Executor: sleeping: '{}' for [{}]", this.currentThreadName(), millis);
 				Thread.sleep(millis);
 			}
 			catch (InterruptedException e)
