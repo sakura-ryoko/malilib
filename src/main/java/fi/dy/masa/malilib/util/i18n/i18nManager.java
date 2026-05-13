@@ -1,17 +1,11 @@
 package fi.dy.masa.malilib.util.i18n;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.*;
+import java.util.*;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 
 import net.minecraft.network.chat.Component;
@@ -63,69 +57,75 @@ public class i18nManager
 		return null;
 	}
 
-	private void readKeys() throws IOException
+	private void readKeys()
 	{
-		InputStream is = i18nManager.class.getClassLoader().getResourceAsStream(this.baseString);
+		final String baseString = "/"+this.baseString;
+		URL resource = i18nManager.class.getResource(baseString);
 
-		try
+		if (resource != null)
 		{
-			if (is != null)
+			try
 			{
-				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-				String line;
+				URI uri = resource.toURI();
+				Path root;
+				FileSystem tempFs = null;
+				boolean created = false;
+
+				if (uri.getScheme().equals("jar"))
+				{
+					try
+					{
+						tempFs = FileSystems.getFileSystem(uri);
+					}
+					catch (FileSystemNotFoundException e)
+					{
+						tempFs = FileSystems.newFileSystem(uri, Collections.emptyMap());
+						created = true;
+					}
+
+					root = tempFs.getPath(baseString);
+				}
+				else
+				{
+					root = Paths.get(uri);
+				}
+
 				this.keys.clear();
 
-				while ((line = reader.readLine()) != null)
+				try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, FILE_FILTER))
 				{
-					Path filePath = Path.of(line);
-					Path file = filePath.getFileName();
-
-					if (FILE_FILTER.accept(file))
+					for (Path file : stream)
 					{
-						final String fileName = file.toString();
+						final String fileName = file.getFileName().toString();
 						final String nameOnly = fileName.split("\\.")[0];
-
 						this.keys.add(nameOnly);
 					}
-					else
+				}
+				finally
+				{
+					if (tempFs != null && tempFs.isOpen()
+						&& created)
 					{
-						if (MaLiLibReference.DEBUG_MODE)
-						{
-							MaLiLib.LOGGER.warn("i18nOptionManager#readKeys({}): Ignoring file/directory '{}'", this.getModId(), line);
-						}
+						tempFs.close();
 					}
 				}
-
-				is.close();
-
-				this.buildLanguageOptions();
-
-				if (MaLiLibReference.DEBUG_MODE)
-				{
-					MaLiLib.LOGGER.info("i18nOptionManager#readKeys({}): keys read from assets folder: {}", this.getModId(), this.keys.toString());
-				}
 			}
-			else
+			catch (Exception e)
 			{
-				MaLiLib.LOGGER.error("i18nOptionManager#readKeys({}): Could not find resource '{}'!", this.getModId(), this.baseString);
-				throw new IOException("i18nOptionManager#readKeys("+this.getModId()+"): Could not find resource '"+this.baseString+"'!");
+				MaLiLib.LOGGER.error("i18nOptionManager#readKeys({}): Could not find resource '{}'; Exception: {}", this.getModId(), this.baseString, e.getLocalizedMessage());
 			}
 		}
-		catch (Throwable t1)
-		{
-			if (is != null)
-			{
-				try
-				{
-					is.close();
-				}
-				catch (Throwable t2)
-				{
-					t1.addSuppressed(t2);
-				}
-			}
 
-			throw t1;
+		if (this.keys.isEmpty())
+		{
+			this.keys.add(DEFAULT_LANG);
+		}
+
+		this.buildLanguageOptions();
+
+		if (MaLiLibReference.DEBUG_MODE)
+		{
+			MaLiLib.LOGGER.info("i18nOptionManager#readKeys({}): keys read from assets folder: {}", this.getModId(), this.keys.toString());
 		}
 	}
 
@@ -266,7 +266,7 @@ public class i18nManager
 			{
 				final String fullName = entry.getFileName().toString();
 
-				if (fullName.endsWith(".json"))
+				if (Files.isRegularFile(entry) && fullName.endsWith(".json"))
 				{
 					final String nameOnly = fullName.split("\\.")[0];
 
