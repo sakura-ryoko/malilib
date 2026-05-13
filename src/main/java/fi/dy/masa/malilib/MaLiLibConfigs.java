@@ -30,6 +30,7 @@ import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.i18n.i18nConfig;
 import fi.dy.masa.malilib.util.i18n.i18nManager;
+import fi.dy.masa.malilib.util.input.KeyboardType;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
 
@@ -43,38 +44,38 @@ public class MaLiLibConfigs implements IConfigHandler
 	private static final String GENERIC_KEY = MaLiLibReference.MOD_ID+".config.generic";
     public static class Generic
     {
+        public static final ConfigInteger           ACTIONBAR_HUD_TICKS         = new ConfigInteger           ("actionbarHudTicks",       60, 1, 240).apply(GENERIC_KEY);
         public static final ConfigOptionValues<FileWriteType> CONFIG_WRITE_METHOD = new ConfigOptionValues<>("configWriteMethod", FileWriteType.TEMP_AND_RENAME, FileWriteType.VALUES).apply(GENERIC_KEY);
+        public static final ConfigBooleanHotkeyed   ENABLE_ACTIONBAR_MESSAGES   = new ConfigBooleanHotkeyed   ("enableActionbarMessages", true, "").apply(GENERIC_KEY);
+        public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
+        public static final ConfigOptionList        KEYBOARD_TYPE               = new ConfigOptionList        ("keyboardType",      KeyboardType.QWERTY).apply(GENERIC_KEY);
+        public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
+        public static final ConfigFloat             IN_GAME_MESSAGE_TIMEOUT     = new ConfigFloat             ("inGameMessageTimeout",    5.0f, 0.5f, 15.0f).apply(GENERIC_KEY);
+        public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
+        public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
         public static final ConfigOptionList        TRANSLATION_LANGUAGE        = new ConfigOptionList        ("translationLanguage", new i18nConfig(LANG.orElseThrow())).apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   TRANSLATION_OVERRIDES       = new ConfigBooleanHotkeyed   ("translationOverrides", true, "").apply(GENERIC_KEY);
 
-        public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
-        public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
-        public static final ConfigBooleanHotkeyed   ENABLE_ACTIONBAR_MESSAGES   = new ConfigBooleanHotkeyed   ("enableActionbarMessages", true, "").apply(GENERIC_KEY);
-        public static final ConfigInteger           ACTIONBAR_HUD_TICKS         = new ConfigInteger           ("actionbarHudTicks",       60, 1, 240).apply(GENERIC_KEY);
-        public static final ConfigFloat             IN_GAME_MESSAGE_TIMEOUT     = new ConfigFloat             ("inGameMessageTimeout",    5.0f, 0.5f, 15.0f).apply(GENERIC_KEY);
-        public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
-        public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
-
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
-                CONFIG_WRITE_METHOD,
-                TRANSLATION_LANGUAGE,
-                TRANSLATION_OVERRIDES,
-
-                IGNORED_KEYS,
-                OPEN_GUI_CONFIGS,
-                ENABLE_ACTIONBAR_MESSAGES,
                 ACTIONBAR_HUD_TICKS,
-                IN_GAME_MESSAGE_TIMEOUT,
+                CONFIG_WRITE_METHOD,
+                ENABLE_ACTIONBAR_MESSAGES,
                 ENABLE_CONFIG_SWITCHER,
-                REALMS_COMMON_CONFIG
+                KEYBOARD_TYPE,
+                IGNORED_KEYS,
+                IN_GAME_MESSAGE_TIMEOUT,
+                OPEN_GUI_CONFIGS,
+                REALMS_COMMON_CONFIG,
+                TRANSLATION_LANGUAGE,
+                TRANSLATION_OVERRIDES
         );
 
         // Can't add OPEN_GUI_CONFIGS here, because things will break
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
-                OPEN_GUI_CONFIGS,
-                TRANSLATION_OVERRIDES,
                 ENABLE_ACTIONBAR_MESSAGES,
-                ENABLE_CONFIG_SWITCHER
+                ENABLE_CONFIG_SWITCHER,
+                OPEN_GUI_CONFIGS,
+                TRANSLATION_OVERRIDES
         );
     }
 

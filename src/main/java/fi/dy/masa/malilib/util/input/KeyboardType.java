@@ -1,7 +1,6 @@
-package fi.dy.masa.malilib.util;
+package fi.dy.masa.malilib.util.input;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
@@ -9,9 +8,9 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.InteractionHand;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import fi.dy.masa.malilib.util.StringUtils;
 
 public enum KeyboardType implements IConfigOptionListEntry, StringRepresentable
 {
