@@ -4,6 +4,10 @@ import java.lang.reflect.Field;
 import javax.annotation.Nullable;
 import org.lwjgl.glfw.GLFW;
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.util.input.KeyCodesAzerty;
+import fi.dy.masa.malilib.util.input.KeyboardType;
+
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -150,12 +154,62 @@ public class KeyCodes
     @Nullable
     public static String getNameForKey(int keyCode)
     {
+        // Transform to AZERTY if a Transform is found
+        KeyboardType type = (KeyboardType) MaLiLibConfigs.Generic.KEYBOARD_TYPE.getOptionListValue();
+
+        if (type == KeyboardType.AZERTY)
+        {
+            KeyCodesAzerty transform = KeyCodesAzerty.fromKeyCode(keyCode);
+
+            if (transform != null)
+            {
+                return transform.getName();
+            }
+        }
+
         return MAP_KEY_TO_NAME.get(keyCode);
     }
 
     public static int getKeyCodeFromName(String name)
     {
+        // Transform to AZERTY if a Transform is found;
+        // Might cause a few problems if converting a config
+        KeyboardType type = (KeyboardType) MaLiLibConfigs.Generic.KEYBOARD_TYPE.getOptionListValue();
+
+        if (type == KeyboardType.AZERTY)
+        {
+            KeyCodesAzerty transform = KeyCodesAzerty.fromName(name);
+
+            if (transform != null)
+            {
+                return transform.keyCode();
+            }
+        }
+        // For backwards reading of configs if the mapping isn't found;
+        // Might cause a few problems if converting a config
+        else if (type == KeyboardType.QWERTY && !MAP_NAME_TO_KEY.containsKey(name))
+        {
+            KeyCodesAzerty transform = KeyCodesAzerty.fromName(name);
+
+            if (transform != null)
+            {
+                return transform.keyCode();
+            }
+        }
+
         return MAP_NAME_TO_KEY.getInt(name);
+    }
+
+    @Nullable
+    public static KeyCodesAzerty getTransformFromAzerty(String name)
+    {
+        return KeyCodesAzerty.fromName(name);
+    }
+
+    @Nullable
+    public static KeyCodesAzerty getTransformFromQwerty(String name)
+    {
+        return KeyCodesAzerty.fromQwertyName(name);
     }
 
     static

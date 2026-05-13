@@ -52,6 +52,7 @@ public class TestInputHandler implements IKeybindProvider
         TestHotkeys.TEST_GUI_EDITOR_KEYBIND.getKeybind().setCallback(this.callback);
         TestHotkeys.TEST_GUI_FILE_BROWSER_KEYBIND.getKeybind().setCallback(this.callback);
         TestHotkeys.TEST_RUN_DATETIME_TEST.getKeybind().setCallback(this.callback);
+        TestHotkeys.TEST_CONFIG_HOTKEY.getKeybind().setCallback(this.callback);
     }
 
     @Override
@@ -95,7 +96,12 @@ public class TestInputHandler implements IKeybindProvider
                 return false;
             }
 
-            if (key == MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind())
+            if (key == TestHotkeys.TEST_CONFIG_HOTKEY.getKeybind())
+            {
+//                KeyCodes.dumpKeyCodeMap();
+                return true;
+            }
+            else if (key == MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind())
             {
                 // No message
                 return true;
