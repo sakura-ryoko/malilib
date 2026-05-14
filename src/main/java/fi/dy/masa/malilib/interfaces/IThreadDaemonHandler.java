@@ -41,7 +41,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	}
 
 	/**
-	 * Default wrapper around building a new {@link Thread}
+	 * Default wrapper around building a new {@link ThreadExecutorPair}
 	 * @param name The name of the new {@link Thread}
 	 * @param useVirtual Whether the {@link Thread} should be run Virtually by the JVM
 	 * @param executor The {@link IThreadDaemonExecutor} to utilize
