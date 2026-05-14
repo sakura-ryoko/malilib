@@ -8,10 +8,12 @@ import java.util.*;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
+import net.minecraft.network.chat.HoverEvent;
 
 public class i18nManager
 {
@@ -223,7 +225,7 @@ public class i18nManager
 	{
 		this.ensureLang();
 
-		if (this.lang.hasTranslation(key))
+		if (this.hasTranslation(key))
 		{
 			return this.translate(key);
 		}
@@ -234,7 +236,7 @@ public class i18nManager
 	public String translate(String key, Object... args)
 	{
 		this.ensureLang();
-		String result = this.lang.getOrDefault(key, key);
+		final String result = this.lang.getOrDefault(key, key);
 
 		try
 		{
@@ -242,7 +244,7 @@ public class i18nManager
 		}
 		catch (Exception e)
 		{
-			MaLiLib.debugLog("i18nOptionManager#translate({}): Formatting exception for key: {}; {}", this.getModId(), key, e.getLocalizedMessage());
+			MaLiLib.LOGGER.warn("i18nOptionManager#translate({}): Formatting exception for key: {}; {}", this.getModId(), key, e.getLocalizedMessage());
 			return "Format Error: "+result;
 		}
 	}
@@ -250,7 +252,19 @@ public class i18nManager
 	public Component translateAsText(String key, Object... args)
 	{
 		this.ensureLang();
-		return this.lang.translate(key, args);
+
+		if (this.hasTranslation(key))
+		{
+			return Component.nullToEmpty(this.translate(key, args));
+		}
+		else
+		{
+			return Component.literal(key)
+							.withStyle((style) ->
+											   style.withColor(ChatFormatting.RED)
+													.withHoverEvent(new HoverEvent.ShowText(Component.nullToEmpty("Missing translation: " + key)))
+									  );
+		}
 	}
 
 	// matches 'en_us.json'; for example.

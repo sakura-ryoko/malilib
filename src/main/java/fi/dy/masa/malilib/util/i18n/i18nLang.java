@@ -1,20 +1,16 @@
 package fi.dy.masa.malilib.util.i18n;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import fi.dy.masa.malilib.MaLiLib;
 
@@ -103,20 +99,5 @@ public class i18nLang
 	public String getOrDefault(final String key, final String defaultString)
 	{
 		return this.map.getOrDefault(key, defaultString);
-	}
-
-	public MutableComponent translate(final String key, Object... args)
-	{
-		if (this.hasTranslation(key))
-		{
-			return Component.translatableWithFallback(key, this.get(key), args);
-		}
-		else
-		{
-			return Component.literal(key)
-			                .withStyle((style) ->
-					                           style.withColor(ChatFormatting.RED)
-					                                .withHoverEvent(new HoverEvent.ShowText(Component.nullToEmpty("Missing translation: "+key))));
-		}
 	}
 }
