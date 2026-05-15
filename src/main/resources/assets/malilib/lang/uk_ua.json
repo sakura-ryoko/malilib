@@ -187,6 +187,8 @@
     "malilib.gui.button.hover.plus_minus_tip": "Натисніть ЛКМ, щоб збільшити.\nПКМ, щоб зменшити.\nShift та/або Alt, щоб збільшити розмір кроку.",
     "malilib.gui.button.hover.search_bar_hotkey": "Уведіть рядок пошуку або використовуйте гарячу клавішу як параметр пошуку",
     "malilib.gui.button.hovertext.add": "Додати",
+    "malilib.gui.button.hovertext.lang_credits.credit": " §7- §f%s§r",
+    "malilib.gui.button.hovertext.lang_credits.title": "§dTranslation Credits:§r",
     "malilib.gui.button.hovertext.move_down": "Змістити вниз",
     "malilib.gui.button.hovertext.move_up": "Змістити вгору",
     "malilib.gui.button.hovertext.remove": "Видалити",

@@ -187,6 +187,8 @@
     "malilib.gui.button.hover.plus_minus_tip": "Vänsterklicka för att öka\nHögerklicka för att minska\nShift och/eller Alt för att öka stegstorleken",
     "malilib.gui.button.hover.search_bar_hotkey": "Ange en söksträng, eller använd en tangentbindning som sökparameter",
     "malilib.gui.button.hovertext.add": "Lägg till",
+    "malilib.gui.button.hovertext.lang_credits.credit": " §7- §f%s§r",
+    "malilib.gui.button.hovertext.lang_credits.title": "§dTranslation Credits:§r",
     "malilib.gui.button.hovertext.move_down": "Flytta ned",
     "malilib.gui.button.hovertext.move_up": "Flytta upp",
     "malilib.gui.button.hovertext.remove": "Radera",
