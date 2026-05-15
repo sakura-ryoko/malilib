@@ -187,6 +187,8 @@
     "malilib.gui.button.hover.plus_minus_tip": "左クリックで増やす\n右クリックで減らす\nShiftを押しながらで8ずつ，\nAltを押しながらで4ずつ，\nShift+Altを押しながらで32ずつ",
     "malilib.gui.button.hover.search_bar_hotkey": "Enter a search string, or use hotkey as a search param",
     "malilib.gui.button.hovertext.add": "追加",
+    "malilib.gui.button.hovertext.lang_credits.credit": " §7- §f%s§r",
+    "malilib.gui.button.hovertext.lang_credits.title": "§dTranslation Credits:§r",
     "malilib.gui.button.hovertext.move_down": "下に移動",
     "malilib.gui.button.hovertext.move_up": "上に移動",
     "malilib.gui.button.hovertext.remove": "削除",

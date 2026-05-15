@@ -187,6 +187,8 @@
     "malilib.gui.button.hover.plus_minus_tip": "Haz clic izquierdo para aumentar\nHaz clic derecho para disminuir\nShift y/o Alt para aumentar el tamaño del paso",
     "malilib.gui.button.hover.search_bar_hotkey": "Enter a search string, or use hotkey as a search param",
     "malilib.gui.button.hovertext.add": "Añadir",
+    "malilib.gui.button.hovertext.lang_credits.credit": " §7- §f%s§r",
+    "malilib.gui.button.hovertext.lang_credits.title": "§dTranslation Credits:§r",
     "malilib.gui.button.hovertext.move_down": "Mover Abajo",
     "malilib.gui.button.hovertext.move_up": "Mover Arriba",
     "malilib.gui.button.hovertext.remove": "Borrar",

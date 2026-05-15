@@ -187,6 +187,8 @@
     "malilib.gui.button.hover.plus_minus_tip": "왼쪽 클릭으로 증가\n오른쪽 클릭으로 감소\nShift 및/또는 Alt로 증감폭 증가",
     "malilib.gui.button.hover.search_bar_hotkey": "검색어를 입력하거나, 단축키를 검색 매개변수로 사용하세요.",
     "malilib.gui.button.hovertext.add": "추가",
+    "malilib.gui.button.hovertext.lang_credits.credit": " §7- §f%s§r",
+    "malilib.gui.button.hovertext.lang_credits.title": "§dTranslation Credits:§r",
     "malilib.gui.button.hovertext.move_down": "아래로 이동",
     "malilib.gui.button.hovertext.move_up": "위로 이동",
     "malilib.gui.button.hovertext.remove": "제거",
