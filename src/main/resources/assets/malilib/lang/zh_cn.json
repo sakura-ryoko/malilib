@@ -188,7 +188,7 @@
     "malilib.gui.button.hover.search_bar_hotkey": "输入搜索字符串，或使用热键作为搜索参数",
     "malilib.gui.button.hovertext.add": "添加",
     "malilib.gui.button.hovertext.lang_credits.credit": " §7- §f%s§r",
-    "malilib.gui.button.hovertext.lang_credits.title": "§dTranslation Credits:§r",
+    "malilib.gui.button.hovertext.lang_credits.title": "§d翻译鸣谢：§r",
     "malilib.gui.button.hovertext.move_down": "下移",
     "malilib.gui.button.hovertext.move_up": "上移",
     "malilib.gui.button.hovertext.remove": "移除",
