@@ -61,5 +61,10 @@ public class ConfigButtonOptionValues extends ButtonGeneric
         {
             this.displayString = this.config.getOptionValue().getDisplayName();
         }
+
+        if (!this.config.getOptionValue().getHoverText().isEmpty())
+        {
+            this.setHoverStrings(this.config.getOptionValue().getHoverText());
+        }
     }
 }

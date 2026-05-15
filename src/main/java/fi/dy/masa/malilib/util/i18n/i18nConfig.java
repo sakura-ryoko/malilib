@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.util.i18n;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.Nonnull;
 import com.google.common.collect.ImmutableList;
 import org.jspecify.annotations.NonNull;
@@ -7,6 +9,7 @@ import org.jspecify.annotations.NonNull;
 import net.minecraft.util.StringRepresentable;
 
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
+import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.ImmutableCopy;
 
 public class i18nConfig implements IConfigOptionListEntry, StringRepresentable
@@ -80,6 +83,28 @@ public class i18nConfig implements IConfigOptionListEntry, StringRepresentable
 	public String getDisplayName()
 	{
 		return this.selectedOption.getTranslatedName();
+	}
+
+	@Override
+	public List<String> getHoverText()
+	{
+		List<String> credits = this.selectedOption.getCredits();
+
+		if (!credits.isEmpty())
+		{
+			List<String> result = new ArrayList<>();
+
+			result.add(StringUtils.translate("malilib.gui.button.hovertext.lang_credits.title"));
+
+			for (String credit : credits)
+			{
+				result.add(StringUtils.translate("malilib.gui.button.hovertext.lang_credits.credit", credit));
+			}
+
+			return result;
+		}
+
+		return List.of();
 	}
 
 	@Override
