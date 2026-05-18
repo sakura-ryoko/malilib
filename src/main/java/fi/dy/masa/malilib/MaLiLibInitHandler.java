@@ -18,6 +18,7 @@ import fi.dy.masa.malilib.test.command.TestCommand;
 import fi.dy.masa.malilib.test.input.TestInputHandler;
 import fi.dy.masa.malilib.test.misc.TestSelector;
 import fi.dy.masa.malilib.test.render.TestRenderHandler;
+import fi.dy.masa.malilib.util.i18n.i18nMode;
 
 public class MaLiLibInitHandler implements IInitializationHandler
 {
@@ -27,10 +28,15 @@ public class MaLiLibInitHandler implements IInitializationHandler
         ConfigManager.getInstance().registerConfigHandler(MaLiLibReference.MOD_ID, new MaLiLibConfigs());
 	    MaLiLibConfigs.LANG.ifPresent(
                 i18nManager ->
-                        Registry.TRANSLATION_OVERRIDE_MANAGER.registerTranslationManager(MaLiLibReference.MOD_ID, i18nManager)
+                        Registry.TRANSLATION_OVERRIDE_MANAGER.registerTranslationManager(MaLiLibReference.MOD_ID, i18nManager,
+                                                                                         (i18nMode) MaLiLibConfigs.Generic.TRANSLATION_MODE.getOptionListValue())
         );
         InputEventHandler.getKeybindManager().registerKeybindProvider(MaLiLibInputHandler.getInstance());
         MaLiLibConfigs.Generic.OPEN_GUI_CONFIGS.getKeybind().setCallback(new CallbackOpenConfigGui());
+        MaLiLibConfigs.Generic.TRANSLATION_MODE.setValueChangeCallback(
+                cfg ->
+                        Registry.TRANSLATION_OVERRIDE_MANAGER.registerLanguageMode(MaLiLibReference.MOD_ID, (i18nMode) cfg.getOptionListValue())
+        );
 
         if (MaLiLibReference.DEBUG_MODE)
         {

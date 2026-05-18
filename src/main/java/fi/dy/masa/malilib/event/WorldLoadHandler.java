@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.data.CachedTagManager;
 import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
@@ -95,6 +96,7 @@ public class WorldLoadHandler implements IWorldLoadManager
             ((ConfigManager) ConfigManager.getInstance()).loadAllConfigs();
             InputEventHandler.getKeybindManager().updateUsedKeys();
             CachedTagManager.startCache();
+            MaLiLibConfigs.checkBaseLanguage();
 
 //            if (MaLiLibReference.DEBUG_MODE && MaLiLibReference.EXPERIMENTAL_MODE)
 //            {

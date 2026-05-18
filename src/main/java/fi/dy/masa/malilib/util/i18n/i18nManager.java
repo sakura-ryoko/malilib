@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -162,6 +163,23 @@ public class i18nManager
 		return this.baseString;
 	}
 
+	public String getMinecraftLanguage()
+	{
+		return Minecraft.getInstance().getLanguageManager().getSelected();
+	}
+
+	public String getLangCode()
+	{
+		this.ensureLang();
+		return this.lang.getLangCode();
+	}
+
+	public boolean isVanillaLanguage()
+	{
+		this.ensureLang();
+		return this.lang.getLangCode().equalsIgnoreCase(this.getMinecraftLanguage());
+	}
+
 	public i18nLang getDefaultLang()
 	{
 		return this.defaultLang;
@@ -178,9 +196,19 @@ public class i18nManager
 		this.lang = this.defaultLang;
 	}
 
+	public void setLangAsVanilla()
+	{
+		this.setLang(this.getMinecraftLanguage());
+	}
+
 	public void setLang(i18nConfig config)
 	{
-		if (this.lang != null && Objects.equals(this.lang.getLangCode(), config.getStringValue()))
+		this.setLang(config.getStringValue());
+	}
+
+	public void setLang(String langCode)
+	{
+		if (this.lang != null && Objects.equals(this.lang.getLangCode(), langCode))
 		{
 			// Already matches
 			return;
@@ -191,14 +219,19 @@ public class i18nManager
 
 		try
 		{
-			this.lang = i18nLang.load(this.baseString, config.getStringValue());
-			MaLiLib.LOGGER.info("i18nOptionManager#setLang({}): Language: '{}' [{}] - has been loaded successfully.", this.getModId(), config.getStringValue(), config.getDisplayName());
+			this.lang = i18nLang.load(this.baseString,langCode);
+			MaLiLib.LOGGER.info("i18nOptionManager#setLang({}): Language: '{}' - has been loaded successfully.", this.getModId(), langCode);
 		}
 		catch (IOException e)
 		{
 			this.ensureLang();
-			MaLiLib.LOGGER.error("i18nOptionManager#setLang({}): Exception loading language: '{}'; {}", this.getModId(), config.getStringValue(), e.getLocalizedMessage());
+			MaLiLib.LOGGER.error("i18nOptionManager#setLang({}): Exception loading language: '{}'; {}", this.getModId(), langCode, e.getLocalizedMessage());
 		}
+	}
+
+	public List<String> getLanguageKeys()
+	{
+		return this.keys;
 	}
 
 	public List<i18nOption> getLanguageOptions()

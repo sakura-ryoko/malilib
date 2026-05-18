@@ -41,6 +41,7 @@ import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.i18n.i18nManager;
+import fi.dy.masa.malilib.util.i18n.i18nMode;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 
 /**
@@ -787,7 +788,20 @@ public class StringUtils
 
                 if (opt.isPresent())
                 {
-                    return opt.get().translate(translationKey, args);
+                    i18nManager manager = opt.get();
+                    Optional<i18nMode> mode = Registry.TRANSLATION_OVERRIDE_MANAGER.getLanguageMode(manager.getModId());
+
+                    if (mode.isPresent())
+                    {
+                        i18nMode modeEntry = mode.get();
+
+	                    if (modeEntry == i18nMode.OFF)
+	                    {
+		                    return I18n.get(translationKey, args);
+	                    }
+                    }
+
+                    return manager.translate(translationKey, args);
                 }
             }
 

@@ -20,4 +20,12 @@ public interface IConfigHandler
      * Called to save any potential config changes to a file
      */
     void save();
+
+    /**
+     * Called when the Vanilla language changes
+     * @param newLang -
+     */
+    default void onLanguageChanged(String newLang)
+    {
+    }
 }
