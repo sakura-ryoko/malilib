@@ -54,4 +54,14 @@ public class ConfigManager implements IConfigManager
             handler.save();
         }
     }
+
+    @ApiStatus.Internal
+    public void onVanillaSetLanguage(String string)
+    {
+        MaLiLib.debugLog("onVanillaSetLanguage()");
+        for (IConfigHandler handler : this.configHandlers.values())
+        {
+            handler.onLanguageChanged(string);
+        }
+    }
 }

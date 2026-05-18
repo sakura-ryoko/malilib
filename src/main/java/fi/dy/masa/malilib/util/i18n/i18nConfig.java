@@ -94,7 +94,7 @@ public class i18nConfig implements IConfigOptionListEntry, StringRepresentable
 		{
 			List<String> result = new ArrayList<>();
 
-			result.add(StringUtils.translate("malilib.gui.button.hovertext.lang_credits.title"));
+			result.add(StringUtils.translate("malilib.gui.button.hovertext.lang_credits.title")+" §f[§e"+this.selectedOption.getKey()+"§f]§r");
 
 			for (String credit : credits)
 			{

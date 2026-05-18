@@ -28,6 +28,7 @@
     ],
     "client": [
         "client.MixinMinecraft",
+        "data.MixinLanguageManager",
         "hud.MixinGui",
         "input.IMixinKeyBinding",
         "input.MixinKeyboard",

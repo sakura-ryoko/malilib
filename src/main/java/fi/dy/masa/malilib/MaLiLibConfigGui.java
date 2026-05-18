@@ -60,6 +60,13 @@ public class MaLiLibConfigGui extends GuiConfigsBase implements IConfigGuiAllTab
         }
     }
 
+    @Override
+    public void removed()
+    {
+        super.removed();
+        MaLiLibConfigs.checkBaseLanguage();
+    }
+
     private int createButton(int x, int y, int width, ConfigGuiTab tab)
     {
         ButtonGeneric button = new ButtonGeneric(x, y, width, 20, tab.getDisplayName());

@@ -5,25 +5,35 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.client.Minecraft;
+
 import fi.dy.masa.malilib.MaLiLibReference;
 
 public class i18nRegistry
 {
 	private final HashMap<String, i18nManager> translationManagerMap;
+	private final HashMap<String, i18nMode> translationModeMap;
 	private ImmutableList<i18nManager> translationManagers;
 
 	public i18nRegistry()
 	{
 		this.translationManagerMap = new HashMap<>();
+		this.translationModeMap = new HashMap<>();
 		this.translationManagers = ImmutableList.of();
 	}
 
-	public void registerTranslationManager(String modId, i18nManager manager)
+	public void registerTranslationManager(String modId, i18nManager manager, i18nMode mode)
 	{
 		this.translationManagerMap.put(modId, manager);
+		this.translationModeMap.put(modId, mode);
 		ArrayList<i18nManager> list = new ArrayList<>(this.translationManagerMap.values());
 		list.sort(Comparator.comparing(i18nManager::getModId));
 		this.translationManagers = ImmutableList.copyOf(list);
+	}
+
+	public void registerLanguageMode(String modId, i18nMode mode)
+	{
+		this.translationModeMap.put(modId, mode);
 	}
 
 	// Return MaLiLib's configured Language Code.
@@ -35,6 +45,11 @@ public class i18nRegistry
 		}
 
 		return i18nManager.DEFAULT_LANG;
+	}
+
+	public String getVanillaLanguageCode()
+	{
+		return Minecraft.getInstance().getLanguageManager().getSelected();
 	}
 
 	public int size()
@@ -67,6 +82,16 @@ public class i18nRegistry
 		return Optional.empty();
 	}
 
+	public Optional<i18nMode> getLanguageMode(String modId)
+	{
+		if (this.translationModeMap.containsKey(modId))
+		{
+			return Optional.of(this.translationModeMap.get(modId));
+		}
+
+		return Optional.empty();
+	}
+
 	public Optional<i18nLang> getCurrentLanguage(String modId)
 	{
 		if (this.translationManagerMap.containsKey(modId))
@@ -75,6 +100,11 @@ public class i18nRegistry
 		}
 
 		return Optional.empty();
+	}
+
+	public void onSetSelectedLanguage(String newLang)
+	{
+
 	}
 
 	public Optional<i18nManager> scanForTranslationKey(String key)

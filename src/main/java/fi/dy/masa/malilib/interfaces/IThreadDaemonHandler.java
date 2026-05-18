@@ -19,7 +19,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 		extends IClientTickHandler, AutoCloseable
 {
 	/**
-	 * Get a "Safe" {@link Thread} count; or 1/4 of your system's Core Count.
+	 * Get a "Safe" {@link Thread} count; or 1/8 of your system's Core Count.
 	 * Note that the number return might be 0, which means that you should
 	 * only be using 1 Virtual {@link Thread} Max if your CPU has less than 4 Cores.
 	 * @return -
@@ -27,17 +27,17 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	default int getThreadCountSafe()
 	{
 		final int maxThreads = Runtime.getRuntime().availableProcessors();
-		final Fraction calc = Fraction.getFraction(maxThreads, 4);
+		final Fraction calc = Fraction.getFraction(maxThreads, 8);
 		return MathUtils.clamp(calc.intValue(), 0, maxThreads);
 	}
 
 	/**
-	 * Get a "Max" {@link Thread} count; or 1/2 of your system's Core Count.
+	 * Get a "Max" {@link Thread} count; or 1/4 of your system's Core Count.
 	 * @return -
 	 */
 	default int getThreadCountMax()
 	{
-		return MathUtils.max(Runtime.getRuntime().availableProcessors() / 2, 1);
+		return MathUtils.max(Runtime.getRuntime().availableProcessors() / 4, 1);
 	}
 
 	/**
