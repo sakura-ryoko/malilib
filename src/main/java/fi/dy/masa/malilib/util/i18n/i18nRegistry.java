@@ -102,11 +102,6 @@ public class i18nRegistry
 		return Optional.empty();
 	}
 
-	public void onSetSelectedLanguage(String newLang)
-	{
-
-	}
-
 	public Optional<i18nManager> scanForTranslationKey(String key)
 	{
 		Set<String> keys = this.translationManagerMap.keySet();
@@ -117,7 +112,13 @@ public class i18nRegistry
 		{
 			if (entry.equalsIgnoreCase(firstKey))
 			{
-				return Optional.of(this.translationManagerMap.get(entry));
+				Optional<i18nManager> opt = Optional.ofNullable(this.translationManagerMap.get(entry));
+
+				// If key is not present, configure scanning
+				if (opt.isPresent() && opt.get().hasTranslation(key))
+				{
+					return opt;
+				}
 			}
 		}
 
