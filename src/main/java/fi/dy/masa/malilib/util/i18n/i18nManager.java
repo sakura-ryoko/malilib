@@ -1,21 +1,20 @@
 package fi.dy.masa.malilib.util.i18n;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.*;
+import java.util.*;
 import java.util.regex.Pattern;
+import javax.annotation.Nullable;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
+import net.minecraft.network.chat.HoverEvent;
 
 public class i18nManager
 {
@@ -39,75 +38,97 @@ public class i18nManager
 		this.readKeys();
 	}
 
-	public static i18nManager create(String modId) throws IOException
+	@Nullable
+	public static i18nManager create(String modId)
 	{
-		i18nManager result = new i18nManager(modId);
-
-		if (result.defaultLang == null)
-		{
-			MaLiLib.LOGGER.error("i18nOptionManager: Default language: '{}' not found!", DEFAULT_LANG);
-			throw new IOException("i18nOptionManager: Default language: '"+DEFAULT_LANG+"' not found!");
-		}
-
-		return result;
-	}
-
-	private void readKeys() throws IOException
-	{
-		InputStream is = i18nManager.class.getClassLoader().getResourceAsStream(this.baseString);
-
 		try
 		{
-			if (is != null)
+			i18nManager result = new i18nManager(modId);
+
+			if (result.defaultLang == null)
 			{
-				BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-				String line;
+				MaLiLib.LOGGER.error("i18nOptionManager#create({}): Default language: '{}' not found!", modId, DEFAULT_LANG);
+			}
+
+			return result;
+		}
+		catch (IOException e)
+		{
+			MaLiLib.LOGGER.error("i18nOptionManager#create({}): Exception building i18nManager; {}", modId, e.getLocalizedMessage());
+		}
+
+		return null;
+	}
+
+	private void readKeys()
+	{
+		final String baseString = "/"+this.baseString;
+		URL resource = i18nManager.class.getResource(baseString);
+
+		if (resource != null)
+		{
+			try
+			{
+				URI uri = resource.toURI();
+				Path root;
+				FileSystem tempFs = null;
+				boolean created = false;
+
+				if (uri.getScheme().equals("jar"))
+				{
+					try
+					{
+						tempFs = FileSystems.getFileSystem(uri);
+					}
+					catch (FileSystemNotFoundException e)
+					{
+						tempFs = FileSystems.newFileSystem(uri, Collections.emptyMap());
+						created = true;
+					}
+
+					root = tempFs.getPath(baseString);
+				}
+				else
+				{
+					root = Paths.get(uri);
+				}
+
 				this.keys.clear();
 
-				while ((line = reader.readLine()) != null)
+				try (DirectoryStream<Path> stream = Files.newDirectoryStream(root, FILE_FILTER))
 				{
-					Path filePath = Path.of(line);
-					Path file = filePath.getFileName();
-
-					if (FILE_FILTER.accept(file))
+					for (Path file : stream)
 					{
-						final String fileName = file.toString();
+						final String fileName = file.getFileName().toString();
 						final String nameOnly = fileName.split("\\.")[0];
-
 						this.keys.add(nameOnly);
 					}
-					else
+				}
+				finally
+				{
+					if (tempFs != null && tempFs.isOpen()
+						&& created)
 					{
-						MaLiLib.LOGGER.warn("i18nOptionManager#readKeys(): Ignoring file/directory '{}'", line);
+						tempFs.close();
 					}
 				}
-
-				is.close();
-
-				this.buildLanguageOptions();
-				MaLiLib.LOGGER.info("i18nOptionManager#readKeys(): keys read from assets folder: {}", this.keys.toString());
 			}
-			else
+			catch (Exception e)
 			{
-				MaLiLib.LOGGER.error("i18nOptionManager: Could not find resource '{}'!", this.baseString);
-				throw new IOException("i18nOptionManager: Could not find resource '" + this.baseString + "'!");
+				MaLiLib.LOGGER.error("i18nOptionManager#readKeys({}): Could not find resource '{}'; Exception: {}", this.getModId(), this.baseString, e.getLocalizedMessage());
 			}
 		}
-		catch (Throwable t1)
-		{
-			if (is != null)
-			{
-				try
-				{
-					is.close();
-				}
-				catch (Throwable t2)
-				{
-					t1.addSuppressed(t2);
-				}
-			}
 
-			throw t1;
+		if (this.keys.isEmpty())
+		{
+			this.keys.add(DEFAULT_LANG);
+		}
+
+		this.buildLanguageOptions();
+
+		if (MaLiLibReference.DEBUG_MODE)
+		{
+			MaLiLib.LOGGER.info("i18nOptionManager#readKeys({}): keys read from assets folder: {}", this.getModId(), this.keys.toString());
 		}
 	}
 
@@ -142,6 +163,23 @@ public class i18nManager
 		return this.baseString;
 	}
 
+	public String getMinecraftLanguage()
+	{
+		return Minecraft.getInstance().getLanguageManager().getSelected();
+	}
+
+	public String getLangCode()
+	{
+		this.ensureLang();
+		return this.lang.getLangCode();
+	}
+
+	public boolean isVanillaLanguage()
+	{
+		this.ensureLang();
+		return this.lang.getLangCode().equalsIgnoreCase(this.getMinecraftLanguage());
+	}
+
 	public i18nLang getDefaultLang()
 	{
 		return this.defaultLang;
@@ -153,9 +191,24 @@ public class i18nManager
 		return this.lang;
 	}
 
+	public void resetLangToDefault()
+	{
+		this.lang = this.defaultLang;
+	}
+
+	public void setLangAsVanilla()
+	{
+		this.setLang(this.getMinecraftLanguage());
+	}
+
 	public void setLang(i18nConfig config)
 	{
-		if (this.lang != null && Objects.equals(this.lang.getLangCode(), config.getStringValue()))
+		this.setLang(config.getStringValue());
+	}
+
+	public void setLang(String langCode)
+	{
+		if (this.lang != null && Objects.equals(this.lang.getLangCode(), langCode))
 		{
 			// Already matches
 			return;
@@ -166,14 +219,19 @@ public class i18nManager
 
 		try
 		{
-			this.lang = i18nLang.load(this.baseString, config.getStringValue());
-			MaLiLib.LOGGER.info("i18nOptionManager#setLang({}): Language: '{}' [{}] - has been loaded successfully.", this.getModId(), config.getStringValue(), config.getDisplayName());
+			this.lang = i18nLang.load(this.baseString,langCode);
+			MaLiLib.LOGGER.info("i18nOptionManager#setLang({}): Language: '{}' - has been loaded successfully.", this.getModId(), langCode);
 		}
 		catch (IOException e)
 		{
 			this.ensureLang();
-			MaLiLib.LOGGER.error("i18nOptionManager#setLang(): Exception loading language: '{}'; {}", config.getStringValue(), e.getLocalizedMessage());
+			MaLiLib.LOGGER.error("i18nOptionManager#setLang({}): Exception loading language: '{}'; {}", this.getModId(), langCode, e.getLocalizedMessage());
 		}
+	}
+
+	public List<String> getLanguageKeys()
+	{
+		return this.keys;
 	}
 
 	public List<i18nOption> getLanguageOptions()
@@ -200,7 +258,7 @@ public class i18nManager
 	{
 		this.ensureLang();
 
-		if (this.lang.hasTranslation(key))
+		if (this.hasTranslation(key))
 		{
 			return this.translate(key);
 		}
@@ -211,7 +269,7 @@ public class i18nManager
 	public String translate(String key, Object... args)
 	{
 		this.ensureLang();
-		String result = this.lang.getOrDefault(key, key);
+		final String result = this.lang.getOrDefault(key, key);
 
 		try
 		{
@@ -219,7 +277,7 @@ public class i18nManager
 		}
 		catch (Exception e)
 		{
-			MaLiLib.LOGGER.error("i18nOptionManager#translate: Formatting exception for key: {}; {}", key, e.getLocalizedMessage());
+			MaLiLib.LOGGER.warn("i18nOptionManager#translate({}): Formatting exception for key: {}; {}", this.getModId(), key, e.getLocalizedMessage());
 			return "Format Error: "+result;
 		}
 	}
@@ -227,7 +285,19 @@ public class i18nManager
 	public Component translateAsText(String key, Object... args)
 	{
 		this.ensureLang();
-		return this.lang.translate(key, args);
+
+		if (this.hasTranslation(key))
+		{
+			return Component.nullToEmpty(this.translate(key, args));
+		}
+		else
+		{
+			return Component.literal(key)
+							.withStyle((style) ->
+											   style.withColor(ChatFormatting.RED)
+													.withHoverEvent(new HoverEvent.ShowText(Component.nullToEmpty("Missing translation: " + key)))
+									  );
+		}
 	}
 
 	// matches 'en_us.json'; for example.
@@ -243,7 +313,7 @@ public class i18nManager
 			{
 				final String fullName = entry.getFileName().toString();
 
-				if (fullName.endsWith(".json"))
+				if (Files.isRegularFile(entry) && fullName.endsWith(".json"))
 				{
 					final String nameOnly = fullName.split("\\.")[0];
 

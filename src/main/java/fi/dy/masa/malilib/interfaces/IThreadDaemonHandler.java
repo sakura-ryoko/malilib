@@ -6,6 +6,7 @@ import org.apache.commons.lang3.math.Fraction;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.MathUtils;
+import fi.dy.masa.malilib.util.thread.ThreadExecutorPair;
 
 /**
  * Extend this to create a "Daemon" Instance class that manages a task {@link java.util.Queue} for the Daemon.
@@ -20,7 +21,7 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	/**
 	 * Get a "Safe" {@link Thread} count; or 1/8 of your system's Core Count.
 	 * Note that the number return might be 0, which means that you should
-	 * only be using 1 Virtual {@link Thread} Max if your CPU has less than 8 Cores.
+	 * only be using 1 Virtual {@link Thread} Max if your CPU has less than 4 Cores.
 	 * @return -
 	 */
 	default int getThreadCountSafe()
@@ -31,39 +32,48 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	}
 
 	/**
-	 * Default wrapper around building a new {@link Thread}
+	 * Get a "Max" {@link Thread} count; or 1/4 of your system's Core Count.
+	 * @return -
+	 */
+	default int getThreadCountMax()
+	{
+		return MathUtils.max(Runtime.getRuntime().availableProcessors() / 4, 1);
+	}
+
+	/**
+	 * Default wrapper around building a new {@link ThreadExecutorPair}
 	 * @param name The name of the new {@link Thread}
 	 * @param useVirtual Whether the {@link Thread} should be run Virtually by the JVM
 	 * @param executor The {@link IThreadDaemonExecutor} to utilize
-	 * @return The newly built {@link Thread}
+	 * @return The newly built {@link ThreadExecutorPair}
 	 */
-	default Thread threadFactory(String name, boolean useVirtual, IThreadDaemonExecutor<T> executor)
+	default ThreadExecutorPair<T> threadFactory(String name, boolean useVirtual, IThreadDaemonExecutor<T> executor)
 	{
 		MaLiLib.debugLog("IThreadDaemonHandler#threadFactory: '{}' [useVirtual: {}]", name, useVirtual);
 		if (useVirtual)
 		{
-			return Thread.ofVirtual().name(name).unstarted(executor);
+			return new ThreadExecutorPair<>(Thread.ofVirtual().name(name).unstarted(executor), executor);
 		}
 
-		return Thread.ofPlatform().name(name).daemon(true).unstarted(executor);
+		return new ThreadExecutorPair<>(Thread.ofPlatform().name(name).daemon(true).unstarted(executor), executor);
 	}
 
 	/**
-	 * Safely start the {@link Thread} by checking the current state.
-	 * @param t The {@link Thread}
+	 * Safely start the {@link ThreadExecutorPair} by checking the current state.
+	 * @param t The {@link ThreadExecutorPair}
 	 * @throws RuntimeException The {@link Thread} is Null, or already Running
 	 * @throws ConcurrentModificationException The {@link Thread} is in the Blocking state
 	 * @throws IllegalStateException The {@link Thread} was terminated, and needs to be replaced.
 	 */
-	default void safeStart(Thread t) throws RuntimeException
+	default void safeStart(ThreadExecutorPair<T> t) throws RuntimeException
 	{
-		if (t == null) { throw new RuntimeException(); }
-		MaLiLib.debugLog("IThreadDaemonHandler#safeStart: '{}' [State: {}]", t.getName(), t.getState().name());
+		if (t == null || t.thread() == null) { throw new RuntimeException(); }
+		MaLiLib.debugLog("IThreadDaemonHandler#safeStart: '{}' [State: {}]", t.thread().getName(), t.thread().getState().name());
 
-		switch (t.getState())
+		switch (t.thread().getState())
 		{
-			case NEW -> t.start();
-			case TIMED_WAITING, WAITING -> t.interrupt();
+			case NEW -> t.thread().start();
+			case TIMED_WAITING, WAITING -> t.thread().interrupt();
 			case RUNNABLE -> throw new RuntimeException();
 			case BLOCKED -> throw new ConcurrentModificationException();
 			case TERMINATED -> throw new IllegalStateException();
@@ -71,28 +81,30 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	}
 
 	/**
-	 * Safely Stop the {@link Thread} by checking the current state.
-	 * @param t The {@link Thread}
+	 * Safely Stop the {@link ThreadExecutorPair} by checking the current state.
+	 * @param t The {@link ThreadExecutorPair}
 	 * @throws RuntimeException If the {@link Thread} is Null
 	 * @throws IllegalThreadStateException If the {@link Thread} is New and not yet started
 	 * @throws ConcurrentModificationException If the {@link Thread} is in a Blocking state
 	 * @throws IllegalStateException If the {@link Thread} was Terminated
 	 */
-	default void safeStop(Thread t) throws RuntimeException
+	default void safeStop(ThreadExecutorPair<T> t) throws RuntimeException
 	{
-		if (t == null) { throw new RuntimeException(); }
-		MaLiLib.debugLog("IThreadDaemonHandler#safeStop: '{}' [State: {}]", t.getName(), t.getState().name());
+		if (t == null || t.thread() == null) { throw new RuntimeException(); }
+		MaLiLib.debugLog("IThreadDaemonHandler#safeStop: '{}' [State: {}]", t.thread().getName(), t.thread().getState().name());
+		t.executor().stop();
 
-		switch (t.getState())
+		switch (t.thread().getState())
 		{
 			case NEW -> throw new IllegalThreadStateException();
 			case BLOCKED -> throw new ConcurrentModificationException();
 			case TERMINATED -> throw new IllegalStateException();
+			case TIMED_WAITING, WAITING -> t.thread().interrupt();
 			default ->
 			{
 				try
 				{
-					if (t.join(Duration.ofMillis(500L)))
+					if (t.thread().join(Duration.ofMillis(50L)))
 					{
 						this.safeStop(t);
 					}

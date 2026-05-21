@@ -14,8 +14,7 @@ public abstract class MixinMinecraft_test
 	{
 //		if (MaLiLibReference.DEBUG_MODE && MaLiLibReference.EXPERIMENTAL_MODE)
 //		{
-//			TestThreadDaemonDefaultHandler.INSTANCE.endAll();
-//            TestThreadDaemonAsyncHandler.INSTANCE.endAll();
+//			TestThreadDaemonHandler.INSTANCE.endAll();
 //		}
 	}
 }

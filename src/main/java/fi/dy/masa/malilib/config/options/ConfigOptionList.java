@@ -9,6 +9,7 @@ import fi.dy.masa.malilib.config.IConfigOptionList;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.config.IStringRepresentable;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.i18n.i18nConfig;
 
 public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IConfigOptionList, IStringRepresentable
 {
@@ -79,6 +80,12 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
     @Override
     public boolean isModified()
     {
+        // Check i18n Default Value
+        if (this.value instanceof i18nConfig cfg)
+        {
+            return cfg.isModified();
+        }
+
         return this.value != this.defaultValue;
     }
 
@@ -98,6 +105,12 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
     public void resetToDefault()
     {
         this.setOptionListValue(this.defaultValue);
+
+        // Set i18n Default Value
+        if (this.value instanceof i18nConfig cfg)
+        {
+            cfg.resetToDefault();
+        }
     }
 
     @Override

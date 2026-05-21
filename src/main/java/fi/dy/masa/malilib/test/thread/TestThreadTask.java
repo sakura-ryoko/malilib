@@ -1,14 +1,14 @@
 package fi.dy.masa.malilib.test.thread;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.interfaces.DefaultThreadTaskBase;
+import fi.dy.masa.malilib.util.thread.ThreadTaskBase;
 
-public class TestThreadTaskDefault extends DefaultThreadTaskBase
+public class TestThreadTask extends ThreadTaskBase
 {
 	private final TestThreadData data;
 	private final Runnable task;
 
-	public TestThreadTaskDefault(Runnable task)
+	public TestThreadTask(Runnable task)
 	{
 		super();
 		this.data = new TestThreadData();
