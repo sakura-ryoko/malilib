@@ -136,6 +136,12 @@ public interface IThreadDaemonExecutor<T extends IThreadTaskBase> extends Runnab
 			{
 				this.interrupt(e);
 			}
+			finally
+			{
+				// This is required to avoid spin-lock.
+				MaLiLib.debugLog("IThreadDaemonExecutor#Executor: sleep finished: for '{}'", this.currentThreadName());
+				this.resume();
+			}
 		}
 	}
 }
