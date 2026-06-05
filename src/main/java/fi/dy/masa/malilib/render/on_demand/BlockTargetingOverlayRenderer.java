@@ -219,15 +219,15 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 		{
 			if (this.renderSides == null)
 			{
-				this.renderSides = new RenderContext(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/side", this.currentEntry.sideState().pipeline());
+				this.renderSides = new RenderContext(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/side", this.currentEntry.sideState().pipeline(), this.currentEntry.sideState().formatIndex());
 			}
 			if (this.renderCenter == null)
 			{
-				this.renderCenter = new RenderContext(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/center", this.currentEntry.centerState().pipeline());
+				this.renderCenter = new RenderContext(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/center", this.currentEntry.centerState().pipeline(), this.currentEntry.centerState().formatIndex());
 			}
 			if (this.renderEdges == null)
 			{
-				this.renderEdges = new RenderContext(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/edges", this.currentEntry.edgesState().pipeline());
+				this.renderEdges = new RenderContext(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/edges", this.currentEntry.edgesState().pipeline(), this.currentEntry.edgesState().formatIndex());
 			}
 
 			this.renderSides.reset();
@@ -242,7 +242,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 		{
 			if (this.renderSides != null && !this.renderSides.isUploaded())
 			{
-				BufferBuilder buffer = this.renderSides.start(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/side", this.currentEntry.sideState().pipeline());
+				BufferBuilder buffer = this.renderSides.start(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/side", this.currentEntry.sideState().pipeline(), this.currentEntry.sideState().formatIndex());
 				this.currentEntry.sideState().update(buffer);
 
 				try (MeshData meshData = buffer.build())
@@ -260,7 +260,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 			}
 			if (this.renderCenter != null && !this.renderCenter.isUploaded())
 			{
-				BufferBuilder buffer = this.renderCenter.start(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/center", this.currentEntry.centerState().pipeline());
+				BufferBuilder buffer = this.renderCenter.start(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/center", this.currentEntry.centerState().pipeline(), this.currentEntry.centerState().formatIndex());
 				this.currentEntry.centerState().update(buffer);
 
 				try (MeshData meshData = buffer.build())
@@ -279,7 +279,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 			}
 			if (this.renderEdges != null && !this.renderEdges.isUploaded())
 			{
-				BufferBuilder buffer = this.renderEdges.start(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/edges", this.currentEntry.edgesState().pipeline());
+				BufferBuilder buffer = this.renderEdges.start(() -> MaLiLibReference.MOD_ID+":block_targeting_overlay/edges", this.currentEntry.edgesState().pipeline(), this.currentEntry.edgesState().formatIndex());
 				this.currentEntry.edgesState().update(buffer);
 
 				try (MeshData meshData = buffer.build())

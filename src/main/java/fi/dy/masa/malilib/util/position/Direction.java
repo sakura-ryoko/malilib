@@ -367,17 +367,22 @@ public enum Direction implements StringRepresentable
 
         public static Axis byName(String name)
         {
-            switch (name.toLowerCase(Locale.ROOT))
-            {
-                case "x":
-                    return X;
-                case "y":
-                    return Y;
-                case "z":
-                    return Z;
-            }
+	        return switch (name.toLowerCase(Locale.ROOT))
+	        {
+		        case "x" -> X;
+		        case "z" -> Z;
+		        default -> Y;
+	        };
+        }
 
-            return Y;
+        public static Axis fromVanilla(net.minecraft.core.Direction.Axis axis)
+        {
+            return Axis.byName(axis.getSerializedName());
+        }
+
+        public net.minecraft.core.Direction.Axis toVanilla()
+        {
+            return net.minecraft.core.Direction.Axis.byName(this.name);
         }
     }
 

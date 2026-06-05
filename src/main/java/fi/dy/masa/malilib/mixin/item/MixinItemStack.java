@@ -20,10 +20,10 @@ public abstract class MixinItemStack
     // This Goes before the Item Additional Tooltips.
     @Inject(method = "addDetailsToTooltip(Lnet/minecraft/world/item/Item$TooltipContext;Lnet/minecraft/world/item/component/TooltipDisplay;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/TooltipFlag;Ljava/util/function/Consumer;)V",
             at = @At("HEAD"))
-    private void onGetTooltipComponentsFirst(Item.TooltipContext context, TooltipDisplay displayComponent,
-                                             Player player, TooltipFlag type, Consumer<Component> textConsumer, CallbackInfo ci)
+    private void onGetTooltipComponentsFirst(Item.TooltipContext context, TooltipDisplay display,
+                                             Player player, TooltipFlag tooltipFlag, Consumer<Component> builder, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipComponentInsertFirst(context, (ItemStack) (Object) this, textConsumer);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipComponentInsertFirst(context, (ItemStack) (Object) this, builder);
     }
 
     // This Goes after the Item Additional Tooltips.
@@ -31,10 +31,10 @@ public abstract class MixinItemStack
             at = @At(value = "INVOKE",
                      target = "Lnet/minecraft/world/item/Item;appendHoverText(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/item/Item$TooltipContext;Lnet/minecraft/world/item/component/TooltipDisplay;Ljava/util/function/Consumer;Lnet/minecraft/world/item/TooltipFlag;)V",
                      shift = At.Shift.AFTER))
-    private void onGetTooltipComponentsMiddle(Item.TooltipContext context, TooltipDisplay displayComponent,
-                                              Player player, TooltipFlag type, Consumer<Component> textConsumer, CallbackInfo ci)
+    private void onGetTooltipComponentsMiddle(Item.TooltipContext context, TooltipDisplay display,
+                                              Player player, TooltipFlag tooltipFlag, Consumer<Component> builder, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipComponentInsertMiddle(context, (ItemStack) (Object) this, textConsumer);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipComponentInsertMiddle(context, (ItemStack) (Object) this, builder);
     }
 
     // This Goes before the Item durability, item id, and component count.
@@ -43,9 +43,9 @@ public abstract class MixinItemStack
                      target = "Lnet/minecraft/world/item/ItemStack;addToTooltip(Lnet/minecraft/core/component/DataComponentType;Lnet/minecraft/world/item/Item$TooltipContext;Lnet/minecraft/world/item/component/TooltipDisplay;Ljava/util/function/Consumer;Lnet/minecraft/world/item/TooltipFlag;)V",
                      ordinal = 23,
                      shift = At.Shift.AFTER))
-    private void onGetTooltipComponentsLast(Item.TooltipContext context, TooltipDisplay displayComponent,
-                                            Player player, TooltipFlag type, Consumer<Component> textConsumer, CallbackInfo ci)
+    private void onGetTooltipComponentsLast(Item.TooltipContext context, TooltipDisplay display,
+                                            Player player, TooltipFlag tooltipFlag, Consumer<Component> builder, CallbackInfo ci)
     {
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipComponentInsertLast(context, (ItemStack) (Object) this, textConsumer);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRenderTooltipComponentInsertLast(context, (ItemStack) (Object) this, builder);
     }
 }

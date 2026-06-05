@@ -1,8 +1,11 @@
 package fi.dy.masa.malilib.render.uniform;
 
+import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
+import org.lwjgl.system.MemoryStack;
+
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.buffers.Std140SizeCalculator;
 import com.mojang.blaze3d.systems.RenderPass;
@@ -17,16 +20,27 @@ import fi.dy.masa.malilib.compat.iris.IrisCompat;
 public class ChunkFixUniform implements AutoCloseable
 {
 	private static final int UBO_SIZE = new Std140SizeCalculator().putIVec2().putFloat().putInt().putInt().get();
-	private final MappableRingBuffer ubo = new MappableRingBuffer(() -> MaLiLibReference.MOD_NAME+" ChunkFix UBO", 130, UBO_SIZE);
+	private final MappableRingBuffer ubo;
+
+	public ChunkFixUniform()
+	{
+		this.ubo = new MappableRingBuffer(() -> MaLiLibReference.MOD_NAME+" ChunkFix UBO", 130, UBO_SIZE);
+
+		try (MemoryStack stack = MemoryStack.stackPush())
+		{
+			ByteBuffer buffer = stack.malloc(UBO_SIZE);
+			this.fillBuffer(buffer, 0, Integer.MAX_VALUE, Integer.MAX_VALUE, Float.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+		}
+	}
 
 	/**
-	 * Fill the UBO Buffer
+	 * Update the UBO Buffer
 	 *
 	 * @param atlasWidth  ()
 	 * @param atlasHeight ()
 	 * @param chunkVisibility ()
 	 */
-	public void fillBuffer(int atlasWidth, int atlasHeight, float chunkVisibility)
+	public void updateBuffer(int atlasWidth, int atlasHeight, float chunkVisibility)
 			throws IllegalArgumentException
 	{
 		if (atlasWidth <= 0 || atlasHeight <= 0)
@@ -37,12 +51,16 @@ public class ChunkFixUniform implements AutoCloseable
 		final int useRGSS = Minecraft.getInstance().options.textureFiltering().get() == TextureFilteringMethod.RGSS ? 1 : 0;
 		final int hasShadersOn = IrisCompat.isShaderActive() ? 1 : 0;
 
-		try (GpuBuffer.MappedView mappedView = RenderSystem.getDevice()
-		                                                   .createCommandEncoder()
-		                                                   .mapBuffer(this.ubo.currentBuffer(), false, true))
+		try (GpuBufferSlice.MappedView mappedView = this.ubo.currentBuffer().map(false, true))
 		{
-			Std140Builder.intoBuffer(mappedView.data()).putIVec2(atlasWidth, atlasHeight).putFloat(chunkVisibility).putInt(useRGSS).putInt(hasShadersOn);
+			this.fillBuffer(mappedView.data(), 0, atlasWidth, atlasHeight, chunkVisibility, useRGSS, hasShadersOn);
 		}
+	}
+
+	public void fillBuffer(final ByteBuffer buffer, final int offset, int atlasWidth, int atlasHeight, float chunkVisibility, int useRGSS, int hasShadersOn)
+	{
+		buffer.position(offset);
+		Std140Builder.intoBuffer(buffer).putIVec2(atlasWidth, atlasHeight).putFloat(chunkVisibility).putInt(useRGSS).putInt(hasShadersOn);
 	}
 
 	/**
@@ -51,16 +69,16 @@ public class ChunkFixUniform implements AutoCloseable
 	 */
 	public void drawPass(@Nonnull RenderPass pass)
 	{
-		pass.setUniform("ChunkFix", this.getCurrentBuffer());
+		pass.setUniform("ChunkFix", this.getCurrentBufferSlice());
 	}
 
 	/**
 	 * Get the 'currentBuffer' from the Ring Buffer.
 	 * @return ()
 	 */
-	public GpuBuffer getCurrentBuffer()
+	public GpuBufferSlice getCurrentBufferSlice()
 	{
-		return this.ubo.currentBuffer();
+		return this.ubo.currentBuffer().slice(0L, UBO_SIZE);
 	}
 
 	/**

@@ -11,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
@@ -330,7 +329,7 @@ public class RenderEventHandler implements IRenderDispatcher
 
     @ApiStatus.Internal
     @ApiStatus.Experimental
-    public void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, MultiBufferSource.BufferSource immediate, Minecraft mc, ImmutableMap.Builder<@NotNull Class<? extends PictureInPictureRenderState>, @NotNull PictureInPictureRenderer<?>> builder)
+    public void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, Minecraft mc, ImmutableMap.Builder<@NotNull Class<? extends PictureInPictureRenderState>, @NotNull PictureInPictureRenderer<?>> builder)
     {
 //        MaLiLib.LOGGER.warn("onRegisterSpecialGuiRenderer():");
 
@@ -339,7 +338,7 @@ public class RenderEventHandler implements IRenderDispatcher
             for (IRenderer renderer : this.specialGuiRenderers)
             {
                 MaLiLib.LOGGER.warn("onRegisterSpecialGuiRenderer(): render for [{}]", renderer.getClass().getName());
-                renderer.onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
+                renderer.onRegisterSpecialGuiRenderer(guiRenderer, mc, builder);
             }
         }
     }

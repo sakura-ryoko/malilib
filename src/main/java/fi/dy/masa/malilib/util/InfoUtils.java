@@ -202,11 +202,11 @@ public class InfoUtils
 
         if (world != null)
         {
-            mc.gui.setOverlayMessage(message, false);
+            mc.gui.hud.setOverlayMessage(message, false);
 
             if (MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.isModified())
             {
-                ((IGameHud) mc.gui).malilib$setOverlayRemaining(MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.getIntegerValue());
+                ((IGameHud) mc.gui.hud).malilib$setOverlayRemaining(MaLiLibConfigs.Generic.ACTIONBAR_HUD_TICKS.getIntegerValue());
             }
         }
     }

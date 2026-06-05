@@ -36,16 +36,16 @@
 	"accessWidener": "malilib.accesswidener",
 
 	"depends": {
-		"minecraft": "~26.1",
-		"fabric-networking-api-v1": ">=6.3.0",
+		"minecraft": "26.2-pre.4",
+		"fabric-networking-api-v1": ">=6.3.3",
         "fabric-resource-loader-v1": "*"
 	},
 	"breaks": {
         "sodium": "<0.8.9-",
 		"iris": "<1.10.9-",
-		"itemscroller": "<0.31.4-",
-		"litematica": "<0.27.5-",
-		"minihud": "<0.39.4-",
-		"tweakeroo": "<0.28.4-"
+		"itemscroller": "<0.31.99-",
+		"litematica": "<0.27.99-",
+		"minihud": "<0.39.99-",
+		"tweakeroo": "<0.28.99-"
 	}
 }

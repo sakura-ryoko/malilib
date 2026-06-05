@@ -108,9 +108,9 @@ public class TestInputHandler implements IKeybindProvider
             }
             else if (key == TestHotkeys.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind())
             {
-                if (mc.screen instanceof InventoryOverlayScreen)
+                if (mc.gui.screen() instanceof InventoryOverlayScreen)
                 {
-                    mc.setScreen(null);
+                    mc.gui.setScreen(null);
                 }
                 else if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
                          MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
@@ -141,8 +141,8 @@ public class TestInputHandler implements IKeybindProvider
             }
             else if (key == TestHotkeys.TEST_RUN_DATETIME_TEST.getKeybind())
             {
-                mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
-                mc.gui.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
+                mc.gui.hud.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runTimeDateTest()));
+                mc.gui.hud.getChat().addClientSystemMessage(Component.nullToEmpty(TimeTestExample.runDurationTest()));
                 return true;
             }
 

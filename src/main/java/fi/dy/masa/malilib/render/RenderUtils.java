@@ -25,7 +25,6 @@ import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.Lightmap;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
@@ -41,6 +40,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
@@ -54,7 +54,10 @@ import net.minecraft.world.entity.npc.villager.VillagerData;
 import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -70,18 +73,21 @@ import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
-import fi.dy.masa.malilib.mixin.client.IMixinMinecraft;
-import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
 import fi.dy.masa.malilib.mixin.gui.IMixinGuiRenderer;
+import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
 import fi.dy.masa.malilib.render.element.*;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElement;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElementRenderer;
-import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.EntityUtils;
+import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.malilib.util.InventoryUtils;
+import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.data.DataBlockUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
+import fi.dy.masa.malilib.util.position.IntBoundingBox;
 import fi.dy.masa.malilib.util.position.PositionUtils;
 
 public class RenderUtils
@@ -93,7 +99,7 @@ public class RenderUtils
     private static final SingleThreadedRandomSource RAND = new SingleThreadedRandomSource(0);
 
     @ApiStatus.Internal
-    public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, MultiBufferSource.BufferSource immediate, Minecraft mc)
+    public static void registerSpecialGuiRenderers(GuiRenderer guiRenderer, Minecraft mc)
     {
         ImmutableMap.Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder = new ImmutableMap.Builder<>();
 
@@ -101,10 +107,10 @@ public class RenderUtils
         builder.putAll(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
 
         // Add Gui Block Model Renderer
-        builder.put(MaLiLibBlockStateGuiElement.class, new MaLiLibBlockStateGuiElementRenderer(immediate, ((IMixinMinecraft) mc).malilib_getBlockModelResolver()));
+        builder.put(MaLiLibBlockStateGuiElement.class, new MaLiLibBlockStateGuiElementRenderer());
 
         // Event Callback
-        ((RenderEventHandler) RenderEventHandler.getInstance()).onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
+        ((RenderEventHandler) RenderEventHandler.getInstance()).onRegisterSpecialGuiRenderer(guiRenderer, mc, builder);
 
         // Invoke / Update
         ((IGuiRendererInvoker) guiRenderer).malilib$replaceSpecialGuiRenderers(builder.buildOrThrow());
@@ -266,7 +272,7 @@ public class RenderUtils
         float b = (float) (color & 255) / 255.0F;
 
         // POSITION_COLOR_SIMPLE
-        RenderContext ctx = new RenderContext(() -> "malilib:drawRect", depthMask ? MaLiLibPipelines.POSITION_COLOR_MASA_DEPTH_MASK : MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL);
+        RenderContext ctx = new RenderContext(() -> "malilib:drawRect", depthMask ? MaLiLibPipelines.POSITION_COLOR_MASA_DEPTH_MASK : MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, 0);
         BufferBuilder buffer = ctx.getBuilder();
 
         buffer.addVertex(x * scale,           y * scale,            zLevel).setColor(r, g, b, a);
@@ -718,7 +724,7 @@ public class RenderUtils
         int eg = (endColor >> 8 & 0xFF);
         int eb = (endColor & 0xFF);
 
-        RenderContext ctx = new RenderContext(() -> "malilib:drawGradientRect", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL);
+        RenderContext ctx = new RenderContext(() -> "malilib:drawGradientRect", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, 0);
         BufferBuilder buffer = ctx.getBuilder();
 
         buffer.addVertex(right, top, zLevel).setColor(sr, sg, sb, sa);
@@ -1392,7 +1398,7 @@ public class RenderUtils
         global4fStack.rotateYXZ((-yaw) * ((float) (Math.PI / 180.0)), pitch * ((float) (Math.PI / 180.0)), 0.0F);
         global4fStack.scale((-scale), (-scale), scale);
 
-        RenderContext ctx = new RenderContext(() -> "malilib:drawTextPlate", disableDepth ? MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH : MaLiLibPipelines.TEXT_PLATE_MASA);
+        RenderContext ctx = new RenderContext(() -> "malilib:drawTextPlate", disableDepth ? MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH : MaLiLibPipelines.TEXT_PLATE_MASA, 0);
         BufferBuilder buffer = ctx.getBuilder();
         int maxLineLen = 0;
 
@@ -1447,6 +1453,7 @@ public class RenderUtils
 	        // k = light
 	        // bl2 = incl empty
 
+	        // FIXME
             MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
 
             textRenderer.drawInBatch(line, -strLenHalf, textY,
@@ -1480,7 +1487,7 @@ public class RenderUtils
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
         // Target "Side" -->
-        RenderContext ctx = new RenderContext(() -> "malilib:renderBlockTargetingOverlay Side", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderBlockTargetingOverlay Side", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, 0);
         BufferBuilder buffer = ctx.getBuilder();
 
         int quadAlpha = (int) (0.18f * 255f);
@@ -1553,7 +1560,7 @@ public class RenderUtils
 
         // Target "Center" -->
         // MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_NO_DEPTH_NO_CULL
-        buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlay/center", MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_NO_DEPTH_NO_CULL);
+        buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlay/center", MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_NO_DEPTH_NO_CULL, 0);
 
         // Middle small rectangle
         buffer.addVertex((float) (x - 0.25), (float) (y - 0.25), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
@@ -1583,7 +1590,7 @@ public class RenderUtils
 
         // Target "Edges" -->
         // MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL
-        buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlay/edges", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL);
+        buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlay/edges", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL, 0);
 
         // Bottom left
         buffer.addVertex((float) (x - 0.50), (float) (y - 0.50), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
@@ -1637,7 +1644,7 @@ public class RenderUtils
 
         blockTargetingOverlayTranslations(x, y, z, side, playerFacing, global4fStack);
 
-        RenderContext ctx = new RenderContext(() -> "malilib:renderBlockTargetingOverlaySimple/quads", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderBlockTargetingOverlaySimple/quads", MaLiLibPipelines.POSITION_COLOR_MASA_NO_DEPTH_NO_CULL, 0);
         BufferBuilder buffer = ctx.getBuilder();
 
         int a = (int) (color.a * 255f);
@@ -1672,7 +1679,7 @@ public class RenderUtils
 		float lineWidth = 1.6f;
 
         // MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_NO_DEPTH_NO_CULL
-        buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlaySimple/lines", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL);
+        buffer = ctx.start(() -> "malilib:renderBlockTargetingOverlaySimple/lines", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL, 0);
 
         // Middle rectangle
         buffer.addVertex((float) (x - 0.375), (float) (y - 0.375), (float) z).setColor(c, c, c, c).setLineWidth(lineWidth);
@@ -2081,79 +2088,31 @@ public class RenderUtils
     public static int getBundleColor(ItemStack bundle)
     {
         Item item = bundle.getItem();
+        if (item == null) { return CommonColors.WHITE; }
 
-        if (item == null)
-        {
-            return CommonColors.WHITE;
-        }
-        if (item.equals(Items.WHITE_BUNDLE))            // 	#ffe6e6e6
-        {
-            return 0xFFE6E6E6;
-        }
-        else if (item.equals(Items.ORANGE_BUNDLE))      //	#fffb9320
-        {
-            return 0xFFFB9320;
-        }
-        else if (item.equals(Items.MAGENTA_BUNDLE))     // 	#ffcc49b9
-        {
-            return 0xFFCC49B9;
-        }
-        else if (item.equals(Items.LIGHT_BLUE_BUNDLE))  // 	#ff30afe5
-        {
-            return 0xFF30AFE5;
-        }
-        else if (item.equals(Items.YELLOW_BUNDLE))      //	#fff2c705
-        {
-            return 0xFFF2C705;
-        }
-        else if (item.equals(Items.LIME_BUNDLE))        // 	#ff9bdf39
-        {
-            return 0xFF9BDF39;
-        }
-        else if (item.equals(Items.PINK_BUNDLE))        //	#fff8a6bd
-        {
-            return 0xFFF8A6BD;
-        }
-        else if (item.equals(Items.GRAY_BUNDLE))        // 	#ff6c7b83
-        {
-            return 0xFF6C7B83;
-        }
-        else if (item.equals(Items.LIGHT_GRAY_BUNDLE))  // 	#ffb1aca3
-        {
-            return 0xFFB1ACA3;
-        }
-        else if (item.equals(Items.CYAN_BUNDLE))        //  #ff14b4b4
-        {
-            return 0xFF14B4B4;
-        }
-        else if (item.equals(Items.BLUE_BUNDLE))        //  #ff4573c7
-        {
-            return 0xFF4573C7;
-        }
-        else if (item.equals(Items.BROWN_BUNDLE))       // 	#ffd18a59
-        {
-            return 0xFFD18A59;
-        }
-        else if (item.equals(Items.GREEN_BUNDLE))       // 	#ff77a119
-        {
-            return 0xFF77A119;
-        }
-        else if (item.equals(Items.RED_BUNDLE))         //	#ffd2382e
-        {
-            return 0xFFD2382E;
-        }
-        else if (item.equals(Items.BLACK_BUNDLE))       //  #ff38364f
-        {
-            return 0xFF38364F;
-        }
-        else if (item.equals(Items.PURPLE_BUNDLE))      // 	#ff942aca
-        {
-            return 0xFF942ACA;
-        }
-        else
-        {
-            return 0xFFA6572C;                          // #FFA6572C
-        }
+		Identifier id = BuiltInRegistries.ITEM.getKey(item);
+		if (id == null) { return CommonColors.WHITE; }
+
+	    return switch (id.getPath())
+	    {
+		    case "white_bundle" ->      0xFFE6E6E6; // #FFE6E6E6
+		    case "orange_bundle" ->     0xFFFB9320; // #FFFB9320
+		    case "magenta_bundle" ->    0xFFCC49B9; // #FFCC49B9
+		    case "light_blue_bundle" -> 0xFF30AFE5; // #FF30AFE5
+		    case "yellow_bundle" ->     0xFFF2C705; // #FFF2C705
+		    case "lime_bundle" ->       0xFF9BDF39; // #FF9BDF39
+		    case "pink_bundle" ->       0xFFF8A6BD; // #FFF8A6BD
+		    case "gray_bundle" ->       0xFF6C7B83; // #FF6C7B83
+		    case "light_gray_bundle" -> 0xFFB1ACA3; // #FFB1ACA3
+		    case "cyan_bundle" ->       0xFF14B4B4; // #FF14B4B4
+		    case "blue_bundle" ->       0xFF4573C7; // #FF4573C7
+		    case "brown_bundle" ->      0xFFD18A59; // #FFD18A59
+		    case "green_bundle" ->      0xFF77A119; // #FF77A119
+		    case "red_bundle" ->        0xFFD2382E; // #FFD2382E
+		    case "black_bundle" ->      0xFF38364F; // #FF38364F
+		    case "purple_bundle" ->     0xFF942ACA; // #FF942ACA
+		    default ->                  0xFFA6572C; // #FFA6572C
+	    };
     }
 
     public static int setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
@@ -2400,14 +2359,14 @@ public class RenderUtils
         return Minecraft.getInstance();
     }
 
-    public static RenderTarget fb()
+    public static RenderTarget mainTarget()
     {
-        return mc().getMainRenderTarget();
+        return mc().gameRenderer.mainRenderTarget();
     }
 
     public static Vec3 camPos()
     {
-        return mc().gameRenderer.getMainCamera().position();
+        return mc().gameRenderer.mainCamera().position();
     }
 
     public static TextureManager tex()
@@ -2438,7 +2397,7 @@ public class RenderUtils
     public static void renderBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color, boolean renderThrough)
     {
         // renderThrough ? MaLiLibPipelines.LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : RenderPipelines.LINES
-        RenderContext ctx = new RenderContext(() -> "malilib:renderBlockOutline", renderThrough ? MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderBlockOutline", renderThrough ? MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH, 0);
         BufferBuilder buffer = ctx.getBuilder();
 
         drawBlockBoundingBoxOutlinesBatchedLinesSimple(pos, color, expand, lineWidth, buffer);
@@ -2536,7 +2495,7 @@ public class RenderUtils
         final float maxZ = (float) (pos.getZ() - dz + expand + 1);
 
         // renderThrough ? MaLiLibPipelines.LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : RenderPipelines.LINES
-        RenderContext ctx = new RenderContext(() -> "malilib:renderBlockOutlineOverlapping", renderThrough ? MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderBlockOutlineOverlapping", renderThrough ? MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH, 0);
         BufferBuilder buffer = ctx.getBuilder();
 
         // Min corner
@@ -2619,7 +2578,7 @@ public class RenderUtils
                                              Color4f colorX, Color4f colorY, Color4f colorZ, float lineWidth)
     {
         // MaLiLibPipelines.LINES_NO_DEPTH_NO_CULL
-        RenderContext ctx = new RenderContext(() -> "malilib:drawBoundingBoxEdges", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL);
+        RenderContext ctx = new RenderContext(() -> "malilib:drawBoundingBoxEdges", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL, 0);
         BufferBuilder buffer = ctx.getBuilder();
 
         drawBoundingBoxLinesX(buffer, minX, minY, minZ, maxX, maxY, maxZ, colorX, lineWidth);
@@ -2702,7 +2661,7 @@ public class RenderUtils
     {
 	    boolean insideOf = isCameraInsideOf(pos1, pos2);
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL
-        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", insideOf ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", insideOf ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH, 0);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
@@ -2788,7 +2747,7 @@ public class RenderUtils
         int start, end;
 
         // RenderPipelines.LINES
-        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaOutlineNoCorners", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaOutlineNoCorners", MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH, 0);
         BufferBuilder buffer = ctx.getBuilder();
 
         // Edges along the X-axis

@@ -118,14 +118,14 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 
 			if (state != null && renderer.shouldUseRenderContext())
 			{
-				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline());
+				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline(), state.formatIndex());
 
 				if (ctx.isStarted())
 				{
 					ctx.reset();
 				}
 
-				BufferBuilder builder = ctx.start(renderer.name(), state.pipeline());
+				BufferBuilder builder = ctx.start(renderer.name(), state.pipeline(), state.formatIndex());
 
 				if (renderer.shouldBindTexture() && state.texture() != null)
 				{
@@ -173,13 +173,13 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 	}
 
 	@ApiStatus.Internal
-	private RenderContext getRenderContext(String key, Supplier<String> name, RenderPipeline pipeline)
+	private RenderContext getRenderContext(String key, Supplier<String> name, RenderPipeline pipeline, int formatIndex)
 	{
 		synchronized (this.renderContextMap)
 		{
 			if (!this.renderContextMap.containsKey(key))
 			{
-				this.renderContextMap.put(key, new RenderContext(name, pipeline));
+				this.renderContextMap.put(key, new RenderContext(name, pipeline, formatIndex));
 			}
 
 			return this.renderContextMap.get(key);
@@ -222,7 +222,7 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 
 			if (state != null && renderer.shouldUseRenderContext())
 			{
-				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline());
+				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline(), state.formatIndex());
 
 				if (!ctx.isUploaded())
 				{

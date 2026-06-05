@@ -21,7 +21,8 @@ import java.util.*;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.util.Tuple;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,7 +40,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields = new ArrayList<>();
 
 	// You're probably going to hate me for this, but...
-	private final List<Tuple<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings>> keybindWidgets = new ArrayList<>();
+	private final List<Pair<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings>> keybindWidgets = new ArrayList<>();
 
 	private final List<ConfigButtonBoolean> booleanWidgets = new ArrayList<>();
 
@@ -438,12 +439,12 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				wrapper.textField().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
 			}
 		}
-		for (Tuple<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)
+		for (Pair<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)
 		{
 			if (pair != null)
 			{
-				ConfigButtonKeybind button = pair.getA();
-				WidgetKeybindSettings settings = pair.getB();
+				ConfigButtonKeybind button = pair.getLeft();
+				WidgetKeybindSettings settings = pair.getRight();
 				if (button != null)
 				{
 					button.render(ctx, mouseX, mouseY, selected);
@@ -473,11 +474,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	@Override
 	public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
 	{
-		for (Tuple<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)
+		for (Pair<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)
 		{
 			if (pair != null)
 			{
-				ConfigButtonKeybind button = pair.getA();
+				ConfigButtonKeybind button = pair.getLeft();
 				if (button != null)
 				{
 					if (button.isMouseOver((int) click.x(), (int) click.y()))
@@ -508,11 +509,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	@Override
 	public boolean onKeyTyped(KeyEvent input)
 	{
-		for (Tuple<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)
+		for (Pair<@NotNull ConfigButtonKeybind, @NotNull WidgetKeybindSettings> pair : this.keybindWidgets)
 		{
 			if (pair != null)
 			{
-				ConfigButtonKeybind button = pair.getA();
+				ConfigButtonKeybind button = pair.getLeft();
 				if (button != null)
 				{
 					if (button.isSelected())

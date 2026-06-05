@@ -1,8 +1,6 @@
 package fi.dy.masa.malilib.mixin.client;
 
-import java.nio.file.Path;
 import java.util.Optional;
-import com.llamalad7.mixinextras.sugar.Local;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -41,7 +39,7 @@ public abstract class MixinMinecraft
     }
 
     @Inject(method = "<init>(Lnet/minecraft/client/main/GameConfig;)V", at = @At("RETURN"))
-    private void malilib_onInitComplete(GameConfig args, CallbackInfo ci)
+    private void malilib_onInitComplete(GameConfig gameConfig, CallbackInfo ci)
     {
         // Register all mod handlers
         ((InitializationHandler) InitializationHandler.getInstance()).onGameInitDone();
@@ -64,7 +62,7 @@ public abstract class MixinMinecraft
     }
 
     @Inject(method = "setLevel", at = @At("HEAD"))
-    private void malilib_onLoadWorldPre(ClientLevel worldClientIn, CallbackInfo ci)
+    private void malilib_onLoadWorldPre(ClientLevel level, CallbackInfo ci)
     {
         // Only handle dimension changes/respawns here.
         // The initial join is handled in MixinClientPlayNetworkHandler onGameJoin
@@ -73,17 +71,17 @@ public abstract class MixinMinecraft
         if (this.level != null)
         {
             this.worldBefore = this.level;
-            ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.level, worldClientIn, (Minecraft)(Object) this);
+            ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPre(this.level, level, (Minecraft)(Object) this);
         }
     }
 
     @Inject(method = "setLevel", at = @At("RETURN"))
-    private void malilib_onLoadWorldPost(ClientLevel worldClientIn, CallbackInfo ci)
+    private void malilib_onLoadWorldPost(ClientLevel level, CallbackInfo ci)
     {
 //        MaLiLib.LOGGER.error("MC#onLoadWorldPost(): world [{}], worldBefore [{}], worldClientIn [{}]", this.level != null, this.worldBefore != null, worldClientIn != null);
         if (this.worldBefore != null)
         {
-            ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, worldClientIn, (Minecraft)(Object) this);
+            ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, level, (Minecraft)(Object) this);
             this.worldBefore = null;
         }
     }
@@ -105,7 +103,7 @@ public abstract class MixinMinecraft
     }
 
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;ZZ)V", at = @At("HEAD"))
-    private void malilib_onDisconnectPre(Screen screen, boolean bl, boolean bl2, CallbackInfo ci)
+    private void malilib_onDisconnectPre(Screen screen, boolean keepResourcePacks, boolean stopSound, CallbackInfo ci)
     {
 //        MaLiLib.LOGGER.error("MC#onDisconnectPre(): world [{}], worldBefore [{}]", this.level != null, this.worldBefore != null);
         this.worldBefore = this.level;
@@ -113,7 +111,7 @@ public abstract class MixinMinecraft
     }
 
     @Inject(method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;ZZ)V", at = @At("RETURN"))
-    private void malilib_onDisconnectPost(Screen screen, boolean bl, boolean bl2, CallbackInfo ci)
+    private void malilib_onDisconnectPost(Screen screen, boolean keepResourcePacks, boolean stopSound, CallbackInfo ci)
     {
 //        MaLiLib.LOGGER.error("MC#onDisconnectPost(): world [{}], worldBefore [{}]", this.level != null, this.worldBefore != null);
         ((WorldLoadHandler) WorldLoadHandler.getInstance()).onWorldLoadPost(this.worldBefore, null, (Minecraft)(Object) this);

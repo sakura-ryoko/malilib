@@ -24,6 +24,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -294,7 +295,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		MaLiLib.LOGGER.error("getTargetFromBlock: inv [{}], data [{}]", inv != null ? inv.getContainerSize() : "<NULL>", data != null ? data.toString() : "<NULL>");
 		BlockEntityType<?> beType = data != null ? DataBlockUtils.getBlockEntityType(data) : null;
 
-		if ((beType != null && beType.equals(BlockEntityType.ENDER_CHEST)) ||
+		if ((beType != null && beType.equals(BlockEntityTypes.ENDER_CHEST)) ||
 			be instanceof EnderChestBlockEntity)
 		{
 			if (Minecraft.getInstance().player != null)

@@ -14,7 +14,7 @@ import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
 
-@Mixin(value = KeyboardHandler.class, priority = 990)
+@Mixin(value = KeyboardHandler.class, priority = 900)
 public abstract class MixinKeyboard implements IF3KeyStateSetter
 {
     @Shadow private boolean usedDebugKeyAsModifier;
@@ -30,9 +30,9 @@ public abstract class MixinKeyboard implements IF3KeyStateSetter
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/KeyboardHandler;debugCrashKeyTime:J",
                      ordinal = 0,
                      opcode = Opcodes.GETFIELD))
-    private void malilib_onKeyboardInput(long window, int key, KeyEvent input, CallbackInfo ci)
+    private void malilib_onKeyboardInput(long handle, int action, KeyEvent event, CallbackInfo ci)
     {
-        if (((InputEventHandler) InputEventHandler.getInputManager()).onKeyInput(input, key, this.minecraft))
+        if (((InputEventHandler) InputEventHandler.getInputManager()).onKeyInput(event, action, this.minecraft))
         {
             ci.cancel();
         }

@@ -1,13 +1,9 @@
 package fi.dy.masa.malilib.mixin.render;
 
-import com.llamalad7.mixinextras.sugar.Local;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.resources.model.ModelManager;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,9 +20,10 @@ public class MixinGameRenderer
     @Shadow @Final private GuiRenderer guiRenderer;
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void malilib_injectSpecialGuiRenderer(Minecraft minecraft, ItemInHandRenderer itemInHandRenderer, RenderBuffers renderBuffers, ModelManager modelManager, CallbackInfo ci,
-                                                  @Local(name = "bufferSource") MultiBufferSource.BufferSource bufferSource)
+    private void malilib_injectSpecialGuiRenderer(Minecraft minecraft,
+                                                  ItemInHandRenderer itemInHandRenderer,
+                                                  ModelManager modelManager, CallbackInfo ci)
     {
-        RenderUtils.registerSpecialGuiRenderers(this.guiRenderer, bufferSource, minecraft);
+        RenderUtils.registerSpecialGuiRenderers(this.guiRenderer, minecraft);
     }
 }

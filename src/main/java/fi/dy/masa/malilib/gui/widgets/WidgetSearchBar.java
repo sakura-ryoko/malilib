@@ -83,9 +83,9 @@ public class WidgetSearchBar extends WidgetBase
             }
             else if (input.key() == KeyCodes.KEY_ESCAPE)
             {
-                if (input.hasShiftDown() && this.mc.screen != null)
+                if (input.hasShiftDown() && this.mc.gui.screen() != null)
                 {
-                    this.mc.screen.onClose();
+                    this.mc.gui.screen().onClose();
                 }
 
                 this.searchOpen = false;

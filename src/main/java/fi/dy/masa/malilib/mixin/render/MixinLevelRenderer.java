@@ -7,14 +7,12 @@ import org.joml.Vector4f;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
-import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.RenderBuffers;
-import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
-import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.spongepowered.asm.mixin.Final;
@@ -29,65 +27,39 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 @Mixin(value = LevelRenderer.class, priority = 900)
 public abstract class MixinLevelRenderer
 {
-	@Shadow @Final private Minecraft minecraft;
 	@Shadow @Final private LevelTargetBundle targets;
 	@Shadow @Final private RenderBuffers renderBuffers;
-
-	@Inject(method = "extractLevel",
-	        at = @At(value = "INVOKE",
-	                 target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
-	                 ordinal = 5
-	        ))
-	private void malilib_onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera,
-	                                              float deltaPartialTick, CallbackInfo ci,
-	                                              @Local(name = "profiler") ProfilerFiller profiler)
-	{
-		((RenderEventHandler) RenderEventHandler.getInstance()).runExtractWorldPreWeather(deltaTracker, camera, deltaPartialTick, profiler);
-	}
-
-	@Inject(method = "extractLevel",
-	        at = @At(value = "INVOKE",
-	                 target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
-	                 ordinal = 10,
-	                 shift = At.Shift.BEFORE
-	        ))
-	private void malilib_onExtractWorldLast(DeltaTracker deltaTracker, Camera camera,
-	                                        float deltaPartialTick, CallbackInfo ci,
-	                                        @Local(name = "profiler") ProfilerFiller profiler)
-	{
-		((RenderEventHandler) RenderEventHandler.getInstance()).runExtractWorldLast(deltaTracker, camera, deltaPartialTick, profiler);
-	}
+	@Shadow @Final private GameRenderer gameRenderer;
 
 	// Effected by Improved Transparency
-	@Inject(method = "renderLevel",
+	@Inject(method = "render",
 	        at = @At(value = "INVOKE",
-	                 target = "Lnet/minecraft/client/renderer/LevelRenderer;addWeatherPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V"
+	                 target = "Lnet/minecraft/client/renderer/LevelRenderer;addWeatherPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
+	                 shift = At.Shift.BEFORE
 	        ))
 	private void malilib_onRenderWorldPreWeather(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker,
 	                                             boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix,
 	                                             GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky,
-	                                             ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci,
+	                                             CallbackInfo ci,
 	                                             @Local(name = "profiler") ProfilerFiller profiler,
-	                                             @Local(name = "cullFrustum") Frustum cullFrustum,
 	                                             @Local(name = "frame") FrameGraphBuilder frame)
 	{
-		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(modelViewMatrix, this.minecraft, frame, this.targets, cullFrustum, cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
+		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(modelViewMatrix, Minecraft.getInstance(), frame, this.targets, this.gameRenderer.mainCamera().getCullFrustum(), cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
 	}
 
 	// 'addLateDebugPass' clears the Depth Texture
-	@Inject(method = "renderLevel",
+	@Inject(method = "render",
 	        at = @At(value = "INVOKE",
-	                 target = "Lnet/minecraft/client/renderer/LevelRenderer;addLateDebugPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Matrix4fc;)V",
+	                 target = "Lnet/minecraft/client/renderer/LevelRenderer;addAlwaysOnTopPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/feature/FeatureRenderDispatcher$PreparedFrame;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;)V",
 	                 shift = At.Shift.BEFORE
 	        ))
 	private void malilib_onRenderWorldLast(GraphicsResourceAllocator resourceAllocator, DeltaTracker deltaTracker,
 	                                       boolean renderOutline, CameraRenderState cameraState, Matrix4fc modelViewMatrix,
 	                                       GpuBufferSlice terrainFog, Vector4f fogColor, boolean shouldRenderSky,
-	                                       ChunkSectionsToRender chunkSectionsToRender, CallbackInfo ci,
+	                                       CallbackInfo ci,
 	                                       @Local(name = "profiler") ProfilerFiller profiler,
-	                                       @Local(name = "cullFrustum") Frustum cullFrustum,
 	                                       @Local(name = "frame") FrameGraphBuilder frame)
 	{
-		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(modelViewMatrix, this.minecraft, frame, this.targets, cullFrustum, cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
+		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(modelViewMatrix, Minecraft.getInstance(), frame, this.targets, this.gameRenderer.mainCamera().getCullFrustum(), cameraState, this.renderBuffers, terrainFog, fogColor, profiler);
 	}
 }

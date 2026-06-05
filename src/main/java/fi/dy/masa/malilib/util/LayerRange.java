@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
@@ -25,6 +26,7 @@ import fi.dy.masa.malilib.util.data.json.JsonUtils;
 /**
  * See {@link fi.dy.masa.malilib.util.position.LayerRange}
  */
+@Deprecated
 public class LayerRange
 {
     public static final Codec<LayerRange> CODEC = RecordCodecBuilder.create(
@@ -43,7 +45,7 @@ public class LayerRange
     public static final StreamCodec<@NotNull ByteBuf, @NotNull LayerRange> PACKET_CODEC = new StreamCodec<>()
     {
         @Override
-        public void encode(ByteBuf buf, LayerRange value)
+        public void encode(@NonNull ByteBuf buf, LayerRange value)
         {
             LayerMode.PACKET_CODEC.encode(buf, value.layerMode);
             ByteBufCodecs.STRING_UTF8.encode(buf, value.axis.getSerializedName());
@@ -57,7 +59,7 @@ public class LayerRange
         }
 
         @Override
-        public LayerRange decode(ByteBuf buf)
+        public @NonNull LayerRange decode(@NonNull ByteBuf buf)
         {
             return new LayerRange(
                     LayerMode.PACKET_CODEC.decode(buf),

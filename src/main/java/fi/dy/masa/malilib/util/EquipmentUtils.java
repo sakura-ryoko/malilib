@@ -12,7 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -356,7 +356,7 @@ public class EquipmentUtils
 					}
 				}
 
-				return bodySlot && (equip.canBeEquippedBy(EntityType.HORSE.builtInRegistryHolder()) || equip.canBeEquippedBy(EntityType.ZOMBIE_HORSE.builtInRegistryHolder()));
+				return bodySlot && (equip.canBeEquippedBy(EntityTypes.HORSE.builtInRegistryHolder()) || equip.canBeEquippedBy(EntityTypes.ZOMBIE_HORSE.builtInRegistryHolder()));
 			}
 		}
 
@@ -387,7 +387,7 @@ public class EquipmentUtils
 					}
 				}
 
-				return bodySlot && (equip.canBeEquippedBy(EntityType.NAUTILUS.builtInRegistryHolder()) || equip.canBeEquippedBy(EntityType.ZOMBIE_NAUTILUS.builtInRegistryHolder()));
+				return bodySlot && (equip.canBeEquippedBy(EntityTypes.NAUTILUS.builtInRegistryHolder()) || equip.canBeEquippedBy(EntityTypes.ZOMBIE_NAUTILUS.builtInRegistryHolder()));
 			}
 		}
 
@@ -418,7 +418,7 @@ public class EquipmentUtils
                     }
 				}
 
-				return bodySlot && equip.canBeEquippedBy(EntityType.WOLF.builtInRegistryHolder());
+				return bodySlot && equip.canBeEquippedBy(EntityTypes.WOLF.builtInRegistryHolder());
 			}
 		}
 

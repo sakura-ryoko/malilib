@@ -12,8 +12,8 @@ import fi.dy.masa.malilib.config.ConfigManager;
 public class MixinLanguageManager
 {
 	@Inject(method = "setSelected", at = @At("RETURN"))
-	private void malilib_onSetLanguage(String string, CallbackInfo ci)
+	private void malilib_onSetLanguage(String code, CallbackInfo ci)
 	{
-		((ConfigManager) ConfigManager.getInstance()).onVanillaSetLanguage(string);
+		((ConfigManager) ConfigManager.getInstance()).onVanillaSetLanguage(code);
 	}
 }

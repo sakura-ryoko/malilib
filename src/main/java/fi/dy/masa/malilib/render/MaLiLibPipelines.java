@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.render;
 
+import com.mojang.blaze3d.pipeline.BindGroupLayout;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 
 /**
@@ -7,11 +8,6 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
  */
 public class MaLiLibPipelines
 {
-    // todo POSITION Snippet
-    public static RenderPipeline.Snippet POSITION_STAGE;
-    public static RenderPipeline.Snippet POSITION_TRANSLUCENT_STAGE;
-    public static RenderPipeline.Snippet POSITION_MASA_STAGE;
-
 	// todo POSITION_COLOR Snippet
 	public static RenderPipeline.Snippet POSITION_COLOR_STAGE;
 	public static RenderPipeline.Snippet POSITION_COLOR_TRANSLUCENT_STAGE;
@@ -84,11 +80,6 @@ public class MaLiLibPipelines
 	public static RenderPipeline MINIHUD_SHAPE_LINES_NO_CULL;
 	public static RenderPipeline MINIHUD_SHAPE_LINES;
 
-	// todo POSITION_TEX Snippet
-	public static RenderPipeline.Snippet POSITION_TEX_STAGE;
-	public static RenderPipeline.Snippet POSITION_TEX_TRANSLUCENT_STAGE;
-	public static RenderPipeline.Snippet POSITION_TEX_MASA_STAGE;
-
 	// todo POSITION_TEX_COLOR Snippet
 	public static RenderPipeline.Snippet POSITION_TEX_COLOR_STAGE;
 	public static RenderPipeline.Snippet POSITION_TEX_COLOR_TRANSLUCENT_STAGE;
@@ -115,11 +106,6 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH;
 	public static RenderPipeline POSITION_TEX_COLOR_MASA_DEPTH_MASK;
     public static RenderPipeline POSITION_TEX_COLOR_MASA;
-
-	// todo LINES Snippet
-	public static RenderPipeline.Snippet LINES_STAGE;
-	public static RenderPipeline.Snippet LINES_TRANSLUCENT_STAGE;
-	public static RenderPipeline.Snippet LINES_MASA_SIMPLE_STAGE;
 
 	// todo DEBUG_LINES Snippet
 	public static RenderPipeline.Snippet DEBUG_LINES_STAGE;
@@ -173,41 +159,8 @@ public class MaLiLibPipelines
     public static RenderPipeline GUI_OVERLAY;
     public static RenderPipeline GUI_TEXTURED_OVERLAY;
 
-	// todo TERRAIN Snippet
-	public static RenderPipeline.Snippet TERRAIN_STAGE;
-	public static RenderPipeline.Snippet TERRAIN_TRANSLUCENT_STAGE;
-
-	// TERRAIN
-	public static RenderPipeline SOLID_TERRAIN;
-	public static RenderPipeline WIREFRAME;
-	public static RenderPipeline CUTOUT_TERRAIN;
-
-	// TERRAIN_OFFSET
-	public static RenderPipeline SOLID_TERRAIN_OFFSET;
-	public static RenderPipeline WIREFRAME_OFFSET;
-	public static RenderPipeline CUTOUT_TERRAIN_OFFSET;
-
-	// TERRAIN_TRANSLUCENT
-	public static RenderPipeline TRANSLUCENT;
-	public static RenderPipeline TRANSLUCENT_OFFSET;
-
-	// todo BLOCK Snippet
-	public static RenderPipeline.Snippet BLOCK_STAGE;
-	public static RenderPipeline.Snippet BLOCK_TRANSLUCENT_STAGE;
-
-	// BLOCK
-	public static RenderPipeline SOLID_BLOCK;
-	public static RenderPipeline CUTOUT_BLOCK;
-
-	// BLOCK_OFFSET
-	public static RenderPipeline SOLID_BLOCK_OFFSET;
-	public static RenderPipeline CUTOUT_BLOCK_OFFSET;
-
-	// BLOCK_TRANSLUCENT
-	public static RenderPipeline TRANSLUCENT_BLOCK;
-	public static RenderPipeline TRANSLUCENT_BLOCK_OFFSET;
-
 	// todo LEGACY_TERRAIN Snippet
+	public static BindGroupLayout LEGACY_TERRAIN_GROUP;
 	public static RenderPipeline.Snippet LEGACY_TERRAIN_STAGE;
 	public static RenderPipeline.Snippet LEGACY_TERRAIN_TRANSLUCENT_STAGE;
 

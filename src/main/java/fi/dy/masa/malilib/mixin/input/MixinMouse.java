@@ -16,7 +16,7 @@ import net.minecraft.client.ScrollWheelHandler;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 
-@Mixin(value = MouseHandler.class, priority = 990)
+@Mixin(value = MouseHandler.class, priority = 900)
 public abstract class MixinMouse
 {
     @Shadow @Final private Minecraft minecraft;
@@ -36,7 +36,7 @@ public abstract class MixinMouse
     }
 
     @Inject(method = "onScroll", cancellable = true,
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getOverlay()Lnet/minecraft/client/gui/screens/Overlay;",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;overlay()Lnet/minecraft/client/gui/screens/Overlay;",
                     ordinal = 0,
                      shift = At.Shift.AFTER))
     private void malilib_hookOnMouseScroll(long handle, double xOffset, double yOffset, CallbackInfo ci)
@@ -55,13 +55,13 @@ public abstract class MixinMouse
     @Inject(method = "onButton", cancellable = true,
             at = @At(value = "INVOKE",
 					 target = "Lnet/minecraft/client/MouseHandler;simulateRightClick(Lnet/minecraft/client/input/MouseButtonInfo;Z)Lnet/minecraft/client/input/MouseButtonInfo;"))
-    private void malilib_hookOnMouseClick(long window, MouseButtonInfo input, int action, CallbackInfo ci)
+    private void malilib_hookOnMouseClick(long handle, MouseButtonInfo rawButtonInfo, int action, CallbackInfo ci)
     {
         Window clientWindow = this.minecraft.getWindow();
         double mouseX = ((MouseHandler) (Object) this).xpos() * (double) clientWindow.getGuiScaledWidth() / (double) clientWindow.getScreenWidth();
         double mouseY = ((MouseHandler) (Object) this).ypos() * (double) clientWindow.getGuiScaledHeight() / (double) clientWindow.getScreenHeight();
 
-        if (((InputEventHandler) InputEventHandler.getInputManager()).onMouseClick(new MouseButtonEvent(mouseX, mouseY, input), action, this.minecraft))
+        if (((InputEventHandler) InputEventHandler.getInputManager()).onMouseClick(new MouseButtonEvent(mouseX, mouseY, rawButtonInfo), action, this.minecraft))
         {
             ci.cancel();
         }

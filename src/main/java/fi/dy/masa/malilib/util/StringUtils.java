@@ -24,6 +24,7 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.locale.Language;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -855,7 +856,7 @@ public class StringUtils
             }
         }
 
-        return I18n.exists(translationKey);
+        return Language.getInstance().has(translationKey);
     }
 
     /**

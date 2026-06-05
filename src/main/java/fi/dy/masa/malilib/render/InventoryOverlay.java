@@ -28,6 +28,7 @@ import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.equine.AbstractHorse;
@@ -597,10 +598,10 @@ public class InventoryOverlay
 
 		if (blockType != null)
 		{
-			if (blockType.equals(BlockEntityType.SHULKER_BOX) ||
-				blockType.equals(BlockEntityType.BARREL) ||
-				blockType.equals(BlockEntityType.CHEST) ||
-				blockType.equals(BlockEntityType.TRAPPED_CHEST))
+			if (blockType.equals(BlockEntityTypes.SHULKER_BOX) ||
+				blockType.equals(BlockEntityTypes.BARREL) ||
+				blockType.equals(BlockEntityTypes.CHEST) ||
+				blockType.equals(BlockEntityTypes.TRAPPED_CHEST))
 			{
 				if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
 				{
@@ -614,44 +615,44 @@ public class InventoryOverlay
 
 				return InventoryOverlayType.FIXED_27;
 			}
-			else if (blockType.equals(BlockEntityType.FURNACE) ||
-					blockType.equals(BlockEntityType.BLAST_FURNACE) ||
-					blockType.equals(BlockEntityType.SMOKER))
+			else if (blockType.equals(BlockEntityTypes.FURNACE) ||
+					blockType.equals(BlockEntityTypes.BLAST_FURNACE) ||
+					blockType.equals(BlockEntityTypes.SMOKER))
 			{
 				return InventoryOverlayType.FURNACE;
 			}
-			else if (blockType.equals(BlockEntityType.DISPENSER) ||
-					blockType.equals(BlockEntityType.DROPPER))
+			else if (blockType.equals(BlockEntityTypes.DISPENSER) ||
+					blockType.equals(BlockEntityTypes.DROPPER))
 			{
 				return InventoryOverlayType.DISPENSER;
 			}
-			else if (blockType.equals(BlockEntityType.HOPPER))
+			else if (blockType.equals(BlockEntityTypes.HOPPER))
 			{
 				return InventoryOverlayType.HOPPER;
 			}
-			else if (blockType.equals(BlockEntityType.BREWING_STAND))
+			else if (blockType.equals(BlockEntityTypes.BREWING_STAND))
 			{
 				return InventoryOverlayType.BREWING_STAND;
 			}
-			else if (blockType.equals(BlockEntityType.CRAFTER))
+			else if (blockType.equals(BlockEntityTypes.CRAFTER))
 			{
 				return InventoryOverlayType.CRAFTER;
 			}
-			else if (blockType.equals(BlockEntityType.DECORATED_POT) ||
-					blockType.equals(BlockEntityType.JUKEBOX) ||
-					blockType.equals(BlockEntityType.LECTERN))
+			else if (blockType.equals(BlockEntityTypes.DECORATED_POT) ||
+					blockType.equals(BlockEntityTypes.JUKEBOX) ||
+					blockType.equals(BlockEntityTypes.LECTERN))
 			{
 				return InventoryOverlayType.SINGLE_ITEM;
 			}
-			else if (blockType.equals(BlockEntityType.CHISELED_BOOKSHELF))
+			else if (blockType.equals(BlockEntityTypes.CHISELED_BOOKSHELF))
 			{
 				return InventoryOverlayType.BOOKSHELF;
 			}
-			else if (blockType.equals(BlockEntityType.SHELF))
+			else if (blockType.equals(BlockEntityTypes.SHELF))
 			{
 				return InventoryOverlayType.WALL_SHELF;
 			}
-			else if (blockType.equals(BlockEntityType.ENDER_CHEST))
+			else if (blockType.equals(BlockEntityTypes.ENDER_CHEST))
 			{
 				return InventoryOverlayType.ENDER_CHEST;
 			}
@@ -661,70 +662,70 @@ public class InventoryOverlay
 
 		if (entityType != null)
 		{
-			if (entityType.equals(EntityType.CHEST_MINECART) ||
-				entityType.equals(EntityType.ACACIA_CHEST_BOAT) ||
-				entityType.equals(EntityType.BAMBOO_CHEST_RAFT) ||
-				entityType.equals(EntityType.BIRCH_CHEST_BOAT) ||
-				entityType.equals(EntityType.CHERRY_CHEST_BOAT) ||
-				entityType.equals(EntityType.DARK_OAK_CHEST_BOAT) ||
-				entityType.equals(EntityType.JUNGLE_CHEST_BOAT) ||
-				entityType.equals(EntityType.MANGROVE_CHEST_BOAT) ||
-				entityType.equals(EntityType.OAK_CHEST_BOAT) ||
-				entityType.equals(EntityType.PALE_OAK_CHEST_BOAT) ||
-				entityType.equals(EntityType.SPRUCE_CHEST_BOAT))
+			if (entityType.equals(EntityTypes.CHEST_MINECART) ||
+				entityType.equals(EntityTypes.ACACIA_CHEST_BOAT) ||
+				entityType.equals(EntityTypes.BAMBOO_CHEST_RAFT) ||
+				entityType.equals(EntityTypes.BIRCH_CHEST_BOAT) ||
+				entityType.equals(EntityTypes.CHERRY_CHEST_BOAT) ||
+				entityType.equals(EntityTypes.DARK_OAK_CHEST_BOAT) ||
+				entityType.equals(EntityTypes.JUNGLE_CHEST_BOAT) ||
+				entityType.equals(EntityTypes.MANGROVE_CHEST_BOAT) ||
+				entityType.equals(EntityTypes.OAK_CHEST_BOAT) ||
+				entityType.equals(EntityTypes.PALE_OAK_CHEST_BOAT) ||
+				entityType.equals(EntityTypes.SPRUCE_CHEST_BOAT))
 			{
 				return InventoryOverlayType.FIXED_27;
 			}
-			else if (entityType.equals(EntityType.HOPPER_MINECART))
+			else if (entityType.equals(EntityTypes.HOPPER_MINECART))
 			{
 				return InventoryOverlayType.HOPPER;
 			}
-			else if (entityType.equals(EntityType.HORSE) ||
-					entityType.equals(EntityType.DONKEY) ||
-					entityType.equals(EntityType.MULE) ||
-					entityType.equals(EntityType.CAMEL) ||
-					entityType.equals(EntityType.SKELETON_HORSE) ||
-					entityType.equals(EntityType.CAMEL_HUSK) ||
-					entityType.equals(EntityType.ZOMBIE_HORSE))
+			else if (entityType.equals(EntityTypes.HORSE) ||
+					entityType.equals(EntityTypes.DONKEY) ||
+					entityType.equals(EntityTypes.MULE) ||
+					entityType.equals(EntityTypes.CAMEL) ||
+					entityType.equals(EntityTypes.SKELETON_HORSE) ||
+					entityType.equals(EntityTypes.CAMEL_HUSK) ||
+					entityType.equals(EntityTypes.ZOMBIE_HORSE))
 			{
 				return InventoryOverlayType.HORSE;
 			}
-			else if (entityType.equals(EntityType.LLAMA) ||
-					entityType.equals(EntityType.TRADER_LLAMA))
+			else if (entityType.equals(EntityTypes.LLAMA) ||
+					entityType.equals(EntityTypes.TRADER_LLAMA))
 			{
 				return InventoryOverlayType.LLAMA;
 			}
-			else if (entityType.equals(EntityType.NAUTILUS) ||
-					entityType.equals(EntityType.ZOMBIE_NAUTILUS))
+			else if (entityType.equals(EntityTypes.NAUTILUS) ||
+					entityType.equals(EntityTypes.ZOMBIE_NAUTILUS))
 			{
 				return InventoryOverlayType.NAUTILUS;
 			}
-			else if (entityType.equals(EntityType.WOLF))
+			else if (entityType.equals(EntityTypes.WOLF))
 			{
 				return InventoryOverlayType.WOLF;
 			}
-			else if (entityType.equals(EntityType.HAPPY_GHAST))
+			else if (entityType.equals(EntityTypes.HAPPY_GHAST))
 			{
 				return InventoryOverlayType.HAPPY_GHAST;
 			}
-			else if (entityType.equals(EntityType.COPPER_GOLEM))
+			else if (entityType.equals(EntityTypes.COPPER_GOLEM))
 			{
 				return InventoryOverlayType.COPPER_GOLEM;
 			}
-			else if (entityType.equals(EntityType.VILLAGER) ||
-					entityType.equals(EntityType.ALLAY) ||
-					entityType.equals(EntityType.PILLAGER) ||
-					entityType.equals(EntityType.PIGLIN) ||
-					entityType.equals(EntityType.WANDERING_TRADER) ||
-					entityType.equals(EntityType.ZOMBIE_VILLAGER))
+			else if (entityType.equals(EntityTypes.VILLAGER) ||
+					entityType.equals(EntityTypes.ALLAY) ||
+					entityType.equals(EntityTypes.PILLAGER) ||
+					entityType.equals(EntityTypes.PIGLIN) ||
+					entityType.equals(EntityTypes.WANDERING_TRADER) ||
+					entityType.equals(EntityTypes.ZOMBIE_VILLAGER))
 			{
 				return InventoryOverlayType.VILLAGER;
 			}
-			else if (entityType.equals(EntityType.PLAYER))
+			else if (entityType.equals(EntityTypes.PLAYER))
 			{
 				return InventoryOverlayType.PLAYER;
 			}
-			else if (entityType.equals(EntityType.ARMOR_STAND))
+			else if (entityType.equals(EntityTypes.ARMOR_STAND))
 			{
 				return InventoryOverlayType.ARMOR_STAND;
 			}
@@ -1321,7 +1322,7 @@ public class InventoryOverlay
 		BUNDLE,
 		ARMOR_STAND,
 		LIVING_ENTITY,
-		GENERIC;
+		GENERIC
 	}
 
 	/**

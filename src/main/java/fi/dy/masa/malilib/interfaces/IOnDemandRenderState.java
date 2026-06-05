@@ -15,6 +15,8 @@ public interface IOnDemandRenderState
 {
 	@Nonnull RenderPipeline pipeline();
 
+	default int formatIndex() { return 0; }
+
 	default @Nullable Identifier texture() { return null;}
 
 	default int textureId() { return -1; }

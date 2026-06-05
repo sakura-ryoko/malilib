@@ -177,13 +177,6 @@ public class CachedTagUtils
             return pair.get();
         }
 
-        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CONCRETE_BLOCKS_KEY, block);
-
-        if (pair.isPresent())
-        {
-            return pair.get();
-        }
-
         pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CORAL_FANS_KEY, block);
 
         if (pair.isPresent())
@@ -192,13 +185,6 @@ public class CachedTagUtils
         }
 
         pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLASS_PANES_KEY, block);
-
-        if (pair.isPresent())
-        {
-            return pair.get();
-        }
-
-        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLAZED_TERRACOTTA_BLOCKS_KEY, block);
 
         return pair.orElseGet(() -> Pair.of(null, null));
     }
@@ -217,13 +203,6 @@ public class CachedTagUtils
             return pair.get();
         }
 
-        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CONCRETE_BLOCKS_KEY, block);
-
-        if (pair.isPresent())
-        {
-            return pair.get();
-        }
-
         pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CORAL_FANS_KEY, block);
 
         if (pair.isPresent())
@@ -232,13 +211,6 @@ public class CachedTagUtils
         }
 
         pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLASS_PANES_KEY, block);
-
-        if (pair.isPresent())
-        {
-            return pair.get();
-        }
-
-        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLAZED_TERRACOTTA_BLOCKS_KEY, block);
 
         return pair.orElseGet(() -> Pair.of(null, null));
     }
@@ -257,13 +229,6 @@ public class CachedTagUtils
             return pair.get();
         }
 
-        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CONCRETE_BLOCKS_KEY, state);
-
-        if (pair.isPresent())
-        {
-            return pair.get();
-        }
-
         pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.CORAL_FANS_KEY, state);
 
         if (pair.isPresent())
@@ -272,13 +237,6 @@ public class CachedTagUtils
         }
 
         pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLASS_PANES_KEY, state);
-
-        if (pair.isPresent())
-        {
-            return pair.get();
-        }
-
-        pair = CachedBlockTags.getInstance().matchPair(CachedTagManager.GLAZED_TERRACOTTA_BLOCKS_KEY, state);
 
         return pair.orElseGet(() -> Pair.of(null, null));
     }

@@ -11,6 +11,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.phys.Vec3;
+import com.mojang.blaze3d.IndexType;
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.systems.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -39,15 +41,15 @@ import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
 public class RenderContext implements AutoCloseable
 {
     private Supplier<String> name;
-    private RenderPipeline shader;
+    private VertexFormat format;
+    private PrimitiveTopology topology;
+    private RenderPipeline pipeline;
     private GpuBuffer vertexBuffer;
     @Nullable private GpuBuffer indexBuffer;
     private RenderSystem.AutoStorageIndexBuffer shapeIndex;
-    private VertexFormat.IndexType indexType;
+    private IndexType indexType;
     private ByteBufferBuilder alloc;
     private BufferBuilder builder;
-    private VertexFormat format;
-    private VertexFormat.Mode drawMode;
     private final HashMap<Integer, SimpleTexture> textures;
     @Nullable private MeshData.SortState sortState;
     private float[] offset;
@@ -56,38 +58,47 @@ public class RenderContext implements AutoCloseable
     private boolean uploaded;
     private int indexCount;
 
-    public RenderContext(Supplier<String> name, RenderPipeline shader)
+    public RenderContext(Supplier<String> name, @Nonnull RenderPipeline shader, final int formatIndex)
+            throws IllegalArgumentException
     {
         this.name = name;
-        this.alloc = new ByteBufferBuilder(shader.getVertexFormat().getVertexSize() * 4);
-        this.builder = new BufferBuilder(this.alloc, shader.getVertexFormatMode(), shader.getVertexFormat());
-        this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getVertexFormatMode());
+        this.format = shader.getVertexFormatBinding(formatIndex);
+        if (this.format == null)
+        {
+            throw new IllegalArgumentException("Invalid Vertex binding format index: "+formatIndex);
+        }
+        this.topology = shader.getPrimitiveTopology();
+        this.alloc = new ByteBufferBuilder(this.format.getVertexSize() * 4);
+        this.builder = new BufferBuilder(this.alloc, this.topology, this.format);
+        this.shapeIndex = RenderSystem.getSequentialBuffer(this.topology);
         this.indexType = this.shapeIndex.type();
-        this.format = shader.getVertexFormat();
-        this.drawMode = shader.getVertexFormatMode();
-        this.shader = shader;
+        this.pipeline = shader;
         this.vertexBuffer = null;
         this.indexBuffer = null;
         this.sortState = null;
         this.indexCount = -1;
-		this.textures = new HashMap<>();
+        this.textures = new HashMap<>();
         this.offset = new float[]{0f, 0f, 0f};
         this.color = -1;
         this.started = true;
         this.uploaded = false;
     }
 
-    public BufferBuilder start(Supplier<String> name, RenderPipeline shader)
+    public BufferBuilder start(Supplier<String> name, @Nonnull RenderPipeline shader, final int formatIndex)
     {
         this.reset();
         this.name = name;
-        this.alloc = new ByteBufferBuilder(shader.getVertexFormat().getVertexSize() * 4);
-        this.builder = new BufferBuilder(this.alloc, shader.getVertexFormatMode(), shader.getVertexFormat());
-        this.shapeIndex = RenderSystem.getSequentialBuffer(shader.getVertexFormatMode());
+        this.format = shader.getVertexFormatBinding(formatIndex);
+        if (this.format == null)
+        {
+            throw new IllegalArgumentException("Invalid Vertex binding format index: "+formatIndex);
+        }
+        this.topology = shader.getPrimitiveTopology();
+        this.alloc = new ByteBufferBuilder(this.format.getVertexSize() * 4);
+        this.builder = new BufferBuilder(this.alloc, this.topology, this.format);
+        this.shapeIndex = RenderSystem.getSequentialBuffer(this.topology);
         this.indexType = this.shapeIndex.type();
-        this.format = shader.getVertexFormat();
-        this.drawMode = shader.getVertexFormatMode();
-        this.shader = shader;
+        this.pipeline = shader;
         this.vertexBuffer = null;
         this.indexBuffer = null;
         this.sortState = null;
@@ -113,34 +124,19 @@ public class RenderContext implements AutoCloseable
         return this.builder;
     }
 
-    public VertexFormat getVertexFormat()
+    public VertexFormat getSelectedVertexFormat()
     {
         return this.format;
     }
 
-    public VertexFormat.Mode getDrawMode()
+    public VertexFormat[] getShaderFormats()
     {
-        return this.drawMode;
+        return this.pipeline.getVertexFormatBindings();
     }
 
-    public VertexFormat getShaderFormat()
+    public PrimitiveTopology getShaderTopology()
     {
-        if (this.shader != null)
-        {
-            return this.shader.getVertexFormat();
-        }
-
-        return this.format;
-    }
-
-    public VertexFormat.Mode getShaderDrawMode()
-    {
-        if (this.shader != null)
-        {
-            return this.shader.getVertexFormatMode();
-        }
-
-        return this.drawMode;
+        return this.pipeline.getPrimitiveTopology();
     }
 
     /**
@@ -653,7 +649,7 @@ public class RenderContext implements AutoCloseable
         }
     }
 
-    private void drawInternal(@Nullable RenderTarget otherFb, float[] rgba, boolean setColor, boolean useOffset) throws RuntimeException
+    private void drawInternal(@Nullable RenderTarget otherTarget, float[] rgba, boolean setColor, boolean useOffset) throws RuntimeException
     {
         this.ensureSafeNoTexture();
 
@@ -682,19 +678,19 @@ public class RenderContext implements AutoCloseable
                 return;
             }
 
-            RenderTarget mainFb = RenderUtils.fb();
+            RenderTarget mainTarget = RenderUtils.mainTarget();
             GpuTextureView texture1;
             GpuTextureView texture2;
 
-            if (otherFb != null)
+            if (otherTarget != null)
             {
-                texture1 = otherFb.getColorTextureView();
-                texture2 = otherFb.useDepth ? otherFb.getDepthTextureView() : null;
+                texture1 = otherTarget.getColorTextureView();
+                texture2 = otherTarget.useDepth ? otherTarget.getDepthTextureView() : null;
             }
             else
             {
-                texture1 = mainFb.getColorTextureView();
-                texture2 = mainFb.useDepth ? mainFb.getDepthTextureView() : null;
+                texture1 = mainTarget.getColorTextureView();
+                texture2 = mainTarget.useDepth ? mainTarget.getDepthTextureView() : null;
             }
 
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());
@@ -704,7 +700,7 @@ public class RenderContext implements AutoCloseable
 
             GpuBufferSlice gpuSlice = RenderSystem.getDynamicUniforms()
                                                         .writeTransform(
-                                                                RenderSystem.getModelViewMatrix(),
+                                                                RenderSystem.getModelViewMatrixCopy(),
                                                                 colorMod,
                                                                 modelOffset,
                                                                 texMatrix);
@@ -712,12 +708,12 @@ public class RenderContext implements AutoCloseable
             // Attach Frame buffers
             try (RenderPass pass = device.createCommandEncoder()
                     .createRenderPass(this.name,
-                                      texture1, OptionalInt.empty(),
+                                      texture1, Optional.empty(),
                                       texture2, OptionalDouble.empty())
             )
             {
 //                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}] // isDevelopment [{}]", this.name.get(), this.shader.getLocation().toString(), RenderPassImpl.IS_DEVELOPMENT);
-                pass.setPipeline(this.shader);
+                pass.setPipeline(this.pipeline);
 
                 ScissorState scissorState = RenderSystem.getScissorStateForRenderTypeDraws();
 
@@ -740,7 +736,7 @@ public class RenderContext implements AutoCloseable
                 }
 
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setVertexBuffer() [0]", this.name.get());
-                pass.setVertexBuffer(0, this.vertexBuffer);
+                pass.setVertexBuffer(0, this.vertexBuffer.slice());
 
                 if (!this.textures.isEmpty())
                 {
@@ -759,7 +755,7 @@ public class RenderContext implements AutoCloseable
                 }
 
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> drawIndexed() [0, {}]", this.name.get(), this.bufferIndex);
-                pass.drawIndexed(0, 0, this.indexCount, 1);
+                pass.drawIndexed(this.indexCount, 1, 0, 0, 0);
             }
 
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> END", this.name.get());
@@ -812,7 +808,7 @@ public class RenderContext implements AutoCloseable
     {
         this.ensureSafeNoShader();
 
-        if (this.shader == null)
+        if (this.pipeline == null)
         {
             throw new RuntimeException("Shader Pipeline not valid!");
         }
