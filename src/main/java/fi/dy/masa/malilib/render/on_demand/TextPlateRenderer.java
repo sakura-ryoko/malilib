@@ -3,25 +3,25 @@ package fi.dy.masa.malilib.render.on_demand;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderState;
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderer;
+import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.render.on_demand.state.TextPlateBackgroundRenderState;
 
 /**
@@ -107,26 +107,43 @@ public class TextPlateRenderer implements IOnDemandRenderer<TextPlateBackgroundR
 		Font font = Minecraft.getInstance().font;
 		final int textColor = st.textColor().getIntValue();
 		int textY = 0;
-		Matrix4f modelMatrix = new Matrix4f();
-		modelMatrix.identity();
-		ByteBufferBuilder allocator = new ByteBufferBuilder(RenderType.TRANSIENT_BUFFER_SIZE);
+//		Matrix4f modelMatrix = new Matrix4f();
+//		modelMatrix.identity();
+//		ByteBufferBuilder allocator = new ByteBufferBuilder(RenderType.TRANSIENT_BUFFER_SIZE);
+
+		PoseStack pose = new PoseStack();
+		SubmitNodeStorage nodes = RenderUtils.nodes();
 
 		for (String line : st.text())
 		{
-			MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
+//			MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
+//
+//			font.drawInBatch(line, -st.strLenHalf(), textY,
+//			                 st.disableDepth() ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
+//			                 false, modelMatrix, immediate,
+//			                 st.disableDepth() ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
+//			                 0, 15728880
+//			);
+//
+//			immediate.endBatch();
 
-			font.drawInBatch(line, -st.strLenHalf(), textY,
-			                 st.disableDepth() ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
-			                 false, modelMatrix, immediate,
-			                 st.disableDepth() ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
-			                 0, 15728880
+			Component comp = Component.literal(line);
+
+			nodes.submitText(
+					pose,
+					-st.strLenHalf(), textY,
+					comp.getVisualOrderText(), false,
+					st.disableDepth() ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
+					0,
+					st.disableDepth() ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
+					15728880,
+					0
 			);
 
-			immediate.endBatch();
 			textY += font.lineHeight;
 		}
 
-		allocator.close();
+//		allocator.close();
 		RenderSystem.getModelViewStack().popMatrix();
 		this.currentState = null;
 	}

@@ -47,6 +47,7 @@
         "render.IMixinBufferBuilder",
         "render.IMixinEntityRenderDispatcher",
         "render.IMixinGameRenderer",
+        "render.IMixinLevelRenderer",
         "render.MixinBindGroupLayouts",
         "render.MixinGameRenderer",
         "render.MixinLevelExtractor",

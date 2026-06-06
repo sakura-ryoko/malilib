@@ -9,32 +9,28 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 
-import fi.dy.masa.malilib.interfaces.IOnDemandRenderState;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.position.Vec3d;
 
 @ApiStatus.Experimental
-public record TextPlateBackgroundRenderState(
-		List<String> text,
-		double x, double y, double z,
-		float yaw, float pitch, float scale,
-		Color4f textColor, Color4f backgroundColor,
-		boolean disableDepth)
-		implements IOnDemandRenderState
+public class TextPlateBackgroundRenderState extends AbstractTextPlateRenderState
 {
 	private static int strLenHalf;
+
+	public TextPlateBackgroundRenderState(List<String> text, Vec3d position,
+	                                      float yaw, float pitch, float scale,
+	                                      Color4f textColor, Color4f backgroundColor,
+	                                      boolean disableDepth)
+	{
+		super(text, position, yaw, pitch, scale, textColor, backgroundColor, disableDepth);
+	}
 
 	@Override
 	public @NonNull RenderPipeline pipeline()
 	{
 		return this.disableDepth ? MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH : MaLiLibPipelines.TEXT_PLATE_MASA;
-	}
-
-	@Override
-	public @NonNull Color4f color()
-	{
-		return this.backgroundColor();
 	}
 
 	public int strLenHalf()

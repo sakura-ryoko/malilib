@@ -15,10 +15,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuSampler;
 import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.render.GuiRenderer;
@@ -26,6 +23,8 @@ import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.Lightmap;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
@@ -42,10 +41,12 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -75,6 +76,7 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
 import fi.dy.masa.malilib.mixin.gui.IMixinGuiRenderer;
 import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
+import fi.dy.masa.malilib.mixin.render.IMixinLevelRenderer;
 import fi.dy.masa.malilib.render.element.*;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElement;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElementRenderer;
@@ -1438,10 +1440,12 @@ public class RenderUtils
 
         int textY = 0;
 
-        Matrix4f modelMatrix = new Matrix4f();
-        modelMatrix.identity();
+//        Matrix4f matrix4f = new Matrix4f();
+//	    matrix4f.identity();
+		PoseStack pose = new PoseStack();
+	    SubmitNodeStorage nodes = nodes();
 
-        ByteBufferBuilder allocator = new ByteBufferBuilder(RenderType.TRANSIENT_BUFFER_SIZE);
+//        ByteBufferBuilder allocator = new ByteBufferBuilder(RenderType.TRANSIENT_BUFFER_SIZE);
 
         for (String line : text)
         {
@@ -1454,20 +1458,34 @@ public class RenderUtils
 	        // bl2 = incl empty
 
 	        // FIXME
-            MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
+//            MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
+//
+//            textRenderer.drawInBatch(line, -strLenHalf, textY,
+//                                     disableDepth ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
+//                                     false, modelMatrix, immediate,
+//                                     disableDepth ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
+//                                     0, 15728880
+//            );
+//
+//            immediate.endBatch();
 
-            textRenderer.drawInBatch(line, -strLenHalf, textY,
-                                     disableDepth ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
-                                     false, modelMatrix, immediate,
-                                     disableDepth ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
-                                     0, 15728880
-            );
+	        Component comp = Component.literal(line);
 
-            immediate.endBatch();
+	        nodes.submitText(
+			        pose,
+			        -strLenHalf, textY,
+			        comp.getVisualOrderText(), false,
+			        disableDepth ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
+					0,
+			        disableDepth ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
+			        15728880,
+			        0
+	        );
+
             textY += textRenderer.lineHeight;
         }
 
-        allocator.close();
+//        allocator.close();
         global4fStack.popMatrix();
     }
 
@@ -2382,6 +2400,11 @@ public class RenderUtils
 	public static Font textRenderer()
 	{
 		return mc().font;
+	}
+
+	public static SubmitNodeStorage nodes()
+	{
+		return ((IMixinLevelRenderer) mc().levelRenderer).malilib_getSubmitNodeStorage();
 	}
 
     /**
