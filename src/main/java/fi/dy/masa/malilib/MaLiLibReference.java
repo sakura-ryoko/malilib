@@ -15,7 +15,7 @@ public class MaLiLibReference
     public static final String MOD_VERSION = StringUtils.getModVersionString(MOD_ID);
     public static final String MC_VERSION = SharedConstants.getCurrentVersion().id();
     public static final int MC_DATA_VERSION = SharedConstants.getCurrentVersion().dataVersion().version();
-	public static final boolean LOCAL_DEBUG = true;
+	public static final boolean LOCAL_DEBUG = false;
 	public static final boolean EXPERIMENTAL_MODE = false;
     public static final boolean DEBUG_MODE = isDebug();
     public static final boolean ANSI_MODE = isAnsiColor();
