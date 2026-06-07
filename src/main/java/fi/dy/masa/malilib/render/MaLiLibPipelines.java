@@ -35,9 +35,9 @@ public class MaLiLibPipelines
 	public static RenderPipeline POSITION_COLOR_MASA_DEPTH_MASK;
     public static RenderPipeline POSITION_COLOR_MASA;
 
-	// TEXT_PLATE
-	public static RenderPipeline TEXT_PLATE_MASA_NO_DEPTH;
-	public static RenderPipeline TEXT_PLATE_MASA;
+	// TEXT_PLATE_BG
+	public static RenderPipeline TEXT_PLATE_BG_MASA_NO_DEPTH;
+	public static RenderPipeline TEXT_PLATE_BG_MASA;
 
 	// todo MINIHUD_SHAPE
 	public static RenderPipeline MINIHUD_SHAPE_NO_DEPTH_OFFSET;
@@ -154,10 +154,6 @@ public class MaLiLibPipelines
     public static RenderPipeline DEBUG_LINE_STRIP_MASA_SIMPLE_OFFSET_2;
     public static RenderPipeline DEBUG_LINE_STRIP_MASA_SIMPLE_OFFSET_3;
     public static RenderPipeline DEBUG_LINE_STRIP_MASA_SIMPLE;
-
-	// todo GUI
-    public static RenderPipeline GUI_OVERLAY;
-    public static RenderPipeline GUI_TEXTURED_OVERLAY;
 
 	// todo LEGACY_TERRAIN Snippet
 	public static BindGroupLayout LEGACY_TERRAIN_GROUP;

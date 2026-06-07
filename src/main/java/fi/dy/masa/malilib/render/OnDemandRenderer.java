@@ -125,9 +125,23 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 					ctx.reset();
 				}
 
+				if (state.bindOverlay())
+				{
+					ctx = ctx.withOverlay();
+				}
+
+				if (state.bindLightmap())
+				{
+					ctx = ctx.withLightmap();
+				}
+
 				BufferBuilder builder = ctx.start(renderer.name(), state.pipeline(), state.formatIndex());
 
-				if (renderer.shouldBindTexture() && state.texture() != null)
+				if (!state.complexTextures().isEmpty() || state.bindLightmap() || state.bindOverlay())
+				{
+					ctx.prepareComplexTextures(state.complexTextures());
+				}
+				else if (renderer.shouldBindTexture() && state.texture() != null)
 				{
 					try
 					{

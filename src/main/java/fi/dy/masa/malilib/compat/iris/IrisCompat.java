@@ -90,8 +90,8 @@ public class IrisCompat
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_COLOR_MASA, IrisProgram.BASIC);
 
 			// TEXT_PLATE_MASA
-	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH, IrisProgram.BASIC);
-	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TEXT_PLATE_MASA, IrisProgram.BASIC);
+	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TEXT_PLATE_BG_MASA_NO_DEPTH, IrisProgram.BASIC);
+	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TEXT_PLATE_BG_MASA, IrisProgram.BASIC);
 
 			// MINIHUD_SHAPE
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH_OFFSET, IrisProgram.BASIC);
@@ -148,7 +148,6 @@ public class IrisCompat
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_3, IrisProgram.TEXTURED);
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_NO_CULL, IrisProgram.TEXTURED);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH, IrisProgram.TEXTURED);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_GREATER_DEPTH, IrisProgram.TEXTURED);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_DEPTH_MASK, IrisProgram.TEXTURED);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_TEX_COLOR_MASA, IrisProgram.TEXTURED);
 
@@ -191,8 +190,8 @@ public class IrisCompat
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE, IrisProgram.LINES);
 
 			// GUI
-	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.GUI_OVERLAY, IrisProgram.BASIC);
-	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.GUI_TEXTURED_OVERLAY, IrisProgram.TEXTURED);
+//	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.GUI_OVERLAY, IrisProgram.BASIC);
+//	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.GUI_TEXTURED_OVERLAY, IrisProgram.TEXTURED);
 
 	        // LEGACY_TERRAIN
 	        IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LEGACY_SOLID_TERRAIN, IrisProgram.TERRAIN_SOLID);

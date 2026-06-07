@@ -23,12 +23,10 @@ import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.Lightmap;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.block.BlockStateModelSet;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.state.MapRenderState;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -46,7 +44,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
-import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.Container;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -78,8 +75,11 @@ import fi.dy.masa.malilib.mixin.gui.IMixinGuiRenderer;
 import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
 import fi.dy.masa.malilib.mixin.render.IMixinLevelRenderer;
 import fi.dy.masa.malilib.render.element.*;
+import fi.dy.masa.malilib.render.on_demand.TextPlateRenderer;
+import fi.dy.masa.malilib.render.on_demand.state.TextPlateRenderState;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElement;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElementRenderer;
+import fi.dy.masa.malilib.render.text.MaLiLibWorldTextRenderer;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
@@ -91,6 +91,8 @@ import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.position.IntBoundingBox;
 import fi.dy.masa.malilib.util.position.PositionUtils;
+import fi.dy.masa.malilib.util.position.Vec3d;
+import fi.dy.masa.malilib.util.text.TextAlignment;
 
 public class RenderUtils
 {
@@ -1322,29 +1324,6 @@ public class RenderUtils
     }
 
 	/**
-	 * @deprecated (Use the Tick Progress version to remove the "jumpy" text problem)<br>
-	 * -
-	 * Renders a text plate/billboard, similar to the player name plate.<br>
-	 * The plate will always face towards the viewer.
-	 *
-	 * @param text  List of strings
-	 * @param x     xPos
-	 * @param y     yPos
-	 * @param z     zPos
-	 * @param scale FontScale
-	 */
-	@Deprecated(forRemoval = true)
-	public static void drawTextPlate(List<String> text, double x, double y, double z, float scale)
-	{
-		Entity entity = mc().getCameraEntity();
-
-		if (entity != null)
-		{
-			drawTextPlate(text, x, y, z, entity.getYRot(), entity.getXRot(), scale, 0xFFFFFFFF, 0x40000000, true);
-		}
-	}
-
-	/**
 	 * Renders a text plate/billboard, similar to the player name plate.<br>
 	 * The plate will always face towards the viewer.
 	 *
@@ -1361,8 +1340,52 @@ public class RenderUtils
 
 		if (entity != null)
 		{
-			drawTextPlate(text, x, y, z, entity.getYRot(delta), entity.getXRot(delta), scale, 0xFFFFFFFF, 0x40000000, true);
+			drawTextPlate(text, x, y, z, entity.getYRot(delta), entity.getXRot(delta), scale, TextAlignment.CENTER, 0xFFFFFFFF, 0x40000000, true);
 		}
+	}
+
+	/**
+	 * Renders a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text      List of strings
+	 * @param x         xPos
+	 * @param y         yPos
+     * @param z         zPos
+	 * @param scale     FontScale
+	 * @param alignment TextAlignment
+	 * @param delta     Tick Progress for Lerping the Camera Entity Rotations
+	 */
+	public static void drawTextPlate(List<String> text, double x, double y, double z, float scale, TextAlignment alignment, float delta)
+	{
+		Entity entity = mc().getCameraEntity();
+
+		if (entity != null)
+		{
+			drawTextPlate(text, x, y, z, entity.getYRot(delta), entity.getXRot(delta), scale, alignment, 0xFFFFFFFF, 0x40000000, true);
+		}
+	}
+
+	/**
+	 * Renders a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text  List of strings
+	 * @param x     xPos
+	 * @param y     yPos
+	 * @param z     zPos
+	 * @param yaw       Camera Yaw / YRot
+	 * @param pitch     Camera Pitch / XRot
+	 * @param scale     FontScale
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 */
+	public static void drawTextPlate(List<String> text,
+	                                 double x, double y, double z,
+	                                 float yaw, float pitch,
+	                                 float scale,
+	                                 boolean disableDepth)
+	{
+		drawTextPlate(text, x, y, z,  yaw, pitch, scale, TextAlignment.CENTER, 0xFFFFFFFF, 0x40000000, disableDepth);
 	}
 
 	/**
@@ -1376,6 +1399,7 @@ public class RenderUtils
 	 * @param yaw       Camera Yaw / YRot
 	*  @param pitch     Camera Pitch / XRot
 	 * @param scale     FontScale
+	 * @param alignment TextAlignment
 	 * @param textColor     Text Color
 	 * @param bgColor       Background Color of the Rectangle
 	 * @param disableDepth  Disable Depth Test (renderThrough)
@@ -1383,14 +1407,15 @@ public class RenderUtils
 	public static void drawTextPlate(List<String> text,
                                      double x, double y, double z,
                                      float yaw, float pitch,
-                                     float scale, int textColor, int bgColor,
+                                     float scale, TextAlignment alignment,
+                                     int textColor, int bgColor,
                                      boolean disableDepth)
     {
         Vec3 cameraPos = camPos();
         double cx = cameraPos.x;
         double cy = cameraPos.y;
         double cz = cameraPos.z;
-        Font textRenderer = mc().font;
+        Font font = mc().font;
 
         Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
 
@@ -1400,17 +1425,17 @@ public class RenderUtils
         global4fStack.rotateYXZ((-yaw) * ((float) (Math.PI / 180.0)), pitch * ((float) (Math.PI / 180.0)), 0.0F);
         global4fStack.scale((-scale), (-scale), scale);
 
-        RenderContext ctx = new RenderContext(() -> "malilib:drawTextPlate", disableDepth ? MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH : MaLiLibPipelines.TEXT_PLATE_MASA, 0);
+        RenderContext ctx = new RenderContext(() -> MaLiLibReference.MOD_ID+":text_plate_bg", disableDepth ? MaLiLibPipelines.TEXT_PLATE_BG_MASA_NO_DEPTH : MaLiLibPipelines.TEXT_PLATE_BG_MASA, 0);
         BufferBuilder buffer = ctx.getBuilder();
         int maxLineLen = 0;
 
         for (String line : text)
         {
-            maxLineLen = MathUtils.max(maxLineLen, textRenderer.width(line));
+            maxLineLen = MathUtils.max(maxLineLen, font.width(line));
         }
 
         int strLenHalf = maxLineLen / 2;
-        int textHeight = textRenderer.lineHeight * text.size() - 1;
+        int textHeight = font.lineHeight * text.size() - 1;
         int bga = ((bgColor >>> 24) & 0xFF);
         int bgr = ((bgColor >>> 16) & 0xFF);
         int bgg = ((bgColor >>> 8) & 0xFF);
@@ -1440,56 +1465,152 @@ public class RenderUtils
 
         int textY = 0;
 
-//        Matrix4f matrix4f = new Matrix4f();
-//	    matrix4f.identity();
-		PoseStack pose = new PoseStack();
-	    SubmitNodeStorage nodes = nodes();
+		Matrix4f matrix4f = new Matrix4f();
 
-//        ByteBufferBuilder allocator = new ByteBufferBuilder(RenderType.TRANSIENT_BUFFER_SIZE);
+	    try (MaLiLibWorldTextRenderer renderer = new MaLiLibWorldTextRenderer())
+	    {
 
-        for (String line : text)
-        {
-			// f = x
-	        // g = y
-	        // i = color
-	        // bl = shadow
-	        // j = backgroundColor
-	        // k = light
-	        // bl2 = incl empty
+		    for (String line : text)
+		    {
+			    Component comp = Component.literal(line);
+			    final int lineWidth = font.width(comp);
+				float textX = switch (alignment)
+				{
+					case LEFT -> -strLenHalf;
+					case RIGHT -> strLenHalf - lineWidth;
+					case CENTER -> -(lineWidth / 2.0F);
+				};
 
-	        // FIXME
-//            MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(allocator);
-//
-//            textRenderer.drawInBatch(line, -strLenHalf, textY,
-//                                     disableDepth ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
-//                                     false, modelMatrix, immediate,
-//                                     disableDepth ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
-//                                     0, 15728880
-//            );
-//
-//            immediate.endBatch();
+			    renderer.prepare(matrix4f, camPos(), 15728880, disableDepth ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET);
 
-	        Component comp = Component.literal(line);
+			    Font.PreparedText preparedText = font.prepareText(comp.getVisualOrderText(),
+			                                                      textX, textY,
+			                                                      disableDepth ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
+			                                                      false,
+			                                                      false,
+			                                                      0);
 
-	        nodes.submitText(
-			        pose,
-			        -strLenHalf, textY,
-			        comp.getVisualOrderText(), false,
-			        disableDepth ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.POLYGON_OFFSET,
-					0,
-			        disableDepth ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
-			        15728880,
-			        0
-	        );
+			    preparedText.visit(renderer);
+			    textY += font.lineHeight;
+		    }
 
-            textY += textRenderer.lineHeight;
-        }
+		    renderer.draw(camPos());
+		    renderer.close();
+	    }
+		catch (Exception ignored) {}
 
-//        allocator.close();
-        global4fStack.popMatrix();
+	    global4fStack.popMatrix();
     }
 
-    public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3 hitVec,
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale, TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale, alignment)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
+	 * @param textColor     Text Color
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale,
+	                                     Color4f textColor,
+	                                     boolean disableDepth,
+	                                     TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale,
+				                         textColor,
+				                         disableDepth, alignment
+				)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
+	 * @param textColor     Text Color
+	 * @param bgColor       Background Color of the Rectangle
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale,
+	                                     Color4f textColor, Color4f bgColor,
+	                                     boolean disableDepth,
+	                                     TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale,
+				                         textColor, bgColor,
+				                         disableDepth, alignment
+				)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
+	 * @param textColor     Text Color
+	 * @param bgColor       Background Color of the Rectangle
+	 * @param light         Light Coordinates
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 * @param useShadow     Shadow Text
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale,
+	                                     Color4f textColor, Color4f bgColor,
+	                                     int light, boolean disableDepth, boolean useShadow,
+	                                     TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale,
+				                         textColor, bgColor,
+				                         light, disableDepth, useShadow,
+				                         alignment
+				)
+		);
+	}
+
+	public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3 hitVec,
                                                    Color4f color)
     {
         Direction playerFacing = entity.getDirection();
@@ -2407,7 +2528,7 @@ public class RenderUtils
 		return ((IMixinLevelRenderer) mc().levelRenderer).malilib_getSubmitNodeStorage();
 	}
 
-    /**
+	/**
      * Only required for translating the values to their RotationAxis.POSITIVE_?.rotationDegrees() equivalence
      */
     public static float matrix4fRotateFix(float ang) {return (ang * 0.017453292F);}

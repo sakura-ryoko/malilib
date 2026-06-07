@@ -14,6 +14,7 @@ import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.render.OnDemandRenderer;
 import fi.dy.masa.malilib.render.on_demand.BlockTargetingOverlayRenderer;
+import fi.dy.masa.malilib.render.on_demand.TextPlateRenderer;
 import fi.dy.masa.malilib.test.command.TestCommand;
 import fi.dy.masa.malilib.test.input.TestInputHandler;
 import fi.dy.masa.malilib.test.misc.TestSelector;
@@ -68,6 +69,9 @@ public class MaLiLibInitHandler implements IInitializationHandler
             }
         }
 
+        OnDemandRenderer.getInstance().registerOnDemandRenderer(
+		        MaLiLibReference.MOD_ID+"_text_plate", TextPlateRenderer.INSTANCE
+        );
         RenderEventHandler.getInstance().registerWorldLastRenderer(OnDemandRenderer.getInstance());
         TickHandler.getInstance().registerClientTickHandler(OnDemandRenderer.getInstance());
     }

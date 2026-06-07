@@ -3,8 +3,13 @@ package fi.dy.masa.malilib.mixin.render;
 import java.util.Map;
 
 import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.pipeline.*;
-import com.mojang.blaze3d.platform.*;
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.BlendFactor;
+import com.mojang.blaze3d.platform.CompareOp;
+import com.mojang.blaze3d.platform.PolygonMode;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.renderer.BindGroupLayouts;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -190,18 +195,19 @@ public abstract class MixinRenderPipelines
 			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
 			                  .build();
 
-	    MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH =
-			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
-			                  .withLocation(getId("pipeline/text_plate/no_depth"))
+		// todo TEXT_PLATE_BG
+	    MaLiLibPipelines.TEXT_PLATE_BG_MASA_NO_DEPTH =
+			    register(RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
+			                  .withLocation(getId("pipeline/text_plate_bg/no_depth"))
 			                  .withCull(false)
 			                  .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
-			                  .build();
+			                  .build());
 
-	    MaLiLibPipelines.TEXT_PLATE_MASA =
-			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
-			                  .withLocation(getId("pipeline/text_plate"))
+	    MaLiLibPipelines.TEXT_PLATE_BG_MASA =
+			    register(RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
+			                  .withLocation(getId("pipeline/text_plate_bg"))
 					          .withCull(false)
-			                  .build();
+			                  .build());
 
 	    // todo MINIHUD_SHAPE
 	    MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH_OFFSET =
@@ -779,20 +785,21 @@ public abstract class MixinRenderPipelines
                               .withLocation(getId("pipeline/debug_line_strip/masa_simple"))
                               .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false))
                               .build();
-	    // todo GUI
-	    MaLiLibPipelines.GUI_OVERLAY =
-			    RenderPipeline.builder(GUI_SNIPPET)
-			                  .withLocation(getId("pipeline/gui_overlay"))
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
-			                  .withColorTargetState(new ColorTargetState(BlendFunction.OVERLAY))
-			                  .build();
 
-	    MaLiLibPipelines.GUI_TEXTURED_OVERLAY =
-			    RenderPipeline.builder(GUI_TEXTURED_SNIPPET)
-			                  .withLocation(getId("pipeline/gui_textured_overlay"))
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
-			                  .withColorTargetState(new ColorTargetState(BlendFunction.OVERLAY))
-			                  .build();
+	    // todo GUI
+//	    MaLiLibPipelines.GUI_OVERLAY =
+//			    RenderPipeline.builder(GUI_SNIPPET)
+//			                  .withLocation(getId("pipeline/gui_overlay"))
+//			                  .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+//			                  .withColorTargetState(new ColorTargetState(BlendFunction.OVERLAY))
+//			                  .build();
+//
+//	    MaLiLibPipelines.GUI_TEXTURED_OVERLAY =
+//			    RenderPipeline.builder(GUI_TEXTURED_SNIPPET)
+//			                  .withLocation(getId("pipeline/gui_textured_overlay"))
+//			                  .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false))
+//			                  .withColorTargetState(new ColorTargetState(BlendFunction.OVERLAY))
+//			                  .build();
 
 	    // todo LEGACY_TERRAIN Snippet
 	    MaLiLibPipelines.LEGACY_TERRAIN_STAGE =
@@ -872,7 +879,7 @@ public abstract class MixinRenderPipelines
 			                           .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, -0.3f, -0.6f))
 			                           .build());
 
-		// Try registering with Iris.
+	    // Try registering with Iris.
         IrisCompat.registerPipelines();
     }
 }
