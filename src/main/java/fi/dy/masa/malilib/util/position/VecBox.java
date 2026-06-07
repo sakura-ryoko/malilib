@@ -10,7 +10,6 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -468,12 +467,12 @@ public class VecBox
 
 	public Vec3d getCenter()
 	{
-		return new Vec3d(Mth.lerp(0.5, this.minX, this.maxX), Mth.lerp(0.5, this.minY, this.maxY), Mth.lerp(0.5, this.minZ, this.maxZ));
+		return new Vec3d(MathUtils.lerp(0.5, this.minX, this.maxX), MathUtils.lerp(0.5, this.minY, this.maxY), MathUtils.lerp(0.5, this.minZ, this.maxZ));
 	}
 
 	public Vec3d getBottomCenter()
 	{
-		return new Vec3d(Mth.lerp(0.5, this.minX, this.maxX), this.minY, Mth.lerp(0.5, this.minZ, this.maxZ));
+		return new Vec3d(MathUtils.lerp(0.5, this.minX, this.maxX), this.minY, MathUtils.lerp(0.5, this.minZ, this.maxZ));
 	}
 
 	public Vec3d getMinPos()

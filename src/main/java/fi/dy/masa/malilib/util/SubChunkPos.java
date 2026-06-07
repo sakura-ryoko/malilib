@@ -10,6 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 /**
  * See {@link fi.dy.masa.malilib.util.position.ChunkSectionPos}
  */
+@Deprecated
 public class SubChunkPos extends Vec3i
 {
     public static final Codec<SubChunkPos> BLOCK_POS_CODEC = RecordCodecBuilder.create(
