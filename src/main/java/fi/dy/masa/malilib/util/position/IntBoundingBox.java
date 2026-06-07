@@ -13,6 +13,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -69,6 +70,16 @@ public record IntBoundingBox(int minX, int minY, int minZ, int maxX, int maxY, i
                 pos.getY() <= this.maxY;
     }
 
+    public boolean contains(long pos)
+    {
+        int x = BlockPos.getX(pos);
+        int y = BlockPos.getY(pos);
+        int z = BlockPos.getZ(pos);
+
+        return  x >= this.minX && y >= this.minY && z >= this.minZ &&
+                x <= this.maxX && y <= this.maxY && z <= this.maxZ;
+    }
+
     public boolean intersects(IntBoundingBox box)
     {
         return this.maxX >= box.minX &&
@@ -99,6 +110,22 @@ public record IntBoundingBox(int minX, int minY, int minZ, int maxX, int maxY, i
 		    case Z -> this.maxZ;
 	    };
 
+    }
+
+    public IntBoundingBox expand(int amount)
+    {
+        return this.expand(amount, amount, amount);
+    }
+
+    public IntBoundingBox expand(int x, int y, int z)
+    {
+        return new IntBoundingBox(this.minX - x, this.minY - y, this.minZ - z,
+                                  this.maxX + x, this.maxY + y, this.maxZ + z);
+    }
+
+    public IntBoundingBox shrink(int x, int y, int z)
+    {
+        return this.expand(-x, -y, -z);
     }
 
     public BoundingBox toVanillaBox()
@@ -192,6 +219,16 @@ public record IntBoundingBox(int minX, int minY, int minZ, int maxX, int maxY, i
                 Math.max(x1, x2),
                 Math.max(y1, y2),
                 Math.max(z1, z2));
+    }
+
+    public static IntBoundingBox createForWorldBounds(@Nullable Level world)
+    {
+        int worldMinH = -30000000;
+        int worldMaxH = 30000000;
+        int worldMinY = world != null ? world.getMinY() : -64;
+        int worldMaxY = world != null ? world.getMaxY() : 319;
+
+        return new IntBoundingBox(worldMinH, worldMinY, worldMinH, worldMaxH, worldMaxY, worldMaxH);
     }
 
     public static IntBoundingBox fromArray(int[] coords)
