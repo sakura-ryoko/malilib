@@ -1541,6 +1541,24 @@ public class RenderUtils
 	 * @param pos           position
 	 * @param scale         FontScale
 	 * @param alignment     TextAlignment
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale,
+	                                     boolean disableDepth, TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale, disableDepth, alignment)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
 	 * @param textColor     Text Color
 	 * @param disableDepth  Disable Depth Test (renderThrough)
 	 */

@@ -39,6 +39,13 @@ public class TextPlateRenderState extends AbstractTextPlateRenderState
 	}
 
 	public TextPlateRenderState(List<String> text, Vec3d position, float scale,
+	                            boolean disableDepth,
+	                            TextAlignment alignment)
+	{
+		this(text, position, scale, Color4f.WHITE, Color4f.fromColor(0x40000000), disableDepth, alignment);
+	}
+
+	public TextPlateRenderState(List<String> text, Vec3d position, float scale,
 	                            Color4f textColor,
 	                            boolean disableDepth,
 	                            TextAlignment alignment)
