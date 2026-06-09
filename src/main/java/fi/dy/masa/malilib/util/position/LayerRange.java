@@ -196,7 +196,6 @@ public class LayerRange
 		    case ALL_ABOVE -> this.layerAbove;
 		    case LAYER_RANGE -> this.layerRangeMin;
 	    };
-
     }
 
     public int getMaxLayerBoundary()
@@ -208,7 +207,6 @@ public class LayerRange
 		    case ALL_BELOW -> this.layerBelow;
 		    case LAYER_RANGE -> this.layerRangeMax;
 	    };
-
     }
 
     public int getCurrentLayerValue(boolean isSecondValue)
@@ -631,6 +629,11 @@ public class LayerRange
         return this.isPositionWithinRange(pos.getX(), pos.getY(), pos.getZ());
     }
 
+    public boolean isPositionWithinRange(net.minecraft.core.BlockPos pos)
+    {
+        return this.isPositionWithinRange(pos.getX(), pos.getY(), pos.getZ());
+    }
+
     public boolean isPositionWithinRange(long posLong)
     {
         int x = BlockPos.getX(posLong);
@@ -705,7 +708,7 @@ public class LayerRange
 	    };
     }
 
-    public boolean intersects(SubChunkPos pos)
+    public boolean intersects(ChunkSectionPos pos)
     {
         switch (this.axis)
         {
@@ -737,7 +740,6 @@ public class LayerRange
         return this.intersectsBox(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
     }
 
-    // FIXME
     public boolean intersectsBox(BlockPos pos1, BlockPos pos2)
     {
         BlockPos posMin = BlockPos.of(PositionUtils.getMinCorner(pos1.toVanillaPos(), pos2.toVanillaPos()));
@@ -745,7 +747,6 @@ public class LayerRange
         return this.intersectsBox(posMin.getX(), posMin.getY(), posMin.getZ(), posMax.getX(), posMax.getY(), posMax.getZ());
     }
 
-    // FIXME
     public boolean intersectsBox(net.minecraft.core.BlockPos pos1, net.minecraft.core.BlockPos pos2)
     {
         net.minecraft.core.BlockPos posMin = PositionUtils.getMinCorner(pos1, pos2);
@@ -785,6 +786,17 @@ public class LayerRange
     public IntBoundingBox getClampedBox(IntBoundingBox box)
     {
         return this.getClampedArea(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
+    }
+
+    /**
+     * Clamps the given box to the layer range bounds.
+     * @return the clamped box, or null, if the range does not intersect the original box
+     */
+    @Nullable
+    public IntBoundingBox getClampedArea(net.minecraft.core.BlockPos posMin, net.minecraft.core.BlockPos posMax)
+    {
+        return this.getClampedArea(posMin.getX(), posMin.getY(), posMin.getZ(),
+                                   posMax.getX(), posMax.getY(), posMax.getZ());
     }
 
     /**

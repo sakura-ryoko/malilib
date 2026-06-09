@@ -59,13 +59,98 @@ public class ChunkSectionPos extends Vec3i
         super(x, y, z);
     }
 
+    public static ChunkSectionPos of(final ChunkPos pos, final int y)
+    {
+        return new ChunkSectionPos(pos.x(), y, pos.z());
+    }
+
+    public static int x(final long node)
+    {
+        return (int) (node << 0 >> 42);
+    }
+
+    public static int y(final long node)
+    {
+        return (int) (node << 44 >> 44);
+    }
+
+    public static int z(final long node)
+    {
+        return (int) (node << 22 >> 42);
+    }
+
+    public static int toCoord(final int section)
+    {
+        return section << 4;
+    }
+
+    public static int toCoord(final int section, final int offset)
+    {
+        return toCoord(section) + offset;
+    }
+
+    public int minX()
+    {
+        return toCoord(this.getX());
+    }
+
+    public int minY()
+    {
+        return toCoord(this.getY());
+    }
+
+    public int minZ()
+    {
+        return toCoord(this.getZ());
+    }
+
+    public int maxX()
+    {
+        return toCoord(this.getX(), 15);
+    }
+
+    public int maxY()
+    {
+        return toCoord(this.getY(), 15);
+    }
+
+    public int maxZ()
+    {
+        return toCoord(this.getZ(), 15);
+    }
+
+    public BlockPos origin()
+    {
+        return new BlockPos(toCoord(this.getX()), toCoord(this.getY()), toCoord(this.getZ()));
+    }
+
+    public BlockPos center()
+    {
+        return this.origin().offset(8, 8, 8);
+    }
+
+    public @NonNull ChunkSectionPos offset(final int x, final int y, final int z)
+    {
+        return x == 0 && y == 0 && z == 0
+               ? this
+               : new ChunkSectionPos(this.getX() + x, this.getY() + y, this.getZ() + z);
+    }
+
+    public static long asLong(final int x, final int y, final int z)
+    {
+        long l = 0L;
+        l |= (x & 4194303L) << 42;
+        l |= (y & 1048575L) << 0;
+        return l | (z & 4194303L) << 20;
+    }
+
     @Override
     public @NonNull String toString()
     {
         return "ChunkSectionPos{x=" + this.getX() + ", y=" + this.getY() + ", z=" + this.getZ() + "}";
     }
 
-    public static ChunkSectionPos ofBlockPos(net.minecraft.core.Vec3i blockPos)
+    public static ChunkSectionPos of(net.minecraft.core.Vec3i blockPos)
     {
         return new ChunkSectionPos(blockPos.getX() >> 4, blockPos.getY() >> 4, blockPos.getZ() >> 4);
     }

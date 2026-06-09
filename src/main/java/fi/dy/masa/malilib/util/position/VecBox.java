@@ -15,6 +15,9 @@ import net.minecraft.world.phys.Vec3;
 
 import fi.dy.masa.malilib.util.MathUtils;
 
+/**
+ * Equivalent of the Vanilla {@link AABB}
+ */
 public class VecBox
 {
 	public static final Codec<VecBox> CODEC = RecordCodecBuilder.create(

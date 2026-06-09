@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.util.position;
 
+import java.util.Objects;
 import javax.annotation.Nullable;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
@@ -60,9 +61,19 @@ public record IntBoundingBox(int minX, int minY, int minZ, int maxX, int maxY, i
         }
     };
 
+    public boolean contains(net.minecraft.core.Vec3i pos)
+    {
+        return  pos.getX() >= this.minX &&
+                pos.getX() <= this.maxX &&
+                pos.getZ() >= this.minZ &&
+                pos.getZ() <= this.maxZ &&
+                pos.getY() >= this.minY &&
+                pos.getY() <= this.maxY;
+    }
+
     public boolean contains(Vec3i pos)
     {
-        return pos.getX() >= this.minX &&
+        return  pos.getX() >= this.minX &&
                 pos.getX() <= this.maxX &&
                 pos.getZ() >= this.minZ &&
                 pos.getZ() <= this.maxZ &&
@@ -204,6 +215,12 @@ public record IntBoundingBox(int minX, int minY, int minZ, int maxX, int maxY, i
         return createProper(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
     }
 
+    public static IntBoundingBox createProper(net.minecraft.core.Vec3i pos1, net.minecraft.core.Vec3i pos2)
+    {
+        return createProper(pos1.getX(), pos1.getY(), pos1.getZ(),
+                            pos2.getX(), pos2.getY(), pos2.getZ());
+    }
+
     public static IntBoundingBox createProper(Vec3i pos1, Vec3i pos2)
     {
         return createProper(pos1.getX(), pos1.getY(), pos1.getZ(),
@@ -246,11 +263,7 @@ public record IntBoundingBox(int minX, int minY, int minZ, int maxX, int maxY, i
     @Override
     public boolean equals(Object otherObj)
     {
-        if (otherObj == this)
-        {
-            return true;
-        }
-
+        if (otherObj == this) { return true; }
         if (otherObj == null || this.getClass() != otherObj.getClass())
         {
             return false;
@@ -265,6 +278,12 @@ public record IntBoundingBox(int minX, int minY, int minZ, int maxX, int maxY, i
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
     }
 
     @Override
