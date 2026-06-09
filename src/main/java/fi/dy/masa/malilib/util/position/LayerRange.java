@@ -695,6 +695,11 @@ public class LayerRange
 	    };
     }
 
+    public boolean isPositionAtRenderEdgeOnSide(net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side)
+    {
+        return this.isPositionAtRenderEdgeOnSide(BlockPos.of(pos), Direction.of(side));
+    }
+
     public boolean isPositionAtRenderEdgeOnSide(BlockPos pos, Direction side)
     {
 	    return switch (this.axis)
