@@ -223,8 +223,9 @@ public class VecBox
 		result = 31 * result + Double.hashCode(this.minZ);
 		result = 31 * result + Double.hashCode(this.maxX);
 		result = 31 * result + Double.hashCode(this.maxY);
+		result = 31 * result + Double.hashCode(this.maxZ);
 
-		return 31 * result + Double.hashCode(this.maxZ);
+		return result;
 	}
 
 	@Override
