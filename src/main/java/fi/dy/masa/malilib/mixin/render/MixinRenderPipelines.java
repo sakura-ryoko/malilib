@@ -94,21 +94,21 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
 			                  .withLocation(getId("pipeline/position_color/translucent/lequal_depth/offset_1"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.3f, -0.6f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.3f, 0.6f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2 =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
 			                  .withLocation(getId("pipeline/position_color/translucent/lequal_depth/offset_2"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.4f, -0.8f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.4f, 0.8f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_STAGE)
 			                  .withLocation(getId("pipeline/position_color/translucent/lequal_depth/offset_3"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3f, -3f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3f, 3f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL =
@@ -153,21 +153,21 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
 			                  .withLocation(getId("pipeline/position_color/masa/lequal_depth/offset_1"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.3f, -0.6f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.3f, 0.6f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_MASA_LEQUAL_DEPTH_OFFSET_2 =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
 			                  .withLocation(getId("pipeline/position_color/masa/lequal_depth/offset_2"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.4f, -0.8f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.4f, 0.8f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_MASA_LEQUAL_DEPTH_OFFSET_3 =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
 			                  .withLocation(getId("pipeline/position_color/masa/lequal_depth/offset_3"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3f, -3f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3f, 3f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_MASA_LEQUAL_DEPTH_NO_CULL =
@@ -214,7 +214,7 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
 			                  .withLocation(getId("pipeline/minihud/shape/no_depth/offset"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false, -3.0f, -3.0f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false, 3.0f, 3.0f))
 			                  .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH =
@@ -228,13 +228,13 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
 			                  .withLocation(getId("pipeline/minihud/shape/offset/no_cull"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3.0f, -3.0f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3.0f, 3.0f))
 			                  .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE_OFFSET =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
 			                  .withLocation(getId("pipeline/minihud/shape/offset"))
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3.0f, -3.0f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3.0f, 3.0f))
 			                  .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE_NO_CULL =
@@ -289,21 +289,21 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_LINES_TRANSLUCENT_STAGE)
 			                  .withLocation(getId("pipeline/position_color_lines/translucent/lequal_depth/offset_1"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.3f, -0.6f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.3f, 0.6f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_LINES_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2 =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_LINES_TRANSLUCENT_STAGE)
 			                  .withLocation(getId("pipeline/position_color_lines/translucent/lequal_depth/offset_2"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.4f, -0.8f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.4f, 0.8f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_LINES_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_LINES_TRANSLUCENT_STAGE)
 			                  .withLocation(getId("pipeline/position_color_lines/translucent/lequal_depth/offset_3"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3f, -3f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3f, 3f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_LINES_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL =
@@ -342,21 +342,21 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_LINES_MASA_STAGE)
 			                  .withLocation(getId("pipeline/position_color_lines/masa/lequal_depth/offset_1"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.3f, -0.6f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.3f, 0.6f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_LINES_MASA_LEQUAL_DEPTH_OFFSET_2 =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_LINES_MASA_STAGE)
 			                  .withLocation(getId("pipeline/position_color_lines/masa/lequal_depth/offset_2"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.4f, -0.8f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.4f, 0.8f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_LINES_MASA_LEQUAL_DEPTH_OFFSET_3 =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_LINES_MASA_STAGE)
 			                  .withLocation(getId("pipeline/position_color_lines/masa/lequal_depth/offset_3"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3f, -3f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3f, 3f))
 			                  .build();
 
 	    MaLiLibPipelines.POSITION_COLOR_LINES_MASA_LEQUAL_DEPTH_NO_CULL =
@@ -383,7 +383,7 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_LINES_MASA_STAGE)
 			                  .withLocation(getId("pipeline/minihud/shape_lines/no_depth/offset"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false, -3.0f, -3.0f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.ALWAYS_PASS, false, 3.0f, 3.0f))
 			                  .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE_LINES_NO_DEPTH =
@@ -397,13 +397,13 @@ public abstract class MixinRenderPipelines
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_LINES_MASA_STAGE)
 			                  .withLocation(getId("pipeline/minihud/shape_lines/offset/no_cull"))
 			                  .withCull(false)
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3.0f, -3.0f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3.0f, 3.0f))
 			                  .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE_LINES_OFFSET =
 			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_LINES_MASA_STAGE)
 			                  .withLocation(getId("pipeline/minihud/shape_lines/offset"))
-			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3.0f, -3.0f))
+			                  .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3.0f, 3.0f))
 			                  .build();
 
 	    MaLiLibPipelines.MINIHUD_SHAPE_LINES_NO_CULL =
@@ -459,19 +459,19 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_1 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(getId("pipeline/position_tex_color/translucent/lequal_depth/offset_1"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.3f, -0.6f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.3f, 0.6f))
                               .build();
 
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(getId("pipeline/position_tex_color/translucent/lequal_depth/offset_2"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.4f, -0.8f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.4f, 0.8f))
                               .build();
 
         MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_STAGE)
                               .withLocation(getId("pipeline/position_tex_color/translucent/lequal_depth/offset_3"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3f, -3f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3f, 3f))
                               .build();
 
 	    MaLiLibPipelines.POSITION_TEX_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL =
@@ -516,19 +516,19 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_1 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_STAGE)
                               .withLocation(getId("pipeline/position_tex_color/masa/lequal_depth/offset_1"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.3f, -0.6f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.3f, 0.6f))
                               .build();
 
         MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_STAGE)
                               .withLocation(getId("pipeline/position_tex_color/masa/lequal_depth/offset_2"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.4f, -0.8f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.4f, 0.8f))
                               .build();
 
         MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_STAGE)
                               .withLocation(getId("pipeline/position_tex_color/masa/lequal_depth/offset_3"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3f, -3f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3f, 3f))
                               .build();
 
 	    MaLiLibPipelines.POSITION_TEX_COLOR_MASA_LEQUAL_DEPTH_NO_CULL =
@@ -606,19 +606,19 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_OFFSET_1 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
                               .withLocation(getId("pipeline/debug_lines/translucent/offset_1"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.8f, -1.8f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.8f, 1.8f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
                               .withLocation(getId("pipeline/debug_lines/translucent/offset_2"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -1.2f, -0.2f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 1.2f, 0.2f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_STAGE)
                               .withLocation(getId("pipeline/debug_lines/translucent/offset_3"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3.0f, -3.0f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3.0f, 3.0f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT =
@@ -656,19 +656,19 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_OFFSET_1 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_STAGE)
                               .withLocation(getId("pipeline/debug_lines/masa_simple/offset_1"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.8f, -1.8f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.8f, 1.8f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_STAGE)
                               .withLocation(getId("pipeline/debug_lines/masa_simple/offset_2"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -1.2f, -0.2f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 1.2f, 0.2f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_STAGE)
                               .withLocation(getId("pipeline/debug_lines/masa_simple/offset_3"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3.0f, -3.0f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3.0f, 3.0f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE =
@@ -721,19 +721,19 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_OFFSET_1 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_STAGE)
                               .withLocation(getId("pipeline/debug_line_strip/translucent/offset_1"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.8f, -1.8f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.8f, 1.8f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_STAGE)
                               .withLocation(getId("pipeline/debug_line_strip/translucent/offset_2"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -1.2f, -0.2f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 1.2f, 0.2f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT_STAGE)
                               .withLocation(getId("pipeline/debug_line_strip/translucent/offset_3"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3.0f, -3.0f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3.0f, 3.0f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_TRANSLUCENT =
@@ -765,19 +765,19 @@ public abstract class MixinRenderPipelines
         MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_OFFSET_1 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_STAGE)
                               .withLocation(getId("pipeline/debug_line_strip/masa_simple/offset_1"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -0.8f, -1.8f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 0.8f, 1.8f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_OFFSET_2 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_STAGE)
                               .withLocation(getId("pipeline/debug_line_strip/masa_simple/offset_2"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -1.2f, -0.2f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 1.2f, 0.2f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_OFFSET_3 =
                 RenderPipeline.builder(MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE_STAGE)
                               .withLocation(getId("pipeline/debug_line_strip/masa_simple/offset_3"))
-                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, -3.0f, -3.0f))
+                              .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, false, 3.0f, 3.0f))
                               .build();
 
         MaLiLibPipelines.DEBUG_LINE_STRIP_MASA_SIMPLE =
@@ -841,21 +841,21 @@ public abstract class MixinRenderPipelines
 	    MaLiLibPipelines.LEGACY_SOLID_TERRAIN_OFFSET =
 			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
 			                           .withLocation(getId("pipeline/legacy/solid/masa/offset"))
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0.3f, 0.6f))
 			                           .build());
 
 	    MaLiLibPipelines.LEGACY_WIREFRAME_OFFSET =
 			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
 			                           .withLocation(getId("pipeline/legacy/wireframe/offset"))
 			                           .withPolygonMode(PolygonMode.WIREFRAME)
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0.3f, 0.6f))
 			                           .build());
 
 	    MaLiLibPipelines.LEGACY_CUTOUT_TERRAIN_OFFSET =
 			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_STAGE)
 			                           .withLocation(getId("pipeline/legacy/cutout/offset"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.5F)
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0.3f, 0.6f))
 			                           .build());
 
 	    // todo LEGACY_TERRAIN_TRANSLUCENT Snippet
@@ -876,7 +876,7 @@ public abstract class MixinRenderPipelines
 			    register(RenderPipeline.builder(MaLiLibPipelines.LEGACY_TERRAIN_TRANSLUCENT_STAGE)
 			                           .withLocation(getId("pipeline/legacy/translucent/offset"))
 			                           .withShaderDefine("ALPHA_CUTOUT", 0.1F)
-			                           .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, -0.3f, -0.6f))
+			                           .withDepthStencilState(new DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true, 0.3f, 0.6f))
 			                           .build());
 
 	    // Try registering with Iris.
