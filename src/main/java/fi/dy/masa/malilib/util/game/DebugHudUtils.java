@@ -9,7 +9,6 @@ import net.minecraft.client.gui.components.debug.DebugScreenEntry;
 import net.minecraft.client.gui.components.debug.DebugScreenEntryStatus;
 import net.minecraft.resources.Identifier;
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.mixin.hud.IMixinDebugHudProfile;
 
 /**
  * You need to add the AW for the "ENTRIES" in the downstream mod.
@@ -30,9 +29,9 @@ public class DebugHudUtils
 
 			if (mc.debugEntries == null) return;
 
-			if (!((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().containsKey(id))
+			if (!mc.debugEntries.allStatuses.containsKey(id))
 			{
-				((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().put(id, DebugScreenEntryStatus.NEVER);
+				mc.debugEntries.allStatuses.put(id, DebugScreenEntryStatus.NEVER);
 				mc.debugEntries.save();
 			}
 		}
@@ -47,8 +46,8 @@ public class DebugHudUtils
 
 		if (mc.debugEntries != null)
 		{
-			((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().remove(id);
-			mc.debugEntries.getCurrentlyEnabled().remove(id);
+			mc.debugEntries.allStatuses.remove(id);
+			mc.debugEntries.currentlyEnabled.remove(id);
 			mc.debugEntries.save();
 		}
 	}
@@ -59,9 +58,9 @@ public class DebugHudUtils
 
 		if (DebugScreenEntries.allEntries().containsKey(id) &&
 			mc.debugEntries != null &&
-			((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().containsKey(id))
+			mc.debugEntries.allStatuses.containsKey(id))
 		{
-			return ((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().get(id);
+			return mc.debugEntries.allStatuses.get(id);
 		}
 
 		return null;
@@ -71,10 +70,9 @@ public class DebugHudUtils
 	{
 		Minecraft mc = Minecraft.getInstance();
 
-		if (DebugScreenEntries.allEntries().containsKey(id) &&
-			mc.debugEntries != null)
+		if (DebugScreenEntries.allEntries().containsKey(id) && mc.debugEntries != null)
 		{
-			((IMixinDebugHudProfile) mc.debugEntries).malilib$getVisibilityMap().put(id, visibility);
+			mc.debugEntries.allStatuses.put(id, visibility);
 		}
 	}
 }
