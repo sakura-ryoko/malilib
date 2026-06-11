@@ -19,36 +19,51 @@ public class DebugHudUtils
 {
 	public static void register(Identifier id, @Nonnull DebugScreenEntry entry)
 	{
-		if (Objects.equals(id.getNamespace(), "minecraft")) return;
-		if (!DebugScreenEntries.allEntries().containsKey(id))
+		if (Objects.equals(id.getNamespace(), "minecraft")) { return; }
+		if (!DebugScreenEntries.ENTRIES_BY_ID.containsKey(id))
 		{
 			Minecraft mc = Minecraft.getInstance();
 
-			DebugScreenEntries.ENTRIES_BY_ID.put(id, entry);
-			MaLiLib.debugLog("DebugHudUtils#register(): Registered [{}]", id.toString());
-
-			if (mc.debugEntries == null) return;
-
-			if (!mc.debugEntries.allStatuses.containsKey(id))
+			try
 			{
-				mc.debugEntries.allStatuses.put(id, DebugScreenEntryStatus.NEVER);
-				mc.debugEntries.save();
+				DebugScreenEntries.ENTRIES_BY_ID.put(id, entry);
+				MaLiLib.debugLog("DebugHudUtils#register(): Registered [{}]", id.toString());
+
+				if (mc.debugEntries == null) return;
+
+				if (!mc.debugEntries.allStatuses.containsKey(id))
+				{
+					mc.debugEntries.allStatuses.put(id, DebugScreenEntryStatus.NEVER);
+					mc.debugEntries.save();
+				}
+			}
+			catch (Throwable e)
+			{
+				MaLiLib.LOGGER.error("DebugHudUtils#register(): Exception registering Debug Hud Entry: '{}'; {}", id.toString(), e.getLocalizedMessage());
 			}
 		}
 	}
 
 	public static void unregister(Identifier id)
 	{
-		if (Objects.equals(id.getNamespace(), "minecraft")) return;
+		if (Objects.equals(id.getNamespace(), "minecraft")) { return; }
 		Minecraft mc = Minecraft.getInstance();
 
-		DebugScreenEntries.ENTRIES_BY_ID.remove(id);
-
-		if (mc.debugEntries != null)
+		try
 		{
-			mc.debugEntries.allStatuses.remove(id);
-			mc.debugEntries.currentlyEnabled.remove(id);
-			mc.debugEntries.save();
+			DebugScreenEntries.ENTRIES_BY_ID.remove(id);
+			MaLiLib.debugLog("DebugHudUtils#register(): Unregistered [{}]", id.toString());
+
+			if (mc.debugEntries != null)
+			{
+				mc.debugEntries.allStatuses.remove(id);
+				mc.debugEntries.currentlyEnabled.remove(id);
+				mc.debugEntries.save();
+			}
+		}
+		catch (Throwable e)
+		{
+			MaLiLib.LOGGER.error("DebugHudUtils#unregister(): Exception unregistering Debug Hud Entry: '{}'; {}", id.toString(), e.getLocalizedMessage());
 		}
 	}
 
@@ -56,7 +71,7 @@ public class DebugHudUtils
 	{
 		Minecraft mc = Minecraft.getInstance();
 
-		if (DebugScreenEntries.allEntries().containsKey(id) &&
+		if (DebugScreenEntries.ENTRIES_BY_ID.containsKey(id) &&
 			mc.debugEntries != null &&
 			mc.debugEntries.allStatuses.containsKey(id))
 		{
@@ -70,7 +85,7 @@ public class DebugHudUtils
 	{
 		Minecraft mc = Minecraft.getInstance();
 
-		if (DebugScreenEntries.allEntries().containsKey(id) && mc.debugEntries != null)
+		if (DebugScreenEntries.ENTRIES_BY_ID.containsKey(id) && mc.debugEntries != null)
 		{
 			mc.debugEntries.allStatuses.put(id, visibility);
 		}
