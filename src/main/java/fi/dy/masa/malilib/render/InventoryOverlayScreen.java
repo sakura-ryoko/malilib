@@ -20,6 +20,7 @@ import net.minecraft.world.entity.animal.golem.CopperGolem;
 import net.minecraft.world.entity.animal.happyghast.HappyGhast;
 import net.minecraft.world.entity.animal.nautilus.AbstractNautilus;
 import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.monster.cubemob.SulfurCube;
 import net.minecraft.world.entity.npc.villager.AbstractVillager;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
@@ -120,7 +121,9 @@ public class InventoryOverlayScreen extends Screen implements Renderable
 				armourItems.add(this.previewData.entity().getItemBySlot(EquipmentSlot.BODY));
 				armourItems.add(this.previewData.entity().getItemBySlot(EquipmentSlot.SADDLE));
 			}
-			else if (this.previewData.entity() instanceof Wolf || this.previewData.entity() instanceof HappyGhast)
+			else if (this.previewData.entity() instanceof Wolf ||
+					 this.previewData.entity() instanceof SulfurCube ||
+					 this.previewData.entity() instanceof HappyGhast)
 			{
 				armourItems.add(this.previewData.entity().getItemBySlot(EquipmentSlot.BODY));
 				//armourItems.add(ItemStack.EMPTY);

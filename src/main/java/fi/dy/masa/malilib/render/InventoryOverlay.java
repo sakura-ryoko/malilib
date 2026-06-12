@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -47,7 +46,6 @@ import net.minecraft.world.item.BundleItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.*;
 
@@ -546,7 +544,7 @@ public class InventoryOverlay
 			{
 				return InventoryOverlayType.FURNACE;
 			}
-			else if (block instanceof DispenserBlock) // this includes the Dropper as a sub class
+			else if (block instanceof DispenserBlock) // this includes the Dropper as a subclass
 			{
 				return InventoryOverlayType.DISPENSER;
 			}
@@ -703,6 +701,10 @@ public class InventoryOverlay
 			else if (entityType.equals(EntityTypes.WOLF))
 			{
 				return InventoryOverlayType.WOLF;
+			}
+			else if (entityType.equals(EntityTypes.SULFUR_CUBE))
+			{
+				return InventoryOverlayType.SULFUR_CUBE;
 			}
 			else if (entityType.equals(EntityTypes.HAPPY_GHAST))
 			{
@@ -1294,49 +1296,4 @@ public class InventoryOverlay
         public int slotOffsetX = 8;
         public int slotOffsetY = 8;
     }
-
-	/**
-	 * Use {@link InventoryOverlayType}
-	 */
-	@Deprecated(forRemoval = true)
-	public enum InventoryRenderType
-	{
-		BREWING_STAND,
-		CRAFTER,
-		DISPENSER,
-		FURNACE,
-		HOPPER,
-		HORSE,
-		LLAMA,
-		WOLF,
-		HAPPY_GHAST,
-		COPPER_GOLEM,
-		FIXED_27,
-		FIXED_54,
-		VILLAGER,
-		PLAYER,
-		ENDER_CHEST,
-		BOOKSHELF,
-		WALL_SHELF,
-		SINGLE_ITEM,
-		BUNDLE,
-		ARMOR_STAND,
-		LIVING_ENTITY,
-		GENERIC
-	}
-
-	/**
-	 * Use {@link InventoryOverlayContext}
-	 */
-	@Deprecated(forRemoval = true)
-	public record Context(InventoryRenderType type, @Nullable Container inv, @Nullable BlockEntity be, @Nullable LivingEntity entity, @Nullable CompoundTag nbt, Refresher handler) {}
-
-	/**
-	 * Use {@link InventoryOverlayRefresher}
-	 */
-	@Deprecated(forRemoval = true)
-	public interface Refresher
-	{
-		Context onContextRefresh(Context data, Level world);
-	}
 }

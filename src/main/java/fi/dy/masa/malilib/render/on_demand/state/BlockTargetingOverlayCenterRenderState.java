@@ -1,23 +1,21 @@
 package fi.dy.masa.malilib.render.on_demand.state;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.phys.Vec3;
 
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.position.BlockPos;
+import fi.dy.masa.malilib.util.position.Direction;
 import fi.dy.masa.malilib.util.position.PositionUtils;
+import fi.dy.masa.malilib.util.position.Vec3d;
 
-@ApiStatus.Experimental
 public class BlockTargetingOverlayCenterRenderState extends AbstractBlockTargetingOverlayRenderState
 {
 	public BlockTargetingOverlayCenterRenderState(BlockPos pos,
-	                                              Vec3 camPos,
+	                                              Vec3d camPos,
 	                                              Color4f sideColor,
 	                                              Color4f lineColor,
 	                                              float lineWidth,

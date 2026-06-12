@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Matrix4fc;
@@ -31,10 +30,6 @@ import fi.dy.masa.malilib.render.on_demand.state.AbstractTextPlateRenderState;
 import fi.dy.masa.malilib.render.on_demand.state.TextPlateRenderState;
 import fi.dy.masa.malilib.render.text.MaLiLibWorldTextRenderer;
 
-/**
- * WARNING!!! Not tested!
- */
-@ApiStatus.Experimental
 public class TextPlateRenderer implements IOnDemandRenderer<AbstractTextPlateRenderState>
 {
 	public static final TextPlateRenderer INSTANCE = new TextPlateRenderer();

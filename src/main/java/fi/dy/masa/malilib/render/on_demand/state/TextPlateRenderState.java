@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.render.on_demand.state;
 
 import java.util.List;
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
@@ -15,7 +14,6 @@ import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.position.Vec3d;
 import fi.dy.masa.malilib.util.text.TextAlignment;
 
-@ApiStatus.Experimental
 public class TextPlateRenderState extends AbstractTextPlateRenderState
 {
 	private int strLenHalf;

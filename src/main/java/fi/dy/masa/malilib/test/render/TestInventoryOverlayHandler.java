@@ -430,7 +430,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 			}
 			// Fix for saddled horse, no inv
 			else if (inv != null &&
-					data.containsLenient(NbtKeys.EQUIPMENT) && data.containsLenient(NbtKeys.EATING_HAY))
+					 data.containsLenient(NbtKeys.EQUIPMENT) && data.containsLenient(NbtKeys.EATING_HAY))
 			{
 				MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): [Fix for saddled horse inv] inv.size: [{}]", inv.getContainerSize());
 
@@ -439,7 +439,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 			}
 			// Fix for empty Villager/Piglin inv
 			else if (inv != null && inv.getContainerSize() == NbtInventory.VILLAGER_SIZE &&
-					data.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST) &&
+					 data.contains(NbtKeys.INVENTORY, Constants.NBT.TAG_LIST) &&
 					!data.getList(NbtKeys.INVENTORY).isEmpty())
 			{
 				MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): [Fix for empty villager/piglin inv] inv.size: [{}]", inv.getContainerSize());

@@ -57,6 +57,21 @@ public class Vec3d
         this.z = z;
     }
 
+    public double x()
+    {
+        return this.x;
+    }
+
+    public double y()
+    {
+        return this.y;
+    }
+
+    public double z()
+    {
+        return this.z;
+    }
+
     public double getX()
     {
         return this.x;

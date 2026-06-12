@@ -124,6 +124,24 @@ public class VecBox
 		);
 	}
 
+	public static VecBox of(IntBoundingBox bb)
+	{
+		BlockPos pos1 = bb.getMinCorner();
+		BlockPos pos2 = bb.getMaxCorner();
+
+		// Fix Bottom Y Border offset
+		if (pos1.getX() < pos2.getY())
+		{
+			pos1 = BlockPos.of(pos1.mutable().setY(pos1.getY() - 1).immutable());
+		}
+		else if (pos2.getY() < pos1.getY())
+		{
+			pos2 = BlockPos.of(pos2.mutable().setY(pos2.getY() - 1).immutable());
+		}
+
+		return VecBox.of(pos1, pos2);
+	}
+
 	public static VecBox of(AABB bb)
 	{
 		return new VecBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
@@ -138,6 +156,18 @@ public class VecBox
 				center.x + sizeX / 2.0,
 				center.y + sizeY / 2.0,
 				center.z + sizeZ / 2.0
+		);
+	}
+
+	public static VecBox encapsulated(BlockPos pos1, BlockPos pos2)
+	{
+		return new VecBox(
+				MathUtils.min(pos1.getX(), pos2.getX()),
+				MathUtils.min(pos1.getY(), pos2.getY()),
+				MathUtils.min(pos1.getZ(), pos2.getZ()),
+				MathUtils.max(pos1.getX(), pos2.getX()) + 1,
+				MathUtils.max(pos1.getY(), pos2.getY()) + 1,
+				MathUtils.max(pos1.getZ(), pos2.getZ()) + 1
 		);
 	}
 

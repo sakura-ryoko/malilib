@@ -17,14 +17,14 @@ accessible method net/minecraft/client/gui/components/MultiLineEditBox <init> (L
 transitive-accessible field net/minecraft/client/gui/GuiGraphicsExtractor scissorStack Lnet/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack;
 transitive-accessible class net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack
 transitive-accessible class net/minecraft/client/gui/GuiGraphicsExtractor$RenderingTextCollector
-transitive-accessible method net/minecraft/client/gui/components/EditBox getMaxLength ()I
-transitive-accessible field net/minecraft/client/gui/components/debug/DebugScreenEntries ENTRIES_BY_ID Ljava/util/Map;
-transitive-accessible method net/minecraft/client/gui/components/debug/DebugScreenEntries register (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/gui/components/debug/DebugScreenEntry;)Lnet/minecraft/resources/Identifier;
-transitive-accessible field net/minecraft/client/gui/components/debug/DebugScreenEntryList allStatuses Ljava/util/Map;
-transitive-accessible field net/minecraft/client/gui/components/debug/DebugScreenEntryList currentlyEnabled Ljava/util/List;
-transitive-accessible field net/minecraft/client/renderer/rendertype/RenderType state Lnet/minecraft/client/renderer/rendertype/RenderSetup;
-transitive-accessible class net/minecraft/client/renderer/rendertype/RenderSetup$TextureBinding
-transitive-accessible field net/minecraft/client/renderer/rendertype/RenderSetup textures Ljava/util/Map;
-transitive-accessible field net/minecraft/client/renderer/rendertype/RenderSetup textureTransform Lnet/minecraft/client/renderer/rendertype/TextureTransform;
+accessible method net/minecraft/client/gui/components/EditBox getMaxLength ()I
+accessible field net/minecraft/client/gui/components/debug/DebugScreenEntries ENTRIES_BY_ID Ljava/util/Map;
+accessible method net/minecraft/client/gui/components/debug/DebugScreenEntries register (Lnet/minecraft/resources/Identifier;Lnet/minecraft/client/gui/components/debug/DebugScreenEntry;)Lnet/minecraft/resources/Identifier;
+accessible field net/minecraft/client/gui/components/debug/DebugScreenEntryList allStatuses Ljava/util/Map;
+accessible field net/minecraft/client/gui/components/debug/DebugScreenEntryList currentlyEnabled Ljava/util/List;
+accessible field net/minecraft/client/renderer/rendertype/RenderType state Lnet/minecraft/client/renderer/rendertype/RenderSetup;
+accessible class net/minecraft/client/renderer/rendertype/RenderSetup$TextureBinding
+accessible field net/minecraft/client/renderer/rendertype/RenderSetup textures Ljava/util/Map;
+accessible field net/minecraft/client/renderer/rendertype/RenderSetup textureTransform Lnet/minecraft/client/renderer/rendertype/TextureTransform;
 accessible field net/minecraft/client/renderer/rendertype/RenderSetup outlineProperty Lnet/minecraft/client/renderer/rendertype/RenderSetup$OutlineProperty;
 accessible field net/minecraft/client/renderer/rendertype/RenderSetup layeringTransform Lnet/minecraft/client/renderer/rendertype/LayeringTransform;

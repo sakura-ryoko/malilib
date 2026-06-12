@@ -139,6 +139,16 @@ public record IntBoundingBox(int minX, int minY, int minZ, int maxX, int maxY, i
         return this.expand(-x, -y, -z);
     }
 
+    public BlockPos getMinCorner()
+    {
+        return new BlockPos(this.minX, this.minY, this.minZ);
+    }
+
+    public BlockPos getMaxCorner()
+    {
+        return new BlockPos(this.maxX, this.maxY, this.maxZ);
+    }
+
     public BoundingBox toVanillaBox()
     {
         return new BoundingBox(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
