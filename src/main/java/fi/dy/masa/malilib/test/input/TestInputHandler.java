@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.render.InventoryOverlayScreen;
 import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.test.config.TestHotkeys;
+import fi.dy.masa.malilib.test.gui.GuiTestBlockStateList;
 import fi.dy.masa.malilib.test.gui.GuiTestFileBrowser;
 import fi.dy.masa.malilib.test.gui.GuiTestPosEditor;
 import fi.dy.masa.malilib.test.gui.GuiTestTextFields;
@@ -126,8 +127,8 @@ public class TestInputHandler implements IKeybindProvider
             else if (key == TestHotkeys.TEST_GUI_KEYBIND.getKeybind())
             {
                 System.out.printf("testGuiKeybind Callback Action: [%s] (Cancel = false)\n", action.getStringValue());
-//                GuiBase.openGui(new GuiTestBlockStateList());
-                GuiBase.openGui(new GuiTestTextFields());
+                GuiBase.openGui(new GuiTestBlockStateList());
+//                GuiBase.openGui(new GuiTestTextFields());
             }
             else if (key == TestHotkeys.TEST_GUI_EDITOR_KEYBIND.getKeybind())
             {

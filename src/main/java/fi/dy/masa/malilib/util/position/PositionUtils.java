@@ -11,7 +11,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * Post-ReWrite code
  */
-// FIXME
+// todo FIXME
 public class PositionUtils
 {
     public static final Direction[] ALL_DIRECTIONS = new Direction[] { Direction.DOWN, Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST };

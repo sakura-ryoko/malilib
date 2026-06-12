@@ -4,6 +4,11 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
+import fi.dy.masa.malilib.render.on_demand.SelectionBoxRenderer;
+import fi.dy.masa.malilib.render.on_demand.TextPlateRenderer;
+import fi.dy.masa.malilib.render.on_demand.state.*;
+import fi.dy.masa.malilib.util.position.Vec3d;
+import fi.dy.masa.malilib.util.text.TextAlignment;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2f;
@@ -1700,6 +1705,132 @@ public class RenderUtils
         global4fStack.popMatrix();
     }
 
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale, TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale, alignment)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale,
+	                                     boolean disableDepth, TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale, disableDepth, alignment)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
+	 * @param textColor     Text Color
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale,
+	                                     Color4f textColor,
+	                                     boolean disableDepth,
+	                                     TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale,
+				                         textColor,
+				                         disableDepth, alignment
+				)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
+	 * @param textColor     Text Color
+	 * @param bgColor       Background Color of the Rectangle
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale,
+	                                     Color4f textColor, Color4f bgColor,
+	                                     boolean disableDepth,
+	                                     TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale,
+				                         textColor, bgColor,
+				                         disableDepth, alignment
+				)
+		);
+	}
+
+	/**
+	 * Schedules a text plate/billboard, similar to the player name plate.<br>
+	 * The plate will always face towards the viewer.
+	 *
+	 * @param text          List of strings
+	 * @param pos           position
+	 * @param scale         FontScale
+	 * @param alignment     TextAlignment
+	 * @param textColor     Text Color
+	 * @param bgColor       Background Color of the Rectangle
+	 * @param light         Light Coordinates
+	 * @param disableDepth  Disable Depth Test (renderThrough)
+	 * @param useShadow     Shadow Text
+	 */
+	public static void scheduleTextPlate(List<String> text, Vec3d pos, float scale,
+	                                     Color4f textColor, Color4f bgColor,
+	                                     int light, boolean disableDepth, boolean useShadow,
+	                                     TextAlignment alignment)
+	{
+		TextPlateRenderer.INSTANCE.schedule(
+				new TextPlateRenderState(text, pos, scale,
+				                         textColor, bgColor,
+				                         light, disableDepth, useShadow,
+				                         alignment
+				)
+		);
+	}
+
     public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3 hitVec,
                                                    Color4f color, Matrix4f posMatrix)
     {
@@ -3276,5 +3407,100 @@ public class RenderUtils
 
 		// Mark culling if the camera is outside of the bounding box (Walls overlapping, etc)
 		return bb.contains(pos);
+	}
+
+	public static void scheduleBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color, boolean renderThrough)
+	{
+		scheduleBlockOutline(fi.dy.masa.malilib.util.position.BlockPos.of(pos), expand, lineWidth, color, renderThrough);
+	}
+
+	public static void scheduleBlockOutline(fi.dy.masa.malilib.util.position.BlockPos pos, float expand, float lineWidth, Color4f color, boolean renderThrough)
+	{
+		SelectionBoxRenderer.INSTANCE.scheduleBlockOutline(
+				new BlockOutlineRenderState(
+						Vec3d.of(camPos()),
+						pos, expand, lineWidth,
+						Color4f.ZERO, color, renderThrough
+				)
+		);
+	}
+
+	public static void scheduleBlockOutlineOverlapping(BlockPos pos, float expand, float lineWidth, Color4f color1, Color4f color2, Color4f colorOverlap, boolean renderThrough)
+	{
+		scheduleBlockOutlineOverlapping(fi.dy.masa.malilib.util.position.BlockPos.of(pos), expand, lineWidth, color1, color2, colorOverlap, renderThrough);
+	}
+
+	public static void scheduleBlockOutlineOverlapping(fi.dy.masa.malilib.util.position.BlockPos pos, float expand, float lineWidth, Color4f color1, Color4f color2, Color4f colorOverlap, boolean renderThrough)
+	{
+		SelectionBoxRenderer.INSTANCE.scheduleBlockOutlineOverlapping(
+				new BlockOutlineOverlappingRenderState(
+						Vec3d.of(camPos()),
+						pos, expand, lineWidth,
+						color1, color2, colorOverlap, renderThrough
+				)
+		);
+	}
+
+	public static void scheduleBlockBoxWithOutline(BlockPos pos, float expand, float lineWidth, Color4f sidesColor, Color4f linesColor)
+	{
+		scheduleBlockBoxWithOutline(fi.dy.masa.malilib.util.position.BlockPos.of(pos), expand, lineWidth, sidesColor, linesColor);
+	}
+
+	public static void scheduleBlockBoxWithOutline(fi.dy.masa.malilib.util.position.BlockPos pos, float expand, float lineWidth, Color4f sidesColor, Color4f linesColor)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		SelectionBoxRenderer.INSTANCE.scheduleBlockBoxWithOutline(
+				new AreaSidesRenderState(
+						camPos,
+						pos, pos,
+						sidesColor, false
+				),
+				new BlockOutlineRenderState(
+						camPos,
+						pos, expand, lineWidth,
+						Color4f.ZERO, linesColor, false
+				)
+		);
+	}
+
+	public static void scheduleSelectionBox(BlockPos pos1, BlockPos pos2,
+	                                        float expand, float lineWidthArea, float lineWithBlock,
+	                                        Color4f sidesColor, Color4f colorPos1, Color4f colorPos2,
+	                                        Color4f colorX, Color4f colorY, Color4f colorZ)
+	{
+		scheduleSelectionBox(fi.dy.masa.malilib.util.position.BlockPos.of(pos1), fi.dy.masa.malilib.util.position.BlockPos.of(pos2),
+		                     expand, lineWidthArea, lineWithBlock, sidesColor, colorPos1, colorPos2, colorX, colorY, colorZ);
+	}
+
+	public static void scheduleSelectionBox(fi.dy.masa.malilib.util.position.BlockPos pos1, fi.dy.masa.malilib.util.position.BlockPos pos2,
+	                                        float expand, float lineWidthArea, float lineWithBlock,
+	                                        Color4f sidesColor, Color4f colorPos1, Color4f colorPos2,
+	                                        Color4f colorX, Color4f colorY, Color4f colorZ)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		SelectionBoxRenderer.INSTANCE.scheduleSelectionBox(
+				new AreaOutlineNoCornersRenderState(
+						camPos,
+						pos1, pos2, lineWidthArea,
+						colorX, colorY, colorZ
+				),
+				new AreaSidesRenderState(
+						camPos,
+						pos1, pos2,
+						sidesColor, false
+				),
+				new BlockOutlineRenderState(
+						camPos,
+						pos1, expand, lineWithBlock,
+						Color4f.ZERO, colorPos1, false
+				),
+				new BlockOutlineRenderState(
+						camPos,
+						pos2, expand, lineWithBlock,
+						Color4f.ZERO, colorPos2, false
+				)
+		);
 	}
 }

@@ -1,7 +1,10 @@
 package fi.dy.masa.malilib.util.data;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.serialization.Codec;
@@ -139,5 +142,31 @@ public class ItemType
         {
             return BuiltInRegistries.ITEM.getKey(this.stack.getItem()).toString();
         }
+    }
+
+    /**
+     * Returns a map that has a list of the indices for each different item in the input list
+     *
+     * @param stacks ()
+     * @return ()
+     */
+    public static Map<ItemType, IntArrayList> getSlotsPerItem(ItemStack[] stacks)
+    {
+        Map<ItemType, IntArrayList> mapSlots = new HashMap<>();
+
+        for (int i = 0; i < stacks.length; i++)
+        {
+            ItemStack stack = stacks[i];
+
+            if (stack.isEmpty() == false)
+            {
+                ItemType item = new ItemType(stack);
+                IntArrayList slots = mapSlots.computeIfAbsent(item, k -> new IntArrayList());
+
+                slots.add(i);
+            }
+        }
+
+        return mapSlots;
     }
 }

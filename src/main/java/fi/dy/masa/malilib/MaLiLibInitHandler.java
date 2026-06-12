@@ -12,6 +12,11 @@ import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.interfaces.IInitializationHandler;
 import fi.dy.masa.malilib.interfaces.IRenderer;
 import fi.dy.masa.malilib.registry.Registry;
+import fi.dy.masa.malilib.render.OnDemandRenderer;
+import fi.dy.masa.malilib.render.on_demand.BlockTargetingOverlayRenderer;
+import fi.dy.masa.malilib.render.on_demand.SelectionBoxRenderer;
+import fi.dy.masa.malilib.render.on_demand.SimpleBlockTargetingOverlayRenderer;
+import fi.dy.masa.malilib.render.on_demand.TextPlateRenderer;
 import fi.dy.masa.malilib.test.command.TestCommand;
 import fi.dy.masa.malilib.test.input.TestInputHandler;
 import fi.dy.masa.malilib.test.misc.TestSelector;
@@ -57,19 +62,27 @@ public class MaLiLibInitHandler implements IInitializationHandler
 //                TestThreadDaemonHandler.INSTANCE.endAll();
 //            }
 
-            /*
             if (MaLiLibReference.EXPERIMENTAL_MODE)
             {
                 OnDemandRenderer.getInstance().registerOnDemandRenderer(
                         MaLiLibReference.MOD_ID+"_block_targeting_overlay",
                         new BlockTargetingOverlayRenderer(MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN, true, false)
                 );
+                OnDemandRenderer.getInstance().registerOnDemandRenderer(
+                        MaLiLibReference.MOD_ID+"_simple_block_targeting_overlay",
+                        new SimpleBlockTargetingOverlayRenderer(MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN, false, true)
+                                                                       );
             }
-            */
         }
 
-//        RenderEventHandler.getInstance().registerWorldLastRenderer(OnDemandRenderer.getInstance());
-//        TickHandler.getInstance().registerClientTickHandler(OnDemandRenderer.getInstance());
+        OnDemandRenderer.getInstance().registerOnDemandRenderer(
+                MaLiLibReference.MOD_ID+"_text_plate", TextPlateRenderer.INSTANCE
+        );
+        OnDemandRenderer.getInstance().registerOnDemandRenderer(
+                MaLiLibReference.MOD_ID+"_selection_box", SelectionBoxRenderer.INSTANCE
+        );
+        RenderEventHandler.getInstance().registerWorldLastRenderer(OnDemandRenderer.getInstance());
+        TickHandler.getInstance().registerClientTickHandler(OnDemandRenderer.getInstance());
     }
 
     private static class CallbackOpenConfigGui implements IHotkeyCallback

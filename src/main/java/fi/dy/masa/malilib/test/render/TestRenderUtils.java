@@ -38,21 +38,21 @@ public class TestRenderUtils
 
         // For whatever reason, in Fabulous! Graphics, the Y level gets rendered through to -64,
         //  so let's make use of the player's current Y position, and seaLevel.
-        if (Minecraft.useAmbientOcclusion() && world != null && mc.player != null)
-        {
-            if (mc.player.blockPosition().getY() >= world.getSeaLevel())
-            {
-                minY = world.getSeaLevel() - 2;
-            }
-            else
-            {
-                minY = world.getMinY();
-            }
-        }
-        else
-        {
+//        if (Minecraft.getInstance().options.improvedTransparency().get() && world != null && mc.player != null)
+//        {
+//            if (mc.player.blockPosition().getY() >= world.getSeaLevel())
+//            {
+//                minY = world.getSeaLevel() - 2;
+//            }
+//            else
+//            {
+//                minY = world.getMinY();
+//            }
+//        }
+//        else
+//        {
             minY = world != null ? world.getMinY() : -64;
-        }
+//        }
 
         return minY;
     }

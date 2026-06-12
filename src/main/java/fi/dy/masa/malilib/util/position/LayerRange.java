@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
@@ -39,7 +40,7 @@ public class LayerRange
     public static final StreamCodec<@NotNull ByteBuf, @NotNull LayerRange> PACKET_CODEC = new StreamCodec<>()
     {
 	    @Override
-	    public void encode(ByteBuf buf, LayerRange value)
+	    public void encode(@NonNull ByteBuf buf, LayerRange value)
 	    {
 		    LayerMode.PACKET_CODEC.encode(buf, value.layerMode);
 		    ByteBufCodecs.STRING_UTF8.encode(buf, value.axis.getSerializedName());
@@ -55,7 +56,7 @@ public class LayerRange
 	    }
 
 	    @Override
-	    public LayerRange decode(ByteBuf buf)
+	    public @NonNull LayerRange decode(@NonNull ByteBuf buf)
 	    {
 		    return new LayerRange(
                     LayerMode.PACKET_CODEC.decode(buf),
@@ -188,42 +189,36 @@ public class LayerRange
 
     public int getMinLayerBoundary()
     {
-        switch (this.layerMode)
-        {
-            case ALL:
-            case ALL_BELOW:     return -30000000;
-            case SINGLE_LAYER:  return this.layerSingle;
-            case ALL_ABOVE:     return this.layerAbove;
-            case LAYER_RANGE:   return this.layerRangeMin;
-        }
-
-        return 0;
+	    return switch (this.layerMode)
+	    {
+		    case ALL, ALL_BELOW -> -30000000;
+		    case SINGLE_LAYER -> this.layerSingle;
+		    case ALL_ABOVE -> this.layerAbove;
+		    case LAYER_RANGE -> this.layerRangeMin;
+	    };
     }
 
     public int getMaxLayerBoundary()
     {
-        switch (this.layerMode)
-        {
-            case ALL:
-            case ALL_ABOVE:     return 30000000;
-            case SINGLE_LAYER:  return this.layerSingle;
-            case ALL_BELOW:     return this.layerBelow;
-            case LAYER_RANGE:   return this.layerRangeMax;
-        }
-
-        return 0;
+	    return switch (this.layerMode)
+	    {
+		    case ALL, ALL_ABOVE -> 30000000;
+		    case SINGLE_LAYER -> this.layerSingle;
+		    case ALL_BELOW -> this.layerBelow;
+		    case LAYER_RANGE -> this.layerRangeMax;
+	    };
     }
 
     public int getCurrentLayerValue(boolean isSecondValue)
     {
-        switch (this.layerMode)
-        {
-            case SINGLE_LAYER:  return this.layerSingle;
-            case ALL_ABOVE:     return this.layerAbove;
-            case ALL_BELOW:     return this.layerBelow;
-            case LAYER_RANGE:   return isSecondValue ? this.layerRangeMax : this.layerRangeMin;
-            default:            return 0;
-        }
+	    return switch (this.layerMode)
+	    {
+		    case SINGLE_LAYER -> this.layerSingle;
+		    case ALL_ABOVE -> this.layerAbove;
+		    case ALL_BELOW -> this.layerBelow;
+		    case LAYER_RANGE -> isSecondValue ? this.layerRangeMax : this.layerRangeMin;
+		    default -> 0;
+	    };
     }
 
     public void setLayerMode(LayerMode mode)
@@ -345,14 +340,12 @@ public class LayerRange
 
     protected int getPositionFromEntity(Entity entity)
     {
-        switch (this.axis)
-        {
-            case X: return MathUtils.floor(entity.getX());
-            case Y: return MathUtils.floor(entity.getY());
-            case Z: return MathUtils.floor(entity.getZ());
-        }
-
-        return 0;
+	    return switch (this.axis)
+	    {
+		    case X -> MathUtils.floor(entity.getX());
+		    case Y -> MathUtils.floor(entity.getY());
+		    case Z -> MathUtils.floor(entity.getZ());
+	    };
     }
 
     public void setToPosition(Entity entity)
@@ -457,7 +450,7 @@ public class LayerRange
             case ALL_ABOVE:
             {
                 val1 = this.layerAbove;
-                val2 = limits.getMaxValueForAxis(this.axis);;
+                val2 = limits.getMaxValueForAxis(this.axis);
                 break;
             }
             case ALL_BELOW:
@@ -614,14 +607,14 @@ public class LayerRange
 
     public String getCurrentLayerString()
     {
-        switch (this.layerMode)
-        {
-            case SINGLE_LAYER:  return String.valueOf(this.layerSingle);
-            case ALL_ABOVE:     return String.valueOf(this.layerAbove);
-            case ALL_BELOW:     return String.valueOf(this.layerBelow);
-            case LAYER_RANGE:   return String.format("%d ... %s", this.layerRangeMin, this.layerRangeMax);
-            default:            return "";
-        }
+	    return switch (this.layerMode)
+	    {
+		    case SINGLE_LAYER -> String.valueOf(this.layerSingle);
+		    case ALL_ABOVE -> String.valueOf(this.layerAbove);
+		    case ALL_BELOW -> String.valueOf(this.layerBelow);
+		    case LAYER_RANGE -> String.format("%d ... %s", this.layerRangeMin, this.layerRangeMax);
+		    default -> "";
+	    };
     }
 
     protected int getWorldLimitsClampedValue(int value, IntBoundingBox limits)
@@ -632,6 +625,11 @@ public class LayerRange
     }
 
     public boolean isPositionWithinRange(BlockPos pos)
+    {
+        return this.isPositionWithinRange(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public boolean isPositionWithinRange(net.minecraft.core.BlockPos pos)
     {
         return this.isPositionWithinRange(pos.getX(), pos.getY(), pos.getZ());
     }
@@ -647,79 +645,75 @@ public class LayerRange
 
     public boolean isPositionWithinRange(int x, int y, int z)
     {
-        switch (this.layerMode)
-        {
-            case ALL:           return true;
-            case SINGLE_LAYER:  return this.isPositionWithinSingleLayerRange(x, y, z);
-            case ALL_ABOVE:     return this.isPositionWithinAboveRange(x, y, z);
-            case ALL_BELOW:     return this.isPositionWithinBelowRange(x, y, z);
-            case LAYER_RANGE:   return this.isPositionWithinLayerRangeRange(x, y, z);
-        }
-
-        return false;
+	    return switch (this.layerMode)
+	    {
+		    case ALL -> true;
+		    case SINGLE_LAYER -> this.isPositionWithinSingleLayerRange(x, y, z);
+		    case ALL_ABOVE -> this.isPositionWithinAboveRange(x, y, z);
+		    case ALL_BELOW -> this.isPositionWithinBelowRange(x, y, z);
+		    case LAYER_RANGE -> this.isPositionWithinLayerRangeRange(x, y, z);
+	    };
     }
 
     protected boolean isPositionWithinSingleLayerRange(int x, int y, int z)
     {
-        switch (this.axis)
-        {
-            case X: return x == this.layerSingle;
-            case Y: return y == this.layerSingle;
-            case Z: return z == this.layerSingle;
-        }
-
-        return false;
+	    return switch (this.axis)
+	    {
+		    case X -> x == this.layerSingle;
+		    case Y -> y == this.layerSingle;
+		    case Z -> z == this.layerSingle;
+	    };
     }
 
     protected boolean isPositionWithinAboveRange(int x, int y, int z)
     {
-        switch (this.axis)
-        {
-            case X: return x >= this.layerAbove;
-            case Y: return y >= this.layerAbove;
-            case Z: return z >= this.layerAbove;
-        }
-
-        return false;
+	    return switch (this.axis)
+	    {
+		    case X -> x >= this.layerAbove;
+		    case Y -> y >= this.layerAbove;
+		    case Z -> z >= this.layerAbove;
+	    };
     }
 
     protected boolean isPositionWithinBelowRange(int x, int y, int z)
     {
-        switch (this.axis)
-        {
-            case X: return x <= this.layerBelow;
-            case Y: return y <= this.layerBelow;
-            case Z: return z <= this.layerBelow;
-        }
-
-        return false;
+	    return switch (this.axis)
+	    {
+		    case X -> x <= this.layerBelow;
+		    case Y -> y <= this.layerBelow;
+		    case Z -> z <= this.layerBelow;
+	    };
     }
 
     protected boolean isPositionWithinLayerRangeRange(int x, int y, int z)
     {
-        switch (this.axis)
-        {
-            case X: return x >= this.layerRangeMin && x <= this.layerRangeMax;
-            case Y: return y >= this.layerRangeMin && y <= this.layerRangeMax;
-            case Z: return z >= this.layerRangeMin && z <= this.layerRangeMax;
-        }
+	    return switch (this.axis)
+	    {
+		    case X -> x >= this.layerRangeMin && x <= this.layerRangeMax;
+		    case Y -> y >= this.layerRangeMin && y <= this.layerRangeMax;
+		    case Z -> z >= this.layerRangeMin && z <= this.layerRangeMax;
+	    };
+    }
 
-        return false;
+    public boolean isPositionAtRenderEdgeOnSide(net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side)
+    {
+        return this.isPositionAtRenderEdgeOnSide(BlockPos.of(pos), Direction.of(side));
     }
 
     public boolean isPositionAtRenderEdgeOnSide(BlockPos pos, Direction side)
     {
-        switch (this.axis)
-        {
-            case X: return (side == Direction.WEST  && pos.getX() == this.getMinLayerBoundary()) || (side == Direction.EAST  && pos.getX() == this.getMaxLayerBoundary());
-            case Y: return (side == Direction.DOWN  && pos.getY() == this.getMinLayerBoundary()) || (side == Direction.UP    && pos.getY() == this.getMaxLayerBoundary());
-            case Z: return (side == Direction.NORTH && pos.getZ() == this.getMinLayerBoundary()) || (side == Direction.SOUTH && pos.getZ() == this.getMaxLayerBoundary());
-        }
-
-        return false;
+	    return switch (this.axis)
+	    {
+		    case X ->
+				    (side == Direction.WEST && pos.getX() == this.getMinLayerBoundary()) || (side == Direction.EAST && pos.getX() == this.getMaxLayerBoundary());
+		    case Y ->
+				    (side == Direction.DOWN && pos.getY() == this.getMinLayerBoundary()) || (side == Direction.UP && pos.getY() == this.getMaxLayerBoundary());
+		    case Z ->
+				    (side == Direction.NORTH && pos.getZ() == this.getMinLayerBoundary()) || (side == Direction.SOUTH && pos.getZ() == this.getMaxLayerBoundary());
+	    };
     }
 
-    public boolean intersects(SubChunkPos pos)
+    public boolean intersects(ChunkSectionPos pos)
     {
         switch (this.axis)
         {
@@ -748,10 +742,9 @@ public class LayerRange
 
     public boolean intersects(IntBoundingBox box)
     {
-        return this.intersectsBox(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+        return this.intersectsBox(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
     }
 
-    // FIXME
     public boolean intersectsBox(BlockPos pos1, BlockPos pos2)
     {
         BlockPos posMin = BlockPos.of(PositionUtils.getMinCorner(pos1.toVanillaPos(), pos2.toVanillaPos()));
@@ -759,7 +752,6 @@ public class LayerRange
         return this.intersectsBox(posMin.getX(), posMin.getY(), posMin.getZ(), posMax.getX(), posMax.getY(), posMax.getZ());
     }
 
-    // FIXME
     public boolean intersectsBox(net.minecraft.core.BlockPos pos1, net.minecraft.core.BlockPos pos2)
     {
         net.minecraft.core.BlockPos posMin = PositionUtils.getMinCorner(pos1, pos2);
@@ -792,13 +784,24 @@ public class LayerRange
 
     /**
      * Clamps the given box to the layer range bounds.
-     * @param box
+     * @param box -
      * @return the clamped box, or null, if the range does not intersect the original box
      */
     @Nullable
     public IntBoundingBox getClampedBox(IntBoundingBox box)
     {
-        return this.getClampedArea(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+        return this.getClampedArea(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
+    }
+
+    /**
+     * Clamps the given box to the layer range bounds.
+     * @return the clamped box, or null, if the range does not intersect the original box
+     */
+    @Nullable
+    public IntBoundingBox getClampedArea(net.minecraft.core.BlockPos posMin, net.minecraft.core.BlockPos posMax)
+    {
+        return this.getClampedArea(posMin.getX(), posMin.getY(), posMin.getZ(),
+                                   posMax.getX(), posMax.getY(), posMax.getZ());
     }
 
     /**
@@ -861,21 +864,21 @@ public class LayerRange
         {
             case X:
             {
-                final int xMin = Math.max(box.minX, this.getMinLayerBoundary());
-                final int xMax = Math.min(box.maxX, this.getMaxLayerBoundary());
-                return IntBoundingBox.createProper(xMin, box.minY, box.minZ, xMax, box.maxY, box.maxZ);
+                final int xMin = Math.max(box.minX(), this.getMinLayerBoundary());
+                final int xMax = Math.min(box.maxX(), this.getMaxLayerBoundary());
+                return IntBoundingBox.createProper(xMin, box.minY(), box.minZ(), xMax, box.maxY(), box.maxZ());
             }
             case Y:
             {
-                final int yMin = Math.max(box.minY, this.getMinLayerBoundary());
-                final int yMax = Math.min(box.maxY, this.getMaxLayerBoundary());
-                return IntBoundingBox.createProper(box.minX, yMin, box.minZ, box.maxX, yMax, box.maxZ);
+                final int yMin = Math.max(box.minY(), this.getMinLayerBoundary());
+                final int yMax = Math.min(box.maxY(), this.getMaxLayerBoundary());
+                return IntBoundingBox.createProper(box.minX(), yMin, box.minZ(), box.maxX(), yMax, box.maxZ());
             }
             case Z:
             {
-                final int zMin = Math.max(box.minZ, this.getMinLayerBoundary());
-                final int zMax = Math.min(box.maxZ, this.getMaxLayerBoundary());
-                return IntBoundingBox.createProper(box.minX, box.minY, zMin, box.maxX, box.maxY, zMax);
+                final int zMin = Math.max(box.minZ(), this.getMinLayerBoundary());
+                final int zMax = Math.min(box.maxZ(), this.getMaxLayerBoundary());
+                return IntBoundingBox.createProper(box.minX(), box.minY(), zMin, box.maxX(), box.maxY(), zMax);
             }
             default:
                 return null;
@@ -960,7 +963,8 @@ public class LayerRange
     public void fromJson(JsonObject obj)
     {
         this.layerMode = LayerMode.fromStringStatic(JsonUtils.getString(obj, "mode"));
-        this.axis = Direction.Axis.byName(JsonUtils.getString(obj, "axis"));
+        this.axis = Direction.Axis.byName(JsonUtils.getStringOrDefault(obj, "axis", "y"));
+
         if (this.axis == null) { this.axis = Direction.Axis.Y; }
 
         this.followPlayer = JsonUtils.getBoolean(obj, "follow_player");

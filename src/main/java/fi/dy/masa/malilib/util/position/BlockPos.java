@@ -51,6 +51,11 @@ public class BlockPos extends Vec3i
         super(x, y, z);
     }
 
+    public BlockPos(net.minecraft.core.Vec3i pos)
+    {
+        super(pos.getX(), pos.getY(), pos.getZ());
+    }
+
     public BlockPos(Vec3i pos)
     {
         super(pos.getX(), pos.getY(), pos.getZ());
@@ -122,6 +127,11 @@ public class BlockPos extends Vec3i
     public BlockPos up()
     {
         return new BlockPos(this.getX(), this.getY() + 1, this.getZ());
+    }
+
+    public @NonNull BlockPos offset(final int x, final int y, final int z)
+    {
+        return x == 0 && y == 0 && z == 0 ? this : new BlockPos(this.getX() + x, this.getY() + y, this.getZ() + z);
     }
 
     @Override
@@ -320,6 +330,22 @@ public class BlockPos extends Vec3i
         }
 
         public MutBlockPos subtractMut(Vec3i pos)
+        {
+            this.x -= pos.getX();
+            this.y -= pos.getY();
+            this.z -= pos.getZ();
+            return this;
+        }
+
+        public MutBlockPos addMut(net.minecraft.core.Vec3i pos)
+        {
+            this.x += pos.getX();
+            this.y += pos.getY();
+            this.z += pos.getZ();
+            return this;
+        }
+
+        public MutBlockPos subtractMut(net.minecraft.core.Vec3i pos)
         {
             this.x -= pos.getX();
             this.y -= pos.getY();
