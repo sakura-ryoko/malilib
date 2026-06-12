@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4fc;
-import org.joml.Vector4f;
+import org.joml.Matrix4f;
 import org.jspecify.annotations.NonNull;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -146,12 +146,6 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
-    {
-        // TODO
-    }
-
-    @Override
     public void onRenderWorldPreWeather(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, RenderBuffers buffers, ProfilerFiller profiler)
     {
 //        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
@@ -172,35 +166,6 @@ public class TestRenderHandler implements IRenderer
 //
 //            profiler.pop();
 //        }
-    }
-
-    @Override
-    public void onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
-    {
-        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-        {
-            Minecraft mc = Minecraft.getInstance();
-
-            if (mc.player != null)
-            {
-                if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-                {
-                    if (TestRenderWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-                    {
-                        profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
-                        TestRenderWalls.INSTANCE.update(camera.position(), mc.getCameraEntity(), mc);
-                        profiler.pop();
-                    }
-                }
-
-                if (ConfigTestEnum.TEST_TEXT_PLATE.getBooleanValue())
-                {
-                    profiler.push(MaLiLibReference.MOD_ID + "_test_text_plate");
-                    TestTextPlateRenderer.INSTANCE.update(mc);
-                    profiler.pop();
-                }
-            }
-        }
     }
 
     @Override
@@ -236,11 +201,16 @@ public class TestRenderHandler implements IRenderer
                     TestRenderWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
                 }
 
+                if (ConfigTestEnum.TEST_TEXT_PLATE.getBooleanValue())
+                {
+                    TestTextPlateRenderer.INSTANCE.update(mc);
+                }
+
                 if (ConfigTestEnum.TEST_TEXT_PLATE.getBooleanValue() &&
                     TestTextPlateRenderer.INSTANCE.shouldRender())
                 {
                     profiler.popPush(MaLiLibReference.MOD_ID + "_test_text_plate");
-                    TestTextPlateRenderer.INSTANCE.render(cameraState.pos, mc, profiler);
+                    TestTextPlateRenderer.INSTANCE.render(camera.position(), mc, profiler);
                 }
 
                 profiler.pop();

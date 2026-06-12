@@ -586,7 +586,7 @@ public class RenderContext implements AutoCloseable
         }
         if (this.withLightmap)
         {
-            GpuTextureView lightmap = mc.gameRenderer.lightmap();
+            GpuTextureView lightmap = mc.gameRenderer.lightTexture().getTextureView();
             this.complexTextures.add(new MaLiLibComplexTexture("Sampler2", lightmap, samplers.getClampToEdge(FilterMode.LINEAR)));
         }
 

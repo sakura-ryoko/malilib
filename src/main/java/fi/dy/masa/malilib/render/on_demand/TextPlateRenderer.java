@@ -6,8 +6,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import fi.dy.masa.malilib.util.EntityUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.world.entity.Entity;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
 import org.joml.Matrix4fc;
@@ -20,7 +23,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.profiling.ProfilerFiller;
 
@@ -39,6 +41,7 @@ public class TextPlateRenderer implements IOnDemandRenderer<AbstractTextPlateRen
 	private final List<AbstractTextPlateRenderState> currentStates = new ArrayList<>();
 	private RenderContext renderBackground;
 	private RenderContext renderBackgroundNoDepth;
+	private float tickDelta;
 
 	@Override
 	public Supplier<String> name()
@@ -99,6 +102,8 @@ public class TextPlateRenderer implements IOnDemandRenderer<AbstractTextPlateRen
 	{
 		if (this.hasData())
 		{
+			this.tickDelta = tracker.getGameTimeDeltaPartialTick(true);
+
 			synchronized (this.states)
 			{
 				if (!this.states.isEmpty())
@@ -137,11 +142,14 @@ public class TextPlateRenderer implements IOnDemandRenderer<AbstractTextPlateRen
 	//, MaLiLibWorldTextRenderer renderer -- 26.2
 	private void drawEachInternal(AbstractTextPlateRenderState state, CameraRenderState cameraState)
 	{
+		Entity camEntity = EntityUtils.getCameraEntity();
+		if (camEntity == null) { return; }
+
 		double cx = cameraState.pos.x();
 		double cy = cameraState.pos.y();
 		double cz = cameraState.pos.z();
-		float fYaw = cameraState.yRot;
-		float fPitch = cameraState.xRot;
+		float fYaw = camEntity.getYRot(this.tickDelta);
+		float fPitch = camEntity.getXRot(this.tickDelta);
 
 		Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
 

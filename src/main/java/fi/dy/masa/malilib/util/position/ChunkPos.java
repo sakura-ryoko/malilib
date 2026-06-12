@@ -114,7 +114,7 @@ public record ChunkPos(int x, int z)
 
 	public int getChessboardDistance(final net.minecraft.world.level.ChunkPos pos)
 	{
-		return this.getChessboardDistance(pos.x(), pos.z());
+		return this.getChessboardDistance(pos.x, pos.z);
 	}
 
 	public int getChessboardDistance(final ChunkPos pos)
@@ -129,7 +129,7 @@ public record ChunkPos(int x, int z)
 
 	public int distanceSquared(final net.minecraft.world.level.ChunkPos pos)
 	{
-		return this.distanceSquared(pos.x(), pos.z());
+		return this.distanceSquared(pos.x, pos.z);
 	}
 
 	public int distanceSquared(final ChunkPos pos)
@@ -183,6 +183,6 @@ public record ChunkPos(int x, int z)
 
 	public static ChunkPos of(net.minecraft.world.level.ChunkPos pos)
 	{
-		return new ChunkPos(pos.x(), pos.z());
+		return new ChunkPos(pos.x, pos.z);
 	}
 }

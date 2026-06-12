@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib.mixin.render;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import fi.dy.masa.malilib.util.IWorldRenderer;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
@@ -15,9 +16,11 @@ import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.util.profiling.ProfilerFiller;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -25,11 +28,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 
 @Mixin(value = LevelRenderer.class, priority = 990)
-public abstract class MixinWorldRenderer
+public abstract class MixinWorldRenderer implements IWorldRenderer
 {
 	@Shadow @Final private Minecraft minecraft;
 	@Shadow @Final private LevelTargetBundle targets;
 	@Shadow @Final private RenderBuffers renderBuffers;
+
+	@Shadow
+	public abstract void tick(Camera camera);
+
+	@Unique private @Nullable DeltaTracker tracker;
 
 	@Inject(method = "renderLevel",
 	        at = @At(value = "INVOKE",
@@ -42,6 +50,7 @@ public abstract class MixinWorldRenderer
 	                                             @Local Frustum frustum,
 	                                             @Local FrameGraphBuilder frameGraphBuilder)
 	{
+		this.tracker = tickCounter;
 		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(matrix4f, projectionMatrix, this.minecraft, frameGraphBuilder, this.targets, frustum, camera, this.renderBuffers, profiler);
 	}
 
@@ -58,7 +67,15 @@ public abstract class MixinWorldRenderer
 	                                       @Local Frustum frustum,
 	                                       @Local FrameGraphBuilder frameGraphBuilder)
 	{
+		this.tracker = tickCounter;
 		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(matrix4f, projectionMatrix, this.minecraft, frameGraphBuilder, this.targets, frustum, camera, this.renderBuffers, profiler);
+	}
+
+	// Compat for OnDemandRenderer
+	@Override
+	public @Nullable DeltaTracker malilib_getDeltaTracker()
+	{
+		return this.tracker;
 	}
 
 //	@Inject(method = "allChanged", at = @At("HEAD"))

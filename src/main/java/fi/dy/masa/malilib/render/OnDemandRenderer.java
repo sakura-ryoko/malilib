@@ -4,11 +4,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4fc;
-import org.joml.Vector4f;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import fi.dy.masa.malilib.util.IWorldRenderer;
+import net.minecraft.client.renderer.state.CameraRenderState;
+import org.jetbrains.annotations.ApiStatus;
+import org.joml.Matrix4f;
+import org.joml.Matrix4fc;
+
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -18,7 +20,6 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -82,12 +83,13 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 		}
 	}
 
-	@ApiStatus.Internal
-	@Override
-	public void onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
-	{
-		this.onUpdateStates(camera, deltaTracker, profiler);
-	}
+	// 26.1+
+//	@ApiStatus.Internal
+//	@Override
+//	public void onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
+//	{
+//		this.onUpdateStates(camera, deltaTracker, profiler);
+//	}
 
 	@ApiStatus.Internal
 	private void onUpdateStates(Camera camera, DeltaTracker deltaTracker, ProfilerFiller profiler)
@@ -204,10 +206,24 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 
 	@ApiStatus.Internal
 	@Override
-	public void onRenderWorldLast(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
+	public void onRenderWorldLastAdvanced(RenderTarget fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum,
+	                                      Camera camera, RenderBuffers buffers, ProfilerFiller profiler)
 	{
-		this.onDrawStates(modelViewMatrix, cameraState, profiler);
+		// Forwards compat
+		Minecraft mc = Minecraft.getInstance();
+		CameraRenderState cameraRenderState = mc.gameRenderer.getLevelRenderState().cameraRenderState;
+		DeltaTracker deltaTracker = ((IWorldRenderer) mc.levelRenderer).malilib_getDeltaTracker();
+
+		this.onUpdateStates(camera, deltaTracker, profiler);
+		this.onDrawStates(posMatrix, cameraRenderState, profiler);
 	}
+
+	// 26.1+
+//	@Override
+//	public void onRenderWorldLast(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
+//	{
+//		this.onDrawStates(modelViewMatrix, cameraState, profiler);
+//	}
 
 	@ApiStatus.Internal
 	private void onDrawStates(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)

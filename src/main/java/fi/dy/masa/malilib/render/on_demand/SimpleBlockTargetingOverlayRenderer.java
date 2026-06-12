@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.render.on_demand;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+
+import net.minecraft.client.renderer.state.CameraRenderState;
 import org.joml.Matrix4fStack;
 import org.joml.Matrix4fc;
 
@@ -11,7 +13,6 @@ import com.mojang.blaze3d.vertex.MeshData;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;

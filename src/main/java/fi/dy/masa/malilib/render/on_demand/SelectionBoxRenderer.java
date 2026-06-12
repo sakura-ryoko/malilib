@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
+
+import net.minecraft.client.renderer.state.CameraRenderState;
 import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
@@ -11,7 +13,6 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.MeshData;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.ProfilerFiller;
 
 import fi.dy.masa.malilib.MaLiLib;

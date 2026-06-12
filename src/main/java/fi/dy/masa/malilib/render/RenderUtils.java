@@ -2073,8 +2073,9 @@ public class RenderUtils
      * Matrix4f rotation adds direct values without adding these numbers.
      * (angle * 0.017453292F) --> easy fix with matrix4fRotateFix()
      */
-    private static void blockTargetingOverlayTranslations(double x, double y, double z,
-                                                          Direction side, Direction playerFacing, Matrix4fStack matrix4fStack)
+    public static void blockTargetingOverlayTranslations(double x, double y, double z,
+                                                         Direction side, Direction playerFacing,
+                                                         Matrix4fStack matrix4fStack)
     {
         matrix4fStack.translate((float) x, (float) y, (float) z);
 
