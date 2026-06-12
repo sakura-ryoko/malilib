@@ -118,16 +118,31 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 
 			if (state != null && renderer.shouldUseRenderContext())
 			{
-				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline());
+				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline(), state.formatIndex());
 
 				if (ctx.isStarted())
 				{
 					ctx.reset();
 				}
 
+				if (state.bindOverlay())
+				{
+					ctx = ctx.withOverlay();
+				}
+
+				if (state.bindLightmap())
+				{
+					ctx = ctx.withLightmap();
+				}
+
+				//, state.formatIndex() -- 26.2
 				BufferBuilder builder = ctx.start(renderer.name(), state.pipeline());
 
-				if (renderer.shouldBindTexture() && state.texture() != null)
+				if (!state.complexTextures().isEmpty() || state.bindLightmap() || state.bindOverlay())
+				{
+					ctx.prepareComplexTextures(state.complexTextures());
+				}
+				else if (renderer.shouldBindTexture() && state.texture() != null)
 				{
 					try
 					{
@@ -173,12 +188,13 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 	}
 
 	@ApiStatus.Internal
-	private RenderContext getRenderContext(String key, Supplier<String> name, RenderPipeline pipeline)
+	private RenderContext getRenderContext(String key, Supplier<String> name, RenderPipeline pipeline, int formatIndex)
 	{
 		synchronized (this.renderContextMap)
 		{
 			if (!this.renderContextMap.containsKey(key))
 			{
+				// , formatIndex -- 26.2
 				this.renderContextMap.put(key, new RenderContext(name, pipeline));
 			}
 
@@ -222,7 +238,7 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 
 			if (state != null && renderer.shouldUseRenderContext())
 			{
-				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline());
+				RenderContext ctx = this.getRenderContext(key, renderer.name(), state.pipeline(), state.formatIndex());
 
 				if (!ctx.isUploaded())
 				{

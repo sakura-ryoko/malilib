@@ -4,9 +4,14 @@ import java.util.*;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.textures.GpuSampler;
+import fi.dy.masa.malilib.render.texture.MaLiLibComplexBinding;
+import fi.dy.masa.malilib.render.texture.MaLiLibComplexTexture;
 import net.minecraft.client.Camera;
-import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.client.renderer.texture.TextureContents;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -48,10 +53,13 @@ public class RenderContext implements AutoCloseable
     private BufferBuilder builder;
     private VertexFormat format;
     private VertexFormat.Mode drawMode;
-    private final HashMap<Integer, SimpleTexture> textures;
+    private final HashMap<Integer, SimpleTexture> simpleTextures;
+    private final List<MaLiLibComplexTexture> complexTextures;
     @Nullable private MeshData.SortState sortState;
     private float[] offset;
     private int color;
+    private boolean withOverlay;
+    private boolean withLightmap;
     private boolean started;
     private boolean uploaded;
     private int indexCount;
@@ -70,7 +78,10 @@ public class RenderContext implements AutoCloseable
         this.indexBuffer = null;
         this.sortState = null;
         this.indexCount = -1;
-		this.textures = new HashMap<>();
+        this.simpleTextures = new HashMap<>();
+        this.complexTextures = new ArrayList<>();
+        this.withOverlay = false;
+        this.withLightmap = false;
         this.offset = new float[]{0f, 0f, 0f};
         this.color = -1;
         this.started = true;
@@ -92,6 +103,8 @@ public class RenderContext implements AutoCloseable
         this.indexBuffer = null;
         this.sortState = null;
         this.indexCount = -1;
+        this.withOverlay = false;
+        this.withLightmap = false;
         this.offset = new float[]{0f, 0f, 0f};
         this.color = -1;
         this.started = true;
@@ -174,6 +187,18 @@ public class RenderContext implements AutoCloseable
     public RenderContext color(int color)
     {
         this.color = color;
+        return this;
+    }
+
+    public RenderContext withOverlay()
+    {
+        this.withOverlay = true;
+        return this;
+    }
+
+    public RenderContext withLightmap()
+    {
+        this.withLightmap = true;
         return this;
     }
 
@@ -428,6 +453,11 @@ public class RenderContext implements AutoCloseable
     {
         this.ensureSafeNoBuffer();
 
+        if (this.needsComplexTextures())
+        {
+            throw new RuntimeException("Needs Complex Textures!");
+        }
+
         if (textureId < 0 || textureId > 12)
         {
             throw new RuntimeException("Invalid textureId of: "+textureId+" for texture: "+id.toString());
@@ -438,7 +468,7 @@ public class RenderContext implements AutoCloseable
             // Verify that we potentially have the correct texture by checking various values
             while (!this.isTextureValid(textureId, width, height))
             {
-                this.textures.put(textureId, (SimpleTexture) RenderUtils.tex().getTexture(id));
+                this.simpleTextures.put(textureId, (SimpleTexture) RenderUtils.tex().getTexture(id));
 
                 if (this.isTextureValid(textureId, width, height))
                 {
@@ -452,7 +482,7 @@ public class RenderContext implements AutoCloseable
         }
 
         // General failure & cleanup
-        if (this.textures.containsKey(textureId))
+        if (this.simpleTextures.containsKey(textureId))
         {
             // Simple texture rebind since we already have a valid texture
             return;
@@ -460,9 +490,9 @@ public class RenderContext implements AutoCloseable
 
         MaLiLib.LOGGER.error("bindTexture: Error uploading texture [{}]", id.toString());
 
-        if (this.textures.containsKey(textureId))
+        if (this.simpleTextures.containsKey(textureId))
         {
-	        try (SimpleTexture tex = this.textures.remove(textureId))
+	        try (SimpleTexture tex = this.simpleTextures.remove(textureId))
 	        {
 				tex.close();
 	        }
@@ -472,12 +502,12 @@ public class RenderContext implements AutoCloseable
 
     private boolean isTextureValid(int textureId, int width, int height)
     {
-        if (this.textures.isEmpty() || !this.textures.containsKey(textureId))
+        if (this.simpleTextures.isEmpty() || !this.simpleTextures.containsKey(textureId))
         {
             return false;
         }
 
-		SimpleTexture tex = this.textures.get(textureId);
+		SimpleTexture tex = this.simpleTextures.get(textureId);
 
 		try (TextureContents content = tex.loadContents(RenderUtils.mc().getResourceManager()))
 		{
@@ -490,14 +520,14 @@ public class RenderContext implements AutoCloseable
 		}
 		catch (Exception e)
 		{
-			this.textures.remove(textureId).close();
+			this.simpleTextures.remove(textureId).close();
 			return false;
 		}
 
         if (((IMixinAbstractTexture) tex).malilib_getGlTextureView() == null ||
             tex.getTextureView().isClosed())
         {
-	        this.textures.remove(textureId).close();
+	        this.simpleTextures.remove(textureId).close();
             return false;
         }
 
@@ -513,9 +543,9 @@ public class RenderContext implements AutoCloseable
 
 		List<Integer> list = new ArrayList<>();
 
-		for (Integer key : this.textures.keySet())
+		for (Integer key : this.simpleTextures.keySet())
         {
-			if (this.textures.get(key).resourceId().equals(id))
+			if (this.simpleTextures.get(key).resourceId().equals(id))
 			{
 				list.add(key);
 			}
@@ -523,13 +553,66 @@ public class RenderContext implements AutoCloseable
 
 		for (Integer key : list)
 		{
-			try (SimpleTexture tex = this.textures.remove(key))
+			try (SimpleTexture tex = this.simpleTextures.remove(key))
 			{
 				RenderUtils.tex().release(tex.resourceId());
 				tex.close();
 			}
 			catch (Exception ignored) {}
 		}
+    }
+
+    /**
+     * COMPLEX BIND TEXTURE PHASE --
+     * -
+     * Performs the Texture Binding/Unbind for a complex "Shader Texture" layer
+     * -------------------------------------------------------------------
+     * [Sampler0] - Main or Atlas Texture
+     * [Sampler1] - Overlay Texture
+     * [Sampler2] - Lightmap Texture
+     */
+    public void prepareComplexTextures(List<MaLiLibComplexBinding> additional)
+    {
+        this.ensureSafeNoBuffer();
+        Minecraft mc = Minecraft.getInstance();
+        SamplerCache samplers = RenderSystem.getSamplerCache();
+
+        this.complexTextures.clear();
+
+        if (this.withOverlay)
+        {
+            OverlayTexture overlay = mc.gameRenderer.overlayTexture();
+            this.complexTextures.add(new MaLiLibComplexTexture("Sampler1", overlay.getTextureView(), samplers.getClampToEdge(FilterMode.LINEAR)));
+        }
+        if (this.withLightmap)
+        {
+            GpuTextureView lightmap = mc.gameRenderer.lightmap();
+            this.complexTextures.add(new MaLiLibComplexTexture("Sampler2", lightmap, samplers.getClampToEdge(FilterMode.LINEAR)));
+        }
+
+        if (!additional.isEmpty())
+        {
+            TextureManager tex = mc.getTextureManager();
+
+            additional.forEach((entry) ->
+                               {
+                                   AbstractTexture texture = tex.getTexture(entry.location());
+                                   GpuSampler sampler = entry.sampler().get();
+
+                                   if (((IMixinAbstractTexture) texture).malilib_getGlTextureView() != null)
+                                   {
+                                       this.complexTextures.add(new MaLiLibComplexTexture(entry.name(),
+                                                                                          texture.getTextureView(),
+                                                                                          sampler != null ? sampler : texture.getSampler())
+                                                               );
+                                   }
+                               });
+        }
+    }
+
+    private boolean needsComplexTextures()
+    {
+        return this.withOverlay || this.withLightmap;
     }
 
     /**
@@ -742,20 +825,27 @@ public class RenderContext implements AutoCloseable
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setVertexBuffer() [0]", this.name.get());
                 pass.setVertexBuffer(0, this.vertexBuffer);
 
-                if (!this.textures.isEmpty())
+                if (!this.complexTextures.isEmpty())
                 {
-	                for (int i = 0; i < this.textures.size(); i++)
-	                {
-						if (this.textures.containsKey(i))
-						{
-							SimpleTexture tex = this.textures.get(i);
+                    for (MaLiLibComplexTexture entry : this.complexTextures)
+                    {
+                        pass.bindTexture(entry.name(), entry.texture(), entry.sampler());
+                    }
+                }
+                else if (!this.simpleTextures.isEmpty())
+                {
+                    for (int i = 0; i < this.simpleTextures.size(); i++)
+                    {
+                        if (this.simpleTextures.containsKey(i))
+                        {
+                            SimpleTexture tex = this.simpleTextures.get(i);
 
-							if (tex != null)
-							{
-								pass.bindTexture("Sampler"+i, tex.getTextureView(), tex.getSampler());
-							}
-						}
-	                }
+                            if (tex != null)
+                            {
+                                pass.bindTexture("Sampler"+i, tex.getTextureView(), tex.getSampler());
+                            }
+                        }
+                    }
                 }
 
                 //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> drawIndexed() [0, {}]", this.name.get(), this.bufferIndex);
@@ -832,7 +922,7 @@ public class RenderContext implements AutoCloseable
     {
         this.ensureSafeNoTexture();
 
-        if (this.textures.isEmpty())
+        if (this.simpleTextures.isEmpty())
         {
             throw new RuntimeException("A Texture Object is expected to be bound");
         }
@@ -894,15 +984,20 @@ public class RenderContext implements AutoCloseable
     @Override
     public void close() throws Exception
     {
-        if (!this.textures.isEmpty())
+        if (!this.simpleTextures.isEmpty())
         {
-			for (SimpleTexture tex : this.textures.values())
+			for (SimpleTexture tex : this.simpleTextures.values())
 			{
 				RenderUtils.tex().release(tex.resourceId());
 				tex.close();
 			}
 
-            this.textures.clear();
+            this.simpleTextures.clear();
+        }
+
+        if (!this.complexTextures.isEmpty())
+        {
+            this.complexTextures.clear();
         }
 
         this.reset();

@@ -40,6 +40,27 @@ public record ChunkPos(int x, int z)
 		}
 	};
 
+	public static final ChunkPos ZERO = new ChunkPos(0, 0);
+
+	public static ChunkPos from(BlockPos pos)
+	{
+		return new ChunkPos(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()));
+	}
+
+	public static ChunkPos from(net.minecraft.core.BlockPos pos)
+	{
+		return new ChunkPos(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()));
+	}
+
+	public static ChunkPos getMinRegion(final int rx, final int rz)
+	{
+		return new ChunkPos(rx << 5, rz << 5);
+	}
+	public static ChunkPos getMaxRegion(final int rx, final int rz)
+	{
+		return new ChunkPos((rx << 5) + 31, (rz << 5) + 31);
+	}
+
 	public static int getX(final long pos)
 	{
 		return (int) (pos & 4294967295L);
@@ -91,6 +112,11 @@ public record ChunkPos(int x, int z)
 		return new BlockPos(this.getMinBlockX(), 0, this.getMinBlockZ());
 	}
 
+	public int getChessboardDistance(final net.minecraft.world.level.ChunkPos pos)
+	{
+		return this.getChessboardDistance(pos.x(), pos.z());
+	}
+
 	public int getChessboardDistance(final ChunkPos pos)
 	{
 		return this.getChessboardDistance(pos.x, pos.z);
@@ -99,6 +125,11 @@ public record ChunkPos(int x, int z)
 	public int getChessboardDistance(final int x, final int z)
 	{
 		return Mth.chessboardDistance(x, z, this.x, this.z);
+	}
+
+	public int distanceSquared(final net.minecraft.world.level.ChunkPos pos)
+	{
+		return this.distanceSquared(pos.x(), pos.z());
 	}
 
 	public int distanceSquared(final ChunkPos pos)
@@ -116,6 +147,28 @@ public record ChunkPos(int x, int z)
 		int deltaX = x - this.x;
 		int deltaZ = z - this.z;
 		return deltaX * deltaX + deltaZ * deltaZ;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return hash(this.x, this.z);
+	}
+
+	public static int hash(final int x, final int z)
+	{
+		int xt = 1664525 * x + 1013904223;
+		int zt = 1664525 * (z ^ -559038737) + 1013904223;
+		return xt ^ zt;
+	}
+
+	@Override
+	public boolean equals(final Object o)
+	{
+		if (this == o) { return true; }
+		if (o == null || getClass() != o.getClass()) { return false; }
+		final ChunkPos that = (ChunkPos) o;
+		return this.x == that.x && this.z == that.z;
 	}
 
 	public static long asLong(int chunkX, int chunkZ)

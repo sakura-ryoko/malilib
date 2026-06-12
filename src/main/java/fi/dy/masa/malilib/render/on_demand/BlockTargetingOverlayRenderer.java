@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.render.on_demand;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix4fStack;
 import org.joml.Matrix4fc;
 
@@ -13,8 +12,6 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -35,12 +32,11 @@ import fi.dy.masa.malilib.render.on_demand.state.BlockTargetingOverlayEdgesRende
 import fi.dy.masa.malilib.render.on_demand.state.BlockTargetingOverlaySideRenderState;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.position.BlockPos;
+import fi.dy.masa.malilib.util.position.Direction;
 import fi.dy.masa.malilib.util.position.PositionUtils;
+import fi.dy.masa.malilib.util.position.Vec3d;
 
-/**
- * Works, but a bit "slow" on the update speed; using no tick rate would be best.
- */
-@ApiStatus.Experimental
 public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<AbstractBlockTargetingOverlayRenderState>
 {
 	private final IConfigBoolean config;
@@ -51,14 +47,12 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 	private Color4f lineColor;
 	private float lineWidth;
 
-	//	private final static float TICK_RATE = 0.07F;
 	private Target currentTarget;
 	private Target lastTarget;
 	private Entry currentEntry;
 	private RenderContext renderSides;
 	private RenderContext renderCenter;
 	private RenderContext renderEdges;
-//	private long lastTick;
 	private boolean dirty;
 
 	public BlockTargetingOverlayRenderer(IConfigBoolean config, boolean useCtrl, boolean useAlt)
@@ -80,7 +74,6 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 		this.keybind = keybind;
 		this.lineColor = Color4f.WHITE;
 		this.lineWidth = 1.6F;
-//		this.lastTick = System.currentTimeMillis();
 	}
 
 	@Override
@@ -119,20 +112,8 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 	@Override
 	public void tick(Minecraft mc)
 	{
-//		final long now = System.currentTimeMillis();
-
-		// Perform Every tick
-//		if ((now - this.lastTick) >= this.tickRate())
-//		{
-			this.checkConfigAndTarget(mc);
-//			this.lastTick = now;
-//		}
+		this.checkConfigAndTarget(mc);
 	}
-
-//	private long tickRate()
-//	{
-//		return (long) (MathUtils.clamp((TICK_RATE * 1000L), 50L, 1000L));
-//	}
 
 	private void checkConfigAndTarget(Minecraft mc)
 	{
@@ -173,7 +154,12 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 		else { this.reset(); }
 	}
 
-	private void scheduleTarget(Direction facing, BlockPos pos, Direction side, Vec3 hitVec)
+	private void scheduleTarget(net.minecraft.core.Direction facing, net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side, Vec3 hitVec)
+	{
+		this.scheduleTarget(Direction.of(facing), BlockPos.of(pos), Direction.of(side), Vec3d.of(hitVec));
+	}
+
+	private void scheduleTarget(Direction facing, BlockPos pos, Direction side, Vec3d hitVec)
 	{
 		Target newTarget = new Target(facing, pos, side, hitVec);
 
@@ -192,9 +178,9 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 		return this.currentTarget != null;
 	}
 
-	private Entry buildEntry(Vec3 camPos, Direction facing, BlockPos pos, Direction side, Vec3 hitVec)
+	private Entry buildEntry(Vec3d camPos, Direction facing, BlockPos pos, Direction side, Vec3d hitVec)
 	{
-		PositionUtils.HitPart part = PositionUtils.getHitPart(side, facing, pos, hitVec);
+		PositionUtils.HitPart part = PositionUtils.getHitPart(side.getVanillaDirection(), facing.getVanillaDirection(), pos, hitVec.toVanilla());
 
 		BlockTargetingOverlaySideRenderState sideState       = new BlockTargetingOverlaySideRenderState(
 				pos, camPos, this.targetColor, this.lineColor, this.lineWidth, side, facing, part
@@ -255,7 +241,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 				}
 				catch (Exception err)
 				{
-					MaLiLib.LOGGER.error("MaLiLibBlockTargetingOverlayRenderer:SIDES: Upload Exception; {}", err.getLocalizedMessage());
+					MaLiLib.LOGGER.error("BlockTargetingOverlayRenderer:SIDES: Upload Exception; {}", err.getLocalizedMessage());
 				}
 			}
 			if (this.renderCenter != null && !this.renderCenter.isUploaded())
@@ -274,7 +260,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 				}
 				catch (Exception err)
 				{
-					MaLiLib.LOGGER.error("MaLiLibBlockTargetingOverlayRenderer:CENTER: Upload Exception; {}", err.getLocalizedMessage());
+					MaLiLib.LOGGER.error("BlockTargetingOverlayRenderer:CENTER: Upload Exception; {}", err.getLocalizedMessage());
 				}
 			}
 			if (this.renderEdges != null && !this.renderEdges.isUploaded())
@@ -293,7 +279,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 				}
 				catch (Exception err)
 				{
-					MaLiLib.LOGGER.error("MaLiLibBlockTargetingOverlayRenderer:EDGES: Upload Exception; {}", err.getLocalizedMessage());
+					MaLiLib.LOGGER.error("BlockTargetingOverlayRenderer:EDGES: Upload Exception; {}", err.getLocalizedMessage());
 				}
 			}
 		}
@@ -354,7 +340,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 				!this.lastTarget.equals(this.currentTarget))
 			{
 				this.lastTarget = this.currentTarget;
-				this.currentEntry = this.buildEntry(camera.position(), this.currentTarget.facing(), this.currentTarget.pos(), this.currentTarget.side(), this.currentTarget.hitVec());
+				this.currentEntry = this.buildEntry(Vec3d.of(camera.position()), this.currentTarget.facing(), this.currentTarget.pos(), this.currentTarget.side(), this.currentTarget.hitVec());
 				this.setupRenderContext();
 				this.uploadBuffers();
 			}
@@ -374,7 +360,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 			Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
 
 			global4fStack.pushMatrix();
-			RenderUtils.blockTargetingOverlayTranslations(state.x(), state.y(), state.z(), state.side(), state.facing(), global4fStack);
+			RenderUtils.blockTargetingOverlayTranslations(state.x(), state.y(), state.z(), state.side().getVanillaDirection(), state.facing().getVanillaDirection(), global4fStack);
 			this.drawBuffers();
 			global4fStack.popMatrix();
 		}
@@ -382,7 +368,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 		return null;
 	}
 
-	public record Target(Direction facing, BlockPos pos, Direction side, Vec3 hitVec)
+	public record Target(Direction facing, BlockPos pos, Direction side, Vec3d hitVec)
 	{
 		@Override
 		public boolean equals(Object o)

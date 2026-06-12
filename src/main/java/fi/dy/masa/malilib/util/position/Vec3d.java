@@ -10,6 +10,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
+import fi.dy.masa.malilib.util.MathUtils;
+
 public class Vec3d
 {
     public static final Codec<Vec3d> CODEC = RecordCodecBuilder.create(
@@ -40,6 +42,9 @@ public class Vec3d
         }
     };
     public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
+    public static final Vec3d X = new Vec3d(1.0, 0.0, 0.0);
+    public static final Vec3d Y = new Vec3d(0.0, 1.0, 0.0);
+    public static final Vec3d Z = new Vec3d(0.0, 0.0, 1.0);
 
     public final double x;
     public final double y;
@@ -50,6 +55,21 @@ public class Vec3d
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    public double x()
+    {
+        return this.x;
+    }
+
+    public double y()
+    {
+        return this.y;
+    }
+
+    public double z()
+    {
+        return this.z;
     }
 
     public double getX()
@@ -87,7 +107,17 @@ public class Vec3d
         return new Vec3d(this.x - other.x, this.y - other.y, this.z - other.z);
     }
 
-    public Vec3d scale(double factor)
+    public Vec3d mul(final Vec3d v)
+    {
+        return new Vec3d(this.x * v.x, this.y * v.y, this.z * v.z);
+    }
+
+    public Vec3d mul(final double x, final double y, final double z)
+    {
+        return new Vec3d(this.x * x, this.y * y, this.z * z);
+    }
+
+    public Vec3d scale(final double factor)
     {
         return new Vec3d(this.x * factor, this.y * factor, this.z * factor);
     }
@@ -104,6 +134,15 @@ public class Vec3d
         double diffZ = z - this.z;
 
         return diffX * diffX + diffY * diffY + diffZ * diffZ;
+    }
+
+    public Vec3d lerp(final Vec3d vec, final double a)
+    {
+        return new Vec3d(
+                MathUtils.lerp(a, this.x, vec.x),
+                MathUtils.lerp(a, this.y, vec.y),
+                MathUtils.lerp(a, this.z, vec.z)
+        );
     }
 
     public double getDistanceTo(Vec3d other)
@@ -183,6 +222,30 @@ public class Vec3d
     public static Vec3d of(net.minecraft.core.Vec3i pos)
     {
         return new Vec3d(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public static Vec3d centerOf(final Vec3i pos)
+    {
+        return lowCornerOffset(pos, 0.5, 0.5, 0.5);
+    }
+
+    public static Vec3d lowCorner(final Vec3i pos)
+    {
+        return new Vec3d(pos.getX(), pos.getY(), pos.getZ());
+    }
+    public static Vec3d lowCornerOffset(final Vec3i pos, final double x, final double y, final double z)
+    {
+        return new Vec3d(pos.getX() + x, pos.getY() + y, pos.getZ() + z);
+    }
+
+    public static Vec3d bottomCenter(final Vec3i pos)
+    {
+        return lowCornerOffset(pos, 0.5, 0.0, 0.5);
+    }
+
+    public static Vec3d bottomCenterOffset(final Vec3i pos, final double y)
+    {
+        return lowCornerOffset(pos, 0.5, y, 0.5);
     }
 
     public static class MutVec3d

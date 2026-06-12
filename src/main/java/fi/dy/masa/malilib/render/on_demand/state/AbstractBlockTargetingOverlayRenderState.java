@@ -1,32 +1,33 @@
 package fi.dy.masa.malilib.render.on_demand.state;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.world.phys.Vec3;
+import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderState;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.position.BlockPos;
+import fi.dy.masa.malilib.util.position.Direction;
 import fi.dy.masa.malilib.util.position.PositionUtils;
+import fi.dy.masa.malilib.util.position.Vec3d;
 
 public abstract class AbstractBlockTargetingOverlayRenderState implements IOnDemandRenderState
 {
 	protected BlockPos pos;
-	protected Vec3 camPos;
+	protected Vec3d camPos;
 	protected Color4f sideColor;
 	protected Color4f lineColor;
 	protected float lineWidth;
 	protected Direction side;
 	protected Direction facing;
-	protected PositionUtils.HitPart part;
+	protected @Nullable PositionUtils.HitPart part;
 
 	public AbstractBlockTargetingOverlayRenderState(BlockPos pos,
-	                                                Vec3 camPos,
+	                                                Vec3d camPos,
 	                                                Color4f sideColor,
 	                                                Color4f lineColor,
 	                                                float lineWidth,
 	                                                Direction side,
 	                                                Direction facing,
-	                                                PositionUtils.HitPart part)
+	                                                @Nullable PositionUtils.HitPart part)
 	{
 		this.pos = pos;
 		this.camPos = camPos;
@@ -47,21 +48,26 @@ public abstract class AbstractBlockTargetingOverlayRenderState implements IOnDem
 	@Override
 	public double z() { return this.camPos.z(); }
 
-	public Color4f sideColor() {return this.sideColor;}
+	public Color4f sideColor() { return this.sideColor; }
 
-	public Color4f lineColor() {return this.lineColor;}
+	public Color4f lineColor() { return this.lineColor; }
 
-	public float lineWidth() {return this.lineWidth;}
+	public float lineWidth() { return this.lineWidth; }
 
-	public Direction side() {return this.side;}
+	public Direction side() { return this.side; }
 
-	public Direction facing() {return this.facing;}
+	public Direction facing() { return this.facing; }
 
-	public PositionUtils.HitPart part() {return this.part;}
-
-	public void updateCameraOffset(Vec3 cameraPos)
+	public boolean isSimple()
 	{
-		this.camPos = new Vec3(
+		return false;
+	}
+
+	public @Nullable PositionUtils.HitPart part() { return this.part; }
+
+	public void updateCameraOffset(Vec3d cameraPos)
+	{
+		this.camPos = new Vec3d(
 				(this.pos.getX() + 0.5d - cameraPos.x()),
 				(this.pos.getY() + 0.5d - cameraPos.y()),
 				(this.pos.getZ() + 0.5d - cameraPos.z())

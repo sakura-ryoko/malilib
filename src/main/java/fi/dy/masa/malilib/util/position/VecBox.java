@@ -10,13 +10,14 @@ import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import fi.dy.masa.malilib.util.IntBoundingBox;
 import fi.dy.masa.malilib.util.MathUtils;
 
+/**
+ * Equivalent of the Vanilla {@link AABB}
+ */
 public class VecBox
 {
 	public static final Codec<VecBox> CODEC = RecordCodecBuilder.create(
@@ -123,6 +124,24 @@ public class VecBox
 		);
 	}
 
+	public static VecBox of(IntBoundingBox bb)
+	{
+		BlockPos pos1 = bb.getMinCorner();
+		BlockPos pos2 = bb.getMaxCorner();
+
+		// Fix Bottom Y Border offset
+		if (pos1.getX() < pos2.getY())
+		{
+			pos1 = BlockPos.of(pos1.mutable().setY(pos1.getY() - 1).immutable());
+		}
+		else if (pos2.getY() < pos1.getY())
+		{
+			pos2 = BlockPos.of(pos2.mutable().setY(pos2.getY() - 1).immutable());
+		}
+
+		return VecBox.of(pos1, pos2);
+	}
+
 	public static VecBox of(AABB bb)
 	{
 		return new VecBox(bb.minX, bb.minY, bb.minZ, bb.maxX, bb.maxY, bb.maxZ);
@@ -137,6 +156,18 @@ public class VecBox
 				center.x + sizeX / 2.0,
 				center.y + sizeY / 2.0,
 				center.z + sizeZ / 2.0
+		);
+	}
+
+	public static VecBox encapsulated(BlockPos pos1, BlockPos pos2)
+	{
+		return new VecBox(
+				MathUtils.min(pos1.getX(), pos2.getX()),
+				MathUtils.min(pos1.getY(), pos2.getY()),
+				MathUtils.min(pos1.getZ(), pos2.getZ()),
+				MathUtils.max(pos1.getX(), pos2.getX()) + 1,
+				MathUtils.max(pos1.getY(), pos2.getY()) + 1,
+				MathUtils.max(pos1.getZ(), pos2.getZ()) + 1
 		);
 	}
 
@@ -222,8 +253,9 @@ public class VecBox
 		result = 31 * result + Double.hashCode(this.minZ);
 		result = 31 * result + Double.hashCode(this.maxX);
 		result = 31 * result + Double.hashCode(this.maxY);
+		result = 31 * result + Double.hashCode(this.maxZ);
 
-		return 31 * result + Double.hashCode(this.maxZ);
+		return result;
 	}
 
 	@Override
@@ -469,12 +501,12 @@ public class VecBox
 
 	public Vec3d getCenter()
 	{
-		return new Vec3d(Mth.lerp(0.5, this.minX, this.maxX), Mth.lerp(0.5, this.minY, this.maxY), Mth.lerp(0.5, this.minZ, this.maxZ));
+		return new Vec3d(MathUtils.lerp(0.5, this.minX, this.maxX), MathUtils.lerp(0.5, this.minY, this.maxY), MathUtils.lerp(0.5, this.minZ, this.maxZ));
 	}
 
 	public Vec3d getBottomCenter()
 	{
-		return new Vec3d(Mth.lerp(0.5, this.minX, this.maxX), this.minY, Mth.lerp(0.5, this.minZ, this.maxZ));
+		return new Vec3d(MathUtils.lerp(0.5, this.minX, this.maxX), this.minY, MathUtils.lerp(0.5, this.minZ, this.maxZ));
 	}
 
 	public Vec3d getMinPos()

@@ -3,8 +3,10 @@ package fi.dy.masa.malilib.util;
 import org.apache.commons.lang3.math.Fraction;
 import org.jetbrains.annotations.ApiStatus;
 
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
+
+import fi.dy.masa.malilib.util.position.Vec3d;
+import fi.dy.masa.malilib.util.position.Vec3i;
 
 /**
  * Post-ReWrite code
@@ -137,6 +139,18 @@ public class MathUtils
     {
         int i = (int) value;
         return value < (double) i ? i - 1 : i;
+    }
+
+    public static int ceil(float value)
+    {
+        int i = (int) value;
+        return (i == value) ? i : i + 1;
+    }
+
+    public static int ceil(double value)
+    {
+        int i = (int) value;
+        return (i == value) ? i : i + 1;
     }
 
     public static float round(float value, int decimalPlaces)
@@ -487,15 +501,25 @@ public class MathUtils
         return new Vec3(g * h, i, f * h);
     }
 
-    public static long getCoordinateRandom(int x, int y, int z)
+    public static Vec3d rotationVector(float yaw, float pitch)
+    {
+        double f = Math.cos(-yaw * (Math.PI / 180.0) - Math.PI);
+        double g = Math.sin(-yaw * (Math.PI / 180.0) - Math.PI);
+        double h = -Math.cos(-pitch * (Math.PI / 180.0));
+        double i = Math.sin(-pitch * (Math.PI / 180.0));
+
+        return new Vec3d(g * h, i, f * h);
+    }
+
+    public static long randomPosition(int x, int y, int z)
     {
         long l = (long) (x * 3129871L) ^ (long) z * 116129781L ^ (long) y;
         return l * l * 42317861L + l * 11L;
     }
 
-    public static long getPositionRandom(Vec3i pos)
+    public static long randomPosition(Vec3i pos)
     {
-        return getCoordinateRandom(pos.getX(), pos.getY(), pos.getZ());
+        return randomPosition(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public static int smallestEncompassingPowerOfTwo(int value)
@@ -544,9 +568,15 @@ public class MathUtils
     }
 
     // TODO until util.position.Vec3d gets added (RayTraceUtils)
+    @Deprecated
     public static Vec3 scale(Vec3 vec, double factor)
     {
         return new Vec3(vec.x * factor, vec.y * factor, vec.z * factor);
+    }
+
+    public static Vec3d scale(Vec3d vec, double factor)
+    {
+        return new Vec3d(vec.x * factor, vec.y * factor, vec.z * factor);
     }
 
     public static int min(int val1, int val2)
@@ -651,5 +681,29 @@ public class MathUtils
         // the doubleValue() should work anyway.
         // This might only be an issue when using BigDecimal, etc. in rare cases.
         return (val1.hashCode() >= val2.hashCode()) ? val1 : val2;
+    }
+
+    public static int lerp(final float a, final int point1, final int point2)
+    {
+        return point1 + floor(a * (point2 - point1));
+    }
+
+    public static float lerp(final float a, final float point1, final float point2)
+    {
+        return point1 + a * (point2 - point1);
+    }
+
+    public static double lerp(final double a, final double point1, final double point2)
+    {
+        return point1 + a * (point2 - point1);
+    }
+
+    public static Vec3d lerp(final double a, final Vec3d point1, final Vec3d point2)
+    {
+        return new Vec3d(
+                    lerp(a, point1.x, point2.x),
+                    lerp(a, point1.y, point2.y),
+                    lerp(a, point1.z, point2.z)
+                );
     }
 }

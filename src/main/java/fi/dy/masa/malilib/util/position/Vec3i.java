@@ -73,7 +73,60 @@ public class Vec3i extends net.minecraft.core.BlockPos
     {
         return this.z;
     }
+
+    public Vec3i setX(final int x)
+    {
+        this.x = x;
+        return this;
+    }
+
+    public Vec3i setY(final int y)
+    {
+        this.y = y;
+        return this;
+    }
+
+    public Vec3i setZ(final int z)
+    {
+        this.z = z;
+        return this;
+    }
     */
+
+    public @NonNull Vec3i offset(final int x, final int y, final int z)
+    {
+        return x == 0 && y == 0 && z == 0
+               ? this
+               : new Vec3i(this.getX() + x, this.getY() + y, this.getZ() + z);
+    }
+
+    public Vec3i offset(final Vec3i v)
+    {
+        return this.offset(v.getX(), v.getY(), v.getZ());
+    }
+
+    public Vec3i subtract(final Vec3i v)
+    {
+        return this.offset(-v.getX(), -v.getY(), -v.getZ());
+    }
+
+    public @NonNull Vec3i mul(final int mul)
+    {
+        if (mul == 1)
+        {
+            return this;
+        }
+        else
+        {
+            return mul == 0
+                   ? ZERO
+                   : new Vec3i(this.getX() * mul, this.getY() * mul, this.getZ() * mul);
+        }
+    }
+
+    public @NonNull Vec3i mul(final int x, final int y, final int z) {
+        return new Vec3i(this.getX() * x, this.getY() * y, this.getZ() * z);
+    }
 
     public long getSquaredDistanceTo(Vec3i other)
     {
@@ -106,27 +159,27 @@ public class Vec3i extends net.minecraft.core.BlockPos
 
     /*
     @Override
-    public boolean equals(Object object)
+    public boolean equals(final Object other)
     {
-        if (this == object) {
-            return true;
-        } else if (! (object instanceof Vec3i)) {
-            return false;
-        } else {
-            Vec3i vec3i = (Vec3i) object;
-            if (this.getX() != vec3i.getX()) {
-                return false;
-            } else if (this.getY() != vec3i.getY()) {
-                return false;
-            } else {
-                return this.getZ() == vec3i.getZ();
+        if (this == other) { return true; }
+        else if (!(other instanceof Vec3i)) { return false; }
+        else
+        {
+            Vec3i o = (Vec3i) other;
+
+            if (this.getX() != o.getX()) { return false; }
+            else if (this.getY() != o.getY()) { return false; }
+            else
+            {
+                return this.getZ() == o.getZ();
             }
         }
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return (this.getY() + this.getZ() * 31) * 31 + this.getX();
     }
-    */
+     */
 }
