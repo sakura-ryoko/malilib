@@ -118,71 +118,35 @@ public enum Direction implements StringRepresentable
         return this.vanillaDirection;
     }
 
-    /**
-     * Rotate this Facing around the Y axis clockwise (NORTH => EAST => SOUTH => WEST => NORTH)
-     */
-    public Direction rotateY()
-    {
-        switch (this)
-        {
-            case NORTH:
-                return EAST;
-            case EAST:
-                return SOUTH;
-            case SOUTH:
-                return WEST;
-            case WEST:
-                return NORTH;
-        }
-
-        return this;
-    }
-
-    /**
-     * Rotate this Facing around the Y axis counter-clockwise (NORTH => WEST => SOUTH => EAST => NORTH)
-     */
-    public Direction rotateYCCW()
-    {
-        switch (this)
-        {
-            case NORTH:
-                return WEST;
-            case WEST:
-                return SOUTH;
-            case SOUTH:
-                return EAST;
-            case EAST:
-                return NORTH;
-        }
-
-        return this;
-    }
-
     public Direction rotateAround(Axis axis)
     {
-        switch (axis)
+        return switch (axis)
         {
-            case X:
+            case X ->
+            {
                 if (this != WEST && this != EAST)
                 {
-                    return this.rotateX();
+                    yield this.rotateX();
                 }
-                return this;
-            case Y:
+                yield this;
+            }
+            case Y ->
+            {
                 if (this != UP && this != DOWN)
                 {
-                    return this.rotateY();
+                    yield this.rotateY();
                 }
-                return this;
-            case Z:
+                yield this;
+            }
+            case Z ->
+            {
                 if (this != NORTH && this != SOUTH)
                 {
-                    return this.rotateZ();
+                    yield this.rotateZ();
                 }
-                return this;
-        }
-
-        return this;
+                yield this;
+            }
+        };
     }
 
     /**
@@ -190,19 +154,29 @@ public enum Direction implements StringRepresentable
      */
     public Direction rotateX()
     {
-        switch (this)
-        {
-            case NORTH:
-                return DOWN;
-            case DOWN:
-                return SOUTH;
-            case SOUTH:
-                return UP;
-            case UP:
-                return NORTH;
-        }
+	    return switch (this)
+	    {
+		    case NORTH -> DOWN;
+		    case DOWN -> SOUTH;
+		    case SOUTH -> UP;
+		    case UP -> NORTH;
+		    default -> this;
+	    };
+    }
 
-        return this;
+    /**
+     * Rotate this Facing around the Y axis clockwise (NORTH => EAST => SOUTH => WEST => NORTH)
+     */
+    public Direction rotateY()
+    {
+        return switch (this)
+        {
+            case NORTH -> EAST;
+            case EAST -> SOUTH;
+            case SOUTH -> WEST;
+            case WEST -> NORTH;
+            default -> this;
+        };
     }
 
     /**
@@ -210,19 +184,93 @@ public enum Direction implements StringRepresentable
      */
     public Direction rotateZ()
     {
-        switch (this)
-        {
-            case EAST:
-                return DOWN;
-            case DOWN:
-                return WEST;
-            case WEST:
-                return UP;
-            case UP:
-                return EAST;
-        }
+	    return switch (this)
+	    {
+		    case EAST -> DOWN;
+		    case DOWN -> WEST;
+		    case WEST -> UP;
+		    case UP -> EAST;
+		    default -> this;
+	    };
+    }
 
-        return this;
+    /**
+     * Rotates this Facing around the given axis counter-clockwise.
+     */
+    public Direction rotateAroundCCW(Axis axis)
+    {
+        return switch (axis)
+        {
+            case X ->
+            {
+                if (this != WEST && this != EAST)
+                {
+                    yield this.rotateXCCW();
+                }
+                yield this;
+            }
+            case Y ->
+            {
+                if (this != UP && this != DOWN)
+                {
+                    yield this.rotateYCCW();
+                }
+                yield this;
+            }
+            case Z ->
+            {
+                if (this != NORTH && this != SOUTH)
+                {
+                    yield this.rotateZCCW();
+                }
+                yield this;
+            }
+        };
+    }
+
+    /**
+     * Rotate this Facing around the X axis counter-clockwise (NORTH => UP => SOUTH => DOWN => NORTH)
+     */
+    public Direction rotateXCCW()
+    {
+        return switch (this)
+        {
+            case NORTH -> UP;
+            case UP -> SOUTH;
+            case SOUTH -> DOWN;
+            case DOWN -> NORTH;
+            default -> this;
+        };
+    }
+
+    /**
+     * Rotate this Facing around the Y axis counter-clockwise (NORTH => WEST => SOUTH => EAST => NORTH)
+     */
+    public Direction rotateYCCW()
+    {
+        return switch (this)
+        {
+            case NORTH -> WEST;
+            case WEST -> SOUTH;
+            case SOUTH -> EAST;
+            case EAST -> NORTH;
+            default -> this;
+        };
+    }
+
+    /**
+     * Rotate this Facing around the Z axis counter-clockwise (EAST => UP => WEST => DOWN => EAST)
+     */
+    public Direction rotateZCCW()
+    {
+        return switch (this)
+        {
+            case EAST -> UP;
+            case UP -> WEST;
+            case WEST -> DOWN;
+            case DOWN -> EAST;
+            default -> this;
+        };
     }
 
     public Direction cycle(boolean reverse)

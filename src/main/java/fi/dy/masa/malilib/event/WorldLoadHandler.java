@@ -10,9 +10,11 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.RegistryAccess;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.data.CachedTagManager;
 import fi.dy.masa.malilib.interfaces.IWorldLoadListener;
+import fi.dy.masa.malilib.test.data.TestDataSyncer;
 import fi.dy.masa.malilib.util.game.RecipeBookUtils;
 
 public class WorldLoadHandler implements IWorldLoadManager
@@ -102,6 +104,10 @@ public class WorldLoadHandler implements IWorldLoadManager
 //            {
 //                TestThreadDaemonHandler.INSTANCE.start();
 //            }
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                TestDataSyncer.INSTANCE.clearAll();
+            }
         }
 
         if (this.worldLoadPostHandlers.isEmpty() == false &&

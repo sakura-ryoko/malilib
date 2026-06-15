@@ -20,14 +20,12 @@ public abstract class AbstractBlockTargetingOverlayRenderState implements IOnDem
 	protected Direction facing;
 	protected @Nullable PositionUtils.HitPart part;
 
-	public AbstractBlockTargetingOverlayRenderState(BlockPos pos,
-	                                                Vec3d camPos,
-	                                                Color4f sideColor,
-	                                                Color4f lineColor,
-	                                                float lineWidth,
-	                                                Direction side,
-	                                                Direction facing,
-	                                                @Nullable PositionUtils.HitPart part)
+	protected AbstractBlockTargetingOverlayRenderState(BlockPos pos,
+	                                                   Vec3d camPos,
+	                                                   Color4f sideColor, Color4f lineColor,
+	                                                   float lineWidth,
+	                                                   Direction side, Direction facing,
+	                                                   @Nullable PositionUtils.HitPart part)
 	{
 		this.pos = pos;
 		this.camPos = camPos;

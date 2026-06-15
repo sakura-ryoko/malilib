@@ -20,13 +20,13 @@ public abstract class AbstractTextPlateRenderState implements IOnDemandRenderSta
 	protected boolean useShadow;
 	protected TextAlignment alignment;
 
-	public AbstractTextPlateRenderState(final List<String> text,
-	                                    final Vec3d position,
-	                                    final float scale,
-	                                    Color4f textColor, Color4f backgroundColor,
-	                                    final int light,
-	                                    boolean seeThrough, boolean useShadow,
-	                                    final TextAlignment alignment)
+	protected AbstractTextPlateRenderState(final List<String> text,
+	                                       final Vec3d position,
+	                                       final float scale,
+	                                       Color4f textColor, Color4f backgroundColor,
+	                                       final int light,
+	                                       boolean seeThrough, boolean useShadow,
+	                                       final TextAlignment alignment)
 	{
 		this.text = text;
 		this.position = position;

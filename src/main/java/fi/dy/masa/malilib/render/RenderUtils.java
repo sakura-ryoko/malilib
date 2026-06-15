@@ -4,11 +4,6 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableMap;
-import fi.dy.masa.malilib.render.on_demand.SelectionBoxRenderer;
-import fi.dy.masa.malilib.render.on_demand.TextPlateRenderer;
-import fi.dy.masa.malilib.render.on_demand.state.*;
-import fi.dy.masa.malilib.util.position.Vec3d;
-import fi.dy.masa.malilib.util.text.TextAlignment;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2f;
@@ -60,6 +55,7 @@ import net.minecraft.world.entity.npc.villager.VillagerProfession;
 import net.minecraft.world.entity.npc.villager.VillagerType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -76,9 +72,13 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
 import fi.dy.masa.malilib.mixin.client.IMixinMinecraft;
-import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
 import fi.dy.masa.malilib.mixin.gui.IMixinGuiRenderer;
+import fi.dy.masa.malilib.mixin.render.IMixinGameRenderer;
 import fi.dy.masa.malilib.render.element.*;
+import fi.dy.masa.malilib.render.on_demand.SelectionBoxRenderer;
+import fi.dy.masa.malilib.render.on_demand.TextPlateRenderer;
+import fi.dy.masa.malilib.render.on_demand.WallOverlayRenderer;
+import fi.dy.masa.malilib.render.on_demand.state.*;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElement;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElementRenderer;
 import fi.dy.masa.malilib.util.*;
@@ -88,6 +88,9 @@ import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.position.PositionUtils;
+import fi.dy.masa.malilib.util.position.Vec2d;
+import fi.dy.masa.malilib.util.position.Vec3d;
+import fi.dy.masa.malilib.util.text.TextAlignment;
 
 public class RenderUtils
 {
@@ -2568,7 +2571,6 @@ public class RenderUtils
 
     public static void renderBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color, boolean renderThrough)
     {
-        // renderThrough ? MaLiLibPipelines.LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : RenderPipelines.LINES
         RenderContext ctx = new RenderContext(() -> "malilib:renderBlockOutline", renderThrough ? MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH);
         BufferBuilder buffer = ctx.getBuilder();
 
@@ -2666,7 +2668,6 @@ public class RenderUtils
         final float maxY = (float) (pos.getY() - dy + expand + 1);
         final float maxZ = (float) (pos.getZ() - dz + expand + 1);
 
-        // renderThrough ? MaLiLibPipelines.LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : RenderPipelines.LINES
         RenderContext ctx = new RenderContext(() -> "malilib:renderBlockOutlineOverlapping", renderThrough ? MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL : MaLiLibPipelines.DEBUG_LINES_MASA_SIMPLE_LEQUAL_DEPTH);
         BufferBuilder buffer = ctx.getBuilder();
 
@@ -2832,7 +2833,6 @@ public class RenderUtils
     public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, boolean shouldResort)
     {
 	    boolean insideOf = isCameraInsideOf(pos1, pos2);
-        // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_NO_CULL
         RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", insideOf ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH);
         BufferBuilder buffer = ctx.getBuilder();
 
@@ -3190,6 +3190,234 @@ public class RenderUtils
 						camPos,
 						pos2, expand, lineWithBlock,
 						Color4f.ZERO, colorPos2, false
+				)
+		);
+	}
+
+	public static void scheduleBoxedWalls(BlockPos pos1,
+	                                      BlockPos pos2,
+	                                      Color4f quadsColor)
+	{
+		scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos1), fi.dy.masa.malilib.util.position.BlockPos.of(pos2), quadsColor);
+	}
+
+	public static void scheduleBoxedWalls(BlockPos pos1,
+	                                      BlockPos pos2,
+	                                      Color4f quadsColor, Color4f linesColor)
+	{
+		scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos1), fi.dy.masa.malilib.util.position.BlockPos.of(pos2), quadsColor, linesColor);
+	}
+
+	public static void scheduleBoxedWalls(BlockPos pos1,
+	                                      BlockPos pos2,
+	                                      Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos1), fi.dy.masa.malilib.util.position.BlockPos.of(pos2), quadsColor, linesColor, linesWidth);
+	}
+
+	public static void scheduleBoxedWalls(BlockPos pos1,
+	                                      BlockPos pos2,
+	                                      double lineIntervalH, double lineIntervalV, boolean alignLinesToModulo,
+	                                      Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos1), fi.dy.masa.malilib.util.position.BlockPos.of(pos2),
+						   lineIntervalH, lineIntervalV, alignLinesToModulo,
+		                   quadsColor, linesColor, linesWidth);
+	}
+
+	public static void scheduleBoxedWalls(BlockPos pos1,
+	                                      BlockPos pos2,
+	                                      Vec2d lineIntervals, boolean alignLinesToModulo,
+	                                      Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos1), fi.dy.masa.malilib.util.position.BlockPos.of(pos2),
+		                   lineIntervals, alignLinesToModulo,
+		                   quadsColor, linesColor, linesWidth);
+	}
+
+	public static void scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos pos1,
+	                                      fi.dy.masa.malilib.util.position.BlockPos pos2,
+	                                      Color4f quadsColor)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+				new BoxWallOutlinesOverlayRenderState(pos1, pos2, camPos)
+		);
+	}
+
+	public static void scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos pos1,
+	                                      fi.dy.masa.malilib.util.position.BlockPos pos2,
+	                                      Color4f quadsColor, Color4f linesColor)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+				new BoxWallOutlinesOverlayRenderState(pos1, pos2, camPos, linesColor)
+		);
+	}
+
+	public static void scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos pos1,
+	                                      fi.dy.masa.malilib.util.position.BlockPos pos2,
+	                                      Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+				new BoxWallOutlinesOverlayRenderState(
+						pos1, pos2, camPos,
+						linesColor, linesWidth
+				)
+		);
+	}
+
+	public static void scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos pos1,
+	                                      fi.dy.masa.malilib.util.position.BlockPos pos2,
+	                                      double lineIntervalH, double lineIntervalV, boolean alignLinesToModulo,
+	                                      Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+				new BoxWallOutlinesOverlayRenderState(
+						pos1, pos2, camPos,
+						lineIntervalH, lineIntervalV, alignLinesToModulo,
+						linesColor, linesWidth
+				)
+		);
+	}
+
+	public static void scheduleBoxedWalls(fi.dy.masa.malilib.util.position.BlockPos pos1,
+	                                      fi.dy.masa.malilib.util.position.BlockPos pos2,
+	                                      Vec2d lineIntervals, boolean alignLinesToModulo,
+	                                      Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+				new BoxWallOutlinesOverlayRenderState(
+						pos1, pos2, camPos,
+						lineIntervals, alignLinesToModulo,
+						linesColor, linesWidth
+				)
+		);
+	}
+
+	public static void scheduleCenteredWalls(BlockPos pos,
+	                                         int range, Level level,
+	                                         Color4f quadsColor)
+	{
+		scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos), range, level, quadsColor);
+	}
+
+	public static void scheduleCenteredWalls(BlockPos pos,
+	                                         int range, Level level,
+	                                         Color4f quadsColor, Color4f linesColor)
+	{
+		scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos), range, level, quadsColor, linesColor);
+	}
+
+	public static void scheduleCenteredWalls(BlockPos pos,
+	                                         int range, Level level,
+	                                         Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos), range, level, quadsColor, linesColor, linesWidth);
+	}
+
+	public static void scheduleCenteredWalls(BlockPos pos,
+	                                         int range, Level level,
+	                                         double lineIntervalH, double lineIntervalV, boolean alignLinesToModulo,
+	                                         Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos), range, level,
+							  lineIntervalH, lineIntervalV, alignLinesToModulo,
+		                      quadsColor, linesColor, linesWidth);
+	}
+
+	public static void scheduleCenteredWalls(BlockPos pos,
+	                                         int range, Level level,
+	                                         Vec2d lineIntervals, boolean alignLinesToModulo,
+	                                         Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos.of(pos), range, level,
+		                      lineIntervals, alignLinesToModulo,
+		                      quadsColor, linesColor, linesWidth);
+	}
+
+	public static void scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos pos,
+	                                         int range, Level level,
+	                                         Color4f quadsColor)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+				CenterRangeWallOutlinesOverlayRenderState.create(pos, range, level, camPos)
+		);
+	}
+
+	public static void scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos pos,
+	                                         int range, Level level,
+	                                         Color4f quadsColor, Color4f linesColor)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+				CenterRangeWallOutlinesOverlayRenderState.create(pos, range, level, camPos, linesColor)
+		);
+	}
+
+	public static void scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos pos,
+	                                         int range, Level level,
+	                                         Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+				CenterRangeWallOutlinesOverlayRenderState.create(
+						pos, range, level, camPos,
+						linesColor, linesWidth
+				)
+		);
+	}
+
+	public static void scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos pos,
+	                                         int range, Level level,
+	                                         double lineIntervalH, double lineIntervalV, boolean alignLinesToModulo,
+	                                         Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+				CenterRangeWallOutlinesOverlayRenderState.create(
+						pos, range, level, camPos,
+						lineIntervalH, lineIntervalV, alignLinesToModulo,
+						linesColor, linesWidth
+				)
+		);
+	}
+
+	public static void scheduleCenteredWalls(fi.dy.masa.malilib.util.position.BlockPos pos,
+	                                         int range, Level level,
+	                                         Vec2d lineIntervals, boolean alignLinesToModulo,
+	                                         Color4f quadsColor, Color4f linesColor, float linesWidth)
+	{
+		Vec3d camPos = Vec3d.of(camPos());
+
+		WallOverlayRenderer.INSTANCE.scheduleWalls(
+				CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+				CenterRangeWallOutlinesOverlayRenderState.create(
+						pos, range, level, camPos,
+						lineIntervals, alignLinesToModulo,
+						linesColor, linesWidth
 				)
 		);
 	}
