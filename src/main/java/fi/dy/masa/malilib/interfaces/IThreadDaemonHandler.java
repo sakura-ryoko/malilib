@@ -162,6 +162,26 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 	boolean hasTasks();
 
 	/**
+	 * Return whether the {@link Thread} should sleep.
+	 * @return -
+	 */
+	default boolean shouldPause()
+	{
+		return !this.hasTasks();
+	}
+
+	/**
+	 * Reset whether the {@link Thread} should stop forcibly.
+	 */
+	default void resetForceStop() {}
+
+	/**
+	 * Return whether the {@link Thread} should stop forcibly.
+	 * @return -
+	 */
+	default boolean isForceStop() { return false; }
+
+	/**
 	 * End Task Execution
 	 */
 	default void endAll()
@@ -169,5 +189,15 @@ public interface IThreadDaemonHandler<T extends IThreadTaskBase>
 		MaLiLib.debugLog("IThreadDaemonHandler#endAll()");
 		this.reset();
 		this.stop();
+	}
+
+	/**
+	 * Force a JVM Garbage Collection.
+	 * This may be useful for high-resource utilization of the {@link Thread}
+	 */
+	default void gc()
+	{
+		MaLiLib.debugLog("IThreadDaemonHandler#gc(): Executing Garbage collection");
+		System.gc();
 	}
 }

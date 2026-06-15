@@ -18,6 +18,7 @@ public class TestThreadDaemonHandler implements IThreadDaemonHandler<TestThreadT
 //	private final ConcurrentHashMap<String, ThreadExecutorPair<TestThreadTask>> threadMap = this.builder();
 //	private final LinkedBlockingQueue<TestThreadTask> queue = new LinkedBlockingQueue<>();
 	private long lastTick;
+	private boolean forceStop = false;
 
 	private int calculateMaxThreads()
 	{
@@ -212,6 +213,26 @@ public class TestThreadDaemonHandler implements IThreadDaemonHandler<TestThreadT
 //				catch (RuntimeException ignored) {}
 //			}
 //		}
+	}
+
+	@Override
+	public void resetForceStop()
+	{
+		this.forceStop = false;
+	}
+
+	@Override
+	public boolean isForceStop()
+	{
+		return this.forceStop;
+	}
+
+	@Override
+	public void endAll()
+	{
+		this.forceStop = true;
+		this.reset();
+		this.stop();
 	}
 
 	@Override

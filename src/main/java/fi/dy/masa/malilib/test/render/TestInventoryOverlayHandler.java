@@ -5,7 +5,6 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.Container;
@@ -53,6 +52,7 @@ import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.game.RayTraceUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
+import fi.dy.masa.malilib.util.position.BlockPos;
 
 @ApiStatus.Experimental
 public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
@@ -88,7 +88,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
     {
         if (this.syncer == null)
         {
-            this.syncer = TestDataSyncer.getInstance();
+            this.syncer = TestDataSyncer.INSTANCE;
         }
 
         return this.syncer;
@@ -189,7 +189,8 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 		if (trace.getType() == HitResult.Type.BLOCK)
 		{
-			BlockPos pos = ((BlockHitResult) trace).getBlockPos();
+			BlockPos pos = BlockPos.of(((BlockHitResult) trace).getBlockPos());
+			fi.dy.masa.malilib.util.position.BlockPos newPos = fi.dy.masa.malilib.util.position.BlockPos.of(pos);
 			BlockState state = world.getBlockState(pos);
 			Block blockTmp = state.getBlock();
 			BlockEntity be = null;
@@ -209,7 +210,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 				}
 				else
 				{
-					Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+					Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, newPos);
 
 					if (pair != null)
 					{
@@ -265,6 +266,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 	@Override
 	public @Nullable InventoryOverlayContext getTargetInventoryFromBlock(Level world, BlockPos pos, @Nullable BlockEntity be, CompoundData data)
 	{
+		fi.dy.masa.malilib.util.position.BlockPos newPos = fi.dy.masa.malilib.util.position.BlockPos.of(pos);
 		Container inv;
 
 		if (be != null)
@@ -280,7 +282,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		{
 			if (data.isEmpty())
 			{
-				Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+				Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, newPos);
 
 				if (pair != null)
 				{
@@ -288,7 +290,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 				}
 			}
 
-			inv = this.getDataSyncer().getBlockInventory(world, pos, false);
+			inv = this.getDataSyncer().getBlockInventory(world, newPos, false);
 		}
 
 		MaLiLib.LOGGER.error("getTargetFromBlock: inv [{}], data [{}]", inv != null ? inv.getContainerSize() : "<NULL>", data != null ? data.toString() : "<NULL>");
@@ -487,8 +489,9 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 			// Refresh data
 			if (data.be() != null)
 			{
-				TestInventoryOverlayHandler.getInstance().requestBlockEntityAt(world, data.be().getBlockPos());
-				data = TestInventoryOverlayHandler.getInstance().getTargetInventoryFromBlock(data.be().getLevel(), data.be().getBlockPos(), data.be(), data.data());
+				BlockPos pos = BlockPos.of(data.be().getBlockPos());
+				TestInventoryOverlayHandler.getInstance().requestBlockEntityAt(world, pos);
+				data = TestInventoryOverlayHandler.getInstance().getTargetInventoryFromBlock(data.be().getLevel(), pos, data.be(), data.data());
 			}
 			else if (data.entity() != null)
 			{
