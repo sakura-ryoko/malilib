@@ -44,6 +44,12 @@ public class TestThreadDaemonExecutor implements IThreadDaemonExecutor<TestThrea
 	@Override
 	public void start()
 	{
+		if (TestThreadDaemonHandler.INSTANCE.isForceStop())
+		{
+			this.stop();
+			return;
+		}
+
 		if (!this.isRunning())
 		{
 			MaLiLib.LOGGER.error("Executor: Starting");
@@ -85,7 +91,7 @@ public class TestThreadDaemonExecutor implements IThreadDaemonExecutor<TestThrea
 			this.paused.set(false);
 		}
 
-//		this.start();
+		this.start();
 	}
 
 	@Override
@@ -125,6 +131,12 @@ public class TestThreadDaemonExecutor implements IThreadDaemonExecutor<TestThrea
 	{
 		if (!this.isCorrectThread()) { return; }
 
+		if (TestThreadDaemonHandler.INSTANCE.isForceStop())
+		{
+			this.stop();
+			return;
+		}
+
 		this.running.set(true);
 		this.lastTaskTime = System.currentTimeMillis();
 		this.ticks = 0L;
@@ -140,15 +152,14 @@ public class TestThreadDaemonExecutor implements IThreadDaemonExecutor<TestThrea
 			{
 				this.paused.set(true);
 				this.ticks = 0L;
+				this.sleep();
+				// calls this.resume() when sleep is interrupt() or times out.
+			}
 
-				if (this.hasTasks())
-				{
-					this.sleep(50L);
-				}
-				else
-				{
-					this.sleep();
-				}
+			if (TestThreadDaemonHandler.INSTANCE.isForceStop())
+			{
+				this.stop();
+				return;
 			}
 		}
 	}
@@ -183,8 +194,8 @@ public class TestThreadDaemonExecutor implements IThreadDaemonExecutor<TestThrea
 	@Override
 	public boolean shouldPause()
 	{
-		if (this.ticks > this.maxTicks) { return true; }
 		if (this.hasTasks()) { return false; }
+		if (this.ticks > this.maxTicks) { return true; }
 		return (System.currentTimeMillis() - this.lastTaskTime) > (this.sleepDelay * 1000L);
 	}
 
