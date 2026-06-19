@@ -55,7 +55,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
         public static final ConfigOptionList        TRANSLATION_LANGUAGE        = new ConfigOptionList        ("translationLanguage",       new i18nConfig(LANG.orElseThrow())).apply(GENERIC_KEY);
         public static final ConfigOptionList        TRANSLATION_MODE            = new ConfigOptionList        ("translationMode",           i18nMode.FOLLOW_VANILLA).apply(GENERIC_KEY);
-        public static final ConfigBooleanHotkeyed   TRANSLATION_OVERRIDES       = new ConfigBooleanHotkeyed   ("translationOverrides",    false, "").apply(GENERIC_KEY);
+        public static final ConfigBooleanHotkeyed   TRANSLATION_OVERRIDES       = new ConfigBooleanHotkeyed   ("translationOverrides",    true, "").apply(GENERIC_KEY);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 ACTIONBAR_HUD_TICKS,

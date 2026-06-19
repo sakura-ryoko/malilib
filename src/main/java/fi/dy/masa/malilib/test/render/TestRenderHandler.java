@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.test.render;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -98,11 +99,20 @@ public class TestRenderHandler implements IRenderer
     {
         List<String> list = new ArrayList<>();
 
-        list.add("Test Line 1");
-        list.add("Test Line 2");
-        list.add("Test Line 3");
-        list.add("Test Line 4");
-        list.add("Test Line 5");
+        list.add(
+                StringUtils.translate(
+                        "malilib.message.test_text.line.format_test",
+                        5, 25, 275686,
+                        5.237562732867557249862098375253F,
+                        25.8305702987592034547520957892058F,
+                        250.93287592837625876782019384230598F
+                ));
+        list.add(StringUtils.translate("malilib.message.test_text.line.1"));
+        list.add(StringUtils.translate("malilib.message.test_text.line.2"));
+        list.add(StringUtils.translate("malilib.message.test_text.line.3"));
+        list.add(StringUtils.translate("malilib.message.test_text.line.4"));
+        list.add(StringUtils.translate("malilib.message.test_text.line.5"));
+//        list.add("Test Line 5");
 
         if (TickUtils.getInstance().isValid())
         {
@@ -134,18 +144,29 @@ public class TestRenderHandler implements IRenderer
         else if (mspt <= 50) { preMspt = GuiBase.TXT_GOLD; }
         else                 { preMspt = GuiBase.TXT_RED; }
 
-        return isEstimated ?
-               String.format("Server TPS: %s%.1f%s (MSPT [est]: %s%.1f%s) (R: %s%.1f%s, avMS: %.2f, avTPS: %.2f, [actTPS: %.2f]) %s",
-                             preTps, clampedTps, rst, preMspt, mspt, rst,
-                             GuiBase.TXT_AQUA, tickRate, rst,
-                             avgMspt, avgTps, actualTps,
-                             sprintStr) :
-               String.format("Server TPS: %s%.1f%s MSPT: %s%.1f%s (R: %s%.1f%s, avMS: %.2f, avTPS: %.2f, [actTPS: %.2f]) %s",
-                             preTps, clampedTps, rst, preMspt, mspt, rst,
-                             GuiBase.TXT_AQUA, tickRate, rst,
-                             avgMspt, avgTps, actualTps,
-                             sprintStr)
-                ;
+        return isEstimated
+               ? StringUtils.translate("malilib.message.test_text.line.tps_est",
+                                       preTps, clampedTps, rst, preMspt, mspt, rst,
+                                       GuiBase.TXT_AQUA, tickRate, rst,
+                                       avgMspt, avgTps, actualTps,
+                                       sprintStr)
+               : StringUtils.translate("malilib.message.test_text.line.tps",
+                                       preTps, clampedTps, rst, preMspt, mspt, rst,
+                                       GuiBase.TXT_AQUA, tickRate, rst,
+                                       avgMspt, avgTps, actualTps,
+                                       sprintStr)
+               ;
+
+//               ? String.format("Server TPS: %s%.1f%s (MSPT [est]: %s%.1f%s) (R: %s%.1f%s, avMS: %.2f, avTPS: %.2f, [actTPS: %.2f]) %s",
+//                               preTps, clampedTps, rst, preMspt, mspt, rst,
+//                               GuiBase.TXT_AQUA, tickRate, rst,
+//                               avgMspt, avgTps, actualTps,
+//                               sprintStr)
+//               : String.format("Server TPS: %s%.1f%s MSPT: %s%.1f%s (R: %s%.1f%s, avMS: %.2f, avTPS: %.2f, [actTPS: %.2f]) %s",
+//                               preTps, clampedTps, rst, preMspt, mspt, rst,
+//                               GuiBase.TXT_AQUA, tickRate, rst,
+//                               avgMspt, avgTps, actualTps,
+//                               sprintStr)
     }
 
     @Override

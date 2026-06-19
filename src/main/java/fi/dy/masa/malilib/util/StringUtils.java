@@ -21,7 +21,6 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.locale.Language;
@@ -798,7 +797,7 @@ public class StringUtils
 
 	                    if (modeEntry == i18nMode.OFF)
 	                    {
-		                    return I18n.get(translationKey, args);
+		                    return translateWrapper(translationKey, args);
 	                    }
                     }
 
@@ -806,11 +805,30 @@ public class StringUtils
                 }
             }
 
-            return I18n.get(translationKey, args);
+            return translateWrapper(translationKey, args);
         }
         catch (Exception e)
         {
             return translationKey;
+        }
+    }
+
+    private static String translateWrapper(String translationKey, Object... args)
+    {
+//        return I18n.get(translationKey, args);
+        // fixme -- Someone is changing our `%.f` formatters all to `%s` ...
+        final String result = Language.getInstance().getOrDefault(translationKey);
+
+//        System.out.printf("KEY: %s\n", translationKey);
+//        System.out.printf("RESULT: %s\n", result);
+
+        try
+        {
+            return String.format(Locale.ROOT, result, args);
+        }
+        catch (Exception e)
+        {
+            return "Format Error:" + result;
         }
     }
 
