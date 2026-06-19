@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.test.render;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -354,7 +353,7 @@ public class TestRenderHandler implements IRenderer
 
                 if (player != null)
                 {
-                    Pair<Entity, CompoundData> pair = TestDataSyncer.getInstance().requestEntity(world, player.getId());
+                    Pair<Entity, CompoundData> pair = TestDataSyncer.INSTANCE.requestEntity(world, player.getId());
                     PlayerEnderChestContainer inv;
 
                     if (pair != null && pair.getRight() != null && pair.getRight().contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))

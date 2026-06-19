@@ -25,12 +25,12 @@ public abstract class AbstractSelectionBoxRenderState implements IOnDemandRender
 	protected boolean renderThrough;
 	protected boolean shouldResort;
 
-	public AbstractSelectionBoxRenderState(Vec3d camPos,
-	                                       BlockPos pos1, BlockPos pos2, @Nullable BlockPos simplePos,
-	                                       float expand, float lineWidth,
-	                                       Color4f color1, Color4f color2,
-	                                       Color4f color3, Color4f color4,
-	                                       boolean renderThrough, boolean shouldResort)
+	protected AbstractSelectionBoxRenderState(Vec3d camPos,
+	                                          BlockPos pos1, BlockPos pos2, @Nullable BlockPos simplePos,
+	                                          float expand, float lineWidth,
+	                                          Color4f color1, Color4f color2,
+	                                          Color4f color3, Color4f color4,
+	                                          boolean renderThrough, boolean shouldResort)
 	{
 		this.camPos = camPos;
 		this.pos1 = pos1;

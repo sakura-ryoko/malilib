@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
@@ -20,6 +19,8 @@ import fi.dy.masa.malilib.render.InventoryOverlayContext;
 import fi.dy.masa.malilib.render.InventoryOverlayRefresher;
 import fi.dy.masa.malilib.render.InventoryOverlayScreen;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.position.BlockPos;
+import fi.dy.masa.malilib.util.position.Direction;
 
 public interface IInventoryOverlayHandler
 {
@@ -142,7 +143,7 @@ public interface IInventoryOverlayHandler
 
 				if (type != ChestType.SINGLE)
 				{
-					return this.getDataSyncer().requestBlockEntity(world, pos.relative(ChestBlock.getConnectedDirection(state)));
+					return this.getDataSyncer().requestBlockEntity(world, pos.offset(Direction.of(ChestBlock.getConnectedDirection(state))));
 				}
 			}
 
