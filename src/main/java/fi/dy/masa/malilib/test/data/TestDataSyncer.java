@@ -71,6 +71,12 @@ public class TestDataSyncer implements IDataSyncer, IClientTickHandler
     }
 
     @Override
+    public boolean loadContainerBlockEntities()
+    {
+        return true;
+    }
+
+    @Override
     public Level getBestWorld()
     {
         return WorldUtils.getBestWorld(Minecraft.getInstance());
@@ -91,11 +97,5 @@ public class TestDataSyncer implements IDataSyncer, IClientTickHandler
             this.cache.tickCache(now);
             this.lastTick = now;
         }
-    }
-
-    public void reset()
-    {
-        this.cache.reset();
-        this.requestTracker.clearAll();
     }
 }

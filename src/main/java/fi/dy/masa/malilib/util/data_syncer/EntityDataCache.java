@@ -17,7 +17,7 @@ public class EntityDataCache
 	private final ConcurrentHashMap<BlockPos, Pair<Long, Pair<BlockEntity, CompoundData>>> blockEntityCache;
 	private final ConcurrentHashMap<Integer, Pair<Long, Pair<Entity, CompoundData>>> entityCache;
 	private final String id;
-	private final long timeout;
+	private long timeout;
 
 	public EntityDataCache(String modId, final long timeout)
 	{
@@ -40,6 +40,11 @@ public class EntityDataCache
 	public long getTimeout()
 	{
 		return this.timeout;
+	}
+
+	public void setTimeout(final long timeout)
+	{
+		this.timeout = timeout;
 	}
 
 	public void tickCache(final long nowTime)
@@ -80,7 +85,7 @@ public class EntityDataCache
 		return this.entityCache.size();
 	}
 
-	public void reset()
+	public void clearAll()
 	{
 		this.blockEntityCache.clear();
 		this.entityCache.clear();

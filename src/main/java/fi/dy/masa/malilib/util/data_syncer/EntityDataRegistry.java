@@ -30,18 +30,21 @@ public class EntityDataRegistry
 		return this.entityDataCaches.isEmpty();
 	}
 
-	public CompoundData scanForBlockEntityData(BlockPos pos)
+	public CompoundData scanForBlockEntityData(BlockPos pos, List<String> ignoredIds)
 	{
 		List<ScanResult> list = new ArrayList<>();
 
 		this.entityDataCaches.forEach((entry) ->
 		                              {
-			                              EntityDataEntry tryData = entry.getBlockEntityDataEntryFromCache(pos);
+										  if (!ignoredIds.contains(entry.getId()))
+										  {
+											  EntityDataEntry tryData = entry.getBlockEntityDataEntryFromCache(pos);
 
-			                              if (tryData != null)
-			                              {
-				                              list.add(new ScanResult(tryData, entry.getTimeout()));
-			                              }
+											  if (tryData != null)
+											  {
+												  list.add(new ScanResult(tryData, entry.getTimeout()));
+											  }
+										  }
 		                              });
 
 		if (list.isEmpty())
@@ -70,17 +73,20 @@ public class EntityDataRegistry
 		return list.getFirst().entry().data();
 	}
 
-	public CompoundData scanForEntityData(int entityId)
+	public CompoundData scanForEntityData(int entityId, List<String> ignoredIds)
 	{
 		List<ScanResult> list = new ArrayList<>();
 
 		this.entityDataCaches.forEach((entry) ->
 		                              {
-			                              EntityDataEntry tryData = entry.getEntityDataEntryFromCache(entityId);
-
-			                              if (tryData != null)
+			                              if (!ignoredIds.contains(entry.getId()))
 			                              {
-				                              list.add(new ScanResult(tryData, entry.getTimeout()));
+				                              EntityDataEntry tryData = entry.getEntityDataEntryFromCache(entityId);
+
+				                              if (tryData != null)
+				                              {
+					                              list.add(new ScanResult(tryData, entry.getTimeout()));
+				                              }
 			                              }
 		                              });
 

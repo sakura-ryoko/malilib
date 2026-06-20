@@ -106,7 +106,7 @@ public class WorldLoadHandler implements IWorldLoadManager
 //            }
             if (MaLiLibReference.DEBUG_MODE)
             {
-                TestDataSyncer.INSTANCE.reset();
+                TestDataSyncer.INSTANCE.clearAll();
             }
         }
 

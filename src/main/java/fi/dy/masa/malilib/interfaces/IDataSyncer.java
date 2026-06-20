@@ -1,12 +1,11 @@
 package fi.dy.masa.malilib.interfaces;
 
-import java.util.Optional;
+import java.util.List;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
@@ -24,12 +23,10 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
@@ -74,6 +71,14 @@ public interface IDataSyncer
 	EntityDataRequestTracker getRequestTracker();
 
 	/**
+	 * Return a list of ignored Cache Ids
+	 */
+	default List<String> ignoredIds()
+	{
+		return List.of(this.getCache().getId());
+	}
+
+	/**
 	 * Return if this Data Syncer is enabled
 	 *
 	 * @return -
@@ -106,7 +111,7 @@ public interface IDataSyncer
 	 *
 	 * @return -
 	 */
-	default boolean loadContainerBlockEntities() {return false;}
+	boolean loadContainerBlockEntities();
 
 	/**
 	 * Get the 'Best World' object
@@ -346,7 +351,7 @@ public interface IDataSyncer
 				}
 			}
 
-			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos);
+			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos, this.ignoredIds());
 
 			if (!globalData.isEmpty())
 			{
@@ -357,11 +362,12 @@ public interface IDataSyncer
 		}
 		else if (world.getBlockState(pos).getBlock() instanceof EntityBlock)
 		{
-			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos);
+			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos, this.ignoredIds());
 			BlockEntity be = this.getClientWorld() != null ? this.getClientWorld().getBlockEntity(pos) : null;
 
 			if (be != null && !globalData.isEmpty())
 			{
+				this.getCache().removeFromCache(pos);
 				this.getCache().addToCache(pos, be, globalData);
 				return Pair.of(be, globalData);
 			}
@@ -405,6 +411,7 @@ public interface IDataSyncer
 				CompoundData data = DataConverterNbt.fromVanillaCompound(be.saveWithFullMetadata(world.registryAccess()));
 				Pair<BlockEntity, CompoundData> pair = Pair.of(be, data);
 
+				this.getCache().removeFromCache(pos);
 				this.getCache().addToCache(pos, be, data);
 
 				return pair;
@@ -434,8 +441,7 @@ public interface IDataSyncer
 				                                   if (pair != null && !pair.getRight().isEmpty())
 				                                   {
 					                                   CompoundData data = pair.getRight();
-					                                   Identifier key = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(pair.getLeft().getType());
-					                                   mc.execute(() -> this.handleBlockEntityData(pos, data, key));
+					                                   mc.execute(() -> this.handleBlockEntityData(pos, data));
 				                                   }
 			                                   });
 			return false;
@@ -503,7 +509,7 @@ public interface IDataSyncer
 				}
 			}
 
-			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForEntityData(entityId);
+			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForEntityData(entityId, this.ignoredIds());
 
 			if (!globalData.isEmpty())
 			{
@@ -513,11 +519,12 @@ public interface IDataSyncer
 			return Pair.of(pair.ent(), pair.data());
 		}
 
-		CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForEntityData(entityId);
+		CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForEntityData(entityId, this.ignoredIds());
 		Entity entity = this.getClientWorld() != null ? this.getClientWorld().getEntity(entityId) : null;
 
 		if (entity != null && !globalData.isEmpty())
 		{
+			this.getCache().removeFromCache(entityId);
 			this.getCache().addToCache(entityId, entity, globalData);
 			return Pair.of(entity, globalData);
 		}
@@ -561,6 +568,7 @@ public interface IDataSyncer
 				{
 					Pair<Entity, CompoundData> pair = Pair.of(entity, data);
 
+					this.getCache().removeFromCache(entityId);
 					this.getCache().addToCache(entityId, entity, data);
 
 					return pair;
@@ -629,64 +637,77 @@ public interface IDataSyncer
 		if (pair != null)
 		{
 			Container inv = null;
+			BlockState state = world.getBlockState(pos.toVanillaPos());
 
-			if (useNbt)
+			if (!useNbt && (state.is(BlockTags.AIR) || !state.hasBlockEntity()))
 			{
-				inv = InventoryUtils.getDataInventory(pair.data(), -1, world.registryAccess());
+				this.getCache().removeFromCache(pos);
+				return null;
 			}
-			else
+
+			if (state.hasProperty(BlockStateProperties.CHEST_TYPE) && state.hasProperty(BlockStateProperties.HORIZONTAL_FACING))
 			{
-				BlockEntity be = pair.be();
-				BlockState state = world.getBlockState(pos.toVanillaPos());
+				ChestType type = state.getValue(BlockStateProperties.CHEST_TYPE);
 
-				if (state.is(BlockTags.AIR) || !state.hasBlockEntity())
+				if (type != ChestType.SINGLE)
 				{
-					this.getCache().removeFromCache(pos);
-					return null;
+					Direction facing = Direction.of(state.getValue(BlockStateProperties.HORIZONTAL_FACING));
+					Direction offsetDir = type == ChestType.LEFT ? facing.rotateY() : facing.rotateYCCW();
+					BlockPos posAdj = pos.offset(offsetDir);
+
+					if (!world.hasChunkAt(posAdj))
+					{
+						return null;
+					}
+
+					BlockState stateAdj = world.getBlockState(posAdj.toVanillaPos());
+					EntityDataPairEntry pairAdj = this.getCache().getBlockEntityPairFromCache(posAdj);
+
+					if (pairAdj == null)
+					{
+						// Issue a network request for the missing half
+						this.requestBlockEntity(world, posAdj);
+					}
+					else if (stateAdj.getBlock() == state.getBlock() &&
+							 stateAdj.hasProperty(BlockStateProperties.CHEST_TYPE) &&
+							 stateAdj.hasProperty(BlockStateProperties.HORIZONTAL_FACING) &&
+							 stateAdj.getValue(BlockStateProperties.CHEST_TYPE) != ChestType.SINGLE &&
+							 stateAdj.getValue(BlockStateProperties.HORIZONTAL_FACING) == facing.getVanillaDirection())
+					{
+						Container inv1 = null;
+						Container inv2 = null;
+
+						if (useNbt)
+						{
+							inv1 = InventoryUtils.getDataInventory(pair.data(), -1, world.registryAccess());
+							inv2 = InventoryUtils.getDataInventory(pairAdj.data(), -1, world.registryAccess());
+						}
+						else if (pair.be() instanceof Container c1 && pairAdj.be() instanceof Container c2)
+						{
+							inv1 = c1;
+							inv2 = c2;
+						}
+
+						if (inv1 != null && inv2 != null)
+						{
+							Container invRight = type == ChestType.RIGHT ? inv1 : inv2;
+							Container invLeft = type == ChestType.RIGHT ? inv2 : inv1;
+
+							inv = new CompoundContainer(invRight, invLeft);
+						}
+					}
 				}
+			}
 
-				if (be instanceof Container inv1)
+			if (inv == null)
+			{
+				if (useNbt)
 				{
-					if (be instanceof ChestBlockEntity && state.hasProperty(ChestBlock.TYPE))
-					{
-						ChestType type = state.getValue(ChestBlock.TYPE);
-
-						if (type != ChestType.SINGLE)
-						{
-							BlockPos posAdj = pos.offset(Direction.of(ChestBlock.getConnectedDirection(state)));
-
-							if (!world.hasChunkAt(posAdj))
-							{
-								return null;
-							}
-							BlockState stateAdj = world.getBlockState(posAdj.toVanillaPos());
-							var dataAdj = this.getCache().getBlockEntityFromCache(posAdj);
-
-							if (dataAdj == null)
-							{
-								this.requestBlockEntity(world, posAdj);
-							}
-
-							if (stateAdj.getBlock() == state.getBlock() &&
-								dataAdj instanceof ChestBlockEntity inv2 &&
-								stateAdj.getValue(ChestBlock.TYPE) != ChestType.SINGLE &&
-								stateAdj.getValue(ChestBlock.FACING) == state.getValue(ChestBlock.FACING))
-							{
-								Container invRight = type == ChestType.RIGHT ? inv1 : inv2;
-								Container invLeft = type == ChestType.RIGHT ? inv2 : inv1;
-
-								inv = new CompoundContainer(invRight, invLeft);
-							}
-						}
-						else
-						{
-							inv = inv1;
-						}
-					}
-					else
-					{
-						inv = inv1;
-					}
+					inv = InventoryUtils.getDataInventory(pair.data(), -1, world.registryAccess());
+				}
+				else if (pair.be() instanceof Container inv2)
+				{
+					inv = inv2;
 				}
 			}
 
@@ -786,12 +807,11 @@ public interface IDataSyncer
 	 *
 	 * @param pos  ()
 	 * @param nbt  ()
-	 * @param type (Optional)
 	 * @return (BlockEntity|Null)
 	 */
-	default BlockEntity handleBlockEntityData(BlockPos pos, CompoundTag nbt, @Nullable Identifier type)
+	default BlockEntity handleBlockEntityData(BlockPos pos, CompoundTag nbt)
 	{
-		return this.handleBlockEntityData(pos, DataConverterNbt.fromVanillaCompound(nbt), type);
+		return this.handleBlockEntityData(pos, DataConverterNbt.fromVanillaCompound(nbt));
 	}
 
 	/**
@@ -829,14 +849,24 @@ public interface IDataSyncer
 	}
 
 	/**
+	 * Specific format for receiving Packets
+	 * @param pos -
+	 * @param nbt -
+	 * @return -
+	 */
+	default @Nullable BlockEntity handleBlockEntityData(net.minecraft.core.BlockPos pos, CompoundTag nbt)
+	{
+		return handleBlockEntityData(BlockPos.of(pos), DataConverterNbt.fromVanillaCompound(nbt));
+	}
+
+	/**
 	 * Used by your Packet Receiver to handle incoming data from BlockPos and the Server Side NBT tags.
 	 *
 	 * @param pos  ()
 	 * @param data ()
-	 * @param type (Optional)
 	 * @return (BlockEntity|Null)
 	 */
-	default @Nullable BlockEntity handleBlockEntityData(BlockPos pos, CompoundData data, @Nullable Identifier type)
+	default @Nullable BlockEntity handleBlockEntityData(BlockPos pos, CompoundData data)
 	{
 		this.getRequestTracker().removeScheduledBlockEntity(pos);
 		this.getRequestTracker().setPendingLocalBlockEntityRequest(pos, false);
@@ -847,7 +877,7 @@ public interface IDataSyncer
 
 		BlockEntity be = this.getClientWorld().getBlockEntity(pos);
 
-		if (be != null && (type == null || type.equals(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType()))))
+		if (be != null)
 		{
 			if (!data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
 			{
@@ -859,6 +889,7 @@ public interface IDataSyncer
 				}
 			}
 
+			this.getCache().removeFromCache(pos);
 			this.getCache().addToCache(pos, be, data);
 
 			if (this.loadContainerBlockEntities() && be instanceof Container)
@@ -868,45 +899,6 @@ public interface IDataSyncer
 			}
 
 			return be;
-		}
-
-		if (type == null)
-		{
-			return null;
-		}
-		Optional<Holder.Reference<BlockEntityType<?>>> opt = BuiltInRegistries.BLOCK_ENTITY_TYPE.get(type);
-
-		if (opt.isPresent())
-		{
-			BlockEntityType<?> beType = opt.get().value();
-
-			if (beType.isValid(this.getClientWorld().getBlockState(pos)))
-			{
-				BlockEntity be2 = beType.create(pos, this.getClientWorld().getBlockState(pos));
-
-				if (be2 != null)
-				{
-					if (!data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
-					{
-						Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(beType);
-
-						if (id != null)
-						{
-							data.putString(NbtKeys.ID, id.toString());
-						}
-					}
-
-					this.getCache().addToCache(pos, be2, data);
-
-					if (this.loadContainerBlockEntities() && be2 instanceof Container)
-					{
-						NbtView view = NbtView.getReader(data, this.getClientWorld().registryAccess());
-						be2.loadWithComponents(view.getReader());
-					}
-
-					return be2;
-				}
-			}
 		}
 
 		return null;
@@ -940,6 +932,7 @@ public interface IDataSyncer
 				}
 			}
 
+			this.getCache().removeFromCache(entityId);
 			this.getCache().addToCache(entityId, entity, data);
 			// Load Nbt into an entity? (How about NO!)
 		}
@@ -970,6 +963,6 @@ public interface IDataSyncer
 	default void clearAll()
 	{
 		this.getRequestTracker().clearAll();
-		this.getCache().reset();
+		this.getCache().clearAll();
 	}
 }

@@ -29,6 +29,16 @@ public class EntityDataRequestTracker
 		}
 	}
 
+	public int getPendingBlockEntityCount()
+	{
+		return this.pendingBlockEntityQueue.size();
+	}
+
+	public int getPendingEntityCount()
+	{
+		return this.pendingEntityQueue.size();
+	}
+
 	public BlockPos pollNextBlockEntity()
 	{
 		return this.pendingBlockEntityQueue.poll();
