@@ -13,7 +13,7 @@ public class GuiTextFieldInteger extends GuiTextFieldGeneric
         super(x, y, width, height, fontRenderer);
 
 //        this.setFilter(input -> input.isEmpty() || PATTERN_NUMBER.matcher(input).matches());
-		this.setResponder(this::onValueChange);
+		this.setResponder(this::onTextChanged);
     }
 
 	protected boolean testInteger(String input)
@@ -28,7 +28,7 @@ public class GuiTextFieldInteger extends GuiTextFieldGeneric
 		return false;
 	}
 
-	protected void onValueChange(String newText)
+	protected void onTextChanged(String newText)
 	{
 		if (!this.testInteger(newText))
 		{
