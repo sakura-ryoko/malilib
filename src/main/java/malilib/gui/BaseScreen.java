@@ -1063,7 +1063,6 @@ public abstract class BaseScreen extends GuiScreen
         screen.setCanDragMove(true);
         screen.setShouldRenderParent(shouldRenderParent);
         screen.setPopupGuiZLevelBasedOn(GuiUtils.getCurrentScreen());
-        screen.boldTitle = true;
 
         return openScreen(screen);
     }
