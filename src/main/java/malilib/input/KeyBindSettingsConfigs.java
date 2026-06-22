@@ -25,6 +25,7 @@ public class KeyBindSettingsConfigs
     protected final IntegerConfig cfgPriority;
     protected final BooleanConfig cfgShowToast;
     protected final BooleanConfig cfgToggle;
+    protected final BooleanConfig cfgUseScrollAdjust;
     protected final ImmutableList<BaseConfigOption<?>> configList;
     protected final EventListener changeListener;
 
@@ -46,6 +47,7 @@ public class KeyBindSettingsConfigs
         this.cfgPriority       = new IntegerConfig("", defaultSettings.getPriority(), 0, 100, false, "malilib.config.comment.keybind_settings.priority");
         this.cfgShowToast      = new BooleanConfig("", defaultSettings.getShowToast(),      "malilib.label.keybind_settings.show_toast",                                    "malilib.config.comment.keybind_settings.show_toast");
         this.cfgToggle         = new BooleanConfig("", defaultSettings.isToggle(),          "malilib.label.keybind_settings.toggle_held",                                   "malilib.config.comment.keybind_settings.toggle");
+        this.cfgUseScrollAdjust = new BooleanConfig("", defaultSettings.useScrollAdjusting(), "malilib.label.keybind_settings.use_scroll_adjust",                           "malilib.config.comment.keybind_settings.use_scroll_adjust");
         this.cfgPriority.setPrettyNameTranslationKey("malilib.label.keybind_settings.priority");
 
         KeyBindSettings settings = keybind.getSettings();
@@ -62,6 +64,7 @@ public class KeyBindSettingsConfigs
         this.cfgPriority.setValue(settings.getPriority());
         this.cfgShowToast.setValue(settings.getShowToast());
         this.cfgToggle.setValue(settings.isToggle());
+        this.cfgUseScrollAdjust.setValue(settings.useScrollAdjusting());
 
         this.cfgActivateOn.setValueChangeCallback((nv, ov) -> this.onValueChanged());
         this.cfgContext.setValueChangeCallback((nv, ov) -> this.onValueChanged());
@@ -75,6 +78,7 @@ public class KeyBindSettingsConfigs
         this.cfgOrderSensitive.setValueChangeCallback(cbb);
         this.cfgShowToast.setValueChangeCallback(cbb);
         this.cfgToggle.setValueChangeCallback(cbb);
+        this.cfgUseScrollAdjust.setValueChangeCallback(cbb);
         this.cfgCancel.setValueChangeCallback((nv, ov) -> this.onValueChanged());
 
         this.configList = ImmutableList.of(this.cfgActivateOn,
@@ -82,12 +86,13 @@ public class KeyBindSettingsConfigs
                                            this.cfgCancel,
                                            this.cfgAllowExtra,
                                            this.cfgOrderSensitive,
+                                           this.cfgAllowEmpty,
                                            this.cfgExclusive,
                                            this.cfgFirstOnly,
                                            this.cfgPriority,
-                                           this.cfgAllowEmpty,
-                                           this.cfgInvertHeld,
                                            this.cfgToggle,
+                                           this.cfgInvertHeld,
+                                           this.cfgUseScrollAdjust,
                                            this.cfgMessageType,
                                            this.cfgShowToast);
     }
@@ -115,9 +120,10 @@ public class KeyBindSettingsConfigs
                 .invertHeld(this.cfgInvertHeld.getBooleanValue())
                 .priority(this.cfgPriority.getIntegerValue())
                 .allowEmpty(this.cfgAllowEmpty.getBooleanValue())
-                .showToast(this.cfgShowToast.getBooleanValue())
                 .toggle(this.cfgToggle.getBooleanValue())
+                .useScrollAdjusting(this.cfgUseScrollAdjust.getBooleanValue())
                 .messageOutput(this.cfgMessageType.getValue())
+                .showToast(this.cfgShowToast.getBooleanValue())
                 .build();
     }
 }

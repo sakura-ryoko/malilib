@@ -114,6 +114,7 @@ public class KeybindSettingsWidget extends InteractableWidget
         this.addOptionText(lines, "malilib.label.keybind_settings.priority", settings.getPriority(), defaultSettings.getPriority(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.toggle_held", settings.isToggle(), defaultSettings.isToggle(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.invert_held", settings.getInvertHeld(), defaultSettings.getInvertHeld(), this::getDisplayString);
+        this.addOptionText(lines, "malilib.label.keybind_settings.use_scroll_adjust", settings.useScrollAdjusting(), defaultSettings.useScrollAdjusting(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.show_toast", settings.getShowToast(), defaultSettings.getShowToast(), this::getDisplayString);
         this.addOptionText(lines, "malilib.label.keybind_settings.message_output", settings.getMessageType(), defaultSettings.getMessageType(), this::getDisplayString);
 

@@ -31,7 +31,7 @@ import malilib.util.data.RangedIntegerStorage;
 
 public class AdjustableValueHotkeyCallback implements HotkeyCallback
 {
-    protected static final List<AdjustableValueHotkeyCallback> ACTIVE_CALLBACKS = new ArrayList<>(2);
+    @Nullable protected static AdjustableValueHotkeyCallback activeAdjustCallback;
 
     protected final List<EventListener> adjustListeners = new ArrayList<>(2);
     @Nullable protected final BooleanContainingConfig<?> toggleConfig;
@@ -103,21 +103,38 @@ public class AdjustableValueHotkeyCallback implements HotkeyCallback
     }
 
     @Override
+    public KeyAction getOuterActivateOnCondition(KeyBind key)
+    {
+        if (key.getSettings().useScrollAdjusting())
+        {
+            return KeyAction.BOTH;
+        }
+
+        return HotkeyCallback.super.getOuterActivateOnCondition(key);
+    }
+
+    @Override
     public ActionResult onKeyAction(KeyAction action, KeyBind key)
     {
         // For keybinds that activate on both edges, the press action activates the
         // "adjust mode", and we just cancel further processing of the key presses here.
         if (action == KeyAction.PRESS &&
-            key.getSettings().getActivateOn() == KeyAction.BOTH &&
+            key.getSettings().useScrollAdjusting() &&
             this.isAdjustmentEnabled())
         {
-            ACTIVE_CALLBACKS.add(this);
+            activeAdjustCallback = this;
+
+            if (key.getSettings().getActivateOn() != KeyAction.RELEASE)
+            {
+                return this.executeCallBackOrAction(action, key);
+            }
+
             return ActionResult.SUCCESS;
         }
 
-        ACTIVE_CALLBACKS.clear();
+        activeAdjustCallback = null;
 
-        // Don't toggle the state if a value was adjusted
+        // Don't execute the real callback if a value was adjusted
         if (this.valueAdjusted && this.triggerAlwaysOnRelease == false)
         {
             this.valueAdjusted = false;
@@ -126,6 +143,18 @@ public class AdjustableValueHotkeyCallback implements HotkeyCallback
 
         this.valueAdjusted = false;
 
+        KeyAction activateOn = key.getSettings().getActivateOn();
+
+        if (activateOn == KeyAction.BOTH || activateOn == action)
+        {
+            return this.executeCallBackOrAction(action, key);
+        }
+
+        return ActionResult.PASS;
+    }
+
+    protected ActionResult executeCallBackOrAction(KeyAction action, KeyBind key)
+    {
         if (this.callback != null)
         {
             return this.callback.onKeyAction(action, key);
@@ -179,15 +208,10 @@ public class AdjustableValueHotkeyCallback implements HotkeyCallback
 
     public static ActionResult onScrollAdjust(int amount)
     {
-        if (ACTIVE_CALLBACKS.isEmpty() == false &&
+        if (activeAdjustCallback != null &&
             MaLiLibConfigs.Hotkeys.SCROLL_VALUE_ADJUST_MODIFIER.isHeld())
         {
-            for (AdjustableValueHotkeyCallback callback : ACTIVE_CALLBACKS)
-            {
-                // This is a bit silly, but multiple simultaneous callbacks
-                // doesn't really make sense or work sanely anyway...
-                return callback.adjustValue(amount);
-            }
+            return activeAdjustCallback.adjustValue(amount);
         }
 
         return ActionResult.PASS;

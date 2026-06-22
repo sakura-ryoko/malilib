@@ -302,14 +302,14 @@ public class KeyBindImpl implements KeyBind
             this.pressedToggle = ! this.pressedToggle;
         }
 
-        KeyAction activateOn = this.settings.getActivateOn();
+        KeyAction activateOn = this.getOuterActivateOnCondition();
 
         if (this.pressed != pressedLast &&
             (isFirst || this.settings.getFirstOnly() == false) &&
-            (triggeredCount == 0 || this.settings.isExclusive() == false) &&
+            this.passesExclusiveCheck() &&
             (activateOn == KeyAction.BOTH || this.pressed == (activateOn == KeyAction.PRESS)))
         {
-            KeyUpdateResult result = this.triggerKeyAction(pressedLast);
+            KeyUpdateResult result = this.triggerKeyAction();
             //System.out.printf("triggered, cancel: %s, triggeredCount: %d\n", cancel, triggeredCount);
 
             if (result.triggered)
@@ -323,34 +323,38 @@ public class KeyBindImpl implements KeyBind
         return NO_ACTION;
     }
 
-    protected KeyUpdateResult triggerKeyAction(boolean pressedLast)
+    protected KeyAction getOuterActivateOnCondition()
     {
-        KeyAction activateOn = this.settings.getActivateOn();
-
-        if (this.pressed == false)
+        if (this.callback != null)
         {
-            if (pressedLast && (activateOn == KeyAction.RELEASE || activateOn == KeyAction.BOTH))
-            {
-                return this.triggerKeyCallback(KeyAction.RELEASE);
-            }
-        }
-        else if (pressedLast == false)
-        {
-            if (activateOn == KeyAction.PRESS || activateOn == KeyAction.BOTH)
-            {
-                KeyUpdateResult result = this.triggerKeyCallback(KeyAction.PRESS);
-
-                if (result.cancel && this.keyCodes.contains(Keys.KEY_F3))
-                {
-                    // Prevent the debug GUI from opening after the F3 key is released
-                    ((MinecraftClientAccessor) GameWrap.getClient()).setActionKeyF3(true);
-                }
-
-                return result;
-            }
+            return this.callback.getOuterActivateOnCondition(this);
         }
 
-        return NO_ACTION;
+        return this.settings.getActivateOn();
+    }
+
+    protected boolean passesExclusiveCheck()
+    {
+        if (this.settings.isExclusive() == false || getTriggeredCount() == 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected KeyUpdateResult triggerKeyAction()
+    {
+        KeyAction currentAction = this.pressed ? KeyAction.PRESS : KeyAction.RELEASE;
+        KeyUpdateResult result = this.triggerKeyCallback(currentAction);
+
+        if (currentAction == KeyAction.PRESS && result.cancel && this.keyCodes.contains(Keys.KEY_F3))
+        {
+            // Prevent the debug GUI from opening after the F3 key is released
+            ((MinecraftClientAccessor) GameWrap.getClient()).setActionKeyF3(true);
+        }
+
+        return result;
     }
 
     protected KeyUpdateResult triggerKeyCallback(KeyAction action)

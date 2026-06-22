@@ -31,6 +31,7 @@ public class KeyBindSettings
     protected final boolean orderSensitive;
     protected final boolean showToast;
     protected final boolean toggle;
+    protected final boolean useScrollAdjusting;
     protected final int priority;
 
     public KeyBindSettings(Context context, KeyAction activateOn,
@@ -42,7 +43,7 @@ public class KeyBindSettings
              cancel,
              false, false, 50,
              false, false, false,
-             true, MessageOutput.DEFAULT_TOGGLE);
+             true, true, MessageOutput.DEFAULT_TOGGLE);
     }
 
     protected KeyBindSettings(Context context, KeyAction activateOn,
@@ -50,7 +51,7 @@ public class KeyBindSettings
                               CancelCondition cancel,
                               boolean exclusive, boolean firstOnly, int priority,
                               boolean allowEmpty, boolean toggle, boolean invertHeld,
-                              boolean showToast, MessageOutput messageOutput)
+                              boolean showToast, boolean useScrollAdjusting, MessageOutput messageOutput)
     {
         this.activateOn = activateOn;
         this.context = context;
@@ -65,6 +66,7 @@ public class KeyBindSettings
         this.priority = priority;
         this.showToast = showToast;
         this.toggle = toggle;
+        this.useScrollAdjusting = useScrollAdjusting;
     }
 
     public Context getContext()
@@ -127,6 +129,11 @@ public class KeyBindSettings
         return this.toggle;
     }
 
+    public boolean useScrollAdjusting()
+    {
+        return this.useScrollAdjusting;
+    }
+
     public MessageOutput getMessageType()
     {
         return this.messageOutput;
@@ -139,7 +146,7 @@ public class KeyBindSettings
                            this.cancel,
                            this.exclusive, this.firstOnly, this.priority,
                            this.allowEmpty, this.toggle, this.invertHeld,
-                           this.showToast, this.messageOutput);
+                           this.showToast, this.useScrollAdjusting, this.messageOutput);
     }
 
     public JsonObject toJson()
@@ -159,6 +166,7 @@ public class KeyBindSettings
         obj.addProperty("priority", this.priority);
         obj.addProperty("show_toast", this.showToast);
         obj.addProperty("toggle", this.toggle);
+        obj.addProperty("useScrollAdjusting", this.useScrollAdjusting);
 
         return obj;
     }
@@ -218,6 +226,7 @@ public class KeyBindSettings
                 .priority(JsonUtils.getIntegerOrDefault(obj, "priority", 50))
                 .showToast(JsonUtils.getBooleanOrDefault(obj, "show_toast", true))
                 .toggle(JsonUtils.getBoolean(obj, "toggle"))
+                .useScrollAdjusting(JsonUtils.getBooleanOrDefault(obj, "useScrollAdjusting", true))
                 .build();
     }
 
@@ -228,6 +237,7 @@ public class KeyBindSettings
         if (obj == null || this.getClass() != obj.getClass()) { return false; }
 
         KeyBindSettings other = (KeyBindSettings) obj;
+
         return this.activateOn == other.activateOn &&
                this.context == other.context &&
                this.allowEmpty == other.allowEmpty &&
@@ -240,7 +250,8 @@ public class KeyBindSettings
                this.orderSensitive == other.orderSensitive &&
                this.priority == other.priority &&
                this.showToast == other.showToast &&
-               this.toggle == other.toggle;
+               this.toggle == other.toggle &&
+               this.useScrollAdjusting == other.useScrollAdjusting;
     }
 
     public static class Builder
@@ -257,6 +268,7 @@ public class KeyBindSettings
         protected boolean orderSensitive = true;
         protected boolean showToast = true;
         protected boolean toggle;
+        protected boolean useScrollAdjusting = true;
         protected int priority = 50;
 
         public Builder()
@@ -268,7 +280,7 @@ public class KeyBindSettings
                        CancelCondition cancel,
                        boolean exclusive, boolean firstOnly, int priority,
                        boolean allowEmpty, boolean toggle, boolean invertHeld,
-                       boolean showToast, MessageOutput messageOutput)
+                       boolean showToast, boolean useScrollAdjusting, MessageOutput messageOutput)
         {
             this.context = context;
             this.activateOn = activateOn;
@@ -284,6 +296,7 @@ public class KeyBindSettings
             this.priority = priority;
             this.showToast = showToast;
             this.toggle = toggle;
+            this.useScrollAdjusting = useScrollAdjusting;
         }
 
         public Builder activateOn(KeyAction activateOn)
@@ -361,6 +374,12 @@ public class KeyBindSettings
         public Builder toggle(boolean toggle)
         {
             this.toggle = toggle;
+            return this;
+        }
+
+        public Builder useScrollAdjusting(boolean useScrollAdjusting)
+        {
+            this.useScrollAdjusting = useScrollAdjusting;
             return this;
         }
 
@@ -444,7 +463,7 @@ public class KeyBindSettings
                                        this.cancel,
                                        this.exclusive, this.firstOnly, this.priority,
                                        this.allowEmpty, this.toggle, this.invertHeld,
-                                       this.showToast, this.messageOutput);
+                                       this.showToast, this.useScrollAdjusting, this.messageOutput);
         }
     }
 

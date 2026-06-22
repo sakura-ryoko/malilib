@@ -330,6 +330,7 @@ malilib.label.keybind_settings.order_sensitive=Order sensitive
 malilib.label.keybind_settings.priority=Priority
 malilib.label.keybind_settings.show_toast=Show toast message
 malilib.label.keybind_settings.toggle_held=Toggle held
+malilib.label.keybind_settings.use_scroll_adjust=Use Scroll Adjust
 malilib.label.keybind_settings.tips=- Left click to configure\n- Right click to reset to defaults
 malilib.label.keybind_settings.value.integer=§b%s
 malilib.label.keybind_settings.value.option_list=§9%s
@@ -714,6 +715,7 @@ malilib.config.comment.keybind_settings.order_sensitive=Are the keys required to
 malilib.config.comment.keybind_settings.priority=The priority of this keybind in relation to other keybinds that trigger with the same key press (last key of this keybind combination).\n\nThis is a simple numerical sort order - lower values come first.
 malilib.config.comment.keybind_settings.show_toast=Should the toast message be shown for this hotkey.\n\nThis allows turning off the toast message for this hotkey entirely. This is useful for hotkeys that trigger often and would spam the toast renderer, such as the malilib scroll adjustment keys.\n\nThe toast message display in general must be enabled in malilib's configs, at Generic -> §eKeyBind Display§r. This is just a per-hotkey override to disable the message.
 malilib.config.comment.keybind_settings.toggle=Makes this hotkey behave as a toggle, that changes it's state ON/OFF on each trigger event.\n\nNote that this is only meaningful for keys that are being checked to be held, i.e. so called "activation keys". Most hotkeys (for toggling on/off features) are "edge triggered" and have an associated callback that fires once when the key combination is completed. This will do nothing for such hotkeys.
+malilib.config.comment.keybind_settings.use_scroll_adjust=Use scroll adjusting for the associated config value, if any.\n\nNote that this is only relevant for a small number of config toggle type hotkeys, which may adjust a related (numeric?) config value when scrolling with the mouse while holding down the toggle hotkey.
 
 malilib.config.name.actionpromptcloseonexecute=Action Prompt Close On Execute
 malilib.config.name.actionpromptfuzzysearch=Action Prompt Fuzzy Search

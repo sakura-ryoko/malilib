@@ -18,6 +18,17 @@ public interface HotkeyCallback
     ActionResult onKeyAction(KeyAction action, KeyBind key);
 
     /**
+     * @return An overridden ActivateOn condition for the higher level keybind handling code.
+     * This can be used for example in scroll adjustable hotkey callbacks to widen the
+     * activation to both edges at the keybind handling level, and then let the scroll adjustable
+     * handler to take care of calling the actual nested callback only on the correct edge.
+     */
+    default KeyAction getOuterActivateOnCondition(KeyBind key)
+    {
+        return key.getSettings().getActivateOn();
+    }
+
+    /**
      * Wraps an Action as a HotkeyCallback
      */
     static HotkeyCallback of(Action action)
