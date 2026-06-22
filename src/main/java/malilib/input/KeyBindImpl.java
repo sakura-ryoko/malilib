@@ -336,15 +336,17 @@ public class KeyBindImpl implements KeyBind
         }
         else if (pressedLast == false)
         {
-            if (this.keyCodes.contains(Keys.KEY_F3))
-            {
-                // Prevent the debug GUI from opening after the F3 key is released
-                ((MinecraftClientAccessor) GameWrap.getClient()).setActionKeyF3(true);
-            }
-
             if (activateOn == KeyAction.PRESS || activateOn == KeyAction.BOTH)
             {
-                return this.triggerKeyCallback(KeyAction.PRESS);
+                KeyUpdateResult result = this.triggerKeyCallback(KeyAction.PRESS);
+
+                if (result.cancel && this.keyCodes.contains(Keys.KEY_F3))
+                {
+                    // Prevent the debug GUI from opening after the F3 key is released
+                    ((MinecraftClientAccessor) GameWrap.getClient()).setActionKeyF3(true);
+                }
+
+                return result;
             }
         }
 
