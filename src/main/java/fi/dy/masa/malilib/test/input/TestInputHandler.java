@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.input;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.ApiStatus;
@@ -7,9 +7,11 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.render.InventoryOverlayScreen;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.test.gui.GuiTestFileBrowser;
 import fi.dy.masa.malilib.test.gui.GuiTestList;
 import fi.dy.masa.malilib.test.gui.GuiTestPosEditor;
+import fi.dy.masa.malilib.test.render.TestInventoryOverlayHandler;
 import fi.dy.masa.malilib.util.time.TimeTestExample;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;

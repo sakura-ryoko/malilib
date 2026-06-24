@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
@@ -22,7 +22,8 @@ import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 
-public class CompoundData extends BaseData implements DataView
+public class CompoundData extends BaseData
+        implements DataView
 {
 	private static final AnsiLogger LOGGER = new AnsiLogger(CompoundData.class, true, true);
 
@@ -104,18 +105,17 @@ public class CompoundData extends BaseData implements DataView
     {
         BaseData data = this.values.get(key);
 
-		if (data != null)
+		if (data.getType() == Constants.NBT.TAG_LIST &&
+			data instanceof ListData listData)
 		{
-			LOGGER.debug("containsList: req [{}], has [{}]", listEntryType, ((ListData) data).getContainedType());
+			LOGGER.debug("containsList: req [{}], has [{}]", listEntryType, listData.getContainedType());
+			return listData.getContainedType() == listEntryType;
 		}
 		else
 		{
-			LOGGER.debug("containsList: req [{}], has: [NULL]", listEntryType);
+			LOGGER.debug("containsList: req [{}], has: [NULL] (Type found: '{}')", listEntryType, data.getType());
+			return false;
 		}
-
-        return data != null &&
-               data.getType() == Constants.NBT.TAG_LIST &&
-               ((ListData) data).getContainedType() == listEntryType;
     }
 
 	@Override
@@ -134,6 +134,19 @@ public class CompoundData extends BaseData implements DataView
     {
         return Optional.ofNullable(this.values.get(key));
     }
+
+	@Override
+	public Optional<Integer> getDataType(String key)
+	{
+		BaseData data = this.values.get(key);
+
+		if (data != null)
+		{
+			return Optional.of(data.getType());
+		}
+
+		return Optional.empty();
+	}
 
     @Override
     public boolean getBoolean(String key)
@@ -434,6 +447,32 @@ public class CompoundData extends BaseData implements DataView
         return copy;
     }
 
+    public CompoundData combine(CompoundData other)
+    {
+        if (other == null || other.isEmpty())
+        {
+            return this.copy();
+        }
+
+        for (String key : other.values.keySet())
+        {
+            BaseData data = other.values.get(key);
+
+            if (data.getType() == Constants.NBT.TAG_COMPOUND &&
+                this.values.containsKey(key) &&
+                this.values.get(key).getType() == Constants.NBT.TAG_COMPOUND)
+            {
+                CompoundData out = ((CompoundData) this.values.get(key)).combine((CompoundData) data);
+                this.values.put(key, out);
+                continue;
+            }
+
+            this.values.put(key, data);
+        }
+
+        return this.copy();
+    }
+
     @Override
     public String toString()
     {
@@ -454,24 +493,6 @@ public class CompoundData extends BaseData implements DataView
 
         return sb.append('}').toString();
     }
-
-	@Override
-	public boolean equals(Object o)
-	{
-		if (o instanceof CompoundData data)
-		{
-			boolean result = false;
-
-			for (String key : this.getKeys())
-			{
-				result = this.values.get(key).equals(data.values.get(key));
-			}
-
-			return result;
-		}
-
-		return false;
-	}
 
     @Override
     public void write(DataOutput output) throws IOException
@@ -543,5 +564,44 @@ public class CompoundData extends BaseData implements DataView
             output.writeUTF(key);
             data.write(output);
         }
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        // Masa's method
+//        CompoundData other = (CompoundData) o;
+
+//        return Objects.equals(this.values, other.values);
+
+        // Match any member of the compound using equals(),
+        // in any insertion order.
+        if (o instanceof CompoundData data)
+        {
+            boolean result = false;
+
+            for (String key : this.getKeys())
+            {
+                result = this.values.get(key).equals(data.values.get(key));
+
+                if (!result)
+                {
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.values != null ? this.values.hashCode() : 0;
     }
 }

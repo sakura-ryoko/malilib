@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.command;
 
 import java.util.List;
 import net.minecraft.client.MinecraftClient;

@@ -33,6 +33,8 @@ public abstract class BaseData
 
 	public abstract String toString();
 
+    public abstract boolean isEmpty();
+
     public Optional<Number> asNumber()
     {
         return Optional.empty();
@@ -40,25 +42,25 @@ public abstract class BaseData
 
     public abstract void write(DataOutput output) throws IOException;
 
-    public static BaseData createTag(int tagType, DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+    public static BaseData createTag(int tagType, DataInput input, int depth, SizeTracker sizeTracker)
+            throws IOException
     {
-        switch (tagType)
-        {
-            case Constants.NBT.TAG_BYTE:        return ByteData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_SHORT:       return ShortData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_INT:         return IntData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_LONG:        return LongData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_FLOAT:       return FloatData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_DOUBLE:      return DoubleData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_STRING:      return StringData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_BYTE_ARRAY:  return ByteArrayData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_INT_ARRAY:   return IntArrayData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_LONG_ARRAY:  return LongArrayData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_COMPOUND:    return CompoundData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_LIST:        return ListData.read(input, depth, sizeTracker);
-            case Constants.NBT.TAG_END:         return EmptyData.read(input, depth, sizeTracker);
-            default:
-                throw new IOException("Unknown tag type " + tagType);
-        }
+	    return switch (tagType)
+	    {
+		    case Constants.NBT.TAG_BYTE -> ByteData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_SHORT -> ShortData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_INT -> IntData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_LONG -> LongData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_FLOAT -> FloatData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_DOUBLE -> DoubleData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_STRING -> StringData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_BYTE_ARRAY -> ByteArrayData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_INT_ARRAY -> IntArrayData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_LONG_ARRAY -> LongArrayData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_COMPOUND -> CompoundData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_LIST -> ListData.read(input, depth, sizeTracker);
+		    case Constants.NBT.TAG_END -> EmptyData.read(input, depth, sizeTracker);
+		    default -> throw new IOException("Unknown tag type " + tagType);
+	    };
     }
 }

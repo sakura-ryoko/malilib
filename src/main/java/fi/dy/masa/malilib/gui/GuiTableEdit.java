@@ -22,6 +22,15 @@ import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.input.KeyInput;
+
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+
 @ApiStatus.Experimental
 public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, WidgetListTableEdit>
 {

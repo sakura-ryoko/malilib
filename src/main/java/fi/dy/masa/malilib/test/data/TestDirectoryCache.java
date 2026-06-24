@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.data;
 
 import java.nio.file.Path;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.misc;
 
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
@@ -8,6 +8,7 @@ import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IClientTickHandler;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.util.data.Color4f;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.hit.BlockHitResult;

@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.render;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
@@ -12,6 +12,7 @@ import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.InventoryOverlayContext;
 import fi.dy.masa.malilib.render.InventoryOverlayRefresher;
+import fi.dy.masa.malilib.test.data.TestDataSyncer;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
@@ -19,6 +20,7 @@ import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.DataBlockUtils;
 import fi.dy.masa.malilib.util.data.DataEntityUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.game.RayTraceUtils;
 import fi.dy.masa.malilib.util.nbt.*;
@@ -498,6 +500,24 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
         if (nbt != null && !nbt.isEmpty())
         {
+	        if (MaLiLibReference.EXPERIMENTAL_MODE)
+	        {
+		        NbtList test = nbt.getListOrEmpty(NbtKeys.ITEMS);
+
+		        if (test != null && test.isEmpty())
+		        {
+			        NbtCompound itemData = new NbtCompound();
+
+			        itemData.putByte(NbtKeys.SLOT, (byte) 13);
+			        itemData.putInt(NbtKeys.COUNT, 1);
+			        itemData.putString(NbtKeys.ID, "restart_detector:restart_detector");
+			        test.add(itemData);
+
+			        nbt.remove(NbtKeys.ITEMS);
+			        nbt.put(NbtKeys.ITEMS, test);
+		        }
+	        }
+
 //            MaLiLib.LOGGER.warn("getTargetInventoryFromBlock(): rawNbt: [{}]", nbt.toString());
             Inventory inv2 = InventoryUtils.getNbtInventory(nbt, inv != null ? inv.size() : -1, world.getRegistryManager());
 
@@ -505,6 +525,11 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             {
                 inv = inv2;
             }
+
+	        if (MaLiLibReference.EXPERIMENTAL_MODE)
+	        {
+		        inv = inv2;
+	        }
         }
 
         MaLiLib.LOGGER.warn("getTarget():3: pos [{}], inv [{}], be [{}], nbt [{}]", pos.toShortString(), inv != null, be != null, nbt != null ? nbt.getString("id") : new NbtCompound());
@@ -587,11 +612,33 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 		if (data != null && !data.isEmpty())
 		{
+			if (MaLiLibReference.EXPERIMENTAL_MODE)
+			{
+				ListData test = data.getList(NbtKeys.ITEMS);
+
+				if (test != null && test.isEmpty())
+				{
+					CompoundData itemData = new CompoundData();
+
+					itemData.putByte(NbtKeys.SLOT, (byte) 13);
+					itemData.putInt(NbtKeys.COUNT, 1);
+					itemData.putString(NbtKeys.ID, "restart_detector:restart_detector");
+					test.add(itemData);
+
+					data.remove(NbtKeys.ITEMS);
+					data.put(NbtKeys.ITEMS, test);
+				}
+			}
 //			MaLiLib.LOGGER.warn("getTargetFromBlockNew(): rawData: [{}]", data.toString());
 
 			Inventory inv2 = InventoryUtils.getDataInventory(data, inv != null ? inv.size() : -1, world.getRegistryManager());
 
 			if (inv == null)
+			{
+				inv = inv2;
+			}
+
+			if (MaLiLibReference.EXPERIMENTAL_MODE)
 			{
 				inv = inv2;
 			}

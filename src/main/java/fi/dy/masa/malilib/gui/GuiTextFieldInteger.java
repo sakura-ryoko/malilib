@@ -15,7 +15,7 @@ public class GuiTextFieldInteger extends GuiTextFieldGeneric
         super(x, y, width, height, fontRenderer);
 
         this.setTextPredicate(input -> input.isEmpty() || PATTERN_NUMBER.matcher(input).matches());
-		this.setChangedListener(this::onChanged);
+		this.setChangedListener(this::onTextChanged);
     }
 
 	protected boolean testInteger(String input)
@@ -30,7 +30,7 @@ public class GuiTextFieldInteger extends GuiTextFieldGeneric
 		return false;
 	}
 
-	protected void onChanged(String newText)
+	protected void onTextChanged(String newText)
 	{
 		if (!this.testInteger(newText))
 		{

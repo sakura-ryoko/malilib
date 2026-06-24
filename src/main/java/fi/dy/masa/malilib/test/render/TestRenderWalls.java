@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.render;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,12 +22,13 @@ import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.render.RenderContext;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.util.data.Color4f;
 
 @ApiStatus.Experimental
-public class TestWalls implements AutoCloseable
+public class TestRenderWalls implements AutoCloseable
 {
-    public static final TestWalls INSTANCE = new TestWalls();
+    public static final TestRenderWalls INSTANCE = new TestRenderWalls();
 
     protected boolean renderThrough;
     protected boolean useCulling;
@@ -39,10 +40,10 @@ public class TestWalls implements AutoCloseable
     private Vec3d updateCameraPos;
     private boolean hasData;
     private final boolean shouldResort;
-    private final boolean needsUpdate;
+    private boolean needsUpdate;
     private final int updateDistance = 48;
 
-    public TestWalls()
+    public TestRenderWalls()
     {
         this.renderThrough = false;
         this.useCulling = false;
@@ -74,6 +75,16 @@ public class TestWalls implements AutoCloseable
                 Math.abs(cameraEntity.getY() - this.lastUpdatePos.getY()) > this.updateDistance;
     }
 
+    public void setNeedsUpdate()
+    {
+        this.needsUpdate = true;
+    }
+
+    public boolean hasData()
+    {
+        return this.hasData;
+    }
+
     public void update(Camera camera, Entity entity, MinecraftClient mc)
     {
         if (mc.world == null || mc.player == null)
@@ -85,8 +96,8 @@ public class TestWalls implements AutoCloseable
         Vec3d vec = camera.getPos();
         BlockPos pos = entity.getBlockPos();
         BlockPos testPos = pos.add(2, 0, 2);
-        Pair<BlockPos, BlockPos> corners = TestUtils.getSpawnChunkCorners(testPos, radius, mc.world);
-        this.boxes = TestUtils.calculateBoxes(corners.getLeft(), corners.getRight());
+        Pair<BlockPos, BlockPos> corners = TestRenderUtils.getSpawnChunkCorners(testPos, radius, mc.world);
+        this.boxes = TestRenderUtils.calculateBoxes(corners.getLeft(), corners.getRight());
 
         if (!this.boxes.isEmpty())
         {
@@ -99,7 +110,8 @@ public class TestWalls implements AutoCloseable
             this.hasData = false;
         }
 
-        setUpdatePosition(vec);
+        this.needsUpdate = false;
+        this.setUpdatePosition(vec);
     }
 
     public void render(Camera camera, Matrix4f matrix4f, Matrix4f projMatrix, MinecraftClient mc, Profiler profiler)
@@ -127,7 +139,7 @@ public class TestWalls implements AutoCloseable
         }
 
         profiler.push("quads");
-        Color4f quadsColor = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
+        final Color4f quadsColor = MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor();
         Vec3d cameraPos = camera.getPos();
 
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_NO_DEPTH_NO_CULL
@@ -143,7 +155,7 @@ public class TestWalls implements AutoCloseable
 
         for (Box entry : this.boxes)
         {
-            TestUtils.renderWallQuads(entry, cameraPos, quadsColor, builder);
+            TestRenderUtils.renderWallQuads(entry, cameraPos, quadsColor, builder);
         }
 
         try
@@ -185,7 +197,10 @@ public class TestWalls implements AutoCloseable
         }
 
         profiler.push("outlines");
-        Color4f linesColor = Color4f.WHITE;
+        boolean useColor = ConfigTestEnum.TEST_WALLS_USE_COLOR.getBooleanValue();
+        final Color4f linesColor = useColor
+                                   ? Color4f.fromColor(MaLiLibConfigs.Test.TEST_CONFIG_COLOR.getColor(), 0xFF)
+                                   : Color4f.WHITE;
         Vec3d cameraPos = camera.getPos();
 
         // RenderPipelines.LINES
@@ -201,7 +216,7 @@ public class TestWalls implements AutoCloseable
 
         for (Box entry : this.boxes)
         {
-            TestUtils.renderWallOutlines(entry, 16, 16, true, cameraPos, linesColor, builder);
+            TestRenderUtils.renderWallOutlines(entry, 16, 16, true, cameraPos, linesColor, builder);
         }
 
         matrix4fstack.popMatrix();

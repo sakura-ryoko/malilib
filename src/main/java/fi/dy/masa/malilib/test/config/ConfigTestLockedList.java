@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.test;
+package fi.dy.masa.malilib.test.config;
 
 import java.util.List;
 import javax.annotation.Nonnull;
