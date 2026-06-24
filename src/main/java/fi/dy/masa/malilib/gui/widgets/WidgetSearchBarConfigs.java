@@ -11,7 +11,6 @@ import fi.dy.masa.malilib.hotkeys.KeybindSettings.Context;
 import fi.dy.masa.malilib.util.KeyCodes;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
 
 public class WidgetSearchBarConfigs extends WidgetSearchBar
@@ -85,19 +84,6 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
         return super.onKeyTypedImpl(input);
     }
 
-    // This stops you from typing in the Search box
-    // while also setting a Search Keybind at the same time ...
-    @Override
-    protected boolean onCharTypedImpl(CharInput input)
-    {
-        if (this.searchOpen && this.button.isSelected())
-        {
-            return true;
-        }
-
-        return super.onCharTypedImpl(input);
-    }
-
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
@@ -106,15 +92,6 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
         if (this.searchOpen)
         {
             this.button.render(drawContext, mouseX, mouseY, false);
-
-            if (!this.hasFilter())
-            {
-                this.searchBox.setHoverTooltip("malilib.gui.button.hover.search_bar_hotkey");
-            }
-            else
-            {
-                this.searchBox.clearHoverTooltip();
-            }
         }
     }
 }

@@ -10,12 +10,15 @@ import javax.annotation.Nullable;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
-
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.*;
 
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.*;
+import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 public class DataTypeUtils
@@ -512,9 +515,10 @@ public class DataTypeUtils
 	 */
 	public static <T> Optional<T> readFlatMap(@Nonnull CompoundData data, MapCodec<T> mapCodec)
 	{
-		DynamicOps<BaseData> ops = DataOps.INSTANCE;
+		DynamicOps<NbtElement> ops = NbtOps.INSTANCE;
+		NbtCompound nbt = DataConverterNbt.toVanillaCompound(data);
 
-		return switch (ops.getMap(data).flatMap(map -> mapCodec.decode(ops, map)))
+		return switch (ops.getMap(nbt).flatMap(map -> mapCodec.decode(ops, map)))
 		{
 			case DataResult.Success<T> result -> Optional.of(result.value());
 			case DataResult.Error<T> error -> error.partialValue();
@@ -531,15 +535,15 @@ public class DataTypeUtils
 	 */
 	public static <T> CompoundData writeFlatMap(MapCodec<T> mapCodec, T value)
 	{
-		DynamicOps<BaseData> ops = DataOps.INSTANCE;
-		CompoundData data = new CompoundData();
+		DynamicOps<NbtElement> ops = NbtOps.INSTANCE;
+		NbtCompound nbt = new NbtCompound();
 
 		switch (mapCodec.encoder().encodeStart(ops, value))
 		{
-			case DataResult.Success<BaseData> result -> data.combine((CompoundData) result.value());
-			case DataResult.Error<BaseData> error -> error.partialValue().ifPresent(partial -> data.combine((CompoundData) partial));
+			case DataResult.Success<NbtElement> result -> nbt.copyFrom((NbtCompound) result.value());
+			case DataResult.Error<NbtElement> error -> error.partialValue().ifPresent(partial -> nbt.copyFrom((NbtCompound) partial));
 		}
 
-		return data;
+		return DataConverterNbt.fromVanillaCompound(nbt);
 	}
 }

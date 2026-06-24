@@ -17,6 +17,6 @@ public class MixinSharedConstants
     @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void malilib_sharedConstants(CallbackInfo ci)
     {
-        isDevelopment = MaLiLibReference.LOCAL_DEBUG || MaLiLibReference.EXPERIMENTAL_MODE;
+        isDevelopment = MaLiLibReference.DEBUG_MODE;
     }
 }

@@ -24,11 +24,8 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
-import fi.dy.masa.malilib.gui.interfaces.ITextFieldMultiLineListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetLabel;
-import fi.dy.masa.malilib.gui.wrappers.TextFieldMultiLineWrapper;
-import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
 import fi.dy.masa.malilib.render.MessageRenderer;
@@ -78,7 +75,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     private final List<ButtonBase> buttons = new ArrayList<>();
     private final List<WidgetBase> widgets = new ArrayList<>();
     private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields = new ArrayList<>();
-    private final List<TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine>> textFieldsMultiLine = new ArrayList<>();
     private final MessageRenderer messageRenderer = new MessageRenderer(0xDD000000, COLOR_HORIZONTAL_BAR);
     protected DrawContext drawContext;
     private long openTime;
@@ -284,17 +280,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public boolean mouseDragged(Click click, double dragX, double dragY)
-    {
-        if (this.onMouseDragged(click, dragX, dragY) == false)
-        {
-            return super.mouseDragged(click, dragX, dragY);
-        }
-
-        return false;
-    }
-
-    @Override
     public boolean keyPressed(KeyInput input)
     {
         this.keyInputCount++;
@@ -377,70 +362,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return false;
     }
 
-    public boolean onMouseDragged(Click click, double dragXAmount, double dragYAmount)
-    {
-        for (ButtonBase button : this.buttons)
-        {
-            if (button.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
-        {
-            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
-        {
-            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (WidgetBase widget : this.widgets)
-        {
-            if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the action got handled
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         for (ButtonBase button : this.buttons)
         {
             if (button.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
-        {
-            if (entry.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
-        {
-            if (entry.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
             {
                 // Don't call super if the button press got handled
                 return true;
@@ -596,20 +522,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public <T extends GuiTextFieldGeneric> TextFieldWrapper<T> addTextField(T textField, @Nullable ITextFieldListener<T> listener)
     {
-        return this.addTextField(textField, listener, TextFieldType.STRING);
-    }
-
-    public <T extends GuiTextFieldGeneric> TextFieldWrapper<T> addTextField(T textField, @Nullable ITextFieldListener<T> listener, TextFieldType type)
-    {
-        TextFieldWrapper<T> wrapper = new TextFieldWrapper<>(textField, listener, type);
+        TextFieldWrapper<T> wrapper = new TextFieldWrapper<>(textField, listener);
         this.textFields.add(wrapper);
-        return wrapper;
-    }
-
-    public <T extends GuiTextFieldMultiLine> TextFieldMultiLineWrapper<T> addTextFieldMultiLine(T textField, int lines, @Nullable ITextFieldMultiLineListener<T> listener)
-    {
-        TextFieldMultiLineWrapper<T> wrapper = new TextFieldMultiLineWrapper<>(textField, lines, listener);
-        this.textFieldsMultiLine.add(wrapper);
         return wrapper;
     }
 

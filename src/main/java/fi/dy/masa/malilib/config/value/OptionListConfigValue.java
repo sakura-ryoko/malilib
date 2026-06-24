@@ -1,15 +1,14 @@
 package fi.dy.masa.malilib.config.value;
 
-import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * Post-ReWrite code
  */
+@ApiStatus.Experimental
 public interface OptionListConfigValue
 {
     String getName();
 
     String getDisplayName();
-
-    default List<String> getHoverText() { return List.of(); }
 }

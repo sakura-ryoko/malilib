@@ -53,7 +53,7 @@ public class RayTraceUtils
         //Vec3d rangedLook = EntityWrap.getScaledLookVector(entity, maxRange);
         //Vec3d lookEndPos = eyesPos.add(rangedLook);
         Vec3d eyesPos = entity.getEyePos();
-        Vec3d rangedLook = MathUtils.scale(MathUtils.getRotationVector(entity.getYaw(), entity.getPitch()), maxRange).toVanilla();
+        Vec3d rangedLook = MathUtils.scale(MathUtils.getRotationVector(entity.getYaw(), entity.getPitch()), maxRange);
         Vec3d lookEndPos = eyesPos.add(rangedLook);
 
         // Something broke with the Block Collider code.

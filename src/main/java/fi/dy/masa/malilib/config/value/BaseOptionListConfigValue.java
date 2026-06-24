@@ -17,25 +17,17 @@ public class BaseOptionListConfigValue implements OptionListConfigValue
     public static final Codec<BaseOptionListConfigValue> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     PrimitiveCodec.STRING.fieldOf("name").forGetter(get -> get.name),
-                    PrimitiveCodec.STRING.fieldOf("translationKey").forGetter(get -> get.translationKey),
-                    Codec.list(PrimitiveCodec.STRING, 0, 256).fieldOf("hoverTexts").forGetter(get -> get.hoverTexts)
+                    PrimitiveCodec.STRING.fieldOf("translationKey").forGetter(get -> get.translationKey)
             ).apply(inst, BaseOptionListConfigValue::new)
     );
 
     protected final String name;
     protected final String translationKey;
-    protected final List<String> hoverTexts;
 
     public BaseOptionListConfigValue(String name, String translationKey)
     {
-        this(name, translationKey, List.of());
-    }
-
-    public BaseOptionListConfigValue(String name, String translationKey, List<String> hoverTexts)
-    {
         this.name = name;
         this.translationKey = translationKey;
-        this.hoverTexts = hoverTexts;
     }
 
     @Override
@@ -51,12 +43,6 @@ public class BaseOptionListConfigValue implements OptionListConfigValue
     }
 
     @Override
-    public List<String> getHoverText()
-    {
-        return this.hoverTexts;
-    }
-
-    @Override
     public String toString()
     {
         return this.name;
@@ -68,7 +54,7 @@ public class BaseOptionListConfigValue implements OptionListConfigValue
      */
     public static <T extends OptionListConfigValue> T findValueByName(String name, List<T> values)
     {
-        return findValueByName(name, values, values.getFirst());
+        return findValueByName(name, values, values.get(0));
     }
 
     /**

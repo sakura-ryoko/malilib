@@ -1,10 +1,7 @@
 package fi.dy.masa.malilib.util;
 
-import org.apache.commons.lang3.math.Fraction;
-import org.jetbrains.annotations.ApiStatus;
-
-import fi.dy.masa.malilib.util.position.Vec3d;
-import fi.dy.masa.malilib.util.position.Vec3i;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 /**
  * Post-ReWrite code
@@ -87,7 +84,7 @@ public class MathUtils
         }
         else
         {
-            return min(value, max);
+            return Math.min(value, max);
         }
     }
 
@@ -99,7 +96,7 @@ public class MathUtils
         }
         else
         {
-            return min(value, max);
+            return Math.min(value, max);
         }
     }
 
@@ -111,7 +108,7 @@ public class MathUtils
         }
         else
         {
-            return min(value, max);
+            return Math.min(value, max);
         }
     }
 
@@ -123,7 +120,7 @@ public class MathUtils
         }
         else
         {
-            return min(value, max);
+            return Math.min(value, max);
         }
     }
 
@@ -137,18 +134,6 @@ public class MathUtils
     {
         int i = (int) value;
         return value < (double) i ? i - 1 : i;
-    }
-
-    public static int ceil(float value)
-    {
-        int i = (int) value;
-        return (i == value) ? i : i + 1;
-    }
-
-    public static int ceil(double value)
-    {
-        int i = (int) value;
-        return (i == value) ? i : i + 1;
     }
 
     public static float round(float value, int decimalPlaces)
@@ -499,25 +484,15 @@ public class MathUtils
         return new Vec3d(g * h, i, f * h);
     }
 
-    public static Vec3d rotationVector(float yaw, float pitch)
-    {
-        double f = Math.cos(-yaw * (Math.PI / 180.0) - Math.PI);
-        double g = Math.sin(-yaw * (Math.PI / 180.0) - Math.PI);
-        double h = -Math.cos(-pitch * (Math.PI / 180.0));
-        double i = Math.sin(-pitch * (Math.PI / 180.0));
-
-        return new Vec3d(g * h, i, f * h);
-    }
-
-    public static long randomPosition(int x, int y, int z)
+    public static long getCoordinateRandom(int x, int y, int z)
     {
         long l = (long) (x * 3129871L) ^ (long) z * 116129781L ^ (long) y;
         return l * l * 42317861L + l * 11L;
     }
 
-    public static long randomPosition(Vec3i pos)
+    public static long getPositionRandom(Vec3i pos)
     {
-        return randomPosition(pos.getX(), pos.getY(), pos.getZ());
+        return getCoordinateRandom(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public static int smallestEncompassingPowerOfTwo(int value)
@@ -566,162 +541,8 @@ public class MathUtils
     }
 
     // TODO until util.position.Vec3d gets added (RayTraceUtils)
-    @Deprecated
-    public static net.minecraft.util.math.Vec3d scale(net.minecraft.util.math.Vec3d vec, double factor)
-    {
-        return new net.minecraft.util.math.Vec3d(vec.x * factor, vec.y * factor, vec.z * factor);
-    }
-
     public static Vec3d scale(Vec3d vec, double factor)
     {
         return new Vec3d(vec.x * factor, vec.y * factor, vec.z * factor);
-    }
-
-    public static int min(int val1, int val2)
-    {
-        return Math.min(val1, val2);
-    }
-
-    public static float min(float val1, float val2)
-    {
-        return Math.min(val1, val2);
-    }
-
-    public static double min(double val1, double val2)
-    {
-        return Math.min(val1, val2);
-    }
-
-    public static long min(long val1, long val2)
-    {
-        return Math.min(val1, val2);
-    }
-
-    public static short min(short val1, short val2)
-    {
-        return (val1 <= val2) ? val1 : val2;
-    }
-
-    public static byte min(byte val1, byte val2)
-    {
-        return (val1 <= val2) ? val1 : val2;
-    }
-
-    public static Fraction min(Fraction val1, Fraction val2)
-    {
-        return (val1.compareTo(val2) < 0) ? val1 : val2;
-    }
-
-    @ApiStatus.Experimental
-    public static Number min(Number val1, Number val2)
-    {
-        try
-        {
-            return (val1.doubleValue() <= val2.doubleValue()) ? val1 : val2;
-        }
-        catch (Exception ignored) {}
-
-        // Experimental, Assumes that a Number's Hash Code
-        // roughly coincides with its proper value.
-        // This is true with Primitives, but then again
-        // the doubleValue() should work anyway.
-        // This might only be an issue when using BigDecimal, etc. in rare cases.
-        return (val1.hashCode() <= val2.hashCode()) ? val1 : val2;
-    }
-
-    public static int max(int val1, int val2)
-    {
-        return Math.max(val1, val2);
-    }
-
-    public static float max(float val1, float val2)
-    {
-        return Math.max(val1, val2);
-    }
-
-    public static double max(double val1, double val2)
-    {
-        return Math.max(val1, val2);
-    }
-
-    public static long max(long val1, long val2)
-    {
-        return Math.max(val1, val2);
-    }
-
-    public static short max(short val1, short val2)
-    {
-        return (val1 >= val2) ? val1 : val2;
-    }
-
-    public static byte max(byte val1, byte val2)
-    {
-        return (val1 >= val2) ? val1 : val2;
-    }
-
-    public static Fraction max(Fraction val1, Fraction val2)
-    {
-        return (val1.compareTo(val2) > 0) ? val1 : val2;
-    }
-
-    @ApiStatus.Experimental
-    public static Number max(Number val1, Number val2)
-    {
-        try
-        {
-            return (val1.doubleValue() >= val2.doubleValue()) ? val1 : val2;
-        }
-        catch (Exception ignored) {}
-
-        // Experimental, Assumes that a Number's Hash Code
-        // roughly coincides with its proper value.
-        // This is true with Primitives, but then again
-        // the doubleValue() should work anyway.
-        // This might only be an issue when using BigDecimal, etc. in rare cases.
-        return (val1.hashCode() >= val2.hashCode()) ? val1 : val2;
-    }
-
-    public static int lerp(final float a, final int point1, final int point2)
-    {
-        return point1 + floor(a * (point2 - point1));
-    }
-
-    public static float lerp(final float a, final float point1, final float point2)
-    {
-        return point1 + a * (point2 - point1);
-    }
-
-    public static double lerp(final double a, final double point1, final double point2)
-    {
-        return point1 + a * (point2 - point1);
-    }
-
-    public static Vec3d lerp(final double a, final Vec3d point1, final Vec3d point2)
-    {
-        return new Vec3d(
-                    lerp(a, point1.x, point2.x),
-                    lerp(a, point1.y, point2.y),
-                    lerp(a, point1.z, point2.z)
-                );
-    }
-
-    public static int absMax(int value1, int value2)
-    {
-        return Math.max(Math.abs(value1), Math.abs(value2));
-    }
-
-    public static float absMax(float value1, float value2)
-    {
-        return Math.max(Math.abs(value1), Math.abs(value2));
-    }
-
-    public static double absMax(double x, double y)
-    {
-        return Math.max(Math.abs(x), Math.abs(y));
-    }
-
-    public static int chessboardDistance(int x1, int y1, int x2, int y2)
-    {
-        return absMax(x2 - x1, y2 - y1);
     }
 }

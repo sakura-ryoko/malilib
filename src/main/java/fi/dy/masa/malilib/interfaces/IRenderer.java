@@ -24,6 +24,11 @@ import net.minecraft.util.profiler.Profiler;
 public interface IRenderer
 {
     /**
+     * Called after the vanilla "drawer" overlays have been rendered
+     */
+//    default void onRenderGameOverlayLastDrawer(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc) {}
+
+    /**
      * Called after the vanilla overlays have been rendered, with advanced Parameters such as ticks, drawer, profiler
      */
     default void onRenderGameOverlayPostAdvanced(DrawContext drawContext, float partialTicks, Profiler profiler, MinecraftClient mc) {}
@@ -34,9 +39,27 @@ public interface IRenderer
     default void onRenderGameOverlayPost(DrawContext drawContext) {}
 
     /**
+     * Called before vanilla Main rendering (Only after the Sky is Drawn)
+     */
+//    default void onRenderWorldPreMain(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
+
+    /**
+     * Called during each and every RenderLayer Pass of the Main World Rendering.
+     * Append `renderObjects` with your additional blocks to render on this layer by passing along each 'Baked Object' per a Built Chunk (Using the chunkIterator)
+     */
+//    default void onRenderWorldLayerPass(RenderLayer layer, Matrix4f posMatrix, Matrix4f projMatrix, Vec3d camera, Profiler profiler,
+//                                        ObjectListIterator<ChunkBuilder.BuiltChunk> chunkIterator,
+//                                        ArrayList<RenderPass.RenderObject> renderObjects) {}
+
+    /**
      * Called after vanilla debug rendering (Chunk Borders, etc)
      */
     default void onRenderWorldPostDebugRender(MatrixStack matrices, Frustum frustum, VertexConsumerProvider.Immediate immediate, Vec3d camera, Profiler profiler) {}
+
+    /**
+     * Called before vanilla Weather rendering
+     */
+//    default void onRenderWorldPreParticles(Framebuffer fb, Matrix4f posMatrix, Matrix4f projMatrix, Frustum frustum, Camera camera, Fog fog, BufferBuilderStorage buffers, Profiler profiler) {}
 
     /**
      * Called before vanilla Weather rendering

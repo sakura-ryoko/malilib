@@ -1,14 +1,14 @@
 package fi.dy.masa.malilib.util.position;
 
 import javax.annotation.Nonnull;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import io.netty.buffer.ByteBuf;
 import org.joml.Vector3f;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 
 /**
  * Post-ReWrite code
@@ -100,32 +100,8 @@ public class Vec3f
     }
 
     @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-
-        result = prime * result + Float.floatToIntBits(x);
-        result = prime * result + Float.floatToIntBits(y);
-        result = prime * result + Float.floatToIntBits(z);
-
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj) { return true; }
-        if (obj == null) { return false; }
-        if (getClass() != obj.getClass()) { return false; }
-
-        Vec3f other = (Vec3f) obj;
-	    return this.x == other.x && this.y == other.y && this.z == other.z;
-    }
-
-    @Override
     public String toString()
     {
-        return "Vec3f:{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
+        return "Vec3f{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
     }
 }

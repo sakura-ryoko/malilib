@@ -4,7 +4,6 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
-import fi.dy.masa.malilib.util.data.tag.EmptyData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 
 import java.io.BufferedInputStream;
@@ -92,7 +91,7 @@ public class DataFileUtils
 
             if (tagType == Constants.NBT.TAG_END)
             {
-                return EmptyData.INSTANCE;
+                return null;
             }
 
             // Discard the name of the root tag

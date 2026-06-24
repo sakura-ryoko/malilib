@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.test.config.ConfigTestEnum;
+import fi.dy.masa.malilib.test.ConfigTestEnum;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;

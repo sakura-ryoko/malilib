@@ -3,7 +3,10 @@ package fi.dy.masa.malilib.util;
 import java.io.File;
 import java.net.SocketAddress;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -30,8 +33,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-
-import fi.dy.masa.malilib.MaLiLibFabricData;
 import fi.dy.masa.malilib.MaLiLibReference;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,9 +40,6 @@ import com.mojang.serialization.JsonOps;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.LeftRight;
-import fi.dy.masa.malilib.registry.Registry;
-import fi.dy.masa.malilib.util.i18n.i18nManager;
-import fi.dy.masa.malilib.util.i18n.i18nMode;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 
 /**
@@ -79,17 +77,12 @@ public class StringUtils
 
     public static String getModVersionString(String modId)
     {
-//        for (ModContainer container : FabricLoader.getInstance().getAllMods())
-//        {
-//            if (container.getMetadata().getId().equals(modId))
-//            {
-//                return container.getMetadata().getVersion().getFriendlyString();
-//            }
-//        }
-
-        if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(modId))
+        for (net.fabricmc.loader.api.ModContainer container : net.fabricmc.loader.api.FabricLoader.getInstance().getAllMods())
         {
-            return MaLiLibFabricData.ALL_MOD_VERSIONS.get(modId);
+            if (container.getMetadata().getId().equals(modId))
+            {
+                return container.getMetadata().getVersion().getFriendlyString();
+            }
         }
 
         return "?";
@@ -772,51 +765,24 @@ public class StringUtils
                 MaLiLib.LOGGER.info("Translation key: {}", translationKey);
             }
 
+            /*
             if (MaLiLibConfigs.Generic.TRANSLATION_OVERRIDES.getBooleanValue())
             {
-                // Post-Rewrite's Translation Overrides
-                /*
-                    String translation = Registry.TRANSLATION_OVERRIDE_MANAGER.getOverriddenTranslation(translationKey, args);
+                String translation = Registry.TRANSLATION_OVERRIDE_MANAGER.getOverriddenTranslation(translationKey, args);
 
-                    if (translation != null)
-                    {
-                        return translation;
-                    }
-                 */
-
-                // Sorry, I wrote my own; :shrug:
-                Optional<i18nManager> opt = Registry.TRANSLATION_OVERRIDE_MANAGER.scanForTranslationKey(translationKey);
-
-                if (opt.isPresent())
+                if (translation != null)
                 {
-                    i18nManager manager = opt.get();
-                    Optional<i18nMode> mode = Registry.TRANSLATION_OVERRIDE_MANAGER.getLanguageMode(manager.getModId());
-
-                    if (mode.isPresent())
-                    {
-                        i18nMode modeEntry = mode.get();
-
-                        if (modeEntry == i18nMode.OFF)
-                        {
-                            return translateWrap(translationKey, args);
-                        }
-                    }
-
-                    return manager.translate(translationKey, args);
+                    return translation;
                 }
             }
+             */
 
-            return translateWrap(translationKey, args);
+            return I18n.translate(translationKey, args);
         }
         catch (Exception e)
         {
             return translationKey;
         }
-    }
-
-    private static String translateWrap(String translationKey, Object... args)
-    {
-        return I18n.translate(translationKey, args);
     }
 
     public static Text translateAsText(String translationKey, Object... args)
@@ -841,16 +807,6 @@ public class StringUtils
      */
     public static boolean hasTranslation(String translationKey)
     {
-        if (MaLiLibConfigs.Generic.TRANSLATION_OVERRIDES.getBooleanValue())
-        {
-            Optional<i18nManager> opt = Registry.TRANSLATION_OVERRIDE_MANAGER.scanForTranslationKey(translationKey);
-
-            if (opt.isPresent())
-            {
-                return true;
-            }
-        }
-
         return I18n.hasTranslation(translationKey);
     }
 

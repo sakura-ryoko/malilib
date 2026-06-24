@@ -175,11 +175,6 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             ConfigButtonOptionList optionButton = new ConfigButtonOptionList(x, y, configWidth, configHeight, (IConfigOptionList) config);
             this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
         }
-        else if (type == ConfigType.OPTION_VALUES)
-        {
-            ConfigButtonOptionValues optionButton = new ConfigButtonOptionValues(x, y, configWidth, configHeight, (IConfigOptionValues<?>) config);
-            this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
-        }
         else if (type == ConfigType.STRING_LIST)
         {
             ConfigButtonStringList optionButton = new ConfigButtonStringList(x, y, configWidth, configHeight, (IConfigStringList) config, this.host, this.host.getDialogHandler());
@@ -203,8 +198,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                  type == ConfigType.COLOR ||
                  type == ConfigType.INTEGER ||
                  type == ConfigType.DOUBLE ||
-                 type == ConfigType.FLOAT ||
-                 type == ConfigType.BLOCK_STATE)
+                 type == ConfigType.FLOAT)
         {
             int resetX = x + configWidth + 2;
 
@@ -213,12 +207,6 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                 configWidth -= 22; // adjust the width to match other configs due to the color display
                 this.colorDisplayPosX = x + configWidth + 2;
                 this.addWidget(new WidgetColorIndicator(this.colorDisplayPosX, y + 1, 19, 19, (IConfigColor) config));
-            }
-            else if (type == ConfigType.BLOCK_STATE)
-            {
-                configWidth -= 22; // adjust the width to match other configs due to the block icon display
-                this.colorDisplayPosX = x + configWidth + 2;
-                this.addWidget(new WidgetBlockStateIcon(this.colorDisplayPosX, y + 1, 18, 18, (IConfigBlockState) config));
             }
             else if (type == ConfigType.INTEGER || type == ConfigType.DOUBLE || type == ConfigType.FLOAT)
             {
@@ -416,7 +404,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, boolean selected)
     {
-//        super.render(ctx, mouseX, mouseY, selected);
+        super.render(ctx, mouseX, mouseY, selected);
 
         this.drawSubWidgets(ctx, mouseX, mouseY);
 

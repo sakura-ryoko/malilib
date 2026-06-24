@@ -1,14 +1,13 @@
 package fi.dy.masa.malilib.config;
 
-import java.util.List;
-
 public interface IConfigOptionListEntry
 {
+//    @ApiStatus.Experimental
+//    Codec<? extends IConfigOptionListEntry> codec();
+
     String getStringValue();
 
     String getDisplayName();
-
-    default List<String> getHoverText() { return List.of(); }
 
     IConfigOptionListEntry cycle(boolean forward);
 

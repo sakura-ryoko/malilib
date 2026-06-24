@@ -1,13 +1,12 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-
+import org.joml.Matrix3x2fStack;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
@@ -69,9 +68,10 @@ public abstract class GuiTextInputBase extends GuiDialogBase
             this.getParent().render(drawContext, mouseX, mouseY, partialTicks);
         }
 
-        drawContext.getMatrices().pushMatrix();
+        Matrix3x2fStack matrixStack = drawContext.getMatrices();
+        matrixStack.pushMatrix();
         // 1.f
-        drawContext.getMatrices().translate(0, 0);
+        matrixStack.translate(0, 0);
 
         RenderUtils.drawOutlinedBox(drawContext, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xE0000000, COLOR_HORIZONTAL_BAR);
 
@@ -82,7 +82,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
         this.textField.render(drawContext, mouseX, mouseY, partialTicks);
 
         this.drawButtons(drawContext, mouseX, mouseY, partialTicks);
-        drawContext.getMatrices().popMatrix();
+        matrixStack.popMatrix();
     }
 
     @Override
@@ -132,28 +132,6 @@ public abstract class GuiTextInputBase extends GuiDialogBase
         }
 
         return super.onMouseClicked(click, doubleClick);
-    }
-
-    @Override
-    public boolean onMouseDragged(Click click, double dragXAmount, double dragYAmount)
-    {
-        if (this.textField.mouseDragged(click, dragXAmount, dragYAmount))
-        {
-            return true;
-        }
-
-        return super.onMouseDragged(click, dragXAmount, dragYAmount);
-    }
-
-    @Override
-    public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
-    {
-        if (this.textField.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
-        {
-            return true;
-        }
-
-        return super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     protected ButtonListener createActionListener(ButtonType type)

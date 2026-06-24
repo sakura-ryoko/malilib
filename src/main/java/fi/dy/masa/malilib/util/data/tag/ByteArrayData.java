@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.util.data.tag;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.ArrayUtils;
@@ -57,25 +56,18 @@ public class ByteArrayData extends BaseData
     }
 
     @Override
-    public boolean isEmpty()
-    {
-        return this.value.length == 0;
-    }
-
-    @Override
     public void clear()
     {
         this.value = new byte[0];
     }
 
     @Override
-    public boolean set(int index, BaseData entry)
+    public boolean set(int index, BaseData value)
     {
-        Optional<Number> opt = entry.asNumber();
+        Optional<Number> opt = value.asNumber();
 
-        if (index < this.size() &&
-            index >= 0 &&
-            opt.isPresent())
+        if (index < this.size() && index >= 0
+            && opt.isPresent())
         {
             this.value[index] = opt.get().byteValue();
             return true;
@@ -85,13 +77,12 @@ public class ByteArrayData extends BaseData
     }
 
     @Override
-    public boolean add(int index, BaseData entry)
+    public boolean add(int index, BaseData value)
     {
-        Optional<Number> opt = entry.asNumber();
+        Optional<Number> opt = value.asNumber();
 
-        if (index < this.size() &&
-            index >= 0 &&
-            opt.isPresent())
+        if (index < this.size() && index >= 0
+            && opt.isPresent())
         {
             this.value = ArrayUtils.add(this.value, index, opt.get().byteValue());
             return true;
@@ -148,22 +139,5 @@ public class ByteArrayData extends BaseData
         input.readFully(arr);
 
         return new ByteArrayData(arr);
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) { return true; }
-        if (o == null || this.getClass() != o.getClass()) { return false; }
-
-        ByteArrayData other = (ByteArrayData) o;
-
-        return Arrays.equals(this.value, other.value);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Arrays.hashCode(this.value);
     }
 }

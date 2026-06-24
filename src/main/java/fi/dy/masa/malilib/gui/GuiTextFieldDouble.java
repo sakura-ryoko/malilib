@@ -17,7 +17,7 @@ public class GuiTextFieldDouble extends GuiTextFieldGeneric
         super(x, y, width, height, fontRenderer);
 
 //        this.setTextPredicate(input -> input.isEmpty() || PATTERN_NUMBER.matcher(input).matches());
-	    this.setChangedListener(this::onTextChanged);
+	    this.setChangedListener(this::onChanged);
     }
 
 	protected boolean testDouble(String input)
@@ -48,7 +48,7 @@ public class GuiTextFieldDouble extends GuiTextFieldGeneric
 		return -1;
 	}
 
-	protected void onTextChanged(String newText)
+	protected void onChanged(String newText)
 	{
 		if (!this.testDouble(newText))
 		{

@@ -40,12 +40,6 @@ public class ShortData extends BaseData
     }
 
     @Override
-    public boolean isEmpty()
-    {
-        return false;
-    }
-
-    @Override
     public Optional<Number> asNumber()
     {
         return Optional.of(this.value);
@@ -61,22 +55,5 @@ public class ShortData extends BaseData
     {
         sizeTracker.increment(2);
         return new ShortData(input.readShort());
-    }
-
-    @Override
-    public boolean equals(Object o)
-    {
-        if (this == o) { return true; }
-        if (o == null || this.getClass() != o.getClass()) { return false; }
-
-        ShortData other = (ShortData) o;
-
-        return this.value == other.value;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return this.value;
     }
 }

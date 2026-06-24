@@ -7,11 +7,16 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.event.InitializationHandler;
 import fi.dy.masa.malilib.event.TickHandler;
 import fi.dy.masa.malilib.event.WorldLoadHandler;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
+import fi.dy.masa.malilib.test.ConfigTestEnum;
+import fi.dy.masa.malilib.test.TestSelector;
 
 import java.nio.file.Path;
 import net.minecraft.client.MinecraftClient;

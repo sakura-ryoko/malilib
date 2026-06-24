@@ -90,16 +90,16 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                 {
                     super.setSelectedEntry(index);
 
-                    if (selectedEntry != null && selectedEntry.configScreenSupplier() != null)
+                    if (selectedEntry != null && selectedEntry.getConfigScreenSupplier() != null)
                     {
-                        client.setScreen(selectedEntry.configScreenSupplier().get());
+                        client.setScreen(selectedEntry.getConfigScreenSupplier().get());
                     }
                 }
 
                 @Override
                 protected String getDisplayString(ModInfo entry)
                 {
-                    return entry.modName();
+                    return entry.getModName();
                 }
             };
 
@@ -307,18 +307,15 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
 
         public ConfigOptionWrapper(IConfigBase config)
         {
-            this(Type.CONFIG, config, null);
+            this.type = Type.CONFIG;
+            this.config = config;
+            this.label = null;
         }
 
         public ConfigOptionWrapper(String label)
         {
-            this(Type.LABEL, null, label);
-        }
-
-        private ConfigOptionWrapper(Type type, @Nullable IConfigBase config, @Nullable String label)
-        {
-            this.type = type;
-            this.config = config;
+            this.type = Type.LABEL;
+            this.config = null;
             this.label = label;
         }
 
