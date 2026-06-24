@@ -25,6 +25,8 @@
     ],
     "client": [
         "client.MixinMinecraftClient",
+        "data.MixinLanguageManager",
+        "gui.IMixinAbstractWidget",
         "hud.MixinInGameHud",
         "input.IMixinKeyBinding",
         "input.MixinKeyboard",
@@ -34,6 +36,7 @@
         "network.MixinClientPlayNetworkHandler",
         "recipe.IMixinClientRecipeBook",
         "render.IMixinAbstractTexture",
+        "render.IMixinBlockRenderManager",
         "render.IMixinBufferBuilder",
         "render.IMixinDrawContext",
         "render.IMixinGameRenderer",

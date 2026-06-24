@@ -8,6 +8,7 @@ import java.util.List;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.config.IConfigResettable;
+import fi.dy.masa.malilib.config.IHotkeyTogglable;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.GuiConfigsBase.ConfigOptionWrapper;
 import fi.dy.masa.malilib.gui.LeftRight;
@@ -88,15 +89,33 @@ public class WidgetListConfigOptions extends WidgetListConfigOptionsBase<ConfigO
     {
         if (this.widgetSearchConfigs != null)
         {
-            String filterText = this.widgetSearchConfigs.getFilter();
             IKeybind filterKeys = this.widgetSearchConfigs.getKeybind();
+            String filterText = this.widgetSearchConfigs.getFilter();
 
+            // Updated Searchbar with Hotkey filter to be less jank
             for (ConfigOptionWrapper entry : entries)
             {
-                if ((filterText.isEmpty() || this.entryMatchesFilter(entry, filterText)) &&
-                    (entry.getConfig().getType() != ConfigType.HOTKEY ||
-                     filterKeys.getKeys().size() == 0 ||
-                     ((IHotkey) entry.getConfig()).getKeybind().overlaps(filterKeys)))
+                if (entry.getConfig() == null)
+                {
+                    continue;
+                }
+
+                boolean isHotkey = entry.getConfig().getType() == ConfigType.HOTKEY ||
+                        entry.getConfig() instanceof IHotkeyTogglable;
+                IKeybind keybind = isHotkey ? ((IHotkey) entry.getConfig()).getKeybind() : null;
+                boolean hasFilterKeys = filterKeys != null && !filterKeys.getKeys().isEmpty();
+                boolean overlaps = keybind != null && hasFilterKeys && keybind.overlaps(filterKeys);
+//                boolean filterEmpty = filterText != null && filterText.isEmpty();         // entryMatchesFilter() also checks for empty
+                boolean entryMatches = this.entryMatchesFilter(entry, filterText);
+
+//                MaLiLib.LOGGER.error("addFilteredContents() - [{}/{}]: isHotkey: [{}], overlaps: [{}], keybind: [{}] // '{}' = filterEmpty: [{}], entryMatches: [{}]",
+//                                     entry.getConfig().getType(), entry.getConfig().getName(),
+//                                     isHotkey, overlaps, keybind != null ? keybind.getStringValue() : "<>",
+//                                     filterText, filterEmpty, entryMatches
+//                );
+
+                if ((isHotkey && (overlaps || !hasFilterKeys) && entryMatches) ||
+                        (!hasFilterKeys && entryMatches))
                 {
                     this.listContents.add(entry);
                 }

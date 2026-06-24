@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase;
-import fi.dy.masa.malilib.test.TestDirectoryCache;
+import fi.dy.masa.malilib.test.data.TestDirectoryCache;
 import fi.dy.masa.malilib.test.gui.GuiTestFileBrowser;
 import fi.dy.masa.malilib.test.gui.TestFileIcons;
 

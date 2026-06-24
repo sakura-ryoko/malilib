@@ -1,0 +1,313 @@
+package fi.dy.masa.malilib.gui;
+
+import javax.annotation.Nullable;
+import org.jetbrains.annotations.ApiStatus;
+
+import net.minecraft.client.gui.Click;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.input.CharInput;
+import net.minecraft.client.input.KeyInput;
+
+import fi.dy.masa.malilib.gui.button.ButtonBase;
+import fi.dy.masa.malilib.gui.button.ButtonGeneric;
+import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.MathUtils;
+import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.Color4f;
+
+@ApiStatus.Experimental
+public abstract class GuiTextInputStackedMultiLineBase extends GuiDialogBase
+{
+    protected final GuiTextFieldGeneric textField1;
+    protected final GuiTextFieldMultiLine textField2;
+    protected final String originalText1;
+    protected final String originalText2;
+    protected int selectedBox;
+    protected final int displayLines;
+    protected final int text1Height;
+    protected final int text2Height;
+    protected final int buttonHeight;
+    protected final int totalLines;
+    protected final int totalHeight;
+    protected final int totalWidth;
+
+    public GuiTextInputStackedMultiLineBase(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText1, String defaultText2, @Nullable Screen parent)
+    {
+        this(maxTextLength, displayLines, maxLines, titleKey, defaultText1, defaultText2, parent, Color4f.WHITE, true);
+    }
+
+    public GuiTextInputStackedMultiLineBase(int maxTextLength, int displayLines, int maxLines, String titleKey, String defaultText1, String defaultText2, @Nullable Screen parent,
+                                            Color4f textColor, boolean withShadow)
+    {
+        this.setParent(parent);
+        this.title = StringUtils.translate(titleKey);
+        this.useTitleHierarchy = false;
+        this.originalText1 = defaultText1;
+        this.originalText2 = defaultText2;
+        this.displayLines = MathUtils.clamp(displayLines, 1, this.dialogHeight);
+        this.totalLines = MathUtils.clamp(maxLines, 1, Integer.MAX_VALUE);
+        this.text1Height = 20;
+        this.text2Height = (displayLines * 20);
+        this.buttonHeight = 20;
+        this.totalHeight = this.text1Height + this.text2Height + 2;
+        this.totalWidth = MathUtils.min(maxTextLength * 10, 240);
+
+        boolean hasScrollbar = displayLines < maxLines;
+        this.setWidthAndHeight(this.totalWidth + 20, this.totalHeight + this.buttonHeight + 40);
+        this.centerOnScreen();
+
+        this.textField1 = new GuiTextFieldGeneric(this.dialogLeft + 12, this.dialogTop + this.buttonHeight, this.totalWidth, this.text1Height, this.textRenderer);
+        this.textField1.setMaxLength(maxTextLength);
+        this.textField1.setEditableColor(textColor.getIntValue());
+        this.textField1.setTextShadow(withShadow);
+        this.textField1.setText(this.originalText1);
+
+        GuiTextFieldMultiLine.Builder builder = new GuiTextFieldMultiLine.Builder();
+
+        this.textField2 = builder.setX(this.dialogLeft + 12).setY(this.dialogTop + this.text1Height + this.buttonHeight + 2)
+                                 .setWidth(this.totalWidth).setHeight(this.text2Height)
+                                 .setTextColor(textColor).setShadow(withShadow).setScrollbar(hasScrollbar)
+                                 .build(this.textRenderer, defaultText2);
+        this.textField2.setMaxLines(maxLines);
+        this.textField2.setText(this.originalText2);
+
+        this.textField1.setFocused(true);
+        this.selectedBox = 1;
+    }
+
+    @Override
+    public void initGui()
+    {
+        int x = this.dialogLeft + 10;
+        int y = this.dialogTop + this.totalHeight + this.buttonHeight + 10;
+
+        x += this.createButton(x, y, ButtonType.OK) + 2;
+        x += this.createButton(x, y, ButtonType.RESET) + 2;
+        this.createButton(x, y, ButtonType.CANCEL);
+    }
+
+    protected int createButton(int x, int y, ButtonType type)
+    {
+        ButtonGeneric button = new ButtonGeneric(x, y, -1, this.buttonHeight, type.getDisplayName());
+        button.setWidth(Math.max(40, button.getWidth()));
+        return this.addButton(button, this.createActionListener(type)).getWidth();
+    }
+
+    protected int getSelectedBox()
+    {
+        return this.selectedBox;
+    }
+
+    @Nullable
+    protected ClickableWidget getSelectedTextField()
+    {
+        if (this.getSelectedBox() == 1)
+        {
+            return this.textField1;
+        }
+        else if (this.getSelectedBox() == 2)
+        {
+            return this.textField2;
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean shouldPause()
+    {
+        return this.getParent() != null && this.getParent().shouldPause();
+    }
+
+    @Override
+    public void drawContents(DrawContext ctx, int mouseX, int mouseY, float partialTicks)
+    {
+        if (this.getParent() != null)
+        {
+            this.getParent().render(ctx, mouseX, mouseY, partialTicks);
+        }
+
+	    ctx.getMatrices().pushMatrix();
+        // 1.f
+	    ctx.getMatrices().translate(0, 0);
+
+        RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xE0000000, COLOR_HORIZONTAL_BAR);
+
+        // Draw the title
+        this.drawStringWithShadow(ctx, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
+
+        //super.drawScreen(mouseX, mouseY, partialTicks);
+        this.textField1.render(ctx, mouseX, mouseY, partialTicks);
+        this.textField2.render(ctx, mouseX, mouseY, partialTicks);
+
+        this.drawButtons(ctx, mouseX, mouseY, partialTicks);
+	    ctx.getMatrices().popMatrix();
+    }
+
+    @Override
+    public boolean onKeyTyped(KeyInput input)
+    {
+        if (input.key() == KeyCodes.KEY_ENTER && this.selectedBox == 1)
+        {
+            // Only close the GUI if the value was successfully applied
+            if (this.applyValues(this.textField1.getText(), this.textField2.getText()))
+            {
+                GuiBase.openGui(this.getParent());
+            }
+
+            return true;
+        }
+        else if (input.key() == KeyCodes.KEY_ESCAPE)
+        {
+            GuiBase.openGui(this.getParent());
+            return true;
+        }
+
+        if (this.textField1.isFocused())
+        {
+            this.selectedBox = 1;
+            return this.textField1.keyPressed(input);
+        }
+        else if (this.textField2.isFocused())
+        {
+            this.selectedBox = 2;
+            return this.textField2.keyPressed(input);
+        }
+
+        return super.onKeyTyped(input);
+    }
+
+    @Override
+    public boolean onCharTyped(CharInput input)
+    {
+        if (this.textField1.isFocused())
+        {
+            this.selectedBox = 1;
+            return this.textField1.charTyped(input);
+        }
+        else if (this.textField2.isFocused())
+        {
+            this.selectedBox = 2;
+            return this.textField2.charTyped(input);
+        }
+
+        return super.onCharTyped(input);
+    }
+
+    @Override
+    public boolean onMouseClicked(Click click, boolean doubleClick)
+    {
+        if (this.textField1.mouseClicked(click, doubleClick))
+        {
+            this.selectedBox = 1;
+            return true;
+        }
+        else if (this.textField2.mouseClicked(click, doubleClick))
+        {
+            this.selectedBox = 2;
+            return true;
+        }
+
+        return super.onMouseClicked(click, doubleClick);
+    }
+
+    @Override
+    public boolean onMouseDragged(Click click, double dragXAmount, double dragYAmount)
+    {
+        if (this.textField1.mouseDragged(click, dragXAmount, dragYAmount))
+        {
+            this.selectedBox = 1;
+            return true;
+        }
+        else if (this.textField2.mouseDragged(click, dragXAmount, dragYAmount))
+        {
+            this.selectedBox = 2;
+            return true;
+        }
+
+        return super.onMouseDragged(click, dragXAmount, dragYAmount);
+    }
+
+    @Override
+    public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
+    {
+        if (this.textField1.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+        {
+            this.selectedBox = 1;
+            return true;
+        }
+        else if (this.textField2.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
+        {
+            this.selectedBox = 2;
+            return true;
+        }
+
+        return super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+    }
+
+    protected ButtonListener createActionListener(ButtonType type)
+    {
+        return new ButtonListener(type, this);
+    }
+
+    protected abstract boolean applyValues(String value1, String value2);
+
+    protected static class ButtonListener implements IButtonActionListener
+    {
+        private final GuiTextInputStackedMultiLineBase gui;
+        private final ButtonType type;
+
+        public ButtonListener(ButtonType type, GuiTextInputStackedMultiLineBase gui)
+        {
+            this.type = type;
+            this.gui = gui;
+        }
+
+        @Override
+        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+        {
+            if (this.type == ButtonType.OK)
+            {
+                // Only close the GUI if the value was successfully applied
+                if (this.gui.applyValues(this.gui.textField1.getText(), this.gui.textField2.getText()))
+                {
+                    GuiBase.openGui(this.gui.getParent());
+                }
+            }
+            else if (this.type == ButtonType.CANCEL)
+            {
+                GuiBase.openGui(this.gui.getParent());
+            }
+            else if (this.type == ButtonType.RESET)
+            {
+                this.gui.textField1.setText(this.gui.originalText1);
+                this.gui.textField2.setText(this.gui.originalText2);
+                this.gui.textField1.setFocused(true);
+                this.gui.selectedBox = 1;
+            }
+        }
+    }
+
+    protected enum ButtonType
+    {
+        OK      ("malilib.gui.button.ok"),
+        CANCEL  ("malilib.gui.button.cancel"),
+        RESET   ("malilib.gui.button.reset");
+
+        private final String labelKey;
+
+        ButtonType(String labelKey)
+        {
+            this.labelKey = labelKey;
+        }
+
+        public String getDisplayName()
+        {
+            return StringUtils.translate(this.labelKey);
+        }
+    }
+}

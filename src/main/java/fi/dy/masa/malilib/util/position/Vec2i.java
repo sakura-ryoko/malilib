@@ -1,14 +1,14 @@
 package fi.dy.masa.malilib.util.position;
 
 import javax.annotation.Nonnull;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
 import io.netty.buffer.ByteBuf;
 import org.joml.Vector2i;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 
 /**
  * Post-ReWrite code
@@ -101,6 +101,6 @@ public class Vec2i
     @Override
     public String toString()
     {
-        return "Vec2i{x=" + this.x + ", y=" + this.y + "}";
+        return "Vec2i:{x=" + this.x + ", y=" + this.y + "}";
     }
 }

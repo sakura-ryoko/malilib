@@ -4,14 +4,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.math.ColorHelper;
 import io.netty.buffer.ByteBuf;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.math.ColorHelper;
+
 import fi.dy.masa.malilib.util.MathUtils;
 
 /**
@@ -133,6 +134,10 @@ public class Color4f
                              getHexColorString(this.intValue), this.a, this.r, this.g, this.b, this.intValue);
     }
 
+    /**
+     * Return this {@link Color4f} as an 8-char Hex value, prefixed by a '#' (ex. '#F0F0F0F0')
+     * @return      The Hex Value as a String
+     */
     public String toHexString()
     {
         return String.format("#%08X", this.intValue);

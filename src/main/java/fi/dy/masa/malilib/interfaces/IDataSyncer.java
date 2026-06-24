@@ -1,15 +1,17 @@
 package fi.dy.masa.malilib.interfaces;
 
+import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockEntityProvider;
+import org.apache.commons.lang3.tuple.Pair;
+
 import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
+import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.PiglinEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -19,20 +21,29 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.ApiStatus;
+
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.entity.IMixinPiglinEntity;
+import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
+import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.DataEntityUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
-import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
+import fi.dy.masa.malilib.util.data_syncer.EntityDataCache;
+import fi.dy.masa.malilib.util.data_syncer.EntityDataPairEntry;
+import fi.dy.masa.malilib.util.data_syncer.EntityDataRequestTracker;
+import fi.dy.masa.malilib.util.nbt.NbtKeys;
+import fi.dy.masa.malilib.util.nbt.NbtView;
+import fi.dy.masa.malilib.util.position.BlockPos;
+import fi.dy.masa.malilib.util.position.Direction;
 
 /**
  * Used as a common Server Data Syncer interface used by the IInventoryOverlayHandler Interface.
@@ -43,383 +54,639 @@ import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
  */
 public interface IDataSyncer
 {
-    /**
-     * Get the 'Best World' object
-     * @return ()
-     */
-    @Nullable
-    default World getWorld()
-    {
-        if (MinecraftClient.getInstance() == null)
-        {
-            return null;
-        }
+	/**
+	 * Return your Cache instance.
+	 *
+	 * @return -
+	 */
+	EntityDataCache getCache();
 
-        return WorldUtils.getBestWorld(MinecraftClient.getInstance());
-    }
+	/**
+	 * Return your request Tracker
+	 *
+	 * @return -
+	 */
+	EntityDataRequestTracker getRequestTracker();
 
-    /**
-     * Get the Client World Object
-     * @return ()
-     */
-    @Nullable
-    default ClientWorld getClientWorld()
-    {
-        if (MinecraftClient.getInstance().world == null)
-        {
-            return null;
-        }
+	/**
+	 * Return a list of ignored Cache Ids
+	 */
+	default List<String> ignoredIds()
+	{
+		return List.of(this.getCache().getId());
+	}
 
-        return MinecraftClient.getInstance().world;
-    }
+	/**
+	 * Return if this Data Syncer is enabled
+	 *
+	 * @return -
+	 */
+	boolean isEnabled();
 
-    /**
-     * Called when Joining / Leaving worlds; used to "reset" any Data Syncer Cache.
-     * @param isLogout ()
-     */
-    default void reset(boolean isLogout) { }
+	/**
+	 * Return if this data syncer's "Backup Mode" is enabled
+	 *
+	 * @return -
+	 */
+	boolean isBackupEnabled();
 
-    /**
-     * If you need to initialize a Packet Handler's Payload Registration.
-     * Needs to be called during your Mod Init Function.
-     */
-    default void onGameInit() {}
+	/**
+	 * Return the length in time for a configured Cache refresh
+	 *
+	 * @return -
+	 */
+	long getRefreshTime();
 
-    /**
-     * If you need to initialize a Packet Receiver, aka. register your Global Receiver.
-     * Needs to be called during the onWorldJoinPre() phase.
-     */
-    default void onWorldPre() {}
+	/**
+	 * Return the Cache's timeout setting
+	 *
+	 * @return -
+	 */
+	long getCacheTimeout();
 
-    /**
-     * What to do when joining a world?  Such a register your
-     * Data Syncer with any Server Back end; requesting Metadata, etc.
-     * Needs to be called during the onWorldJoinPost() phase.
-     */
-    default void onWorldJoin() {}
+	/**
+	 * Return whether to "load" the Nbt into a Block Entity Container
+	 *
+	 * @return -
+	 */
+	boolean loadContainerBlockEntities();
 
-    /**
-     * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
-     * Note, that these functions are intended to be simple Getters.
-     * For Requesting Server Data, use `requestBlockEntity()`
-     * @param pos ()
-     * @return ()
-     */
-    @Nullable
-    default NbtCompound getFromBlockEntityCacheNbt(BlockPos pos) { return null; }
+	/**
+	 * Get the 'Best World' object
+	 *
+	 * @return ()
+	 */
+	@Nullable
+	default World getBestWorld()
+	{
+		if (MinecraftClient.getInstance() == null)
+		{
+			return null;
+		}
+
+		return WorldUtils.getBestWorld(MinecraftClient.getInstance());
+	}
+
+	/**
+	 * Get the Client World Object
+	 *
+	 * @return ()
+	 */
+	@Nullable
+	default ClientWorld getClientWorld()
+	{
+		if (MinecraftClient.getInstance().world == null)
+		{
+			return null;
+		}
+
+		return MinecraftClient.getInstance().world;
+	}
+
+	/**
+	 * Return if there is a local single player server
+	 *
+	 * @return -
+	 */
+	default boolean hasSingleplayerServer() {return MinecraftClient.getInstance().isIntegratedServerRunning();}
+
+	/**
+	 * Return if we are running on the local Server Thread
+	 *
+	 * @return -
+	 */
+	default boolean isOnLocalServerThread()
+	{
+		if (this.hasSingleplayerServer() && MinecraftClient.getInstance().getServer() != null)
+		{
+			return MinecraftClient.getInstance().getServer().isOnThread();
+		}
+
+		return false;
+	}
+
+	/**
+	 * Called when Joining / Leaving worlds; used to "reset" any Data Syncer Cache.
+	 *
+	 * @param isLogout ()
+	 */
+	default void reset(boolean isLogout) {}
+
+	/**
+	 * If you need to initialize a Packet Handler's Payload Registration.
+	 * Needs to be called during your Mod Init Function.
+	 */
+	default void onGameInit() {}
+
+	/**
+	 * If you need to initialize a Packet Receiver, aka. register your Global Receiver.
+	 * Needs to be called during the onWorldJoinPre() phase.
+	 */
+	default void onWorldPre() {}
+
+	/**
+	 * What to do when joining a world?  Such a register your
+	 * Data Syncer with any Server Back end; requesting Metadata, etc.
+	 * Needs to be called during the onWorldJoinPost() phase.
+	 */
+	default void onWorldJoin() {}
 
 	/**
 	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
 	 * Note, that these functions are intended to be simple Getters.
 	 * For Requesting Server Data, use `requestBlockEntity()`
+	 *
 	 * @param pos ()
 	 * @return ()
 	 */
 	@Nullable
-	default CompoundData getFromBlockEntityCacheData(BlockPos pos) { return null; }
+	default NbtCompound getFromBlockEntityCacheNbt(BlockPos pos)
+	{
+		CompoundData data = this.getFromBlockEntityCacheData(pos);
 
-    /**
-     * Used to return an BlockEntity Object from the Entity Data Syncer Cache at the specific BlockPos.
-     * Note, that these functions are intended to be simple Getters.
-     * For Requesting Server Data, use `requestBlockEntity()`
-     * @param pos ()
-     * @return ()
-     */
-    @Nullable
-    default BlockEntity getFromBlockEntityCache(BlockPos pos) { return null; }
+		if (data != null)
+		{
+			return DataConverterNbt.toVanillaCompound(data);
+		}
 
-    /**
-     * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
-     * Note, that these functions are intended to be simple Getters.
-     * For Requesting Server Data, use `requestEntity()`
-     * @param entityId ()
-     * @return ()
-     */
-    @Nullable
-    default NbtCompound getFromEntityCacheNbt(int entityId) { return null; }
+		return new NbtCompound();
+	}
+
+	/**
+	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
+	 * Note, that these functions are intended to be simple Getters.
+	 * For Requesting Server Data, use `requestBlockEntity()`
+	 *
+	 * @param pos ()
+	 * @return ()
+	 */
+	@Nullable
+	default CompoundData getFromBlockEntityCacheData(BlockPos pos)
+	{
+		return this.getCache().getBlockEntityDataFromCache(pos);
+	}
+
+	/**
+	 * Used to return an BlockEntity Object from the Entity Data Syncer Cache at the specific BlockPos.
+	 * Note, that these functions are intended to be simple Getters.
+	 * For Requesting Server Data, use `requestBlockEntity()`
+	 *
+	 * @param pos ()
+	 * @return ()
+	 */
+	@Nullable
+	default BlockEntity getFromBlockEntityCache(BlockPos pos)
+	{
+		return this.getCache().getBlockEntityFromCache(pos);
+	}
 
 	/**
 	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
 	 * Note, that these functions are intended to be simple Getters.
 	 * For Requesting Server Data, use `requestEntity()`
+	 *
 	 * @param entityId ()
 	 * @return ()
 	 */
 	@Nullable
-	default CompoundData getFromEntityCacheData(int entityId) { return null; }
+	default NbtCompound getFromEntityCacheNbt(int entityId)
+	{
+		CompoundData data = this.getFromEntityCacheData(entityId);
 
-    /**
-     * Used to return an Entity Object from the Entity Data Syncer Cache at the specific BlockPos.
-     * Note, that these functions are intended to be simple Getters.
-     * For Requesting Server Data, use `requestEntity()`
-     * @param entityId ()
-     * @return ()
-     */
-    @Nullable
-    default Entity getFromEntityCache(int entityId) { return null; }
+		if (data != null)
+		{
+			return DataConverterNbt.toVanillaCompound(data);
+		}
 
-    /**
-     * Request the Block Entity Pair from the server;
-     * if the Cache contains the Data, return the data Pair.
-     * @param world ()
-     * @param pos ()
-     * @return (The Data Pair|Null)
-     */
-    @Nullable
-    default Pair<BlockEntity, NbtCompound> requestBlockEntity(World world, BlockPos pos)
-    {
-        if (world == null)
-        {
-            world = this.getWorld();
-        }
+		return new NbtCompound();
+	}
 
-        if (world == null) return null;
+	/**
+	 * Used to return an NBT Object from the Entity Data Syncer Cache at the specific BlockPos.
+	 * Note, that these functions are intended to be simple Getters.
+	 * For Requesting Server Data, use `requestEntity()`
+	 *
+	 * @param entityId ()
+	 * @return ()
+	 */
+	@Nullable
+	default CompoundData getFromEntityCacheData(int entityId)
+	{
+		return this.getCache().getEntityDataFromCache(entityId);
+	}
 
-        if (world.getBlockState(pos).getBlock() instanceof BlockEntityProvider)
-        {
-            BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
+	/**
+	 * Used to return an Entity Object from the Entity Data Syncer Cache at the specific BlockPos.
+	 * Note, that these functions are intended to be simple Getters.
+	 * For Requesting Server Data, use `requestEntity()`
+	 *
+	 * @param entityId ()
+	 * @return ()
+	 */
+	@Nullable
+	default Entity getFromEntityCache(int entityId)
+	{
+		return this.getCache().getEntityFromCache(entityId);
+	}
 
-            if (be != null)
-            {
-                NbtCompound nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
+	@Nullable
+	default Pair<BlockEntity, NbtCompound> requestBlockEntityNbt(World world, BlockPos pos)
+	{
+		Pair<BlockEntity, CompoundData> pair = this.requestBlockEntity(world, pos);
 
-                return Pair.of(be, nbt);
-            }
-        }
+		if (pair != null)
+		{
+			return Pair.of(pair.getLeft(), DataConverterNbt.toVanillaCompound(pair.getRight()));
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 	/**
 	 * Request the Block Entity Pair from the server;
 	 * if the Cache contains the Data, return the data Pair.
+	 *
 	 * @param world ()
-	 * @param pos ()
+	 * @param pos   ()
 	 * @return (The Data Pair|Null)
 	 */
 	@Nullable
-	default Pair<BlockEntity, CompoundData> requestBlockEntityNew(World world, BlockPos pos)
+	default Pair<BlockEntity, CompoundData> requestBlockEntity(World world, BlockPos pos)
 	{
 		if (world == null)
 		{
-			world = this.getWorld();
+			world = this.getBestWorld();
 		}
 
-		if (world == null) return null;
-
-		if (world.getBlockState(pos).getBlock() instanceof BlockEntityProvider)
+		if (world == null)
 		{
-			BlockEntity be = world.getWorldChunk(pos).getBlockEntity(pos);
+			return null;
+		}
+
+		EntityDataPairEntry pair = this.getCache().getBlockEntityPairFromCache(pos);
+		final long now = System.currentTimeMillis();
+
+		if (pair != null)
+		{
+			if (!this.hasSingleplayerServer() && (this.isEnabled() || this.isBackupEnabled()))
+			{
+				if ((now - pair.time()) > this.getRefreshTime())
+				{
+					this.getRequestTracker().schedulePendingBlockEntity(pos);
+				}
+			}
+
+			if (world instanceof ServerWorld sl)
+			{
+				if (this.isOnLocalServerThread())
+				{
+					return this.refreshBlockEntityFromWorld(sl, pos);
+				}
+				else if ((now - pair.time()) > this.getRefreshTime() && !this.getRequestTracker().hasPendingLocalBlockEntity(pos))
+				{
+					this.getRequestTracker().setPendingLocalBlockEntityRequest(pos, true);
+					this.requestBlockEntityFromLocalServer(MinecraftClient.getInstance(), world, pos);
+				}
+			}
+
+			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos, this.ignoredIds());
+
+			if (!globalData.isEmpty())
+			{
+				return Pair.of(pair.be(), globalData);
+			}
+
+			return Pair.of(pair.be(), pair.data());
+		}
+		else if (world.getBlockState(pos).getBlock() instanceof BlockWithEntity)
+		{
+			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos, this.ignoredIds());
+			BlockEntity be = this.getClientWorld() != null ? this.getClientWorld().getBlockEntity(pos) : null;
+
+			if (be != null && !globalData.isEmpty())
+			{
+				this.getCache().removeFromCache(pos);
+				this.getCache().addToCache(pos, be, globalData);
+				return Pair.of(be, globalData);
+			}
+
+			if (!this.hasSingleplayerServer() && (this.isEnabled() || this.isBackupEnabled()))
+			{
+				this.getRequestTracker().schedulePendingBlockEntity(pos);
+			}
+
+			if (world instanceof ServerWorld sl && this.isOnLocalServerThread())
+			{
+				return this.refreshBlockEntityFromWorld(sl, pos);
+			}
+			else if (this.hasSingleplayerServer() && !this.getRequestTracker().hasPendingLocalBlockEntity(pos))
+			{
+				this.getRequestTracker().setPendingLocalBlockEntityRequest(pos, true);
+				this.requestBlockEntityFromLocalServer(MinecraftClient.getInstance(), world, pos);
+			}
+
+			return this.refreshBlockEntityFromWorld(this.getClientWorld(), pos);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Refresh the Block Entity from the World
+	 *
+	 * @param world -
+	 * @param pos   -
+	 * @return -
+	 */
+	default @Nullable Pair<BlockEntity, CompoundData> refreshBlockEntityFromWorld(World world, BlockPos pos)
+	{
+		if (world != null && world.getBlockState(pos).hasBlockEntity())
+		{
+			BlockEntity be = world.getChunk(pos).getBlockEntity(pos);
 
 			if (be != null)
 			{
-				return Pair.of(be, DataConverterNbt.fromVanillaCompound(be.createNbtWithIdentifyingData(world.getRegistryManager())));
+				CompoundData data = DataConverterNbt.fromVanillaCompound(be.createNbtWithIdentifyingData(world.getRegistryManager()));
+				Pair<BlockEntity, CompoundData> pair = Pair.of(be, data);
+
+				this.getCache().removeFromCache(pos);
+				this.getCache().addToCache(pos, be, data);
+
+				return pair;
 			}
 		}
 
 		return null;
 	}
 
-    /**
-     * Request the Entity Pair from the server;
-     * if the Cache contains the Data, return the data Pair.
-     * @param entityId ()
-     * @return (The Data Pair|Null)
-     */
-    @Nullable
-    default Pair<Entity, NbtCompound> requestEntity(World world, int entityId)
-    {
-        if (world == null)
-        {
-            world = this.getWorld();
-        }
-
-        if (world == null) return null;
-
-        Entity entity = world.getEntityById(entityId);
-
-        if (entity != null)
-        {
-            return Pair.of(entity, NbtEntityUtils.invokeEntityNbtDataNoPassengers(entity, entityId));
-        }
-
-        return null;
-    }
-
 	/**
-	 * Request the Entity Pair from the server;
-	 * if the Cache contains the Data, return the data Pair.
-	 * @param entityId ()
-	 * @return (The Data Pair|Null)
+	 * Request the Block Entity NBT data from a local server; via it's Thread Executor, and then have it call `handleBlockEntityData()`
+	 *
+	 * @param mc    -
+	 * @param world -
+	 * @param pos   -
+	 * @return Return if the Request should proceed.
 	 */
-	@Nullable
-	default Pair<Entity, CompoundData> requestEntityNew(World world, int entityId)
+	default boolean requestBlockEntityFromLocalServer(MinecraftClient mc, World world, BlockPos pos)
 	{
-		if (world == null)
+		if (mc.isIntegratedServerRunning() && mc.getServer() != null &&
+			!mc.getServer().isOnThread())
 		{
-			world = this.getWorld();
+			mc.getServer().execute(() ->
+			                                   {
+				                                   Pair<BlockEntity, CompoundData> pair = this.refreshBlockEntityFromWorld(world, pos);
+
+				                                   if (pair != null && !pair.getRight().isEmpty())
+				                                   {
+					                                   CompoundData data = pair.getRight();
+					                                   mc.execute(() -> this.handleBlockEntityData(pos, data));
+				                                   }
+			                                   });
+			return false;
 		}
 
-		if (world == null) return null;
+		return true;
+	}
 
-		Entity entity = world.getEntityById(entityId);
+	@Nullable
+	default Pair<Entity, NbtCompound> requestEntityNbt(World world, int entityId)
+	{
+		Pair<Entity, CompoundData> pair = this.requestEntity(world, entityId);
 
-		if (entity != null)
+		if (pair != null)
 		{
-			return Pair.of(entity, DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entityId));
+			return Pair.of(pair.getLeft(), DataConverterNbt.toVanillaCompound(pair.getRight()));
 		}
 
 		return null;
 	}
 
-    /**
-     * Used to Obtain the Inventory Object from the Specified BlockPos,
-     * and handle if it is a Double Chest.  If the Data doesn't exist in the Cache, request it.
-     * @param world (Provided for compatibility with other worlds)
-     * @param pos ()
-     * @param useNbt ()
-     * @return (Inventory|EmptyInventory|Null)
-     */
-    @Nullable
-    @SuppressWarnings("deprecation")
-    default Inventory getBlockInventory(World world, BlockPos pos, boolean useNbt)
-    {
-        if (world == null)
-        {
-            world = this.getWorld();
-        }
+	/**
+	 * Request the Entity Pair from the server;
+	 * if the Cache contains the Data, return the data Pair.
+	 *
+	 * @param entityId ()
+	 * @return (The Data Pair|Null)
+	 */
+	@Nullable
+	default Pair<Entity, CompoundData> requestEntity(World world, int entityId)
+	{
+		if (world == null)
+		{
+			world = this.getBestWorld();
+		}
 
-        if (world == null) return null;
+		if (world == null)
+		{
+			return null;
+		}
 
-        Pair<BlockEntity, NbtCompound> pair = this.requestBlockEntity(world, pos);
-        Inventory inv = null;
+		EntityDataPairEntry pair = this.getCache().getEntityPairFromCache(entityId);
+		final long now = System.currentTimeMillis();
 
-        if (pair == null) return null;
+		if (pair != null)
+		{
+			if (!this.hasSingleplayerServer() && (this.isEnabled() || this.isBackupEnabled()))
+			{
+				if ((now - pair.time()) > this.getRefreshTime())
+				{
+					this.getRequestTracker().schedulePendingEntity(entityId);
+				}
+			}
 
-        if (useNbt)
-        {
-            inv = InventoryUtils.getNbtInventory(pair.getRight(), -1, world.getRegistryManager());
-        }
-        else
-        {
-            BlockEntity be = pair.getLeft();
-            BlockState state = world.getBlockState(pos);
+			if (world instanceof ServerWorld sl)
+			{
+				if (this.isOnLocalServerThread())
+				{
+					return this.refreshEntityFromWorld(sl, entityId);
+				}
+				else if ((now - pair.time()) > this.getRefreshTime() && !this.getRequestTracker().hasPendingLocalEntity(entityId))
+				{
+					this.getRequestTracker().setPendingLocalEntityRequest(entityId, true);
+					this.requestEntityFromLocalServer(MinecraftClient.getInstance(), world, entityId);
+				}
+			}
 
-            if (state.isIn(BlockTags.AIR) || !state.hasBlockEntity())
-            {
-                // Don't keep requesting if we're tick warping or something.
-                return null;
-            }
+			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForEntityData(entityId, this.ignoredIds());
 
-            if (be instanceof Inventory inv1)
-            {
-                if (be instanceof ChestBlockEntity && state.contains(ChestBlock.CHEST_TYPE))
-                {
-                    ChestType type = state.get(ChestBlock.CHEST_TYPE);
+			if (!globalData.isEmpty())
+			{
+				return Pair.of(pair.ent(), globalData);
+			}
 
-                    if (type != ChestType.SINGLE)
-                    {
-                        BlockPos posAdj = pos.offset(ChestBlock.getFacing(state));
+			return Pair.of(pair.ent(), pair.data());
+		}
 
-                        if (!world.isChunkLoaded(posAdj)) return null;
-                        BlockState stateAdj = world.getBlockState(posAdj);
+		CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForEntityData(entityId, this.ignoredIds());
+		Entity entity = this.getClientWorld() != null ? this.getClientWorld().getEntityById(entityId) : null;
 
-                        Pair<BlockEntity, NbtCompound> pairAdj = this.requestBlockEntity(world, posAdj);
+		if (entity != null && !globalData.isEmpty())
+		{
+			this.getCache().removeFromCache(entityId);
+			this.getCache().addToCache(entityId, entity, globalData);
+			return Pair.of(entity, globalData);
+		}
 
-                        if (pairAdj == null)
-                        {
-                            return inv1;
-                        }
+		if (!this.hasSingleplayerServer() && (this.isEnabled() || this.isBackupEnabled()))
+		{
+			this.getRequestTracker().schedulePendingEntity(entityId);
+		}
 
-                        if (stateAdj.getBlock() == state.getBlock() &&
-                            pairAdj.getLeft() instanceof ChestBlockEntity inv2 &&
-                            stateAdj.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE &&
-                            stateAdj.get(ChestBlock.FACING) == state.get(ChestBlock.FACING))
-                        {
-                            Inventory invRight = type == ChestType.RIGHT ? inv1 : inv2;
-                            Inventory invLeft = type == ChestType.RIGHT ? inv2 : inv1;
+		if (world instanceof ServerWorld sl && this.isOnLocalServerThread())
+		{
+			return this.refreshEntityFromWorld(sl, entityId);
+		}
+		else if (this.hasSingleplayerServer() && !this.getRequestTracker().hasPendingLocalEntity(entityId))
+		{
+			this.getRequestTracker().setPendingLocalEntityRequest(entityId, true);
+			this.requestEntityFromLocalServer(MinecraftClient.getInstance(), world, entityId);
+		}
 
-                            inv = new DoubleInventory(invRight, invLeft);
-                        }
-                    }
-                    else
-                    {
-                        inv = inv1;
-                    }
-                }
-                else
-                {
-                    inv = inv1;
-                }
-            }
-        }
+		return this.refreshEntityFromWorld(this.getClientWorld(), entityId);
+	}
 
-        return inv;
-    }
+	/**
+	 * Refresh an entity from the World
+	 *
+	 * @param world    -
+	 * @param entityId -
+	 * @return -
+	 */
+	default @Nullable Pair<Entity, CompoundData> refreshEntityFromWorld(World world, int entityId)
+	{
+		if (world != null)
+		{
+			Entity entity = world.getEntityById(entityId);
+
+			if (entity != null)
+			{
+				CompoundData data = DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entityId);
+
+				if (!data.isEmpty())
+				{
+					Pair<Entity, CompoundData> pair = Pair.of(entity, data);
+
+					this.getCache().removeFromCache(entityId);
+					this.getCache().addToCache(entityId, entity, data);
+
+					return pair;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Request the Entity NBT data from a local server; via it's Thread Executor, and then have it call `handleEntityData()`
+	 *
+	 * @param mc       -
+	 * @param world    -
+	 * @param entityId -
+	 * @return Return if the Request should proceed.
+	 */
+	default boolean requestEntityFromLocalServer(MinecraftClient mc, World world, int entityId)
+	{
+		if (mc.isIntegratedServerRunning() && mc.getServer() != null &&
+				!this.isOnLocalServerThread())
+		{
+			mc.getServer().execute(() ->
+			                                   {
+				                                   Pair<Entity, CompoundData> pair = this.refreshEntityFromWorld(world, entityId);
+
+				                                   if (pair != null && !pair.getRight().isEmpty())
+				                                   {
+					                                   CompoundData data = pair.getRight();
+					                                   mc.execute(() -> this.handleEntityData(entityId, data));
+				                                   }
+			                                   });
+
+			return false;
+		}
+
+		return true;
+	}
 
 	/**
 	 * Used to Obtain the Inventory Object from the Specified BlockPos,
 	 * and handle if it is a Double Chest.  If the Data doesn't exist in the Cache, request it.
-	 * @param world (Provided for compatibility with other worlds)
-	 * @param pos ()
+	 *
+	 * @param world  (Provided for compatibility with other worlds)
+	 * @param pos    ()
 	 * @param useNbt ()
 	 * @return (Inventory|EmptyInventory|Null)
 	 */
 	@Nullable
 	@SuppressWarnings("deprecation")
-	default Inventory getBlockInventoryNew(World world, BlockPos pos, boolean useNbt)
+	default Inventory getBlockInventory(World world, BlockPos pos, boolean useNbt)
 	{
 		if (world == null)
 		{
-			world = this.getWorld();
+			world = this.getBestWorld();
 		}
 
-		if (world == null) return null;
-
-		Pair<BlockEntity, CompoundData> pair = this.requestBlockEntityNew(world, pos);
-		Inventory inv = null;
-
-		if (pair == null) return null;
-
-		if (useNbt)
+		if (world == null)
 		{
-			inv = InventoryUtils.getDataInventory(pair.getRight(), -1, world.getRegistryManager());
+			return null;
 		}
-		else
-		{
-			BlockEntity be = pair.getLeft();
-			BlockState state = world.getBlockState(pos);
 
-			if (state.isIn(BlockTags.AIR) || !state.hasBlockEntity())
+		EntityDataPairEntry pair = this.getCache().getBlockEntityPairFromCache(pos);
+
+		if (pair != null)
+		{
+			Inventory inv = null;
+			BlockState state = world.getBlockState(pos.toVanillaPos());
+
+			if (!useNbt && (state.isIn(BlockTags.AIR) || !state.hasBlockEntity()))
 			{
-				// Don't keep requesting if we're tick warping or something.
+				this.getCache().removeFromCache(pos);
 				return null;
 			}
 
-			if (be instanceof Inventory inv1)
+			if (state.contains(Properties.CHEST_TYPE) && state.contains(Properties.HORIZONTAL_FACING))
 			{
-				if (be instanceof ChestBlockEntity && state.contains(ChestBlock.CHEST_TYPE))
+				ChestType type = state.get(Properties.CHEST_TYPE);
+
+				if (type != ChestType.SINGLE)
 				{
-					ChestType type = state.get(ChestBlock.CHEST_TYPE);
+					Direction facing = Direction.of(state.get(Properties.HORIZONTAL_FACING));
+					Direction offsetDir = type == ChestType.LEFT ? facing.rotateY() : facing.rotateYCCW();
+					BlockPos posAdj = pos.offset(offsetDir);
 
-					if (type != ChestType.SINGLE)
+					if (!world.isChunkLoaded(posAdj))
 					{
-						BlockPos posAdj = pos.offset(ChestBlock.getFacing(state));
+						return null;
+					}
 
-						if (!world.isChunkLoaded(posAdj)) return null;
-						BlockState stateAdj = world.getBlockState(posAdj);
+					BlockState stateAdj = world.getBlockState(posAdj.toVanillaPos());
+					EntityDataPairEntry pairAdj = this.getCache().getBlockEntityPairFromCache(posAdj);
 
-						Pair<BlockEntity, CompoundData> pairAdj = this.requestBlockEntityNew(world, posAdj);
+					if (pairAdj == null)
+					{
+						// Issue a network request for the missing half
+						this.requestBlockEntity(world, posAdj);
+					}
+					else if (stateAdj.getBlock() == state.getBlock() &&
+							 stateAdj.contains(Properties.CHEST_TYPE) &&
+							 stateAdj.contains(Properties.HORIZONTAL_FACING) &&
+							 stateAdj.get(Properties.CHEST_TYPE) != ChestType.SINGLE &&
+							 stateAdj.get(Properties.HORIZONTAL_FACING) == facing.getVanillaDirection())
+					{
+						Inventory inv1 = null;
+						Inventory inv2 = null;
 
-						if (pairAdj == null)
+						if (useNbt)
 						{
-							return inv1;
+							inv1 = InventoryUtils.getDataInventory(pair.data(), -1, world.getRegistryManager());
+							inv2 = InventoryUtils.getDataInventory(pairAdj.data(), -1, world.getRegistryManager());
+						}
+						else if (pair.be() instanceof Inventory c1 && pairAdj.be() instanceof Inventory c2)
+						{
+							inv1 = c1;
+							inv2 = c2;
 						}
 
-						if (stateAdj.getBlock() == state.getBlock() &&
-							pairAdj.getLeft() instanceof ChestBlockEntity inv2 &&
-							stateAdj.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE &&
-							stateAdj.get(ChestBlock.FACING) == state.get(ChestBlock.FACING))
+						if (inv1 != null && inv2 != null)
 						{
 							Inventory invRight = type == ChestType.RIGHT ? inv1 : inv2;
 							Inventory invLeft = type == ChestType.RIGHT ? inv2 : inv1;
@@ -427,198 +694,273 @@ public interface IDataSyncer
 							inv = new DoubleInventory(invRight, invLeft);
 						}
 					}
-					else
-					{
-						inv = inv1;
-					}
 				}
-				else
+			}
+
+			if (inv == null)
+			{
+				if (useNbt)
 				{
-					inv = inv1;
+					inv = InventoryUtils.getDataInventory(pair.data(), -1, world.getRegistryManager());
 				}
+				else if (pair.be() instanceof Inventory inv2)
+				{
+					inv = inv2;
+				}
+			}
+
+			if (inv != null)
+			{
+				return inv;
 			}
 		}
 
-		return inv;
+		if (this.isEnabled() || this.isBackupEnabled())
+		{
+			this.requestBlockEntity(this.getBestWorld(), pos);
+		}
+
+		return null;
 	}
-
-    /**
-     * Used to Obtain the Inventory Object from the Specified Entity, if available;
-     * and handle if it needs special handling.  If the Data doesn't exist in the Cache, request it.
-     * @param entityId ()
-     * @param useNbt ()
-     * @return (Inventory|Null)
-     */
-    @Nullable
-    default Inventory getEntityInventory(World world, int entityId, boolean useNbt)
-    {
-        if (world == null)
-        {
-            world = this.getWorld();
-        }
-
-        if (world == null) return null;
-
-        Pair<Entity, NbtCompound> pair = this.requestEntity(world, entityId);
-        Inventory inv = null;
-
-        if (pair == null) return null;
-
-        if (useNbt)
-        {
-            inv = InventoryUtils.getNbtInventory(pair.getRight(), -1, world.getRegistryManager());
-        }
-        else
-        {
-            Entity entity = pair.getLeft();
-
-            if (entity instanceof Inventory)
-            {
-                inv = (Inventory) entity;
-            }
-            else if (entity instanceof PlayerEntity player)
-            {
-                inv = new SimpleInventory(player.getInventory().getMainStacks().toArray(new ItemStack[36]));
-            }
-            else if (entity instanceof VillagerEntity)
-            {
-                inv = ((VillagerEntity) entity).getInventory();
-            }
-            else if (entity instanceof AbstractHorseEntity)
-            {
-                inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
-            }
-            else if (entity instanceof PiglinEntity)
-            {
-                inv = ((IMixinPiglinEntity) entity).malilib_getInventory();
-            }
-
-            return inv;
-        }
-
-        return inv;
-    }
 
 	/**
 	 * Used to Obtain the Inventory Object from the Specified Entity, if available;
 	 * and handle if it needs special handling.  If the Data doesn't exist in the Cache, request it.
+	 *
 	 * @param entityId ()
-	 * @param useData ()
+	 * @param useData  ()
 	 * @return (Inventory|Null)
 	 */
 	@Nullable
-	default Inventory getEntityInventoryNew(World world, int entityId, boolean useData)
+	default Inventory getEntityInventory(World world, int entityId, boolean useData)
 	{
 		if (world == null)
 		{
-			world = this.getWorld();
+			world = this.getBestWorld();
 		}
 
-		if (world == null) return null;
-
-		Pair<Entity, CompoundData> pair = this.requestEntityNew(world, entityId);
-		Inventory inv = null;
-
-		if (pair == null) return null;
-
-		if (useData)
+		if (world == null)
 		{
-			inv = InventoryUtils.getDataInventory(pair.getRight(), -1, world.getRegistryManager());
+			return null;
 		}
-		else
+
+		EntityDataPairEntry pair = this.getCache().getEntityPairFromCache(entityId);
+
+		if (pair != null && this.getBestWorld() != null)
 		{
-			Entity entity = pair.getLeft();
+			Inventory inv = null;
 
-			if (entity instanceof Inventory)
+			if (useData)
 			{
-				inv = (Inventory) entity;
+				inv = InventoryUtils.getDataInventory(pair.data(), -1, world.getRegistryManager());
 			}
-			else if (entity instanceof PlayerEntity player)
+			else
 			{
-				inv = new SimpleInventory(player.getInventory().getMainStacks().toArray(new ItemStack[36]));
-			}
-			else if (entity instanceof VillagerEntity)
-			{
-				inv = ((VillagerEntity) entity).getInventory();
-			}
-			else if (entity instanceof AbstractHorseEntity)
-			{
-				inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
-			}
-			else if (entity instanceof PiglinEntity)
-			{
-				inv = ((IMixinPiglinEntity) entity).malilib_getInventory();
+				Entity entity = pair.ent();
+
+				if (entity instanceof Inventory)
+				{
+					inv = (Inventory) entity;
+				}
+				else if (entity instanceof PlayerEntity player && player != null)
+				{
+					inv = new SimpleInventory(player.getInventory().getMainStacks().toArray(new ItemStack[36]));
+				}
+				else if (entity instanceof VillagerEntity)
+				{
+					inv = ((VillagerEntity) entity).getInventory();
+				}
+				else if (entity instanceof AbstractHorseEntity)
+				{
+					inv = ((IMixinAbstractHorseEntity) entity).malilib_getHorseInventory();
+				}
+//				else if (entity instanceof AbstractNautilusEntity)
+//				{
+//					inv = ((IMixinAbstractNautilus) entity).malilib_getNautilusInventory();
+//				}
+				else if (entity instanceof PiglinEntity)
+				{
+					inv = ((IMixinPiglinEntity) entity).malilib_getInventory();
+				}
+
+				return inv;
 			}
 
-			return inv;
+			if (inv != null)
+			{
+				return inv;
+			}
 		}
 
-		return inv;
+		if (this.isEnabled() || this.isBackupEnabled())
+		{
+			this.requestEntity(this.getBestWorld(), entityId);
+		}
+
+		return null;
 	}
-
-    /**
-     * Used by your Packet Receiver to hande incoming data from BlockPos and the Server Side NBT tags.
-     * @param pos ()
-     * @param nbt ()
-     * @param type (Optional)
-     * @return (BlockEntity|Null)
-     */
-    default BlockEntity handleBlockEntityData(BlockPos pos, NbtCompound nbt, @Nullable Identifier type) { return null; }
-
-    /**
-     * Used by your Packet Receiver to hande incoming data from the entityId and the Server Side NBT tags.
-     * @param nbt ()
-     * @return (Entity|Null)
-     */
-    default Entity handleEntityData(int entityId, NbtCompound nbt) { return null; }
-
-    /**
-     * Used by your Packet Receiver if any Bulk handling of NBT Tags for multiple Entities is required.
-     * This is usually used for something like downloading an entire ChunkPos worth of Entity Data; such as with Litematica.
-     * @param transactionId ()
-     * @param nbt ()
-     */
-    default void handleBulkEntityData(int transactionId, NbtCompound nbt) {}
-
-    /**
-     * Vanilla QueryNbt Packet Receiver & Handling
-     * @param transactionId (QueryNbt Transaction Id)
-     * @param nbt (The NBT Data returned by the server)
-     */
-    default void handleVanillaQueryNbt(int transactionId, NbtCompound nbt) {}
 
 	/**
 	 * Used by your Packet Receiver to hande incoming data from BlockPos and the Server Side NBT tags.
-	 * @param pos ()
-	 * @param data ()
-	 * @param type (Optional)
+	 *
+	 * @param pos  ()
+	 * @param nbt  ()
 	 * @return (BlockEntity|Null)
 	 */
-	@ApiStatus.Experimental
-	default BlockEntity handleBlockEntityData(BlockPos pos, CompoundData data, @Nullable Identifier type) { return null; }
+	default BlockEntity handleBlockEntityData(BlockPos pos, NbtCompound nbt)
+	{
+		return this.handleBlockEntityData(pos, DataConverterNbt.fromVanillaCompound(nbt));
+	}
 
 	/**
 	 * Used by your Packet Receiver to hande incoming data from the entityId and the Server Side NBT tags.
-	 * @param data ()
+	 *
+	 * @param nbt ()
 	 * @return (Entity|Null)
 	 */
-	@ApiStatus.Experimental
-	default Entity handleEntityData(int entityId, CompoundData data) { return null; }
+	default Entity handleEntityData(int entityId, NbtCompound nbt)
+	{
+		return handleEntityData(entityId, DataConverterNbt.fromVanillaCompound(nbt));
+	}
 
 	/**
 	 * Used by your Packet Receiver if any Bulk handling of NBT Tags for multiple Entities is required.
 	 * This is usually used for something like downloading an entire ChunkPos worth of Entity Data; such as with Litematica.
+	 *
 	 * @param transactionId ()
-	 * @param data ()
+	 * @param nbt           ()
 	 */
-	@ApiStatus.Experimental
+	default void handleBulkEntityData(int transactionId, NbtCompound nbt)
+	{
+		this.handleBulkEntityData(transactionId, DataConverterNbt.fromVanillaCompound(nbt));
+	}
+
+	/**
+	 * Vanilla QueryNbt Packet Receiver & Handling
+	 *
+	 * @param transactionId (QueryNbt Transaction Id)
+	 * @param nbt           (The NBT Data returned by the server)
+	 */
+	default void handleVanillaQueryNbt(int transactionId, NbtCompound nbt)
+	{
+		this.handleVanillaQueryNbt(transactionId, DataConverterNbt.fromVanillaCompound(nbt));
+	}
+
+	/**
+	 * Specific format for receiving Packets
+	 * @param pos -
+	 * @param nbt -
+	 * @return -
+	 */
+	default @Nullable BlockEntity handleBlockEntityData(net.minecraft.util.math.BlockPos pos, NbtCompound nbt)
+	{
+		return handleBlockEntityData(BlockPos.of(pos), DataConverterNbt.fromVanillaCompound(nbt));
+	}
+
+	/**
+	 * Used by your Packet Receiver to handle incoming data from BlockPos and the Server Side NBT tags.
+	 *
+	 * @param pos  ()
+	 * @param data ()
+	 * @return (BlockEntity|Null)
+	 */
+	default @Nullable BlockEntity handleBlockEntityData(BlockPos pos, CompoundData data)
+	{
+		this.getRequestTracker().removeScheduledBlockEntity(pos);
+		this.getRequestTracker().setPendingLocalBlockEntityRequest(pos, false);
+		if (data == null || this.getClientWorld() == null)
+		{
+			return null;
+		}
+
+		BlockEntity be = this.getClientWorld().getBlockEntity(pos);
+
+		if (be != null)
+		{
+			if (!data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
+			{
+				Identifier id = Registries.BLOCK_ENTITY_TYPE.getId(be.getType());
+
+				if (id != null)
+				{
+					data.putString(NbtKeys.ID, id.toString());
+				}
+			}
+
+			this.getCache().removeFromCache(pos);
+			this.getCache().addToCache(pos, be, data);
+
+			if (this.loadContainerBlockEntities() && be instanceof Inventory)
+			{
+				NbtView view = NbtView.getReader(data, this.getClientWorld().getRegistryManager());
+				be.read(view.getReader());
+			}
+
+			return be;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Used by your Packet Receiver to handle incoming data from the entityId and the Server Side NBT tags.
+	 *
+	 * @param data ()
+	 * @return (Entity|Null)
+	 */
+	default @Nullable Entity handleEntityData(int entityId, CompoundData data)
+	{
+		this.getRequestTracker().removeScheduledEntity(entityId);
+		this.getRequestTracker().setPendingLocalEntityRequest(entityId, false);
+		if (data == null || this.getClientWorld() == null)
+		{
+			return null;
+		}
+		Entity entity = this.getClientWorld().getEntityById(entityId);
+
+		if (entity != null)
+		{
+			if (!data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
+			{
+				Identifier id = EntityType.getId(entity.getType());
+
+				if (id != null)
+				{
+					data.putString(NbtKeys.ID, id.toString());
+				}
+			}
+
+			this.getCache().removeFromCache(entityId);
+			this.getCache().addToCache(entityId, entity, data);
+			// Load Nbt into an entity? (How about NO!)
+		}
+
+		return entity;
+	}
+
+	/**
+	 * Used by your Packet Receiver if any Bulk handling of NBT Tags for multiple Entities is required.
+	 * This is usually used for something like downloading an entire ChunkPos worth of Entity Data; such as with Litematica.
+	 *
+	 * @param transactionId ()
+	 * @param data          ()
+	 */
 	default void handleBulkEntityData(int transactionId, CompoundData data) {}
 
 	/**
 	 * Vanilla QueryNbt Packet Receiver & Handling
+	 *
 	 * @param transactionId (QueryNbt Transaction Id)
-	 * @param data (The NBT Data returned by the server)
+	 * @param data          (The NBT Data returned by the server)
 	 */
-	@ApiStatus.Experimental
 	default void handleVanillaQueryNbt(int transactionId, CompoundData data) {}
+
+	/**
+	 * Clear All pending Quests and Cache.
+	 */
+	default void clearAll()
+	{
+		this.getRequestTracker().clearAll();
+		this.getCache().clearAll();
+	}
 }

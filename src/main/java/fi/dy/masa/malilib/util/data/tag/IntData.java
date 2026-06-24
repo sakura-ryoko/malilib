@@ -40,6 +40,12 @@ public class IntData extends BaseData
     }
 
     @Override
+    public boolean isEmpty()
+    {
+        return false;
+    }
+
+    @Override
     public Optional<Number> asNumber()
     {
         return Optional.of(this.value);
@@ -55,5 +61,22 @@ public class IntData extends BaseData
     {
         sizeTracker.increment(4);
         return new IntData(input.readInt());
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o) { return true; }
+        if (o == null || this.getClass() != o.getClass()) { return false; }
+
+        IntData other = (IntData) o;
+
+        return this.value == other.value;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return this.value;
     }
 }

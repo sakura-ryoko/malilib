@@ -123,22 +123,6 @@ public class IrisCompat
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_TEX_COLOR_MASA_DEPTH_MASK, IrisProgram.TEXTURED);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.POSITION_TEX_COLOR_MASA, IrisProgram.TEXTURED);
 
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_TRANSLUCENT_NO_DEPTH, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_TRANSLUCENT_NO_CULL, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_TRANSLUCENT_OFFSET_1, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_TRANSLUCENT_OFFSET_2, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_TRANSLUCENT_OFFSET_3, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_TRANSLUCENT, IrisProgram.LINES);
-
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_MASA_SIMPLE_NO_DEPTH_NO_CULL, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_MASA_SIMPLE_NO_DEPTH, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_MASA_SIMPLE_NO_CULL, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_MASA_SIMPLE_OFFSET_1, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_MASA_SIMPLE_OFFSET_2, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_MASA_SIMPLE_OFFSET_3, IrisProgram.LINES);
-//            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.LINES_MASA_SIMPLE, IrisProgram.LINES);
-
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_NO_DEPTH_NO_CULL, IrisProgram.LINES);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_NO_DEPTH, IrisProgram.LINES);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.DEBUG_LINES_TRANSLUCENT_NO_CULL, IrisProgram.LINES);
@@ -186,6 +170,9 @@ public class IrisCompat
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.CUTOUT_MASA, IrisProgram.TERRAIN_CUTOUT);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TRANSLUCENT_MASA, IrisProgram.TRANSLUCENT);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TRIPWIRE_MASA, IrisProgram.TRANSLUCENT);
+
+            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH, IrisProgram.BASIC);
+            IrisApi.getInstance().assignPipeline(MaLiLibPipelines.TEXT_PLATE_MASA, IrisProgram.BASIC);
 
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH_OFFSET, IrisProgram.BASIC);
             IrisApi.getInstance().assignPipeline(MaLiLibPipelines.MINIHUD_SHAPE_NO_DEPTH, IrisProgram.BASIC);

@@ -212,7 +212,7 @@ public interface IInventoryOverlayHandler
     {
         if (!(world instanceof ServerWorld))
         {
-            Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+            Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntityNbt(world, fi.dy.masa.malilib.util.position.BlockPos.of(pos));
 
             BlockState state = world.getBlockState(pos);
 
@@ -222,7 +222,7 @@ public interface IInventoryOverlayHandler
 
                 if (type != ChestType.SINGLE)
                 {
-                    return this.getDataSyncer().requestBlockEntity(world, pos.offset(ChestBlock.getFacing(state)));
+                    return this.getDataSyncer().requestBlockEntityNbt(world, fi.dy.masa.malilib.util.position.BlockPos.of(pos.offset(ChestBlock.getFacing(state))));
                 }
             }
 
@@ -245,7 +245,7 @@ public interface IInventoryOverlayHandler
 	{
 		if (!(world instanceof ServerWorld))
 		{
-			Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntityNew(world, pos);
+			Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, fi.dy.masa.malilib.util.position.BlockPos.of(pos));
 
 			BlockState state = world.getBlockState(pos);
 
@@ -255,7 +255,7 @@ public interface IInventoryOverlayHandler
 
 				if (type != ChestType.SINGLE)
 				{
-					return this.getDataSyncer().requestBlockEntityNew(world, pos.offset(ChestBlock.getFacing(state)));
+					return this.getDataSyncer().requestBlockEntity(world, fi.dy.masa.malilib.util.position.BlockPos.of(pos.offset(ChestBlock.getFacing(state))));
 				}
 			}
 

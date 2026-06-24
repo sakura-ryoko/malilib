@@ -3,9 +3,12 @@ package fi.dy.masa.malilib;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import net.minecraft.block.Blocks;
 
 import fi.dy.masa.malilib.config.ConfigUtils;
 import fi.dy.masa.malilib.config.IConfigBase;
@@ -15,15 +18,18 @@ import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.config.options.table.ConfigTable;
 import fi.dy.masa.malilib.config.options.table.Label;
 import fi.dy.masa.malilib.config.options.table.TableRow;
+import fi.dy.masa.malilib.config.value.FileWriteType;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
-import fi.dy.masa.malilib.hotkeys.KeyAction;
-import fi.dy.masa.malilib.hotkeys.KeybindSettings;
-import fi.dy.masa.malilib.test.ConfigTestEnum;
-import fi.dy.masa.malilib.test.ConfigTestLockedList;
-import fi.dy.masa.malilib.test.ConfigTestOptList;
+import fi.dy.masa.malilib.registry.Registry;
+import fi.dy.masa.malilib.test.config.ConfigTestEnum;
+import fi.dy.masa.malilib.test.config.ConfigTestLockedList;
+import fi.dy.masa.malilib.test.config.ConfigTestOptList;
+import fi.dy.masa.malilib.test.config.TestHotkeys;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.JsonUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.i18n.*;
+import fi.dy.masa.malilib.util.input.KeyboardType;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
 
@@ -32,36 +38,45 @@ import static fi.dy.masa.malilib.config.options.table.type.EntryTypes.*;
 public class MaLiLibConfigs implements IConfigHandler
 {
     private static final String CONFIG_FILE_NAME = MaLiLibReference.MOD_ID + ".json";
+    public static final Optional<i18nManager> LANG = Optional.ofNullable(i18nManager.create(MaLiLibReference.MOD_ID));
 
     private static final String GENERIC_KEY = MaLiLibReference.MOD_ID+".config.generic";
     public static class Generic
     {
-        public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
-        public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
-        public static final ConfigBooleanHotkeyed   ENABLE_ACTIONBAR_MESSAGES   = new ConfigBooleanHotkeyed   ("enableActionbarMessages", true, "").apply(GENERIC_KEY);
         public static final ConfigInteger           ACTIONBAR_HUD_TICKS         = new ConfigInteger           ("actionbarHudTicks",       60, 1, 240).apply(GENERIC_KEY);
-        public static final ConfigFloat             IN_GAME_MESSAGE_TIMEOUT     = new ConfigFloat             ("inGameMessageTimeout",    5.0f, 0.5f, 15.0f).apply(GENERIC_KEY);
+        public static final ConfigOptionValues<FileWriteType> CONFIG_WRITE_METHOD = new ConfigOptionValues<>("configWriteMethod", FileWriteType.TEMP_AND_RENAME, FileWriteType.VALUES).apply(GENERIC_KEY);
+        public static final ConfigBooleanHotkeyed   ENABLE_ACTIONBAR_MESSAGES   = new ConfigBooleanHotkeyed   ("enableActionbarMessages", true, "").apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
-//        public static final ConfigBooleanHotkeyed   RENDER_TRANSPARENCY_FIX     = new ConfigBooleanHotkeyed   ("renderTransparencyFix",   true, "").apply(GENERIC_KEY);
+        public static final ConfigOptionList        KEYBOARD_TYPE               = new ConfigOptionList        ("keyboardType",          KeyboardType.QWERTY).apply(GENERIC_KEY);
+        public static final ConfigHotkey            IGNORED_KEYS                = new ConfigHotkey            ("ignoredKeys",      "").apply(GENERIC_KEY);
+        public static final ConfigFloat             IN_GAME_MESSAGE_TIMEOUT     = new ConfigFloat             ("inGameMessageTimeout",    5.0f, 0.5f, 15.0f).apply(GENERIC_KEY);
+        public static final ConfigHotkey            OPEN_GUI_CONFIGS            = new ConfigHotkey            ("openGuiConfigs",   "A,C").apply(GENERIC_KEY);
         public static final ConfigBoolean           REALMS_COMMON_CONFIG        = new ConfigBoolean           ("realmsCommonConfig",      true).apply(GENERIC_KEY);
+        public static final ConfigOptionList        TRANSLATION_LANGUAGE        = new ConfigOptionList        ("translationLanguage",       new i18nConfig(LANG.orElseThrow())).apply(GENERIC_KEY);
+        public static final ConfigOptionList        TRANSLATION_MODE            = new ConfigOptionList        ("translationMode",           i18nMode.FOLLOW_VANILLA).apply(GENERIC_KEY);
+        public static final ConfigBooleanHotkeyed   TRANSLATION_OVERRIDES       = new ConfigBooleanHotkeyed   ("translationOverrides",    true, "").apply(GENERIC_KEY);
 
-        public static final ImmutableList<IConfigValue> OPTIONS = ImmutableList.of(
-                IGNORED_KEYS,
-                OPEN_GUI_CONFIGS,
-                ENABLE_ACTIONBAR_MESSAGES,
+        public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 ACTIONBAR_HUD_TICKS,
-                IN_GAME_MESSAGE_TIMEOUT,
+                CONFIG_WRITE_METHOD,
+                ENABLE_ACTIONBAR_MESSAGES,
                 ENABLE_CONFIG_SWITCHER,
-//                RENDER_TRANSPARENCY_FIX,
-                REALMS_COMMON_CONFIG
+                KEYBOARD_TYPE,
+                IGNORED_KEYS,
+                IN_GAME_MESSAGE_TIMEOUT,
+                OPEN_GUI_CONFIGS,
+                REALMS_COMMON_CONFIG,
+                TRANSLATION_LANGUAGE,
+                TRANSLATION_MODE,
+                TRANSLATION_OVERRIDES
         );
 
         // Can't add OPEN_GUI_CONFIGS here, because things will break
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
-                OPEN_GUI_CONFIGS,
                 ENABLE_ACTIONBAR_MESSAGES,
-                ENABLE_CONFIG_SWITCHER
-//                RENDER_TRANSPARENCY_FIX
+                ENABLE_CONFIG_SWITCHER,
+                OPEN_GUI_CONFIGS,
+                TRANSLATION_OVERRIDES
         );
     }
 
@@ -91,19 +106,15 @@ public class MaLiLibConfigs implements IConfigHandler
     }
 
     private static final String TEST_KEY = MaLiLibReference.MOD_ID+".config.test";
-    private static final KeybindSettings OVERLAY_TOGGLE = KeybindSettings.create(KeybindSettings.Context.ANY, KeyAction.PRESS, true, true, false, true);
-    //private static final KeybindSettings GUI_RELAXED = KeybindSettings.create(KeybindSettings.Context.GUI, KeyAction.PRESS, true, false, false, false);
-    private static final KeybindSettings GUI_RELAXED_CANCEL = KeybindSettings.create(KeybindSettings.Context.GUI, KeyAction.PRESS, true, false, false, true);
-    //private static final KeybindSettings GUI_NO_ORDER = KeybindSettings.create(KeybindSettings.Context.GUI, KeyAction.PRESS, false, false, false, true);
     public static class Test
     {
         public static final ConfigBoolean           TEST_CONFIG_BOOLEAN             = new ConfigBoolean("testBoolean", false, "Test Boolean").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_CONFIG_BOOLEAN_HOTKEYED    = new ConfigBooleanHotkeyed("testBooleanHotkeyed", false, "A,K").apply(TEST_KEY);
         public static final ConfigColor             TEST_CONFIG_COLOR               = new ConfigColor("testColor", "0x3022FFFF", "Test Color").apply(TEST_KEY);
         public static final ConfigColorList         TEST_CONFIG_COLOR_LIST          = new ConfigColorList("testColorList", ImmutableList.of(new Color4f(0, 0, 0), new Color4f(255, 255, 255, 255)), "Test Color List").apply(TEST_KEY);
+        public static final ConfigBlockState        TEST_CONFIG_BLOCK_STATE         = new ConfigBlockState("testBlockState", Blocks.OBSERVER.getDefaultState(), "Test Block State").apply(TEST_KEY);
         public static final ConfigDouble            TEST_CONFIG_DOUBLE              = new ConfigDouble("testDouble", 0.5, 0, 1, true, "Test Double").apply(TEST_KEY);
         public static final ConfigFloat             TEST_CONFIG_FLOAT               = new ConfigFloat("testFloat", 0.5f, 0.0f, 1.0f, true, "Test Float").apply(TEST_KEY);
-        public static final ConfigHotkey            TEST_CONFIG_HOTKEY              = new ConfigHotkey("testHotkey", "", "Test Hotkey").apply(TEST_KEY);
         public static final ConfigInteger           TEST_CONFIG_INTEGER             = new ConfigInteger("testInteger", 5, 1, 10, "Test Integer").apply(TEST_KEY);
         public static final ConfigOptionList        TEST_CONFIG_OPTIONS_LIST        = new ConfigOptionList("testOptionList", ConfigTestOptList.TEST1, "Test Option List").apply(TEST_KEY);
         public static final ConfigString            TEST_CONFIG_STRING              = new ConfigString("testString", "testString", "Test String").apply(TEST_KEY);
@@ -163,22 +174,17 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigInteger           TEST_BUNDLE_PREVIEW_WIDTH       = new ConfigInteger("testBundlePreviewWidth", 9, 6, 9, "Test Bundle Preview Width").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY          = new ConfigBooleanHotkeyed("testInventoryOverlay", false, "LEFT_ALT").apply(TEST_KEY);
         public static final ConfigBooleanHotkeyed   TEST_INVENTORY_OVERLAY_OG       = new ConfigBooleanHotkeyed("testInventoryOverlayOG", false, "").apply(TEST_KEY);
-        public static final ConfigHotkey            TEST_INVENTORY_OVERLAY_TOGGLE   = new ConfigHotkey("testInventoryOverlayToggle", "BUTTON_3", OVERLAY_TOGGLE).apply(TEST_KEY);
-        public static final ConfigHotkey            TEST_GUI_KEYBIND                = new ConfigHotkey("testGuiKeybind", "").apply(TEST_KEY);
-	    public static final ConfigHotkey            TEST_GUI_EDITOR_KEYBIND         = new ConfigHotkey("testGuiEditorKeybind", "").apply(TEST_KEY);
-	    public static final ConfigHotkey            TEST_GUI_FILE_BROWSER_KEYBIND   = new ConfigHotkey("testGuiFileBrowserKeybind", "").apply(TEST_KEY);
         public static final ConfigOptionList        TEST_DATE_TIME_OPTION           = new ConfigOptionList("testDateTimeList", TimeFormat.RFC1123).apply(TEST_KEY);
         public static final ConfigOptionList        TEST_DURATION_OPTION            = new ConfigOptionList("testDurationList", DurationFormat.PRETTY).apply(TEST_KEY);
-        public static final ConfigHotkey            TEST_RUN_DATETIME_TEST          = new ConfigHotkey("testRunDateTimeTest", "").apply(TEST_KEY);
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN,
                 TEST_CONFIG_BOOLEAN_HOTKEYED,
                 TEST_CONFIG_COLOR,
                 TEST_CONFIG_COLOR_LIST,
+                TEST_CONFIG_BLOCK_STATE,
                 TEST_CONFIG_DOUBLE,
                 TEST_CONFIG_FLOAT,
-                TEST_CONFIG_HOTKEY,
                 TEST_CONFIG_INTEGER,
                 TEST_CONFIG_OPTIONS_LIST,
                 TEST_CONFIG_STRING,
@@ -192,24 +198,14 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_BUNDLE_PREVIEW_WIDTH,
                 TEST_INVENTORY_OVERLAY,
                 TEST_INVENTORY_OVERLAY_OG,
-                TEST_INVENTORY_OVERLAY_TOGGLE,
-                TEST_GUI_KEYBIND,
-                TEST_GUI_EDITOR_KEYBIND,
-                TEST_GUI_FILE_BROWSER_KEYBIND,
                 TEST_DATE_TIME_OPTION,
-                TEST_DURATION_OPTION,
-                TEST_RUN_DATETIME_TEST
+                TEST_DURATION_OPTION
         );
 
         public static final List<IHotkey> HOTKEY_LIST = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN_HOTKEYED,
                 TEST_INVENTORY_OVERLAY,
-                TEST_INVENTORY_OVERLAY_OG,
-                TEST_INVENTORY_OVERLAY_TOGGLE,
-                TEST_GUI_KEYBIND,
-                TEST_GUI_EDITOR_KEYBIND,
-                TEST_GUI_FILE_BROWSER_KEYBIND,
-                TEST_RUN_DATETIME_TEST
+                TEST_INVENTORY_OVERLAY_OG
         );
     }
 
@@ -236,7 +232,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static void loadFromFile()
     {
-        Path configFile = FileUtils.getConfigDirectoryAsPath().resolve(CONFIG_FILE_NAME);
+        Path configFile = FileUtils.getConfigDirectory().resolve(CONFIG_FILE_NAME);
 
         if (Files.exists(configFile) && Files.isReadable(configFile))
         {
@@ -251,7 +247,8 @@ public class MaLiLibConfigs implements IConfigHandler
 
                 if (MaLiLibReference.DEBUG_MODE)
                 {
-                    ConfigUtils.readConfigBase(root, "Test", Test.OPTIONS);
+                    ConfigUtils.readConfigBase(root, "TestOptions", Test.OPTIONS);
+                    ConfigUtils.readConfigBase(root, "TestHotkeys", TestHotkeys.HOTKEY_LIST);
                     ConfigUtils.readHotkeyToggleOptions(root, "TestEnumHotkeys", "TestEnumToggles", ConfigTestEnum.VALUES);
                 }
 
@@ -277,7 +274,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
     public static void saveToFile()
     {
-        Path dir = FileUtils.getConfigDirectoryAsPath();
+        Path dir = FileUtils.getConfigDirectory();
 
         if (!Files.exists(dir))
         {
@@ -294,7 +291,8 @@ public class MaLiLibConfigs implements IConfigHandler
 
             if (MaLiLibReference.DEBUG_MODE)
             {
-                ConfigUtils.writeConfigBase(root, "Test", Test.OPTIONS);
+                ConfigUtils.writeConfigBase(root, "TestOptions", Test.OPTIONS);
+                ConfigUtils.writeConfigBase(root, "TestHotkeys", TestHotkeys.HOTKEY_LIST);
                 ConfigUtils.writeHotkeyToggleOptions(root, "TestEnumHotkeys", "TestEnumToggles", ConfigTestEnum.VALUES);
             }
 
@@ -341,5 +339,85 @@ public class MaLiLibConfigs implements IConfigHandler
     public void save()
     {
         saveToFile();
+    }
+
+    @Override
+    public void onLanguageChanged(String newLang)
+    {
+        checkBaseLanguage();
+    }
+
+    public static void checkBaseLanguage()
+    {
+        i18nMode mode = (i18nMode) Generic.TRANSLATION_MODE.getOptionListValue();
+
+        if (mode == i18nMode.FOLLOW_MALILIB)
+        {
+            LANG.ifPresent(
+                    i18nManager ->
+                    {
+                        String baseKey = Registry.TRANSLATION_OVERRIDE_MANAGER.getBaseLanguageCode();
+
+                        // Try setting language if it doesn't match
+                        if (!i18nManager.getLang().getLangCode().equalsIgnoreCase(baseKey))
+                        {
+                            List<i18nOption> list = i18nManager.getLanguageOptions();
+                            boolean found = false;
+
+                            for (i18nOption entry : list)
+                            {
+                                if (entry.getKey().equalsIgnoreCase(baseKey))
+                                {
+                                    i18nManager.setLang(baseKey);
+                                    i18nConfig newConfig = new i18nConfig(i18nManager).fromString(baseKey);
+                                    Generic.TRANSLATION_LANGUAGE.setOptionListValue(newConfig);
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                i18nManager.resetLangToDefault();
+                                Generic.TRANSLATION_LANGUAGE.resetToDefault();
+                            }
+                        }
+                    }
+            );
+        }
+        else if (mode == i18nMode.FOLLOW_VANILLA)
+        {
+            LANG.ifPresent(
+                    i18nManager ->
+                    {
+                        String vanCode = Registry.TRANSLATION_OVERRIDE_MANAGER.getVanillaLanguageCode();
+
+                        // Try setting language if it doesn't match
+                        if (!i18nManager.getLang().getLangCode().equalsIgnoreCase(vanCode))
+                        {
+                            List<i18nOption> list = i18nManager.getLanguageOptions();
+                            boolean found = false;
+
+                            for (i18nOption entry : list)
+                            {
+                                if (entry.getKey().equalsIgnoreCase(vanCode))
+                                {
+                                    i18nManager.setLang(vanCode);
+                                    i18nConfig newConfig = new i18nConfig(i18nManager).fromString(vanCode);
+                                    Generic.TRANSLATION_LANGUAGE.setOptionListValue(newConfig);
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (!found)
+                            {
+                                i18nManager.resetLangToDefault();
+                                Generic.TRANSLATION_LANGUAGE.resetToDefault();
+                            }
+                        }
+                    }
+            );
+        }
     }
 }

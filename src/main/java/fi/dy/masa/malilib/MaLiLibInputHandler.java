@@ -21,8 +21,6 @@ public class MaLiLibInputHandler implements IKeybindProvider
     @Override
     public void addKeysToMap(IKeybindManager manager)
     {
-//        manager.addKeybindToMap(MaLiLibConfigs.Generic.OPEN_GUI_CONFIGS.getKeybind());
-
         // These are probably empty, but I am just building the ability to
         // add Hotkey configs here without much extra effort
         for (IHotkey hotkey : MaLiLibConfigs.Generic.HOTKEY_LIST)
@@ -39,8 +37,6 @@ public class MaLiLibInputHandler implements IKeybindProvider
     @Override
     public void addHotkeys(IKeybindManager manager)
     {
-//        List<? extends IHotkey> hotkeys = ImmutableList.of( MaLiLibConfigs.Generic.OPEN_GUI_CONFIGS );
-//        manager.addHotkeysForCategory(MaLiLibReference.MOD_NAME, MaLiLibReference.MOD_ID + ".hotkeys.category.generic_hotkeys", hotkeys);
         manager.addHotkeysForCategory(MaLiLibReference.MOD_NAME, MaLiLibReference.MOD_ID + ".hotkeys.category.generic_hotkeys", MaLiLibConfigs.Generic.HOTKEY_LIST);
         manager.addHotkeysForCategory(MaLiLibReference.MOD_NAME, MaLiLibReference.MOD_ID + ".hotkeys.category.debug_hotkeys",   MaLiLibConfigs.Debug.HOTKEY_LIST);
     }
