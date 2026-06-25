@@ -187,6 +187,7 @@
     "malilib.gui.button.copy": "복사",
     "malilib.gui.button.delete": "삭제",
     "malilib.gui.button.dual_text": "이중 텍스트 편집",
+    "malilib.gui.button.empty_keybind": "NONE",
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "새 디렉터리 생성",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "파일 또는 디렉터리 삭제",
