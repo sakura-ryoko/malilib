@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.interfaces;
 
 import java.util.List;
 import javax.annotation.Nullable;
+
+import net.minecraft.world.level.block.BarrelBlock;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.client.Minecraft;
@@ -645,7 +647,52 @@ public interface IDataSyncer
 				return null;
 			}
 
-			if (state.hasProperty(BlockStateProperties.CHEST_TYPE) && state.hasProperty(BlockStateProperties.HORIZONTAL_FACING))
+			Pair<net.minecraft.core.BlockPos, BlockState> barrelAdj = InventoryUtils.getCarpetTISLargeBarrel(world, pos, state);
+
+			if (barrelAdj != null)
+			{
+				if (!world.hasChunkAt(barrelAdj.getLeft()))
+				{
+					return null;
+				}
+
+				BlockPos posAdj = BlockPos.of(barrelAdj.getLeft());
+				BlockState stateAdj = barrelAdj.getRight();
+				EntityDataPairEntry pairAdj = this.getCache().getBlockEntityPairFromCache(posAdj);
+
+				if (pairAdj == null)
+				{
+					this.requestBlockEntity(world, posAdj);
+				}
+				else
+				{
+					Container inv1 = null;
+					Container inv2 = null;
+
+					if (useNbt)
+					{
+						inv1 = InventoryUtils.getDataInventory(pair.data(), -1, world.registryAccess());
+						inv2 = InventoryUtils.getDataInventory(pairAdj.data(), -1, world.registryAccess());
+					}
+					else if (pair.be() instanceof Container c1 && pairAdj.be() instanceof Container c2)
+					{
+						inv1 = c1;
+						inv2 = c2;
+					}
+
+					// Just recycling "ChestType" here.  Negative Axis Direction == First Side.
+					ChestType type = state.getValue(BarrelBlock.FACING).getAxisDirection() == net.minecraft.core.Direction.AxisDirection.NEGATIVE ? ChestType.RIGHT : ChestType.LEFT;
+
+					if (inv1 != null && inv2 != null)
+					{
+						Container invRight = type == ChestType.RIGHT ? inv1 : inv2;
+						Container invLeft = type == ChestType.RIGHT ? inv2 : inv1;
+
+						inv = new CompoundContainer(invRight, invLeft);
+					}
+				}
+			}
+			else if (state.hasProperty(BlockStateProperties.CHEST_TYPE) && state.hasProperty(BlockStateProperties.HORIZONTAL_FACING))
 			{
 				ChestType type = state.getValue(BlockStateProperties.CHEST_TYPE);
 
@@ -655,7 +702,7 @@ public interface IDataSyncer
 					Direction offsetDir = type == ChestType.LEFT ? facing.rotateY() : facing.rotateYCCW();
 					BlockPos posAdj = pos.offset(offsetDir);
 
-					if (!world.hasChunkAt(posAdj))
+					if (!world.hasChunkAt(posAdj.toVanillaPos()))
 					{
 						return null;
 					}
@@ -665,7 +712,6 @@ public interface IDataSyncer
 
 					if (pairAdj == null)
 					{
-						// Issue a network request for the missing half
 						this.requestBlockEntity(world, posAdj);
 					}
 					else if (stateAdj.getBlock() == state.getBlock() &&
