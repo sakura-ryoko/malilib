@@ -4,11 +4,12 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderState;
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
 import fi.dy.masa.malilib.util.position.Vec3d;
-import fi.dy.masa.malilib.util.position.VecBox;
 
 public abstract class AbstractSelectionBoxRenderState implements IOnDemandRenderState
 {
@@ -149,14 +150,14 @@ public abstract class AbstractSelectionBoxRenderState implements IOnDemandRender
 		// Fix Bottom Y Border offset
 		if (pos1.getY() < pos2.getY())
 		{
-			pos1 = BlockPos.of(pos1.mutable().setY(pos1.getY() - 1).immutable());
+			pos1 = pos1.mutable().setY(pos1.getY() - 1).immutable();
 		}
 		else if (pos2.getY() < pos1.getY())
 		{
-			pos2 = BlockPos.of(pos2.mutable().setY(pos2.getY() - 1).immutable());
+			pos2 = pos2.mutable().setY(pos2.getY() - 1).immutable();
 		}
 
-		return VecBox.encapsulated(pos1, pos2).contains(this.camPos());
+		return AABB.encapsulatingFullBlocks(pos1, pos2).contains(this.camPos().toVanilla());
 	}
 
 	// Library of common buffer filling methods

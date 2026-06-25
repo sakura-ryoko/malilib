@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Vec3i;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
@@ -219,7 +220,7 @@ public class Vec3d
         return new Vec3d(pos.x, pos.y, pos.z);
     }
 
-    public static Vec3d of(net.minecraft.core.Vec3i pos)
+    public static Vec3d of(Vec3i pos)
     {
         return new Vec3d(pos.getX(), pos.getY(), pos.getZ());
     }

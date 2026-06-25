@@ -2,10 +2,10 @@ package fi.dy.masa.malilib.render.on_demand.state;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
 import fi.dy.masa.malilib.util.position.Vec2d;
 import fi.dy.masa.malilib.util.position.Vec3d;
 

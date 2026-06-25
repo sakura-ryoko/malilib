@@ -13,11 +13,12 @@ import com.mojang.blaze3d.vertex.MeshData;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -33,8 +34,6 @@ import fi.dy.masa.malilib.render.on_demand.state.BlockTargetingOverlayEdgesRende
 import fi.dy.masa.malilib.render.on_demand.state.BlockTargetingOverlaySideRenderState;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
-import fi.dy.masa.malilib.util.position.Direction;
 import fi.dy.masa.malilib.util.position.PositionUtils;
 import fi.dy.masa.malilib.util.position.Vec3d;
 
@@ -131,7 +130,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 			{
 				if (this.keybind.isKeybindHeld())
 				{
-					this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), hitResult.getLocation());
+					this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), Vec3d.of(hitResult.getLocation()));
 				}
 				else { this.reset(); }
 			}
@@ -139,7 +138,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 			{
 				if (GuiBase.isCtrlDown())
 				{
-					this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), hitResult.getLocation());
+					this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), Vec3d.of(hitResult.getLocation()));
 				}
 				else { this.reset(); }
 			}
@@ -147,17 +146,12 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 			{
 				if (GuiBase.isAltDown())
 				{
-					this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), hitResult.getLocation());
+					this.scheduleTarget(entity.getDirection(), hitResult.getBlockPos(), hitResult.getDirection(), Vec3d.of(hitResult.getLocation()));
 				}
 				else { this.reset(); }
 			}
 		}
 		else { this.reset(); }
-	}
-
-	private void scheduleTarget(net.minecraft.core.Direction facing, net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side, Vec3 hitVec)
-	{
-		this.scheduleTarget(Direction.of(facing), BlockPos.of(pos), Direction.of(side), Vec3d.of(hitVec));
 	}
 
 	private void scheduleTarget(Direction facing, BlockPos pos, Direction side, Vec3d hitVec)
@@ -181,7 +175,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 
 	private Entry buildEntry(Vec3d camPos, Direction facing, BlockPos pos, Direction side, Vec3d hitVec)
 	{
-		PositionUtils.HitPart part = PositionUtils.getHitPart(side.getVanillaDirection(), facing.getVanillaDirection(), pos, hitVec.toVanilla());
+		PositionUtils.HitPart part = PositionUtils.getHitPart(side, facing, pos, hitVec.toVanilla());
 
 		BlockTargetingOverlaySideRenderState sideState       = new BlockTargetingOverlaySideRenderState(
 				pos, camPos, this.targetColor, this.lineColor, this.lineWidth, side, facing, part
@@ -361,7 +355,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 			Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
 
 			global4fStack.pushMatrix();
-			RenderUtils.blockTargetingOverlayTranslations(state.x(), state.y(), state.z(), state.side().getVanillaDirection(), state.facing().getVanillaDirection(), global4fStack);
+			RenderUtils.blockTargetingOverlayTranslations(state.x(), state.y(), state.z(), state.side(), state.facing(), global4fStack);
 			this.drawBuffers();
 			global4fStack.popMatrix();
 		}

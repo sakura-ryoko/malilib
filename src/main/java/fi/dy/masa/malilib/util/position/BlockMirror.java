@@ -3,14 +3,15 @@ package fi.dy.masa.malilib.util.position;
 import java.util.function.IntFunction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.core.Direction;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.util.ByIdMap;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Mirror;
-
-import io.netty.buffer.ByteBuf;
-import org.jetbrains.annotations.NotNull;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;

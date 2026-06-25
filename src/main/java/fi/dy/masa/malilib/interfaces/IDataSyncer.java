@@ -2,12 +2,12 @@ package fi.dy.masa.malilib.interfaces;
 
 import java.util.List;
 import javax.annotation.Nullable;
-
-import net.minecraft.world.level.block.BarrelBlock;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.Identifier;
@@ -25,6 +25,7 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -46,8 +47,6 @@ import fi.dy.masa.malilib.util.data_syncer.EntityDataPairEntry;
 import fi.dy.masa.malilib.util.data_syncer.EntityDataRequestTracker;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
-import fi.dy.masa.malilib.util.position.BlockPos;
-import fi.dy.masa.malilib.util.position.Direction;
 
 /**
  * Used as a common Server Data Syncer interface used by the IInventoryOverlayHandler Interface.
@@ -639,7 +638,7 @@ public interface IDataSyncer
 		if (pair != null)
 		{
 			Container inv = null;
-			BlockState state = world.getBlockState(pos.toVanillaPos());
+			BlockState state = world.getBlockState(pos);
 
 			if (!useNbt && (state.is(BlockTags.AIR) || !state.hasBlockEntity()))
 			{
@@ -647,7 +646,7 @@ public interface IDataSyncer
 				return null;
 			}
 
-			Pair<net.minecraft.core.BlockPos, BlockState> barrelAdj = InventoryUtils.getCarpetTISLargeBarrel(world, pos, state);
+			Pair<BlockPos, BlockState> barrelAdj = InventoryUtils.getCarpetTISLargeBarrel(world, pos, state);
 
 			if (barrelAdj != null)
 			{
@@ -656,7 +655,7 @@ public interface IDataSyncer
 					return null;
 				}
 
-				BlockPos posAdj = BlockPos.of(barrelAdj.getLeft());
+				BlockPos posAdj = barrelAdj.getLeft();
 				BlockState stateAdj = barrelAdj.getRight();
 				EntityDataPairEntry pairAdj = this.getCache().getBlockEntityPairFromCache(posAdj);
 
@@ -698,16 +697,16 @@ public interface IDataSyncer
 
 				if (type != ChestType.SINGLE)
 				{
-					Direction facing = Direction.of(state.getValue(BlockStateProperties.HORIZONTAL_FACING));
-					Direction offsetDir = type == ChestType.LEFT ? facing.rotateY() : facing.rotateYCCW();
-					BlockPos posAdj = pos.offset(offsetDir);
+					Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+					Direction offsetDir = type == ChestType.LEFT ? facing.getClockWise() : facing.getCounterClockWise();
+					BlockPos posAdj = pos.relative(offsetDir);
 
-					if (!world.hasChunkAt(posAdj.toVanillaPos()))
+					if (!world.hasChunkAt(posAdj))
 					{
 						return null;
 					}
 
-					BlockState stateAdj = world.getBlockState(posAdj.toVanillaPos());
+					BlockState stateAdj = world.getBlockState(posAdj);
 					EntityDataPairEntry pairAdj = this.getCache().getBlockEntityPairFromCache(posAdj);
 
 					if (pairAdj == null)
@@ -718,7 +717,7 @@ public interface IDataSyncer
 							 stateAdj.hasProperty(BlockStateProperties.CHEST_TYPE) &&
 							 stateAdj.hasProperty(BlockStateProperties.HORIZONTAL_FACING) &&
 							 stateAdj.getValue(BlockStateProperties.CHEST_TYPE) != ChestType.SINGLE &&
-							 stateAdj.getValue(BlockStateProperties.HORIZONTAL_FACING) == facing.getVanillaDirection())
+							 stateAdj.getValue(BlockStateProperties.HORIZONTAL_FACING) == facing)
 					{
 						Container inv1 = null;
 						Container inv2 = null;
@@ -892,17 +891,6 @@ public interface IDataSyncer
 	default void handleVanillaQueryNbt(int transactionId, CompoundTag nbt)
 	{
 		this.handleVanillaQueryNbt(transactionId, DataConverterNbt.fromVanillaCompound(nbt));
-	}
-
-	/**
-	 * Specific format for receiving Packets
-	 * @param pos -
-	 * @param nbt -
-	 * @return -
-	 */
-	default @Nullable BlockEntity handleBlockEntityData(net.minecraft.core.BlockPos pos, CompoundTag nbt)
-	{
-		return handleBlockEntityData(BlockPos.of(pos), DataConverterNbt.fromVanillaCompound(nbt));
 	}
 
 	/**

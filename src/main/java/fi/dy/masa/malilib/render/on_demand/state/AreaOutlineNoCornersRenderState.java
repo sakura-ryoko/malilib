@@ -5,14 +5,15 @@ import org.jspecify.annotations.NonNull;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
+import net.minecraft.core.BlockPos;
+
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
 import fi.dy.masa.malilib.util.position.Vec3d;
 
 public class AreaOutlineNoCornersRenderState extends AbstractSelectionBoxRenderState
 {
-	public static final AreaOutlineNoCornersRenderState EMPTY = new AreaOutlineNoCornersRenderState(Vec3d.ZERO, BlockPos.ORIGIN, BlockPos.ORIGIN, 3f, Color4f.ZERO, Color4f.ZERO, Color4f.ZERO)
+	public static final AreaOutlineNoCornersRenderState EMPTY = new AreaOutlineNoCornersRenderState(Vec3d.ZERO, BlockPos.ZERO, BlockPos.ZERO, 3f, Color4f.ZERO, Color4f.ZERO, Color4f.ZERO)
 	{
 		@Override
 		public boolean isEmpty() { return true; }
