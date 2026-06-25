@@ -187,6 +187,7 @@
     "malilib.gui.button.copy": "Копіювати",
     "malilib.gui.button.delete": "Видалити",
     "malilib.gui.button.dual_text": "Редагувати подвійний текст",
+    "malilib.gui.button.empty_keybind": "NONE",
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "Створити новий каталог",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "Видалити файл або каталог",
