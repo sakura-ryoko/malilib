@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.commons.lang3.math.Fraction;
 
@@ -49,8 +50,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibFabricData;
-import fi.dy.masa.malilib.compat.ModIds;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.InventoryOverlayType;
@@ -465,7 +464,8 @@ public class InventoryUtils
 	public static @Nullable Pair<BlockPos, BlockState> getCarpetTISLargeBarrel(Level world, BlockPos pos, BlockState state)
 	{
 		// The logic is that the "Bottom" of the Barrel's needs to connect.
-		if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(ModIds.carpetTis))
+		// MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(ModIds.carpetTis) &&
+		if (MaLiLibConfigs.Generic.ENABLE_LARGE_BARREL_PREVIEW.getBooleanValue())
 		{
 			if (state.getBlock() instanceof BarrelBlock)
 			{
