@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.commons.lang3.math.Fraction;
 
@@ -16,10 +17,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.item.ItemParser;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -41,6 +39,7 @@ import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -50,6 +49,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibFabricData;
+import fi.dy.masa.malilib.compat.ModIds;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.InventoryOverlayType;
@@ -65,6 +66,7 @@ import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class InventoryUtils
 {
@@ -387,16 +389,12 @@ public class InventoryUtils
      * @param pos ()
      * @return ()
      */
+	@SuppressWarnings("deprecation")
     @Nullable
     public static Container getInventory(Level world, BlockPos pos)
     {
-        @SuppressWarnings("deprecation")
         boolean isLoaded = world.hasChunkAt(pos);
-
-        if (isLoaded == false)
-        {
-            return null;
-        }
+        if (!isLoaded) { return null; }
 
         // The method in World now checks that the caller is from the same thread...
         BlockEntity te = world.getChunkAt(pos).getBlockEntity(pos);
@@ -404,15 +402,31 @@ public class InventoryUtils
         if (te instanceof Container inv)
         {
             BlockState state = world.getBlockState(pos);
+			Pair<BlockPos, BlockState> barrelAdj = getCarpetTISLargeBarrel(world, pos, state);
 
-            if (state.getBlock() instanceof ChestBlock && te instanceof ChestBlockEntity)
+			// Add "largeBarrel" logic only if Carpet-TIS is installed.
+			if (barrelAdj != null)
+			{
+				BlockPos posAdj = barrelAdj.getLeft();
+				BlockState stateAdj = barrelAdj.getRight();
+				// Just recycling "ChestType" here.  Negative Axis Direction == First Side.
+				ChestType type = state.getValue(BarrelBlock.FACING).getAxisDirection() == Direction.AxisDirection.NEGATIVE ? ChestType.RIGHT : ChestType.LEFT;
+				BlockEntity te2 = world.getChunkAt(posAdj).getBlockEntity(posAdj);
+
+				if (state.getBlock() == stateAdj.getBlock() && te2 instanceof Container inv2)
+				{
+					Container invRight = type == ChestType.RIGHT ? inv : inv2;
+					Container invLeft = type == ChestType.RIGHT ? inv2 : inv;
+					inv = new CompoundContainer(invRight, invLeft);
+				}
+			}
+            else if (state.getBlock() instanceof ChestBlock && te instanceof ChestBlockEntity)
             {
                 ChestType type = state.getValue(ChestBlock.TYPE);
 
                 if (type != ChestType.SINGLE)
                 {
                     BlockPos posAdj = pos.relative(ChestBlock.getConnectedDirection(state));
-                    @SuppressWarnings("deprecation")
                     boolean isLoadedAdj = world.hasChunkAt(posAdj);
 
                     if (isLoadedAdj)
@@ -439,6 +453,44 @@ public class InventoryUtils
 
         return null;
     }
+
+	/**
+	 * Attempt to support the Carpet-TIS Large Barrel.
+	 * @param world -
+	 * @param pos -
+	 * @param state -
+	 * @return -
+	 */
+	@SuppressWarnings("deprecation")
+	public static @Nullable Pair<BlockPos, BlockState> getCarpetTISLargeBarrel(Level world, BlockPos pos, BlockState state)
+	{
+		// The logic is that the "Bottom" of the Barrel's needs to connect.
+		if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(ModIds.carpetTis))
+		{
+			if (state.getBlock() instanceof BarrelBlock)
+			{
+				Direction facing = state.getValue(BarrelBlock.FACING);
+				BlockPos posAdj = pos.relative(facing.getOpposite());
+
+				if (world.hasChunkAt(posAdj))
+				{
+					BlockState stateAdj = world.getBlockState(posAdj);
+
+					if (stateAdj.getBlock() instanceof BarrelBlock)
+					{
+						Direction facingAdj = stateAdj.getValue(BarrelBlock.FACING);
+
+						if (facingAdj.equals(facing.getOpposite()))
+						{
+							return Pair.of(posAdj, stateAdj);
+						}
+					}
+				}
+			}
+		}
+
+		return null;
+	}
 
     /**
      * Checks if the given Shulker Box (or other storage item with the
