@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui.button;
 
 import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiBase;
+import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.client.input.MouseButtonEvent;
 
 public class ConfigButtonBoolean extends ButtonGeneric
@@ -28,15 +29,8 @@ public class ConfigButtonBoolean extends ButtonGeneric
     @Override
     public void updateDisplayString()
     {
-        String valueStr = String.valueOf(this.config.getBooleanValue());
-
-        if (this.config.getBooleanValue())
-        {
-            this.displayString = GuiBase.TXT_DARK_GREEN + valueStr + GuiBase.TXT_RST;
-        }
-        else
-        {
-            this.displayString = GuiBase.TXT_DARK_RED + valueStr + GuiBase.TXT_RST;
-        }
+        this.displayString = this.config.getBooleanValue()
+                             ? StringUtils.translate("malilib.gui.button.true")
+                             : StringUtils.translate("malilib.gui.button.false");
     }
 }
