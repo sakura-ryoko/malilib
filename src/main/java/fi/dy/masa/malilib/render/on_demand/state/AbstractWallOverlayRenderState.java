@@ -5,14 +5,14 @@ import java.util.List;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
 
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderState;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
 import fi.dy.masa.malilib.util.position.Vec2d;
 import fi.dy.masa.malilib.util.position.Vec3d;
-import fi.dy.masa.malilib.util.position.VecBox;
 
 public abstract class AbstractWallOverlayRenderState implements IOnDemandRenderState
 {
@@ -24,7 +24,7 @@ public abstract class AbstractWallOverlayRenderState implements IOnDemandRenderS
 	protected Color4f quadsColor;
 	protected Color4f linesColor;
 	protected float linesWidth;
-	protected List<VecBox> boxes;
+	protected List<AABB> boxes;
 
 	protected AbstractWallOverlayRenderState(BlockPos posStart, BlockPos posEnd,
 	                                         Vec3d camPos,
@@ -83,7 +83,7 @@ public abstract class AbstractWallOverlayRenderState implements IOnDemandRenderS
 		return this.camPos;
 	}
 
-	public List<VecBox> boxes()
+	public List<AABB> boxes()
 	{
 		return this.boxes;
 	}
@@ -123,7 +123,7 @@ public abstract class AbstractWallOverlayRenderState implements IOnDemandRenderS
 		return this.linesWidth;
 	}
 
-	protected List<VecBox> calculateBoxes()
+	protected List<AABB> calculateBoxes()
 	{
 		Minecraft mc = Minecraft.getInstance();
 		final int renderDistance = mc.options.renderDistance().get();
@@ -142,7 +142,7 @@ public abstract class AbstractWallOverlayRenderState implements IOnDemandRenderS
 		final double maxY = MathUtils.max(this.posStart().getY(), this.posEnd().getY()) + 1;
 		double minX, minZ, maxX, maxZ;
 
-		List<VecBox> boxes = new ArrayList<>();
+		List<AABB> boxes = new ArrayList<>();
 
 		// The sides of the box along the x-axis can be at least partially inside the range
 		if (rangeMinX <= boxMaxX && rangeMaxX >= boxMinX)
@@ -153,13 +153,13 @@ public abstract class AbstractWallOverlayRenderState implements IOnDemandRenderS
 			if (rangeMinZ <= boxMinZ && rangeMaxZ >= boxMinZ)
 			{
 				minZ = maxZ = boxMinZ;
-				boxes.add(new VecBox(minX, minY, minZ, maxX, maxY, maxZ));
+				boxes.add(new AABB(minX, minY, minZ, maxX, maxY, maxZ));
 			}
 
 			if (rangeMinZ <= boxMaxZ && rangeMaxZ >= boxMaxZ)
 			{
 				minZ = maxZ = boxMaxZ + 1;
-				boxes.add(new VecBox(minX, minY, minZ, maxX, maxY, maxZ));
+				boxes.add(new AABB(minX, minY, minZ, maxX, maxY, maxZ));
 			}
 		}
 
@@ -172,13 +172,13 @@ public abstract class AbstractWallOverlayRenderState implements IOnDemandRenderS
 			if (rangeMinX <= boxMinX && rangeMaxX >= boxMinX)
 			{
 				minX = maxX = boxMinX;
-				boxes.add(new VecBox(minX, minY, minZ, maxX, maxY, maxZ));
+				boxes.add(new AABB(minX, minY, minZ, maxX, maxY, maxZ));
 			}
 
 			if (rangeMinX <= boxMaxX && rangeMaxX >= boxMaxX)
 			{
 				minX = maxX = boxMaxX + 1;
-				boxes.add(new VecBox(minX, minY, minZ, maxX, maxY, maxZ));
+				boxes.add(new AABB(minX, minY, minZ, maxX, maxY, maxZ));
 			}
 		}
 

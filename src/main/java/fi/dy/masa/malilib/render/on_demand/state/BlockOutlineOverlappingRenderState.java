@@ -6,14 +6,15 @@ import org.jspecify.annotations.NonNull;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
+import net.minecraft.core.BlockPos;
+
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
 import fi.dy.masa.malilib.util.position.Vec3d;
 
 public class BlockOutlineOverlappingRenderState extends AbstractSelectionBoxRenderState
 {
-	public static final BlockOutlineOverlappingRenderState EMPTY = new BlockOutlineOverlappingRenderState(Vec3d.ZERO, BlockPos.ORIGIN, 0f, 3f, Color4f.ZERO, Color4f.ZERO, Color4f.ZERO, false)
+	public static final BlockOutlineOverlappingRenderState EMPTY = new BlockOutlineOverlappingRenderState(Vec3d.ZERO, BlockPos.ZERO, 0f, 3f, Color4f.ZERO, Color4f.ZERO, Color4f.ZERO, false)
 	{
 		@Override
 		public boolean isEmpty() {return true;}
@@ -26,7 +27,7 @@ public class BlockOutlineOverlappingRenderState extends AbstractSelectionBoxRend
 	                                          boolean renderThrough)
 	{
 		super(camPos,
-		      BlockPos.ORIGIN, BlockPos.ORIGIN, simplePos,
+		      BlockPos.ZERO, BlockPos.ZERO, simplePos,
 		      expand, lineWidth,
 		      colorPos1, colorPos2, colorOverlapping,
 		      Color4f.ZERO,

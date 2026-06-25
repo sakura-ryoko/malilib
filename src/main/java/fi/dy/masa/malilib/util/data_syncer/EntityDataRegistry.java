@@ -3,8 +3,9 @@ package fi.dy.masa.malilib.util.data_syncer;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.core.BlockPos;
+
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
-import fi.dy.masa.malilib.util.position.BlockPos;
 
 public class EntityDataRegistry
 {
