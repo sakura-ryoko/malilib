@@ -12,6 +12,8 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.BlockHitResult;
@@ -30,8 +32,6 @@ import fi.dy.masa.malilib.render.on_demand.state.SimpleBlockTargetingOverlayLine
 import fi.dy.masa.malilib.render.on_demand.state.SimpleBlockTargetingOverlayQuadsRenderState;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
-import fi.dy.masa.malilib.util.position.Direction;
 import fi.dy.masa.malilib.util.position.Vec3d;
 
 public class SimpleBlockTargetingOverlayRenderer implements IOnDemandRenderer<AbstractBlockTargetingOverlayRenderState>
@@ -147,11 +147,6 @@ public class SimpleBlockTargetingOverlayRenderer implements IOnDemandRenderer<Ab
 			}
 		}
 		else { this.reset(); }
-	}
-
-	private void scheduleTarget(net.minecraft.core.Direction facing, net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side)
-	{
-		this.scheduleTarget(Direction.of(facing), BlockPos.of(pos), Direction.of(side));
 	}
 
 	private void scheduleTarget(Direction facing, BlockPos pos, Direction side)
@@ -317,7 +312,7 @@ public class SimpleBlockTargetingOverlayRenderer implements IOnDemandRenderer<Ab
 			Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
 
 			global4fStack.pushMatrix();
-			RenderUtils.blockTargetingOverlayTranslations(state.x(), state.y(), state.z(), state.side().getVanillaDirection(), state.facing().getVanillaDirection(), global4fStack);
+			RenderUtils.blockTargetingOverlayTranslations(state.x(), state.y(), state.z(), state.side(), state.facing(), global4fStack);
 			this.drawBuffers();
 			global4fStack.popMatrix();
 		}

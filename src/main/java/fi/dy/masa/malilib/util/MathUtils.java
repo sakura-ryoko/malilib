@@ -3,10 +3,10 @@ package fi.dy.masa.malilib.util;
 import org.apache.commons.lang3.math.Fraction;
 import org.jetbrains.annotations.ApiStatus;
 
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.phys.Vec3;
 
 import fi.dy.masa.malilib.util.position.Vec3d;
-import fi.dy.masa.malilib.util.position.Vec3i;
 
 /**
  * Post-ReWrite code
@@ -568,7 +568,6 @@ public class MathUtils
     }
 
     // TODO until util.position.Vec3d gets added (RayTraceUtils)
-    @Deprecated
     public static Vec3 scale(Vec3 vec, double factor)
     {
         return new Vec3(vec.x * factor, vec.y * factor, vec.z * factor);

@@ -147,10 +147,10 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 			}
 			else if (this.type == Type.AXIS)
 			{
-				Direction.Axis axis = this.layerRange.getAxis().toVanilla();
+				Direction.Axis axis = this.layerRange.getAxis();
 				int next = mouseButton == 0 ? ((axis.ordinal() + 1) % 3) : (axis.ordinal() == 0 ? 2 : axis.ordinal() - 1);
 				axis = Direction.Axis.values()[next % 3];
-				this.layerRange.setAxis(fi.dy.masa.malilib.util.position.Direction.Axis.fromVanilla(axis));
+				this.layerRange.setAxis(axis);
 			}
 			else if (this.type == Type.SET_HERE && this.parent.mc.player != null)
 			{

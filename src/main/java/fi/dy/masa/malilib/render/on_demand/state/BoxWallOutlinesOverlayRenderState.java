@@ -5,13 +5,14 @@ import org.jspecify.annotations.NonNull;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
 import fi.dy.masa.malilib.util.position.Vec2d;
 import fi.dy.masa.malilib.util.position.Vec3d;
-import fi.dy.masa.malilib.util.position.VecBox;
 
 public class BoxWallOutlinesOverlayRenderState extends AbstractWallOverlayRenderState
 {
@@ -78,7 +79,7 @@ public class BoxWallOutlinesOverlayRenderState extends AbstractWallOverlayRender
 		final Color4f color = this.linesColor();
 		final float lineWidth = this.linesWidth();
 
-		for (VecBox box : this.boxes())
+		for (AABB box : this.boxes())
 		{
 			if (lineIntervalV > 0.0)
 			{

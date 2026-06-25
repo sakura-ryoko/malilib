@@ -10,6 +10,9 @@ import org.jspecify.annotations.NonNull;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.SectionPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.Entity;
@@ -24,17 +27,17 @@ public class LayerRange
 {
     public static final Codec<LayerRange> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
-                    LayerMode.CODEC.fieldOf("mode").forGetter(get -> get.layerMode),
-                    Direction.Axis.CODEC.fieldOf("axis").forGetter(get -> get.axis),
-                    PrimitiveCodec.INT.fieldOf("layer_single").forGetter(get -> get.layerSingle),
-                    PrimitiveCodec.INT.fieldOf("layer_above").forGetter(get -> get.layerAbove),
-                    PrimitiveCodec.INT.fieldOf("layer_below").forGetter(get -> get.layerBelow),
-                    PrimitiveCodec.INT.fieldOf("layer_range_min").forGetter(get -> get.layerRangeMin),
-                    PrimitiveCodec.INT.fieldOf("layer_range_max").forGetter(get -> get.layerRangeMax),
-                    PrimitiveCodec.INT.fieldOf("follow_player_offset").forGetter(get -> get.playerFollowOffset),
-                    PrimitiveCodec.BOOL.fieldOf("hotkey_range_min").forGetter(get -> get.hotkeyRangeMin),
-                    PrimitiveCodec.BOOL.fieldOf("hotkey_range_max").forGetter(get -> get.hotkeyRangeMax),
-                    PrimitiveCodec.BOOL.fieldOf("follow_player").forGetter(get -> get.followPlayer)
+		            LayerMode.CODEC.fieldOf("mode").forGetter(get -> get.layerMode),
+		            Direction.Axis.CODEC.fieldOf("axis").forGetter(get -> get.axis),
+		            PrimitiveCodec.INT.fieldOf("layer_single").forGetter(get -> get.layerSingle),
+		            PrimitiveCodec.INT.fieldOf("layer_above").forGetter(get -> get.layerAbove),
+		            PrimitiveCodec.INT.fieldOf("layer_below").forGetter(get -> get.layerBelow),
+		            PrimitiveCodec.INT.fieldOf("layer_range_min").forGetter(get -> get.layerRangeMin),
+		            PrimitiveCodec.INT.fieldOf("layer_range_max").forGetter(get -> get.layerRangeMax),
+		            PrimitiveCodec.INT.fieldOf("follow_player_offset").forGetter(get -> get.playerFollowOffset),
+		            PrimitiveCodec.BOOL.fieldOf("hotkey_range_min").forGetter(get -> get.hotkeyRangeMin),
+		            PrimitiveCodec.BOOL.fieldOf("hotkey_range_max").forGetter(get -> get.hotkeyRangeMax),
+		            PrimitiveCodec.BOOL.fieldOf("follow_player").forGetter(get -> get.followPlayer)
             ).apply(inst, LayerRange::new)
     );
     public static final StreamCodec<@NotNull ByteBuf, @NotNull LayerRange> PACKET_CODEC = new StreamCodec<>()
@@ -629,11 +632,6 @@ public class LayerRange
         return this.isPositionWithinRange(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public boolean isPositionWithinRange(net.minecraft.core.BlockPos pos)
-    {
-        return this.isPositionWithinRange(pos.getX(), pos.getY(), pos.getZ());
-    }
-
     public boolean isPositionWithinRange(long posLong)
     {
         int x = BlockPos.getX(posLong);
@@ -695,11 +693,6 @@ public class LayerRange
 	    };
     }
 
-    public boolean isPositionAtRenderEdgeOnSide(net.minecraft.core.BlockPos pos, net.minecraft.core.Direction side)
-    {
-        return this.isPositionAtRenderEdgeOnSide(BlockPos.of(pos), Direction.of(side));
-    }
-
     public boolean isPositionAtRenderEdgeOnSide(BlockPos pos, Direction side)
     {
 	    return switch (this.axis)
@@ -713,7 +706,7 @@ public class LayerRange
 	    };
     }
 
-    public boolean intersects(ChunkSectionPos pos)
+    public boolean intersects(SectionPos pos)
     {
         switch (this.axis)
         {
@@ -747,15 +740,8 @@ public class LayerRange
 
     public boolean intersectsBox(BlockPos pos1, BlockPos pos2)
     {
-        BlockPos posMin = BlockPos.of(PositionUtils.getMinCorner(pos1.toVanillaPos(), pos2.toVanillaPos()));
-        BlockPos posMax = BlockPos.of(PositionUtils.getMaxCorner(pos1.toVanillaPos(), pos2.toVanillaPos()));
-        return this.intersectsBox(posMin.getX(), posMin.getY(), posMin.getZ(), posMax.getX(), posMax.getY(), posMax.getZ());
-    }
-
-    public boolean intersectsBox(net.minecraft.core.BlockPos pos1, net.minecraft.core.BlockPos pos2)
-    {
-        net.minecraft.core.BlockPos posMin = PositionUtils.getMinCorner(pos1, pos2);
-        net.minecraft.core.BlockPos posMax = PositionUtils.getMaxCorner(pos1, pos2);
+        BlockPos posMin = PositionUtils.getMinCorner(pos1, pos2);
+        BlockPos posMax = PositionUtils.getMaxCorner(pos1, pos2);
         return this.intersectsBox(posMin.getX(), posMin.getY(), posMin.getZ(), posMax.getX(), posMax.getY(), posMax.getZ());
     }
 
@@ -791,17 +777,6 @@ public class LayerRange
     public IntBoundingBox getClampedBox(IntBoundingBox box)
     {
         return this.getClampedArea(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
-    }
-
-    /**
-     * Clamps the given box to the layer range bounds.
-     * @return the clamped box, or null, if the range does not intersect the original box
-     */
-    @Nullable
-    public IntBoundingBox getClampedArea(net.minecraft.core.BlockPos posMin, net.minecraft.core.BlockPos posMax)
-    {
-        return this.getClampedArea(posMin.getX(), posMin.getY(), posMin.getZ(),
-                                   posMax.getX(), posMax.getY(), posMax.getZ());
     }
 
     /**

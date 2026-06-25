@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import fi.dy.masa.malilib.util.position.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public class EntityDataRequestTracker
 {

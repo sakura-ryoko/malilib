@@ -2,10 +2,11 @@ package fi.dy.masa.malilib.render.on_demand.state;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderState;
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
-import fi.dy.masa.malilib.util.position.Direction;
 import fi.dy.masa.malilib.util.position.PositionUtils;
 import fi.dy.masa.malilib.util.position.Vec3d;
 

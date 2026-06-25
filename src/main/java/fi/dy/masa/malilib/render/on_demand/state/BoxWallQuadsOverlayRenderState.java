@@ -5,12 +5,13 @@ import org.jspecify.annotations.NonNull;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.AABB;
+
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.util.data.Color4f;
-import fi.dy.masa.malilib.util.position.BlockPos;
 import fi.dy.masa.malilib.util.position.Vec2d;
 import fi.dy.masa.malilib.util.position.Vec3d;
-import fi.dy.masa.malilib.util.position.VecBox;
 
 public class BoxWallQuadsOverlayRenderState extends AbstractWallOverlayRenderState
 {
@@ -36,7 +37,7 @@ public class BoxWallQuadsOverlayRenderState extends AbstractWallOverlayRenderSta
 		final double cz = this.camPos().z;
 		final Color4f color = this.quadsColor();
 
-		for (VecBox box : this.boxes())
+		for (AABB box : this.boxes())
 		{
 			consumer.addVertex((float) (box.minX - cx), (float) (box.maxY - cy), (float) (box.minZ - cz)).setColor(color.r, color.g, color.b, color.a);
 			consumer.addVertex((float) (box.minX - cx), (float) (box.minY - cy), (float) (box.minZ - cz)).setColor(color.r, color.g, color.b, color.a);
