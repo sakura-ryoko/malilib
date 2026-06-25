@@ -187,6 +187,7 @@
     "malilib.gui.button.copy": "复制",
     "malilib.gui.button.delete": "删除",
     "malilib.gui.button.dual_text": "编辑两个文本",
+    "malilib.gui.button.empty_keybind": "NONE",
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "新建目录",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "删除文件或目录",

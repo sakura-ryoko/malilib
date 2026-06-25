@@ -187,6 +187,7 @@
     "malilib.gui.button.copy": "Kopiera",
     "malilib.gui.button.delete": "Ta bort",
     "malilib.gui.button.dual_text": "Redigera dubbeltext",
+    "malilib.gui.button.empty_keybind": "NONE",
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "Skapa en ny katalog",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "Ta bort en fil eller katalog",

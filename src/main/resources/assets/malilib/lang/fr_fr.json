@@ -187,6 +187,7 @@
     "malilib.gui.button.copy": "Copy",
     "malilib.gui.button.delete": "Delete",
     "malilib.gui.button.dual_text": "Edit Dual Text",
+    "malilib.gui.button.empty_keybind": "NONE",
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "Créer un nouveau répertoire",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "Delete a file or directory",
