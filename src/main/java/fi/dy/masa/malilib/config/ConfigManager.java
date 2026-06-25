@@ -3,7 +3,9 @@ package fi.dy.masa.malilib.config;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import fi.dy.masa.malilib.MaLiLib;
 
@@ -33,6 +35,12 @@ public class ConfigManager implements IConfigManager
         {
             handler.onConfigsChanged();
         }
+    }
+
+    @ApiStatus.Internal
+    public Set<String> modIdSet()
+    {
+        return this.configHandlers.keySet();
     }
 
     @ApiStatus.Internal
