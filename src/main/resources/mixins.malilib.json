@@ -5,6 +5,7 @@
     "compatibilityLevel": "JAVA_21",
     "minVersion": "0.8",
     "mixins": [
+        "client.MixinLanguage",
         "entity.IMixinAbstractHorseEntity",
         "entity.IMixinAbstractNautilus",
         "entity.IMixinMerchantEntity",
