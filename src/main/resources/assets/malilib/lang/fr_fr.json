@@ -417,6 +417,7 @@
     "malilib.message.set_layer_axis_to": "Définir l'axe du calque à %s",
     "malilib.message.set_layer_mode_to": "Définir le mode de couche à %s",
     "malilib.message.set_layer_to": "Définir le calque à %s",
+    "malilib.message.test_edit_string_each": "String %d:\n§e'%s'§r",
     "malilib.message.test_edit_strings_dual": "String 1:\n§e'%s'§r\nString 2:\n§e'%s'§r",
     "malilib.message.test_edit_strings_single": "String 1:\n§e'%s'§r",
     "malilib.message.test_text.line.1": "Test Line 1",
