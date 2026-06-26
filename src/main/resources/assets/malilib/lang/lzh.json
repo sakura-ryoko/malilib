@@ -417,6 +417,7 @@
     "malilib.message.set_layer_axis_to": "設層軸至%s",
     "malilib.message.set_layer_mode_to": "設層式如%s",
     "malilib.message.set_layer_to": "設層至%s",
+    "malilib.message.test_edit_string_each": "String %d:\n§e'%s'§r",
     "malilib.message.test_edit_strings_dual": "String 1:\n§e'%s'§r\nString 2:\n§e'%s'§r",
     "malilib.message.test_edit_strings_single": "String 1:\n§e'%s'§r",
     "malilib.message.test_text.line.1": "Test Line 1",
