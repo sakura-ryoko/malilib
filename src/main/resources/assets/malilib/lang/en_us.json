@@ -419,6 +419,7 @@
     "malilib.message.set_layer_to": "Set layer to %s",
     "malilib.message.test_edit_strings_dual": "String 1:\n§e'%s'§r\nString 2:\n§e'%s'§r",
     "malilib.message.test_edit_strings_single": "String 1:\n§e'%s'§r",
+    "malilib.message.test_edit_string_each": "String %d:\n§e'%s'§r",
     "malilib.message.test_text.line.1": "Test Line 1",
     "malilib.message.test_text.line.2": "Test Line 2",
     "malilib.message.test_text.line.3": "Test Line 3",

@@ -51,6 +51,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.compat.carpet.CarpetCompat;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.InventoryOverlayType;
@@ -468,7 +469,8 @@ public class InventoryUtils
 	{
 		// The logic is that the "Bottom" of the Barrel's needs to connect.
 		// MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(ModIds.carpetTis) &&
-		if (MaLiLibConfigs.Generic.ENABLE_LARGE_BARREL_PREVIEW.getBooleanValue())
+		if (MaLiLibConfigs.Generic.ENABLE_LARGE_BARREL_PREVIEW.getBooleanValue() ||
+			(CarpetCompat.isCarpetTisLoaded && checkCarpetTisLargeBarrelRule()))
 		{
 			if (state.getBlock() instanceof BarrelBlock)
 			{
@@ -493,6 +495,28 @@ public class InventoryUtils
 		}
 
 		return null;
+	}
+
+	private static boolean checkCarpetTisLargeBarrelRule()
+	{
+		if (CarpetCompat.isCarpetTisLoaded)
+		{
+			try
+			{
+				Boolean rule = (Boolean) CarpetCompat.getCarpetTisRuleValue("largeBarrel");
+
+				if (rule != null)
+				{
+					return rule;
+				}
+			}
+			catch (Exception e)
+			{
+				return false;
+			}
+		}
+
+		return false;
 	}
 
     /**
