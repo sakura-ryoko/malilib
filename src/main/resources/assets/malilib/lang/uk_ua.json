@@ -417,6 +417,7 @@
     "malilib.message.set_layer_axis_to": "Установлено вісь шару на %s",
     "malilib.message.set_layer_mode_to": "Установлено режим шару на %s",
     "malilib.message.set_layer_to": "Установлено шар на %s",
+    "malilib.message.test_edit_string_each": "String %d:\n§e'%s'§r",
     "malilib.message.test_edit_strings_dual": "Рядок 1:\n§e«%s»§r\nРядок 2:\n§e«%s»§r",
     "malilib.message.test_edit_strings_single": "Рядок 1:\n§e«%s»§r",
     "malilib.message.test_text.line.1": "Test Line 1",
