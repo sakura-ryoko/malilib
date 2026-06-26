@@ -1,6 +1,7 @@
 package fi.dy.masa.malilib;
 
 import fi.dy.masa.malilib.command.ClientCommandHandler;
+import fi.dy.masa.malilib.compat.carpet.CarpetCompat;
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.event.RenderEventHandler;
@@ -85,6 +86,7 @@ public class MaLiLibInitHandler implements IInitializationHandler
         );
         RenderEventHandler.getInstance().registerWorldLastRenderer(OnDemandRenderer.getInstance());
         TickHandler.getInstance().registerClientTickHandler(OnDemandRenderer.getInstance());
+        CarpetCompat.load();
     }
 
     private static class CallbackOpenConfigGui implements IHotkeyCallback
