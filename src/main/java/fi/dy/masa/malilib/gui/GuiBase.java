@@ -653,6 +653,16 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return button;
     }
 
+    /**
+     * Text Characters are at most 6 pixels wide + 8 padding
+     * @param maxTextLength The Text's Max Length
+     * @return The adjusted Pixel Width
+     */
+    protected int calcMaxTextFieldWidth(final int maxTextLength)
+    {
+        return (maxTextLength * 6) + 8;
+    }
+
     public <T extends GuiTextFieldGeneric> TextFieldWrapper<T> addTextField(T textField, @Nullable ITextFieldListener<T> listener)
     {
         return this.addTextField(textField, listener, TextFieldType.STRING);
