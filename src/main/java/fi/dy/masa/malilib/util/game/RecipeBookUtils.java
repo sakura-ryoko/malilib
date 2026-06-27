@@ -226,18 +226,21 @@ public class RecipeBookUtils
             return false;
         }
 
-        if (areStacksEqual(result, stacks.getFirst()))
+        for (ItemStack stack : stacks)
         {
-            if (entry.craftingRequirements().isPresent())
+            if (areStacksEqual(result, stack))
             {
-                return compareStacksAndIngredients(recipeStacks,
-                                                   entry.craftingRequirements().get(),
-                                                   Type.fromRecipeDisplay(entry.display()),
-                                                   allowed
-                );
-            }
+                if (entry.craftingRequirements().isPresent())
+                {
+                    return compareStacksAndIngredients(recipeStacks,
+                                                       entry.craftingRequirements().get(),
+                                                       Type.fromRecipeDisplay(entry.display()),
+                                                       allowed
+                    );
+                }
 
-            return true;
+                return true;
+            }
         }
 
         return false;
@@ -526,7 +529,7 @@ public class RecipeBookUtils
      */
     public static boolean areStacksEqual(ItemStack left, ItemStack right)
     {
-        return ItemStack.isSameItem(left, right) && left.getCount() == right.getCount();
+        return ItemStack.isSameItemSameComponents(left, right) && left.getCount() == right.getCount();
     }
 
     private static void dumpStacks(List<ItemStack> stacks, String side)
