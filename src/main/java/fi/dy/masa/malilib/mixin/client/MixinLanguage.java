@@ -29,7 +29,7 @@ public class MixinLanguage
 					target = "Ljava/util/function/BiConsumer;accept(Ljava/lang/Object;Ljava/lang/Object;)V"
 			)
 	)
-	private static void malilib_onLoadCustomText(Args args, @Local(name = "entry") Map.Entry<String, JsonElement> entry)
+	private static void malilib_onLoadCustomText(Args args, @Local Map.Entry<String, JsonElement> entry)
 	{
 		final String id = args.get(0);
 		final boolean fix = malilib$checkModIds(id);
