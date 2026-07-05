@@ -22,8 +22,8 @@ public class PacketSplitter
     public static final int MAX_PAYLOAD_PER_PACKET_S2C = MAX_TOTAL_PER_PACKET_S2C - 5;
     public static final int MAX_TOTAL_PER_PACKET_C2S = 32767;
     public static final int MAX_PAYLOAD_PER_PACKET_C2S = MAX_TOTAL_PER_PACKET_C2S - 5;
-    public static final int DEFAULT_MAX_RECEIVE_SIZE_C2S = 1048576;
-    public static final int DEFAULT_MAX_RECEIVE_SIZE_S2C = 67108864;
+    public static final int DEFAULT_MAX_RECEIVE_SIZE_C2S = 134217728;       // 128mb Max Buffer
+    public static final int DEFAULT_MAX_RECEIVE_SIZE_S2C = 134217728;
 
     private static final Map<Long, ReadingSession> READING_SESSIONS = new HashMap<>();
 
