@@ -76,7 +76,7 @@ public enum i18nOption
 	LO_LA   ("lo_la", "ພາສາລາວ", List.of()),
 	LT_LT   ("lt_lt", "Lietuvių", List.of()),
 	LV_LV   ("lv_lv", "Latviešu", List.of()),
-	LZH     ("lzh",   "文言 (華夏)", List.of("Kaohaaa")),
+	LZH     ("lzh",   "文言 (華夏)", List.of("Koolhaas(Kaohaaa)")),
 	MK_MK   ("mk_mk", "Македонски (Северна Македонија)", List.of()),
 	MN_MN   ("mn_mn", "Монгол", List.of()),
 	MS_MY   ("ms_my", "Bahasa Melayu", List.of()),
