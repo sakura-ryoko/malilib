@@ -4,6 +4,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import javax.annotation.Nullable;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.util.Util;
+
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextInputFeedback;
 import fi.dy.masa.malilib.gui.LeftRight;
@@ -21,6 +23,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
     protected final WidgetIcon iconRoot;
     protected final WidgetIcon iconUp;
     protected final WidgetIcon iconCreateDir;
+    protected final WidgetIcon iconOpenDir;
 
     public WidgetDirectoryNavigation(int x, int y, int width, int height,
                                      Path currentDir, Path rootDir,
@@ -38,7 +41,10 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
         x += this.iconUp.getWidth() + 2;
 
         this.iconCreateDir = new WidgetIcon(x, y + 1, iconProvider.getIconCreateDirectory());
-//	    x += this.iconCreateDir.getWidth() + 2;
+	    x += this.iconCreateDir.getWidth() + 2;
+
+        this.iconOpenDir = new WidgetIcon(x, y + 1, iconProvider.getIconDirectory());
+//        x += this.iconOpenDir.getWidth() + 2;
     }
 
     @Override
@@ -50,20 +56,45 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
 
             if (hoveredIcon == this.iconRoot)
             {
-                this.navigator.switchToRootDirectory();
+                if (click.input() == 0)
+                {
+                    this.navigator.switchToRootDirectory();
+                }
+                else if (click.input() == 1 && this.navigator instanceof WidgetFileBrowserBase fb)
+                {
+                    Util.getPlatform().openPath(fb.getRootDirectory());
+                }
+
+                return true;
+            }
+            else if (hoveredIcon == this.iconOpenDir)
+            {
+                if (click.input() == 0)
+                {
+                    Util.getPlatform().openPath(this.navigator.getCurrentDirectory());
+                }
+
                 return true;
             }
             else if (hoveredIcon == this.iconUp)
             {
-                this.navigator.switchToParentDirectory();
+                if (click.input() == 0)
+                {
+                    this.navigator.switchToParentDirectory();
+                }
+
                 return true;
             }
             else if (hoveredIcon == this.iconCreateDir)
             {
-                String title = "malilib.gui.title.create_directory";
-                DirectoryCreator creator = new DirectoryCreator(this.currentDir, this.navigator, false);
-                GuiTextInputFeedback gui = new GuiTextInputFeedback(256, title, "", GuiUtils.getCurrentScreen(), creator);
-                GuiBase.openGui(gui);
+                if (click.input() == 0)
+                {
+                    String title = "malilib.gui.title.create_directory";
+                    DirectoryCreator creator = new DirectoryCreator(this.currentDir, this.navigator, false);
+                    GuiTextInputFeedback gui = new GuiTextInputFeedback(256, title, "", GuiUtils.getCurrentScreen(), creator);
+                    GuiBase.openGui(gui);
+                }
+
                 return true;
             }
         }
@@ -88,6 +119,10 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             {
                 return this.iconCreateDir;
             }
+            else if (this.iconOpenDir.isMouseOver(mouseX, mouseY))
+            {
+                return this.iconOpenDir;
+            }
         }
 
         return null;
@@ -105,8 +140,9 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             this.iconRoot.render(ctx, false, hoveredIcon == this.iconRoot);
             this.iconUp.render(ctx, false, hoveredIcon == this.iconUp);
             this.iconCreateDir.render(ctx, false, hoveredIcon == this.iconCreateDir);
+            this.iconOpenDir.render(ctx, false, hoveredIcon == this.iconOpenDir);
 
-            int pathStartX = this.iconCreateDir.x + this.iconCreateDir.getWidth() + 6;
+            int pathStartX = this.iconOpenDir.x + this.iconOpenDir.getWidth() + 6;
 
             // Draw the directory path text background
             RenderUtils.drawRect(ctx, pathStartX, this.y, this.width - pathStartX - 2, this.height, 0x20FFFFFF);
@@ -138,6 +174,10 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             else if (hoveredIcon == this.iconCreateDir)
             {
                 RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.create_directory")));
+            }
+            else if (hoveredIcon == this.iconOpenDir)
+            {
+                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.open_directory")));
             }
         }
     }

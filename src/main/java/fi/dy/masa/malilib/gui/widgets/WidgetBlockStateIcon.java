@@ -1,11 +1,13 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang3.math.Fraction;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -14,12 +16,12 @@ import fi.dy.masa.malilib.config.options.ConfigBlockState;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiBlockStateEditor;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
+import fi.dy.masa.malilib.mixin.item.IMixinItem;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
-@ApiStatus.Experimental
 public class WidgetBlockStateIcon extends WidgetBase
 {
 	protected final IConfigBlockState config;
@@ -66,13 +68,28 @@ public class WidgetBlockStateIcon extends WidgetBase
 		RenderUtils.drawRect(ctx, x    , y    , width    , height    , 0xFFFFFFFF);
 		RenderUtils.drawRect(ctx, x + 1, y + 1, width - 2, height - 2, 0xFF000000);
 
-		final ItemStack stack = this.config.getBlockStateValue().getBlock().asItem().getDefaultInstance();
+		final ItemStack stack = this.createItemStackForRendering();
 
 		ctx.pose().pushMatrix();
 		ctx.pose().translate(x + 1, y + 1);
 		ctx.pose().scale(1, 1);
-		ctx.item(stack.copy(), 0, 0);
-		ctx.itemDecorations(ctx.fontRenderer(), stack.copy(), 0, 0);
+		ctx.fakeItem(stack, 0, 0);
+//		ctx.itemDecorations(ctx.fontRenderer(), stack, 0, 0);
 		ctx.pose().popMatrix();
+	}
+
+	private ItemStack createItemStackForRendering()
+	{
+		final BlockState state = this.config.getBlockStateValue();
+		final Item item = state.getBlock().asItem();
+		final Holder<Item> ref = ((IMixinItem) item).malilib_getBuiltInRegistryHolder();
+
+		if (ref.areComponentsBound())
+		{
+			return new ItemStack(ref);
+		}
+
+		// Used when like ... we're at the title screen (item.componets() crashes, so we just use an Empty Components map) -- It'll just render a blank "Air" icon
+		return new ItemStack(ref, 1, new PatchedDataComponentMap(DataComponentMap.EMPTY));
 	}
 }

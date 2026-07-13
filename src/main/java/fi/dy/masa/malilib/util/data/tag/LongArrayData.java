@@ -10,8 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
-public class LongArrayData extends BaseData
-        implements ArrayData
+public class LongArrayData extends BaseData implements ArrayData
 {
     public static final String TAG_NAME = "TAG_LongArray";
 
@@ -59,6 +58,12 @@ public class LongArrayData extends BaseData
     public boolean isEmpty()
     {
         return this.value.length == 0;
+    }
+
+    @Override
+    public int sizeInBytes()
+    {
+        return Long.BYTES * this.value.length;
     }
 
     @Override

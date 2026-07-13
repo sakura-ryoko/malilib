@@ -191,6 +191,7 @@
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "Créer un nouveau répertoire",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "Delete a file or directory",
+    "malilib.gui.button.hover.directory_widget.open_directory": "§dOpen directory§r",
     "malilib.gui.button.hover.directory_widget.root": "Vers le répertoire racine/base",
     "malilib.gui.button.hover.directory_widget.up": "Répertoire parent",
     "malilib.gui.button.hover.hold_shift_for_info": "§oMaintenez la touche Maj enfoncée pour plus d'informations§r",

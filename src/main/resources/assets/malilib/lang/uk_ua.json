@@ -191,6 +191,7 @@
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "Створити новий каталог",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "Видалити файл або каталог",
+    "malilib.gui.button.hover.directory_widget.open_directory": "§dOpen directory§r",
     "malilib.gui.button.hover.directory_widget.root": "До кореневого/базового каталогу",
     "malilib.gui.button.hover.directory_widget.up": "До батьківського каталогу",
     "malilib.gui.button.hover.hold_shift_for_info": "§oУтримуйте Shift для подробиць.§r",

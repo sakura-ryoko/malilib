@@ -38,7 +38,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
 
     public ConfigInteger(String name, int defaultValue)
     {
-        this(name, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigInteger(String name, int defaultValue, String comment)
@@ -58,7 +58,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue)
     {
-        this(name, defaultValue, minValue, maxValue, false, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, false, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, String comment)
@@ -78,7 +78,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, boolean useSlider)
     {
-        this(name, defaultValue, minValue, maxValue, useSlider, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, useSlider, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, boolean useSlider, String comment)

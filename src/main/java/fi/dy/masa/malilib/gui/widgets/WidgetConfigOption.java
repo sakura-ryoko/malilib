@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import javax.annotation.Nullable;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.MutableComponent;
+
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
@@ -138,18 +140,29 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
 
         String comment;
+		MutableComponent commentComponent = null;
         IConfigInfoProvider infoProvider = this.host.getHoverInfoProvider();
 
         if (infoProvider != null)
         {
             comment = infoProvider.getHoverInfo(config);
+
+			if (infoProvider.getHoverComponent(config) != null)
+			{
+				commentComponent = infoProvider.getHoverComponent(config);
+			}
         }
         else
         {
             comment = config.getComment();
+			commentComponent = config.getCommentComponent();
         }
 
-        if (comment != null)
+		if (commentComponent != null)
+		{
+			this.addConfigComment(x, y + 5, labelWidth, 12, commentComponent);
+		}
+        else if (comment != null && !comment.isEmpty())
         {
             this.addConfigComment(x, y + 5, labelWidth, 12, comment);
         }
@@ -352,7 +365,12 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addWidget(new WidgetHoverInfo(x, y, width, height, comment));
     }
 
-    protected void addHotkeyConfigElements(int x, int y, int configWidth, String configName, IHotkey hotkey)
+	protected void addConfigComment(int x, int y, int width, int height, MutableComponent comment)
+	{
+		this.addWidget(new WidgetHoverComponent(x, y, width, height, comment));
+	}
+
+	protected void addHotkeyConfigElements(int x, int y, int configWidth, String configName, IHotkey hotkey)
     {
         configWidth -= 22; // adjust the width to match other configs due to the settings widget
         IKeybind keybind = hotkey.getKeybind();

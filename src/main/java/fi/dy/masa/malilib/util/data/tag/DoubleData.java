@@ -8,8 +8,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.Optional;
 
-public class DoubleData extends BaseData
-        implements NumberData
+public class DoubleData extends BaseData implements NumberData
 {
     public static final String TAG_NAME = "TAG_Double";
 
@@ -43,6 +42,12 @@ public class DoubleData extends BaseData
     public boolean isEmpty()
     {
         return false;
+    }
+
+    @Override
+    public int sizeInBytes()
+    {
+        return Double.BYTES;
     }
 
     @Override

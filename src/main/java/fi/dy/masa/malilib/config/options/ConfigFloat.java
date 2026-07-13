@@ -38,7 +38,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
 
     public ConfigFloat(String name, float defaultValue)
     {
-        this(name, defaultValue, Float.MIN_VALUE, Float.MAX_VALUE, false, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, Float.MIN_VALUE, Float.MAX_VALUE, false, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigFloat(String name, float defaultValue, String comment)
@@ -58,7 +58,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
 
     public ConfigFloat(String name, float defaultValue, float minValue, float maxValue)
     {
-        this(name, defaultValue, minValue, maxValue, false, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, false, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigFloat(String name, float defaultValue, float minValue, float maxValue, String comment)
@@ -73,7 +73,7 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
 
     public ConfigFloat(String name, float defaultValue, float minValue, float maxValue, boolean useSlider)
     {
-        this(name, defaultValue, minValue, maxValue, useSlider, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, useSlider, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigFloat(String name, float defaultValue, float minValue, float maxValue, boolean useSlider, String comment)

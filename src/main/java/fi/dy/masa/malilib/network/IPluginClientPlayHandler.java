@@ -6,7 +6,6 @@ import java.util.Objects;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,6 +13,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.MaLiLib;
@@ -30,6 +30,7 @@ public interface IPluginClientPlayHandler<T extends CustomPacketPayload> extends
     int TO_CLIENT = 4;
     int FROM_CLIENT = 5;
     int BOTH_CLIENT = 6;
+    int MAX_FAILURES = 2;
 
     /**
      * Returns your HANDLER's CHANNEL ID
@@ -160,8 +161,6 @@ public interface IPluginClientPlayHandler<T extends CustomPacketPayload> extends
      * @param channel (Channel)
      * @param data (Data Codec)
      */
-    default void decodeNbtCompound(Identifier channel, CompoundTag data) {}
-    default <D> void decodeObject(Identifier channel, D data1) {}
     default <P extends IClientPayloadData> void decodeClientData(Identifier channel, P data) {}
 
     /**
@@ -170,8 +169,6 @@ public interface IPluginClientPlayHandler<T extends CustomPacketPayload> extends
      * -
      * @param data (Data Codec)
      */
-    default void encodeNbtCompound(CompoundTag data) {}
-    default <D> void encodeObject(D data1) {}
     default <P extends IClientPayloadData> void encodeClientData(P data) {}
 
     /**
@@ -189,7 +186,9 @@ public interface IPluginClientPlayHandler<T extends CustomPacketPayload> extends
      */
     default boolean sendPlayPayload(@Nonnull T payload)
     {
-        if (payload.type().id().equals(this.getPayloadChannel()) && this.isPlayRegistered(this.getPayloadChannel()))
+        if (payload.type().id().equals(this.getPayloadChannel()) &&
+            this.isPlayRegistered(this.getPayloadChannel()) &&
+            this.checkFailures())
         {
             if (ClientPlayNetworking.canSend(payload.type()))
             {
@@ -213,7 +212,9 @@ public interface IPluginClientPlayHandler<T extends CustomPacketPayload> extends
      */
     default boolean sendPlayPayload(@Nonnull ClientPacketListener handler, @Nonnull T payload)
     {
-        if (payload.type().id().equals(this.getPayloadChannel()) && this.isPlayRegistered(this.getPayloadChannel()))
+        if (payload.type().id().equals(this.getPayloadChannel()) &&
+            this.isPlayRegistered(this.getPayloadChannel()) &&
+            this.checkFailures())
         {
             Packet<?> packet = new ServerboundCustomPayloadPacket(payload);
 
@@ -230,4 +231,21 @@ public interface IPluginClientPlayHandler<T extends CustomPacketPayload> extends
 
         return false;
     }
+
+    /**
+     * Max Failures
+     * @return -
+     */
+    default int maxFailures() { return MAX_FAILURES; }
+
+    /**
+     * Tick the Failure Counter
+     */
+    void tickFailures();
+
+    /**
+     * Return if it is safe to proceed processing packets.
+     * @return True for safe; False for unsafe.
+     */
+    boolean checkFailures();
 }

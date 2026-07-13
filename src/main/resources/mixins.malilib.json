@@ -17,6 +17,7 @@
         "entity.MixinPiglin",
         "hud.IMixinDebugHudProfile",
         "item.IMixinContainerComponent",
+        "item.IMixinItem",
         "item.MixinItemStack",
         "item.MixinSimpleContainer",
         "nbt.IMixinNbtReadView",

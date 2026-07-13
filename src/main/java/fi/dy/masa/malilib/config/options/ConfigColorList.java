@@ -36,7 +36,7 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
 
     public ConfigColorList(String name, ImmutableList<Color4f> defaultValue)
     {
-        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigColorList(String name, ImmutableList<Color4f> defaultValue, String comment)
