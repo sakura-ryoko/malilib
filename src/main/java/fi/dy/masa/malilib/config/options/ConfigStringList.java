@@ -36,7 +36,7 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
 
     public ConfigStringList(String name, ImmutableList<@NotNull String> defaultValue)
     {
-        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigStringList(String name, ImmutableList<@NotNull String> defaultValue, String comment)

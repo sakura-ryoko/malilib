@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.gui;
 
 import java.util.*;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -33,7 +32,6 @@ import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
-@ApiStatus.Experimental
 public class GuiBlockStateEditor extends GuiDialogSplitBase
 {
 	protected final IConfigBlockState config;
@@ -126,6 +124,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		CompoundTag tag = new CompoundTag();
 		CompoundTag tagProps = new CompoundTag();
 
+		// TODO -- 26.3 (name)
 		tag.putString("Name", BuiltInRegistries.BLOCK.getKey(this.block).toString());
 
 		for (Property<?> prop : this.props)
@@ -147,6 +146,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			}
 		}
 
+		// TODO -- 26.3 (properties)
 		tag.put("Properties", tagProps);        // Ugly method, but if it works? ~_^ (Unlike this.blockstate.setValue() ?)
 
 		if (MaLiLibReference.DEBUG_MODE)

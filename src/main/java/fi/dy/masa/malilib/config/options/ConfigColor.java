@@ -35,7 +35,7 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
 
     public ConfigColor(String name, Color4f defaultValue)
     {
-        super(ConfigType.COLOR, name, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        super(ConfigType.COLOR, name, "", StringUtils.splitCamelCase(name), name);
 
         this.minValue = Integer.MIN_VALUE;
         this.maxValue = Integer.MAX_VALUE;
@@ -46,7 +46,7 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
 
     public ConfigColor(String name, String defaultValue)
     {
-        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigColor(String name, String defaultValue, String comment)

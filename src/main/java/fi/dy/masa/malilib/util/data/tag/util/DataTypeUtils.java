@@ -1,19 +1,28 @@
 package fi.dy.masa.malilib.util.data.tag.util;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.*;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.StateHolder;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -544,5 +553,90 @@ public class DataTypeUtils
 		}
 
 		return data;
+	}
+
+	public static BlockState readBlockStateFromTag(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
+	{
+		Codec<ResourceKey<Block>> CODEC = ResourceKey.codec(Registries.BLOCK);
+		HolderGetter<Block> lookup = registry.lookupOrThrow(Registries.BLOCK);
+		Optional<? extends Holder<Block>> opt = data.containsLenient("name")
+		                                        ? data.getCodec("name", CODEC).flatMap(lookup::get)
+		                                        : data.getCodec("Name", CODEC).flatMap(lookup::get);
+
+		if (opt.isEmpty())
+		{
+			return Blocks.AIR.defaultBlockState();
+		}
+
+		Block block = opt.get().value();
+		BlockState state = block.defaultBlockState();
+		CompoundData props = data.containsLenient("properties")
+		                     ? data.getCompoundOrDefault("properties", new CompoundData())
+		                     : data.getCompoundOrDefault("Properties", new CompoundData());
+
+		if (!props.isEmpty())
+		{
+			StateDefinition<Block, BlockState> def = block.getStateDefinition();
+
+			for (String key : props.getKeys())
+			{
+				Property<?> prop = def.getProperty(key);
+
+				if (prop != null)
+				{
+					state = setValueEach(state, props, key, prop);
+				}
+			}
+		}
+
+		return state;
+	}
+
+	public static <STATE extends StateHolder<?, STATE>, PROP extends Comparable<PROP>> STATE setValueEach(STATE state,
+	                                                                                                      CompoundData props,
+	                                                                                                      String key,
+	                                                                                                      Property<PROP> prop)
+	{
+		Optional<PROP> opt = Optional.ofNullable(props.getString(key)).flatMap(prop::getValue);
+		return opt.map(value -> state.setValue(prop, value)).orElse(state);
+	}
+
+	public static CompoundData writeBlockStateToTag(@Nonnull final BlockState state)
+	{
+		CompoundData data = new CompoundData();
+		data.putString("Name", BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
+		writeStatePropertiesToTag(data, state);
+		return data;
+	}
+
+	public static CompoundData writeFluidStateToTag(@Nonnull final FluidState state)
+	{
+		CompoundData data = new CompoundData();
+		data.putString("Name", BuiltInRegistries.FLUID.getKey(state.getType()).toString());
+		writeStatePropertiesToTag(data, state);
+		return data;
+	}
+
+	public static void writeStatePropertiesToTag(@Nonnull CompoundData data, @Nonnull final StateHolder<?, ?> state)
+	{
+		Map<Property<?>, Comparable<?>> values = state.getValues();
+
+		if (!values.isEmpty())
+		{
+			CompoundData props = new CompoundData();
+
+			for (Map.Entry<Property<?>, Comparable<?>> v : values.entrySet())
+			{
+				props.putString(v.getKey().getName(), valueName(v.getKey(), v.getValue()));
+			}
+
+			data.put("Properties", props);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Comparable<T>> String valueName(Property<T> p, Comparable<?> c)
+	{
+		return p.getName((T) c);
 	}
 }

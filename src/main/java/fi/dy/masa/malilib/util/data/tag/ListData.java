@@ -5,14 +5,14 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 import com.google.common.collect.Lists;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
-public class ListData extends BaseData
-        implements ArrayData
+public class ListData extends BaseData implements ArrayData
 {
     public static final String TAG_NAME = "TAG_List";
     protected final ArrayList<BaseData> list;
@@ -254,6 +254,25 @@ public class ListData extends BaseData
     public boolean isEmpty()
     {
         return this.list.isEmpty();
+    }
+
+    @Override
+    public int sizeInBytes()
+    {
+        int size = 36 + (4 * this.list.size());
+
+        for (BaseData data : this.list)
+        {
+            size += data.sizeInBytes();
+        }
+
+        return size;
+    }
+
+    @Override
+    public Optional<ListData> asList()
+    {
+        return Optional.of(this);
     }
 
     @Override

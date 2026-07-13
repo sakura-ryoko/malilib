@@ -53,6 +53,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ARGB;
@@ -105,11 +106,11 @@ import fi.dy.masa.malilib.util.text.TextAlignment;
 
 public class RenderUtils
 {
-    private static final AnsiLogger LOGGER = new AnsiLogger(RenderUtils.class);
+//    private static final AnsiLogger LOGGER = new AnsiLogger(RenderUtils.class);
     public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.withDefaultNamespace("textures/map/map_background.png");
     public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.withDefaultNamespace("textures/map/map_background_checkerboard.png");
 
-    private static final SingleThreadedRandomSource RAND = new SingleThreadedRandomSource(0);
+//    private static final SingleThreadedRandomSource RAND = new SingleThreadedRandomSource(0);
 
 	/**
 	 * @deprecated Please transition to using RenderPipelines
@@ -843,10 +844,10 @@ public class RenderUtils
 	/**
 	 * Draw a 'Hover Text' Bubble object, simillar to Vanilla.
 	 *
-	 * @param ctx
-	 * @param x
-	 * @param y
-	 * @param textLines
+	 * @param ctx -
+	 * @param x -
+	 * @param y -
+	 * @param textLines -
 	 */
     public static void drawHoverText(GuiContext ctx, int x, int y, List<String> textLines)
     {
@@ -889,7 +890,7 @@ public class RenderUtils
 	        ctx.pose().pushMatrix();
 	        ctx.pose().translate(0, 0);
 
-            float zLevel = (float) 300;
+//            float zLevel = (float) 300;
             int borderColor = 0xF0100010;
             drawGradientRectBatched(ctx, textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
             drawGradientRectBatched(ctx, textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
@@ -916,15 +917,65 @@ public class RenderUtils
     }
 
 	/**
+	 * Draw a 'Hover Text' Bubble object, simillar to Vanilla.
+	 *
+	 * @param ctx -
+	 * @param x -
+	 * @param y -
+	 * @param text -
+	 */
+	@ApiStatus.Experimental
+	public static void drawHoverText(GuiContext ctx, int x, int y, Component text)
+	{
+		if (text != null && GuiUtils.getCurrentScreen() != null)
+		{
+			Font font = mc().font;
+			int maxLineLength = font.width(text);
+			int maxWidth = GuiUtils.getCurrentScreen().width;
+
+			final int lineHeight = font.lineHeight + 1;
+			int textHeight = lineHeight - 2;
+			int textStartX = x + 4;
+			int textStartY = Math.max(8, y - textHeight - 6);
+
+			if (textStartX + maxLineLength + 6 > maxWidth)
+			{
+				textStartX = Math.max(2, maxWidth - maxLineLength - 8);
+			}
+
+			ctx.pose().pushMatrix();
+			ctx.pose().translate(0, 0);
+
+			int borderColor = 0xF0100010;
+			drawGradientRectBatched(ctx, textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
+			drawGradientRectBatched(ctx, textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
+			drawGradientRectBatched(ctx, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY + textHeight + 3, borderColor, borderColor);
+			drawGradientRectBatched(ctx, textStartX - 4, textStartY - 3, textStartX - 3, textStartY + textHeight + 3, borderColor, borderColor);
+			drawGradientRectBatched(ctx, textStartX + maxLineLength + 3, textStartY - 3, textStartX + maxLineLength + 4, textStartY + textHeight + 3, borderColor, borderColor);
+
+			int fillColor1 = 0x505000FF;
+			int fillColor2 = 0x5028007F;
+			drawGradientRectBatched(ctx, textStartX - 3, textStartY - 3 + 1, textStartX - 3 + 1, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
+			drawGradientRectBatched(ctx, textStartX + maxLineLength + 2, textStartY - 3 + 1, textStartX + maxLineLength + 3, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
+			drawGradientRectBatched(ctx, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY - 3 + 1, fillColor1, fillColor1);
+			drawGradientRectBatched(ctx, textStartX - 3, textStartY + textHeight + 2, textStartX + maxLineLength + 3, textStartY + textHeight + 3, fillColor2, fillColor2);
+
+			ctx.drawString(font, text, textStartX, textStartY, 0xFFFFFFFF, false);
+
+			ctx.pose().popMatrix();
+		}
+	}
+
+	/**
 	 * Draw a Gradient Rect Element
 	 *
-	 * @param ctx
-	 * @param left
-	 * @param top
-	 * @param right
-	 * @param bottom
-	 * @param startColor
-	 * @param endColor
+	 * @param ctx -
+	 * @param left -
+	 * @param top -
+	 * @param right -
+	 * @param bottom -
+	 * @param startColor -
+	 * @param endColor -
 	 */
     public static void drawGradientRectBatched(GuiContext ctx, float left, float top, float right, float bottom, int startColor, int endColor)
     {
@@ -991,11 +1042,11 @@ public class RenderUtils
 	/**
 	 * Render a Centered String (GUI)
 	 *
-	 * @param ctx
-	 * @param x
-	 * @param y
-	 * @param color
-	 * @param text
+	 * @param ctx -
+	 * @param x -
+	 * @param y -
+	 * @param color -
+	 * @param text -
 	 */
     public static void drawCenteredString(GuiContext ctx, int x, int y, int color, String text)
     {
@@ -1005,11 +1056,11 @@ public class RenderUtils
 	/**
 	 * Render a Horizontal Line (GUI)
 	 *
-	 * @param ctx
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param color
+	 * @param ctx -
+	 * @param x -
+	 * @param y -
+	 * @param width -
+	 * @param color -
 	 */
     public static void drawHorizontalLine(GuiContext ctx, int x, int y, int width, int color)
     {
@@ -1019,11 +1070,11 @@ public class RenderUtils
 	/**
 	 * Render a Vertical Line (GUI)
 	 *
-	 * @param ctx
-	 * @param x
-	 * @param y
-	 * @param height
-	 * @param color
+	 * @param ctx -
+	 * @param x -
+	 * @param y -
+	 * @param height -
+	 * @param color -
 	 */
     public static void drawVerticalLine(GuiContext ctx, int x, int y, int height, int color)
     {
@@ -1033,13 +1084,13 @@ public class RenderUtils
 	/**
 	 * Render a Texture Atlas Sprite (GUI)
 	 *
-	 * @param ctx
-	 * @param atlas
-	 * @param texture
-	 * @param x
-	 * @param y
-	 * @param width
-	 * @param height
+	 * @param ctx -
+	 * @param atlas -
+	 * @param texture -
+	 * @param x -
+	 * @param y -
+	 * @param width -
+	 * @param height -
 	 */
     public static void renderSprite(GuiContext ctx, Identifier atlas, Identifier texture, int x, int y, int width, int height)
     {
@@ -1057,11 +1108,11 @@ public class RenderUtils
 	/**
 	 * Render Text (GUI)
 	 *
-	 * @param ctx
-	 * @param x
-	 * @param y
-	 * @param color
-	 * @param text
+	 * @param ctx -
+	 * @param x -
+	 * @param y -
+	 * @param color -
+	 * @param text -
 	 */
     public static void renderText(GuiContext ctx, int x, int y, int color, String text)
     {
@@ -1078,11 +1129,26 @@ public class RenderUtils
 	/**
 	 * Render Text (GUI)
 	 *
-	 * @param ctx
-	 * @param x
-	 * @param y
-	 * @param color
-	 * @param lines
+	 * @param ctx -
+	 * @param x -
+	 * @param y -
+	 * @param color -
+	 * @param text -
+	 */
+	@ApiStatus.Experimental
+	public static void renderText(GuiContext ctx, int x, int y, int color, Component text)
+	{
+		ctx.drawString(mc().font, text, x, y, color, true);
+	}
+
+	/**
+	 * Render Text (GUI)
+	 *
+	 * @param ctx -
+	 * @param x -
+	 * @param y -
+	 * @param color -
+	 * @param lines -
 	 */
     public static void renderText(GuiContext ctx, int x, int y, int color, List<String> lines)
     {
@@ -1101,17 +1167,17 @@ public class RenderUtils
 	/**
 	 * Render Scaled Text with a background (GUI)
 	 *
-	 * @param ctx
-	 * @param xOff
-	 * @param yOff
-	 * @param scale
-	 * @param textColor
-	 * @param bgColor
-	 * @param alignment
-	 * @param useBackground
-	 * @param useShadow
-	 * @param lines
-	 * @return
+	 * @param ctx -
+	 * @param xOff -
+	 * @param yOff -
+	 * @param scale -
+	 * @param textColor -
+	 * @param bgColor -
+	 * @param alignment -
+	 * @param useBackground -
+	 * @param useShadow -
+	 * @param lines -
+	 * @return -
 	 */
     public static int renderText(GuiContext ctx, int xOff, int yOff, double scale,
                                  int textColor, int bgColor, HudAlignment alignment,
@@ -1127,18 +1193,18 @@ public class RenderUtils
 	/**
 	 * Render Scaled Text with a background (GUI)
 	 *
-	 * @param ctx
-	 * @param xOff
-	 * @param yOff
-	 * @param scale
-	 * @param textColor
-	 * @param bgColor
-	 * @param alignment
-	 * @param useBackground
-	 * @param useShadow
-	 * @param useStatusShift
-	 * @param lines
-	 * @return
+	 * @param ctx -
+	 * @param xOff -
+	 * @param yOff -
+	 * @param scale -
+	 * @param textColor -
+	 * @param bgColor -
+	 * @param alignment -
+	 * @param useBackground -
+	 * @param useShadow -
+	 * @param useStatusShift -
+	 * @param lines -
+	 * @return -
 	 */
     public static int renderText(GuiContext ctx,
                                  int xOff, int yOff, double scale,
@@ -1178,7 +1244,7 @@ public class RenderUtils
 
         posY = getHudPosY((int) posY, yOff, contentHeight, scale, alignment);
 
-        if (useStatusShift)
+        if (useStatusShift && mc().player != null)
         {
             posY += getHudOffsetForPotions(alignment, scale, mc().player);
         }
@@ -1221,15 +1287,128 @@ public class RenderUtils
     }
 
 	/**
+	 * Render Scaled Text with a background (GUI)
+	 *
+	 * @param ctx -
+	 * @param xOff -
+	 * @param yOff -
+	 * @param scale -
+	 * @param textColor -
+	 * @param bgColor -
+	 * @param alignment -
+	 * @param useBackground -
+	 * @param useShadow -
+	 * @param text -
+	 * @return -
+	 */
+	@ApiStatus.Experimental
+	public static int renderText(GuiContext ctx, int xOff, int yOff, double scale,
+	                             int textColor, int bgColor, HudAlignment alignment,
+	                             boolean useBackground, boolean useShadow,
+	                             Component text)
+	{
+		return renderText(ctx, xOff, yOff, scale,
+		                  textColor, bgColor, alignment,
+		                  useBackground, useShadow, true,
+		                  text);
+	}
+
+	/**
+	 * Render Scaled Text with a background (GUI)
+	 *
+	 * @param ctx -
+	 * @param xOff -
+	 * @param yOff -
+	 * @param scale -
+	 * @param textColor -
+	 * @param bgColor -
+	 * @param alignment -
+	 * @param useBackground -
+	 * @param useShadow -
+	 * @param useStatusShift -
+	 * @param text -
+	 * @return -
+	 */
+	@ApiStatus.Experimental
+	public static int renderText(GuiContext ctx,
+	                             int xOff, int yOff, double scale,
+	                             int textColor, int bgColor, HudAlignment alignment,
+	                             boolean useBackground, boolean useShadow, boolean useStatusShift,
+	                             Component text)
+	{
+		Font fontRenderer = mc().font;
+		final int scaledWidth = GuiUtils.getScaledWindowWidth();
+		final int lineHeight = fontRenderer.lineHeight + 2;
+		final int contentHeight = lineHeight - 2;
+		final int bgMargin = 2;
+
+		// Only Chuck Norris can divide by zero
+		if (scale < 0.0125)
+		{
+			return 0;
+		}
+
+		boolean scaled = scale != 1.0;
+
+		if (scaled)
+		{
+			ctx.pose().pushMatrix();
+			ctx.pose().scale((float) scale, (float) scale);      // z = 1.0f
+		}
+
+		double posX = xOff + bgMargin;
+		double posY = yOff + bgMargin;
+
+		posY = getHudPosY((int) posY, yOff, contentHeight, scale, alignment);
+
+		if (useStatusShift && mc().player != null)
+		{
+			posY += getHudOffsetForPotions(alignment, scale, mc().player);
+		}
+
+		final int width = fontRenderer.width(text);
+
+		switch (alignment)
+		{
+			case TOP_RIGHT:
+			case BOTTOM_RIGHT:
+				posX = (scaledWidth / scale) - width - xOff - bgMargin;
+				break;
+			case CENTER:
+				posX = (scaledWidth / scale / 2) - ((double) width / 2) - xOff;
+				break;
+			default:
+		}
+
+		final int x = (int) posX;
+		final int y = (int) posY;
+
+		if (useBackground)
+		{
+			drawRect(ctx, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.lineHeight, bgColor);
+		}
+
+		ctx.drawString(fontRenderer, text, x, y, textColor, useShadow);
+
+		if (scaled)
+		{
+			ctx.pose().popMatrix();
+		}
+
+		return contentHeight + bgMargin * 2;
+	}
+
+	/**
 	 * Calculate HUD offest based on Active Effects
 	 *
-	 * @param alignment
-	 * @param scale
-	 * @param player
-	 * @return
+	 * @param alignment -
+	 * @param scale -
+	 * @param player -
+	 * @return -
 	 */
     public static int getHudOffsetForPotions(HudAlignment alignment, double scale, Player player)
     {
+		if (player == null) { return 0; }
         if (alignment == HudAlignment.TOP_RIGHT)
         {
             // Only Chuck Norris can divide by zero

@@ -38,7 +38,10 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     {
         if (this.entry.type() == DirectoryEntryType.DIRECTORY)
         {
-            this.navigator.switchToDirectory(this.entry.getDirectory().resolve(this.entry.name()));
+            if (click.input() == 0)
+            {
+                this.navigator.switchToDirectory(this.entry.getDirectory().resolve(this.entry.name()));
+            }
         }
         else
         {

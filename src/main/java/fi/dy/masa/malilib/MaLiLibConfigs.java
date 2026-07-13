@@ -112,6 +112,7 @@ public class MaLiLibConfigs implements IConfigHandler
     public static class Test
     {
         public static final ConfigBoolean           TEST_CONFIG_BOOLEAN             = new ConfigBoolean("testBoolean", false, "Test Boolean").apply(TEST_KEY);
+//        public static final TestConfig              TEST_CONFIG                     = new TestConfig("testConfig");
         public static final ConfigBooleanHotkeyed   TEST_CONFIG_BOOLEAN_HOTKEYED    = new ConfigBooleanHotkeyed("testBooleanHotkeyed", false, "A,K").apply(TEST_KEY);
         public static final ConfigColor             TEST_CONFIG_COLOR               = new ConfigColor("testColor", "0x3022FFFF", "Test Color").apply(TEST_KEY);
         public static final ConfigColorList         TEST_CONFIG_COLOR_LIST          = new ConfigColorList("testColorList", ImmutableList.of(new Color4f(0, 0, 0), new Color4f(255, 255, 255, 255)), "Test Color List").apply(TEST_KEY);
@@ -183,6 +184,7 @@ public class MaLiLibConfigs implements IConfigHandler
 
         public static final ImmutableList<IConfigBase> OPTIONS = ImmutableList.of(
                 TEST_CONFIG_BOOLEAN,
+//                TEST_CONFIG,
                 TEST_CONFIG_BOOLEAN_HOTKEYED,
                 TEST_CONFIG_COLOR,
                 TEST_CONFIG_COLOR_LIST,

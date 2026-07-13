@@ -31,7 +31,7 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
 
     public ConfigBoolean(String name, boolean defaultValue)
     {
-        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigBoolean(String name, boolean defaultValue, String comment)

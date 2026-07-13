@@ -38,7 +38,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
 
     public ConfigDouble(String name, double defaultValue)
     {
-        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, String comment)
@@ -58,7 +58,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue)
     {
-        this(name, defaultValue, minValue, maxValue, false, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, false, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, String comment)
@@ -78,7 +78,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider)
     {
-        this(name, defaultValue, minValue, maxValue, useSlider, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, useSlider, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider, String comment)

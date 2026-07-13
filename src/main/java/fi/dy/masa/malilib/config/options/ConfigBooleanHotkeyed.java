@@ -37,7 +37,7 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey)
     {
-        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, String comment)
@@ -57,7 +57,7 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings)
     {
-        this(name, defaultValue, defaultHotkey, settings, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, defaultHotkey, settings, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings, String comment)
