@@ -7,42 +7,86 @@ import malilib.util.data.Constants;
 
 public interface DataView
 {
-    boolean contains(String key, int requestedType);
-
-    boolean containsList(String key, int listEntryType);
-
+    /**
+     * @return the number of tags/keys stored in this data structure
+     */
     int size();
 
     boolean isEmpty();
 
     Set<String> getKeys();
 
+    boolean contains(String key, int requestedType);
+
+    boolean containsList(String key, int listEntryType);
+
     Optional<BaseData> getData(String key);
 
+    Optional<BaseData> getData(String key, int requestedType);
+
+    /**
+     * @return the requested boolean value, or false if this key doesn't exist
+     */
     boolean getBoolean(String key);
 
+    /**
+     * @return the requested byte value, or 0 if this key doesn't exist
+     */
     byte getByte(String key);
 
+    /**
+     * @return the requested short value, or 0 if this key doesn't exist
+     */
     short getShort(String key);
 
+    /**
+     * @return the requested int value, or 0 if this key doesn't exist
+     */
     int getInt(String key);
 
+    /**
+     * @return the requested long value, or 0L if this key doesn't exist
+     */
     long getLong(String key);
 
+    /**
+     * @return the requested float value, or 0.0f if this key doesn't exist
+     */
     float getFloat(String key);
 
+    /**
+     * @return the requested double value, or 0.0 if this key doesn't exist
+     */
     double getDouble(String key);
 
+    /**
+     * @return the requested string, or an empty string if this key doesn't exist
+     */
     String getString(String key);
 
+    /**
+     * @return the requested array, or an empty array if this key doesn't exist
+     */
     byte[] getByteArray(String key);
 
+    /**
+     * @return the requested array, or an empty array if this key doesn't exist
+     */
     int[] getIntArray(String key);
 
+    /**
+     * @return the requested array, or an empty array if this key doesn't exist
+     */
     long[] getLongArray(String key);
 
+    /**
+     * @return the requested compound tag, or an empty compound if this key doesn't exist
+     */
     CompoundData getCompound(String key);
 
+    /**
+     * @return the requested list, or an empty list if this key doesn't exist
+     */
     ListData getList(String key, int containedType);
 
     default boolean getBooleanOrDefault(String key, boolean defaultValue)
@@ -178,7 +222,7 @@ public interface DataView
 
     default ListData getListOrDefault(String key, int containedType, ListData defaultValue)
     {
-        Optional<BaseData> dataOpt = this.getData(key);
+        Optional<BaseData> dataOpt = this.getData(key, Constants.NBT.TAG_LIST);
 
         if (dataOpt.isPresent() == false)
         {

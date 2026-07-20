@@ -186,6 +186,8 @@ public class DataConverterNbt
         return list;
     }
 
+    // Design note: Converting compounds continues after errors, just those broken keys/tags will be missing.
+    // But for lists the order and index is important, so the list converter above will return null if it encounters any errors.
     public static NBTTagCompound toVanillaCompound(CompoundData compoundData)
     {
         NBTTagCompound tag = new NBTTagCompound();
