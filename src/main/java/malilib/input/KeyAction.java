@@ -2,9 +2,9 @@ package malilib.input;
 
 import com.google.common.collect.ImmutableList;
 
-import malilib.config.value.BaseOptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
 
-public class KeyAction extends BaseOptionListConfigValue
+public class KeyAction extends BaseOptionConfigValue
 {
     public static final KeyAction PRESS   = new KeyAction("press",   "malilib.name.key_action.press", 0);
     public static final KeyAction RELEASE = new KeyAction("release", "malilib.name.key_action.release", 1);

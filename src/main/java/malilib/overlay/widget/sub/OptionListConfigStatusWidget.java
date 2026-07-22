@@ -1,21 +1,21 @@
 package malilib.overlay.widget.sub;
 
 import malilib.MaLiLibReference;
-import malilib.config.option.OptionListConfig;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.option.OptionConfig;
+import malilib.config.value.OptionConfigValue;
 import malilib.render.text.StyledTextLine;
 import malilib.util.data.ConfigOnTab;
 
-public class OptionListConfigStatusWidget extends BaseConfigStatusIndicatorWidget<OptionListConfig<OptionListConfigValue>>
+public class OptionListConfigStatusWidget extends BaseConfigStatusIndicatorWidget<OptionConfig<OptionConfigValue>>
 {
-    protected OptionListConfigValue lastValue;
+    protected OptionConfigValue lastValue;
 
-    public OptionListConfigStatusWidget(OptionListConfig<OptionListConfigValue> config, ConfigOnTab configOnTab)
+    public OptionListConfigStatusWidget(OptionConfig<OptionConfigValue> config, ConfigOnTab configOnTab)
     {
         this(config, configOnTab, MaLiLibReference.MOD_ID + ":csi_value_option_list");
     }
 
-    public OptionListConfigStatusWidget(OptionListConfig<OptionListConfigValue> config,
+    public OptionListConfigStatusWidget(OptionConfig<OptionConfigValue> config,
                                         ConfigOnTab configOnTab, String widgetTypeId)
     {
         super(config, configOnTab, widgetTypeId);

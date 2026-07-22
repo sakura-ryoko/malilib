@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import malilib.gui.widget.BaseWidget;
 import malilib.util.data.EdgeInt;
 
-public class VerticalAlignment extends BaseOptionListConfigValue
+public class VerticalAlignment extends BaseOptionConfigValue
 {
     public static final VerticalAlignment TOP    = new VerticalAlignment("top",    "malilib.name.vertical_alignment.top",    (h) -> 0, (ch, vh, o) -> o);
     public static final VerticalAlignment BOTTOM = new VerticalAlignment("bottom", "malilib.name.vertical_alignment.bottom", (h) -> -h, (ch, vh, o) -> vh - ch - o);

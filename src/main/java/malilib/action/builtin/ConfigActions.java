@@ -3,10 +3,10 @@ package malilib.action.builtin;
 import java.util.Locale;
 
 import malilib.action.ParameterizedAction;
-import malilib.config.option.OptionListConfig;
+import malilib.config.option.OptionConfig;
 import malilib.config.option.StringConfig;
-import malilib.config.value.BaseOptionListConfigValue;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.input.ActionResult;
 import malilib.util.data.BooleanStorage;
 import malilib.util.data.DoubleStorage;
@@ -76,13 +76,13 @@ public class ConfigActions
         };
     }
 
-    public static <T extends OptionListConfigValue>
-    ParameterizedAction createSetOptionListValueAction(OptionListConfig<T> config)
+    public static <T extends OptionConfigValue>
+    ParameterizedAction createSetOptionListValueAction(OptionConfig<T> config)
     {
         return (ctx, str) -> {
             try
             {
-                T value = BaseOptionListConfigValue.findValueByName(str.trim(), config.getAllValues(), null);
+                T value = BaseOptionConfigValue.findValueByName(str.trim(), config.getAllValues(), null);
 
                 if (value != null)
                 {

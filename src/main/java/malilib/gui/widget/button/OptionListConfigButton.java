@@ -6,26 +6,26 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-import malilib.config.option.OptionListConfig;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.option.OptionConfig;
+import malilib.config.value.OptionConfigValue;
 import malilib.listener.EventListener;
 import malilib.render.text.StyledTextLine;
 import malilib.util.StringUtils;
 
 public class OptionListConfigButton extends GenericButton
 {
-    protected final OptionListConfig<?> config;
+    protected final OptionConfig<?> config;
     @Nullable protected final String prefixTranslationKey;
     @Nullable protected EventListener changeListener;
 
     public OptionListConfigButton(int width, int height,
-                                  OptionListConfig<?> config)
+                                  OptionConfig<?> config)
     {
         this(width, height, config, null);
     }
 
     public OptionListConfigButton(int width, int height,
-                                  OptionListConfig<?> config,
+                                  OptionConfig<?> config,
                                   @Nullable String prefixTranslationKey)
     {
         super(width, height);
@@ -81,13 +81,13 @@ public class OptionListConfigButton extends GenericButton
         return getOptionListPreviewHoverString(this.config, previousLines);
     }
 
-    public static List<StyledTextLine> getOptionListPreviewHoverString(OptionListConfig<?> config,
+    public static List<StyledTextLine> getOptionListPreviewHoverString(OptionConfig<?> config,
                                                                        List<StyledTextLine> previousLines)
     {
         List<StyledTextLine> lines = new ArrayList<>();
-        List<OptionListConfigValue> allValues = new ArrayList<>(config.getAllValues());
-        Set<OptionListConfigValue> allowedValues = new HashSet<>(config.getAllowedValues());
-        OptionListConfigValue currentValue = config.getValue();
+        List<OptionConfigValue> allValues = new ArrayList<>(config.getAllValues());
+        Set<OptionConfigValue> allowedValues = new HashSet<>(config.getAllowedValues());
+        OptionConfigValue currentValue = config.getValue();
         int totalValues = allValues.size();
         int allowedValuesCount = config.getAllowedValues().size();
 
@@ -106,7 +106,7 @@ public class OptionListConfigButton extends GenericButton
                                      allowedValuesCount, totalValues);
         }
 
-        for (OptionListConfigValue value : allValues)
+        for (OptionConfigValue value : allValues)
         {
             if (allowedValues.contains(value))
             {
@@ -129,7 +129,7 @@ public class OptionListConfigButton extends GenericButton
             StyledTextLine.translate(lines, "malilib.hover.config.option_list.total_values.disallowed",
                                      totalValues - allowedValuesCount, totalValues);
 
-            for (OptionListConfigValue value : allValues)
+            for (OptionConfigValue value : allValues)
             {
                 if (allowedValues.contains(value) == false)
                 {

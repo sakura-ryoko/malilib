@@ -16,7 +16,7 @@ import malilib.action.Action;
 import malilib.action.ActionContext;
 import malilib.action.builtin.BooleanToggleAction;
 import malilib.config.option.BooleanContainingConfig;
-import malilib.config.option.OptionListConfig;
+import malilib.config.option.OptionConfig;
 import malilib.input.ActionResult;
 import malilib.input.KeyAction;
 import malilib.input.KeyBind;
@@ -228,7 +228,7 @@ public class AdjustableValueHotkeyCallback implements HotkeyCallback
     }
 
     public static AdjustableValueHotkeyCallback create(@Nullable BooleanContainingConfig<?> toggleConfig,
-                                                       OptionListConfig<?> config)
+                                                       OptionConfig<?> config)
     {
         IntConsumer adjuster = (v) -> config.cycleValue(v > 0);
         return new AdjustableValueHotkeyCallback(toggleConfig, adjuster);

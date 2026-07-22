@@ -2,9 +2,9 @@ package malilib.input;
 
 import com.google.common.collect.ImmutableList;
 
-import malilib.config.value.BaseOptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
 
-public class CancelCondition extends BaseOptionListConfigValue
+public class CancelCondition extends BaseOptionConfigValue
 {
     public static final CancelCondition NEVER       = new CancelCondition("never",       "malilib.name.cancel_condition.never");
     public static final CancelCondition ALWAYS      = new CancelCondition("always",      "malilib.name.cancel_condition.always");

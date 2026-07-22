@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import malilib.MaLiLibReference;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.gui.BaseScreen;
 import malilib.gui.config.KeybindSettingsScreen;
 import malilib.gui.util.ScreenContext;
@@ -148,7 +148,7 @@ public class KeybindSettingsWidget extends InteractableWidget
         return StringUtils.translate(value ? "malilib.label.misc.yes.colored" : "malilib.label.misc.no.colored");
     }
 
-    protected String getDisplayString(OptionListConfigValue value)
+    protected String getDisplayString(OptionConfigValue value)
     {
         return StringUtils.translate("malilib.label.keybind_settings.value.option_list", value.getDisplayName());
     }

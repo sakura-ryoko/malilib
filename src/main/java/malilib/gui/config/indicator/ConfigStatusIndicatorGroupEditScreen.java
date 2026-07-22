@@ -3,7 +3,7 @@ package malilib.gui.config.indicator;
 import java.util.Collection;
 
 import malilib.MaLiLibReference;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.config.value.ScreenLocation;
 import malilib.gui.BaseListScreen;
 import malilib.gui.BaseScreen;
@@ -63,7 +63,7 @@ public class ConfigStatusIndicatorGroupEditScreen extends BaseListScreen<DataLis
         this.setTitle("malilib.title.screen.configs.config_status_indicator_configuration", MaLiLibReference.MOD_VERSION);
 
         this.locationDropdownWidget = new DropDownListWidget<>(16, 10, ScreenLocation.VALUES,
-                                                               OptionListConfigValue::getDisplayName);
+                                                               OptionConfigValue::getDisplayName);
         this.locationDropdownWidget.setSelectedEntry(widget.getScreenLocation());
         this.locationDropdownWidget.setSelectionListener(this::changeWidgetLocation);
 

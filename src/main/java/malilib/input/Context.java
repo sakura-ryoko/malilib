@@ -2,9 +2,9 @@ package malilib.input;
 
 import com.google.common.collect.ImmutableList;
 
-import malilib.config.value.BaseOptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
 
-public class Context extends BaseOptionListConfigValue
+public class Context extends BaseOptionConfigValue
 {
     public static final Context INGAME = new Context("ingame",  "malilib.name.key_context.ingame", 0);
     public static final Context GUI    = new Context("gui",     "malilib.name.key_context.gui", 1);

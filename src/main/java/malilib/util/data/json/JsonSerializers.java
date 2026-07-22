@@ -12,7 +12,7 @@ import malilib.config.option.BooleanAndDoubleConfig.BooleanAndDouble;
 import malilib.config.option.BooleanAndFileConfig.BooleanAndFile;
 import malilib.config.option.BooleanAndIntConfig.BooleanAndInt;
 import malilib.config.value.BlackWhiteList;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.util.data.Color4f;
 import malilib.util.position.Vec2d;
 import malilib.util.position.Vec2i;
@@ -67,7 +67,7 @@ public class JsonSerializers
         return obj;
     }
 
-    public static <T extends OptionListConfigValue> JsonElement serializeOptionListValue(T value)
+    public static <T extends OptionConfigValue> JsonElement serializeOptionListValue(T value)
     {
         return new JsonPrimitive(value.getName());
     }

@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import malilib.gui.widget.BaseWidget;
 import malilib.util.data.EdgeInt;
 
-public class HorizontalAlignment extends BaseOptionListConfigValue
+public class HorizontalAlignment extends BaseOptionConfigValue
 {
     public static final HorizontalAlignment LEFT   = new HorizontalAlignment("left",   "malilib.name.horizontal_alignment.left",   (w) -> 0, (cw, vw, o) -> o);
     public static final HorizontalAlignment RIGHT  = new HorizontalAlignment("right",  "malilib.name.horizontal_alignment.right",  (w) -> -w, (cw, vw, o) -> vw - cw - o);

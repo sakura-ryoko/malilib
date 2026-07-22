@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 import malilib.MaLiLibConfigScreen;
 import malilib.MaLiLibReference;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.config.value.ScreenLocation;
 import malilib.gui.BaseImportExportEntriesListScreen;
 import malilib.gui.BaseListScreen;
@@ -61,7 +61,7 @@ public class InfoRendererWidgetListScreen<WIDGET extends InfoRendererWidget> ext
         this.widgetFactory = widgetFactory;
         this.entryWidgetFactory = entryWidgetFactory;
 
-        this.locationDropdownWidget = new DropDownListWidget<>(16, 10, ScreenLocation.VALUES, OptionListConfigValue::getDisplayName);
+        this.locationDropdownWidget = new DropDownListWidget<>(16, 10, ScreenLocation.VALUES, OptionConfigValue::getDisplayName);
         this.createWidgetButton = GenericButton.create(16, "malilib.button.csi_edit.add_csi_widget", this::createInfoRendererWidget);
         this.exportButton  = GenericButton.create(16, "malilib.button.misc.export", this::openExportScreen);
         this.importButton  = GenericButton.create(16, "malilib.button.misc.import", this::openImportScreen);

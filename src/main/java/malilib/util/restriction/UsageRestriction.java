@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import com.google.common.collect.ImmutableList;
 
-import malilib.config.value.BaseOptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
 import malilib.config.value.BlackWhiteList;
 
 public class UsageRestriction<TYPE>
@@ -98,7 +98,7 @@ public class UsageRestriction<TYPE>
         }
     }
 
-    public static class ListType extends BaseOptionListConfigValue
+    public static class ListType extends BaseOptionConfigValue
     {
         public static final ListType NONE      = new ListType("none",        "malilib.label.list_type.none");
         public static final ListType BLACKLIST = new ListType("blacklist",   "malilib.label.list_type.blacklist");

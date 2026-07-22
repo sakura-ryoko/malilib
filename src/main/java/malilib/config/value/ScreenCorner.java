@@ -2,7 +2,7 @@ package malilib.config.value;
 
 import com.google.common.collect.ImmutableList;
 
-public class ScreenCorner extends BaseOptionListConfigValue
+public class ScreenCorner extends BaseOptionConfigValue
 {
     public static final ScreenCorner TOP_LEFT     = new ScreenCorner("top_left",        "malilib.name.screen_location.top_left");
     public static final ScreenCorner TOP_RIGHT    = new ScreenCorner("top_right",       "malilib.name.screen_location.top_right");

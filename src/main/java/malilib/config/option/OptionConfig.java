@@ -6,27 +6,27 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.util.ListUtils;
 
-public class OptionListConfig<T extends OptionListConfigValue> extends BaseGenericConfig<T>
+public class OptionConfig<T extends OptionConfigValue> extends BaseGenericConfig<T>
 {
     protected final ImmutableList<T> allValues;
     protected ImmutableSet<T> allowedValues;
 
-    public OptionListConfig(String name, T defaultValue, ImmutableList<T> allValues)
+    public OptionConfig(String name, T defaultValue, ImmutableList<T> allValues)
     {
         this(name, defaultValue, allValues, name);
     }
 
-    public OptionListConfig(String name, T defaultValue, ImmutableList<T> allValues,
-                            @Nullable String commentTranslationKey, Object... commentArgs)
+    public OptionConfig(String name, T defaultValue, ImmutableList<T> allValues,
+                        @Nullable String commentTranslationKey, Object... commentArgs)
     {
         this(name, defaultValue, allValues, name, commentTranslationKey, commentArgs);
     }
 
-    public OptionListConfig(String name, T defaultValue, ImmutableList<T> allValues, String prettyName,
-                            @Nullable String commentTranslationKey, Object... commentArgs)
+    public OptionConfig(String name, T defaultValue, ImmutableList<T> allValues, String prettyName,
+                        @Nullable String commentTranslationKey, Object... commentArgs)
     {
         super(name, defaultValue, name, prettyName, commentTranslationKey, commentArgs);
 

@@ -5,12 +5,12 @@ import javax.annotation.Nullable;
 
 import malilib.util.StringUtils;
 
-public class BaseOptionListConfigValue implements OptionListConfigValue
+public class BaseOptionConfigValue implements OptionConfigValue
 {
     protected final String name;
     protected final String translationKey;
 
-    public BaseOptionListConfigValue(String name, String translationKey)
+    public BaseOptionConfigValue(String name, String translationKey)
     {
         this.name = name;
         this.translationKey = translationKey;
@@ -31,14 +31,14 @@ public class BaseOptionListConfigValue implements OptionListConfigValue
     @Override
     public String toString()
     {
-        return this.name;
+        return this.getName();
     }
 
     /**
      * Finds the value by the given name from the provided list.
      * If none of the entries match, then the first entry is returned as a fallback.
      */
-    public static <T extends OptionListConfigValue> T findValueByName(String name, List<T> values)
+    public static <T extends OptionConfigValue> T findValueByName(String name, List<T> values)
     {
         return findValueByName(name, values, values.get(0));
     }
@@ -47,7 +47,8 @@ public class BaseOptionListConfigValue implements OptionListConfigValue
      * Finds the value by the given name from the provided list.
      * If none of the entries match, then the fallback value is returned.
      */
-    public static <T extends OptionListConfigValue> T findValueByName(String name, List<T> values, @Nullable T fallback)
+    @Nullable
+    public static <T extends OptionConfigValue> T findValueByName(String name, List<T> values, @Nullable T fallback)
     {
         for (T val : values)
         {

@@ -5,10 +5,10 @@ import java.util.function.Supplier;
 import com.google.common.collect.ImmutableList;
 
 import malilib.action.util.ActionUtils;
-import malilib.config.value.BaseOptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
 import malilib.registry.Registry;
 
-public class ActionGroup extends BaseOptionListConfigValue
+public class ActionGroup extends BaseOptionConfigValue
 {
     public static final ActionGroup ALL             = new ActionGroup("all",             "malilib.name.action_group.all",             Registry.ACTION_REGISTRY::getAllActions);
     public static final ActionGroup BASE            = new ActionGroup("base",            "malilib.name.action_group.base",            Registry.ACTION_REGISTRY::getBaseActions);

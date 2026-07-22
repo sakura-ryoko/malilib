@@ -2,7 +2,7 @@ package malilib.config.value;
 
 import com.google.common.collect.ImmutableList;
 
-public class FileBrowserColumns extends BaseOptionListConfigValue
+public class FileBrowserColumns extends BaseOptionConfigValue
 {
     public static final FileBrowserColumns NONE       = new FileBrowserColumns("none",       "malilib.name.file_browser_columns.none");
     public static final FileBrowserColumns SIZE       = new FileBrowserColumns("size",       "malilib.name.file_browser_columns.size");

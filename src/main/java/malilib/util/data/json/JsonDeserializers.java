@@ -16,9 +16,9 @@ import malilib.config.option.BooleanAndFileConfig.BooleanAndFile;
 import malilib.config.option.BooleanAndIntConfig.BooleanAndInt;
 import malilib.config.option.list.BlackWhiteListConfig;
 import malilib.config.option.list.ValueListConfig;
-import malilib.config.value.BaseOptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
 import malilib.config.value.BlackWhiteList;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.util.data.Color4f;
 import malilib.util.position.Vec2d;
 import malilib.util.position.Vec2i;
@@ -202,13 +202,13 @@ public class JsonDeserializers
         return Optional.empty();
     }
 
-    public static <T extends OptionListConfigValue> Optional<T> readOptionListValue(JsonElement element, List<T> allValues)
+    public static <T extends OptionConfigValue> Optional<T> readOptionListValue(JsonElement element, List<T> allValues)
     {
         try
         {
             if (element.isJsonPrimitive())
             {
-                return Optional.of(BaseOptionListConfigValue.findValueByName(element.getAsString(), allValues));
+                return Optional.of(BaseOptionConfigValue.findValueByName(element.getAsString(), allValues));
             }
             else
             {
@@ -315,7 +315,7 @@ public class JsonDeserializers
                     JsonUtils.hasArray(obj, "whitelist"))
                 {
                     String typeStr = JsonUtils.getString(obj, "type");
-                    ListType type = BaseOptionListConfigValue.findValueByName(typeStr, UsageRestriction.ListType.VALUES);
+                    ListType type = BaseOptionConfigValue.findValueByName(typeStr, UsageRestriction.ListType.VALUES);
                     List<String> blackListStr = JsonUtils.arrayAsStringList(obj.getAsJsonArray("blacklist"));
                     List<String> whiteListStr = JsonUtils.arrayAsStringList(obj.getAsJsonArray("whitelist"));
 

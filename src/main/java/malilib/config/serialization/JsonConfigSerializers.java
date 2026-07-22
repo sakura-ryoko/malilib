@@ -15,13 +15,13 @@ import malilib.config.option.FileConfig;
 import malilib.config.option.HotkeyConfig;
 import malilib.config.option.HotkeyedBooleanConfig;
 import malilib.config.option.IntegerConfig;
-import malilib.config.option.OptionListConfig;
+import malilib.config.option.OptionConfig;
 import malilib.config.option.StringConfig;
 import malilib.config.option.Vec2dConfig;
 import malilib.config.option.Vec2iConfig;
 import malilib.config.option.list.BlackWhiteListConfig;
 import malilib.config.option.list.ValueListConfig;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.util.data.json.JsonSerializers;
 
 public class JsonConfigSerializers
@@ -99,7 +99,7 @@ public class JsonConfigSerializers
         return JsonSerializers.serializeBooleanAndFileValue(config.getValueForSerialization());
     }
 
-    public static <T extends OptionListConfigValue> JsonElement serializeOptionListConfig(OptionListConfig<T> config)
+    public static <T extends OptionConfigValue> JsonElement serializeOptionListConfig(OptionConfig<T> config)
     {
         return JsonSerializers.serializeOptionListValue(config.getValueForSerialization());
     }

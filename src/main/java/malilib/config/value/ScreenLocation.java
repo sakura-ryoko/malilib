@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList;
 import malilib.gui.widget.BaseWidget;
 import malilib.util.data.EdgeInt;
 
-public class ScreenLocation extends BaseOptionListConfigValue implements HorizontalAlignment.StartXPositionSource, VerticalAlignment.StartYPositionSource
+public class ScreenLocation extends BaseOptionConfigValue implements HorizontalAlignment.StartXPositionSource, VerticalAlignment.StartYPositionSource
 {
     public static final ScreenLocation BOTTOM_CENTER = new ScreenLocation(VerticalAlignment.BOTTOM, HorizontalAlignment.CENTER, "bottom_center", "malilib.name.screen_location.bottom_center");
     public static final ScreenLocation BOTTOM_LEFT   = new ScreenLocation(VerticalAlignment.BOTTOM, HorizontalAlignment.LEFT,   "bottom_left",   "malilib.name.screen_location.bottom_left");

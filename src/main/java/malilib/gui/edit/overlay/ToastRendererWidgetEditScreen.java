@@ -1,6 +1,6 @@
 package malilib.gui.edit.overlay;
 
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.config.value.ScreenLocation;
 import malilib.gui.BaseScreen;
 import malilib.gui.edit.EdgeIntEditScreen;
@@ -53,7 +53,7 @@ public class ToastRendererWidgetEditScreen extends BaseScreen
         this.setTitle("malilib.title.screen.toast_renderer_configuration");
 
         this.locationDropdownWidget = new DropDownListWidget<>(16, 10, ScreenLocation.VALUES,
-                                                               OptionListConfigValue::getDisplayName);
+                                                               OptionConfigValue::getDisplayName);
         this.locationDropdownWidget.setSelectedEntry(widget.getScreenLocation());
         this.locationDropdownWidget.setSelectionListener(this::changeWidgetLocation);
 

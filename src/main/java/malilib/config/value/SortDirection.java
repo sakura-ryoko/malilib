@@ -2,7 +2,7 @@ package malilib.config.value;
 
 import com.google.common.collect.ImmutableList;
 
-public class SortDirection extends BaseOptionListConfigValue
+public class SortDirection extends BaseOptionConfigValue
 {
     public static final SortDirection NONE       = new SortDirection("none",        "malilib.name.sort_direction.none");
     public static final SortDirection ASCENDING  = new SortDirection("ascending",   "malilib.name.sort_direction.ascending");

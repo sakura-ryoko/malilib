@@ -5,7 +5,7 @@ import java.util.List;
 import malilib.config.option.BaseConfigOption;
 import malilib.config.option.BooleanConfig;
 import malilib.config.option.IntegerConfig;
-import malilib.config.option.OptionListConfig;
+import malilib.config.option.OptionConfig;
 import malilib.gui.BaseScreen;
 import malilib.gui.widget.IntegerEditWidget;
 import malilib.gui.widget.LabelWidget;
@@ -85,9 +85,9 @@ public class KeybindSettingsScreen extends BaseScreen
             btn.setPosition(x, y);
             this.addWidget(btn);
         }
-        else if (config instanceof OptionListConfig)
+        else if (config instanceof OptionConfig)
         {
-            OptionListConfigButton btn = new OptionListConfigButton(configWidth, 16, (OptionListConfig<?>) config);
+            OptionListConfigButton btn = new OptionListConfigButton(configWidth, 16, (OptionConfig<?>) config);
             btn.setPosition(x, y);
             this.addWidget(btn);
         }

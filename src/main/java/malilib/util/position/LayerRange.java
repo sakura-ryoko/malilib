@@ -6,7 +6,7 @@ import com.google.gson.JsonPrimitive;
 
 import net.minecraft.entity.Entity;
 
-import malilib.config.value.BaseOptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
 import malilib.config.value.LayerMode;
 import malilib.listener.LayerRangeChangeListener;
 import malilib.overlay.message.MessageDispatcher;
@@ -805,7 +805,7 @@ public class LayerRange
 
     public void fromJson(JsonObject obj)
     {
-        this.layerMode = BaseOptionListConfigValue.findValueByName(JsonUtils.getString(obj, "mode"), LayerMode.VALUES);
+        this.layerMode = BaseOptionConfigValue.findValueByName(JsonUtils.getString(obj, "mode"), LayerMode.VALUES);
         this.axis = Direction.Axis.byName(JsonUtils.getString(obj, "axis"));
         if (this.axis == null) { this.axis = Direction.Axis.Y; }
 

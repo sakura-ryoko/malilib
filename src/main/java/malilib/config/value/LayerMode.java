@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 
 import malilib.util.StringUtils;
 
-public enum LayerMode implements OptionListConfigValue
+public enum LayerMode implements OptionConfigValue
 {
     ALL             ("all",             "malilib.name.layer_mode.all"),
     SINGLE_LAYER    ("single_layer",    "malilib.name.layer_mode.single_layer"),

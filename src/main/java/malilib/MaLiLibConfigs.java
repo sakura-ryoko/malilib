@@ -13,7 +13,7 @@ import malilib.config.option.ColorConfig;
 import malilib.config.option.ConfigOption;
 import malilib.config.option.HotkeyConfig;
 import malilib.config.option.IntegerConfig;
-import malilib.config.option.OptionListConfig;
+import malilib.config.option.OptionConfig;
 import malilib.config.option.StringConfig;
 import malilib.config.value.FileWriteType;
 import malilib.config.value.KeybindDisplayMode;
@@ -29,10 +29,10 @@ public class MaLiLibConfigs
 
     public static class Generic
     {
-        public static final OptionListConfig<Scope>              CONFIG_SEARCH_DEFAULT_SCOPE    = new OptionListConfig<>("configSearchDefaultScope", Scope.ALL_CATEGORIES, Scope.VALUES);
-        public static final OptionListConfig<FileWriteType>      CONFIG_WRITE_METHOD            = new OptionListConfig<>("configWriteMethod", FileWriteType.TEMP_AND_RENAME, FileWriteType.VALUES);
-        public static final OptionListConfig<MessageOutput>      DEFAULT_TOGGLE_MESSAGE_OUTPUT  = new OptionListConfig<>("defaultToggleMessageOutput", MessageOutput.CUSTOM_HOTBAR, getUsableDefaultToggleMessageOutputs());
-        public static final OptionListConfig<KeybindDisplayMode> KEYBIND_DISPLAY                = new OptionListConfig<>("keybindDisplay", KeybindDisplayMode.NONE, KeybindDisplayMode.VALUES);
+        public static final OptionConfig<Scope>              CONFIG_SEARCH_DEFAULT_SCOPE    = new OptionConfig<>("configSearchDefaultScope", Scope.ALL_CATEGORIES, Scope.VALUES);
+        public static final OptionConfig<FileWriteType>      CONFIG_WRITE_METHOD            = new OptionConfig<>("configWriteMethod", FileWriteType.TEMP_AND_RENAME, FileWriteType.VALUES);
+        public static final OptionConfig<MessageOutput>      DEFAULT_TOGGLE_MESSAGE_OUTPUT  = new OptionConfig<>("defaultToggleMessageOutput", MessageOutput.CUSTOM_HOTBAR, getUsableDefaultToggleMessageOutputs());
+        public static final OptionConfig<KeybindDisplayMode> KEYBIND_DISPLAY                = new OptionConfig<>("keybindDisplay", KeybindDisplayMode.NONE, KeybindDisplayMode.VALUES);
 
         public static final BooleanConfig ACTION_PROMPT_CLOSE_ON_EXECUTE            = new BooleanConfig("actionPromptCloseOnExecute", true);
         public static final BooleanConfig ACTION_PROMPT_FUZZY_SEARCH                = new BooleanConfig("actionPromptFuzzySearch", false);
@@ -178,7 +178,7 @@ public class MaLiLibConfigs
 
     public static class Internal
     {
-        public static final OptionListConfig<ActionGroup> ACTION_LIST_RIGHT_SIDE_DROPDOWN   = new OptionListConfig<>("actionListRightSideDropdown", ActionGroup.USER_ADDED, ActionGroup.VALUES_USER_ADDED);
+        public static final OptionConfig<ActionGroup> ACTION_LIST_RIGHT_SIDE_DROPDOWN   = new OptionConfig<>("actionListRightSideDropdown", ActionGroup.USER_ADDED, ActionGroup.VALUES_USER_ADDED);
 
         public static final StringConfig ACTIVE_CONFIG_PROFILE          = new StringConfig("activeConfigProfile", "");
         public static final StringConfig ACTION_PROMPT_SEARCH_TEXT      = new StringConfig("actionPromptSearchText", "");

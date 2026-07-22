@@ -6,16 +6,16 @@ import malilib.config.ValueChangeCallback;
 import malilib.config.option.BaseConfigOption;
 import malilib.config.option.BooleanConfig;
 import malilib.config.option.IntegerConfig;
-import malilib.config.option.OptionListConfig;
+import malilib.config.option.OptionConfig;
 import malilib.listener.EventListener;
 import malilib.overlay.message.MessageOutput;
 
 public class KeyBindSettingsConfigs
 {
-    protected final OptionListConfig<KeyAction> cfgActivateOn;
-    protected final OptionListConfig<Context> cfgContext;
-    protected final OptionListConfig<CancelCondition> cfgCancel;
-    protected final OptionListConfig<MessageOutput> cfgMessageType;
+    protected final OptionConfig<KeyAction> cfgActivateOn;
+    protected final OptionConfig<Context> cfgContext;
+    protected final OptionConfig<CancelCondition> cfgCancel;
+    protected final OptionConfig<MessageOutput> cfgMessageType;
     protected final BooleanConfig cfgAllowEmpty;
     protected final BooleanConfig cfgAllowExtra;
     protected final BooleanConfig cfgOrderSensitive;
@@ -34,10 +34,10 @@ public class KeyBindSettingsConfigs
         this.changeListener = changeListener;
 
         KeyBindSettings defaultSettings = keybind.getDefaultSettings();
-        this.cfgActivateOn     = new OptionListConfig<>("", defaultSettings.getActivateOn(), KeyAction.VALUES, "malilib.label.keybind_settings.activate_on",                "malilib.config.comment.keybind_settings.activate_on");
-        this.cfgContext        = new OptionListConfig<>("", defaultSettings.getContext(),    Context.VALUES, "malilib.label.keybind_settings.context",                      "malilib.config.comment.keybind_settings.context");
-        this.cfgCancel         = new OptionListConfig<>("", defaultSettings.getCancelCondition(), CancelCondition.VALUES, "malilib.label.keybind_settings.cancel_further",  "malilib.config.comment.keybind_settings.cancel_further");
-        this.cfgMessageType    = new OptionListConfig<>("", defaultSettings.getMessageType(), MessageOutput.getValues(), "malilib.label.keybind_settings.message_output",   "malilib.config.comment.keybind_settings.message_output");
+        this.cfgActivateOn     = new OptionConfig<>("", defaultSettings.getActivateOn(), KeyAction.VALUES, "malilib.label.keybind_settings.activate_on", "malilib.config.comment.keybind_settings.activate_on");
+        this.cfgContext        = new OptionConfig<>("", defaultSettings.getContext(), Context.VALUES, "malilib.label.keybind_settings.context", "malilib.config.comment.keybind_settings.context");
+        this.cfgCancel         = new OptionConfig<>("", defaultSettings.getCancelCondition(), CancelCondition.VALUES, "malilib.label.keybind_settings.cancel_further", "malilib.config.comment.keybind_settings.cancel_further");
+        this.cfgMessageType    = new OptionConfig<>("", defaultSettings.getMessageType(), MessageOutput.getValues(), "malilib.label.keybind_settings.message_output", "malilib.config.comment.keybind_settings.message_output");
         this.cfgAllowEmpty     = new BooleanConfig("", defaultSettings.getAllowEmpty(),     "malilib.label.keybind_settings.allow_empty_keybind",                           "malilib.config.comment.keybind_settings.allow_empty_keybind");
         this.cfgAllowExtra     = new BooleanConfig("", defaultSettings.getAllowExtraKeys(), "malilib.label.keybind_settings.allow_extra_keys",                              "malilib.config.comment.keybind_settings.allow_extra_keys");
         this.cfgOrderSensitive = new BooleanConfig("", defaultSettings.isOrderSensitive(),  "malilib.label.keybind_settings.order_sensitive",                               "malilib.config.comment.keybind_settings.order_sensitive");

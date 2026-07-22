@@ -2,7 +2,7 @@ package malilib.config.value;
 
 import com.google.common.collect.ImmutableList;
 
-public class KeybindDisplayMode extends BaseOptionListConfigValue
+public class KeybindDisplayMode extends BaseOptionConfigValue
 {
     public static final KeybindDisplayMode NONE         = new KeybindDisplayMode("none",                "malilib.name.keybind_display_mode.none");
     public static final KeybindDisplayMode KEYS         = new KeybindDisplayMode("keys",                "malilib.name.keybind_display_mode.keys");

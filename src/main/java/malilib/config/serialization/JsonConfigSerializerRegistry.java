@@ -20,7 +20,7 @@ import malilib.config.option.FileConfig;
 import malilib.config.option.HotkeyConfig;
 import malilib.config.option.HotkeyedBooleanConfig;
 import malilib.config.option.IntegerConfig;
-import malilib.config.option.OptionListConfig;
+import malilib.config.option.OptionConfig;
 import malilib.config.option.StringConfig;
 import malilib.config.option.Vec2dConfig;
 import malilib.config.option.Vec2iConfig;
@@ -190,7 +190,7 @@ public class JsonConfigSerializerRegistry
         this.registerGenericConfigSerializers(BooleanAndFileConfig.class,   JsonConfigSerializers::serializeBooleanAndFileConfig,   (c, el) -> JsonDeserializers.readBooleanAndFileValue(el));
         this.registerGenericConfigSerializers(BooleanAndIntConfig.class,    JsonConfigSerializers::serializeBooleanAndIntConfig,    (c, el) -> JsonDeserializers.readBooleanAndIntValue(el));
         this.registerGenericConfigSerializers(DualColorConfig.class,        JsonConfigSerializers::serializeDualColorConfig,        (c, el) -> JsonDeserializers.readDualColorValue(el));
-        this.registerGenericConfigSerializers(OptionListConfig.class,       JsonConfigSerializers::serializeOptionListConfig,       (c, el) -> JsonDeserializers.readOptionListValue(el, c.getAllValues()));
+        this.registerGenericConfigSerializers(OptionConfig.class, JsonConfigSerializers::serializeOptionListConfig, (c, el) -> JsonDeserializers.readOptionListValue(el, c.getAllValues()));
         this.registerGenericConfigSerializers(ValueListConfig.class,        JsonConfigSerializers::serializeValueListConfig,        (c, el) -> JsonDeserializers.readValueList(el, c.getFromStringConverter()));
         this.registerGenericConfigSerializers(Vec2dConfig.class,            JsonConfigSerializers::serializeVec2dConfig,            (c, el) -> JsonDeserializers.readVec2dValue(el));
         this.registerGenericConfigSerializers(Vec2iConfig.class,            JsonConfigSerializers::serializeVec2iConfig,            (c, el) -> JsonDeserializers.readVec2iValue(el));

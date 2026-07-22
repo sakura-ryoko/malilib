@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import com.google.common.collect.ImmutableList;
 
-import malilib.config.value.BaseOptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
 import malilib.render.text.StyledText;
 import malilib.util.ListUtils;
 
-public class MessageOutput extends BaseOptionListConfigValue
+public class MessageOutput extends BaseOptionConfigValue
 {
     private static ImmutableList<MessageOutput> VALUES = ImmutableList.of();
     private static final Map<String, MessageOutput> TYPES_BY_NAME = new HashMap<>();

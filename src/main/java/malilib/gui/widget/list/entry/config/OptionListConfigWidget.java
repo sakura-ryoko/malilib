@@ -4,22 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import malilib.MaLiLibConfigs;
-import malilib.config.option.OptionListConfig;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.option.OptionConfig;
+import malilib.config.value.OptionConfigValue;
 import malilib.gui.config.ConfigWidgetContext;
 import malilib.gui.widget.DropDownListWidget;
 import malilib.gui.widget.button.OptionListConfigButton;
 import malilib.gui.widget.list.entry.DataListEntryWidgetData;
 import malilib.render.text.StyledTextLine;
 
-public class OptionListConfigWidget extends BaseConfigWidget<OptionListConfig<OptionListConfigValue>>
+public class OptionListConfigWidget extends BaseConfigWidget<OptionConfig<OptionConfigValue>>
 {
-    protected final OptionListConfig<OptionListConfigValue> config;
-    protected final OptionListConfigValue initialValue;
+    protected final OptionConfig<OptionConfigValue> config;
+    protected final OptionConfigValue initialValue;
     protected final OptionListConfigButton optionListButton;
-    protected final DropDownListWidget<OptionListConfigValue> dropDownWidget;
+    protected final DropDownListWidget<OptionConfigValue> dropDownWidget;
 
-    public OptionListConfigWidget(OptionListConfig<OptionListConfigValue> config,
+    public OptionListConfigWidget(OptionConfig<OptionConfigValue> config,
                                   DataListEntryWidgetData constructData,
                                   ConfigWidgetContext ctx)
     {
@@ -32,8 +32,8 @@ public class OptionListConfigWidget extends BaseConfigWidget<OptionListConfig<Op
         this.optionListButton.setHoverStringProvider("locked", this.config::getLockAndOverrideMessages);
         this.optionListButton.setChangeListener(this::updateWidgetState);
 
-        ArrayList<OptionListConfigValue> values = new ArrayList<>(config.getAllowedValues());
-        this.dropDownWidget = new DropDownListWidget<>(16, 12, values, OptionListConfigValue::getDisplayName);
+        ArrayList<OptionConfigValue> values = new ArrayList<>(config.getAllowedValues());
+        this.dropDownWidget = new DropDownListWidget<>(16, 12, values, OptionConfigValue::getDisplayName);
         this.dropDownWidget.setSelectedEntry(config.getValue());
         this.dropDownWidget.getHoverInfoFactory()
                 .setTextLineProvider("list_preview", this::getOptionListPreviewHoverString, 99);

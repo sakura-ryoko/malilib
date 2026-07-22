@@ -2,7 +2,7 @@ package malilib.input;
 
 import com.google.gson.JsonObject;
 
-import malilib.config.value.BaseOptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
 import malilib.overlay.message.MessageOutput;
 import malilib.util.data.json.JsonUtils;
 
@@ -182,17 +182,17 @@ public class KeyBindSettings
 
         if (contextStr != null)
         {
-            context = BaseOptionListConfigValue.findValueByName(contextStr, Context.VALUES);
+            context = BaseOptionConfigValue.findValueByName(contextStr, Context.VALUES);
         }
 
         if (activateStr != null)
         {
-            activateOn = BaseOptionListConfigValue.findValueByName(activateStr, KeyAction.VALUES);
+            activateOn = BaseOptionConfigValue.findValueByName(activateStr, KeyAction.VALUES);
         }
 
         if (messageTypeStr != null)
         {
-            messageOutput = BaseOptionListConfigValue.findValueByName(messageTypeStr, MessageOutput.getValues());
+            messageOutput = BaseOptionConfigValue.findValueByName(messageTypeStr, MessageOutput.getValues());
         }
 
         String cancelName = JsonUtils.getStringOrDefault(obj, "cancel", "false");
@@ -209,7 +209,7 @@ public class KeyBindSettings
         }
         else
         {
-            cancel = BaseOptionListConfigValue.findValueByName(cancelName, CancelCondition.VALUES);
+            cancel = BaseOptionConfigValue.findValueByName(cancelName, CancelCondition.VALUES);
         }
 
         return builder()

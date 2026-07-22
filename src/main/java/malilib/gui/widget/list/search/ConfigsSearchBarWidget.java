@@ -7,8 +7,8 @@ import com.google.common.collect.ImmutableList;
 
 import malilib.MaLiLibConfigs;
 import malilib.config.option.ConfigInfo;
-import malilib.config.value.BaseOptionListConfigValue;
-import malilib.config.value.OptionListConfigValue;
+import malilib.config.value.BaseOptionConfigValue;
+import malilib.config.value.OptionConfigValue;
 import malilib.gui.BaseScreen;
 import malilib.gui.ConfirmActionScreen;
 import malilib.gui.config.ConfigSearchInfo;
@@ -227,7 +227,7 @@ public class ConfigsSearchBarWidget extends SearchBarWidget
         BaseScreen.openPopupScreenWithCurrentScreenAsParent(confirmScreen);
     }
 
-    public static class Scope extends BaseOptionListConfigValue
+    public static class Scope extends BaseOptionConfigValue
     {
         public static final Scope CURRENT_CATEGORY = new Scope("malilib.label.config.search.scope.current_category");
         public static final Scope ALL_CATEGORIES   = new Scope("malilib.label.config.search.scope.all_categories");
@@ -241,7 +241,7 @@ public class ConfigsSearchBarWidget extends SearchBarWidget
         }
     }
 
-    public static class TypeFilter implements OptionListConfigValue
+    public static class TypeFilter implements OptionConfigValue
     {
         public static final List<TypeFilter> VALUES = new ArrayList<>();
 

@@ -1,6 +1,6 @@
 package malilib.config.value;
 
-public interface OptionListConfigValue
+public interface OptionConfigValue
 {
     String getName();
 

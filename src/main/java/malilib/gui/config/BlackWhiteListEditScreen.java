@@ -2,7 +2,7 @@ package malilib.gui.config;
 
 import javax.annotation.Nullable;
 
-import malilib.config.option.OptionListConfig;
+import malilib.config.option.OptionConfig;
 import malilib.config.option.list.BlackWhiteListConfig;
 import malilib.config.option.list.ValueListConfig;
 import malilib.config.value.BlackWhiteList;
@@ -12,7 +12,7 @@ import malilib.util.restriction.UsageRestriction.ListType;
 public class BlackWhiteListEditScreen<TYPE> extends BaseConfigGroupEditScreen
 {
     protected final BlackWhiteListConfig<TYPE> config;
-    protected final OptionListConfig<ListType> typeConfig;
+    protected final OptionConfig<ListType> typeConfig;
     protected final ValueListConfig<TYPE> blackListConfig;
     protected final ValueListConfig<TYPE> whiteListConfig;
     @Nullable protected final Runnable saveListener;
@@ -28,8 +28,8 @@ public class BlackWhiteListEditScreen<TYPE> extends BaseConfigGroupEditScreen
         // Initialize them to the default value so that the reset button is active when they differ from the default value,
         // and also so that the reset restores them to the default value, not the value they were at when the screen was opened
         BlackWhiteList<TYPE> bwList = config.getValue();
-        this.typeConfig = new OptionListConfig<>("malilib.label.config.black_white_list_edit.type",
-                                                 config.getDefaultValue().getListType(), ListType.VALUES);
+        this.typeConfig = new OptionConfig<>("malilib.label.config.black_white_list_edit.type",
+                                             config.getDefaultValue().getListType(), ListType.VALUES);
         this.typeConfig.setValue(bwList.getListType());
         this.typeConfig.setCommentTranslationKey(null);
 
