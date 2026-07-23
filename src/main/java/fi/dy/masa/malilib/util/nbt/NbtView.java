@@ -13,6 +13,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.*;
 
@@ -167,7 +168,12 @@ public class NbtView
 
         for (String key : nbtIn.keySet())
         {
-            Objects.requireNonNull(this.readNbt()).put(key, nbtIn.get(key));
+	        Tag entry = nbtIn.get(key);
+
+	        if (entry != null)
+	        {
+		        Objects.requireNonNull(this.readNbt()).put(key, entry);
+	        }
         }
 
         return this;
@@ -178,17 +184,15 @@ public class NbtView
 	 * @param dataIn ()
 	 * @return ()
 	 */
-	@ApiStatus.Experimental
 	public @Nullable NbtView writeData(@Nonnull CompoundData dataIn)
 	{
-		CompoundTag nbt = DataConverterNbt.toVanillaCompound(dataIn);
-
-		if (nbt != null)
+		if (this.isReader())
 		{
-			return this.writeNbt(nbt);
+			LOGGER.error("writeData(): Called from a Reader Context");
+			return null;
 		}
 
-		return null;
+		return this.writeNbt(DataConverterNbt.toVanillaCompound(dataIn));
 	}
 
     /**

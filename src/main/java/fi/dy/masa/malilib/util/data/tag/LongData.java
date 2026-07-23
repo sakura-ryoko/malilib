@@ -8,8 +8,7 @@ import java.util.Optional;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
-public class LongData extends BaseData
-        implements NumberData
+public class LongData extends BaseData implements NumberData
 {
     public static final String TAG_NAME = "TAG_Long";
 
@@ -43,6 +42,12 @@ public class LongData extends BaseData
     public boolean isEmpty()
     {
         return false;
+    }
+
+    @Override
+    public int sizeInBytes()
+    {
+        return Long.BYTES;
     }
 
     @Override

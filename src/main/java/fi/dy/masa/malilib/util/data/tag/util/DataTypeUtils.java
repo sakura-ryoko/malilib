@@ -7,13 +7,21 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.UUIDUtil;
-import net.minecraft.core.Vec3i;
+import net.minecraft.core.*;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.StateHolder;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
@@ -541,6 +549,83 @@ public class DataTypeUtils
 		{
 			case DataResult.Success<BaseData> result -> data.combine((CompoundData) result.value());
 			case DataResult.Error<BaseData> error -> error.partialValue().ifPresent(partial -> data.combine((CompoundData) partial));
+		}
+
+		return data;
+	}
+
+	public static BlockState readBlockStateFromTag(@Nonnull CompoundData data, @Nonnull RegistryAccess registry)
+	{
+		Codec<ResourceKey<Block>> CODEC = ResourceKey.codec(Registries.BLOCK);
+		HolderGetter<Block> lookup = registry.lookupOrThrow(Registries.BLOCK);
+		Optional<? extends Holder<Block>> opt = data.getCodec("Name", CODEC).flatMap(lookup::get);
+
+		if (opt.isEmpty())
+		{
+			return Blocks.AIR.defaultBlockState();
+		}
+
+		Block block = opt.get().value();
+		BlockState state = block.defaultBlockState();
+		CompoundData props = data.getCompoundOrDefault("Properties", new CompoundData());
+
+		if (!props.isEmpty())
+		{
+			StateDefinition<Block, BlockState> def = block.getStateDefinition();
+
+			for (String key : props.getKeys())
+			{
+				Property<?> prop = def.getProperty(key);
+
+				if (prop != null)
+				{
+					state = setValueEach(state, props, key, prop);
+				}
+			}
+		}
+
+		return state;
+	}
+
+	public static <STATE extends StateHolder<?, STATE>, PROP extends Comparable<PROP>> STATE setValueEach(STATE state,
+	                                                                                                      CompoundData props,
+	                                                                                                      String key,
+	                                                                                                      Property<PROP> prop)
+	{
+		Optional<PROP> opt = Optional.ofNullable(props.getString(key)).flatMap(prop::getValue);
+		return opt.map(value -> state.setValue(prop, value)).orElse(state);
+	}
+
+	public static CompoundData writeBlockStateToTag(@Nonnull final BlockState state)
+	{
+		CompoundData data = new CompoundData();
+		data.putString("Name", BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
+		writeStatePropertiesToTag(data, state);
+		return data;
+	}
+
+	public static CompoundData writeFluidStateToTag(@Nonnull final FluidState state)
+	{
+		CompoundData data = new CompoundData();
+		data.putString("Name", BuiltInRegistries.FLUID.getKey(state.getType()).toString());
+		writeStatePropertiesToTag(data, state);
+		return data;
+	}
+
+	public static CompoundData writeStatePropertiesToTag(@Nonnull CompoundData data, @Nonnull final StateHolder<?, ?> state)
+	{
+		if (!state.isSingletonState())
+		{
+			CompoundData props = new CompoundData();
+
+			state.getValues().forEach(
+					v ->
+					{
+						props.putString(v.property().getName(), v.valueName());
+					}
+			);
+
+			data.put("Properties", props);
 		}
 
 		return data;
