@@ -213,6 +213,12 @@ public class GameWrap
         return getOptions().hideGUI;
     }
 
+    public static boolean isPlayerSneaking()
+    {
+        EntityPlayer player = getClientPlayer();
+        return player != null && player.isSneaking();
+    }
+
     public static void scheduleToClientThread(Runnable task)
     {
         Minecraft mc = getClient();
