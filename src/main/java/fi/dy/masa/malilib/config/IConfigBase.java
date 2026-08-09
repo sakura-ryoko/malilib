@@ -4,6 +4,8 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import com.google.gson.JsonElement;
 
+import net.minecraft.network.chat.MutableComponent;
+
 public interface IConfigBase
 {
     /**
@@ -53,7 +55,16 @@ public interface IConfigBase
     @Nullable
     String getComment();
 
-    /**
+	/**
+	 * Returns the comment displayed when hovering over the config name in the config GUI.
+	 * Newlines can be added with "\n". Can be null if there is no comment for this config.
+	 *
+	 * @return the comment, or null if no comment has been set
+	 */
+	@Nullable
+	default MutableComponent getCommentComponent() { return null; }
+
+	/**
      * Returns the "pretty name" for this config.
      * This is used in the possible toggle messages.
      * @return ()

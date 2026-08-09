@@ -34,7 +34,7 @@ public class ConfigHotkey extends ConfigBase<ConfigHotkey> implements IHotkey, I
 
 	public ConfigHotkey(String name, String defaultStorageString)
 	{
-		this(name, defaultStorageString, KeybindSettings.DEFAULT, name + " Comment?", StringUtils.splitCamelCase(name), name);
+		this(name, defaultStorageString, KeybindSettings.DEFAULT, "", StringUtils.splitCamelCase(name), name);
 	}
 
 	public ConfigHotkey(String name, String defaultStorageString, String comment)
@@ -54,7 +54,7 @@ public class ConfigHotkey extends ConfigBase<ConfigHotkey> implements IHotkey, I
 
 	public ConfigHotkey(String name, String defaultStorageString, KeybindSettings settings)
 	{
-		this(name, defaultStorageString, settings, name + " Comment?", StringUtils.splitCamelCase(name), name);
+		this(name, defaultStorageString, settings, "", StringUtils.splitCamelCase(name), name);
 	}
 
 	public ConfigHotkey(String name, String defaultStorageString, KeybindSettings settings, String comment)

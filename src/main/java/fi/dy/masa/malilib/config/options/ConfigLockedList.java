@@ -22,7 +22,7 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
 
     public ConfigLockedList(String name, IConfigLockedListType handler)
     {
-        this(name, handler, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, handler, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigLockedList(String name, IConfigLockedListType handler, String comment)

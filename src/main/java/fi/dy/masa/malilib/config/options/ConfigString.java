@@ -32,7 +32,7 @@ public class ConfigString extends ConfigBase<ConfigString> implements IConfigVal
 
     public ConfigString(String name, String defaultValue)
     {
-        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigString(String name, String defaultValue, String comment)

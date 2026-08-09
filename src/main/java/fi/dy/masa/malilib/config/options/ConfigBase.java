@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.config.options;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.network.chat.MutableComponent;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -18,6 +20,7 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
     private final String name;
     protected String prettyName;
     protected String comment;
+    protected MutableComponent commentComponent;
     protected String translatedName;
     private String translationPrefix = "";
     @Nullable
@@ -34,7 +37,7 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
     public ConfigBase(ConfigType type, String name)
     {
         this(type, name,
-                name+" Comment ?",
+                "",
                 StringUtils.splitCamelCase(name),
                 name);
     }
@@ -54,6 +57,7 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
         this.type = type;
         this.name = name;
         this.comment = comment;
+        this.commentComponent = null;
         this.prettyName = prettyName;
         this.translatedName = translatedName;
 
@@ -99,11 +103,7 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
     {
         String result;
 
-        if (this.comment.isEmpty())
-        {
-            result = StringUtils.splitCamelCase(this.getName())+" Comment?";
-        }
-        else if (this.translationPrefix.isEmpty())
+        if (this.translationPrefix.isEmpty())
         {
             if (this.comment.contains(COMMENT_KEY + "."))
             {
@@ -121,6 +121,12 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
 
         this.printConfigElementDebug(this.type, "comment", this.comment, result);
         return result;
+    }
+
+    @Nullable
+    public MutableComponent getCommentComponent()
+    {
+        return this.commentComponent;
     }
 
     @SuppressWarnings("unchecked")
@@ -201,6 +207,11 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
     public void setComment(String comment)
     {
         this.comment = comment;
+    }
+
+    public void setCommentComponent(MutableComponent commentComponent)
+    {
+        this.commentComponent = commentComponent;
     }
 
     public void setValueChangeCallback(IValueChangeCallback<T> callback)

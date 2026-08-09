@@ -30,7 +30,7 @@ public class ConfigOptionValues<T extends OptionListConfigValue> extends ConfigB
 
 	public ConfigOptionValues(String name, T defaultValue, ImmutableList<T> allValues)
 	{
-		this(name, defaultValue, allValues, name + " Comment?", StringUtils.splitCamelCase(name), name);
+		this(name, defaultValue, allValues, "", StringUtils.splitCamelCase(name), name);
 	}
 
 	public ConfigOptionValues(String name, T defaultValue, ImmutableList<T> allValues, String comment)

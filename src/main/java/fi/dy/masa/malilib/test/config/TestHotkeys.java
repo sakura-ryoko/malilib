@@ -20,7 +20,7 @@ public class TestHotkeys
 	public static final ConfigHotkey    TEST_INVENTORY_OVERLAY_TOGGLE   = new ConfigHotkey("testInventoryOverlayToggle", "BUTTON_3", OVERLAY_TOGGLE).apply(HOTKEYS_KEY);
 	public static final ConfigHotkey    TEST_GUI_KEYBIND                = new ConfigHotkey("testGuiKeybind", "").apply(HOTKEYS_KEY);
 	public static final ConfigHotkey    TEST_GUI_EDITOR_KEYBIND         = new ConfigHotkey("testGuiEditorKeybind", "").apply(HOTKEYS_KEY);
-	public static final ConfigHotkey    TEST_GUI_FILE_BROWSER_KEYBIND   = new ConfigHotkey("testGuiFileBrowserKeybind", "").apply(HOTKEYS_KEY);
+	public static final ConfigHotkey    TEST_GUI_FILE_BROWSER_KEYBIND   = new ConfigHotkey("testGuiFileBrowserKeybind", "", KeybindSettings.RELEASE_EXCLUSIVE).apply(HOTKEYS_KEY);
 	public static final ConfigHotkey    TEST_RUN_DATETIME_TEST          = new ConfigHotkey("testRunDateTimeTest", "").apply(HOTKEYS_KEY);
 
 	public static final List<ConfigHotkey> HOTKEY_LIST = ImmutableList.of(

@@ -5,14 +5,12 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -21,7 +19,6 @@ import fi.dy.masa.malilib.config.IConfigBlockState;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.game.BlockUtils;
 
-@ApiStatus.Experimental
 public class ConfigBlockState extends ConfigBase<ConfigBlockState> implements IConfigBlockState
 {
 	public static final Codec<ConfigBlockState> CODEC = RecordCodecBuilder.create(
@@ -42,7 +39,7 @@ public class ConfigBlockState extends ConfigBase<ConfigBlockState> implements IC
 
 	public ConfigBlockState(String name, BlockState defaultValue)
 	{
-		this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+		this(name, defaultValue, "", StringUtils.splitCamelCase(name), name);
 	}
 
 	public ConfigBlockState(String name, BlockState defaultValue, String comment)

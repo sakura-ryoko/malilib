@@ -89,6 +89,7 @@ public class GuiTextFieldGeneric extends EditBox
                mouseY >= this.y && mouseY < this.y + this.height;
     }
 
+    @Deprecated(forRemoval = true)
     public GuiTextFieldGeneric setZLevel(int zLevel)
     {
         this.zLevel = zLevel;

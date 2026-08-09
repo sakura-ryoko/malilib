@@ -1,14 +1,15 @@
 package fi.dy.masa.malilib.config.options;
 
+import javax.annotation.Nullable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.*;
-import fi.dy.masa.malilib.config.value.OptionListConfigValue;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.interfaces.IValueChangeCallback;
@@ -98,9 +99,17 @@ public class ConfigTypeWrapper implements IConfigBoolean, IConfigColor, IConfigD
     }
 
     @Override
+    @Nullable
     public String getComment()
     {
         return this.wrappedConfig.getComment();
+    }
+
+    @Override
+    @Nullable
+    public MutableComponent getCommentComponent()
+    {
+        return this.wrappedConfig.getCommentComponent();
     }
 
     @Override

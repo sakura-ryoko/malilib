@@ -24,7 +24,7 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
 
     public ConfigOptionList(String name, IConfigOptionListEntry defaultValue)
     {
-        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigOptionList(String name, IConfigOptionListEntry defaultValue, String comment)
