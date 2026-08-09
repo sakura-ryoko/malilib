@@ -558,7 +558,9 @@ public class DataTypeUtils
 	{
 		Codec<ResourceKey<Block>> CODEC = ResourceKey.codec(Registries.BLOCK);
 		HolderGetter<Block> lookup = registry.lookupOrThrow(Registries.BLOCK);
-		Optional<? extends Holder<Block>> opt = data.getCodec("Name", CODEC).flatMap(lookup::get);
+		Optional<? extends Holder<Block>> opt = data.containsLenient("name")
+		                                        ? data.getCodec("name", CODEC).flatMap(lookup::get)
+		                                        : data.getCodec("Name", CODEC).flatMap(lookup::get);
 
 		if (opt.isEmpty())
 		{
@@ -567,7 +569,9 @@ public class DataTypeUtils
 
 		Block block = opt.get().value();
 		BlockState state = block.defaultBlockState();
-		CompoundData props = data.getCompoundOrDefault("Properties", new CompoundData());
+		CompoundData props = data.containsLenient("properties")
+		                     ? data.getCompoundOrDefault("properties", new CompoundData())
+		                     : data.getCompoundOrDefault("Properties", new CompoundData());
 
 		if (!props.isEmpty())
 		{
