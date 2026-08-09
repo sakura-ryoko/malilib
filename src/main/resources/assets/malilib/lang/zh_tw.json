@@ -191,6 +191,7 @@
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "建立新目錄",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "Delete a file or directory",
+    "malilib.gui.button.hover.directory_widget.open_directory": "§dOpen directory§r",
     "malilib.gui.button.hover.directory_widget.root": "回到根目錄",
     "malilib.gui.button.hover.directory_widget.up": "回到上一層目錄",
     "malilib.gui.button.hover.hold_shift_for_info": "§o按住 Shift 以取得更多資訊§r",

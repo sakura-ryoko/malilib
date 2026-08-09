@@ -191,6 +191,7 @@
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "Skapa en ny katalog",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "Ta bort en fil eller katalog",
+    "malilib.gui.button.hover.directory_widget.open_directory": "§dOpen directory§r",
     "malilib.gui.button.hover.directory_widget.root": "Till rot-/baskatalog",
     "malilib.gui.button.hover.directory_widget.up": "Upp till överordnad katalog",
     "malilib.gui.button.hover.hold_shift_for_info": "§oHåll Shift för mer information§r",

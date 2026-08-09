@@ -191,6 +191,7 @@
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "Создать новую папку",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "Delete a file or directory",
+    "malilib.gui.button.hover.directory_widget.open_directory": "§dOpen directory§r",
     "malilib.gui.button.hover.directory_widget.root": "В корневую папку",
     "malilib.gui.button.hover.directory_widget.up": "На уровень вверх",
     "malilib.gui.button.hover.hold_shift_for_info": "§oУдерживайте Shift для получения дополнительной информации§r",

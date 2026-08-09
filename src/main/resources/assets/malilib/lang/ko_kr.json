@@ -191,6 +191,7 @@
     "malilib.gui.button.false": "§4false§r",
     "malilib.gui.button.hover.directory_widget.create_directory": "새 디렉터리 생성",
     "malilib.gui.button.hover.directory_widget.delete_file_or_directory": "파일 또는 디렉터리 삭제",
+    "malilib.gui.button.hover.directory_widget.open_directory": "§dOpen directory§r",
     "malilib.gui.button.hover.directory_widget.root": "루트/기본 디렉터리로",
     "malilib.gui.button.hover.directory_widget.up": "상위 디렉터리로",
     "malilib.gui.button.hover.hold_shift_for_info": "§o자세한 정보를 보려면 Shift 키를 누르세요§r",
