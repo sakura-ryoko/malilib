@@ -10,6 +10,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
+import net.minecraft.client.Minecraft;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.value.FileWriteType;
@@ -30,7 +32,7 @@ public class FileUtils
     @Deprecated
     public static Path getConfigDirectoryAsPath()
     {
-        return MaLiLibReference.CONFIG_DIR;
+        return getConfigDirectory();
     }
 
     /**
@@ -39,19 +41,22 @@ public class FileUtils
     @Deprecated
     public static Path getMinecraftDirectoryAsPath()
     {
-        return MaLiLibReference.GAME_DIR;
+        return getMinecraftDirectory();
     }
 
     public static Path getConfigDirectory()
     {
-//        return GameWrap.getClient().gameDirectory.toPath().resolve("config");
-        return MaLiLibReference.CONFIG_DIR;
+        return getMinecraftDirectory().resolve("config");
+    }
+
+    public static Path getLogsDirectory()
+    {
+        return getMinecraftDirectory().resolve("logs");
     }
 
     public static Path getMinecraftDirectory()
     {
-//        return GameWrap.getClient().gameDirectory.toPath();
-        return MaLiLibReference.GAME_DIR;
+        return Minecraft.getInstance().gameDirectory.toPath();
     }
 
     public static Path getRootDirectory()

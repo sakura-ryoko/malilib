@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.test.gui;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 
-import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.*;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -45,7 +44,7 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 
 	public Path getDefaultDirectory()
 	{
-		return MaLiLibReference.GAME_DIR.resolve("logs");
+		return FileUtils.getLogsDirectory();
 	}
 
 	@Override
