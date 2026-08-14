@@ -616,7 +616,7 @@ public class DataTypeUtils
 		return data;
 	}
 
-	public static CompoundData writeStatePropertiesToTag(@Nonnull CompoundData data, @Nonnull final StateHolder<?, ?> state)
+	public static void writeStatePropertiesToTag(@Nonnull CompoundData data, @Nonnull final StateHolder<?, ?> state)
 	{
 		if (!state.isSingletonState())
 		{
@@ -624,14 +624,10 @@ public class DataTypeUtils
 
 			state.getValues().forEach(
 					v ->
-					{
-						props.putString(v.property().getName(), v.valueName());
-					}
+							props.putString(v.property().getName(), v.valueName())
 			);
 
 			data.put("Properties", props);
 		}
-
-		return data;
 	}
 }

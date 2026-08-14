@@ -103,7 +103,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     {
         String labelReset = StringUtils.translate("malilib.gui.button.reset.caps");
         ButtonGeneric resetButton = new ButtonGeneric(x, y, -1, 20, labelReset);
-        resetButton.setEnabled(!textField.getValue().equals(this.defaultValue));
+        resetButton.setEnabled(!textField.getValue().equals(this.defaultValue.toString()));
 
         return resetButton;
     }
@@ -219,8 +219,6 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     @Override
     public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
-//        super.render(ctx, mouseX, mouseY, selected);
-
         if (this.isOdd)
         {
             RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x20FFFFFF);

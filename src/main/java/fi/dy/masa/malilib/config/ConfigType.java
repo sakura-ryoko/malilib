@@ -26,6 +26,7 @@ public enum ConfigType implements StringRepresentable
     COLOR_LIST              ("color_list",              ConfigColorList.CODEC),
     OPTION_LIST             ("option_list",             null),
     OPTION_VALUES           ("option_values",           null),
+    BLOCK_STATE_LIST        ("block_state_list",        null),
     HOTKEY                  ("hotkey",                  ConfigHotkey.CODEC),
 	TABLE                   ("table",                   ConfigTable.CODEC),
     ;

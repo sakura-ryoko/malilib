@@ -210,6 +210,11 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             ConfigButtonColorList optionButton = new ConfigButtonColorList(x, y, configWidth, configHeight, (IConfigColorList) config, this.host, this.host.getDialogHandler());
             this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
         }
+        else if (type == ConfigType.BLOCK_STATE_LIST)
+        {
+	        ConfigButtonBlockStateList optionButton = new ConfigButtonBlockStateList(x, y, configWidth, configHeight, (IConfigBlockStateList) config, this.host, this.host.getDialogHandler());
+	        this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
+        }
         else if (type == ConfigType.HOTKEY)
         {
             this.addHotkeyConfigElements(x, y, configWidth, config.getName(), (IHotkey) config);

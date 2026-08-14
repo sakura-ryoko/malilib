@@ -15,7 +15,7 @@ import fi.dy.masa.malilib.config.IConfigBlockState;
 import fi.dy.masa.malilib.config.options.ConfigBlockState;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiBlockStateEditor;
-import fi.dy.masa.malilib.interfaces.IStringConsumer;
+import fi.dy.masa.malilib.interfaces.IBlockStateConsumer;
 import fi.dy.masa.malilib.mixin.item.IMixinItem;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
@@ -27,11 +27,16 @@ public class WidgetBlockStateIcon extends WidgetBase
 	protected final IConfigBlockState config;
 	protected final ImmutableList<@NotNull String> hoverText;
 
-	public WidgetBlockStateIcon(int x, int y, int width, int height, BlockState state, IStringConsumer consumer)
+	public WidgetBlockStateIcon(int x, int y, int width, int height, BlockState state, IBlockStateConsumer consumer)
 	{
-		this(x, y, width, height, new ConfigBlockState("block_state_icon_widget", state));
+		this(x, y, width, height, "block_state_icon_widget", state, consumer);
+	}
 
-		((ConfigBlockState) this.config).setValueChangeCallback(cfg -> consumer.setString(cfg.getStringValue()));
+	public WidgetBlockStateIcon(int x, int y, int width, int height, final String name, BlockState state, IBlockStateConsumer consumer)
+	{
+		this(x, y, width, height, new ConfigBlockState(name, state));
+
+		((ConfigBlockState) this.config).setValueChangeCallback(cfg -> consumer.setState(cfg.getBlockStateValue()));
 	}
 
 	public WidgetBlockStateIcon(int x, int y, int width, int height, IConfigBlockState config)
