@@ -12,7 +12,7 @@ public class WidgetListStringListEdit extends WidgetListConfigOptionsBase<String
     {
         super(x, y, width, height, configWidth);
 
-        this.config = parent.getConfig();;
+        this.config = parent.getConfig();
     }
 
     public IConfigStringList getConfig()

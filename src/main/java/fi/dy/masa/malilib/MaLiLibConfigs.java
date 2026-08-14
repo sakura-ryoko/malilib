@@ -117,6 +117,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigColor             TEST_CONFIG_COLOR               = new ConfigColor("testColor", "0x3022FFFF", "Test Color").apply(TEST_KEY);
         public static final ConfigColorList         TEST_CONFIG_COLOR_LIST          = new ConfigColorList("testColorList", ImmutableList.of(new Color4f(0, 0, 0), new Color4f(255, 255, 255, 255)), "Test Color List").apply(TEST_KEY);
         public static final ConfigBlockState        TEST_CONFIG_BLOCK_STATE         = new ConfigBlockState("testBlockState", Blocks.OBSERVER.defaultBlockState(), "Test Block State").apply(TEST_KEY);
+        public static final ConfigBlockStateList    TEST_CONFIG_BLOCK_STATE_LIST    = new ConfigBlockStateList("testBlockStateList", ImmutableList.of(Blocks.STONE.defaultBlockState(), Blocks.BEEHIVE.defaultBlockState(), Blocks.EXPOSED_COPPER_GOLEM_STATUE.defaultBlockState()), "Test Block State List").apply(TEST_KEY);
         public static final ConfigDouble            TEST_CONFIG_DOUBLE              = new ConfigDouble("testDouble", 0.5, 0, 1, true, "Test Double").apply(TEST_KEY);
         public static final ConfigFloat             TEST_CONFIG_FLOAT               = new ConfigFloat("testFloat", 0.5f, 0.0f, 1.0f, true, "Test Float").apply(TEST_KEY);
         public static final ConfigInteger           TEST_CONFIG_INTEGER             = new ConfigInteger("testInteger", 5, 1, 10, "Test Integer").apply(TEST_KEY);
@@ -189,6 +190,7 @@ public class MaLiLibConfigs implements IConfigHandler
                 TEST_CONFIG_COLOR,
                 TEST_CONFIG_COLOR_LIST,
                 TEST_CONFIG_BLOCK_STATE,
+                TEST_CONFIG_BLOCK_STATE_LIST,
                 TEST_CONFIG_DOUBLE,
                 TEST_CONFIG_FLOAT,
                 TEST_CONFIG_INTEGER,

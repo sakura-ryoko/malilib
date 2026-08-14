@@ -28,12 +28,16 @@ import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class GuiBlockStateEditor extends GuiDialogSplitBase
 {
+	public static final String BLOCK_NAME = "Name";
+	public static final String BLOCK_PROPERTIES = "Properties";
+
 	protected final IConfigBlockState config;
 	protected final String configName;
 	protected final @Nullable IDialogHandler dialogHandler;
@@ -82,26 +86,43 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.props = this.blockState.getProperties();
 		this.tempBlockId = BuiltInRegistries.BLOCK.getKey(this.block);
 
-		for (Property<?> prop : this.props)
+		int leftPaneWidth = MathUtils.max(this.modelSize, this.maxLength) + 24;
+		int maxPropLabelWidth = 120;
+
+		if (!this.props.isEmpty())
 		{
-			@SuppressWarnings("unchecked")
-			Property<T> entry = (Property<T>) prop;
-			String name = prop.getName();
-			T value = this.blockState.getValue(entry);
-			String valStr = value.toString().toLowerCase();
-			this.tempProps.put(name, valStr);
+			for (Property<?> prop : this.props)
+			{
+				@SuppressWarnings("unchecked")
+				Property<T> entry = (Property<T>) prop;
+				String name = prop.getName();
+				int propWidth = this.getStringWidth(name);
+				T value = this.blockState.getValue(entry);
+				String valStr = value.toString().toLowerCase();
+				this.tempProps.put(name, valStr);
+
+				if (propWidth > maxPropLabelWidth)
+				{
+					maxPropLabelWidth = propWidth;
+				}
+			}
+
+			maxPropLabelWidth += 100;
 		}
 
 		final int propSize = this.props.size();
 		final int modelSizeLines = (this.modelSize + (this.elementHeight + 2) + (this.buttonHeight + 4));
 		final int blockNameLines = ((this.elementHeight + 2) * 3) + (modelSizeLines + 6);
 		final int propLines = ((this.elementHeight + 2) * 4) * propSize;
+
 		final int largerSide = MathUtils.max(blockNameLines + 6, propLines + 10);
-		final int adjWidth = MathUtils.max(MathUtils.max((this.maxLength * 2) + 6, (this.titleWidth * 2) + 6), 256) + 8;
+//		final int adjWidth = MathUtils.max(MathUtils.max((this.maxLength * 2) + 6, (this.titleWidth * 2) + 6), 256) + 8;
+		int totalWidth = leftPaneWidth + maxPropLabelWidth + 30;
+		totalWidth = MathUtils.clamp(totalWidth, 240, GuiUtils.getScaledWindowWidth() - 40);
 
 		// (this.elementHeight + 2)
-		this.setTotalWidthAndHeight(adjWidth, (largerSide + 6));
-		this.setLeftSideWidth(MathUtils.max(this.modelSize, this.maxLength) + 2);
+		this.setTotalWidthAndHeight(totalWidth, (largerSide + 6));      // adjWidth, (largerSide + 6)
+		this.setLeftSideWidth(leftPaneWidth);   //  + 2
 		this.centerOnScreen();
 		this.init(this.dialogTotalWidth, this.dialogTotalHeight);
 	}
@@ -125,29 +146,32 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		CompoundTag tagProps = new CompoundTag();
 
 		// TODO -- 26.3 (name)
-		tag.putString("Name", BuiltInRegistries.BLOCK.getKey(this.block).toString());
+		tag.putString(BLOCK_NAME, BuiltInRegistries.BLOCK.getKey(this.block).toString());
 
-		for (Property<?> prop : this.props)
+		if (!this.props.isEmpty())
 		{
-			@SuppressWarnings("unchecked")
-			Property<T> entry = (Property<T>) prop;
-			final String name = prop.getName();
-			final String tmp = this.tempProps.get(name);
+			for (Property<?> prop : this.props)
+			{
+				@SuppressWarnings("unchecked")
+				Property<T> entry = (Property<T>) prop;
+				final String name = prop.getName();
+				final String tmp = this.tempProps.get(name);
 
-			if (tmp != null && !tmp.isEmpty())
-			{
-				Optional<T> newVal = entry.getValue(tmp);
-				newVal.ifPresent(value -> tagProps.putString(name, value.toString().toLowerCase()));
+				if (tmp != null && !tmp.isEmpty())
+				{
+					Optional<T> newVal = entry.getValue(tmp);
+					newVal.ifPresent(value -> tagProps.putString(name, value.toString().toLowerCase()));
+				}
+				else
+				{
+					T value = this.blockState.getValue(entry);
+					tagProps.putString(name, value.toString().toLowerCase());
+				}
 			}
-			else
-			{
-				T value = this.blockState.getValue(entry);
-				tagProps.putString(name, value.toString().toLowerCase());
-			}
+
+			// TODO -- 26.3 (properties)
+			tag.put(BLOCK_PROPERTIES, tagProps);        // Ugly method, but if it works? ~_^
 		}
-
-		// TODO -- 26.3 (properties)
-		tag.put("Properties", tagProps);        // Ugly method, but if it works? ~_^ (Unlike this.blockstate.setValue() ?)
 
 		if (MaLiLibReference.DEBUG_MODE)
 		{
@@ -185,14 +209,14 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		yScaled += (this.elementHeight) + 2;
 
 		// Model Pos
-		this.modelX = (this.dialogLeftSideCenter - (this.modelSize / 2)) + 14;
+		this.modelX = (this.dialogLeftSideCenter - (this.modelSize / 2)); //  + 14
 		this.modelY = yScaled;
 
 		// Buttons (Centered on Left Pane)
 		final int buttonALen = this.getStringWidth(ButtonType.UPDATE.getDisplayName()) + 10;
 		final int buttonBLen = this.getStringWidth(ButtonType.RESET.getDisplayName()) + 10;
 		final int totalButtonWidth = (buttonALen + 2 + buttonBLen + 2);
-		int xAdj = (this.dialogLeftSideCenter - ((totalButtonWidth) / 2)) + 14;
+		int xAdj = (this.dialogLeftSideCenter - ((totalButtonWidth) / 2)); //  + 14
 		int yAdj = this.dialogBottom - this.buttonHeight - 4;
 
 		xAdj += this.createButton(xAdj, yAdj, this.buttonHeight, ButtonType.UPDATE);
@@ -220,7 +244,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	{
 		final String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_display");
 		final int width = this.getStringWidth(str);
-		final int xAdj = (this.dialogLeftSideCenter - (width / 2)) + 14;
+		final int xAdj = (this.dialogLeftSideCenter - (width / 2)); //  + 14
 		this.addLabel(xAdj, y, width, this.elementHeight, COLOR_WHITE, str);
 		y += this.elementHeight + 2;
 	}

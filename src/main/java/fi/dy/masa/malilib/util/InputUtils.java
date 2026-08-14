@@ -2,47 +2,47 @@ package fi.dy.masa.malilib.util;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
-import fi.dy.masa.malilib.mixin.input.IMixinKeyBinding;
-import fi.dy.masa.malilib.util.game.wrap.GameWrap;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+
+import fi.dy.masa.malilib.mixin.input.IMixinKeyBinding;
 
 public class InputUtils
 {
     public static int getMouseX()
     {
-        Minecraft mc = GameWrap.getClient();
+        Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
         return (int) (mc.mouseHandler.xpos() * (double) window.getGuiScaledWidth() / (double) window.getScreenWidth());
     }
 
     public static int getMouseY()
     {
-        Minecraft mc = GameWrap.getClient();
+        Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
         return (int) (mc.mouseHandler.ypos() * (double) window.getGuiScaledHeight() / (double) window.getScreenHeight());
     }
 
 	public static double getMouseXDirect()
 	{
-		return GameWrap.getClient().mouseHandler.xpos();
+		return Minecraft.getInstance().mouseHandler.xpos();
 	}
 
 	public static double getMouseYDirect()
 	{
-		return GameWrap.getClient().mouseHandler.ypos();
+		return Minecraft.getInstance().mouseHandler.ypos();
 	}
 
 	public static double getMouseXScaled()
 	{
-		Minecraft mc = GameWrap.getClient();
+		Minecraft mc = Minecraft.getInstance();
 		Window window = mc.getWindow();
 		return (mc.mouseHandler.xpos() * ((double) window.getGuiScaledWidth() / window.getScreenWidth()));
 	}
 
 	public static double getMouseYScaled()
 	{
-		Minecraft mc = GameWrap.getClient();
+		Minecraft mc = Minecraft.getInstance();
 		Window window = mc.getWindow();
 		return (mc.mouseHandler.ypos() * ((double) window.getGuiScaledHeight() / window.getScreenHeight()));
 	}

@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,6 +15,15 @@ import com.google.gson.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.StateHolder;
+import net.minecraft.world.level.block.state.properties.Property;
+import net.minecraft.world.level.material.FluidState;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
@@ -263,6 +269,155 @@ public class JsonUtils
         return defaultValue;
     }
 
+    public static BlockState getBlockStateOrDefault(JsonObject obj, String name, @Nullable BlockState defaultValue)
+    {
+        if (obj.has(name) && obj.get(name).isJsonObject())
+        {
+            defaultValue = defaultValue != null ? defaultValue : Blocks.AIR.defaultBlockState();
+
+            try
+            {
+                JsonObject o = obj.getAsJsonObject(name);
+
+                if (o != null && o.isJsonObject())
+                {
+                    return getAsBlockState(o, defaultValue).orElse(defaultValue);
+                }
+            }
+            catch (Exception ignore) {}
+        }
+
+        return defaultValue;
+    }
+
+    public static Optional<BlockState> getAsBlockState(JsonElement ele, @Nullable BlockState defaultValue)
+    {
+        defaultValue = defaultValue != null ? defaultValue : Blocks.AIR.defaultBlockState();
+
+        try
+        {
+            if (ele.isJsonObject())
+            {
+                JsonObject o = ele.getAsJsonObject();
+
+                if (o == null || o.isEmpty())
+                {
+                    return Optional.of(defaultValue);
+                }
+
+                final String objName = hasString(o, "Name")
+                                       ? getStringOrDefault(o, "Name", "")
+                                       : hasString(o, "name")
+                                         ? getStringOrDefault(o, "name", "")
+                                         : "";
+
+                if (objName == null || objName.isEmpty())
+                {
+                    return Optional.of(defaultValue);
+                }
+
+                Identifier id = Identifier.tryParse(objName);
+
+                if (id != null)
+                {
+                    Optional<Block> opt = BuiltInRegistries.BLOCK.getOptional(id);
+
+                    if (opt.isEmpty())
+                    {
+                        return Optional.of(Blocks.AIR.defaultBlockState());
+                    }
+
+                    Block block = opt.get();
+                    BlockState state = block.defaultBlockState();
+
+                    JsonObject p = hasObject(o, "Properties")
+                                   ? o.getAsJsonObject("Properties")
+                                   : hasObject(o, "properties")
+                                     ? o.getAsJsonObject("Properties")
+                                     : new JsonObject();
+
+                    if (p != null && !p.isEmpty())
+                    {
+                        StateDefinition<Block, BlockState> def = block.getStateDefinition();
+                        Map<String, JsonElement> map = p.asMap();
+
+                        for (String key : map.keySet())
+                        {
+                            Property<?> prop = def.getProperty(key);
+
+                            if (prop != null)
+                            {
+                                state = setValueEach(state, map.get(key), prop);
+                            }
+                        }
+                    }
+
+                    return Optional.of(state);
+                }
+            }
+        }
+        catch (Exception ignored) {}
+
+        return Optional.of(defaultValue);
+    }
+
+    public static <STATE extends StateHolder<?, STATE>, PROP extends Comparable<PROP>> STATE setValueEach(STATE state,
+                                                                                                          JsonElement ele,
+                                                                                                          Property<PROP> prop)
+    {
+        Optional<PROP> opt = Optional.ofNullable(ele.getAsString()).flatMap(prop::getValue);
+        return opt.map(value -> state.setValue(prop, value)).orElse(state);
+    }
+
+    public static void addBlockState(JsonObject obj, String name, @Nonnull final BlockState state)
+    {
+        obj.add(name, getBlockStateAsObject(state));
+    }
+
+    public static void addFluidState(JsonObject obj, String name, @Nonnull final FluidState state)
+    {
+        obj.add(name, getFluidStateAsObject(state));
+    }
+
+    public static JsonObject getBlockStateAsObject(@Nonnull final BlockState state)
+    {
+        JsonObject o = new JsonObject();
+        o.addProperty("Name", BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
+        addStateProperties(o, state);
+        return o;
+    }
+
+    public static JsonObject getFluidStateAsObject(@Nonnull final FluidState state)
+    {
+        JsonObject o = new JsonObject();
+        o.addProperty("Name", BuiltInRegistries.FLUID.getKey(state.getType()).toString());
+        addStateProperties(o, state);
+        return o;
+    }
+
+    public static void addStateProperties(JsonObject obj, @Nonnull final StateHolder<?, ?> state)
+    {
+        Map<Property<?>, Comparable<?>> values = state.getValues();
+
+        if (!values.isEmpty())
+        {
+            JsonObject o = new JsonObject();
+
+            for (Map.Entry<Property<?>, Comparable<?>> v : values.entrySet())
+            {
+                o.addProperty(v.getKey().getName(), valueName(v.getKey(), v.getValue()));
+            }
+
+            obj.add("Properties", o);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends Comparable<T>> String valueName(Property<T> p, Comparable<?> c)
+    {
+        return p.getName((T) c);
+    }
+
     public static void getBooleanIfExists(JsonObject obj, String name, BooleanConsumer consumer)
     {
         if (obj.has(name) && obj.get(name).isJsonPrimitive())
@@ -364,6 +519,11 @@ public class JsonUtils
     public static String getString(JsonObject obj, String name)
     {
         return getStringOrDefault(obj, name, null);
+    }
+
+    public static BlockState getBlockState(JsonObject obj, String name)
+    {
+        return getBlockStateOrDefault(obj, name, Blocks.AIR.defaultBlockState());
     }
 
     public static void addIfNotEqual(JsonObject obj, String name, int value, int excludeValue)

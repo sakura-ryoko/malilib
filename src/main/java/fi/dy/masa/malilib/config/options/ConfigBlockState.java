@@ -4,10 +4,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
@@ -17,6 +15,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigBlockState;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.game.BlockUtils;
 
 public class ConfigBlockState extends ConfigBase<ConfigBlockState> implements IConfigBlockState
@@ -148,27 +147,30 @@ public class ConfigBlockState extends ConfigBase<ConfigBlockState> implements IC
 		try
 		{
 			AtomicReference<BlockState> temp = new AtomicReference<>();
-			BlockState.CODEC.decode(JsonOps.INSTANCE, element)
-			                .ifSuccess(res -> temp.set(res.getFirst()))
-			                .ifError(err ->
-					                         MaLiLib.LOGGER.error("ConfigBlockState: Exception reading from JSON; {}", err.error())
-			                );
 
-			this.value = temp.get();
-
-			if (!this.value.equals(oldValue) || this.isDirty())
+			JsonUtils.getAsBlockState(element, null).ifPresentOrElse(temp::set, () ->
 			{
-				this.markClean();
+				MaLiLib.LOGGER.error("ConfigBlockState: Error reading from JSON; {}", element.toString());
+			});
 
-				if (!Objects.equals(this.getLastBlockStateValue(), this.getBlockStateValue()))
+			if (temp.get() != null)
+			{
+				this.value = temp.get();
+
+				if (!this.value.equals(oldValue) || this.isDirty())
 				{
-                    MaLiLib.LOGGER.error("[BLOCK_STATE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-                                         BlockStateParser.serialize(this.getLastBlockStateValue()),
-                                         BlockStateParser.serialize(oldValue),
-                                         BlockStateParser.serialize(this.getBlockStateValue())
-                    );
+					this.markClean();
 
-					this.onValueChanged();
+					if (!Objects.equals(this.getLastBlockStateValue(), this.getBlockStateValue()))
+					{
+//						MaLiLib.LOGGER.error("[BLOCK_STATE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//						                     BlockStateParser.serialize(this.getLastBlockStateValue()),
+//						                     BlockStateParser.serialize(oldValue),
+//						                     BlockStateParser.serialize(this.getBlockStateValue())
+//						);
+
+						this.onValueChanged();
+					}
 				}
 			}
 		}
@@ -181,6 +183,6 @@ public class ConfigBlockState extends ConfigBase<ConfigBlockState> implements IC
 	@Override
 	public JsonElement getAsJsonElement()
 	{
-		return BlockState.CODEC.encodeStart(JsonOps.INSTANCE, this.value).result().orElse(new JsonObject());
+		return JsonUtils.getBlockStateAsObject(this.value);
 	}
 }
