@@ -4,6 +4,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+
 import fi.dy.masa.malilib.config.options.ConfigTypeWrapper;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;

@@ -102,7 +102,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
     {
         String labelReset = StringUtils.translate("malilib.gui.button.reset.caps");
         ButtonGeneric resetButton = new ButtonGeneric(x, y, -1, 20, labelReset);
-        resetButton.setEnabled(textField.getValue().equals(this.defaultValue) == false);
+        resetButton.setEnabled(!textField.getValue().equals(this.defaultValue));
 
         return resetButton;
     }
@@ -110,7 +110,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
     @Override
     public boolean wasConfigModified()
     {
-        return this.isDummy() == false && this.textField.textField().getValue().equals(this.initialStringValue) == false;
+        return !this.isDummy() && !this.textField.textField().getValue().equals(this.initialStringValue);
     }
 
     @Override
@@ -235,7 +235,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         @Override
         public boolean onTextChange(GuiTextFieldGeneric textField)
         {
-            this.buttonReset.setEnabled(this.textField.getValue().equals(this.defaultValue) == false);
+            this.buttonReset.setEnabled(!this.textField.getValue().equals(this.defaultValue));
             return false;
         }
     }
@@ -249,7 +249,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
 			if (this.parent.textField != null)
 			{
 				this.parent.textField.textField().setValue(this.parent.defaultValue);
-				this.buttonReset.setEnabled(this.parent.textField.textField().getValue().equals(this.parent.defaultValue) == false);
+				this.buttonReset.setEnabled(!this.parent.textField.textField().getValue().equals(this.parent.defaultValue));
 			}
 		}
 	}

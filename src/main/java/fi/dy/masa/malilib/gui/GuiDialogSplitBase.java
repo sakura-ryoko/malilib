@@ -101,19 +101,9 @@ public class GuiDialogSplitBase extends GuiBase
     // Keeps these scaled to the correct dialogCenter
     protected void recalculateCenters()
     {
-        this.dialogCenter = this.getScaledCenterX();
-
-        if (this.dialogLeftSideWidth <= this.dialogRightSideWidth)
-        {
-            this.dialogCenter -= (this.dialogLeftSideWidth / 2);
-        }
-        else
-        {
-            this.dialogCenter += (this.dialogRightSideWidth / 2);
-        }
-
+        this.dialogCenter = this.dialogLeft + this.dialogLeftSideWidth;
         this.dialogLeftSideCenter = this.dialogLeft + (this.dialogLeftSideWidth / 2);
-        this.dialogRightSideCenter = this.dialogRight - (this.dialogRightSideWidth / 2);
+        this.dialogRightSideCenter = this.dialogCenter + (this.dialogRightSideWidth / 2);
     }
 
     // Divider "T" Bars
