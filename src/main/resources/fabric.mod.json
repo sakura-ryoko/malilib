@@ -44,8 +44,8 @@
         "sodium": "<0.8.7-",
 		"iris": "<1.10.7-",
 		"itemscroller": "<0.30.5-",
-		"litematica": "<0.26.10-",
-		"minihud": "<0.38.12-",
-		"tweakeroo": "<0.27.11-"
+		"litematica": "<0.26.13-",
+		"minihud": "<0.38.14-",
+		"tweakeroo": "<0.27.12-"
 	}
 }
