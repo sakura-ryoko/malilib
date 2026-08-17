@@ -15,6 +15,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
+import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -28,6 +29,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ChestType;
@@ -45,6 +47,7 @@ import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data_syncer.EntityDataCache;
 import fi.dy.masa.malilib.util.data_syncer.EntityDataPairEntry;
 import fi.dy.masa.malilib.util.data_syncer.EntityDataRequestTracker;
+import fi.dy.masa.malilib.util.nbt.NbtInventory;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
 
@@ -746,6 +749,8 @@ public interface IDataSyncer
 
 			if (inv == null)
 			{
+				// Don't unpack Loot Tables
+				if (pair.be() instanceof RandomizableContainer rc && rc.getLootTable() != null) { return NbtInventory.LOOTABLE_INVENTORY; }
 				if (useNbt)
 				{
 					inv = InventoryUtils.getDataInventory(pair.data(), -1, world.registryAccess());
@@ -913,6 +918,8 @@ public interface IDataSyncer
 
 		if (be != null)
 		{
+			// Don't unpack Loot Tables
+			if (be instanceof RandomizableContainer rc && rc.getLootTable() != null) { return (RandomizableContainerBlockEntity) NbtInventory.LOOTABLE_INVENTORY; }
 			if (!data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
 			{
 				Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType());

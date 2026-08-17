@@ -8,10 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import fi.dy.masa.malilib.MaLiLibConfigs;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import org.apache.commons.lang3.math.Fraction;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -51,24 +50,24 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.ChestType;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.compat.carpet.CarpetCompat;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.InventoryOverlayType;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.DataEntityUtils;
+import fi.dy.masa.malilib.util.data.ItemType;
 import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data.tag.util.DataOps;
-import fi.dy.masa.malilib.util.data.ItemType;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
 import fi.dy.masa.malilib.util.nbt.NbtView;
-import org.apache.commons.lang3.tuple.Pair;
 
 public class InventoryUtils
 {
@@ -402,6 +401,8 @@ public class InventoryUtils
         // The method in World now checks that the caller is from the same thread...
         BlockEntity te = world.getChunkAt(pos).getBlockEntity(pos);
 
+		// Do not "unpack" a Loot Table.  C2ME problems strikes again.
+		if (te instanceof RandomizableContainer rc && rc.getLootTable() != null) { return NbtInventory.LOOTABLE_INVENTORY; }
         if (te instanceof Container inv)
         {
             BlockState state = world.getBlockState(pos);
@@ -1134,6 +1135,7 @@ public class InventoryUtils
 			slotCount = NbtInventory.MAX_SIZE;
 		}
 
+		if (data.contains(NbtKeys.LOOT_TABLE, Constants.NBT.TAG_COMPOUND)) { return NbtInventory.LOOTABLE_INVENTORY; }
 		if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
 		{
 			// Standard 'Items' tag for most Block Entities --
