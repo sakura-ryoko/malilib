@@ -47,6 +47,21 @@ public class NbtInventory implements AutoCloseable
     private static final AnsiLogger LOGGER = new AnsiLogger(NbtInventory.class, true, true);
 //    public static final Comparator<ItemStackWithSlot> SLOT_COMPARATOR = new StackWithSlotComparator();
     public static final Comparator<EntrySlot> COMPARATOR = new EntrySlotComparator();
+    public static final Container LOOTABLE_INVENTORY = createLootableInventory();
+
+    private static Container createLootableInventory()
+    {
+        SimpleContainer inv = new SimpleContainer(1);
+        try
+        {
+            DataComponentPatch.Builder builder = DataComponentPatch.builder();
+            builder.set(DataComponents.LORE, new ItemLore(List.of(StringUtils.translateAsText("malilib.gui.tooltip.nbt.has_loot_table"))));
+            inv.setItem(0, new ItemStack(Items.BARRIER.builtInRegistryHolder(), 1, builder.build()));
+        }
+        catch (Exception ignored) {}
+        return inv;
+    }
+
     public static final int VILLAGER_SIZE = 8;
     public static final int DEFAULT_SIZE = 27;
     public static final int PLAYER_SIZE = 36;

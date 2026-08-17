@@ -314,6 +314,7 @@
     "malilib.gui.title.test_stacked_multi_line_text_editor": "Тест стакованого багаторядкового редактора тексту",
     "malilib.gui.title.test_text_fields": "Тест текстових полів",
     "malilib.gui.title.test_widget_list": "Тест віджету списку",
+    "malilib.gui.tooltip.nbt.has_loot_table": "§cLootable Container§r",
     "malilib.gui.tooltip.nbt.unparsable": "§cUnparsable/Invalid Item§r",
     "malilib.gui.tooltip.nbt.unparsable.id": "§cUnparsable/Invalid Item: '%s'§r",
     "malilib.gui.tooltip.test.first": "§eПідказка первинного тесту§r",
