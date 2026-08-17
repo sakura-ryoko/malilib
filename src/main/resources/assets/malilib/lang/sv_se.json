@@ -314,6 +314,7 @@
     "malilib.gui.title.test_stacked_multi_line_text_editor": "Test: staplad flerradstextredigerare",
     "malilib.gui.title.test_text_fields": "Test: textfält",
     "malilib.gui.title.test_widget_list": "Test: widgetlista",
+    "malilib.gui.tooltip.nbt.has_loot_table": "§cLootable Container§r",
     "malilib.gui.tooltip.nbt.unparsable": "§cObjektet kunde inte tolkas/är ogiltigt§r",
     "malilib.gui.tooltip.nbt.unparsable.id": "§cObjektet kunde inte tolkas/är ogiltigt: '%s'§r",
     "malilib.gui.tooltip.test.first": "§eFörsta testverktygstipset§r",
