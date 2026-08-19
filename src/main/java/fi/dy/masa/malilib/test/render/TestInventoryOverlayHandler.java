@@ -369,16 +369,16 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 				{
 					inv = cc;
 				}
-				else
-				{
-					inv = new SimpleContainer(1);
-				}
 			}
 		}
 
-		if (inv == null || data == null)
+		if (data == null)
 		{
-			return null;
+			data = new CompoundData();
+		}
+		if (inv == null)
+		{
+			inv = new SimpleContainer(1);
 		}
 
 		this.context = new InventoryOverlayContext(InventoryOverlay.getBestInventoryType(inv, data), inv,
