@@ -47,7 +47,7 @@ public class MaLiLibConfigs implements IConfigHandler
         public static final ConfigInteger           ACTIONBAR_HUD_TICKS         = new ConfigInteger           ("actionbarHudTicks",       60, 1, 240).apply(GENERIC_KEY);
         public static final ConfigOptionValues<FileWriteType> CONFIG_WRITE_METHOD = new ConfigOptionValues<>("configWriteMethod", FileWriteType.TEMP_AND_RENAME, FileWriteType.VALUES).apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_ACTIONBAR_MESSAGES   = new ConfigBooleanHotkeyed   ("enableActionbarMessages", true, "").apply(GENERIC_KEY);
-        public static final ConfigBooleanHotkeyed   ENABLE_CHEST_DATA_TRACKER   = new ConfigBooleanHotkeyed   ("enableChestDataTracker",  true, "").apply(GENERIC_KEY);
+        public static final ConfigBooleanHotkeyed   ENABLE_CHEST_DATA_TRACKER   = new ConfigBooleanHotkeyed   ("enableChestDataTracker",  false, "").apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_CONFIG_SWITCHER      = new ConfigBooleanHotkeyed   ("enableConfigSwitcher",    true, "").apply(GENERIC_KEY);
         public static final ConfigBooleanHotkeyed   ENABLE_LARGE_BARREL_PREVIEW = new ConfigBooleanHotkeyed   ("enableLargeBarrelPreview",false, "").apply(GENERIC_KEY);
         public static final ConfigOptionList        KEYBOARD_TYPE               = new ConfigOptionList        ("keyboardType",      KeyboardType.QWERTY).apply(GENERIC_KEY);
