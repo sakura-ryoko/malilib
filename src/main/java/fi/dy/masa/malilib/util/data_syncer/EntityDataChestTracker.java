@@ -42,7 +42,7 @@ public class EntityDataChestTracker
 	public void onContainerMenuOpened(int containerId, BlockPos pos, BlockEntity te)
 	{
 		if (te == null) { return; }
-//		MaLiLib.LOGGER.warn("onContainerMenuOpened: id: {}, pos: [{}], te: [{}]", containerId, pos.toShortString(), te.getType().builtInRegistryHolder().key().identifier().toString());
+//		MaLiLib.LOGGER.warn("onContainerMenuOpened: id: {}, pos: [{}], te: [{}]", containerId, pos.toShortString(), BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(te.getType()));
 		this.lastOpenedContainers.put(pos, Pair.of(containerId, te));
 	}
 

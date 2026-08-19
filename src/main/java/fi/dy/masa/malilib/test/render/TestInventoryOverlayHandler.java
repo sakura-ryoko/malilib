@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.Container;
@@ -286,14 +287,15 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 				if (pair != null)
 				{
 					data = pair.getRight();
+					be = pair.getLeft();
 				}
 			}
 
-			inv = this.getDataSyncer().getBlockInventory(world, pos, false);
+			inv = this.getDataSyncer().getBlockInventory(world, pos, true);
 		}
 
-		MaLiLib.LOGGER.error("getTargetFromBlock: inv [{}], data [{}]", inv != null ? inv.getContainerSize() : "<NULL>", data != null ? data.toString() : "<NULL>");
 		BlockEntityType<?> beType = data != null ? DataBlockUtils.getBlockEntityType(data) : null;
+		MaLiLib.LOGGER.error("getTargetInventoryFromBlock() beType: [{}], inv [{}]", beType != null ? beType.getClass().getSimpleName() : "<null>", inv != null ? inv.getContainerSize() : "<null>");
 
 		if ((beType != null && beType.equals(BlockEntityTypes.ENDER_CHEST)) ||
 			be instanceof EnderChestBlockEntity)
@@ -350,18 +352,30 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 			MaLiLib.LOGGER.warn("getTargetFromBlock(): rawData: [{}]", data.toString());
 			Container inv2 = InventoryUtils.getDataInventory(data, inv != null ? inv.getContainerSize() : -1, world.registryAccess());
 
-			if (inv == null)
-			{
-				inv = inv2;
-			}
-
-			if (MaLiLibReference.EXPERIMENTAL_MODE)
+			if (inv == null || MaLiLibReference.EXPERIMENTAL_MODE)
 			{
 				inv = inv2;
 			}
 		}
 
 		MaLiLib.LOGGER.warn("getTargetFromBlock():3: pos [{}], inv [{}], be [{}], data [{}]", pos.toShortString(), inv != null, be != null, data != null ? data.getString("id") : new CompoundData());
+
+		if (be == null)
+		{
+			be = world.getBlockEntity(pos);
+
+			if (inv == null || inv.isEmpty())
+			{
+				if (be instanceof Container cc)
+				{
+					inv = cc;
+				}
+				else
+				{
+					inv = new SimpleContainer(1);
+				}
+			}
+		}
 
 		if (inv == null || data == null)
 		{
@@ -476,6 +490,25 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		                                              inv, null, entityLivingBase, data, this.getRefreshHandler());
 
 		return this.context;
+	}
+
+	private static void dumpContext(InventoryOverlayContext ctx)
+	{
+		System.out.print("Context Dump --> ");
+
+		if (ctx == null)
+		{
+			System.out.print("NULL!\n");
+			return;
+		}
+
+		System.out.printf("\nTYPE: [%s]\n", ctx.type().name());
+		System.out.printf("BE  : [%s]\n", ctx.be() != null ? BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(ctx.be().getType()) : "<NULL>");
+		System.out.printf("ENT : [%s]\n", ctx.entity() != null ? BuiltInRegistries.ENTITY_TYPE.getKey(ctx.entity().getType()) : "<NULL>");
+		System.out.printf("INV : [%s]\n", ctx.inv() != null ? "size: "+ctx.inv().getContainerSize()+"/ empty: "+ctx.inv().isEmpty() : "<NULL>");
+		System.out.printf("DATA: [%s]\n", ctx.data() != null ? ctx.data().toString() : "<NULL>");
+
+		System.out.print("--> EOF\n");
 	}
 
 	public static class Refresher implements InventoryOverlayRefresher
