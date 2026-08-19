@@ -53,6 +53,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.compat.carpet.CarpetCompat;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
+import fi.dy.masa.malilib.mixin.menu.*;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.InventoryOverlayType;
 import fi.dy.masa.malilib.util.data.Constants;
@@ -2275,5 +2276,49 @@ public class InventoryUtils
 		}
 
 		return slot.getHand();
+	}
+
+	/**
+	 * Returns the Container object from any Compatible Menu Type.
+	 * @param menu
+	 * @return -
+	 */
+	@Nullable
+	public static Container getMenuAsContainer(@Nonnull AbstractContainerMenu menu)
+	{
+		if (menu instanceof ChestMenu cm)
+		{
+			return cm.getContainer();
+		}
+		else if (menu instanceof DispenserMenu dm)
+		{
+			return ((IMixinDispenserMenu) dm).malilib_getDispenser();
+		}
+		else if (menu instanceof CrafterMenu cm)
+		{
+			return cm.getContainer();
+		}
+		else if (menu instanceof AbstractFurnaceMenu fm)
+		{
+			return ((IMixinAbstractFurnaceMenu) fm).malilib_getContainer();
+		}
+		else if (menu instanceof BrewingStandMenu bm)
+		{
+			return ((IMixinBrewingStandMenu) bm).malilib_getBrewingStand();
+		}
+		else if (menu instanceof HopperMenu hm)
+		{
+			return ((IMixinHopperMenu) hm).malilib_getHopper();
+		}
+		else if (menu instanceof LecternMenu lm)
+		{
+			return ((IMixinLecternMenu) lm).malilib_getLectern();
+		}
+		else if (menu instanceof ShulkerBoxMenu sbm)
+		{
+			return ((IMixinShulkerBoxMenu) sbm).malilib_getContainer();
+		}
+
+		return null;
 	}
 }
