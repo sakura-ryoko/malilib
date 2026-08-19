@@ -22,6 +22,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
@@ -265,6 +266,36 @@ public class NbtInventory implements AutoCloseable
             EntrySlot slot = new EntrySlot(i, list.get(i));
             //LOGGER.info("fromVanillaList():[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
             newInv.items.add(slot);
+        }
+
+        return newInv;
+    }
+
+    /**
+     * Create a new {@link NbtInventory} from a {@link NonNullList} of Slots.
+     *
+     * @param list -
+     * @return -
+     */
+    public static @Nullable NbtInventory fromVanillaSlotList(@Nonnull NonNullList<@NotNull Slot> list)
+    {
+        int size = list.size();
+
+        if (size < 1)
+        {
+            return null;
+        }
+
+        size = getAdjustedSize(Mth.clamp(size, 1, MAX_SIZE));
+        NbtInventory newInv = new NbtInventory();
+        newInv.items = new HashSet<>();
+
+        for (int i = 0; i < size; i++)
+        {
+            Slot entry = list.get(i);
+	        EntrySlot slot = new EntrySlot(entry.getContainerSlot(), entry.getItem());
+	        //LOGGER.info("fromVanillaSlotList():[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
+	        newInv.items.add(slot);
         }
 
         return newInv;
