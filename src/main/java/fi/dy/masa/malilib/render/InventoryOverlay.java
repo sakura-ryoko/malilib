@@ -477,6 +477,12 @@ public class InventoryOverlay
 			{
 				return InventoryOverlayType.WALL_SHELF;
 			}
+			case SimpleContainer sc ->
+			{
+				return (sc.getContainerSize() == 54) ? InventoryOverlayType.FIXED_54 :
+				       (sc.getContainerSize() == 27) ? InventoryOverlayType.FIXED_27 :
+				       InventoryOverlayType.GENERIC;
+			}
 			case Inventory itemStacks ->
 			{
 				return InventoryOverlayType.PLAYER;
@@ -531,6 +537,10 @@ public class InventoryOverlay
 				if (size >= 0 && size <= 27)
 				{
 					return InventoryOverlayType.FIXED_27;
+				}
+				else if (size == 36)
+				{
+					return InventoryOverlayType.PLAYER;
 				}
 				else if (size > 27 && size <= 54)
 				{
@@ -609,6 +619,26 @@ public class InventoryOverlay
 					if (list.size() > 27)
 					{
 						return InventoryOverlayType.FIXED_54;
+					}
+					else
+					{
+						int highSlot = -1;
+
+						for (int i = 0; i < list.size(); i++)
+						{
+							CompoundData tag = list.getCompoundAt(i);
+							int entry = tag.getByteOrDefault(NbtKeys.SLOT, (byte) 0) & 0xFF;
+
+							if (entry >  highSlot)
+							{
+								highSlot = entry;
+							}
+						}
+
+						if (highSlot > 27)
+						{
+							return InventoryOverlayType.FIXED_54;
+						}
 					}
 				}
 
@@ -749,7 +779,8 @@ public class InventoryOverlay
 		InventoryOverlayType n = getInventoryType(data);
 
 		// Don't use the NBT value if the INV result is FIXED_54.
-		if (i != n && i == InventoryOverlayType.GENERIC)
+		if (i != n && (i == InventoryOverlayType.GENERIC || i == InventoryOverlayType.FIXED_27) &&
+			data.contains("id", Constants.NBT.TAG_STRING))
 		{
 			return n;
 		}
