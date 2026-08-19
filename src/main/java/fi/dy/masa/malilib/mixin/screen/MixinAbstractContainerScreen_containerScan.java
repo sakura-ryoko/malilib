@@ -18,7 +18,6 @@ public abstract class MixinAbstractContainerScreen_containerScan<T extends Abstr
     @Inject(method = "onClose", at = @At("HEAD"))
     private void malilib_onCloseContainer(CallbackInfo ci)
     {
-        // ((AbstractContainerScreen<?>) (Object) this).getMenu()
-        Registry.ENTITY_DATA_REGISTRY.onContainerMenuClosed(this.getMenu());
+        Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuClosed(this.getMenu());
     }
 }

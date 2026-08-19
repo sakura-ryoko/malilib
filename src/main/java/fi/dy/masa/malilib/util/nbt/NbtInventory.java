@@ -63,11 +63,17 @@ public class NbtInventory implements AutoCloseable
         return inv;
     }
 
+    public static final int SINGLE_SIZE = 1;
+    public static final int HOPPER_SIZE = 5;
     public static final int VILLAGER_SIZE = 8;
+    public static final int DISPENSER_SIZE = 9;
     public static final int DEFAULT_SIZE = 27;
     public static final int PLAYER_SIZE = 36;
     public static final int DOUBLE_SIZE = 54;
+    public static final int TRIPLE_SIZE = 81;
+    public static final int QUAD_SIZE = 108;
     public static final int MAX_SIZE = 256;
+
     private HashSet<EntrySlot> items;
 
     private NbtInventory() {}
@@ -98,9 +104,17 @@ public class NbtInventory implements AutoCloseable
     public static int getAdjustedSize(int size)
     {
         //LOGGER.debug("getAdjustedSize(): sizeIn: [{}]", size);
-        if (size <= VILLAGER_SIZE)
+        if (size <= SINGLE_SIZE)
+        {
+            return SINGLE_SIZE;
+        }
+        else if (size <= VILLAGER_SIZE)
         {
             return size;
+        }
+        else if (size == DISPENSER_SIZE)
+        {
+            return DISPENSER_SIZE;
         }
         else if (size <= DEFAULT_SIZE)
         {
@@ -113,6 +127,14 @@ public class NbtInventory implements AutoCloseable
         else if (size <= DOUBLE_SIZE)
         {
             return DOUBLE_SIZE;
+        }
+        else if (size <= TRIPLE_SIZE)
+        {
+            return TRIPLE_SIZE;
+        }
+        else if (size <= QUAD_SIZE)
+        {
+            return QUAD_SIZE;
         }
         else
         {
