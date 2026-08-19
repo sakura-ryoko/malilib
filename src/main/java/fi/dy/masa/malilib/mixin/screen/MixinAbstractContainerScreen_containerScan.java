@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.mixin.screen;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,6 +19,15 @@ public abstract class MixinAbstractContainerScreen_containerScan<T extends Abstr
     @Inject(method = "onClose", at = @At("HEAD"))
     private void malilib_onCloseContainer(CallbackInfo ci)
     {
-        Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuClosed(this.getMenu());
+        Minecraft mc = Minecraft.getInstance();
+
+        if (mc.hasSingleplayerServer() && mc.getSingleplayerServer() != null)
+        {
+            mc.getSingleplayerServer().execute(() -> Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuClosed(this.getMenu()));
+        }
+        else
+        {
+            mc.execute(() -> Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuClosed(this.getMenu()));
+        }
     }
 }

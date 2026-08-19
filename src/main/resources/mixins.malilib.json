@@ -34,6 +34,7 @@
         "nbt.IMixinNbtReadView",
         "nbt.IMixinNbtWriteView",
         "recipe.IMixinIngredient",
+        "server.IMixinMinecraftServer",
         "server.IMixinServerTickManager",
         "server.MixinMinecraftServer",
         "test.MixinBundleItem_test",
