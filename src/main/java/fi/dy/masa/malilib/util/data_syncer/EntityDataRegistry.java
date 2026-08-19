@@ -27,6 +27,7 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.mixin.item.IMixinCompoundContainer;
 import fi.dy.masa.malilib.mixin.menu.*;
 import fi.dy.masa.malilib.util.InventoryUtils;
+import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.DataBlockUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
@@ -154,7 +155,7 @@ public class EntityDataRegistry
 
 	public void onContainerMenuClosed(AbstractContainerMenu menu)
 	{
-		Level level = Minecraft.getInstance().level;
+		Level level = WorldUtils.getBestWorld(Minecraft.getInstance());
 
 		if (level == null)
 		{
