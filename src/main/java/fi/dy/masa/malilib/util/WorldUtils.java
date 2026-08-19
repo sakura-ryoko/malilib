@@ -21,6 +21,8 @@ import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.dimension.DimensionType;
 
+import fi.dy.masa.malilib.mixin.server.IMixinMinecraftServer;
+
 public class WorldUtils
 {
     public static String getDimensionId(Level world)
@@ -48,6 +50,26 @@ public class WorldUtils
         {
             return mc.level;
         }
+    }
+
+    public static RegistryAccess getBestRegistry(Minecraft mc)
+    {
+        IntegratedServer server = mc.getSingleplayerServer();
+
+        if (mc.level != null && server != null)
+        {
+            return ((IMixinMinecraftServer) server).malilib_registries().compositeAccess();
+        }
+        else if (mc.level != null)
+        {
+            return mc.level.registryAccess();
+        }
+        else if (mc.player != null)
+        {
+            return mc.player.registryAccess();
+        }
+
+        return RegistryAccess.EMPTY;
     }
 
     /**

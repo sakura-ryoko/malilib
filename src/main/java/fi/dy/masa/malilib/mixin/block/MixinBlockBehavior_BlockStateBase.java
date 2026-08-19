@@ -2,7 +2,9 @@ package fi.dy.masa.malilib.mixin.block;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
@@ -23,9 +25,9 @@ import fi.dy.masa.malilib.registry.Registry;
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class MixinBlockBehavior_BlockStateBase extends StateHolder<Block, BlockState>
 {
-	protected MixinBlockBehavior_BlockStateBase(Block owner, Property<?>[] propertyKeys, Comparable<?>[] propertyValues)
+	protected MixinBlockBehavior_BlockStateBase(Block object, Reference2ObjectArrayMap<Property<?>, Comparable<?>> reference2ObjectArrayMap, MapCodec<BlockState> mapCodec)
 	{
-		super(owner, propertyKeys, propertyValues);
+		super(object, reference2ObjectArrayMap, mapCodec);
 	}
 
 	@WrapOperation(method = "useWithoutItem",

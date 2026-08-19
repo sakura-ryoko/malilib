@@ -86,16 +86,19 @@ public abstract class MixinClientPacketListener
         if (MaLiLibConfigs.Generic.ENABLE_CHEST_DATA_TRACKER.getBooleanValue() &&
             !minecraft.hasSingleplayerServer())
         {
-            BlockPos pos = Registry.ENTITY_DATA_REGISTRY.chestTracker().getLastInteractPos();
-            ClientLevel level = minecraft.level;
-            if (pos == null || level == null) { return; }
+            minecraft.execute(() ->
+                              {
+                                  BlockPos pos = Registry.ENTITY_DATA_REGISTRY.chestTracker().getLastInteractPos();
+                                  ClientLevel level = minecraft.level;
+                                  if (pos == null || level == null) { return; }
 
-            if (level.getBlockState(pos).hasBlockEntity())
-            {
-                BlockEntity te = level.getBlockEntity(pos);
-                InventoryUtils.getInventory(level, pos);
-                Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuOpened(containerId, pos, te);
-            }
+                                  if (level.getBlockState(pos).hasBlockEntity())
+                                  {
+                                      BlockEntity te = level.getBlockEntity(pos);
+                                      InventoryUtils.getInventory(level, pos);
+                                      Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuOpened(containerId, pos, te);
+                                  }
+                              });
         }
     }
 }
