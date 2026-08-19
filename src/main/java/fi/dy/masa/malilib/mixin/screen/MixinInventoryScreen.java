@@ -18,7 +18,7 @@ public abstract class MixinInventoryScreen
     @Inject(method = "render", at = @At("TAIL"))
     private void malilib_onPostInventoryStatusEffects(GuiGraphics context, int x, int y, float delta, CallbackInfo ci)
     {
-        Slot focused = ((IMixinHandledScreen) this).malilib_getFocusedSlot();
+        Slot focused = ((IMixinAbstractContainerScreen) this).malilib_getFocusedSlot();
 
         if (focused != null && focused.hasItem())
         {

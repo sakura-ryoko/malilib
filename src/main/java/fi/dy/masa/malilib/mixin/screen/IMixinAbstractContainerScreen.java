@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(AbstractContainerScreen.class)
-public interface IMixinHandledScreen
+public interface IMixinAbstractContainerScreen
 {
     @Accessor("hoveredSlot")
     Slot malilib_getFocusedSlot();
