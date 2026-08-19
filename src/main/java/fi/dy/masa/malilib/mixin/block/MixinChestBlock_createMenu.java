@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.mixin.block;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.registry.Registry;
 
 @Mixin(targets = "net.minecraft.world.level.block.ChestBlock$2$1", priority = 1001)
@@ -30,14 +32,21 @@ public class MixinChestBlock_createMenu
 	)
 	private ChestMenu malilib_onOpenMenu3Post(int containerId, Inventory inventory, Container container, Operation<ChestMenu> original)
 	{
-		if (container instanceof CompoundContainer)
+		if (MaLiLibConfigs.Generic.ENABLE_CHEST_DATA_TRACKER.getBooleanValue())
 		{
-			Registry.ENTITY_DATA_REGISTRY.onContainerMenuOpened(containerId, this.val$first.getBlockPos(), this.val$first);
-			Registry.ENTITY_DATA_REGISTRY.onContainerMenuOpened(containerId, this.val$second.getBlockPos(), this.val$second);
-		}
-		else
-		{
-			Registry.ENTITY_DATA_REGISTRY.onContainerMenuOpened(containerId, this.val$first.getBlockPos(), this.val$first);
+			Minecraft.getInstance()
+			         .execute(() ->
+			                  {
+				                  if (container instanceof CompoundContainer)
+				                  {
+					                  Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuOpened(containerId, this.val$first.getBlockPos(), this.val$first);
+					                  Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuOpened(containerId, this.val$second.getBlockPos(), this.val$second);
+				                  }
+				                  else
+				                  {
+					                  Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuOpened(containerId, this.val$first.getBlockPos(), this.val$first);
+				                  }
+			                  });
 		}
 
 		return original.call(containerId, inventory, container);

@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.mixin.block;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -13,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.registry.Registry;
 
 @Mixin(RandomizableContainerBlockEntity.class)
@@ -28,6 +30,9 @@ public abstract class MixinRandomizableContainerBlockEntity extends BaseContaine
 	                 target = "Lnet/minecraft/world/level/block/entity/RandomizableContainerBlockEntity;createMenu(ILnet/minecraft/world/entity/player/Inventory;)Lnet/minecraft/world/inventory/AbstractContainerMenu;"))
 	private void malilib_onContainerOpen2(int containerId, Inventory inventory, Player player, CallbackInfoReturnable<AbstractContainerMenu> cir)
 	{
-		Registry.ENTITY_DATA_REGISTRY.onContainerMenuOpened(containerId, this.getBlockPos(), this);
+		if (MaLiLibConfigs.Generic.ENABLE_CHEST_DATA_TRACKER.getBooleanValue())
+		{
+			Minecraft.getInstance().execute(() -> Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuOpened(containerId, this.getBlockPos(), this));
+		}
 	}
 }

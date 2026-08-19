@@ -6,6 +6,7 @@
     "minVersion": "0.8",
     "mixins": [
         "block.MixinBaseContainerBlockEntity",
+        "block.MixinBlockBehavior_BlockStateBase",
         "block.MixinChestBlock_createMenu",
         "block.MixinRandomizableContainerBlockEntity",
         "client.MixinLanguage",
