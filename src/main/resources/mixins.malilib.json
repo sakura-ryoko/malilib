@@ -63,6 +63,7 @@
         "render.MixinGuiGraphics",
         "render.MixinGuiRenderer",
         "render.MixinRenderPipelines",
+        "render.MixinWorldRenderer",
         "screen.IMixinAbstractContainerScreen",
         "screen.MixinAbstractContainerScreen_containerScan",
         "screen.MixinAbstractContainerScreen_renderTooltip",
