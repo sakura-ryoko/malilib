@@ -10,9 +10,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 
+import net.minecraft.client.MinecraftClient;
+
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.value.FileWriteType;
-import fi.dy.masa.malilib.util.game.wrap.GameWrap;
 
 /**
  * File has been merged with Post-Rewrite FileUtils
@@ -24,14 +26,37 @@ public class FileUtils
     public static final Predicate<Path> ANY_FILE_FILEFILTER = Files::isRegularFile;
     public static final Predicate<Path> JSON_FILEFILTER = (f) -> Files.isRegularFile(f) && f.getFileName().toString().endsWith(".json");
 
+    /**
+     * @deprecated Please migrate to using 'getConfigDirectory' again
+     */
+    @Deprecated(forRemoval = true)
     public static Path getConfigDirectoryAsPath()
     {
-        return GameWrap.getClient().runDirectory.toPath().resolve("config");
+        return getConfigDirectory();
     }
 
+    /**
+     * @deprecated Please migrate to using 'getMinecraftDirectory' again
+     */
+    @Deprecated(forRemoval = true)
     public static Path getMinecraftDirectoryAsPath()
     {
-        return GameWrap.getClient().runDirectory.toPath();
+        return getMinecraftDirectory();
+    }
+
+    public static Path getConfigDirectory()
+    {
+        return getMinecraftDirectory().resolve("config");
+    }
+
+    public static Path getLogsDirectory()
+    {
+        return getMinecraftDirectory().resolve("logs");
+    }
+
+    public static Path getMinecraftDirectory()
+    {
+        return MinecraftClient.getInstance().runDirectory.toPath();
     }
 
     public static Path getRootDirectory()
@@ -89,6 +114,11 @@ public class FileUtils
             return false;
         }
 
+        if (MaLiLibReference.DEBUG_MODE)
+        {
+            MaLiLib.LOGGER.warn("createDirectoriesIfMissing: '{}'", dir.toAbsolutePath().toString());
+        }
+
         return Files.isDirectory(dir);
     }
 
@@ -102,6 +132,12 @@ public class FileUtils
         try
         {
             Files.createFile(file);
+
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("createFile: '{}'", file.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)
@@ -144,6 +180,11 @@ public class FileUtils
                 Files.copy(srcFile, dstFile, StandardCopyOption.COPY_ATTRIBUTES);
             }
 
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("copy: '{}' -> '{}'", srcFile.toAbsolutePath().toString(), dstFile.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)
@@ -182,6 +223,11 @@ public class FileUtils
                 Files.move(srcFile, dstFile);
             }
 
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("move: '{}' -> '{}'", srcFile.toAbsolutePath().toString(), dstFile.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)
@@ -202,6 +248,12 @@ public class FileUtils
         try
         {
             Files.delete(file);
+
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("delete: '{}'", file.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)
@@ -447,6 +499,12 @@ public class FileUtils
         {
             dataWriter.accept(writer);
             writer.close();
+
+            if (MaLiLibReference.DEBUG_MODE)
+            {
+                MaLiLib.LOGGER.warn("writeDataToExactFile: '{}'", file.toAbsolutePath().toString());
+            }
+
             return true;
         }
         catch (Exception e)

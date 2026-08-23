@@ -9,22 +9,20 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.config.ConfigType;
-import fi.dy.masa.malilib.config.IConfigLockedList;
-import fi.dy.masa.malilib.config.IConfigLockedListEntry;
-import fi.dy.masa.malilib.config.IConfigLockedListType;
+import fi.dy.masa.malilib.config.*;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.data.ImmutableCopy;
 
 public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IConfigLockedList
 {
-//    public static final Codec<?> CODEC = null;
     IConfigLockedListType handler;
     ImmutableList<IConfigLockedListEntry> defaultList;
     List<IConfigLockedListEntry> values = new ArrayList<>();
+    List<IConfigLockedListEntry> lastValues = new ArrayList<>();
 
     public ConfigLockedList(String name, IConfigLockedListType handler)
     {
-        this(name, handler, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, handler, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigLockedList(String name, IConfigLockedListType handler, String comment)
@@ -43,6 +41,7 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
         this.handler = handler;
         this.defaultList = handler.getDefaultEntries();
         this.values.addAll(this.defaultList);
+        this.updateLastLockedListValue();
     }
 
     @Override
@@ -75,6 +74,7 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
     {
         if (this.values.equals(entries) == false)
         {
+            this.updateLastLockedListValue();
             this.values.clear();
             entries.forEach((v) ->
             {
@@ -121,7 +121,14 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
     @Override
     public void setModified()
     {
+        this.markClean();
         this.onValueChanged();
+    }
+
+    @Override
+    public List<IConfigLockedListEntry> getLastLockedListValue()
+    {
+        return this.lastValues;
     }
 
     @Override
@@ -131,57 +138,16 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
     }
 
     @Override
-    public boolean isModified()
+    public void updateLastLockedListValue()
     {
-        return this.values.equals(this.defaultList) == false;
+        this.lastValues.clear();
+        this.lastValues.addAll(ImmutableCopy.of(this.values).toList());
     }
 
     @Override
-    public void setValueFromJsonElement(JsonElement element)
+    public boolean isModified()
     {
-        this.values.clear();
-
-        try
-        {
-            if (element.isJsonArray())
-            {
-                JsonArray array = element.getAsJsonArray();
-
-                List<IConfigLockedListEntry> defList = new ArrayList<>(this.getDefaultEntries().stream().toList());
-                List<IConfigLockedListEntry> list = new ArrayList<>();
-
-                // Only add matches ONCE & compare with Defaults.
-                for (int i = 0; i < array.size(); i++)
-                {
-                    IConfigLockedListEntry entry = this.handler.fromString(array.get(i).getAsString());
-
-                    if (entry != null && list.contains(entry) == false)
-                    {
-                        list.add(entry);
-                        defList.remove(entry);
-						this.markDirty();
-                    }
-                }
-
-                // Default entries are missing
-                if (defList.isEmpty() == false)
-                {
-                    list.addAll(defList);
-					this.markDirty();
-                }
-
-                this.values.addAll(list);
-				this.checkIfClean();
-            }
-            else
-            {
-                MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
-            }
-        }
-        catch (Exception e)
-        {
-            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
-        }
+        return this.values.equals(this.defaultList) == false;
     }
 
     @Override
@@ -210,5 +176,82 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
         }
 
         return array;
+    }
+
+    @Override
+    public void setValueFromJsonElement(JsonElement element)
+    {
+        ImmutableList<IConfigLockedListEntry> oldEntries = ImmutableCopy.of(this.values).toList();
+        int sizeBefore;
+        this.values.clear();
+
+        try
+        {
+            if (element.isJsonArray())
+            {
+                JsonArray array = element.getAsJsonArray();
+
+                List<IConfigLockedListEntry> defList = new ArrayList<>(this.getDefaultEntries().stream().toList());
+                List<IConfigLockedListEntry> list = new ArrayList<>();
+
+                sizeBefore = array.size();
+
+                // Only add matches ONCE & compare with Defaults.
+                for (int i = 0; i < array.size(); i++)
+                {
+                    String temp = array.get(i).getAsString();
+                    IConfigLockedListEntry entry = this.handler.fromString(temp);
+
+                    if (entry != null && !list.contains(entry))
+                    {
+                        list.add(entry);
+                        defList.remove(entry);
+                    }
+                }
+
+                if (sizeBefore != list.size())
+                {
+                    this.markDirty();
+                }
+
+                // Default entries are missing
+                if (!defList.isEmpty())
+                {
+                    sizeBefore = list.size();
+                    list.addAll(defList);
+
+                    if (list.size() != sizeBefore)
+                    {
+                        this.markDirty();
+                    }
+                }
+
+                this.values.addAll(list);
+
+                if (!oldEntries.equals(this.values) || this.isDirty())
+                {
+                    this.markClean();
+
+                    if (!this.getLastLockedListValue().equals(this.getEntries()))
+                    {
+//                        MaLiLib.LOGGER.error("[LOCKED-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                             this.getLastLockedListValue().size(),
+//                                             oldEntries.size(),
+//                                             this.getEntries().size()
+//                        );
+
+                        this.setModified();
+                    }
+                }
+            }
+            else
+            {
+                MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+            }
+        }
+        catch (Exception e)
+        {
+            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+        }
     }
 }

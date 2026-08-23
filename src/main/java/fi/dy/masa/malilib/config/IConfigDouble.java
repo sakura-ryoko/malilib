@@ -11,4 +11,8 @@ public interface IConfigDouble extends IConfigValue, IConfigSlider
     double getMinDoubleValue();
 
     double getMaxDoubleValue();
+
+    default double getLastDoubleValue() { return this.getDefaultDoubleValue(); }
+
+    default void updateLastDoubleValue() {}
 }

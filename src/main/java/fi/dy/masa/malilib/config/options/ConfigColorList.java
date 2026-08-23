@@ -16,6 +16,7 @@ import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.data.ImmutableCopy;
 
 public class ConfigColorList extends ConfigBase<ConfigColorList> implements IConfigColorList
 {
@@ -31,10 +32,11 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
     );
     private final ImmutableList<Color4f> defaultValue;
     private final List<Color4f> colors = new ArrayList<>();
+    private final List<Color4f> lastColors = new ArrayList<>();
 
     public ConfigColorList(String name, ImmutableList<Color4f> defaultValue)
     {
-        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigColorList(String name, ImmutableList<Color4f> defaultValue, String comment)
@@ -53,6 +55,7 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
 
         this.defaultValue = defaultValue;
         this.colors.addAll(defaultValue);
+        this.lastColors.addAll(defaultValue);
     }
 
     private ConfigColorList(String name, List<Color4f> defaultValues, List<Color4f> values, String comment, String prettyName, String translationName)
@@ -78,6 +81,7 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
     {
         if (!this.colors.equals(colors))
         {
+            this.updateLastColorsValue();
             this.colors.clear();
             this.colors.addAll(colors);
             this.onValueChanged();
@@ -85,8 +89,15 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
     }
 
     @Override
+    public List<Color4f> getLastColorsValue()
+    {
+        return this.lastColors;
+    }
+
+    @Override
     public void setModified()
     {
+        this.markClean();
         this.onValueChanged();
     }
 
@@ -107,38 +118,11 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
 		this.colors.add(color);
 	}
 
-	@Override
-    public void setValueFromJsonElement(JsonElement element)
+    @Override
+    public void updateLastColorsValue()
     {
-		List<Color4f> oldList = new ArrayList<>(this.colors);
-	    this.colors.clear();
-
-        try
-        {
-            if (element.isJsonArray())
-            {
-                JsonArray arr = element.getAsJsonArray();
-                final int count = arr.size();
-
-                for (int i = 0; i < count; ++i)
-                {
-                    this.addColor(Color4f.fromColor(StringUtils.getColor(arr.get(i).getAsString(), 0)));
-                }
-
-				if (!oldList.equals(this.colors))
-				{
-					this.onValueChanged();
-				}
-            }
-            else
-            {
-                MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
-            }
-        }
-		catch (Exception e)
-        {
-            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
-        }
+        this.lastColors.clear();
+        this.lastColors.addAll(ImmutableCopy.of(this.colors).toList());
     }
 
     @Override
@@ -152,5 +136,51 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
         }
 
         return arr;
+    }
+
+	@Override
+    public void setValueFromJsonElement(JsonElement element)
+    {
+        ImmutableList<Color4f> oldList = ImmutableCopy.of(this.colors).toList();
+	    this.colors.clear();
+
+        try
+        {
+            if (element.isJsonArray())
+            {
+                JsonArray arr = element.getAsJsonArray();
+                final int count = arr.size();
+
+                for (int i = 0; i < count; ++i)
+                {
+                    String temp = arr.get(i).getAsString();
+                    this.addColor(Color4f.fromColor(StringUtils.getColor(temp, 0)));
+                }
+
+                if (!oldList.equals(this.colors) || this.isDirty())
+				{
+                    this.markClean();
+
+                    if (!this.getLastColorsValue().equals(this.getColors()))
+                    {
+//                        MaLiLib.LOGGER.error("[COLOR-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                             this.getLastColorsValue().size(),
+//                                             oldList.size(),
+//                                             this.getColors().size()
+//                        );
+
+                        this.setModified();
+                    }
+				}
+            }
+            else
+            {
+                MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+            }
+        }
+		catch (Exception e)
+        {
+            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+        }
     }
 }

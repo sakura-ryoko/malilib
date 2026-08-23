@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public interface ArrayData extends Iterable<BaseData>
 {
@@ -25,7 +25,7 @@ public interface ArrayData extends Iterable<BaseData>
 		return size() == 0;
 	}
 
-	default @NotNull Iterator<BaseData> iterator()
+	default @NonNull Iterator<BaseData> iterator()
 	{
 		return new Iterator<>()
 		{

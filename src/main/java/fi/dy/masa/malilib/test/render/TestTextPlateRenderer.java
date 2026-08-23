@@ -10,10 +10,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.util.position.Vec3d;
 
 public class TestTextPlateRenderer
 {
@@ -42,7 +42,7 @@ public class TestTextPlateRenderer
 		ClientWorld level = mc.world;
 		Entity camera = mc.getCameraEntity() != null ? mc.getCameraEntity() : mc.player;
 		if (camera == null) { return; }
-		Vec3d pos = camera.getEntityPos();
+		net.minecraft.util.math.Vec3d pos = camera.getEntityPos();
 		Box bb = new Box(pos, pos).expand(16);
 
 		this.nearbyEntities.clear();
@@ -71,7 +71,7 @@ public class TestTextPlateRenderer
 		return !this.nearbyEntities.isEmpty();
 	}
 
-	public void render(Vec3d camPos, MinecraftClient mc, Profiler profiler)
+	public void render(net.minecraft.util.math.Vec3d camPos, MinecraftClient mc, Profiler profiler)
 	{
 		if (this.shouldRender())
 		{
@@ -79,10 +79,10 @@ public class TestTextPlateRenderer
 		}
 	}
 
-	private void renderEach(Entity e, Vec3d camPos, MinecraftClient mc)
+	private void renderEach(Entity e, net.minecraft.util.math.Vec3d camPos, MinecraftClient mc)
 	{
 		float delta = mc.getRenderTickCounter().getTickProgress(true);
-		Vec3d targetPos = e.getLerpedPos(delta);
+		Vec3d targetPos = Vec3d.of(e.getLerpedPos(delta));
 		double hypot = MathHelper.hypot(camPos.x - targetPos.x, camPos.z - targetPos.z);
 		double distance = 0.8;
 		double x = targetPos.x + (camPos.x - targetPos.x) / hypot * distance;
@@ -90,8 +90,8 @@ public class TestTextPlateRenderer
 		double y = targetPos.y + 1.5 + 0.1 * this.text.size();
 		final float scale = 2.0f * 0.01F;       // 2.0f is configurable SCALE -- do not modify the 0.01F
 
-		RenderUtils.drawTextPlate(this.text, x, y, z, scale, delta);
+//		RenderUtils.drawTextPlate(this.text, x, y, z, scale, delta);
 //		RenderUtils.scheduleTextPlate(this.text, new Vec3d(x, y, z), scale, Color4f.WHITE, Color4f.fromColor(0x40000000), 15728880, false, false, TextAlignment.CENTER);
-//		RenderUtils.scheduleTextPlate(this.text, new Vec3d(x, y, z), scale);
+		RenderUtils.scheduleTextPlate(this.text, new Vec3d(x, y, z), scale);
 	}
 }

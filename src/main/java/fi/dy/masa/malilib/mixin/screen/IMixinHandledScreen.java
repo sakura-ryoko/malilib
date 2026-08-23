@@ -10,4 +10,10 @@ public interface IMixinHandledScreen
 {
     @Accessor("focusedSlot")
     Slot malilib_getFocusedSlot();
+
+    @Accessor("x")
+    int malilib_getX();
+
+    @Accessor("y")
+    int malilib_getY();
 }

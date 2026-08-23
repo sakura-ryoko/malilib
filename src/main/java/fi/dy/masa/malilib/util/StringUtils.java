@@ -3,10 +3,7 @@ package fi.dy.masa.malilib.util;
 import java.io.File;
 import java.net.SocketAddress;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -33,6 +30,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+
+import fi.dy.masa.malilib.MaLiLibFabricData;
 import fi.dy.masa.malilib.MaLiLibReference;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,6 +39,9 @@ import com.mojang.serialization.JsonOps;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.LeftRight;
+import fi.dy.masa.malilib.registry.Registry;
+import fi.dy.masa.malilib.util.i18n.i18nManager;
+import fi.dy.masa.malilib.util.i18n.i18nMode;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 
 /**
@@ -77,12 +79,17 @@ public class StringUtils
 
     public static String getModVersionString(String modId)
     {
-        for (net.fabricmc.loader.api.ModContainer container : net.fabricmc.loader.api.FabricLoader.getInstance().getAllMods())
+//        for (net.fabricmc.loader.api.ModContainer container : net.fabricmc.loader.api.FabricLoader.getInstance().getAllMods())
+//        {
+//            if (container.getMetadata().getId().equals(modId))
+//            {
+//                return container.getMetadata().getVersion().getFriendlyString();
+//            }
+//        }
+
+        if (MaLiLibFabricData.ALL_MOD_VERSIONS.containsKey(modId))
         {
-            if (container.getMetadata().getId().equals(modId))
-            {
-                return container.getMetadata().getVersion().getFriendlyString();
-            }
+            return MaLiLibFabricData.ALL_MOD_VERSIONS.get(modId);
         }
 
         return "?";
@@ -765,19 +772,41 @@ public class StringUtils
                 MaLiLib.LOGGER.info("Translation key: {}", translationKey);
             }
 
-            /*
             if (MaLiLibConfigs.Generic.TRANSLATION_OVERRIDES.getBooleanValue())
             {
-                String translation = Registry.TRANSLATION_OVERRIDE_MANAGER.getOverriddenTranslation(translationKey, args);
+                // Post-Rewrite's Translation Overrides
+                /*
+                    String translation = Registry.TRANSLATION_OVERRIDE_MANAGER.getOverriddenTranslation(translationKey, args);
 
-                if (translation != null)
+                    if (translation != null)
+                    {
+                        return translation;
+                    }
+                 */
+
+                // Sorry, I wrote my own; :shrug:
+                Optional<i18nManager> opt = Registry.TRANSLATION_OVERRIDE_MANAGER.scanForTranslationKey(translationKey);
+
+                if (opt.isPresent())
                 {
-                    return translation;
+                    i18nManager manager = opt.get();
+                    Optional<i18nMode> mode = Registry.TRANSLATION_OVERRIDE_MANAGER.getLanguageMode(manager.getModId());
+
+                    if (mode.isPresent())
+                    {
+                        i18nMode modeEntry = mode.get();
+
+                        if (modeEntry == i18nMode.OFF)
+                        {
+                            return translateWrapper(translationKey, args);
+                        }
+                    }
+
+                    return manager.translate(translationKey, args);
                 }
             }
-             */
 
-            return I18n.translate(translationKey, args);
+            return translateWrapper(translationKey, args);
         }
         catch (Exception e)
         {
@@ -785,8 +814,37 @@ public class StringUtils
         }
     }
 
+    private static String translateWrapper(String translationKey, Object... args)
+    {
+//        return I18n.get(translationKey, args);
+        // fixme -- Someone is changing our `%.f` formatters all to `%s` ...
+        final String result = I18n.translate(translationKey, args);
+
+//        System.out.printf("KEY: %s\n", translationKey);
+//        System.out.printf("RESULT: %s\n", result);
+
+        try
+        {
+            return String.format(Locale.ROOT, result, args);
+        }
+        catch (Exception e)
+        {
+            return "Format Error:" + result;
+        }
+    }
+
     public static Text translateAsText(String translationKey, Object... args)
     {
+        if (MaLiLibConfigs.Generic.TRANSLATION_OVERRIDES.getBooleanValue())
+        {
+            Optional<i18nManager> opt = Registry.TRANSLATION_OVERRIDE_MANAGER.scanForTranslationKey(translationKey);
+
+            if (opt.isPresent())
+            {
+                return opt.get().translateAsText(translationKey, args);
+            }
+        }
+
         return Text.of(translate(translationKey, args));
     }
 
@@ -807,6 +865,16 @@ public class StringUtils
      */
     public static boolean hasTranslation(String translationKey)
     {
+        if (MaLiLibConfigs.Generic.TRANSLATION_OVERRIDES.getBooleanValue())
+        {
+            Optional<i18nManager> opt = Registry.TRANSLATION_OVERRIDE_MANAGER.scanForTranslationKey(translationKey);
+
+            if (opt.isPresent())
+            {
+                return true;
+            }
+        }
+
         return I18n.hasTranslation(translationKey);
     }
 
@@ -888,5 +956,26 @@ public class StringUtils
             MaLiLib.LOGGER.error("legacyTextSerializer: Failed to convert JSON to MutableText; {}", err.getLocalizedMessage());
             return null;
         }
+    }
+
+    /**
+     * Return if the given CharSequence is blank
+     * @param cs -
+     * @return -
+     */
+    public static boolean isBlank(final CharSequence cs)
+    {
+        final int strLen = cs == null ? 0 : cs.length();
+        if (strLen == 0) { return true; }
+
+        for (int i = 0; i < strLen; i++)
+        {
+            if (!Character.isWhitespace(cs.charAt(i)))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -1,8 +1,11 @@
 package fi.dy.masa.malilib.gui.widgets;
 
+import java.awt.*;
 import javax.annotation.Nullable;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.MutableText;
+
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.config.*;
 import fi.dy.masa.malilib.config.gui.*;
@@ -19,6 +22,7 @@ import fi.dy.masa.malilib.gui.interfaces.IConfigInfoProvider;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
 import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
@@ -136,18 +140,29 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addLabel(x, y + 7, labelWidth, 8, 0xFFFFFFFF, configName);
 
         String comment;
+        MutableText commentComponent = null;
         IConfigInfoProvider infoProvider = this.host.getHoverInfoProvider();
 
         if (infoProvider != null)
         {
             comment = infoProvider.getHoverInfo(config);
+
+            if (infoProvider.getHoverComponent(config) != null)
+            {
+                commentComponent = infoProvider.getHoverComponent(config);
+            }
         }
         else
         {
             comment = config.getComment();
+            commentComponent = config.getCommentComponent();
         }
 
-        if (comment != null)
+        if (commentComponent != null)
+        {
+            this.addConfigComment(x, y + 5, labelWidth, 12, commentComponent);
+        }
+        else if (comment != null && !comment.isEmpty())
         {
             this.addConfigComment(x, y + 5, labelWidth, 12, comment);
         }
@@ -175,6 +190,11 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             ConfigButtonOptionList optionButton = new ConfigButtonOptionList(x, y, configWidth, configHeight, (IConfigOptionList) config);
             this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
         }
+        else if (type == ConfigType.OPTION_VALUES)
+        {
+            ConfigButtonOptionValues optionButton = new ConfigButtonOptionValues(x, y, configWidth, configHeight, (IConfigOptionValues<?>) config);
+            this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
+        }
         else if (type == ConfigType.STRING_LIST)
         {
             ConfigButtonStringList optionButton = new ConfigButtonStringList(x, y, configWidth, configHeight, (IConfigStringList) config, this.host, this.host.getDialogHandler());
@@ -190,6 +210,11 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             ConfigButtonColorList optionButton = new ConfigButtonColorList(x, y, configWidth, configHeight, (IConfigColorList) config, this.host, this.host.getDialogHandler());
             this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
         }
+        else if (type == ConfigType.BLOCK_STATE_LIST)
+        {
+            ConfigButtonBlockStateList optionButton = new ConfigButtonBlockStateList(x, y, configWidth, configHeight, (IConfigBlockStateList) config, this.host, this.host.getDialogHandler());
+            this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
+        }
         else if (type == ConfigType.HOTKEY)
         {
             this.addHotkeyConfigElements(x, y, configWidth, config.getName(), (IHotkey) config);
@@ -198,7 +223,8 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                  type == ConfigType.COLOR ||
                  type == ConfigType.INTEGER ||
                  type == ConfigType.DOUBLE ||
-                 type == ConfigType.FLOAT)
+                 type == ConfigType.FLOAT ||
+                 type == ConfigType.BLOCK_STATE)
         {
             int resetX = x + configWidth + 2;
 
@@ -207,6 +233,12 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                 configWidth -= 22; // adjust the width to match other configs due to the color display
                 this.colorDisplayPosX = x + configWidth + 2;
                 this.addWidget(new WidgetColorIndicator(this.colorDisplayPosX, y + 1, 19, 19, (IConfigColor) config));
+            }
+            else if (type == ConfigType.BLOCK_STATE)
+            {
+                configWidth -= 22; // adjust the width to match other configs due to the block icon display
+                this.colorDisplayPosX = x + configWidth + 2;
+                this.addWidget(new WidgetBlockStateIcon(this.colorDisplayPosX, y + 1, 18, 18, (IConfigBlockState) config));
             }
             else if (type == ConfigType.INTEGER || type == ConfigType.DOUBLE || type == ConfigType.FLOAT)
             {
@@ -221,7 +253,30 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             }
             else
             {
-                this.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, (IConfigValue) config);
+                TextFieldType textType = TextFieldType.STRING.setMaxLength(this.maxTextfieldTextLength);
+
+                if (type == ConfigType.INTEGER)
+                {
+                    textType = TextFieldType.INTEGER;
+                }
+                else if (type == ConfigType.DOUBLE)
+                {
+                    textType = TextFieldType.DOUBLE;
+                }
+                else if (type == ConfigType.FLOAT)
+                {
+                    textType = TextFieldType.FLOAT;
+                }
+                else if (type == ConfigType.COLOR)
+                {
+                    textType = TextFieldType.STRING.setMaxLength(12);
+                }
+				else if (type == ConfigType.BLOCK_STATE)
+                {
+                    textType = TextFieldType.BLOCK_STATE;
+                }
+
+                this.addConfigTextFieldEntry(x, y, resetX, configWidth, configHeight, (IConfigValue) config, textType);
             }
 
             if (type != ConfigType.COLOR && config instanceof IConfigSlider)
@@ -231,7 +286,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
                 this.addButton(toggleBtn, new ListenerSliderToggle((IConfigSlider) config));
             }
         }
-		else if (type == ConfigType.TABLE)
+		else if (type == ConfigType.TABLE || config instanceof IConfigTable)
         {
 			ConfigButtonTable optionButton = new ConfigButtonTable(x, y, configWidth, configHeight, (IConfigTable) config, this.host, this.host.getDialogHandler());
 	        this.addConfigButtonEntry(x + configWidth + 2, y, (IConfigResettable) config, optionButton);
@@ -246,37 +301,47 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
             IConfigBase config = this.wrapper.getConfig();
             boolean modified = false;
 
-            if (config instanceof BooleanHotkeyGuiWrapper booleanHotkey)
+            switch (config)
             {
-                IKeybind keybind = booleanHotkey.getKeybind();
-                return this.initialBoolean != booleanHotkey.getBooleanValue() ||
-                       this.initialStringValue.equals(keybind.getStringValue()) == false ||
-                       this.initialKeybindSettings.equals(keybind.getSettings()) == false;
-            }
-            else if (config instanceof ConfigBooleanHotkeyed booleanHotkey)
-            {
-                IKeybind keybind = booleanHotkey.getKeybind();
-                return this.initialBoolean != booleanHotkey.getBooleanValue() ||
-                       this.initialStringValue.equals(keybind.getStringValue()) == false ||
-                       this.initialKeybindSettings.equals(keybind.getSettings()) == false;
-            }
-            else if (config instanceof IStringRepresentable)
-            {
-                if (this.textField != null)
+                case BooleanHotkeyGuiWrapper booleanHotkey ->
                 {
-                    modified |= this.initialStringValue.equals(this.textField.getTextField().getText()) == false;
+                    IKeybind keybind = booleanHotkey.getKeybind();
+                    return  this.initialBoolean != booleanHotkey.getBooleanValue() ||
+                            this.initialStringValue.equals(keybind.getStringValue()) == false ||
+                            this.initialKeybindSettings.equals(keybind.getSettings()) == false ||
+                            config.isDirty();
                 }
-
-                if (this.initialKeybindSettings != null && this.initialKeybindSettings.equals(((IHotkey) config).getKeybind().getSettings()) == false)
+                case ConfigBooleanHotkeyed booleanHotkey ->
                 {
-                    modified = true;
+                    IKeybind keybind = booleanHotkey.getKeybind();
+                    return  this.initialBoolean != booleanHotkey.getBooleanValue() ||
+                            this.initialStringValue.equals(keybind.getStringValue()) == false ||
+                            this.initialKeybindSettings.equals(keybind.getSettings()) == false ||
+                            config.isDirty();
                 }
-
-                return modified || this.initialStringValue.equals(((IStringRepresentable) config).getStringValue()) == false;
-            }
-            else if (this.initialStringList != null && config instanceof IConfigStringList)
-            {
-                return this.initialStringList.equals(((IConfigStringList) config).getStrings()) == false;
+                case IStringRepresentable iStringRepresentable ->
+                {
+                    if (this.textField != null)
+                    {
+                        modified |= this.initialStringValue.equals(this.textField.getTextField().getText()) == false ||
+                                config.isDirty();
+                    }
+                    if (this.initialKeybindSettings != null && this.initialKeybindSettings.equals(((IHotkey) config).getKeybind().getSettings()) == false)
+                    {
+                        modified = true;
+                    }
+                    return  modified || this.initialStringValue.equals(iStringRepresentable.getStringValue()) == false ||
+                            config.isDirty();
+                }
+                case IConfigStringList iConfigStringList when this.initialStringList != null ->
+                {
+                    return  this.initialStringList.equals(iConfigStringList.getStrings()) == false ||
+                            config.isDirty();
+                }
+                case null, default ->
+                {
+                    return config != null && config.isDirty();
+                }
             }
         }
 
@@ -302,6 +367,12 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     {
         this.addWidget(new WidgetHoverInfo(x, y, width, height, comment));
     }
+
+    protected void addConfigComment(int x, int y, int width, int height, MutableText comment)
+    {
+        this.addWidget(new WidgetHoverComponent(x, y, width, height, comment));
+    }
+
 
     protected void addHotkeyConfigElements(int x, int y, int configWidth, String configName, IHotkey hotkey)
     {
@@ -355,17 +426,17 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         this.addButton(resetButton, listenerReset);
     }
 
-    protected void addConfigTextFieldEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigValue config)
+    protected void addConfigTextFieldEntry(int x, int y, int resetX, int configWidth, int configHeight, IConfigValue config, TextFieldType type)
     {
         GuiTextFieldGeneric field = this.createTextField(x, y + 1, configWidth - 4, configHeight - 3);
-        field.setMaxLength(this.maxTextfieldTextLength);
+        field.setMaxLength(type.getMaxLength() > 0 ? type.getMaxLength() : this.maxTextfieldTextLength);
         field.setText(config.getStringValue());
 
         ButtonGeneric resetButton = this.createResetButton(resetX, y, config);
         ConfigOptionChangeListenerTextField listenerChange = new ConfigOptionChangeListenerTextField(config, field, resetButton);
         ConfigOptionListenerResetConfig listenerReset = new ConfigOptionListenerResetConfig(config, new ConfigResetterTextField(config, field), resetButton, null);
 
-        this.addTextField(field, listenerChange);
+        this.addTextField(field, listenerChange, type);
         this.addButton(resetButton, listenerReset);
     }
 
@@ -404,7 +475,7 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
     @Override
     public void render(DrawContext ctx, int mouseX, int mouseY, boolean selected)
     {
-        super.render(ctx, mouseX, mouseY, selected);
+//        super.render(ctx, mouseX, mouseY, selected);
 
         this.drawSubWidgets(ctx, mouseX, mouseY);
 

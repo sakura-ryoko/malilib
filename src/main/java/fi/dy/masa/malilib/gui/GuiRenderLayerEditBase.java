@@ -7,6 +7,7 @@ import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetCheckBox;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.LayerMode;
 import fi.dy.masa.malilib.util.LayerRange;
@@ -89,7 +90,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         if (layerMode == LayerMode.LAYER_RANGE)
         {
             this.textField2 = new GuiTextFieldInteger(x, y, width, 20, this.textRenderer);
-            this.addTextField(this.textField2, new TextFieldListener(layerMode, layerRange, true));
+            this.addTextField(this.textField2, new TextFieldListener(layerMode, layerRange, true), TextFieldType.INTEGER);
 
             this.createHotkeyCheckBoxes(x + width + 24, y, layerRange);
 
@@ -102,7 +103,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         }
 
         this.textField1 = new GuiTextFieldInteger(x, y, width, 20, this.textRenderer);
-        this.addTextField(this.textField1, new TextFieldListener(layerMode, layerRange, false));
+        this.addTextField(this.textField1, new TextFieldListener(layerMode, layerRange, false), TextFieldType.INTEGER);
         this.createValueAdjustButton(x + width + 3, y, false, layerRange, valueAdjustIcon);
         y += 23;
 
@@ -134,17 +135,12 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         this.addButton(button, listener);
     }
 
-    protected static class ButtonListenerLayerEdit implements IButtonActionListener
+    protected record ButtonListenerLayerEdit(GuiRenderLayerEditBase parent, LayerRange layerRange, Type type)
+            implements IButtonActionListener
     {
-        protected final GuiRenderLayerEditBase parent;
-        protected final LayerRange layerRange;
-        protected final Type type;
-
         public ButtonListenerLayerEdit(Type type, LayerRange layerRange, GuiRenderLayerEditBase parent)
         {
-            this.type = type;
-            this.layerRange = layerRange;
-            this.parent = parent;
+            this(parent, layerRange, type);
         }
 
         @Override
@@ -197,19 +193,12 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         }
     }
 
-    protected static class ButtonListenerChangeValue implements IButtonActionListener
+    protected record ButtonListenerChangeValue(GuiRenderLayerEditBase parent, LayerRange layerRange, LayerMode mode, boolean isSecondLimit)
+            implements IButtonActionListener
     {
-        protected final GuiRenderLayerEditBase parent;
-        protected final LayerRange layerRange;
-        protected final LayerMode mode;
-        protected final boolean isSecondLimit;
-
         protected ButtonListenerChangeValue(LayerMode mode, LayerRange layerRange, boolean isSecondLimit, GuiRenderLayerEditBase parent)
         {
-            this.mode = mode;
-            this.layerRange = layerRange;
-            this.isSecondLimit = isSecondLimit;
-            this.parent = parent;
+            this(parent, layerRange, mode, isSecondLimit);
         }
 
         @Override
@@ -247,17 +236,12 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         }
     }
 
-    protected static class TextFieldListener implements ITextFieldListener<GuiTextFieldGeneric>
+    protected record TextFieldListener(LayerRange layerRange, LayerMode mode, boolean isSecondLimit)
+            implements ITextFieldListener<GuiTextFieldGeneric>
     {
-        protected final LayerRange layerRange;
-        protected final LayerMode mode;
-        protected final boolean isSecondLimit;
-
         protected TextFieldListener(LayerMode mode, LayerRange layerRange, boolean isSecondLimit)
         {
-            this.mode = mode;
-            this.layerRange = layerRange;
-            this.isSecondLimit = isSecondLimit;
+            this(layerRange, mode, isSecondLimit);
         }
 
         @Override
@@ -306,17 +290,9 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         }
     }
 
-    public static class RangeHotkeyListener implements ISelectionListener<WidgetCheckBox>
+    public record RangeHotkeyListener(LayerRange layerRange, boolean isMax)
+            implements ISelectionListener<WidgetCheckBox>
     {
-        protected final LayerRange layerRange;
-        protected final boolean isMax;
-
-        public RangeHotkeyListener(LayerRange layerRange, boolean isMax)
-        {
-            this.layerRange = layerRange;
-            this.isMax = isMax;
-        }
-
         @Override
         public void onSelectionChange(WidgetCheckBox entry)
         {

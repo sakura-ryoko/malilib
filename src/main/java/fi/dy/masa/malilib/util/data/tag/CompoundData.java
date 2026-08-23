@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
-
 import net.minecraft.nbt.NbtElement;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -20,13 +19,10 @@ import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data.tag.util.DataOps;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
-import fi.dy.masa.malilib.util.log.AnsiLogger;
 
-public class CompoundData extends BaseData
-        implements DataView
+public class CompoundData extends BaseData implements DataView
 {
-	private static final AnsiLogger LOGGER = new AnsiLogger(CompoundData.class, true, true);
-
+//	private static final AnsiLogger LOGGER = new AnsiLogger(CompoundData.class, true, true);
     public static final String TAG_NAME = "TAG_Compound";
     private static final Pattern SIMPLE_VALUE = Pattern.compile("[A-Za-z0-9._+-]+");
 
@@ -55,6 +51,22 @@ public class CompoundData extends BaseData
     public boolean isEmpty()
     {
         return this.values.isEmpty();
+    }
+
+    @Override
+    public int sizeInBytes()
+    {
+        int size = 48;
+
+        for (Map.Entry<String, BaseData> entry : this.values.entrySet())
+        {
+            size += 28;
+            size += Character.BYTES * entry.getKey().length();
+            size += 36;
+            size += entry.getValue().sizeInBytes();
+        }
+
+        return size;
     }
 
     @Override
@@ -104,16 +116,17 @@ public class CompoundData extends BaseData
     public boolean containsList(String key, int listEntryType)
     {
         BaseData data = this.values.get(key);
+        if (data == null) { return false; }
 
 		if (data.getType() == Constants.NBT.TAG_LIST &&
 			data instanceof ListData listData)
 		{
-			LOGGER.debug("containsList: req [{}], has [{}]", listEntryType, listData.getContainedType());
+//			LOGGER.debug("containsList: req [{}], has [{}]", listEntryType, listData.getContainedType());
 			return listData.getContainedType() == listEntryType;
 		}
 		else
 		{
-			LOGGER.debug("containsList: req [{}], has: [NULL] (Type found: '{}')", listEntryType, data.getType());
+//			LOGGER.debug("containsList: req [{}], has: [NULL] (Type found: '{}')", listEntryType, data.getType());
 			return false;
 		}
     }
@@ -147,6 +160,12 @@ public class CompoundData extends BaseData
 
 		return Optional.empty();
 	}
+
+    @Override
+    public Optional<CompoundData> asCompound()
+    {
+        return Optional.of(this);
+    }
 
     @Override
     public boolean getBoolean(String key)

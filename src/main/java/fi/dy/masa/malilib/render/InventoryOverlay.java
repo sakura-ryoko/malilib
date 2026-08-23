@@ -585,6 +585,12 @@ public class InventoryOverlay
         {
             return InventoryRenderType.WALL_SHELF;
         }
+		else if (inv instanceof SimpleInventory sc)
+        {
+	        return (sc.size() == 54) ? InventoryRenderType.FIXED_54 :
+	               (sc.size() == 27) ? InventoryRenderType.FIXED_27 :
+	               InventoryRenderType.GENERIC;
+        }
         else if (inv instanceof PlayerInventory)
         {
             return InventoryRenderType.PLAYER;
@@ -673,6 +679,12 @@ public class InventoryOverlay
 		{
 			return InventoryOverlayType.WALL_SHELF;
 		}
+		else if (inv instanceof SimpleInventory sc)
+		{
+			return (sc.size() == 54) ? InventoryOverlayType.FIXED_54 :
+			       (sc.size() == 27) ? InventoryOverlayType.FIXED_27 :
+			       InventoryOverlayType.GENERIC;
+		}
 		else if (inv instanceof PlayerInventory)
 		{
 			return InventoryOverlayType.PLAYER;
@@ -721,6 +733,10 @@ public class InventoryOverlay
                 if (size >= 0 && size <= 27)
                 {
                     return InventoryRenderType.FIXED_27;
+                }
+                else if (size == 36)
+                {
+	                return InventoryRenderType.PLAYER;
                 }
                 else if (size > 27 && size <= 54)
                 {
@@ -794,6 +810,10 @@ public class InventoryOverlay
 				if (size >= 0 && size <= 27)
 				{
 					return InventoryOverlayType.FIXED_27;
+				}
+				else if (size == 36)
+				{
+					return InventoryOverlayType.PLAYER;
 				}
 				else if (size > 27 && size <= 54)
 				{
@@ -872,6 +892,23 @@ public class InventoryOverlay
                     if (list.size() > 27)
                     {
                         return InventoryRenderType.FIXED_54;
+                    }
+                    else
+                    {
+	                    int highSlot = -1;
+	                    for (int i = 0; i < list.size(); i++)
+	                    {
+		                    NbtCompound tag = list.getCompoundOrEmpty(i);
+		                    int entry = tag.getByte(NbtKeys.SLOT, (byte) 0) & 0xFF;
+		                    if (entry >  highSlot)
+		                    {
+			                    highSlot = entry;
+		                    }
+	                    }
+	                    if (highSlot > 27)
+	                    {
+		                    return InventoryRenderType.FIXED_54;
+	                    }
                     }
                 }
 
@@ -1019,6 +1056,23 @@ public class InventoryOverlay
 					{
 						return InventoryOverlayType.FIXED_54;
 					}
+					else
+					{
+						int highSlot = -1;
+						for (int i = 0; i < list.size(); i++)
+						{
+							CompoundData tag = list.getCompoundAt(i);
+							int entry = tag.getByteOrDefault(NbtKeys.SLOT, (byte) 0) & 0xFF;
+							if (entry >  highSlot)
+							{
+								highSlot = entry;
+							}
+						}
+						if (highSlot > 27)
+						{
+							return InventoryOverlayType.FIXED_54;
+						}
+					}
 				}
 
 				return InventoryOverlayType.FIXED_27;
@@ -1152,7 +1206,8 @@ public class InventoryOverlay
         InventoryRenderType n = getInventoryType(nbt);
 
         // Don't use the NBT value if the INV result is FIXED_54.
-        if (i != n && i == InventoryRenderType.GENERIC)
+	    if (i != n && (i == InventoryRenderType.GENERIC || i == InventoryRenderType.FIXED_27) &&
+		    nbt.contains("id"))
         {
             return n;
         }
@@ -1199,7 +1254,8 @@ public class InventoryOverlay
 		InventoryOverlayType n = getInventoryTypeNew(data);
 
 		// Don't use the NBT value if the INV result is FIXED_54.
-		if (i != n && i == InventoryOverlayType.GENERIC)
+		if (i != n && (i == InventoryOverlayType.GENERIC || i == InventoryOverlayType.FIXED_27) &&
+			data.contains("id", Constants.NBT.TAG_STRING))
 		{
 			return n;
 		}

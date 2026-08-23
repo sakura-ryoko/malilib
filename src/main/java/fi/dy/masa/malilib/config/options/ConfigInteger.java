@@ -2,14 +2,16 @@ package fi.dy.masa.malilib.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigInteger;
+import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.util.math.MathHelper;
 
 public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigInteger
 {
@@ -32,10 +34,11 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
     protected final int defaultValue;
     protected int value;
     private boolean useSlider;
+    private int lastValue;
 
     public ConfigInteger(String name, int defaultValue)
     {
-        this(name, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, Integer.MIN_VALUE, Integer.MAX_VALUE, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigInteger(String name, int defaultValue, String comment)
@@ -55,7 +58,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue)
     {
-        this(name, defaultValue, minValue, maxValue, false, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, false, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, String comment)
@@ -75,7 +78,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, boolean useSlider)
     {
-        this(name, defaultValue, minValue, maxValue, useSlider, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, useSlider, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigInteger(String name, int defaultValue, int minValue, int maxValue, boolean useSlider, String comment)
@@ -97,6 +100,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.useSlider = useSlider;
+        this.updateLastIntegerValue();
     }
 
     private ConfigInteger(String name, Integer defaultValue, Integer minValue, Integer maxValue, Integer value, Boolean useSlider, String comment, String prettyName, String translatedName)
@@ -132,6 +136,7 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
     @Override
     public void setIntegerValue(int value)
     {
+        this.updateLastIntegerValue();
         int oldValue = this.value;
         this.value = this.getClampedValue(value);
 
@@ -153,9 +158,15 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
         return this.maxValue;
     }
 
+    @Override
+    public int getLastIntegerValue()
+    {
+        return this.lastValue;
+    }
+
     protected int getClampedValue(int value)
     {
-        return MathHelper.clamp(value, this.minValue, this.maxValue);
+        return MathUtils.clamp(value, this.minValue, this.maxValue);
     }
 
     @Override
@@ -205,27 +216,51 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
         }
         catch (Exception e)
         {
-            MaLiLib.LOGGER.warn("Failed to set config value for {} from the string '{}'", this.getName(), value, e);
+            MaLiLib.LOGGER.warn("Failed to set config value for {} from the string '{}'; {}", this.getName(), value, e.getLocalizedMessage());
         }
+    }
+
+    @Override
+    public void updateLastIntegerValue()
+    {
+        this.lastValue = this.value;
     }
 
     @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+        int oldValue = this.value;
+
         try
         {
             if (element.isJsonPrimitive())
             {
-                this.setIntegerValue(this.getClampedValue(element.getAsInt()));
+                int temp = element.getAsInt();
+                this.value = this.getClampedValue(temp);
             }
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
             }
+
+            if (oldValue != this.value || this.isDirty())
+            {
+                this.markClean();
+
+                if (this.getLastIntegerValue() != this.getIntegerValue())
+                {
+//                    MaLiLib.LOGGER.error("[INT/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                         this.getLastIntegerValue(), oldValue, this.getIntegerValue()
+//                    );
+
+                    this.onValueChanged();
+                    this.updateLastIntegerValue();
+                }
+            }
         }
         catch (Exception e)
         {
-            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'; {}", this.getName(), element, e.getLocalizedMessage());
         }
     }
 

@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.mixin.input;
 
+import org.objectweb.asm.Opcodes;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,7 +23,7 @@ public abstract class MixinMouse
     @Shadow @Final private Scroller scroller;
 
     @Inject(method = "onCursorPos",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/Mouse;hasResolutionChanged:Z", ordinal = 0))
+            at = @At(value = "FIELD", target = "Lnet/minecraft/client/Mouse;hasResolutionChanged:Z", ordinal = 0, opcode = Opcodes.GETFIELD))
     private void malilib_hookOnMouseMove(long handle, double xpos, double ypos, CallbackInfo ci)
     {
 		Window clientWindow = this.client.getWindow();

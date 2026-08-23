@@ -2,15 +2,17 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.*;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.input.CharInput;
 import net.minecraft.client.input.KeyInput;
-import net.minecraft.util.math.MathHelper;
+
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.MathUtils;
 
 public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>> extends GuiBase
 {
@@ -393,7 +395,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             totalHeight += this.getBrowserEntryHeightFor(listContent);
         }
 
-        totalHeight = Math.max(totalHeight, scrollbarHeight);
+        totalHeight = MathUtils.max(totalHeight, scrollbarHeight);
 
         int scrollBarX = this.posX + this.browserWidth - 9;
         int scrollBarY = this.browserEntriesStartY + this.browserEntriesOffsetY;
@@ -589,7 +591,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         }
         else if (this.lastSelectedEntryIndex >= 0 && this.listContents.size() > 0)
         {
-            int index = MathHelper.clamp(this.lastSelectedEntryIndex + amount, 0, this.listContents.size() - 1);
+            int index = MathUtils.clamp(this.lastSelectedEntryIndex + amount, 0, this.listContents.size() - 1);
 
             if (index != this.lastSelectedEntryIndex)
             {

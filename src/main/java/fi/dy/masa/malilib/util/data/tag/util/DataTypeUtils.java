@@ -1,16 +1,27 @@
 package fi.dy.masa.malilib.util.data.tag.util;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.registry.*;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.state.State;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -545,5 +556,90 @@ public class DataTypeUtils
 		}
 
 		return data;
+	}
+
+	public static BlockState readBlockStateFromTag(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
+	{
+		Codec<RegistryKey<Block>> CODEC = RegistryKey.createCodec(RegistryKeys.BLOCK);
+		RegistryEntryLookup<Block> lookup = registry.getOrThrow(RegistryKeys.BLOCK);
+		Optional<? extends RegistryEntry<Block>> opt = data.containsLenient("name")
+		                                        ? data.getCodec("name", CODEC).flatMap(lookup::getOptional)
+		                                        : data.getCodec("Name", CODEC).flatMap(lookup::getOptional);
+
+		if (opt.isEmpty())
+		{
+			return Blocks.AIR.getDefaultState();
+		}
+
+		Block block = opt.get().value();
+		BlockState state = block.getDefaultState();
+		CompoundData props = data.containsLenient("properties")
+		                     ? data.getCompoundOrDefault("properties", new CompoundData())
+		                     : data.getCompoundOrDefault("Properties", new CompoundData());
+
+		if (!props.isEmpty())
+		{
+			StateManager<Block, BlockState> def = block.getStateManager();
+
+			for (String key : props.getKeys())
+			{
+				Property<?> prop = def.getProperty(key);
+
+				if (prop != null)
+				{
+					state = setValueEach(state, props, key, prop);
+				}
+			}
+		}
+
+		return state;
+	}
+
+	public static <STATE extends State<?, STATE>, PROP extends Comparable<PROP>> STATE setValueEach(STATE state,
+	                                                                                                      CompoundData props,
+	                                                                                                      String key,
+	                                                                                                      Property<PROP> prop)
+	{
+		Optional<PROP> opt = Optional.ofNullable(props.getString(key)).flatMap(prop::parse);
+		return opt.map(value -> state.with(prop, value)).orElse(state);
+	}
+
+	public static CompoundData writeBlockStateToTag(@Nonnull final BlockState state)
+	{
+		CompoundData data = new CompoundData();
+		data.putString("Name", Registries.BLOCK.getKey(state.getBlock()).toString());
+		writeStatePropertiesToTag(data, state);
+		return data;
+	}
+
+	public static CompoundData writeFluidStateToTag(@Nonnull final FluidState state)
+	{
+		CompoundData data = new CompoundData();
+		data.putString("Name", Registries.FLUID.getKey(state.getFluid()).toString());
+		writeStatePropertiesToTag(data, state);
+		return data;
+	}
+
+	public static void writeStatePropertiesToTag(@Nonnull CompoundData data, @Nonnull final State<?, ?> state)
+	{
+		Map<Property<?>, Comparable<?>> values = state.getEntries();
+
+		if (!values.isEmpty())
+		{
+			CompoundData props = new CompoundData();
+
+			for (Map.Entry<Property<?>, Comparable<?>> v : values.entrySet())
+			{
+				props.putString(v.getKey().getName(), valueName(v.getKey(), v.getValue()));
+			}
+
+			data.put("Properties", props);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T extends Comparable<T>> String valueName(Property<T> p, Comparable<?> c)
+	{
+		return p.name((T) c);
 	}
 }

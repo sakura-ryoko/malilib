@@ -10,12 +10,15 @@ import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 
+/**
+ * See {@link fi.dy.masa.malilib.util.position.Quadrant}
+ */
 public enum Quadrant implements IConfigOptionListEntry, StringIdentifiable
 {
-    NORTH_WEST ("north_west"),
-    NORTH_EAST ("north_east"),
-    SOUTH_WEST ("south_west"),
-    SOUTH_EAST ("south_east");
+    NORTH_WEST("north_west"),
+    NORTH_EAST("north_east"),
+    SOUTH_WEST("south_west"),
+    SOUTH_EAST("south_east");
 
     public static final StringIdentifiable.EnumCodec<Quadrant> CODEC = StringIdentifiable.createCodec(Quadrant::values);
     public static final PacketCodec<ByteBuf, Quadrant> PACKET_CODEC = PacketCodecs.STRING.xmap(Quadrant::fromStringStatic, Quadrant::asString);

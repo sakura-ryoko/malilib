@@ -15,6 +15,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+/**
+ * See {@link fi.dy.masa.malilib.util.position.IntBoundingBox}
+ */
 public class IntBoundingBox
 {
     public static final Codec<IntBoundingBox> CODEC = RecordCodecBuilder.create(

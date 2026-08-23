@@ -1,0 +1,33 @@
+package fi.dy.masa.malilib.mixin.screen;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.screen.ScreenHandler;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import fi.dy.masa.malilib.registry.Registry;
+
+@Mixin(value = HandledScreen.class, priority = 900)
+public abstract class MixinHandledScreen_containerScan<T extends ScreenHandler>
+{
+    @Shadow public abstract T getScreenHandler();
+
+    @Inject(method = "close", at = @At("HEAD"))
+    private void malilib_onCloseContainer(CallbackInfo ci)
+    {
+        MinecraftClient mc = MinecraftClient.getInstance();
+
+        if (mc.isIntegratedServerRunning() && mc.getServer() != null)
+        {
+            mc.getServer().execute(() -> Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuClosed(this.getScreenHandler()));
+        }
+        else
+        {
+            mc.execute(() -> Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuClosed(this.getScreenHandler()));
+        }
+    }
+}

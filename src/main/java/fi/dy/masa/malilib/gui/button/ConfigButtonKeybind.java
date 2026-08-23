@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.gui.Click;
-import org.apache.commons.lang3.StringUtils;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
@@ -12,6 +11,7 @@ import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindCategory;
 import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigButtonKeybind extends ButtonGeneric
 {
@@ -115,7 +115,7 @@ public class ConfigButtonKeybind extends ButtonGeneric
 
         if (this.keybind.getKeys().size() == 0 || StringUtils.isBlank(valueStr))
         {
-            valueStr = "NONE";
+            valueStr = StringUtils.translate("malilib.gui.button.empty_keybind");
         }
 
         this.clearHoverStrings();

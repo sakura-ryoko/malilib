@@ -88,35 +88,38 @@ public class TestRenderHandler implements IRenderer
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
-            if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
-                MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
+            if (mc.player != null)
             {
-                /*
-                profiler.push(this.getProfilerSectionSupplier() + "_inventory_overlay");
-                InventoryOverlay.Context context = RayTraceUtils.getTargetInventory(mc, true);
-
-                if (context != null)
+                if (MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getBooleanValue() &&
+                    MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().isKeybindHeld())
                 {
-                    renderInventoryOverlay(context, drawContext, mc);
+                    /*
+                    profiler.push(this.getProfilerSectionSupplier() + "_inventory_overlay");
+                    InventoryOverlay.Context context = RayTraceUtils.getTargetInventory(mc, true);
+
+                    if (context != null)
+                    {
+                        renderInventoryOverlay(context, drawContext, mc);
+                    }
+
+                    profiler.pop();
+                     */
+
+                    if (TestInventoryOverlayHandler.getInstance().isNewCode())
+                    {
+                        TestInventoryOverlayHandler.getInstance().getRenderContextNew(drawContext, profiler, mc);
+                    }
+                    else
+                    {
+                        TestInventoryOverlayHandler.getInstance().getRenderContext(drawContext, profiler, mc);
+                    }
                 }
 
-                profiler.pop();
-                 */
-
-	            if (TestInventoryOverlayHandler.getInstance().isNewCode())
-	            {
-		            TestInventoryOverlayHandler.getInstance().getRenderContextNew(drawContext, profiler, mc);
-	            }
-				else
-	            {
-		            TestInventoryOverlayHandler.getInstance().getRenderContext(drawContext, profiler, mc);
-	            }
-            }
-
-            if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
-            {
-                List<String> list = getTestTextStrings();
-                RenderUtils.renderText(drawContext, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
+                if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
+                {
+                    List<String> list = getTestTextStrings();
+                    RenderUtils.renderText(drawContext, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
+                }
             }
         }
     }
@@ -266,12 +269,12 @@ public class TestRenderHandler implements IRenderer
                 {
                     if (TestRenderWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
                     {
-                        TestRenderWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
+                        TestRenderWalls.INSTANCE.update(camera.getCameraPos(), mc.getCameraEntity(), mc);
                     }
 
                     if (TestRenderWalls.INSTANCE.hasData())
                     {
-                        TestRenderWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
+                        TestRenderWalls.INSTANCE.render(camera.getCameraPos(), posMatrix, projMatrix, mc, profiler);
                     }
                 }
 
@@ -374,7 +377,7 @@ public class TestRenderHandler implements IRenderer
 
                 if (player != null)
                 {
-                    Pair<Entity, NbtCompound> pair = TestDataSyncer.getInstance().requestEntity(world, player.getId());
+                    Pair<Entity, NbtCompound> pair = TestDataSyncer.INSTANCE.requestEntity(world, player.getId());
                     EnderChestInventory inv;
 
                     if (pair != null && pair.getRight() != null && pair.getRight().contains(NbtKeys.ENDER_ITEMS))
@@ -452,6 +455,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     // OG / Tweakeroo method also
+    @Deprecated
     public static void renderInventoryOverlayOG(DrawContext drawContext, InventoryOverlay.Context context, MinecraftClient mc)
     {
         //MinecraftClient mc = MinecraftClient.getInstance();

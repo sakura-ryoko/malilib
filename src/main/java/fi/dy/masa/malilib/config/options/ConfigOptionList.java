@@ -9,6 +9,7 @@ import fi.dy.masa.malilib.config.IConfigOptionList;
 import fi.dy.masa.malilib.config.IConfigOptionListEntry;
 import fi.dy.masa.malilib.config.IStringRepresentable;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.i18n.i18nConfig;
 
 public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IConfigOptionList, IStringRepresentable
 {
@@ -19,10 +20,11 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
 //    );
     private final IConfigOptionListEntry defaultValue;
     private IConfigOptionListEntry value;
+    private IConfigOptionListEntry lastValue;
 
     public ConfigOptionList(String name, IConfigOptionListEntry defaultValue)
     {
-        this(name, defaultValue, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigOptionList(String name, IConfigOptionListEntry defaultValue, String comment)
@@ -41,6 +43,7 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
 
         this.defaultValue = defaultValue;
         this.value = defaultValue;
+        this.updateLastOptionListValue();
     }
 
     @Override
@@ -58,6 +61,7 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
     @Override
     public void setOptionListValue(IConfigOptionListEntry value)
     {
+        this.updateLastOptionListValue();
         IConfigOptionListEntry oldValue = this.value;
         this.value = value;
 
@@ -68,8 +72,20 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
     }
 
     @Override
+    public IConfigOptionListEntry getLastOptionListValue()
+    {
+        return this.lastValue;
+    }
+
+    @Override
     public boolean isModified()
     {
+        // Check i18n Default Value
+        if (this.value instanceof i18nConfig cfg)
+        {
+            return cfg.isModified();
+        }
+
         return this.value != this.defaultValue;
     }
 
@@ -89,6 +105,12 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
     public void resetToDefault()
     {
         this.setOptionListValue(this.defaultValue);
+
+        // Set i18n Default Value
+        if (this.value instanceof i18nConfig cfg)
+        {
+            cfg.resetToDefault();
+        }
     }
 
     @Override
@@ -106,6 +128,7 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
     @Override
     public void setValueFromString(String value)
     {
+        this.updateLastOptionListValue();
 		IConfigOptionListEntry oldValue = this.value;
         this.value = this.value.fromString(value);
 
@@ -116,17 +139,50 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
     }
 
     @Override
+    public void updateLastOptionListValue()
+    {
+        this.lastValue = this.value;
+    }
+
+    @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+        final IConfigOptionListEntry oldValue = this.value;
+
         try
         {
             if (element.isJsonPrimitive())
             {
-                this.setValueFromString(element.getAsString());
+                String temp = element.getAsString();
+
+                try
+                {
+                    this.value = temp != null ? this.value.fromString(temp) : this.defaultValue;
+                }
+                catch (Exception ignored)
+                {
+                    this.value = this.defaultValue;
+                }
             }
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
+            }
+
+            if (!this.value.equals(oldValue) || this.isDirty())
+            {
+                this.markClean();
+
+                if (!this.getLastOptionListValue().equals(this.getOptionListValue()))
+                {
+//                    MaLiLib.LOGGER.error("[OPTION/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                         this.getLastOptionListValue().getStringValue(),
+//                                         oldValue.getStringValue(),
+//                                         this.getOptionListValue().getStringValue()
+//                    );
+
+                    this.onValueChanged();
+                }
             }
         }
         catch (Exception e)

@@ -82,7 +82,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
             this.modSwitchWidget = new WidgetDropDownList<>(GuiUtils.getScaledWindowWidth() - 155, 6, 130, 18, 200, 10, Registry.CONFIG_SCREEN.getAllModsWithConfigScreens())
             {
                 {
-                    selectedEntry = thisMod;
+                    this.selectedEntry = thisMod;
                 }
 
                 @Override
@@ -90,9 +90,9 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                 {
                     super.setSelectedEntry(index);
 
-                    if (selectedEntry != null && selectedEntry.getConfigScreenSupplier() != null)
+                    if (this.selectedEntry != null && this.selectedEntry.getConfigScreenSupplier() != null)
                     {
-                        client.setScreen(selectedEntry.getConfigScreenSupplier().get());
+                        client.setScreen(this.selectedEntry.getConfigScreenSupplier().get());
                     }
                 }
 
@@ -305,17 +305,20 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
         @Nullable private final IConfigBase config;
         @Nullable private final String label;
 
-        public ConfigOptionWrapper(IConfigBase config)
+        public ConfigOptionWrapper(@Nullable IConfigBase config)
         {
-            this.type = Type.CONFIG;
-            this.config = config;
-            this.label = null;
+            this(Type.CONFIG, config, null);
         }
 
-        public ConfigOptionWrapper(String label)
+        public ConfigOptionWrapper(@Nullable String label)
         {
-            this.type = Type.LABEL;
-            this.config = null;
+            this(Type.LABEL, null, label);
+        }
+
+        private ConfigOptionWrapper(Type type, @Nullable IConfigBase config, @Nullable String label)
+        {
+            this.type = type;
+            this.config = config;
             this.label = label;
         }
 

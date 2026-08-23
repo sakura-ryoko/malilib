@@ -60,6 +60,12 @@ public abstract class MixinRenderPipelines
         return renderPipeline;
     }
 
+	@Unique
+	private static Identifier getId(String id)
+	{
+		return Identifier.of(MaLiLibReference.MOD_ID, id);
+	}
+
     @Inject(method = "<clinit>", at = @At("TAIL"))
     private static void malilib_onRegisterPipelines(CallbackInfo ci)
     {
@@ -609,6 +615,22 @@ public abstract class MixinRenderPipelines
                               .withDepthWrite(false)
                               .withColorWrite(true)
                               .build();
+
+	    MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH =
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
+			                  .withLocation(getId("pipeline/text_plate/no_depth"))
+			                  .withCull(false)
+			                  .withColorWrite(true)
+			                  .withDepthWrite(false)
+			                  .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+			                  .build();
+
+	    MaLiLibPipelines.TEXT_PLATE_MASA =
+			    RenderPipeline.builder(MaLiLibPipelines.POSITION_COLOR_MASA_STAGE)
+			                  .withLocation(getId("pipeline/text_plate"))
+			                  .withCull(false)
+			                  .withColorWrite(true)
+			                  .build();
 
         // POSITION_TEX_TRANSLUCENT
 //        MaLiLibPipelines.POSITION_TEX_TRANSLUCENT_NO_DEPTH_NO_CULL =

@@ -21,7 +21,7 @@ dependencies {
 //    mappings loom.officialMojangMappings()
 	modImplementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
 	implementation "com.google.code.findbugs:jsr305:3.0.2"
-//	implementation "org.jspecify:jspecify:1.0.0"
+	implementation "org.jspecify:jspecify:1.0.0"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	//modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
@@ -30,6 +30,7 @@ dependencies {
 	include(modApi(fabricApi.module("fabric-networking-api-v1", project.fabric_api_version)))
     include(modApi(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
 	include(modApi(fabricApi.module("fabric-resource-loader-v1", project.fabric_api_version)))
+	include(implementation("me.fallenbreath:conditional-mixin-fabric:${project.conditionalmixin_version}"))
 
 	modCompileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
 	modCompileOnly "maven.modrinth:iris:${project.iris_version}+${project.iris_mc_version}-fabric"

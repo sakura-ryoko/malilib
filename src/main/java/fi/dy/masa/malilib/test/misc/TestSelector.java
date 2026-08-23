@@ -128,7 +128,8 @@ public class TestSelector implements IClientTickHandler
 
         if (this.posLookingAt != null)
         {
-            RenderUtils.renderBlockOutline(this.posLookingAt, expand, lineWidthBlockBox, this.colorLooking, false);
+//            RenderUtils.renderBlockOutline(this.posLookingAt, expand, lineWidthBlockBox, this.colorLooking, false);
+            RenderUtils.scheduleBlockOutline(this.posLookingAt, expand, lineWidthBlockBox, this.colorLooking, false);
         }
 
         this.renderSelection(posMatrix, projMatrix, profiler, this.AREA_SELECTION, mc);
@@ -162,27 +163,33 @@ public class TestSelector implements IClientTickHandler
         {
             if (!pos1.equals(pos2))
             {
-                RenderUtils.renderAreaOutlineNoCorners(pos1, pos2, lineWidthArea, this.colorX, this.colorY, this.colorZ);
-                RenderUtils.renderAreaSides(pos1, pos2, this.sideColor, posMatrix, false);
-                RenderUtils.renderBlockOutline(pos1, expand, lineWidthBlockBox, this.colorPos1, false);
-                RenderUtils.renderBlockOutline(pos2, expand, lineWidthBlockBox, this.colorPos2, false);
+//                RenderUtils.renderAreaOutlineNoCorners(pos1, pos2, lineWidthArea, this.colorX, this.colorY, this.colorZ);
+//                RenderUtils.renderAreaSides(pos1, pos2, this.sideColor, posMatrix, false);
+//                RenderUtils.renderBlockOutline(pos1, expand, lineWidthBlockBox, this.colorPos1, false);
+//                RenderUtils.renderBlockOutline(pos2, expand, lineWidthBlockBox, this.colorPos2, false);
+                RenderUtils.scheduleSelectionBox(pos1, pos2, expand,lineWidthArea, lineWidthBlockBox,
+                                                 this.sideColor, this.colorPos1, this.colorPos2, this.colorX, colorY, colorZ);
             }
             else
             {
-                RenderUtils.renderBlockOutlineOverlapping(pos1, expand, lineWidthBlockBox, this.colorPos1, this.colorPos2,
-                                                          this.colorOverlapping, posMatrix, false);
+//                RenderUtils.renderBlockOutlineOverlapping(pos1, expand, lineWidthBlockBox, this.colorPos1, this.colorPos2,
+//                                                          this.colorOverlapping, posMatrix, false);
+                RenderUtils.scheduleBlockOutlineOverlapping(pos1, expand, lineWidthBlockBox, this.colorPos1, this.colorPos2,
+                                                            this.colorOverlapping, false);
             }
         }
         else
         {
             if (pos1 != null)
             {
-                RenderUtils.renderBlockOutline(pos1, expand, lineWidthBlockBox, this.colorPos1, false);
+//                RenderUtils.renderBlockOutline(pos1, expand, lineWidthBlockBox, this.colorPos1, false);
+                RenderUtils.scheduleBlockOutline(pos1, expand, lineWidthBlockBox, this.colorPos1, false);
             }
 
             if (pos2 != null)
             {
-                RenderUtils.renderBlockOutline(pos2, expand, lineWidthBlockBox, this.colorPos2, false);
+//                RenderUtils.renderBlockOutline(pos2, expand, lineWidthBlockBox, this.colorPos2, false);
+                RenderUtils.scheduleBlockOutline(pos2, expand, lineWidthBlockBox, this.colorPos2, false);
             }
         }
 

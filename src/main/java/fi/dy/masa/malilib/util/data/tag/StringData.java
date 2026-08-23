@@ -45,6 +45,12 @@ public class StringData extends BaseData
     }
 
     @Override
+    public int sizeInBytes()
+    {
+        return Character.BYTES * this.value.length();
+    }
+
+    @Override
     public void write(DataOutput output) throws IOException
     {
         output.writeUTF(this.value);

@@ -1,7 +1,10 @@
 accessWidener v2 named
-accessible method net/minecraft/client/gui/hud/debug/DebugHudEntries register (Lnet/minecraft/util/Identifier;Lnet/minecraft/client/gui/hud/debug/DebugHudEntry;)Lnet/minecraft/util/Identifier;
-accessible field net/minecraft/client/gui/hud/debug/DebugHudEntries ENTRIES Ljava/util/Map;
 accessible class net/minecraft/client/gui/DrawContext$ScissorStack
 accessible field net/minecraft/client/gui/DrawContext scissorStack Lnet/minecraft/client/gui/DrawContext$ScissorStack;
 accessible method net/minecraft/client/gui/widget/EditBoxWidget <init> (Lnet/minecraft/client/font/TextRenderer;IIIILnet/minecraft/text/Text;Lnet/minecraft/text/Text;IZIZZ)V
 accessible method net/minecraft/client/gui/widget/TextFieldWidget getMaxLength ()I
+accessible method net/minecraft/client/gui/hud/debug/DebugHudEntries register (Lnet/minecraft/util/Identifier;Lnet/minecraft/client/gui/hud/debug/DebugHudEntry;)Lnet/minecraft/util/Identifier;
+accessible field net/minecraft/client/gui/hud/debug/DebugHudEntries ENTRIES Ljava/util/Map;
+accessible field net/minecraft/client/gui/hud/debug/DebugHudProfile visibilityMap Ljava/util/Map;
+accessible field net/minecraft/client/gui/hud/debug/DebugHudProfile visibleEntries Ljava/util/List;
+accessible method net/minecraft/item/ItemStack <init> (Lnet/minecraft/item/ItemConvertible;ILnet/minecraft/component/MergedComponentMap;)V

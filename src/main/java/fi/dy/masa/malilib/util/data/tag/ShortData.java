@@ -8,8 +8,7 @@ import java.util.Optional;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
-public class ShortData extends BaseData
-        implements NumberData
+public class ShortData extends BaseData implements NumberData
 {
     public static final String TAG_NAME = "TAG_Short";
 
@@ -43,6 +42,12 @@ public class ShortData extends BaseData
     public boolean isEmpty()
     {
         return false;
+    }
+
+    @Override
+    public int sizeInBytes()
+    {
+        return Short.BYTES;
     }
 
     @Override

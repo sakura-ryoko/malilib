@@ -43,6 +43,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -92,7 +93,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
     {
         if (this.syncer == null)
         {
-            this.syncer = TestDataSyncer.getInstance();
+            this.syncer = TestDataSyncer.INSTANCE;
         }
 
         return this.syncer;
@@ -290,6 +291,11 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
         {
             Entity entity = ((EntityHitResult) trace).getEntity();
 
+	        if (entity.getUuid().equals(cameraEntity.getUuid()))
+	        {
+		        return null;
+	        }
+
             if (mc.targetedEntity != null && entity.getId() != mc.targetedEntity.getId())
             {
                 MaLiLib.LOGGER.error("getTarget(): entityId Not Equal: [{} != {}]", entity.getId(), mc.targetedEntity.getId());
@@ -408,6 +414,11 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		{
 			Entity entity = ((EntityHitResult) trace).getEntity();
 
+			if (entity.getUuid().equals(cameraEntity.getUuid()))
+			{
+				return null;
+			}
+
 			if (mc.targetedEntity != null && entity.getId() != mc.targetedEntity.getId())
 			{
 				MaLiLib.LOGGER.error("getTargetNew(): entityId Not Equal: [{} != {}]", entity.getId(), mc.targetedEntity.getId());
@@ -460,6 +471,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
                 if (pair != null)
                 {
                     nbt = pair.getRight();
+	                be = pair.getLeft();
                 }
             }
 
@@ -467,6 +479,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
         }
 
         BlockEntityType<?> beType = nbt != null ? NbtBlockUtils.getBlockEntityTypeFromNbt(nbt) : null;
+	    MaLiLib.LOGGER.error("getTargetInventoryFromBlock() beType: [{}], inv [{}]", beType != null ? beType.getClass().getSimpleName() : "<null>", inv != null ? inv.size() : "<null>");
 
         if ((beType != null && beType.equals(BlockEntityType.ENDER_CHEST)) ||
              be instanceof EnderChestBlockEntity)
@@ -494,6 +507,8 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
                     {
                         inv = enderItems;
                     }
+
+	                MaLiLib.LOGGER.error("getTargetFromBlock: EnderItems [{}]", enderItems != null ? enderItems.size() : "<NULL>");
                 }
             }
         }
@@ -518,15 +533,10 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		        }
 	        }
 
-//            MaLiLib.LOGGER.warn("getTargetInventoryFromBlock(): rawNbt: [{}]", nbt.toString());
+            MaLiLib.LOGGER.warn("getTargetInventoryFromBlock(): rawNbt: [{}]", nbt.toString());
             Inventory inv2 = InventoryUtils.getNbtInventory(nbt, inv != null ? inv.size() : -1, world.getRegistryManager());
 
-            if (inv == null)
-            {
-                inv = inv2;
-            }
-
-	        if (MaLiLibReference.EXPERIMENTAL_MODE)
+	        if (inv == null || MaLiLibReference.EXPERIMENTAL_MODE)
 	        {
 		        inv = inv2;
 	        }
@@ -534,10 +544,27 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
         MaLiLib.LOGGER.warn("getTarget():3: pos [{}], inv [{}], be [{}], nbt [{}]", pos.toShortString(), inv != null, be != null, nbt != null ? nbt.getString("id") : new NbtCompound());
 
-        if (inv == null || nbt == null)
-        {
-            return null;
-        }
+	    if (be == null)
+	    {
+		    be = world.getBlockEntity(pos);
+
+		    if (inv == null || inv.isEmpty())
+		    {
+			    if (be instanceof Inventory cc)
+			    {
+				    inv = cc;
+			    }
+		    }
+	    }
+
+	    if (nbt == null)
+	    {
+		    nbt = new NbtCompound();
+	    }
+	    if (inv == null)
+	    {
+		    inv = new SimpleInventory(1);
+	    }
 
         this.context = new InventoryOverlay.Context(InventoryOverlay.getBestInventoryType(inv, nbt), inv,
                                                     be != null ? be : world.getBlockEntity(pos), null, nbt, this.getRefreshHandler());
@@ -569,14 +596,15 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 				if (pair != null)
 				{
 					data = pair.getRight();
+					be = pair.getLeft();
 				}
 			}
 
-			inv = this.getDataSyncer().getBlockInventoryNew(world, pos, false);
+			inv = this.getDataSyncer().getBlockInventory(world, pos, false);
 		}
 
-		MaLiLib.LOGGER.error("getTargetFromBlockNew: inv [{}], data [{}]", inv != null ? inv.size() : "<NULL>", data != null ? data.toString() : "<NULL>");
 		BlockEntityType<?> beType = data != null ? DataBlockUtils.getBlockEntityType(data) : null;
+		MaLiLib.LOGGER.error("getTargetFromBlockNew() beType: [{}], inv [{}]", beType != null ? beType.getClass().getSimpleName() : "<null>", inv != null ? inv.size() : "<null>");
 
 		if ((beType != null && beType.equals(BlockEntityType.ENDER_CHEST)) ||
 			be instanceof EnderChestBlockEntity)
@@ -605,7 +633,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 						inv = enderItems;
 					}
 
-//					MaLiLib.LOGGER.error("getTargetFromBlockNew: EnderItems [{}]", enderItems != null ? enderItems.size() : "<NULL>");
+					MaLiLib.LOGGER.error("getTargetFromBlockNew: EnderItems [{}]", enderItems != null ? enderItems.size() : "<NULL>");
 				}
 			}
 		}
@@ -629,16 +657,11 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 					data.put(NbtKeys.ITEMS, test);
 				}
 			}
-//			MaLiLib.LOGGER.warn("getTargetFromBlockNew(): rawData: [{}]", data.toString());
 
+			MaLiLib.LOGGER.warn("getTargetFromBlockNew(): rawData: [{}]", data.toString());
 			Inventory inv2 = InventoryUtils.getDataInventory(data, inv != null ? inv.size() : -1, world.getRegistryManager());
 
-			if (inv == null)
-			{
-				inv = inv2;
-			}
-
-			if (MaLiLibReference.EXPERIMENTAL_MODE)
+			if (inv == null || MaLiLibReference.EXPERIMENTAL_MODE)
 			{
 				inv = inv2;
 			}
@@ -646,9 +669,26 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 		MaLiLib.LOGGER.warn("getTargetFromBlockNew():3: pos [{}], inv [{}], be [{}], data [{}]", pos.toShortString(), inv != null, be != null, data != null ? data.getString("id") : new CompoundData());
 
-		if (inv == null || data == null)
+		if (be == null)
 		{
-			return null;
+			be = world.getBlockEntity(pos);
+
+			if (inv == null || inv.isEmpty())
+			{
+				if (be instanceof Inventory cc)
+				{
+					inv = cc;
+				}
+			}
+		}
+
+		if (data == null)
+		{
+			data = new CompoundData();
+		}
+		if (inv == null)
+		{
+			inv = new SimpleInventory(1);
 		}
 
 		this.contextNew = new InventoryOverlayContext(InventoryOverlay.getBestInventoryTypeNew(inv, data), inv,
@@ -688,8 +728,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
         if (!nbt.isEmpty())
         {
             Inventory inv2;
-
-//            MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): rawNbt: [{}]", nbt.toString());
+            MaLiLib.LOGGER.warn("getTargetInventoryFromEntity(): rawNbt: [{}]", nbt.toString());
 
             // Fix for empty horse inv
             if (inv != null &&
@@ -789,8 +828,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		if (!data.isEmpty())
 		{
 			Inventory inv2;
-
-//			MaLiLib.LOGGER.warn("getTargetInventoryFromEntityNew(): rawData: [{}]", data.toString());
+			MaLiLib.LOGGER.warn("getTargetInventoryFromEntityNew(): rawData: [{}]", data.toString());
 
 			// Fix for empty horse inv
 			if (inv != null &&
@@ -859,6 +897,25 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		return this.contextNew;
 	}
 
+	private static void dumpContext(InventoryOverlayContext ctx)
+	{
+		System.out.print("Context Dump --> ");
+
+		if (ctx == null)
+		{
+			System.out.print("NULL!\n");
+			return;
+		}
+
+		System.out.printf("\nTYPE: [%s]\n", ctx.type().name());
+		System.out.printf("BE  : [%s]\n", ctx.be() != null ? Registries.BLOCK_ENTITY_TYPE.getKey(ctx.be().getType()) : "<NULL>");
+		System.out.printf("ENT : [%s]\n", ctx.entity() != null ? Registries.ENTITY_TYPE.getKey(ctx.entity().getType()) : "<NULL>");
+		System.out.printf("INV : [%s]\n", ctx.inv() != null ? "size: "+ctx.inv().size()+"/ empty: "+ctx.inv().isEmpty() : "<NULL>");
+		System.out.printf("DATA: [%s]\n", ctx.data() != null ? ctx.data().toString() : "<NULL>");
+
+		System.out.print("--> EOF\n");
+	}
+
 	public static class Refresher implements InventoryOverlay.Refresher
     {
         public Refresher() {}
@@ -874,7 +931,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
             }
             else if (data.entity() != null)
             {
-                TestInventoryOverlayHandler.getInstance().getDataSyncer().requestEntity(world, data.entity().getId());
+                TestInventoryOverlayHandler.getInstance().getDataSyncer().requestEntityNew(world, data.entity().getId());
                 data = TestInventoryOverlayHandler.getInstance().getTargetInventoryFromEntity(data.entity(), data.nbt());
             }
 

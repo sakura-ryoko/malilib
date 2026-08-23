@@ -17,7 +17,7 @@ public class WidgetStringListEntry extends WidgetListEntryBase<String>
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
+//        super.render(drawContext, mouseX, mouseY, selected);
 //        RenderUtils.color(1f, 1f, 1f, 1f);
 
         // Draw a lighter background for the hovered and the selected entry

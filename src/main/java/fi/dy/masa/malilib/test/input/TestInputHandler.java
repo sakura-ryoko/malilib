@@ -2,19 +2,22 @@ package fi.dy.masa.malilib.test.input;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.ApiStatus;
+
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.Text;
+
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.render.InventoryOverlayScreen;
 import fi.dy.masa.malilib.test.config.ConfigTestEnum;
+import fi.dy.masa.malilib.test.config.TestHotkeys;
 import fi.dy.masa.malilib.test.gui.GuiTestFileBrowser;
-import fi.dy.masa.malilib.test.gui.GuiTestList;
 import fi.dy.masa.malilib.test.gui.GuiTestPosEditor;
+import fi.dy.masa.malilib.test.gui.GuiTestTextFields;
 import fi.dy.masa.malilib.test.render.TestInventoryOverlayHandler;
 import fi.dy.masa.malilib.util.time.TimeTestExample;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
 
 @ApiStatus.Experimental
 public class TestInputHandler implements IKeybindProvider
@@ -42,18 +45,26 @@ public class TestInputHandler implements IKeybindProvider
 
     public void init()
     {
+        if (!MaLiLibReference.DEBUG_MODE) return;
         MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind().setCallback(this.callback);
-        MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind().setCallback(this.callback);
-        MaLiLibConfigs.Test.TEST_GUI_KEYBIND.getKeybind().setCallback(this.callback);
-	    MaLiLibConfigs.Test.TEST_GUI_EDITOR_KEYBIND.getKeybind().setCallback(this.callback);
-	    MaLiLibConfigs.Test.TEST_GUI_FILE_BROWSER_KEYBIND.getKeybind().setCallback(this.callback);
-        MaLiLibConfigs.Test.TEST_RUN_DATETIME_TEST.getKeybind().setCallback(this.callback);
+        TestHotkeys.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind().setCallback(this.callback);
+        TestHotkeys.TEST_GUI_KEYBIND.getKeybind().setCallback(this.callback);
+        TestHotkeys.TEST_GUI_EDITOR_KEYBIND.getKeybind().setCallback(this.callback);
+        TestHotkeys.TEST_GUI_FILE_BROWSER_KEYBIND.getKeybind().setCallback(this.callback);
+        TestHotkeys.TEST_RUN_DATETIME_TEST.getKeybind().setCallback(this.callback);
+        TestHotkeys.TEST_CONFIG_HOTKEY.getKeybind().setCallback(this.callback);
     }
 
     @Override
     public void addKeysToMap(IKeybindManager manager)
     {
+        if (!MaLiLibReference.DEBUG_MODE) return;
         for (IHotkey hotkey : MaLiLibConfigs.Test.HOTKEY_LIST)
+        {
+            manager.addKeybindToMap(hotkey.getKeybind());
+        }
+
+        for (IHotkey hotkey : TestHotkeys.HOTKEY_LIST)
         {
             manager.addKeybindToMap(hotkey.getKeybind());
         }
@@ -67,6 +78,8 @@ public class TestInputHandler implements IKeybindProvider
     @Override
     public void addHotkeys(IKeybindManager manager)
     {
+        if (!MaLiLibReference.DEBUG_MODE) return;
+        manager.addHotkeysForCategory(MaLiLibReference.MOD_NAME, MaLiLibReference.MOD_ID + ".hotkeys.category.test_option_hotkeys", MaLiLibConfigs.Test.HOTKEY_LIST);
         manager.addHotkeysForCategory(MaLiLibReference.MOD_NAME, MaLiLibReference.MOD_ID + ".hotkeys.category.test_hotkeys", MaLiLibConfigs.Test.HOTKEY_LIST);
         manager.addHotkeysForCategory(MaLiLibReference.MOD_NAME, MaLiLibReference.MOD_ID + ".hotkeys.category.test_enum_hotkeys", ImmutableList.copyOf(ConfigTestEnum.values()));
     }
@@ -78,17 +91,22 @@ public class TestInputHandler implements IKeybindProvider
         {
             MinecraftClient mc = MinecraftClient.getInstance();
 
-            if (mc.player == null)
+            if (mc.player == null || !MaLiLibReference.DEBUG_MODE)
             {
                 return false;
             }
 
-            if (key == MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind())
+            if (key == TestHotkeys.TEST_CONFIG_HOTKEY.getKeybind())
+            {
+//                KeyCodes.dumpKeyCodeMap();
+                return true;
+            }
+            else if (key == MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY.getKeybind())
             {
                 // No message
                 return true;
             }
-            else if (key == MaLiLibConfigs.Test.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind())
+            else if (key == TestHotkeys.TEST_INVENTORY_OVERLAY_TOGGLE.getKeybind())
             {
                 if (mc.currentScreen instanceof InventoryOverlayScreen)
                 {
@@ -105,22 +123,23 @@ public class TestInputHandler implements IKeybindProvider
                     return false;
                 }
             }
-            else if (key == MaLiLibConfigs.Test.TEST_GUI_KEYBIND.getKeybind())
+            else if (key == TestHotkeys.TEST_GUI_KEYBIND.getKeybind())
             {
                 System.out.printf("testGuiKeybind Callback Action: [%s] (Cancel = false)\n", action.getStringValue());
-                GuiBase.openGui(new GuiTestList());
+//                GuiBase.openGui(new GuiTestBlockStateList());
+                GuiBase.openGui(new GuiTestTextFields());
             }
-            else if (key == MaLiLibConfigs.Test.TEST_GUI_EDITOR_KEYBIND.getKeybind())
+            else if (key == TestHotkeys.TEST_GUI_EDITOR_KEYBIND.getKeybind())
             {
 	            System.out.printf("testGuiEditorKeybind Callback Action: [%s] (Cancel = false)\n", action.getStringValue());
 	            GuiBase.openGui(new GuiTestPosEditor());
             }
-            else if (key == MaLiLibConfigs.Test.TEST_GUI_FILE_BROWSER_KEYBIND.getKeybind())
+            else if (key == TestHotkeys.TEST_GUI_FILE_BROWSER_KEYBIND.getKeybind())
             {
 	            System.out.printf("testGuiFileBrowserKeybind Callback Action: [%s] (Cancel = false)\n", action.getStringValue());
 	            GuiBase.openGui(new GuiTestFileBrowser());
             }
-            else if (key == MaLiLibConfigs.Test.TEST_RUN_DATETIME_TEST.getKeybind())
+            else if (key == TestHotkeys.TEST_RUN_DATETIME_TEST.getKeybind())
             {
                 mc.inGameHud.getChatHud().addMessage(Text.of(TimeTestExample.runTimeDateTest()));
                 mc.inGameHud.getChatHud().addMessage(Text.of(TimeTestExample.runDurationTest()));

@@ -11,4 +11,8 @@ public interface IConfigFloat extends IConfigValue, IConfigSlider
     float getMinFloatValue();
 
     float getMaxFloatValue();
+
+    default float getLastFloatValue() { return this.getDefaultFloatValue(); }
+
+    default void updateLastFloatValue() {}
 }

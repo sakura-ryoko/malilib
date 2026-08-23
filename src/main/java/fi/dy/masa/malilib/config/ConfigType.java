@@ -2,29 +2,33 @@ package fi.dy.masa.malilib.config;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.StringIdentifiable;
 import io.netty.buffer.ByteBuf;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.StringIdentifiable;
+
 import fi.dy.masa.malilib.config.options.*;
 import fi.dy.masa.malilib.config.options.table.ConfigTable;
 
 public enum ConfigType implements StringIdentifiable
 {
-    BOOLEAN     ("boolean",         ConfigBoolean.CODEC),
-    INTEGER     ("integer",         ConfigInteger.CODEC),
-    DOUBLE      ("double",          ConfigDouble.CODEC),
-    FLOAT       ("float",           ConfigFloat.CODEC),
-    COLOR       ("color",           ConfigColor.CODEC),
-    STRING      ("string",          ConfigString.CODEC),
-    STRING_LIST ("string_list",     ConfigString.CODEC),
-    LOCKED_LIST ("locked_list",     null),
-    COLOR_LIST  ("color_list",      ConfigColorList.CODEC),
-    OPTION_LIST ("option_list",     null),
-    HOTKEY      ("hotkey",          ConfigHotkey.CODEC),
-    TABLE       ("table",           ConfigTable.CODEC),
+    BOOLEAN                 ("boolean",                 ConfigBoolean.CODEC),
+    INTEGER                 ("integer",                 ConfigInteger.CODEC),
+    DOUBLE                  ("double",                  ConfigDouble.CODEC),
+    FLOAT                   ("float",                   ConfigFloat.CODEC),
+    COLOR                   ("color",                   ConfigColor.CODEC),
+    BLOCK_STATE             ("block_state",             ConfigBlockState.CODEC),
+    STRING                  ("string",                  ConfigString.CODEC),
+    STRING_LIST             ("string_list",             ConfigString.CODEC),
+    LOCKED_LIST             ("locked_list",             null),
+    COLOR_LIST              ("color_list",              ConfigColorList.CODEC),
+    OPTION_LIST             ("option_list",             null),
+    OPTION_VALUES           ("option_values",           null),
+    BLOCK_STATE_LIST        ("block_state_list",        null),
+    HOTKEY                  ("hotkey",                  ConfigHotkey.CODEC),
+	TABLE                   ("table",                   ConfigTable.CODEC),
     ;
 
     public static final StringIdentifiable.EnumCodec<ConfigType> CODEC = StringIdentifiable.createCodec(ConfigType::values);

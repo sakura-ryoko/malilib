@@ -51,7 +51,12 @@ public class BlockUtils
     {
         int index = str.indexOf("["); // [prop=value]
         String blockName = index != -1 ? str.substring(0, index) : str;
-        Identifier id = Identifier.of(blockName);
+        Identifier id = Identifier.tryParse(blockName);
+
+        if (id == null)
+        {
+            return Optional.empty();
+        }
 
         if (RegistryUtils.getBlockById(id) != null)
         {
@@ -151,14 +156,18 @@ public class BlockUtils
      */
     public static String getBlockStateStringFromTag(NbtCompound stateTag)
     {
-        String name = stateTag.getString("Name", "");
+        String name = stateTag.contains("name")
+                      ? stateTag.getString("name", "")
+                      : stateTag.getString("Name", "");
 
-        if (stateTag.contains("Properties") == false)
+        if (!stateTag.contains("properties") && !stateTag.contains("Properties"))
         {
             return name;
         }
 
-        NbtCompound propTag = stateTag.getCompoundOrEmpty("Properties");
+        NbtCompound propTag = stateTag.contains("properties")
+                              ? stateTag.getCompoundOrEmpty("properties")
+                              : stateTag.getCompoundOrEmpty("Properties");
         ArrayList<Pair<String, String>> props = new ArrayList<>();
 
         for (String key : propTag.getKeys())

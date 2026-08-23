@@ -3,12 +3,12 @@ package fi.dy.masa.malilib.test.gui.widgets;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 
-import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase;
 import fi.dy.masa.malilib.test.data.TestDirectoryCache;
 import fi.dy.masa.malilib.test.gui.GuiTestFileBrowser;
 import fi.dy.masa.malilib.test.gui.TestFileIcons;
+import fi.dy.masa.malilib.util.FileUtils;
 
 public class WidgetTestBrowser extends WidgetFileBrowserBase
 {
@@ -30,7 +30,7 @@ public class WidgetTestBrowser extends WidgetFileBrowserBase
 	@Override
 	protected Path getRootDirectory()
 	{
-		return MaLiLibReference.GAME_DIR;
+		return FileUtils.getMinecraftDirectory();
 	}
 
 	@Override

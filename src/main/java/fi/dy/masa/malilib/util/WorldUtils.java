@@ -18,6 +18,8 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 
+import fi.dy.masa.malilib.mixin.server.IMixinMinecraftServer;
+
 public class WorldUtils
 {
     public static String getDimensionId(World world)
@@ -46,6 +48,27 @@ public class WorldUtils
             return mc.world;
         }
     }
+
+    public static DynamicRegistryManager getBestRegistry(MinecraftClient mc)
+    {
+        IntegratedServer server = mc.getServer();
+
+        if (mc.world != null && server != null)
+        {
+            return ((IMixinMinecraftServer) server).malilib_registries().getCombinedRegistryManager();
+        }
+        else if (mc.world != null)
+        {
+            return mc.world.getRegistryManager();
+        }
+        else if (mc.player != null)
+        {
+            return mc.player.getRegistryManager();
+        }
+
+        return DynamicRegistryManager.EMPTY;
+    }
+
 
     /**
      * Returns the requested chunk from the integrated server, if it's available.

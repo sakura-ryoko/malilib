@@ -2,30 +2,31 @@ package fi.dy.masa.malilib.render.special;
 
 import javax.annotation.Nonnull;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4fStack;
-import org.joml.Quaternionf;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.block.BlockRenderType;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.render.SpecialGuiElementRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
+import net.minecraft.client.render.command.OrderedRenderCommandQueueImpl;
+import net.minecraft.client.render.command.RenderDispatcher;
+import net.minecraft.client.render.model.BlockStateModel;
 import net.minecraft.client.util.math.MatrixStack;
 
 import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.mixin.render.IMixinBlockRenderManager;
 
 /**
  * DISABLED -- DOES NOT WORK, DO NOT USE
  */
-@Deprecated
 @ApiStatus.Experimental
 public class MaLiLibBlockModelGuiElementRenderer extends SpecialGuiElementRenderer<MaLiLibBlockStateModelGuiElement>
 {
-    BlockRenderManager blockRenderManager;
-    MinecraftClient mc = MinecraftClient.getInstance();
+    private final BlockRenderManager blockRenderManager;
 
     public MaLiLibBlockModelGuiElementRenderer(VertexConsumerProvider.Immediate immediate, BlockRenderManager blockRenderManager)
     {
@@ -44,30 +45,37 @@ public class MaLiLibBlockModelGuiElementRenderer extends SpecialGuiElementRender
     {
         if (state.state().getRenderType() == BlockRenderType.MODEL)
         {
-	        Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
-	        int light = LightmapTextureManager.pack(15, 15);
-			float zLevel = 0f;
-			float halfSize = (float) (state.size() / 2);
+	        matrices.push();
+	        matrices.scale(state.size(), -state.size(), state.size());
 
-//	        this.vertexConsumers.draw();
-	        matrix4fStack.pushMatrix();
-	        matrix4fStack.translate(state.x1() + halfSize, state.y1() + halfSize,  zLevel + 100f);
-//	        matrix4fStack.scale((float) state.size(), (float) -state.size(), (float) state.size());
-//	        matrices.scale((float) state.size(), (float) -state.size(), (float) state.size());
-//	        matrix4fStack.translate(halfSize, halfSize, zLevel);
-			matrix4fStack.scale(state.size(), state.size(), state.size());
-
-//			matrices.scale(1f, -1f, 1f);
-//			matrices.translate(0.5f, 0.5f, 0.5f);
-	        matrices.multiply(new Quaternionf().rotationXYZ(30 * (float) (Math.PI / 180.0), 225 * (float) (Math.PI / 180.0), 0.0F));
+	        matrices.multiply(state.rotation());
 	        matrices.scale(state.scale(), state.scale(), state.scale());
-	        matrices.translate(-0.5f, -0.5f, -0.5f);
+	        matrices.translate(-0.5F, (0.5F + state.yOffset()), -0.5F);
 
-	        this.blockRenderManager.renderBlockAsEntity(state.state(), matrices, this.vertexConsumers, light, OverlayTexture.DEFAULT_UV);
-			this.vertexConsumers.draw();
-	        matrix4fStack.popMatrix();
+	        this.submitBlockStateModel(state.state(), matrices);
+	        matrices.pop();
         }
     }
+
+	private void submitBlockStateModel(BlockState state, MatrixStack matrices)
+	{
+		final int l = LightmapTextureManager.pack(15, 15);
+		final int overlay = OverlayTexture.DEFAULT_UV;
+		final int blockColor = ((IMixinBlockRenderManager) this.blockRenderManager).malilib_getBlockColors().getColor(state, null, null, 0);
+		float[] color = new float[] {
+				(blockColor >> 16 & 0xFF) / 255.0F,
+				(blockColor >> 16 & 0xFF) / 255.0F,
+				(blockColor & 0xFF) / 255.0F,
+				1.0F
+		};
+
+		RenderDispatcher featureRenderer = MinecraftClient.getInstance().gameRenderer.getEntityRenderDispatcher();
+		OrderedRenderCommandQueueImpl nodeStorage = featureRenderer.getQueue();
+		BlockStateModel model = this.blockRenderManager.getModel(state);
+
+		nodeStorage.submitBlockStateModel(matrices, RenderLayer.getTripwire(), model, color[0], color[1], color[2], l, overlay, 0);
+		featureRenderer.render();
+	}
 
     @Override
     protected @Nonnull String getName()

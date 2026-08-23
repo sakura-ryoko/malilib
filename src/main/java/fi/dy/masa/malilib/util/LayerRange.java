@@ -19,6 +19,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRangeChangeListener;
 
+/**
+ * See {@link fi.dy.masa.malilib.util.position.LayerRange}
+ */
 public class LayerRange
 {
     public static final Codec<LayerRange> CODEC = RecordCodecBuilder.create(

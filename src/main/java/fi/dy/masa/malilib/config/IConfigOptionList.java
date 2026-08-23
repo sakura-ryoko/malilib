@@ -7,4 +7,8 @@ public interface IConfigOptionList
     IConfigOptionListEntry getDefaultOptionListValue();
 
     void setOptionListValue(IConfigOptionListEntry value);
+
+    default IConfigOptionListEntry getLastOptionListValue() { return this.getDefaultOptionListValue(); }
+
+    default void updateLastOptionListValue() {}
 }

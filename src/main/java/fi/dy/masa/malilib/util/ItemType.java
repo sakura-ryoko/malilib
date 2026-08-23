@@ -12,6 +12,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  * A wrapper around ItemStack, that implements hashCode() and equals().
  * Whether or not the NBT data is considered by those methods,
  * depends on the checkNBT argument to the constructor.
+ * -
+ * See {@link fi.dy.masa.malilib.util.data.ItemType}
  */
 public class ItemType
 {
@@ -79,11 +81,17 @@ public class ItemType
     public boolean equals(Object obj)
     {
         if (this == obj)
+        {
             return true;
+        }
         if (obj == null)
+        {
             return false;
+        }
         if (this.getClass() != obj.getClass())
+        {
             return false;
+        }
 
         ItemType other = (ItemType) obj;
 

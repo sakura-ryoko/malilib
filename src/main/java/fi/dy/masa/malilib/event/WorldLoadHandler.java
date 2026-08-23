@@ -18,6 +18,7 @@ public class WorldLoadHandler implements IWorldLoadManager
 
     private final List<IWorldLoadListener> worldLoadPreHandlers = new ArrayList<>();
     private final List<IWorldLoadListener> worldLoadPostHandlers = new ArrayList<>();
+    private DynamicRegistryManager.Immutable immutable;
 
     public static IWorldLoadManager getInstance()
     {
@@ -64,6 +65,8 @@ public class WorldLoadHandler implements IWorldLoadManager
                 listener.onWorldLoadImmutable(immutable);
             }
         }
+
+        this.immutable = immutable;
     }
 
     @ApiStatus.Internal
@@ -103,5 +106,10 @@ public class WorldLoadHandler implements IWorldLoadManager
                 listener.onWorldLoadPost(worldBefore, worldAfter, mc);
             }
         }
+    }
+
+    public DynamicRegistryManager.Immutable immutable()
+    {
+        return this.immutable;
     }
 }

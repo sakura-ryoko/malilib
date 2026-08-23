@@ -11,8 +11,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
 
-public class ByteArrayData extends BaseData
-        implements ArrayData
+public class ByteArrayData extends BaseData implements ArrayData
 {
     public static final String TAG_NAME = "TAG_ByteArray";
 
@@ -60,6 +59,12 @@ public class ByteArrayData extends BaseData
     public boolean isEmpty()
     {
         return this.value.length == 0;
+    }
+
+    @Override
+    public int sizeInBytes()
+    {
+        return Byte.BYTES * this.value.length;
     }
 
     @Override

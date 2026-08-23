@@ -28,7 +28,7 @@ public enum BlockRotation implements IConfigOptionListEntry, StringIdentifiable
     public static final BlockRotation[] VALUES = values();
 
     private final int index;
-    private final String configString;
+    private final String name;
     private final String translationKey;
     private final net.minecraft.util.BlockRotation vanillaRotation;
 
@@ -36,7 +36,7 @@ public enum BlockRotation implements IConfigOptionListEntry, StringIdentifiable
     {
         this.index = index;
         this.vanillaRotation = vanillaRotation;
-        this.configString = name;
+        this.name = name;
         this.translationKey = MaLiLibReference.MOD_ID + ".label.block_rotation." + name;
     }
 
@@ -48,7 +48,12 @@ public enum BlockRotation implements IConfigOptionListEntry, StringIdentifiable
     @Override
     public String getStringValue()
     {
-        return this.configString;
+        return this.name;
+    }
+
+    public String getName()
+    {
+        return this.name;
     }
 
     public String getDisplayName()
@@ -59,7 +64,7 @@ public enum BlockRotation implements IConfigOptionListEntry, StringIdentifiable
     @Override
     public @Nonnull String asString()
     {
-        return this.configString;
+        return this.name;
     }
 
     public BlockRotation add(BlockRotation rotation)
@@ -117,7 +122,7 @@ public enum BlockRotation implements IConfigOptionListEntry, StringIdentifiable
     {
         for (BlockRotation rot : VALUES)
         {
-            if (rot.configString.equalsIgnoreCase(name))
+            if (rot.name.equalsIgnoreCase(name))
             {
                 return rot;
             }

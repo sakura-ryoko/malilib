@@ -1,4 +1,4 @@
-//package fi.dy.masa.malilib.config.options.table.type;
+package fi.dy.masa.malilib.config.options.table.type;//package fi.dy.masa.malilib.config.options.table.type;
 //
 //import com.google.gson.JsonObject;
 //import fi.dy.masa.malilib.hotkeys.IKeybind;

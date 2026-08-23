@@ -1,5 +1,8 @@
 package fi.dy.masa.malilib.util;
 
+import org.apache.commons.lang3.math.Fraction;
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 
@@ -134,6 +137,18 @@ public class MathUtils
     {
         int i = (int) value;
         return value < (double) i ? i - 1 : i;
+    }
+
+    public static int ceil(float value)
+    {
+        int i = (int) value;
+        return (i == value) ? i : i + 1;
+    }
+
+    public static int ceil(double value)
+    {
+        int i = (int) value;
+        return (i == value) ? i : i + 1;
     }
 
     public static float round(float value, int decimalPlaces)
@@ -544,5 +559,147 @@ public class MathUtils
     public static Vec3d scale(Vec3d vec, double factor)
     {
         return new Vec3d(vec.x * factor, vec.y * factor, vec.z * factor);
+    }
+
+    public static fi.dy.masa.malilib.util.position.Vec3d scale(fi.dy.masa.malilib.util.position.Vec3d vec, double factor)
+    {
+        return new fi.dy.masa.malilib.util.position.Vec3d(vec.x * factor, vec.y * factor, vec.z * factor);
+    }
+
+    public static int min(int val1, int val2)
+    {
+        return Math.min(val1, val2);
+    }
+
+    public static float min(float val1, float val2)
+    {
+        return Math.min(val1, val2);
+    }
+
+    public static double min(double val1, double val2)
+    {
+        return Math.min(val1, val2);
+    }
+
+    public static long min(long val1, long val2)
+    {
+        return Math.min(val1, val2);
+    }
+
+    public static short min(short val1, short val2)
+    {
+        return (val1 <= val2) ? val1 : val2;
+    }
+
+    public static byte min(byte val1, byte val2)
+    {
+        return (val1 <= val2) ? val1 : val2;
+    }
+
+    public static Fraction min(Fraction val1, Fraction val2)
+    {
+        return (val1.compareTo(val2) < 0) ? val1 : val2;
+    }
+
+    @ApiStatus.Experimental
+    public static Number min(Number val1, Number val2)
+    {
+        try
+        {
+            return (val1.doubleValue() <= val2.doubleValue()) ? val1 : val2;
+        }
+        catch (Exception ignored) {}
+
+        // Experimental, Assumes that a Number's Hash Code
+        // roughly coincides with its proper value.
+        // This is true with Primitives, but then again
+        // the doubleValue() should work anyway.
+        // This might only be an issue when using BigDecimal, etc. in rare cases.
+        return (val1.hashCode() <= val2.hashCode()) ? val1 : val2;
+    }
+
+    public static int max(int val1, int val2)
+    {
+        return Math.max(val1, val2);
+    }
+
+    public static float max(float val1, float val2)
+    {
+        return Math.max(val1, val2);
+    }
+
+    public static double max(double val1, double val2)
+    {
+        return Math.max(val1, val2);
+    }
+
+    public static long max(long val1, long val2)
+    {
+        return Math.max(val1, val2);
+    }
+
+    public static short max(short val1, short val2)
+    {
+        return (val1 >= val2) ? val1 : val2;
+    }
+
+    public static byte max(byte val1, byte val2)
+    {
+        return (val1 >= val2) ? val1 : val2;
+    }
+
+    public static Fraction max(Fraction val1, Fraction val2)
+    {
+        return (val1.compareTo(val2) > 0) ? val1 : val2;
+    }
+
+    @ApiStatus.Experimental
+    public static Number max(Number val1, Number val2)
+    {
+        try
+        {
+            return (val1.doubleValue() >= val2.doubleValue()) ? val1 : val2;
+        }
+        catch (Exception ignored) {}
+
+        // Experimental, Assumes that a Number's Hash Code
+        // roughly coincides with its proper value.
+        // This is true with Primitives, but then again
+        // the doubleValue() should work anyway.
+        // This might only be an issue when using BigDecimal, etc. in rare cases.
+        return (val1.hashCode() >= val2.hashCode()) ? val1 : val2;
+    }
+
+    public static int lerp(final float a, final int point1, final int point2)
+    {
+        return point1 + floor(a * (point2 - point1));
+    }
+
+    public static float lerp(final float a, final float point1, final float point2)
+    {
+        return point1 + a * (point2 - point1);
+    }
+
+    public static double lerp(final double a, final double point1, final double point2)
+    {
+        return point1 + a * (point2 - point1);
+    }
+
+    public static Vec3d lerp(final double a, final Vec3d point1, final Vec3d point2)
+    {
+        return new Vec3d(
+                lerp(a, point1.x, point2.x),
+                lerp(a, point1.y, point2.y),
+                lerp(a, point1.z, point2.z)
+        );
+    }
+
+    public static fi.dy.masa.malilib.util.position.Vec3d lerp(final double a, final fi.dy.masa.malilib.util.position.Vec3d point1, final fi.dy.masa.malilib.util.position.Vec3d point2)
+    {
+        return new fi.dy.masa.malilib.util.position.Vec3d(
+                lerp(a, point1.x, point2.x),
+                lerp(a, point1.y, point2.y),
+                lerp(a, point1.z, point2.z)
+        );
     }
 }

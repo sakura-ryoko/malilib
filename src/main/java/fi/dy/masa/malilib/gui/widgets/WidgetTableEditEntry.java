@@ -341,6 +341,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				}
 
 				list.set(this.listIndex, temp);
+				config.markDirty();
 				config.setModified();
 			}
 		}
@@ -352,6 +353,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		final int size = list.size();
 		int index = this.listIndex < 0 ? size : (Math.min(this.listIndex, size));
 		list.add(index, ConfigTable.getDummy(types));
+		this.parent.getConfig().markDirty();
 		this.parent.getConfig().setModified();
 		this.parent.refreshEntries();
 		this.parent.markConfigsModified();
@@ -365,6 +367,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		if (this.listIndex >= 0 && this.listIndex < size)
 		{
 			list.remove(this.listIndex);
+			this.parent.getConfig().markDirty();
 			this.parent.getConfig().setModified();
 			this.parent.refreshEntries();
 			this.parent.markConfigsModified();
@@ -393,6 +396,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 
 			if (index2 >= 0)
 			{
+				this.parent.getConfig().markDirty();
 				this.parent.getConfig().setModified();
 				this.parent.markConfigsModified();
 				this.parent.applyPendingModifications();
@@ -415,7 +419,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 	@Override
 	public void render(DrawContext ctx, int mouseX, int mouseY, boolean selected)
 	{
-		super.render(ctx, mouseX, mouseY, selected);
+//		super.render(ctx, mouseX, mouseY, selected);
 
 		if (this.isOdd)
 		{
@@ -520,6 +524,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						{
 							button.onClearSelection();
 						}
+
+						this.parent.getConfig().markDirty();
 						this.parent.getConfig().setModified();
 						this.parent.markConfigsModified();
 
@@ -626,10 +632,10 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 
 	protected enum ButtonType
 	{
-		ADD(MaLiLibIcons.PLUS, "malilib.gui.button.hovertext.add"),
-		REMOVE(MaLiLibIcons.MINUS, "malilib.gui.button.hovertext.remove"),
-		MOVE_UP(MaLiLibIcons.ARROW_UP, "malilib.gui.button.hovertext.move_up"),
-		MOVE_DOWN(MaLiLibIcons.ARROW_DOWN, "malilib.gui.button.hovertext.move_down");
+		ADD         (MaLiLibIcons.PLUS,         "malilib.gui.button.hovertext.add"),
+		REMOVE      (MaLiLibIcons.MINUS,        "malilib.gui.button.hovertext.remove"),
+		MOVE_UP     (MaLiLibIcons.ARROW_UP,     "malilib.gui.button.hovertext.move_up"),
+		MOVE_DOWN   (MaLiLibIcons.ARROW_DOWN,   "malilib.gui.button.hovertext.move_down");
 
 		private final MaLiLibIcons icon;
 		private final String hoverTextKey;

@@ -12,4 +12,8 @@ public interface IConfigStringList extends IConfigBase
     void setStrings(List<String> strings);
 
     void setModified();
+
+    default List<String> getLastStringListValue() { return this.getDefaultStrings(); }
+
+    default void updateLastStringListValue() {}
 }

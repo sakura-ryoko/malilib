@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -91,7 +92,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         ChangeListenerTextField listenerChange = new ChangeListenerTextField(field, resetButton, this.defaultValue);
         ListenerResetConfig listenerReset = new ListenerResetConfig(resetButton, this);
 
-        this.addTextField(field, listenerChange);
+        this.addTextField(field, listenerChange, TextFieldType.STRING.setMaxLength(this.maxTextfieldTextLength));
         this.addButton(resetButton, listenerReset);
 
         return resetButton.x + resetButton.getWidth() + 4;
@@ -101,7 +102,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
     {
         String labelReset = StringUtils.translate("malilib.gui.button.reset.caps");
         ButtonGeneric resetButton = new ButtonGeneric(x, y, -1, 20, labelReset);
-        resetButton.setEnabled(textField.getText().equals(this.defaultValue) == false);
+        resetButton.setEnabled(!textField.getText().equals(this.defaultValue));
 
         return resetButton;
     }
@@ -109,7 +110,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
     @Override
     public boolean wasConfigModified()
     {
-        return this.isDummy() == false && this.textField.getTextField().getText().equals(this.initialStringValue) == false;
+        return !this.isDummy() && !this.textField.getTextField().getText().equals(this.initialStringValue);
     }
 
     @Override
@@ -125,6 +126,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
             {
                 list.set(this.listIndex, value);
                 this.lastAppliedValue = value;
+                config.markDirty();
                 config.setModified();
             }
         }
@@ -136,6 +138,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         final int size = list.size();
         int index = this.listIndex < 0 ? size : (this.listIndex >= size ? size : this.listIndex);
         list.add(index, "");
+        this.parent.getConfig().markDirty();
         this.parent.getConfig().setModified();
         this.parent.refreshEntries();
         this.parent.markConfigsModified();
@@ -149,6 +152,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         if (this.listIndex >= 0 && this.listIndex < size)
         {
             list.remove(this.listIndex);
+            this.parent.getConfig().markDirty();
             this.parent.getConfig().setModified();
             this.parent.refreshEntries();
             this.parent.markConfigsModified();
@@ -177,6 +181,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
 
             if (index2 >= 0)
             {
+                this.parent.getConfig().markDirty();
                 this.parent.getConfig().setModified();
                 this.parent.markConfigsModified();
                 this.parent.applyPendingModifications();
@@ -199,7 +204,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
+//        super.render(drawContext, mouseX, mouseY, selected);
 //        RenderUtils.color(1f, 1f, 1f, 1f);
 
         if (this.isOdd)
@@ -231,41 +236,30 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
         @Override
         public boolean onTextChange(GuiTextFieldGeneric textField)
         {
-            this.buttonReset.setEnabled(this.textField.getText().equals(this.defaultValue) == false);
+            this.buttonReset.setEnabled(!this.textField.getText().equals(this.defaultValue));
             return false;
         }
     }
 
-    private static class ListenerResetConfig implements IButtonActionListener
+    private record ListenerResetConfig(WidgetStringListEditEntry parent, ButtonGeneric buttonReset)
+            implements IButtonActionListener
     {
-        private final WidgetStringListEditEntry parent;
-        private final ButtonGeneric buttonReset;
-
         public ListenerResetConfig(ButtonGeneric buttonReset, WidgetStringListEditEntry parent)
         {
-            this.buttonReset = buttonReset;
-            this.parent = parent;
+            this(parent, buttonReset);
         }
 
         @Override
         public void actionPerformedWithButton(ButtonBase button, int mouseButton)
         {
             this.parent.textField.getTextField().setText(this.parent.defaultValue);
-            this.buttonReset.setEnabled(this.parent.textField.getTextField().getText().equals(this.parent.defaultValue) == false);
+            this.buttonReset.setEnabled(!this.parent.textField.getTextField().getText().equals(this.parent.defaultValue));
         }
     }
 
-    private static class ListenerListActions implements IButtonActionListener
+    private record ListenerListActions(ButtonType type, WidgetStringListEditEntry parent)
+            implements IButtonActionListener
     {
-        private final ButtonType type;
-        private final WidgetStringListEditEntry parent;
-
-        public ListenerListActions(ButtonType type, WidgetStringListEditEntry parent)
-        {
-            this.type = type;
-            this.parent = parent;
-        }
-
         @Override
         public void actionPerformedWithButton(ButtonBase button, int mouseButton)
         {

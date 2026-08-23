@@ -3,16 +3,20 @@ package fi.dy.masa.malilib.mixin.render;
 import com.llamalad7.mixinextras.sugar.Local;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.event.RenderEventHandler;
+import fi.dy.masa.malilib.util.IWorldRenderer;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilderStorage;
 import net.minecraft.client.render.Camera;
@@ -25,11 +29,13 @@ import net.minecraft.client.util.ObjectAllocator;
 import net.minecraft.util.profiler.Profiler;
 
 @Mixin(value = WorldRenderer.class)
-public abstract class MixinWorldRenderer
+public abstract class MixinWorldRenderer implements IWorldRenderer
 {
     @Shadow @Final private MinecraftClient client;
     @Shadow @Final private DefaultFramebufferSet framebufferSet;
     @Shadow @Final private BufferBuilderStorage bufferBuilders;
+
+	@Unique private @Nullable RenderTickCounter tracker;
 
 //    @Inject(method = "render",
 //            at = @At(value = "INVOKE",
@@ -56,6 +62,7 @@ public abstract class MixinWorldRenderer
 												 @Local Frustum frustum,
 												 @Local FrameGraphBuilder frameGraphBuilder)
     {
+	    this.tracker = tickCounter;
         ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreWeather(matrix4f, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
     }
 
@@ -71,6 +78,13 @@ public abstract class MixinWorldRenderer
 										   @Local Frustum frustum,
 										   @Local FrameGraphBuilder frameGraphBuilder)
     {
+	    this.tracker = tickCounter;
         ((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(matrix4f, projectionMatrix, this.client, frameGraphBuilder, this.framebufferSet, frustum, camera, this.bufferBuilders, profiler);
     }
+
+	@Override
+	public @Nullable RenderTickCounter malilib_getDeltaTracker()
+	{
+		return this.tracker;
+	}
 }

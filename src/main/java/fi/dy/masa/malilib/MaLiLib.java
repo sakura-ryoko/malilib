@@ -16,6 +16,7 @@ public class MaLiLib implements ModInitializer
     @Override
     public void onInitialize()
     {
+        MaLiLibFabricData.onInitialize();
         InitializationHandler.getInstance().registerInitializationHandler(new MaLiLibInitHandler());
         Registry.CONFIG_SCREEN.registerConfigScreenFactory(
                 new ModInfo(MaLiLibReference.MOD_ID, MaLiLibReference.MOD_NAME, MaLiLibConfigGui::new)

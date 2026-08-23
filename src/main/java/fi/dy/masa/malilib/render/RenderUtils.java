@@ -8,6 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2f;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
+import org.joml.Quaternionf;
 
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
@@ -30,7 +31,6 @@ import net.minecraft.client.gui.render.state.SimpleGuiElementRenderState;
 import net.minecraft.client.gui.render.state.TextGuiElementRenderState;
 import net.minecraft.client.gui.render.state.special.SpecialGuiElementRenderState;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BlockModelPart;
 import net.minecraft.client.render.model.BlockStateModel;
 import net.minecraft.client.texture.ResourceTexture;
@@ -38,7 +38,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.texture.TextureSetup;
 import net.minecraft.client.util.BufferAllocator;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
@@ -52,6 +51,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -60,6 +60,8 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.LocalRandom;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
+import net.minecraft.village.VillagerType;
+import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -68,14 +70,23 @@ import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
-import fi.dy.masa.malilib.mixin.render.IMixinDrawContext;
-import fi.dy.masa.malilib.mixin.render.IMixinGuiRenderer;
+import fi.dy.masa.malilib.mixin.gui.IMixinDrawContext;
+import fi.dy.masa.malilib.mixin.gui.IMixinGuiRenderer;
 import fi.dy.masa.malilib.render.element.*;
+import fi.dy.masa.malilib.render.on_demand.SelectionBoxRenderer;
+import fi.dy.masa.malilib.render.on_demand.TextPlateRenderer;
+import fi.dy.masa.malilib.render.on_demand.WallOverlayRenderer;
+import fi.dy.masa.malilib.render.on_demand.state.*;
+import fi.dy.masa.malilib.render.special.MaLiLibBlockModelGuiElementRenderer;
+import fi.dy.masa.malilib.render.special.MaLiLibBlockStateModelGuiElement;
 import fi.dy.masa.malilib.util.*;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
 import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
 import fi.dy.masa.malilib.util.position.PositionUtils;
+import fi.dy.masa.malilib.util.position.Vec2d;
+import fi.dy.masa.malilib.util.text.TextAlignment;
 
 public class RenderUtils
 {
@@ -83,12 +94,15 @@ public class RenderUtils
     public static final Identifier TEXTURE_MAP_BACKGROUND = Identifier.ofVanilla("textures/map/map_background.png");
     public static final Identifier TEXTURE_MAP_BACKGROUND_CHECKERBOARD = Identifier.ofVanilla("textures/map/map_background_checkerboard.png");
 
-    private static final LocalRandom RAND = new LocalRandom(0);
+//    private static final LocalRandom RAND = new LocalRandom(0);
 
     //private static final Vec3d LIGHT0_POS = (new Vec3d( 0.2D, 1.0D, -0.7D)).normalize();
     //private static final Vec3d LIGHT1_POS = (new Vec3d(-0.2D, 1.0D,  0.7D)).normalize();
 
-    @Deprecated
+    /**
+     * @deprecated Please transition to using RenderPipelines
+     */
+    @Deprecated(forRemoval = true)
     public static void blend(boolean toggle)
     {
         //RenderSystem.enableBlend();
@@ -112,7 +126,10 @@ public class RenderUtils
     }
      */
 
-    @Deprecated
+    /**
+     * @deprecated Please transition to using RenderPipelines
+     */
+    @Deprecated(forRemoval = true)
     public static void depthTest(boolean toggle)
     {
         if (toggle)
@@ -125,19 +142,28 @@ public class RenderUtils
         }
     }
 
-    @Deprecated
+    /**
+     * @deprecated Please transition to using RenderPipelines
+     */
+    @Deprecated(forRemoval = true)
     public static void depthFunc(int depth)
     {
         GlStateManager._depthFunc(depth);
     }
 
-    @Deprecated
+    /**
+     * @deprecated Please transition to using RenderPipelines
+     */
+    @Deprecated(forRemoval = true)
     public static void depthMask(boolean toggle)
     {
         GlStateManager._depthMask(toggle);
     }
 
-    @Deprecated
+    /**
+     * @deprecated Please transition to using RenderPipelines
+     */
+    @Deprecated(forRemoval = true)
     public static void culling(boolean toggle)
     {
         if (toggle)
@@ -150,7 +176,10 @@ public class RenderUtils
         }
     }
 
-    @Deprecated
+    /**
+     * @deprecated Please transition to using RenderPipelines
+     */
+    @Deprecated(forRemoval = true)
     public static void polygonOffset(boolean toggle)
     {
         if (toggle)
@@ -163,13 +192,19 @@ public class RenderUtils
         }
     }
 
-    @Deprecated
+    /**
+     * @deprecated Please transition to using RenderPipelines
+     */
+    @Deprecated(forRemoval = true)
     public static void polygonOffset(float factor, float units)
     {
         GlStateManager._polygonOffset(factor, units);
     }
 
-    @Deprecated
+    /**
+     * @deprecated Please transition to using RenderPipelines
+     */
+    @Deprecated(forRemoval = true)
     public static void fbStartDrawing()
     {
         RenderSystem.assertOnRenderThread();
@@ -178,10 +213,13 @@ public class RenderUtils
 
     /**
      * Attempts to bind the Shader Texture
-     * @param texture ()
+     *
+     * @param texture   ()
      * @param textureId ()
      * @return ()
+     * @deprecated Please transition to using RenderPipelines
      */
+    @Deprecated(forRemoval = true)
     public static ResourceTexture bindShaderTexture(Identifier texture, int textureId) throws RuntimeException
     {
         if (textureId < 0 || textureId > 12)
@@ -201,7 +239,9 @@ public class RenderUtils
      *
      * @param texture ()
      * @return ()
+     * @deprecated Please transition to using RenderPipelines
      */
+    @Deprecated(forRemoval = true)
     public static @Nullable GpuTexture bindGpuTexture(Identifier texture)
     {
         ResourceTexture tex = (ResourceTexture) tex().getTexture(texture);
@@ -267,7 +307,7 @@ public class RenderUtils
         builder.putAll(((IMixinGuiRenderer) guiRenderer).malilib_getSpecialGuiRenderers());
 
         // Add Gui Block Model Renderer
-//        builder.put(MaLiLibBlockStateModelGuiElement.class, new MaLiLibBlockModelGuiElementRenderer(immediate, mc.getBlockRenderManager()));
+        builder.put(MaLiLibBlockStateModelGuiElement.class, new MaLiLibBlockModelGuiElementRenderer(immediate, mc.getBlockRenderManager()));
 
         // Event Callback
         ((RenderEventHandler) RenderEventHandler.getInstance()).onRegisterSpecialGuiRenderer(guiRenderer, immediate, mc, builder);
@@ -413,31 +453,31 @@ public class RenderUtils
         drawRect(drawContext, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder, scale); // bottom edge
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color)
     {
         drawRect(x, y, width, height, color, 0f);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color, boolean depthMask)
     {
         drawRect(x, y, width, height, color, 0f, 1.0f, depthMask);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel)
     {
         drawRect(x, y, width, height, color, zLevel, 1.0f, false);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel, boolean depthMask)
     {
         drawRect(x, y, width, height, color, zLevel, 1.0f, depthMask);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawRect(int x, int y, int width, int height, int color, float zLevel, float scale, boolean depthMask)
     {
         float a = (float) (color >> 24 & 255) / 255.0F;
@@ -509,19 +549,19 @@ public class RenderUtils
         mc.gameRenderer.renderBlur();
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
     {
         drawTexturedRect(posMatrix, x, y, u, v, width, height, 0f, -1, buffer);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, int color, VertexConsumer buffer)
     {
         drawTexturedRect(posMatrix, x, y, u, v, width, height, 0f, color, buffer);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawTexturedRect(Matrix4f posMatrix, int x, int y, int u, int v, int width, int height, float zLevel, int color, VertexConsumer buffer)
     {
         float pixelWidth = 0.00390625F;
@@ -605,19 +645,19 @@ public class RenderUtils
         );
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, VertexConsumer buffer)
     {
         drawTexturedRectBatched(x, y, u, v, width, height, 0, -1, buffer);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, int argb, VertexConsumer buffer)
     {
         drawTexturedRectBatched(x, y, u, v, width, height, 0, argb, buffer);
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawTexturedRectBatched(int x, int y, int u, int v, int width, int height, float zLevel, int argb, VertexConsumer buffer)
     {
         float pixelWidth = 0.00390625F;
@@ -692,7 +732,7 @@ public class RenderUtils
             drawContext.getMatrices().pushMatrix();
             drawContext.getMatrices().translate(0, 0);
 
-            float zLevel = (float) 300;
+//            float zLevel = (float) 300;
             int borderColor = 0xF0100010;
             drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
             drawGradientRectBatched(drawContext, textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
@@ -718,6 +758,48 @@ public class RenderUtils
         }
     }
 
+    public static void drawHoverText(DrawContext drawContext, int x, int y, Text text)
+    {
+        if (text != null && GuiUtils.getCurrentScreen() != null)
+        {
+            TextRenderer font = mc().textRenderer;
+            int maxLineLength = font.getWidth(text);
+            int maxWidth = GuiUtils.getCurrentScreen().width;
+
+            final int lineHeight = font.fontHeight + 1;
+            int textHeight = lineHeight - 2;
+            int textStartX = x + 4;
+            int textStartY = Math.max(8, y - textHeight - 6);
+
+            if (textStartX + maxLineLength + 6 > maxWidth)
+            {
+                textStartX = Math.max(2, maxWidth - maxLineLength - 8);
+            }
+
+            drawContext.getMatrices().pushMatrix();
+            drawContext.getMatrices().translate(0, 0);
+
+//            float zLevel = (float) 300;
+            int borderColor = 0xF0100010;
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY + textHeight + 3, borderColor, borderColor);
+            drawGradientRectBatched(drawContext, textStartX - 4, textStartY - 3, textStartX - 3, textStartY + textHeight + 3, borderColor, borderColor);
+            drawGradientRectBatched(drawContext, textStartX + maxLineLength + 3, textStartY - 3, textStartX + maxLineLength + 4, textStartY + textHeight + 3, borderColor, borderColor);
+
+            int fillColor1 = 0x505000FF;
+            int fillColor2 = 0x5028007F;
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 3 + 1, textStartX - 3 + 1, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
+            drawGradientRectBatched(drawContext, textStartX + maxLineLength + 2, textStartY - 3 + 1, textStartX + maxLineLength + 3, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY - 3 + 1, fillColor1, fillColor1);
+            drawGradientRectBatched(drawContext, textStartX - 3, textStartY + textHeight + 2, textStartX + maxLineLength + 3, textStartY + textHeight + 3, fillColor2, fillColor2);
+
+            drawContext.drawText(font, text, textStartX, textStartY, 0xFFFFFFFF, false);
+
+            drawContext.getMatrices().popMatrix();
+        }
+    }
+
     public static void drawGradientRectBatched(DrawContext drawContext, float left, float top, float right, float bottom, int startColor, int endColor)
     {
         addSimpleElement(drawContext, new MaLiLibGradientRectGuiElement(
@@ -730,7 +812,7 @@ public class RenderUtils
         );
     }
 
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static void drawGradientRect(float left, float top, float right, float bottom, float zLevel, int startColor, int endColor)
     {
         int sa = (startColor >> 24 & 0xFF);
@@ -807,6 +889,21 @@ public class RenderUtils
             drawContext.drawText(textRenderer, line, x, y, color, true);
             y += textRenderer.fontHeight + 1;
         }
+    }
+
+    /**
+     * Render Text (GUI)
+     *
+     * @param ctx -
+     * @param x -
+     * @param y -
+     * @param color -
+     * @param text -
+     */
+    @ApiStatus.Experimental
+    public static void renderText(DrawContext ctx, int x, int y, int color, Text text)
+    {
+        ctx.drawText(mc().textRenderer, text, x, y, color, true);
     }
 
     public static void renderText(DrawContext drawContext, int x, int y, int color, List<String> lines)
@@ -913,8 +1010,122 @@ public class RenderUtils
         return contentHeight + bgMargin * 2;
     }
 
+    /**
+     * Render Scaled Text with a background (GUI)
+     *
+     * @param ctx -
+     * @param xOff -
+     * @param yOff -
+     * @param scale -
+     * @param textColor -
+     * @param bgColor -
+     * @param alignment -
+     * @param useBackground -
+     * @param useShadow -
+     * @param text -
+     * @return -
+     */
+    @ApiStatus.Experimental
+    public static int renderText(DrawContext ctx, int xOff, int yOff, double scale,
+                                 int textColor, int bgColor, HudAlignment alignment,
+                                 boolean useBackground, boolean useShadow,
+                                 Text text)
+    {
+        return renderText(ctx, xOff, yOff, scale,
+                          textColor, bgColor, alignment,
+                          useBackground, useShadow, true,
+                          text);
+    }
+
+    /**
+     * Render Scaled Text with a background (GUI)
+     *
+     * @param ctx -
+     * @param xOff -
+     * @param yOff -
+     * @param scale -
+     * @param textColor -
+     * @param bgColor -
+     * @param alignment -
+     * @param useBackground -
+     * @param useShadow -
+     * @param useStatusShift -
+     * @param text -
+     * @return -
+     */
+    @ApiStatus.Experimental
+    public static int renderText(DrawContext ctx, int xOff, int yOff, double scale,
+                                 int textColor, int bgColor, HudAlignment alignment,
+                                 boolean useBackground, boolean useShadow, boolean useStatusShift,
+                                 Text text)
+    {
+        TextRenderer fontRenderer = mc().textRenderer;
+        final int scaledWidth = GuiUtils.getScaledWindowWidth();
+        final int lineHeight = fontRenderer.fontHeight + 2;
+        final int contentHeight = lineHeight - 2;
+        final int bgMargin = 2;
+
+        // Only Chuck Norris can divide by zero
+        if (scale < 0.0125)
+        {
+            return 0;
+        }
+
+        //Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
+        boolean scaled = scale != 1.0;
+
+        if (scaled)
+        {
+            ctx.getMatrices().pushMatrix();
+            ctx.getMatrices().scale((float) scale, (float) scale);      // z = 1.0f
+        }
+
+        double posX = xOff + bgMargin;
+        double posY = yOff + bgMargin;
+
+        posY = getHudPosY((int) posY, yOff, contentHeight, scale, alignment);
+
+        if (useStatusShift && mc().player != null)
+        {
+            posY += getHudOffsetForPotions(alignment, scale, mc().player);
+        }
+
+        final int width = fontRenderer.getWidth(text);
+
+        switch (alignment)
+        {
+            case TOP_RIGHT:
+            case BOTTOM_RIGHT:
+                posX = (scaledWidth / scale) - width - xOff - bgMargin;
+                break;
+            case CENTER:
+                posX = (scaledWidth / scale / 2) - ((double) width / 2) - xOff;
+                break;
+            default:
+        }
+
+        final int x = (int) posX;
+        final int y = (int) posY;
+
+        if (useBackground)
+        {
+//            drawRect(ctx, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor, (float) (scale * 2));
+            drawRect(ctx, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, bgColor);
+        }
+
+        ctx.drawText(fontRenderer, text, x, y, textColor, useShadow);
+
+        if (scaled)
+        {
+            ctx.getMatrices().popMatrix();
+        }
+
+        return contentHeight + bgMargin * 2;
+    }
+
     public static int getHudOffsetForPotions(HudAlignment alignment, double scale, PlayerEntity player)
     {
+        if (player == null) { return 0; }
         if (alignment == HudAlignment.TOP_RIGHT)
         {
             // Only Chuck Norris can divide by zero
@@ -1247,9 +1458,10 @@ public class RenderUtils
     }
 
 	/**
+     * @deprecated (Use the Tick Progress version to remove the "jumpy" text problem)<br>
+     * -
 	 * Renders a text plate/billboard, similar to the player name plate.<br>
 	 * The plate will always face towards the viewer.
-	 * @deprecated (Use the Tick Progress version to remove the "jumpy" text problem)
 	 *
 	 * @param text  (Text)
 	 * @param x     ()
@@ -1289,6 +1501,21 @@ public class RenderUtils
 		}
 	}
 
+    /**
+     * Renders a text plate/billboard, similar to the player name plate.<br>
+     * The plate will always face towards the viewer.
+     *
+     * @param text  List of strings
+     * @param x     xPos
+     * @param y     yPos
+     * @param z     zPos
+     * @param yaw       Camera Yaw / YRot
+     * @param pitch     Camera Pitch / XRot
+     * @param scale     FontScale
+     * @param textColor     Text Color
+     * @param bgColor       Background Color of the Rectangle
+     * @param disableDepth  Disable Depth Test (renderThrough)
+     */
 	public static void drawTextPlate(List<String> text,
                                      double x, double y, double z,
                                      float yaw, float pitch,
@@ -1302,20 +1529,18 @@ public class RenderUtils
         TextRenderer textRenderer = mc().textRenderer;
 
         Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
+
         global4fStack.pushMatrix();
-
         global4fStack.translate((float) (x - cx), (float) (y - cy), (float) (z - cz));
-
         //  Wrap it with matrix4fRotateFix() if rotation errors are found.
         global4fStack.rotateYXZ((-yaw) * ((float) (Math.PI / 180.0)), pitch * ((float) (Math.PI / 180.0)), 0.0F);
-
         global4fStack.scale((-scale), (-scale), scale);
         //RenderSystem.applyModelViewMatrix();
 
-        culling(false);
-        blend(true);
+//        culling(false);
+//        blend(true);
 
-        RenderContext ctx = new RenderContext(() -> "malilib:drawTextPlate", MaLiLibPipelines.POSITION_COLOR_MASA);
+        RenderContext ctx = new RenderContext(() -> "malilib:drawTextPlate", disableDepth ? MaLiLibPipelines.TEXT_PLATE_MASA_NO_DEPTH : MaLiLibPipelines.TEXT_PLATE_MASA);
         BufferBuilder buffer = ctx.getBuilder();
         int maxLineLen = 0;
 
@@ -1331,11 +1556,11 @@ public class RenderUtils
         int bgg = ((bgColor >>> 8) & 0xFF);
         int bgb = (bgColor & 0xFF);
 
-        if (disableDepth)
-        {
-            //RenderSystem.depthMask(false);
-            depthTest(false);
-        }
+//        if (disableDepth)
+//        {
+//            //RenderSystem.depthMask(false);
+//            depthTest(false);
+//        }
 
         buffer.vertex((float) (-strLenHalf - 1), (float) -1, 0.0F).color(bgr, bgg, bgb, bga);
         buffer.vertex((float) (-strLenHalf - 1), (float) textHeight, 0.0F).color(bgr, bgg, bgb, bga);
@@ -1362,11 +1587,11 @@ public class RenderUtils
         int textY = 0;
 
         // translate the text a bit infront of the background
-        if (disableDepth == false)
-        {
-            polygonOffset(true);
-            polygonOffset(-0.6f, -1.2f);
-        }
+//        if (disableDepth == false)
+//        {
+//            polygonOffset(true);
+//            polygonOffset(-0.6f, -1.2f);
+//        }
 
         Matrix4f modelMatrix = new Matrix4f();
         modelMatrix.identity();
@@ -1375,34 +1600,172 @@ public class RenderUtils
 
         for (String line : text)
         {
-            if (disableDepth)
-            {
-                //depthMask(false);
-                depthTest(false);
-                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(allocator);
-                textRenderer.draw(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFF), false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
-                immediate.draw();
-                depthTest(true);
-                //depthMask(true);
-            }
+//            if (disableDepth)
+//            {
+//                //depthMask(false);
+//                depthTest(false);
+//                VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(allocator);
+//                textRenderer.draw(line, -strLenHalf, textY, 0x20000000 | (textColor & 0xFFFFFF), false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
+//                immediate.draw();
+//                depthTest(true);
+//                //depthMask(true);
+//            }
+
+            // f = x
+            // g = y
+            // i = color
+            // bl = shadow
+            // j = bgColor
+            // k = light
+            // bl2 = incl empty
 
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(allocator);
-            textRenderer.draw(line, -strLenHalf, textY, textColor, false, modelMatrix, immediate, TextRenderer.TextLayerType.SEE_THROUGH, 0, 15728880);
+            textRenderer.draw(line, -strLenHalf, textY,     // drawInBatch
+                              disableDepth ? (0x20000000 | (textColor & 0xFFFFFFFF)) : textColor,
+                              false, modelMatrix, immediate,
+                              disableDepth ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.POLYGON_OFFSET,
+                              0, 15728880);
+
             immediate.draw();
             textY += textRenderer.fontHeight;
         }
 
         allocator.close();
 
-        if (disableDepth == false)
-        {
-            polygonOffset(0f, 0f);
-            polygonOffset(false);
-        }
-
-//        color(1f, 1f, 1f, 1f);
-        culling(true);
+//        if (disableDepth == false)
+//        {
+//            polygonOffset(0f, 0f);
+//            polygonOffset(false);
+//        }
+//
+//        culling(true);
         global4fStack.popMatrix();
+    }
+
+    /**
+     * Schedules a text plate/billboard, similar to the player name plate.<br>
+     * The plate will always face towards the viewer.
+     *
+     * @param text          List of strings
+     * @param pos           position
+     * @param scale         FontScale
+     */
+    public static void scheduleTextPlate(List<String> text, fi.dy.masa.malilib.util.position.Vec3d pos, float scale)
+    {
+        TextPlateRenderer.INSTANCE.schedule(
+                new TextPlateRenderState(text, pos, scale)
+        );
+    }
+
+    /**
+     * Schedules a text plate/billboard, similar to the player name plate.<br>
+     * The plate will always face towards the viewer.
+     *
+     * @param text          List of strings
+     * @param pos           position
+     * @param scale         FontScale
+     * @param alignment     TextAlignment
+     */
+    public static void scheduleTextPlate(List<String> text, fi.dy.masa.malilib.util.position.Vec3d pos, float scale, TextAlignment alignment)
+    {
+        TextPlateRenderer.INSTANCE.schedule(
+                new TextPlateRenderState(text, pos, scale, alignment)
+        );
+    }
+
+    /**
+     * Schedules a text plate/billboard, similar to the player name plate.<br>
+     * The plate will always face towards the viewer.
+     *
+     * @param text          List of strings
+     * @param pos           position
+     * @param scale         FontScale
+     * @param alignment     TextAlignment
+     * @param disableDepth  Disable Depth Test (renderThrough)
+     */
+    public static void scheduleTextPlate(List<String> text, fi.dy.masa.malilib.util.position.Vec3d pos, float scale,
+                                         boolean disableDepth, TextAlignment alignment)
+    {
+        TextPlateRenderer.INSTANCE.schedule(
+                new TextPlateRenderState(text, pos, scale, disableDepth, alignment)
+        );
+    }
+
+    /**
+     * Schedules a text plate/billboard, similar to the player name plate.<br>
+     * The plate will always face towards the viewer.
+     *
+     * @param text          List of strings
+     * @param pos           position
+     * @param scale         FontScale
+     * @param alignment     TextAlignment
+     * @param textColor     Text Color
+     * @param disableDepth  Disable Depth Test (renderThrough)
+     */
+    public static void scheduleTextPlate(List<String> text, fi.dy.masa.malilib.util.position.Vec3d pos, float scale,
+                                         Color4f textColor,
+                                         boolean disableDepth,
+                                         TextAlignment alignment)
+    {
+        TextPlateRenderer.INSTANCE.schedule(
+                new TextPlateRenderState(text, pos, scale,
+                                         textColor,
+                                         disableDepth, alignment
+                )
+        );
+    }
+
+    /**
+     * Schedules a text plate/billboard, similar to the player name plate.<br>
+     * The plate will always face towards the viewer.
+     *
+     * @param text          List of strings
+     * @param pos           position
+     * @param scale         FontScale
+     * @param alignment     TextAlignment
+     * @param textColor     Text Color
+     * @param bgColor       Background Color of the Rectangle
+     * @param disableDepth  Disable Depth Test (renderThrough)
+     */
+    public static void scheduleTextPlate(List<String> text, fi.dy.masa.malilib.util.position.Vec3d pos, float scale,
+                                         Color4f textColor, Color4f bgColor,
+                                         boolean disableDepth,
+                                         TextAlignment alignment)
+    {
+        TextPlateRenderer.INSTANCE.schedule(
+                new TextPlateRenderState(text, pos, scale,
+                                         textColor, bgColor,
+                                         disableDepth, alignment
+                )
+        );
+    }
+
+    /**
+     * Schedules a text plate/billboard, similar to the player name plate.<br>
+     * The plate will always face towards the viewer.
+     *
+     * @param text          List of strings
+     * @param pos           position
+     * @param scale         FontScale
+     * @param alignment     TextAlignment
+     * @param textColor     Text Color
+     * @param bgColor       Background Color of the Rectangle
+     * @param light         Light Coordinates
+     * @param disableDepth  Disable Depth Test (renderThrough)
+     * @param useShadow     Shadow Text
+     */
+    public static void scheduleTextPlate(List<String> text, fi.dy.masa.malilib.util.position.Vec3d pos, float scale,
+                                         Color4f textColor, Color4f bgColor,
+                                         int light, boolean disableDepth, boolean useShadow,
+                                         TextAlignment alignment)
+    {
+        TextPlateRenderer.INSTANCE.schedule(
+                new TextPlateRenderState(text, pos, scale,
+                                         textColor, bgColor,
+                                         light, disableDepth, useShadow,
+                                         alignment
+                )
+        );
     }
 
     public static void renderBlockTargetingOverlay(Entity entity, BlockPos pos, Direction side, Vec3d hitVec,
@@ -1644,8 +2007,9 @@ public class RenderUtils
      * Matrix4f rotation adds direct values without adding these numbers.
      * (angle * 0.017453292F) --> easy fix with matrix4fRotateFix()
      */
-    private static void blockTargetingOverlayTranslations(double x, double y, double z,
-                                                          Direction side, Direction playerFacing, Matrix4fStack matrix4fStack)
+    public static void blockTargetingOverlayTranslations(double x, double y, double z,
+                                                         Direction side, Direction playerFacing,
+                                                         Matrix4fStack matrix4fStack)
     {
         matrix4fStack.translate((float) x, (float) y, (float) z);
 
@@ -1760,8 +2124,8 @@ public class RenderUtils
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
             int height = props.height + 18;
-            int x = MathHelper.clamp(baseX + 8, 0, screenWidth - props.width);
-            int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
+            int x = MathUtils.clamp(baseX + 8, 0, screenWidth - props.width);
+            int y = MathUtils.clamp(baseY - height, 0, screenHeight - height);
             int color;
 
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof ShulkerBoxBlock)
@@ -1799,13 +2163,17 @@ public class RenderUtils
         }
     }
 
-    public static void renderBundlePreview(DrawContext drawContext, ItemStack stack, int baseX, int baseY, boolean useBgColors)
+    public static void renderBundlePreview(DrawContext drawContext,
+                                           ItemStack stack,
+                                           int baseX, int baseY, boolean useBgColors)
     {
         // Default is 9 to make the default display the same as Shulker Boxes
         renderBundlePreview(drawContext, stack, baseX, baseY, 9, useBgColors);
     }
 
-    public static void renderBundlePreview(DrawContext drawContext, ItemStack stack, int baseX, int baseY, int slotsPerRow, boolean useBgColors)
+    public static void renderBundlePreview(DrawContext drawContext,
+                                           ItemStack stack,
+                                           int baseX, int baseY, int slotsPerRow, boolean useBgColors)
     {
         DefaultedList<ItemStack> items;
 
@@ -1827,8 +2195,8 @@ public class RenderUtils
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
             int height = props.height + 18;
-            int x = MathHelper.clamp(baseX + 8, 0, screenWidth - props.width);
-            int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
+            int x = MathUtils.clamp(baseX + 8, 0, screenWidth - props.width);
+            int y = MathUtils.clamp(baseY - height, 0, screenHeight - height);
 
             int color = setBundleBackgroundTintColor(stack, useBgColors);
 
@@ -1848,15 +2216,16 @@ public class RenderUtils
      * Such as for a Crafter, etc.  This is meant to be simillar to the 1.20.4 behavior, minus the "BlockEntityTag";
      * since it no longer exists; but this can be used as such, if the "BlockEntityTag" or its eqivalent, is read in first.
      * -
-     *
+     * @param drawContext
      * @param stackIn     (Stack of the Entity for selecting the right textures)
      * @param itemsTag    (Nbt Items[] list)
      * @param baseX
      * @param baseY
      * @param useBgColors
-     * @param drawContext
      */
-    public static void renderNbtItemsPreview(DrawContext drawContext, ItemStack stackIn, @Nonnull NbtCompound itemsTag, int baseX, int baseY, boolean useBgColors)
+    public static void renderNbtItemsPreview(DrawContext drawContext,
+                                             ItemStack stackIn, @Nonnull NbtCompound itemsTag,
+                                             int baseX, int baseY, boolean useBgColors)
     {
         if (InventoryUtils.hasNbtItems(itemsTag))
         {
@@ -1878,8 +2247,62 @@ public class RenderUtils
             int screenWidth = GuiUtils.getScaledWindowWidth();
             int screenHeight = GuiUtils.getScaledWindowHeight();
             int height = props.height + 18;
-            int x = MathHelper.clamp(baseX + 8, 0, screenWidth - props.width);
-            int y = MathHelper.clamp(baseY - height, 0, screenHeight - height);
+            int x = MathUtils.clamp(baseX + 8, 0, screenWidth - props.width);
+            int y = MathUtils.clamp(baseY - height, 0, screenHeight - height);
+
+            int color = Colors.WHITE;
+
+            Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
+            matrix4fStack.pushMatrix();
+            matrix4fStack.translate(0, 0, 500);
+
+            InventoryOverlay.renderInventoryBackground(drawContext, type, x, y, props.slotsPerRow, items.size(), color, mc());
+
+            Inventory inv = InventoryUtils.getAsInventory(items);
+            InventoryOverlay.renderInventoryStacks(drawContext, type, inv, x + props.slotOffsetX, y + props.slotOffsetY, props.slotsPerRow, 0, -1, mc());
+
+            matrix4fStack.popMatrix();
+        }
+    }
+
+    /**
+     * Render's the Inventory Overlay using an NbtCompound Items[] List format instead of the Item Container Component,
+     * Such as for a Crafter, etc.  This is meant to be simillar to the 1.20.4 behavior, minus the "BlockEntityTag";
+     * since it no longer exists; but this can be used as such, if the "BlockEntityTag" or its eqivalent, is read in first.
+     * -
+     * @param drawContext
+     * @param stackIn     (Stack of the Entity for selecting the right textures)
+     * @param data    (Nbt Items[] list)
+     * @param baseX
+     * @param baseY
+     * @param useBgColors
+     */
+    public static void renderDataItemsPreview(DrawContext drawContext,
+                                              ItemStack stackIn, @Nonnull CompoundData data,
+                                              int baseX, int baseY, boolean useBgColors)
+    {
+        if (InventoryUtils.hasDataItems(data))
+        {
+            if (mc().world == null)
+            {
+                return;
+            }
+
+            DefaultedList<ItemStack> items = InventoryUtils.getDataItems(data, -1, mc().world.getRegistryManager());
+
+            if (items.size() == 0)
+            {
+                return;
+            }
+
+            InventoryOverlay.InventoryRenderType type = InventoryOverlay.getInventoryType(stackIn);
+            InventoryOverlay.InventoryProperties props = InventoryOverlay.getInventoryPropsTemp(type, items.size());
+
+            int screenWidth = GuiUtils.getScaledWindowWidth();
+            int screenHeight = GuiUtils.getScaledWindowHeight();
+            int height = props.height + 18;
+            int x = MathUtils.clamp(baseX + 8, 0, screenWidth - props.width);
+            int y = MathUtils.clamp(baseY - height, 0, screenHeight - height);
 
             int color = Colors.WHITE;
 
@@ -2028,32 +2451,181 @@ public class RenderUtils
 
     public static int setVillagerBackgroundTintColor(VillagerData data, boolean useBgColors)
     {
-        if (useBgColors)
+        if (useBgColors && data != null)
         {
             RegistryEntry<VillagerProfession> profession = data != null ? data.profession() : null;
-            return setVillagerBackgroundTintColor(profession, useBgColors);
+            RegistryEntry<VillagerType> type = data != null ? data.type() : null;
+
+            return setVillagerBackgroundTintColor(profession, type, useBgColors);
         }
 
         return Colors.WHITE;
     }
 
-    public static int setVillagerBackgroundTintColor(RegistryEntry<VillagerProfession> profession, boolean useBgColors)
+    public static int setVillagerBackgroundTintColor(RegistryEntry<VillagerProfession> profession,
+                                                     RegistryEntry<VillagerType> type,
+                                                     boolean useBgColors)
     {
         if (useBgColors)
         {
-            final DyeColor dye = getVillagerColor(profession);
+//            final DyeColor dye = getVillagerColor(profession);
+            final int professionColor = getVillagerProfessionColor(profession);
 
-            if (dye != null)
-            {
-                final float[] colors = getColorComponents(dye.getEntityColor());
-                return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
-            }
+//            if (dye != null)
+//            {
+//                final float[] colors = getColorComponents(dye.getEntityColor());
+//                return ColorHelper.fromFloats(1f, colors[0], colors[1], colors[2]);
+//            }
+
+            return professionColor;
         }
 
         return Colors.WHITE;
     }
 
+    public static int getVillagerLevelColor(int level)
+    {
+        switch (level)
+        {
+            case 1 ->       // Stone
+            {
+                return 0xFFB3B1AF;
+            }
+            case 2 ->       // Iron
+            {
+                return 0xFFECC1A6;
+            }
+            case 3 ->       // Gold
+            {
+                return 0xFFFDFF76;
+            }
+            case 4 ->       // Emerald
+            {
+                return 0xFF41F384;
+            }
+            case 5 ->       // Diamond
+            {
+                return 0xFFA4FDF0;
+            }
+        }
+
+        return -1;
+    }
+
+    public static int getVillagerTypeColor(RegistryEntry<VillagerType> type)
+    {
+        if (type == null) return -1;
+
+        if (type.matchesKey(VillagerType.DESERT))
+        {
+            return 0xFFD75601;      // Orangeish color of robes
+        }
+        else if (type.matchesKey(VillagerType.JUNGLE))
+        {
+            return 0xFFEAC03F;      // Yellowish color of shirt
+        }
+        else if (type.matchesKey(VillagerType.PLAINS))
+        {
+            return 0xFF71544D;      // Brownish Color of overalls
+        }
+        else if (type.matchesKey(VillagerType.SAVANNA))
+        {
+            return 0xFFAA2A2A;      // Reddish Color of top
+        }
+        else if (type.matchesKey(VillagerType.SNOW))
+        {
+            return 0xFF5E8F83;      // Cyanish Color of coat
+        }
+        else if (type.matchesKey(VillagerType.SWAMP))
+        {
+            return 0xFF412D56;      // Purpleish color of shirt
+        }
+        else if (type.matchesKey(VillagerType.TAIGA))
+        {
+            return 0xFFE3E0C2;      // Off-White color of shirt
+        }
+
+        return -1;
+    }
+
+    public static int getVillagerProfessionColor(RegistryEntry<VillagerProfession> profession)
+    {
+        if (profession == null) return -1;
+
+        if (profession.matchesKey(VillagerProfession.NONE))
+        {
+//			return 0xFFBE886C;          // Skin-like color
+            return 0xFF5F44B6;          // Skin-like + Blue
+        }
+        else if (profession.matchesKey(VillagerProfession.ARMORER))
+        {
+            return 0xFF858078;          // A Gray face mask color
+//			return 0xFF615E58;          // A Gray + hint of Charcoal
+        }
+        else if (profession.matchesKey(VillagerProfession.BUTCHER))
+        {
+//			return 0xFFAE574F;          // Reddish/Orange Headband color
+            return 0xFFCE6D9F;          // Reddish/Orange + Pink
+        }
+        else if (profession.matchesKey(VillagerProfession.CARTOGRAPHER))
+        {
+            return 0xFF97CAF6;          // Light Blue Monicle glass color
+        }
+        else if (profession.matchesKey(VillagerProfession.CLERIC))
+        {
+//			return 0xFF793C5B;          // Purpleish robes color
+            return 0xFF6A2868;          // Purpleish + a hint Purple
+        }
+        else if (profession.matchesKey(VillagerProfession.FARMER))
+        {
+            return 0xFFDBC549;          // Yellowish hat color
+        }
+        else if (profession.matchesKey(VillagerProfession.FISHERMAN))
+        {
+            return 0xFF6B9F93;          // Cyanish "Fish" color
+        }
+        else if (profession.matchesKey(VillagerProfession.FLETCHER))
+        {
+            return 0xFF9A5030;          // Orangish belt color
+        }
+        else if (profession.matchesKey(VillagerProfession.LEATHERWORKER))
+        {
+            return 0xFF855636;          // Brownish apron color
+        }
+        else if (profession.matchesKey(VillagerProfession.LIBRARIAN))
+        {
+            return 0xFF9A2323;          // Red hat color
+        }
+        else if (profession.matchesKey(VillagerProfession.MASON))
+        {
+            return 0xFF363230;          // Dark Gray apron color
+//			return 0xFF5B1958;          // Dark Gray + Magenta
+        }
+        else if (profession.matchesKey(VillagerProfession.NITWIT))
+        {
+            return 0xFF5D744F;          // Greenish shirt color
+        }
+        else if (profession.matchesKey(VillagerProfession.SHEPHERD))
+        {
+            return 0xFFF4F4E1;          // Off-White vest color
+        }
+        else if (profession.matchesKey(VillagerProfession.TOOLSMITH))
+        {
+            return 0xFF615026;          // Wood-Brownish Hammer handle color
+//			return 0xFF82765C;          // Wood-Brown + Light Gray
+        }
+        else if (profession.matchesKey(VillagerProfession.WEAPONSMITH))
+        {
+            return 0xFF191919;          // Charcoalish hat color
+//			return 0xFF232121;          // Charcoal + hint of Mason Dark Gray
+        }
+
+//		return 0xFF32CD32;              // Lime
+        return 0xFF4EB349;              // Lime + hint of gray
+    }
+
     // todo - return real colors
+    @Deprecated(forRemoval = true)
     public static DyeColor getVillagerColor(RegistryEntry<VillagerProfession> profession)
     {
         if (profession == null)
@@ -2156,12 +2728,19 @@ public class RenderUtils
         return totalSize > 0;
     }
 
-    public static void renderModelInGui(DrawContext drawContext, int x, int y, BlockState state)
+    public static void renderModelInGui(DrawContext ctx, int x, int y, BlockState state)
     {
-        renderModelInGui(drawContext, x, y, 16, state, 0.625f);
+        renderModelInGui(ctx, x, y, 16, state, 0.75F, 0.50F);
     }
 
-    public static void renderModelInGui(DrawContext drawContext, int x, int y, int size, BlockState state, float scale)
+    public static void renderModelInGui(DrawContext ctx, int x, int y, BlockState state, float scale)
+    {
+        renderModelInGui(ctx, x, y, 16, state, scale, 0.0F);
+        // scale: 0.625f ?
+    }
+
+    @ApiStatus.Experimental
+    public static void renderModelInGui(DrawContext ctx, int x, int y, int size, BlockState state, float scale, float yOffset)
     {
         if (state.getBlock() == Blocks.AIR)
         {
@@ -2169,71 +2748,73 @@ public class RenderUtils
         }
 
         // FIXME
-//        RenderUtils.addSpecialElement(drawContext, new MaLiLibBlockStateModelGuiElement(
-//                state,
-//                x, y,
-//                size,
-//                scale,
-//                RenderUtils.peekLastScissor(drawContext))
-//        );
+        RenderUtils.addSpecialElement(ctx, new MaLiLibBlockStateModelGuiElement(
+                state,
+                new Quaternionf().rotationXYZ(30 * (float) (Math.PI / 180.0), 225 * (float) (Math.PI / 180.0), 0.0F),
+                x, y,
+                size,
+                scale,
+                yOffset,
+                RenderUtils.peekLastScissor(ctx))
+        );
     }
 
-    private static void renderModel(BlockStateModel model, BlockState state,
-                                    MatrixStack matrices, BufferBuilder builder)
-    {
-        LocalRandom random = new LocalRandom(0);
-        List<BlockModelPart> parts = model.getParts(random);
-        MatrixStack.Entry entry = matrices.peek();
-        int l = LightmapTextureManager.pack(15, 15);
-        int[] light = new int[] { l, l, l, l };
-        float[] brightness = new float[] { 0.75f, 0.75f, 0.75f, 1.0f };
-
-        for (BlockModelPart part : parts)
-        {
-            for (Direction face : PositionUtils.ALL_DIRECTIONS)
-            {
-                random.setSeed(0);
-                renderQuads(part.getQuads(face), brightness, light, entry, builder);
-            }
-
-            random.setSeed(0);
-            renderQuads(part.getQuads(null), brightness, light, entry, builder);
-        }
-    }
-
-    private static void renderQuads(List<BakedQuad> quads, float[] brightness, int[] light,
-                                    MatrixStack.Entry matrixEntry, BufferBuilder builder)
-    {
-        for (BakedQuad quad : quads)
-        {
-            renderQuad(quad, brightness, light, matrixEntry, builder);
-        }
-    }
-
-    private static void renderQuad(BakedQuad quad, float[] brightness, int[] light,
-                                   MatrixStack.Entry matrixEntry, BufferBuilder builder)
-    {
-        builder.quad(matrixEntry, quad, brightness, 1.0f, 1.0f, 1.0f, 1.0f, light, OverlayTexture.DEFAULT_UV, true);
-    }
-
-    private static void renderModelQuadOverlayBatched(BlockPos pos, BufferBuilder buffer, Color4f color, BakedQuad quad)
-    {
-        final int[] vertexData = quad.vertexData();
-        final int x = pos.getX();
-        final int y = pos.getY();
-        final int z = pos.getZ();
-        final int vertexSize = vertexData.length / 4;
-        float fx, fy, fz;
-
-        for (int index = 0; index < 4; ++index)
-        {
-            fx = x + Float.intBitsToFloat(vertexData[index * vertexSize    ]);
-            fy = y + Float.intBitsToFloat(vertexData[index * vertexSize + 1]);
-            fz = z + Float.intBitsToFloat(vertexData[index * vertexSize + 2]);
-
-            buffer.vertex(fx, fy, fz).color(color.r, color.g, color.b, color.a);
-        }
-    }
+//    private static void renderModel(BlockStateModel model, BlockState state,
+//                                    MatrixStack matrices, BufferBuilder builder)
+//    {
+//        LocalRandom random = new LocalRandom(0);
+//        List<BlockModelPart> parts = model.getParts(random);
+//        MatrixStack.Entry entry = matrices.peek();
+//        int l = LightmapTextureManager.pack(15, 15);
+//        int[] light = new int[] { l, l, l, l };
+//        float[] brightness = new float[] { 0.75f, 0.75f, 0.75f, 1.0f };
+//
+//        for (BlockModelPart part : parts)
+//        {
+//            for (Direction face : PositionUtils.ALL_DIRECTIONS)
+//            {
+//                random.setSeed(0);
+//                renderQuads(part.getQuads(face), brightness, light, entry, builder);
+//            }
+//
+//            random.setSeed(0);
+//            renderQuads(part.getQuads(null), brightness, light, entry, builder);
+//        }
+//    }
+//
+//    private static void renderQuads(List<BakedQuad> quads, float[] brightness, int[] light,
+//                                    MatrixStack.Entry matrixEntry, BufferBuilder builder)
+//    {
+//        for (BakedQuad quad : quads)
+//        {
+//            renderQuad(quad, brightness, light, matrixEntry, builder);
+//        }
+//    }
+//
+//    private static void renderQuad(BakedQuad quad, float[] brightness, int[] light,
+//                                   MatrixStack.Entry matrixEntry, BufferBuilder builder)
+//    {
+//        builder.quad(matrixEntry, quad, brightness, 1.0f, 1.0f, 1.0f, 1.0f, light, OverlayTexture.DEFAULT_UV, true);
+//    }
+//
+//    private static void renderModelQuadOverlayBatched(BlockPos pos, BufferBuilder buffer, Color4f color, BakedQuad quad)
+//    {
+//        final int[] vertexData = quad.vertexData();
+//        final int x = pos.getX();
+//        final int y = pos.getY();
+//        final int z = pos.getZ();
+//        final int vertexSize = vertexData.length / 4;
+//        float fx, fy, fz;
+//
+//        for (int index = 0; index < 4; ++index)
+//        {
+//            fx = x + Float.intBitsToFloat(vertexData[index * vertexSize    ]);
+//            fy = y + Float.intBitsToFloat(vertexData[index * vertexSize + 1]);
+//            fz = z + Float.intBitsToFloat(vertexData[index * vertexSize + 2]);
+//
+//            buffer.vertex(fx, fy, fz).color(color.r, color.g, color.b, color.a);
+//        }
+//    }
 
     public static MinecraftClient mc()
     {
@@ -2531,9 +3112,9 @@ public class RenderUtils
 
     public static void renderAreaSides(BlockPos pos1, BlockPos pos2, Color4f color, Matrix4f matrix4f, boolean shouldResort)
     {
-		boolean culling = shouldCull(pos1, pos2);
+		boolean insideOf = isCameraInsideOf(pos1, pos2);
         // MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_2
-        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", culling ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH);
+        RenderContext ctx = new RenderContext(() -> "malilib:renderAreaSides", insideOf ? MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH_OFFSET_3 : MaLiLibPipelines.POSITION_COLOR_TRANSLUCENT_LEQUAL_DEPTH);
         BufferBuilder buffer = ctx.getBuilder();
 
         renderAreaSidesBatched(pos1, pos2, color, 0.002, buffer);
@@ -2602,19 +3183,19 @@ public class RenderUtils
         final double dy = cameraPos.y;
         final double dz = cameraPos.z;
 
-        final float dxMin = (float) (-dx - expand);
-        final float dyMin = (float) (-dy - expand);
-        final float dzMin = (float) (-dz - expand);
-        final float dxMax = (float) (-dx + expand);
-        final float dyMax = (float) (-dy + expand);
-        final float dzMax = (float) (-dz + expand);
+        final double dxMin = -dx - expand;
+        final double dyMin = -dy - expand;
+        final double dzMin = -dz - expand;
+        final double dxMax = -dx + expand;
+        final double dyMax = -dy + expand;
+        final double dzMax = -dz + expand;
 
-        final float minX = xMin + dxMin;
-        final float minY = yMin + dyMin;
-        final float minZ = zMin + dzMin;
-        final float maxX = xMax + dxMax;
-        final float maxY = yMax + dyMax;
-        final float maxZ = zMax + dzMax;
+        final float minX = (float) (xMin + dxMin);
+        final float minY = (float) (yMin + dyMin);
+        final float minZ = (float) (zMin + dzMin);
+        final float maxX = (float) (xMax + dxMax);
+        final float maxY = (float) (yMax + dyMax);
+        final float maxZ = (float) (zMax + dzMax);
 
         int start, end;
 
@@ -2628,8 +3209,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
-            buffer.vertex(end + dxMax, minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex((float) (start + dxMin), minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex((float) (end + dxMax), minY, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMin) ? xMin + 1 : xMin;
@@ -2637,8 +3218,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
-            buffer.vertex(end + dxMax, maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex((float) (start + dxMin), maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex((float) (end + dxMax), maxY + 1, minZ).color(colorX.r, colorX.g, colorX.b, colorX.a);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMax) ? xMin + 1 : xMin;
@@ -2646,8 +3227,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
-            buffer.vertex(end + dxMax, minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex((float) (start + dxMin), minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex((float) (end + dxMax), minY, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMax) ? xMin + 1 : xMin;
@@ -2655,8 +3236,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(start + dxMin, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
-            buffer.vertex(end + dxMax, maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex((float) (start + dxMin), maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
+            buffer.vertex((float) (end + dxMax), maxY + 1, maxZ + 1).color(colorX.r, colorX.g, colorX.b, colorX.a);
         }
 
         // Edges along the Y-axis
@@ -2665,8 +3246,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
-            buffer.vertex(minX, end + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(minX, (float) (start + dyMin), minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(minX, (float) (end + dyMax), minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMin) ? yMin + 1 : yMin;
@@ -2674,8 +3255,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, start + dyMin, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
-            buffer.vertex(maxX + 1, end + dyMax, minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(maxX + 1, (float) (start + dyMin), minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(maxX + 1, (float) (end + dyMax), minZ).color(colorY.r, colorY.g, colorY.b, colorY.a);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMin && pos2.getY() == yMin && pos2.getZ() == zMax) ? yMin + 1 : yMin;
@@ -2683,8 +3264,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
-            buffer.vertex(minX, end + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(minX, (float) (start + dyMin), maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(minX, (float) (end + dyMax), maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMax) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMax) ? yMin + 1 : yMin;
@@ -2692,8 +3273,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, start + dyMin, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
-            buffer.vertex(maxX + 1, end + dyMax, maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(maxX + 1, (float) (start + dyMin), maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
+            buffer.vertex(maxX + 1, (float) (end + dyMax), maxZ + 1).color(colorY.r, colorY.g, colorY.b, colorY.a);
         }
 
         // Edges along the Z-axis
@@ -2702,8 +3283,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
-            buffer.vertex(minX, minY, end + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(minX, minY, (float) (start + dzMin)).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(minX, minY, (float) (end + dzMax)).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMin && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMin && pos2.getZ() == zMin) ? zMin + 1 : zMin;
@@ -2711,8 +3292,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, minY, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
-            buffer.vertex(maxX + 1, minY, end + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(maxX + 1, minY, (float) (start + dzMin)).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(maxX + 1, minY, (float) (end + dzMax)).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
         }
 
         start = (pos1.getX() == xMin && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMin && pos2.getY() == yMax && pos2.getZ() == zMin) ? zMin + 1 : zMin;
@@ -2720,8 +3301,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(minX, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
-            buffer.vertex(minX, maxY + 1, end + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(minX, maxY + 1, (float) (start + dzMin)).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(minX, maxY + 1, (float) (end + dzMax)).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
         }
 
         start = (pos1.getX() == xMax && pos1.getY() == yMax && pos1.getZ() == zMin) || (pos2.getX() == xMax && pos2.getY() == yMax && pos2.getZ() == zMin) ? zMin + 1 : zMin;
@@ -2729,8 +3310,8 @@ public class RenderUtils
 
         if (end > start)
         {
-            buffer.vertex(maxX + 1, maxY + 1, start + dzMin).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
-            buffer.vertex(maxX + 1, maxY + 1, end + dzMax).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(maxX + 1, maxY + 1, (float) (start + dzMin)).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
+            buffer.vertex(maxX + 1, maxY + 1, (float) (end + dzMax)).color(colorZ.r, colorZ.g, colorZ.b, colorZ.a);
         }
 
         try
@@ -2759,7 +3340,7 @@ public class RenderUtils
      * @param pos2
      * @return
      */
-	public static boolean shouldCull(BlockPos pos1, BlockPos pos2)
+    public static boolean isCameraInsideOf(BlockPos pos1, BlockPos pos2)
 	{
         // Fix Bottom Y Border offset
         if (pos1.getY() < pos2.getY())
@@ -2771,13 +3352,13 @@ public class RenderUtils
             pos2 = pos2.mutableCopy().setY(pos2.getY() - 1).toImmutable();
         }
 
-        return shouldCull(Box.enclosing(pos1, pos2));
+        return isCameraInsideOf(Box.enclosing(pos1, pos2));
 	}
 
-	public static boolean shouldCull(Vec3d pos1, Vec3d pos2)
-	{
-		return shouldCull(new Box(pos1, pos2));
-	}
+    public static boolean isCameraInsideOf(Vec3d pos1, Vec3d pos2)
+    {
+        return isCameraInsideOf(new Box(pos1, pos2));
+    }
 
 	/**
 	 * The POSITION_COLOR Bottom Side causes Z fighting at certain distances;
@@ -2789,12 +3370,234 @@ public class RenderUtils
 	 * @param bb
 	 * @return
 	 */
-	public static boolean shouldCull(Box bb)
-	{
+    public static boolean isCameraInsideOf(Box bb)
+    {
         Entity camera = mc().getCameraEntity();
         Vec3d pos = camera.getEntityPos();
 
         // Mark culling if the camera is outside of the bounding box (Walls overlapping, etc)
 		return bb.contains(pos);
 	}
+
+    public static fi.dy.masa.malilib.util.position.Vec3d camPosMasa()
+    {
+        return fi.dy.masa.malilib.util.position.Vec3d.of(camPos());
+    }
+
+    public static void scheduleBlockOutline(BlockPos pos, float expand, float lineWidth, Color4f color, boolean renderThrough)
+    {
+        SelectionBoxRenderer.INSTANCE.scheduleBlockOutline(
+                new BlockOutlineRenderState(
+                        camPosMasa(),
+                        pos, expand, lineWidth,
+                        Color4f.ZERO, color, renderThrough
+                )
+        );
+    }
+
+    public static void scheduleBlockOutlineOverlapping(BlockPos pos, float expand, float lineWidth, Color4f color1, Color4f color2, Color4f colorOverlap, boolean renderThrough)
+    {
+        SelectionBoxRenderer.INSTANCE.scheduleBlockOutlineOverlapping(
+                new BlockOutlineOverlappingRenderState(
+                        camPosMasa(),
+                        pos, expand, lineWidth,
+                        color1, color2, colorOverlap, renderThrough
+                )
+        );
+    }
+
+    public static void scheduleBlockBoxWithOutline(BlockPos pos, float expand, float lineWidth, Color4f sidesColor, Color4f linesColor)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        SelectionBoxRenderer.INSTANCE.scheduleBlockBoxWithOutline(
+                new AreaSidesRenderState(
+                        camPos,
+                        pos, pos,
+                        sidesColor, false
+                ),
+                new BlockOutlineRenderState(
+                        camPos,
+                        pos, expand, lineWidth,
+                        Color4f.ZERO, linesColor, false
+                )
+        );
+    }
+
+    public static void scheduleSelectionBox(BlockPos pos1, BlockPos pos2,
+                                            float expand, float lineWidthArea, float lineWithBlock,
+                                            Color4f sidesColor, Color4f colorPos1, Color4f colorPos2,
+                                            Color4f colorX, Color4f colorY, Color4f colorZ)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        SelectionBoxRenderer.INSTANCE.scheduleSelectionBox(
+                new AreaOutlineNoCornersRenderState(
+                        camPos,
+                        pos1, pos2, lineWidthArea,
+                        colorX, colorY, colorZ
+                ),
+                new AreaSidesRenderState(
+                        camPos,
+                        pos1, pos2,
+                        sidesColor, false
+                ),
+                new BlockOutlineRenderState(
+                        camPos,
+                        pos1, expand, lineWithBlock,
+                        Color4f.ZERO, colorPos1, false
+                ),
+                new BlockOutlineRenderState(
+                        camPos,
+                        pos2, expand, lineWithBlock,
+                        Color4f.ZERO, colorPos2, false
+                )
+        );
+    }
+
+    public static void scheduleBoxedWalls(BlockPos pos1,
+                                          BlockPos pos2,
+                                          Color4f quadsColor)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+                new BoxWallOutlinesOverlayRenderState(pos1, pos2, camPos)
+        );
+    }
+
+    public static void scheduleBoxedWalls(BlockPos pos1,
+                                          BlockPos pos2,
+                                          Color4f quadsColor, Color4f linesColor)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+                new BoxWallOutlinesOverlayRenderState(pos1, pos2, camPos, linesColor)
+        );
+    }
+
+    public static void scheduleBoxedWalls(BlockPos pos1,
+                                          BlockPos pos2,
+                                          Color4f quadsColor, Color4f linesColor, float linesWidth)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+                new BoxWallOutlinesOverlayRenderState(
+                        pos1, pos2, camPos,
+                        linesColor, linesWidth
+                )
+        );
+    }
+
+    public static void scheduleBoxedWalls(BlockPos pos1,
+                                          BlockPos pos2,
+                                          double lineIntervalH, double lineIntervalV, boolean alignLinesToModulo,
+                                          Color4f quadsColor, Color4f linesColor, float linesWidth)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+                new BoxWallOutlinesOverlayRenderState(
+                        pos1, pos2, camPos,
+                        lineIntervalH, lineIntervalV, alignLinesToModulo,
+                        linesColor, linesWidth
+                )
+        );
+    }
+
+    public static void scheduleBoxedWalls(BlockPos pos1,
+                                          BlockPos pos2,
+                                          Vec2d lineIntervals, boolean alignLinesToModulo,
+                                          Color4f quadsColor, Color4f linesColor, float linesWidth)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                new BoxWallQuadsOverlayRenderState(pos1, pos2, camPos, quadsColor),
+                new BoxWallOutlinesOverlayRenderState(
+                        pos1, pos2, camPos,
+                        lineIntervals, alignLinesToModulo,
+                        linesColor, linesWidth
+                )
+        );
+    }
+
+    public static void scheduleCenteredWalls(BlockPos pos,
+                                             int range, World level,
+                                             Color4f quadsColor)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+                CenterRangeWallOutlinesOverlayRenderState.create(pos, range, level, camPos)
+        );
+    }
+
+    public static void scheduleCenteredWalls(BlockPos pos,
+                                             int range, World level,
+                                             Color4f quadsColor, Color4f linesColor)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+                CenterRangeWallOutlinesOverlayRenderState.create(pos, range, level, camPos, linesColor)
+        );
+    }
+
+    public static void scheduleCenteredWalls(BlockPos pos,
+                                             int range, World level,
+                                             Color4f quadsColor, Color4f linesColor, float linesWidth)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+                CenterRangeWallOutlinesOverlayRenderState.create(
+                        pos, range, level, camPos,
+                        linesColor, linesWidth
+                )
+        );
+    }
+
+    public static void scheduleCenteredWalls(BlockPos pos,
+                                             int range, World level,
+                                             double lineIntervalH, double lineIntervalV, boolean alignLinesToModulo,
+                                             Color4f quadsColor, Color4f linesColor, float linesWidth)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+                CenterRangeWallOutlinesOverlayRenderState.create(
+                        pos, range, level, camPos,
+                        lineIntervalH, lineIntervalV, alignLinesToModulo,
+                        linesColor, linesWidth
+                )
+        );
+    }
+
+    public static void scheduleCenteredWalls(BlockPos pos,
+                                             int range, World level,
+                                             Vec2d lineIntervals, boolean alignLinesToModulo,
+                                             Color4f quadsColor, Color4f linesColor, float linesWidth)
+    {
+        fi.dy.masa.malilib.util.position.Vec3d camPos = camPosMasa();
+
+        WallOverlayRenderer.INSTANCE.scheduleWalls(
+                CenterRangeWallQuadsOverlayRenderState.create(pos, range, level, camPos, quadsColor),
+                CenterRangeWallOutlinesOverlayRenderState.create(
+                        pos, range, level, camPos,
+                        lineIntervals, alignLinesToModulo,
+                        linesColor, linesWidth
+                )
+        );
+    }
 }

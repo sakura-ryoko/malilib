@@ -31,7 +31,7 @@ public class KeybindMulti implements IKeybind
 
     private final String defaultStorageString;
     private final KeybindSettings defaultSettings;
-    private List<Integer> keyCodes = new ArrayList<>(4);
+    private final List<Integer> keyCodes = new ArrayList<>(4);
     private KeybindSettings settings;
     private boolean pressed;
     private boolean pressedLast;
@@ -467,7 +467,14 @@ public class KeybindMulti implements IKeybind
     public static KeybindMulti fromStorageString(String str, KeybindSettings settings)
     {
         KeybindMulti keybind = new KeybindMulti(str, settings);
+        final String oldValue = keybind.getStringValue();
         keybind.setValueFromString(str);
+
+        if (!oldValue.equals(keybind.getStringValue()))
+        {
+            keybind.markDirty();
+        }
+
         return keybind;
     }
 
@@ -605,7 +612,7 @@ public class KeybindMulti implements IKeybind
         return triggeredCount;
     }
 
-    public IHotkeyCallback getCallback() {
+    public @Nullable IHotkeyCallback getCallback() {
         return callback;
     }
 }

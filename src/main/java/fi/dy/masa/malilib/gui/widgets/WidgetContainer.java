@@ -117,6 +117,26 @@ public abstract class WidgetContainer extends WidgetBase
     }
 
     @Override
+    public boolean onMouseDragged(Click click, double dragXAmount, double dragYAmount)
+    {
+        if (this.isMouseOver((int) click.x(), (int) click.y()))
+        {
+            if (this.subWidgets.isEmpty() == false)
+            {
+                for (WidgetBase widget : this.subWidgets)
+                {
+                    if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return this.onMouseDraggedImpl(click, dragXAmount, dragYAmount);
+        }
+        return false;
+    }
+
+    @Override
     public boolean onKeyTyped(KeyInput input)
     {
         boolean handled = false;

@@ -29,7 +29,7 @@ public class WidgetListTableEdit extends WidgetListConfigOptionsBase<TableRow, W
 	@Override
 	protected Collection<TableRow> getAllEntries()
 	{
-		return this.config.getTable();
+		return this.config.getTable().stream().toList();
 	}
 
 	@Override

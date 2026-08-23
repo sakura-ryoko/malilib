@@ -1,11 +1,9 @@
 package fi.dy.masa.malilib.config;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jetbrains.annotations.ApiStatus;
 
 import fi.dy.masa.malilib.MaLiLib;
 
@@ -60,6 +58,16 @@ public class ConfigManager implements IConfigManager
         for (IConfigHandler handler : this.configHandlers.values())
         {
             handler.save();
+        }
+    }
+
+    @ApiStatus.Internal
+    public void onVanillaSetLanguage(String string)
+    {
+        MaLiLib.debugLog("onVanillaSetLanguage()");
+        for (IConfigHandler handler : this.configHandlers.values())
+        {
+            handler.onLanguageChanged(string);
         }
     }
 }

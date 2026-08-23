@@ -566,7 +566,7 @@ public class DataEntityUtils
 	 */
 	public static @Nullable TradeOfferList getTradeOffers(@Nonnull CompoundData data, @Nonnull DynamicRegistryManager registry)
 	{
-		if (data.contains(NbtKeys.OFFERS, Constants.NBT.TAG_LIST))
+		if (data.containsLenient(NbtKeys.OFFERS))
 		{
 			return data.getCodec(NbtKeys.OFFERS, TradeOfferList.CODEC, registry.getOps(DataOps.INSTANCE)).orElse(null);
 		}

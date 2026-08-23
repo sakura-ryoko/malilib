@@ -38,7 +38,10 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     {
         if (this.entry.getType() == DirectoryEntryType.DIRECTORY)
         {
-            this.navigator.switchToDirectory(this.entry.getDirectory().resolve(this.entry.getName()));
+            if (click.button() == 0)
+            {
+                this.navigator.switchToDirectory(this.entry.getDirectory().resolve(this.entry.getName()));
+            }
         }
         else
         {
@@ -51,7 +54,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
     @Override
     public void render(DrawContext drawContext, int mouseX, int mouseY, boolean selected)
     {
-        super.render(drawContext, mouseX, mouseY, selected);
+//        super.render(drawContext, mouseX, mouseY, selected);
 
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY))

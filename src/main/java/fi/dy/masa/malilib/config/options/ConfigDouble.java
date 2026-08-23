@@ -6,11 +6,12 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.ConfigType;
 import fi.dy.masa.malilib.config.IConfigDouble;
+import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import net.minecraft.util.math.MathHelper;
 
 public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDouble
 {
@@ -33,10 +34,11 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
     private final double defaultValue;
     private double value;
     private boolean useSlider;
+    private double lastValue;
 
     public ConfigDouble(String name, double defaultValue)
     {
-        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, Double.MIN_VALUE, Double.MAX_VALUE, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, String comment)
@@ -56,7 +58,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue)
     {
-        this(name, defaultValue, minValue, maxValue, false, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, false, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, String comment)
@@ -76,7 +78,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider)
     {
-        this(name, defaultValue, minValue, maxValue, useSlider, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, minValue, maxValue, useSlider, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigDouble(String name, double defaultValue, double minValue, double maxValue, boolean useSlider, String comment)
@@ -98,6 +100,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
         this.defaultValue = defaultValue;
         this.value = defaultValue;
         this.useSlider = useSlider;
+        this.updateLastDoubleValue();
     }
 
     private ConfigDouble(String name, Double defaultValue, Double minValue, Double maxValue, Double value, Boolean useSlider, String comment, String prettyName, String translatedName)
@@ -133,6 +136,7 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
     @Override
     public void setDoubleValue(double value)
     {
+        this.updateLastDoubleValue();
         double oldValue = this.value;
         this.value = this.getClampedValue(value);
 
@@ -154,9 +158,15 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
         return this.maxValue;
     }
 
+    @Override
+    public double getLastDoubleValue()
+    {
+        return this.lastValue;
+    }
+
     protected double getClampedValue(double value)
     {
-        return MathHelper.clamp(value, this.minValue, this.maxValue);
+        return MathUtils.clamp(value, this.minValue, this.maxValue);
     }
 
     @Override
@@ -204,27 +214,50 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
         }
         catch (Exception e)
         {
-            MaLiLib.LOGGER.warn("Failed to set config value for {} from the string '{}'", this.getName(), value, e);
+            MaLiLib.LOGGER.warn("Failed to set config value for {} from the string '{}'; {}", this.getName(), value, e.getLocalizedMessage());
         }
+    }
+
+    @Override
+    public void updateLastDoubleValue()
+    {
+        this.lastValue = this.value;
     }
 
     @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+        double oldValue = this.value;
+
         try
         {
             if (element.isJsonPrimitive())
             {
-                this.setDoubleValue(this.getClampedValue(element.getAsDouble()));
+                double temp = element.getAsDouble();
+                this.value = this.getClampedValue(temp);
             }
             else
             {
                 MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element);
             }
+
+            if (oldValue != this.value || this.isDirty())
+            {
+                this.markClean();
+
+                if (this.getLastDoubleValue() != this.getDoubleValue())
+                {
+//                    MaLiLib.LOGGER.error("[DOUBLE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                         this.getLastDoubleValue(), oldValue, this.getDoubleValue()
+//                    );
+
+                    this.onValueChanged();
+                }
+            }
         }
         catch (Exception e)
         {
-            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
+            MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'; {}", this.getName(), element, e.getLocalizedMessage());
         }
     }
 

@@ -85,6 +85,10 @@ public class MaLiLibPipelines
     public static RenderPipeline POSITION_COLOR_MASA_DEPTH_MASK;
     public static RenderPipeline POSITION_COLOR_MASA;
 
+    // TEXT_PLATE
+    public static RenderPipeline TEXT_PLATE_MASA_NO_DEPTH;
+    public static RenderPipeline TEXT_PLATE_MASA;
+
     // POSITION_TEX_TRANSLUCENT
 //    public static RenderPipeline POSITION_TEX_TRANSLUCENT_NO_DEPTH_NO_CULL;
 //    public static RenderPipeline POSITION_TEX_TRANSLUCENT_NO_DEPTH;

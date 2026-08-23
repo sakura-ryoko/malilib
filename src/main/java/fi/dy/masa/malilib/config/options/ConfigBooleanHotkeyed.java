@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.config.options;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
@@ -13,7 +14,7 @@ import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeyCallbackToggleBooleanConfigWithMessage;
 import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
-import fi.dy.masa.malilib.util.JsonUtils;
+import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyTogglable
@@ -32,10 +33,11 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
                                 .apply(instance, ConfigBooleanHotkeyed::new)
     );
     protected final IKeybind keybind;
+    private Pair<Boolean, String> lastBooleanHotkey;
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey)
     {
-        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, defaultHotkey, KeybindSettings.DEFAULT, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, String comment)
@@ -55,7 +57,7 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings)
     {
-        this(name, defaultValue, defaultHotkey, settings, name+" Comment?", StringUtils.splitCamelCase(name), name);
+        this(name, defaultValue, defaultHotkey, settings, "", StringUtils.splitCamelCase(name), name);
     }
 
     public ConfigBooleanHotkeyed(String name, boolean defaultValue, String defaultHotkey, KeybindSettings settings, String comment)
@@ -74,6 +76,7 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
 
         this.keybind = KeybindMulti.fromStorageString(defaultHotkey, settings);
         this.keybind.setCallback(new KeyCallbackToggleBooleanConfigWithMessage(this));
+        this.updateLastBooleanHotkeyValue();
     }
 
     private ConfigBooleanHotkeyed(String name, boolean defaultValue, boolean value, String defaultHotkey, KeybindSettings settings, String comment, String prettyName, String translatedName)
@@ -117,39 +120,86 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
     @Override
     public void toggleBooleanValue()
     {
+        this.updateLastBooleanHotkeyValue();
         super.toggleBooleanValue();
     }
 
     @Override
     public void resetToDefault()
     {
-//		boolean oldValue = super.getBooleanValue();
-        super.resetToDefault();
+        this.updateLastBooleanHotkeyValue();
         this.keybind.resetToDefault();
-//
-//		if (super.getBooleanValue() != oldValue)
-//		{
-//			this.keybind.markClean();
-//			// Don't duplicate the Callback
-//		}
-//		else
-//		{
-//			this.checkIfKeybindIsClean();
-//		}
+        super.resetToDefault();
 	}
 
-	private void checkIfKeybindIsClean()
-	{
-		if (this.keybind.isDirty())
-		{
-			this.keybind.markClean();
-			this.onValueChanged();
-		}
-	}
+    @Override
+    public Pair<Boolean, String> getBooleanHotkeyValue()
+    {
+        return Pair.of(super.getBooleanValue(), this.getKeybind().getStringValue());
+    }
+
+    @Override
+    public Pair<Boolean, String> getDefaultBooleanHotkeyValue()
+    {
+        return Pair.of(this.getDefaultBooleanValue(), this.getKeybind().getDefaultStringValue());
+    }
+
+    @Override
+    public void setBooleanHotkeyValue(Pair<Boolean, String> value)
+    {
+        this.updateLastBooleanHotkeyValue();
+        this.setBooleanValue(value.getLeft());
+        this.getKeybind().setValueFromString(value.getRight());
+    }
+
+    @Override
+    public Pair<Boolean, String> getLastBooleanHotkeyValue()
+    {
+        return this.lastBooleanHotkey;
+    }
+
+    @Override
+    public void updateLastBooleanHotkeyValue()
+    {
+        this.lastBooleanHotkey = Pair.of(this.getBooleanValue(), this.getKeybind().getStringValue());
+    }
+
+    @Override
+    public boolean isDirty()
+    {
+        return this.getKeybind().isDirty() || super.isDirty();
+    }
+
+    @Override
+    public void markDirty()
+    {
+        super.markDirty();
+        this.getKeybind().markDirty();
+    }
+
+    @Override
+    public void markClean()
+    {
+        super.markClean();
+        this.getKeybind().markClean();
+    }
+
+    @Override
+    public void checkIfClean()
+    {
+        if (this.isDirty())
+        {
+            this.markClean();
+            this.onValueChanged();
+        }
+    }
 
     @Override
     public void setValueFromJsonElement(JsonElement element)
     {
+        final boolean oldBool = this.getBooleanValue();
+        final String oldKeybind = this.getKeybind().getStringValue();
+
         try
         {
             if (element.isJsonObject())
@@ -165,13 +215,30 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
                 {
                     JsonObject hotkeyObj = obj.getAsJsonObject("hotkey");
                     this.keybind.setValueFromJsonElement(hotkeyObj);
-	                this.checkIfKeybindIsClean();
                 }
             }
             // Backwards compatibility with the old bugged serialization that only serialized the boolean value
             else
             {
                 super.setValueFromJsonElement(element);
+            }
+
+            final Pair<Boolean, String> oldValue = Pair.of(oldBool, oldKeybind);
+
+            if (!oldValue.equals(this.getBooleanHotkeyValue()) || this.isDirty())
+            {
+                this.markClean();
+
+                if (!this.getLastBooleanHotkeyValue().equals(this.getBooleanHotkeyValue()))
+                {
+//                    MaLiLib.LOGGER.error("[BOOL-HOTKEY/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+//                                         this.getLastBooleanHotkeyValue().toString(),
+//                                         oldValue,
+//                                         this.getBooleanHotkeyValue().toString()
+//                    );
+
+                    this.onValueChanged();
+                }
             }
         }
         catch (Exception e)

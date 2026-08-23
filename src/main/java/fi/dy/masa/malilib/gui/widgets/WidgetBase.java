@@ -113,6 +113,19 @@ public abstract class WidgetBase
     {
     }
 
+    public boolean onMouseDragged(Click click, double dragXAmount, double dragYAmount)
+    {
+        if (this.isMouseOver((int) click.x(), (int) click.y()))
+        {
+            return this.onMouseDraggedImpl(click, dragXAmount, dragYAmount);
+        }
+        return false;
+    }
+    public boolean onMouseDraggedImpl(Click click, double dragXAmount, double dragYAmount)
+    {
+        return false;
+    }
+
     public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
         if (this.isMouseOver((int) mouseX, (int) mouseY))

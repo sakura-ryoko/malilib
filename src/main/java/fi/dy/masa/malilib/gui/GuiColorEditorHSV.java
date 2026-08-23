@@ -1,9 +1,12 @@
 package fi.dy.masa.malilib.gui;
 
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import org.apache.commons.lang3.math.Fraction;
+import org.apache.commons.lang3.tuple.Pair;
+import org.joml.Matrix3x2f;
+
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.DrawContext;
@@ -16,18 +19,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
-import org.apache.commons.lang3.math.Fraction;
-import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Matrix3x2f;
-
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigColor;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.render.element.*;
-import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -129,7 +128,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         this.addLabel(this.xH - 26, y + 3, 12, 12, 0xFFFFFFFF, "HEX:");
         this.textFieldFullColor = new GuiTextFieldGeneric(this.xH, y + 1, 68, 14, this.textRenderer);
         this.textFieldFullColor.setMaxLength(12);
-        this.addTextField(this.textFieldFullColor, new TextFieldListener(null, this));
+        this.addTextField(this.textFieldFullColor, new TextFieldListener(null, this), TextFieldType.STRING.setMaxLength(12));
 
         //String str = StringUtils.translate("malilib.gui.label.color_editor.current_color");
         //this.addLabel(this.xHS, this.yHS + this.sizeHS + 10, 60, 12, 0xFFFFFF, str);
@@ -155,7 +154,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
 
         this.addLabel(xLabel, y, 12, 12, 0xFFFFFFFF, element.name() + ":");
-        this.addTextField(textField, listener);
+        this.addTextField(textField, listener, TextFieldType.INTEGER);
 
         return this.heightSlider + this.gapSlider;
     }

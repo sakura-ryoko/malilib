@@ -12,6 +12,7 @@ import net.minecraft.client.input.KeyInput;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
+import fi.dy.masa.malilib.mixin.gui.IMixinClickableWidget;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class GuiTextFieldGeneric extends TextFieldWidget
@@ -88,6 +89,7 @@ public class GuiTextFieldGeneric extends TextFieldWidget
                mouseY >= this.y && mouseY < this.y + this.height;
     }
 
+    @Deprecated
     public GuiTextFieldGeneric setZLevel(int zLevel)
     {
         this.zLevel = zLevel;
@@ -140,6 +142,11 @@ public class GuiTextFieldGeneric extends TextFieldWidget
 			}
 		}
 	}
+
+    public boolean hasTooltip()
+    {
+        return ((IMixinClickableWidget) this).malilib_getTooltipHolder().getTooltip() != null;
+    }
 
 	/**
 	 * Clear the Hover tooltip

@@ -16,10 +16,12 @@ import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.MaLiLibIcons;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringRetriever;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.malilib.util.MathUtils;
 
 /**
  * A dropdown selection widget for entries in the given list.
@@ -41,17 +43,19 @@ public class WidgetDropDownList<T> extends WidgetBase
     protected boolean isOpen;
     protected int selectedIndex;
     protected int scrollbarWidth = 10;
-    @Nullable protected final IStringRetriever<T> stringRetriever;
-    @Nullable protected T selectedEntry;
+    @Nullable
+    protected final IStringRetriever<T> stringRetriever;
+    @Nullable
+    protected T selectedEntry;
 
     public WidgetDropDownList(int x, int y, int width, int height, int maxHeight,
-            int maxVisibleEntries, List<T> entries)
+                              int maxVisibleEntries, List<T> entries)
     {
         this(x, y, width, height, maxHeight, maxVisibleEntries, entries, null);
     }
 
     public WidgetDropDownList(int x, int y, int width, int height, int maxHeight,
-            int maxVisibleEntries, List<T> entries, @Nullable IStringRetriever<T> stringRetriever)
+                              int maxVisibleEntries, List<T> entries, @Nullable IStringRetriever<T> stringRetriever)
     {
         super(x, y, width, height);
 
@@ -61,17 +65,17 @@ public class WidgetDropDownList<T> extends WidgetBase
         this.filteredEntries = new ArrayList<>();
         this.stringRetriever = stringRetriever;
 
-        int v = Math.min(maxVisibleEntries, entries.size());
-        v = Math.min(v, maxHeight / height);
-        v = Math.min(v, (GuiUtils.getScaledWindowHeight() - y) / height);
-        v = Math.max(v, 1);
+        int v = MathUtils.min(maxVisibleEntries, entries.size());
+        v = MathUtils.min(v, maxHeight / height);
+        v = MathUtils.min(v, (GuiUtils.getScaledWindowHeight() - y) / height);
+        v = MathUtils.max(v, 1);
 
         this.maxVisibleEntries = v;
         this.totalHeight = (v + 1) * height;
         this.scrollBar.setMaxValue(entries.size() - this.maxVisibleEntries);
 
         TextFieldListener listener = new TextFieldListener(this);
-        this.searchBar = new TextFieldWrapper<>(new GuiTextFieldGeneric(x + 1, y - 18, this.width - 2, 16, this.textRenderer), listener);
+        this.searchBar = new TextFieldWrapper<>(new GuiTextFieldGeneric(x + 1, y - 18, this.width - 2, 16, this.textRenderer), listener, TextFieldType.STRING);
         this.searchBar.getTextField().setFocused(true);
 
         this.updateFilteredEntries();
@@ -94,7 +98,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
             for (int i = 0; i < entries.size(); ++i)
             {
-                width = Math.max(width, this.getStringWidth(this.getDisplayString(entries.get(i))) + 20);
+                width = MathUtils.max(width, this.getStringWidth(this.getDisplayString(entries.get(i))) + 20);
             }
         }
 
@@ -135,8 +139,8 @@ public class WidgetDropDownList<T> extends WidgetBase
     @Override
     protected boolean onMouseClickedImpl(Click click, boolean doubleClick)
     {
-		int mouseX = (int) click.x();
-		int mouseY = (int) click.y();
+        int mouseX = (int) click.x();
+        int mouseY = (int) click.y();
 
         if (this.isOpen && mouseY > this.y + this.height)
         {
@@ -163,7 +167,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         if (this.isOpen == false || (mouseX < this.x + this.width - this.scrollbarWidth || mouseY < this.y + this.height))
         {
-            this.isOpen = ! this.isOpen;
+            this.isOpen = !this.isOpen;
 
             if (this.isOpen == false)
             {
@@ -295,66 +299,65 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         if (this.isOpen)
         {
-            if (this.searchBar.getTextField().getText().isEmpty() == false)
-            {
-                this.searchBar.draw(drawContext, mouseX, mouseY);
-            }
-
-//            RenderUtils.depthMask(true);
-//            RenderUtils.depthTest(true);
-            RenderUtils.drawOutline(drawContext, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
-
-            int y = this.y + this.height + 1;
-            int startIndex = Math.max(0, this.scrollBar.getValue());
-            int max = Math.min(startIndex + this.maxVisibleEntries, list.size());
-
-            for (int i = startIndex; i < max; ++i)
-            {
-                int bg = (i & 0x1) != 0 ? 0x20FFFFFF : 0x30FFFFFF;
-
-                if (mouseX >= this.x && mouseX < this.x + this.width - scrollWidth &&
-                    mouseY >= y && mouseY < y + this.height)
-                {
-                    bg = 0x60FFFFFF;
-                }
-
-//                RenderUtils.depthMask(true);
-//                RenderUtils.depthTest(true);
-                RenderUtils.drawRect(drawContext, this.x, y, this.width - scrollWidth, this.height, bg);
-                str = this.getDisplayString(list.get(i));
-                this.drawString(drawContext, txtX, txtY, 0xFFE0E0E0, str);
-                y += this.height;
-                txtY += this.height;
-            }
-
-            int x = this.x + this.width - this.scrollbarWidth - 1;
-            y = this.y + this.height + 1;
-            int h = visibleEntries * this.height;
-            int totalHeight = Math.max(h, list.size() * this.height);
-
-//            RenderUtils.depthMask(true);
-//            RenderUtils.depthTest(true);
-            this.scrollBar.render(drawContext, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
-
-//            VertexConsumer buffer = this.bindTexture(MaLiLibIcons.TEXTURE, drawContext);
-//            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
+            this.renderOpen(drawContext, mouseX, mouseY, txtX, txtY);
 
             MaLiLibIcons i = MaLiLibIcons.ARROW_UP;
             RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
         else
         {
-//            VertexConsumer buffer = this.bindTexture(MaLiLibIcons.TEXTURE, drawContext);
-//            Matrix4f posMatrix = drawContext.getMatrices().peek().getPositionMatrix();
-
             MaLiLibIcons i = MaLiLibIcons.ARROW_DOWN;
             RenderUtils.drawTexturedRect(drawContext, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
 
-//        RenderUtils.depthMask(false);
-//        RenderUtils.depthTest(false);
         matrixStack.popMatrix();
         matrixStackIn.popMatrix();
+    }
+
+    private void renderOpen(DrawContext ctx, int mouseX, int mouseY, int txtX, int txtY)
+    {
+        List<T> list = this.filteredEntries;
+        int visibleEntries = MathUtils.min(this.maxVisibleEntries, list.size());
+        String str;
+
+        txtY += this.height + 1;
+        int scrollWidth = 10;
+
+        if (this.searchBar.getTextField().getText().isEmpty() == false)
+        {
+            this.searchBar.draw(ctx, mouseX, mouseY);
+        }
+
+    //        RenderUtils.drawOutline(ctx, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
+        RenderUtils.drawOutlinedBox(ctx, this.x + 1, this.y + this.height, this.width - 2, visibleEntries * this.height + 1, 0xFF101010, 0xFFE0E0E0);
+
+        int y = this.y + this.height + 1;
+        int startIndex = Math.max(0, this.scrollBar.getValue());
+        int max = Math.min(startIndex + this.maxVisibleEntries, list.size());
+
+        for (int i = startIndex; i < max; ++i)
+        {
+            int bg = (i & 0x1) != 0 ? 0x20FFFFFF : 0x30FFFFFF;
+
+            if (mouseX >= this.x && mouseX < this.x + this.width - scrollWidth &&
+                mouseY >= y && mouseY < y + this.height)
+            {
+                bg = 0x60FFFFFF;
+            }
+
+            RenderUtils.drawRect(ctx, this.x, y, this.width - scrollWidth, this.height, bg);
+            str = this.getDisplayString(list.get(i));
+            this.drawString(ctx, txtX, txtY, 0xFFE0E0E0, str);
+            y += this.height;
+            txtY += this.height;
+        }
+
+        int x = this.x + this.width - this.scrollbarWidth - 1;
+        y = this.y + this.height + 1;
+        int h = visibleEntries * this.height;
+        int totalHeight = Math.max(h, list.size() * this.height);
+
+        this.scrollBar.render(ctx, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
     }
 
     @Override
@@ -365,19 +368,16 @@ public class WidgetDropDownList<T> extends WidgetBase
         // Draw it again to cover up other elements, when open
         if (this.isOpen)
         {
-            this.render(drawContext, mouseX, mouseY, selected);
-            //RenderUtils.forceDraw(drawContext);
+            int txtX = this.x + 4;
+            int txtY = this.y + this.height / 2 - this.fontHeight / 2;
+
+//            drawContext.elementUp();
+            this.renderOpen(drawContext, mouseX, mouseY, txtX, txtY);
         }
     }
 
-    protected static class TextFieldListener implements ITextFieldListener<GuiTextFieldGeneric>
+    protected record TextFieldListener(WidgetDropDownList<?> widget) implements ITextFieldListener<GuiTextFieldGeneric>
     {
-        protected final WidgetDropDownList<?> widget;
-
-        protected TextFieldListener(WidgetDropDownList<?> widget)
-        {
-            this.widget = widget;
-        }
 
         @Override
         public boolean onTextChange(GuiTextFieldGeneric textField)

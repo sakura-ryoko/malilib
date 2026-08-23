@@ -48,6 +48,11 @@ public enum BlockMirror implements IConfigOptionListEntry, StringIdentifiable
         return this.index;
     }
 
+    public String getName()
+    {
+        return this.name;
+    }
+
     @Override
     public String getStringValue()
     {

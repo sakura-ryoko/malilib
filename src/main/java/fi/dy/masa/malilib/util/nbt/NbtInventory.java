@@ -22,11 +22,13 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.BaseData;
@@ -46,11 +48,32 @@ public class NbtInventory implements AutoCloseable
     private static final AnsiLogger LOGGER = new AnsiLogger(NbtInventory.class, true, true);
 //    public static final Comparator<ItemStackWithSlot> SLOT_COMPARATOR = new StackWithSlotComparator();
     public static final Comparator<EntrySlot> COMPARATOR = new EntrySlotComparator();
+    public static final Inventory LOOTABLE_INVENTORY = createLootableInventory();
+
+    private static Inventory createLootableInventory()
+    {
+        SimpleInventory inv = new SimpleInventory(1);
+        try
+        {
+            ComponentChanges.Builder builder = ComponentChanges.builder();
+            builder.add(DataComponentTypes.LORE, new LoreComponent(List.of(StringUtils.translateAsText("malilib.gui.tooltip.nbt.has_loot_table"))));
+            inv.setStack(0, new ItemStack(Items.BARRIER.getRegistryEntry(), 1, builder.build()));
+        }
+        catch (Exception ignored) {}
+        return inv;
+    }
+
+    public static final int SINGLE_SIZE = 1;
+    public static final int HOPPER_SIZE = 5;
     public static final int VILLAGER_SIZE = 8;
+    public static final int DISPENSER_SIZE = 9;
     public static final int DEFAULT_SIZE = 27;
     public static final int PLAYER_SIZE = 36;
     public static final int DOUBLE_SIZE = 54;
+    public static final int TRIPLE_SIZE = 81;
+    public static final int QUAD_SIZE = 108;
     public static final int MAX_SIZE = 256;
+
     private HashSet<EntrySlot> items;
 
     private NbtInventory() {}
@@ -81,9 +104,17 @@ public class NbtInventory implements AutoCloseable
     public static int getAdjustedSize(int size)
     {
         //LOGGER.debug("getAdjustedSize(): sizeIn: [{}]", size);
-        if (size <= VILLAGER_SIZE)
+        if (size <= SINGLE_SIZE)
+        {
+            return SINGLE_SIZE;
+        }
+        else if (size <= VILLAGER_SIZE)
         {
             return size;
+        }
+        else if (size == DISPENSER_SIZE)
+        {
+            return DISPENSER_SIZE;
         }
         else if (size <= DEFAULT_SIZE)
         {
@@ -96,6 +127,14 @@ public class NbtInventory implements AutoCloseable
         else if (size <= DOUBLE_SIZE)
         {
             return DOUBLE_SIZE;
+        }
+        else if (size <= TRIPLE_SIZE)
+        {
+            return TRIPLE_SIZE;
+        }
+        else if (size <= QUAD_SIZE)
+        {
+            return QUAD_SIZE;
         }
         else
         {
@@ -240,6 +279,36 @@ public class NbtInventory implements AutoCloseable
         {
             EntrySlot slot = new EntrySlot(i, list.get(i));
             //LOGGER.info("fromVanillaList():[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
+            newInv.items.add(slot);
+        }
+
+        return newInv;
+    }
+
+    /**
+     * Create a new {@link NbtInventory} from a {@link DefaultedList} of Slots.
+     *
+     * @param list -
+     * @return -
+     */
+    public static @Nullable NbtInventory fromVanillaSlotList(@Nonnull DefaultedList<Slot> list)
+    {
+        int size = list.size();
+
+        if (size < 1)
+        {
+            return null;
+        }
+
+        size = getAdjustedSize(MathUtils.clamp(size, 1, MAX_SIZE));
+        NbtInventory newInv = new NbtInventory();
+        newInv.items = new HashSet<>();
+
+        for (int i = 0; i < size; i++)
+        {
+            Slot entry = list.get(i);
+            EntrySlot slot = new EntrySlot(entry.getIndex(), entry.getStack());
+            //LOGGER.info("fromVanillaSlotList():[{}]: slot [{}], stack: [{}]", i, slot.slot(), slot.stack().toString());
             newInv.items.add(slot);
         }
 
