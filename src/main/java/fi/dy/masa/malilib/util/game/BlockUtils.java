@@ -151,14 +151,18 @@ public class BlockUtils
      */
     public static String getBlockStateStringFromTag(CompoundTag stateTag)
     {
-        String name = stateTag.getStringOr("Name", "");
+        String name = stateTag.contains("name")
+                      ? stateTag.getStringOr("name", "")
+                      : stateTag.getStringOr("Name", "");
 
-        if (stateTag.contains("Properties") == false)
+        if (!stateTag.contains("properties") && !stateTag.contains("Properties"))
         {
             return name;
         }
 
-        CompoundTag propTag = stateTag.getCompoundOrEmpty("Properties");
+        CompoundTag propTag = stateTag.contains("properties")
+                              ? stateTag.getCompoundOrEmpty("properties")
+                              : stateTag.getCompoundOrEmpty("Properties");
         ArrayList<Pair<String, String>> props = new ArrayList<>();
 
         for (String key : propTag.keySet())
