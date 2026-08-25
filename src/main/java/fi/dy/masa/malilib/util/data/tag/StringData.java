@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.util.Objects;
 
 import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTrackerException;
 
 public class StringData extends BaseData
 {
@@ -47,19 +49,20 @@ public class StringData extends BaseData
     @Override
     public int sizeInBytes()
     {
-        return Character.BYTES * this.value.length();
+        return (int) Math.min(Short.BYTES + DataTypeUtils.getUTFLength(this.value), Integer.MAX_VALUE);
     }
 
     @Override
-    public void write(DataOutput output) throws IOException
+    public void write(DataOutput output) throws IOException, SizeTrackerException
     {
         output.writeUTF(this.value);
     }
 
-    public static StringData read(DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+    public static StringData read(DataInput input, int depth, SizeTracker sizeTracker)
+            throws IOException, SizeTrackerException
     {
         String str = input.readUTF();
-        sizeTracker.increment(str.length() + 2);
+        sizeTracker.increment(Short.BYTES + DataTypeUtils.getUTFLength(str));
         return new StringData(str);
     }
 

@@ -278,6 +278,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
                     if (pair != null)
                     {
                         nbt = pair.getRight();
+                        be = pair.getLeft();
                     }
                 }
 
@@ -401,6 +402,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 					if (pair != null)
 					{
 						data = pair.getRight();
+						be = pair.getLeft();
 					}
 				}
 
@@ -454,29 +456,29 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
     {
         Inventory inv;
 
-        if (be != null)
-        {
-            if (nbt.isEmpty())
-            {
-                nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
-            }
-            inv = InventoryUtils.getInventory(world, pos);
-        }
-        else
-        {
-            if (nbt.isEmpty())
-            {
-                Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
-
-                if (pair != null)
-                {
-                    nbt = pair.getRight();
-	                be = pair.getLeft();
-                }
-            }
+//        if (be != null)
+//        {
+//            if (nbt.isEmpty())
+//            {
+//                nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
+//            }
+//            inv = InventoryUtils.getInventory(world, pos);
+//        }
+//        else
+//        {
+//            if (nbt.isEmpty())
+//            {
+//                Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+//
+//                if (pair != null)
+//                {
+//                    nbt = pair.getRight();
+//	                be = pair.getLeft();
+//                }
+//            }
 
             inv = this.getDataSyncer().getBlockInventory(world, pos, false);
-        }
+//        }
 
         BlockEntityType<?> beType = nbt != null ? NbtBlockUtils.getBlockEntityTypeFromNbt(nbt) : null;
 	    MaLiLib.LOGGER.error("getTargetInventoryFromBlock() beType: [{}], inv [{}]", beType != null ? beType.getClass().getSimpleName() : "<null>", inv != null ? inv.size() : "<null>");
@@ -578,30 +580,30 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 	{
 		Inventory inv;
 
-		if (be != null)
-		{
-			if (data.isEmpty())
-			{
-				data = DataConverterNbt.fromVanillaCompound(be.createNbtWithIdentifyingData(world.getRegistryManager()));
-			}
-
-			inv = InventoryUtils.getInventory(world, pos);
-		}
-		else
-		{
-			if (data.isEmpty())
-			{
-				Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntityNew(world, pos);
-
-				if (pair != null)
-				{
-					data = pair.getRight();
-					be = pair.getLeft();
-				}
-			}
+//		if (be != null)
+//		{
+//			if (data.isEmpty())
+//			{
+//				data = DataConverterNbt.fromVanillaCompound(be.saveWithFullMetadata(world.registryAccess()));
+//			}
+//
+//			inv = InventoryUtils.getInventory(world, pos);
+//		}
+//		else
+//		{
+//			if (data.isEmpty())
+//			{
+//				Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+//
+//				if (pair != null)
+//				{
+//					data = pair.getRight();
+//					be = pair.getLeft();
+//				}
+//			}
 
 			inv = this.getDataSyncer().getBlockInventory(world, pos, false);
-		}
+//		}
 
 		BlockEntityType<?> beType = data != null ? DataBlockUtils.getBlockEntityType(data) : null;
 		MaLiLib.LOGGER.error("getTargetFromBlockNew() beType: [{}], inv [{}]", beType != null ? beType.getClass().getSimpleName() : "<null>", inv != null ? inv.size() : "<null>");
@@ -640,7 +642,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 		if (data != null && !data.isEmpty())
 		{
-			if (MaLiLibReference.EXPERIMENTAL_MODE)
+			if (MaLiLibReference.DEBUG_MODE && MaLiLibReference.EXPERIMENTAL_MODE)
 			{
 				ListData test = data.getList(NbtKeys.ITEMS);
 

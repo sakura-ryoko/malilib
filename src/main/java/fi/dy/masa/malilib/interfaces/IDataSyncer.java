@@ -640,6 +640,7 @@ public interface IDataSyncer
 		{
 			Inventory inv = null;
 			BlockState state = world.getBlockState(pos);
+			boolean shouldCombine = false;
 
 			if (!useNbt && (state.isIn(BlockTags.AIR) || !state.hasBlockEntity()))
 			{
@@ -666,13 +667,14 @@ public interface IDataSyncer
 				}
 				else
 				{
+					shouldCombine = true;
 					Inventory inv1 = null;
 					Inventory inv2 = null;
 
 					if (useNbt)
 					{
-						inv1 = InventoryUtils.getDataInventory(pair.data(), -1, world.getRegistryManager());
-						inv2 = InventoryUtils.getDataInventory(pairAdj.data(), -1, world.getRegistryManager());
+						inv1 = InventoryUtils.getDataInventory(pair.data(), NbtInventory.DEFAULT_SIZE, world.getRegistryManager());
+						inv2 = InventoryUtils.getDataInventory(pairAdj.data(), NbtInventory.DEFAULT_SIZE, world.getRegistryManager());
 					}
 					else if (pair.be() instanceof Inventory c1 && pairAdj.be() instanceof Inventory c2)
 					{
@@ -720,13 +722,14 @@ public interface IDataSyncer
 							 stateAdj.get(Properties.CHEST_TYPE) != ChestType.SINGLE &&
 							 stateAdj.get(Properties.HORIZONTAL_FACING) == facing)
 					{
+						shouldCombine = true;
 						Inventory inv1 = null;
 						Inventory inv2 = null;
 
 						if (useNbt)
 						{
-							inv1 = InventoryUtils.getDataInventory(pair.data(), -1, world.getRegistryManager());
-							inv2 = InventoryUtils.getDataInventory(pairAdj.data(), -1, world.getRegistryManager());
+							inv1 = InventoryUtils.getDataInventory(pair.data(), NbtInventory.DEFAULT_SIZE, world.getRegistryManager());
+							inv2 = InventoryUtils.getDataInventory(pairAdj.data(), NbtInventory.DEFAULT_SIZE, world.getRegistryManager());
 						}
 						else if (pair.be() instanceof Inventory c1 && pairAdj.be() instanceof Inventory c2)
 						{
@@ -751,7 +754,8 @@ public interface IDataSyncer
 				if (pair.be() instanceof LootableInventory rc && rc.getLootTable() != null) { return NbtInventory.LOOTABLE_INVENTORY; }
 				if (useNbt)
 				{
-					inv = InventoryUtils.getDataInventory(pair.data(), -1, world.getRegistryManager());
+					final int slotCount = shouldCombine ? NbtInventory.DOUBLE_SIZE : -1;
+					inv = InventoryUtils.getDataInventory(pair.data(), slotCount, world.getRegistryManager());
 				}
 				else if (pair.be() instanceof Inventory inv2)
 				{

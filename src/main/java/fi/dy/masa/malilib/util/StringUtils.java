@@ -95,16 +95,6 @@ public class StringUtils
         return "?";
     }
 
-    public static String getMCVersionString()
-    {
-        return MaLiLibReference.MC_VERSION;
-    }
-
-    public static int getMCDataVersion()
-    {
-        return MaLiLibReference.MC_DATA_VERSION;
-    }
-
     /**
      * Removes the string <b>extension</b> from the end of <b>str</b>,
      * if <b>str</b> ends in <b>extension</b>
