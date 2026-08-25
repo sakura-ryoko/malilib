@@ -1,12 +1,14 @@
 package fi.dy.masa.malilib.util.data_syncer;
 
 import java.util.HashMap;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.CompoundContainer;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -14,19 +16,25 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.EnderChestBlockEntity;
 
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
+import fi.dy.masa.malilib.util.nbt.NbtInventory;
 
 public class EntityDataChestTracker
 {
 	private final HashMap<BlockPos, Pair<Integer, BlockEntity>> lastOpenedContainers;
 	private BlockPos lastInteractPos;
+	private NbtInventory enderCache;
 
 	public EntityDataChestTracker()
 	{
 		this.lastOpenedContainers = new HashMap<>();
+		this.enderCache = null;
 	}
 
 	public void setLastInteractPos(BlockPos pos)
@@ -42,8 +50,36 @@ public class EntityDataChestTracker
 	public void onContainerMenuOpened(int containerId, BlockPos pos, BlockEntity te)
 	{
 		if (te == null) { return; }
-//		MaLiLib.LOGGER.warn("onContainerMenuOpened: id: {}, pos: [{}], te: [{}]", containerId, pos.toShortString(), BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(te.getType()));
+		if (MaLiLibReference.DEBUG_MODE)
+		{
+			MaLiLib.LOGGER.warn("onContainerMenuOpened: id: {}, pos: [{}], te: [{}]", containerId, pos.toShortString(), BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(te.getType()));
+		}
 		this.lastOpenedContainers.put(pos, Pair.of(containerId, te));
+	}
+
+	public @Nullable NbtInventory getEnderCache()
+	{
+		return this.enderCache;
+	}
+
+	public void onCloseEnderChest(@Nonnull Container inv)
+	{
+		if (this.enderCache != null)
+		{
+			try
+			{
+				this.enderCache.close();
+				this.enderCache = null;
+			}
+			catch (Exception ignored) {}
+		}
+
+		if (MaLiLibReference.DEBUG_MODE)
+		{
+			MaLiLib.LOGGER.warn("onCloseEnderChest(): size: [{}]", inv.getContainerSize());
+		}
+
+		this.enderCache = NbtInventory.fromInventory(inv);
 	}
 
 	public void onContainerMenuClosed(AbstractContainerMenu menu)
@@ -87,7 +123,11 @@ public class EntityDataChestTracker
 			{
 				Pair<Integer, BlockEntity> pair = this.lastOpenedContainers.get(key);
 
-				if (pair != null && pair.getLeft() == containerId && pair.getRight() instanceof Container cc)
+				if (pair != null && pair.getLeft() == containerId && pair.getRight() instanceof EnderChestBlockEntity)
+				{
+					this.onCloseEnderChest(inv);
+				}
+				else if (pair != null && pair.getLeft() == containerId && pair.getRight() instanceof Container cc)
 				{
 					if (cc.getContainerSize() == inv.getContainerSize())
 					{

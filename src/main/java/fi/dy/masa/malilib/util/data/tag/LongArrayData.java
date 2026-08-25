@@ -9,6 +9,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTrackerException;
 
 public class LongArrayData extends BaseData implements ArrayData
 {
@@ -63,7 +64,7 @@ public class LongArrayData extends BaseData implements ArrayData
     @Override
     public int sizeInBytes()
     {
-        return Long.BYTES * this.value.length;
+        return Integer.BYTES + (Long.BYTES * this.value.length);
     }
 
     @Override
@@ -135,7 +136,7 @@ public class LongArrayData extends BaseData implements ArrayData
     }
 
     @Override
-    public void write(DataOutput output) throws IOException
+    public void write(DataOutput output) throws IOException, SizeTrackerException
     {
         output.writeInt(this.value.length);
 
@@ -145,10 +146,18 @@ public class LongArrayData extends BaseData implements ArrayData
         }
     }
 
-    public static LongArrayData read(DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+    public static LongArrayData read(DataInput input, int depth, SizeTracker sizeTracker)
+            throws IOException, SizeTrackerException
     {
         int len = input.readInt();
-        sizeTracker.increment(len * 8 + 4);
+
+        if (len < 0)
+        {
+            throw new IOException("Invalid array length: " + len);
+        }
+
+        long bytesNeeded = ((long) len * Long.BYTES) + Long.BYTES;
+        sizeTracker.increment(bytesNeeded);
 
         long[] arr = new long[len];
 

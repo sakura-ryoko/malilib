@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTrackerException;
 
 public class EmptyData extends BaseData
 {
@@ -42,12 +43,14 @@ public class EmptyData extends BaseData
 	}
 
 	@Override
-	public void write(DataOutput output) throws IOException
+	public void write(DataOutput output) throws IOException, SizeTrackerException
 	{
 	}
 
-	public static EmptyData read(DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+	public static EmptyData read(DataInput input, int depth, SizeTracker sizeTracker)
+			throws IOException, SizeTrackerException
 	{
+		sizeTracker.increment(Byte.BYTES);
 		return new EmptyData();
 	}
 

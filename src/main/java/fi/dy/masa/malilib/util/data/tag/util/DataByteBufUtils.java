@@ -37,7 +37,7 @@ public class DataByteBufUtils
 			try (GZIPInputStream gis = new GZIPInputStream(bis);
 			     DataInputStream dis = new DataInputStream(gis))
 			{
-				return Optional.ofNullable(DataFileUtils.readFromNbtStream(dis));
+				return Optional.ofNullable(DataFileUtils.readFromNbtStream(dis, SizeTracker.NETWORK_MAX_BYTES));
 			}
 		}
 		catch (ZipException e)
@@ -47,7 +47,7 @@ public class DataByteBufUtils
 			try (ByteBufInputStream bis = new ByteBufInputStream(slice);
 			     DataInputStream dis = new DataInputStream(bis))
 			{
-				return Optional.ofNullable(DataFileUtils.readFromNbtStream(dis));
+				return Optional.ofNullable(DataFileUtils.readFromNbtStream(dis, SizeTracker.NETWORK_MAX_BYTES));
 			}
 			catch (Exception e2)
 			{
@@ -73,17 +73,7 @@ public class DataByteBufUtils
 	public static ByteBuf toByteBuf(@Nullable BaseData data, String rootTagName) throws IOException
 	{
 		ByteBuf byteBuf = PooledByteBufAllocator.DEFAULT.buffer();
-
-		try
-		{
-			return toByteBuf(byteBuf, data, rootTagName);
-		}
-		catch (Exception e)
-		{
-			MaLiLib.LOGGER.error("DataByteBufUtils: Exception while writing data to a (new) ByteBuf; {}", e.getLocalizedMessage());
-			byteBuf.release();
-			throw e;
-		}
+		return toByteBuf(byteBuf, data, rootTagName);
 	}
 
 	/**
@@ -109,7 +99,11 @@ public class DataByteBufUtils
 		{
 			try (DataOutputStream os = new DataOutputStream(new GZIPOutputStream(new ByteBufOutputStream(tempBuf))))
 			{
-				DataFileUtils.writeToNbtStream(os, data, rootTagName);
+				if (!DataFileUtils.writeToNbtStream(os, data, rootTagName, SizeTracker.NETWORK_MAX_BYTES))
+				{
+					MaLiLib.LOGGER.error("DataByteBufUtils#toByteBuf: Error while writing data to ByteBuf.");
+					throw new IOException("Exception writing data to ByteBuf.");
+				}
 			}
 
 			byteBuf.writeInt(tempBuf.readableBytes());
@@ -117,6 +111,7 @@ public class DataByteBufUtils
 		}
 		catch (Exception e)
 		{
+			byteBuf.release();
 			MaLiLib.LOGGER.error("DataByteBufUtils: Exception while writing data to a ByteBuf; {}", e.getLocalizedMessage());
 			throw e;
 		}
