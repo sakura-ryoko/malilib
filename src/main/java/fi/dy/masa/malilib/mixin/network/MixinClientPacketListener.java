@@ -14,7 +14,9 @@ import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import net.minecraft.network.protocol.game.ClientboundTickingStatePacket;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -83,20 +85,23 @@ public abstract class MixinClientPacketListener
     {
         original.call(type, minecraft, containerId, title);
 
-        if (MaLiLibConfigs.Generic.ENABLE_CHEST_DATA_TRACKER.getBooleanValue() &&
-            !minecraft.hasSingleplayerServer())
+        if (MaLiLibConfigs.Generic.ENABLE_CHEST_DATA_TRACKER.getBooleanValue())
         {
             minecraft.execute(() ->
                               {
                                   BlockPos pos = Registry.ENTITY_DATA_REGISTRY.chestTracker().getLastInteractPos();
                                   ClientLevel level = minecraft.level;
                                   if (pos == null || level == null) { return; }
+                                  BlockState state =level.getBlockState(pos);
 
-                                  if (level.getBlockState(pos).hasBlockEntity())
+                                  if (state.hasBlockEntity())
                                   {
-                                      BlockEntity te = level.getBlockEntity(pos);
-                                      InventoryUtils.getInventory(level, pos);
-                                      Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuOpened(containerId, pos, te);
+                                      if (!minecraft.hasSingleplayerServer() || state.getBlock() == Blocks.ENDER_CHEST)
+                                      {
+                                          BlockEntity te = level.getBlockEntity(pos);
+                                          InventoryUtils.getInventory(level, pos);
+                                          Registry.ENTITY_DATA_REGISTRY.chestTracker().onContainerMenuOpened(containerId, pos, te);
+                                      }
                                   }
                               });
         }

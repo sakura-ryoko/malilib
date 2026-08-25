@@ -18,7 +18,9 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.data.tag.util.DataOps;
+import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTrackerException;
 
 public class CompoundData extends BaseData implements DataView
 {
@@ -56,17 +58,16 @@ public class CompoundData extends BaseData implements DataView
     @Override
     public int sizeInBytes()
     {
-        int size = 48;
+        long size = Byte.BYTES;
 
         for (Map.Entry<String, BaseData> entry : this.values.entrySet())
         {
-            size += 28;
-            size += Character.BYTES * entry.getKey().length();
-            size += 36;
+            size += Byte.BYTES;
+            size += Short.BYTES + DataTypeUtils.getUTFLength(entry.getKey());
             size += entry.getValue().sizeInBytes();
         }
 
-        return size;
+        return (int) Math.min(size, Integer.MAX_VALUE);
     }
 
     @Override
@@ -514,7 +515,7 @@ public class CompoundData extends BaseData implements DataView
     }
 
     @Override
-    public void write(DataOutput output) throws IOException
+    public void write(DataOutput output) throws IOException, SizeTrackerException
     {
         for (Map.Entry<String, BaseData> entry : this.values.entrySet())
         {
@@ -524,7 +525,8 @@ public class CompoundData extends BaseData implements DataView
         output.writeByte(Constants.NBT.TAG_END);
     }
 
-    public static CompoundData read(DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+    public static CompoundData read(DataInput input, int depth, SizeTracker sizeTracker)
+            throws IOException, SizeTrackerException
     {
         if (depth > 512)
         {
@@ -536,7 +538,7 @@ public class CompoundData extends BaseData implements DataView
         while (true)
         {
             int tagType = input.readByte();
-            sizeTracker.increment(1);
+            sizeTracker.increment(Byte.BYTES);
 
             if (tagType == Constants.NBT.TAG_END)
             {
@@ -544,19 +546,19 @@ public class CompoundData extends BaseData implements DataView
             }
 
             String key = input.readUTF();
-            sizeTracker.increment(2 + key.length());
-	        BaseData data;
+            sizeTracker.increment(Short.BYTES + DataTypeUtils.getUTFLength(key));
+            BaseData data;
 
-	        try
-	        {
-		        data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
-	        }
+            try
+            {
+                data = BaseData.createTag(tagType, input, depth + 1, sizeTracker);
+            }
 
-	        catch (IOException e)
-	        {
-		        MaLiLib.LOGGER.warn("Failed to read data for compound member {}", key);
-		        throw e;
-	        }
+            catch (IOException e)
+            {
+                MaLiLib.LOGGER.warn("Failed to read data for compound member {}", key);
+                throw e;
+            }
 
             if (data == null)
             {

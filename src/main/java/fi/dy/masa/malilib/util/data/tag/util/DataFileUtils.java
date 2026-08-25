@@ -7,12 +7,7 @@ import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.EmptyData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.zip.GZIPInputStream;
@@ -37,14 +32,14 @@ public class DataFileUtils
 
         try (DataInputStream is = new DataInputStream(new BufferedInputStream(new GZIPInputStream(Files.newInputStream(file)))))
         {
-            data = readFromNbtStream(is);
+            data = readFromNbtStream(is, SizeTracker.FILE_MAX_BYTES);
         }
         catch (ZipException e)
         {
             // Maybe the file is uncompressed, attempt to read it as such
             try (DataInputStream is = new DataInputStream(new BufferedInputStream(Files.newInputStream(file))))
             {
-                data = readFromNbtStream(is);
+                data = readFromNbtStream(is, SizeTracker.FILE_MAX_BYTES);
             }
             catch (Exception e2)
             {
@@ -73,7 +68,7 @@ public class DataFileUtils
     {
         try (DataOutputStream os = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(Files.newOutputStream(file)))))
         {
-            return writeToNbtStream(os, data, rootTagName);
+            return writeToNbtStream(os, data, rootTagName, SizeTracker.FILE_MAX_BYTES);
         }
         catch (Exception e)
         {
@@ -83,8 +78,14 @@ public class DataFileUtils
         return false;
     }
 
-    @Nullable
-    public static BaseData readFromNbtStream(DataInput input)
+	@Nullable
+	public static BaseData readFromNbtStream(DataInput input)
+	{
+		return readFromNbtStream(input, SizeTracker.DEFAULT_MAX_BYTES);
+	}
+
+	@Nullable
+	public static BaseData readFromNbtStream(DataInput input, long maxBytes)
     {
         try
         {
@@ -98,33 +99,48 @@ public class DataFileUtils
             // Discard the name of the root tag
             input.readUTF();
 
-            return BaseData.createTag(Constants.NBT.TAG_COMPOUND, input, 0, new SizeTracker(0L));
+            return BaseData.createTag(Constants.NBT.TAG_COMPOUND, input, 0, new SizeTracker(maxBytes));
         }
-        catch (Exception e)
+        catch (SizeTrackerException e)
         {
-            MaLiLib.LOGGER.warn("DataFileUtils.readFromNbtStream: Exception while reading NBT data", e);
+	        MaLiLib.LOGGER.warn("DataFileUtils.readFromNbtStream: SizeTrackerException while reading NBT data; {}", e.getLocalizedMessage());
+        }
+        catch (IOException e)
+        {
+            MaLiLib.LOGGER.warn("DataFileUtils.readFromNbtStream: IOException while reading NBT data; {}", e.getLocalizedMessage());
         }
 
         return null;
     }
 
-    public static boolean writeToNbtStream(DataOutput output, BaseData data, String tagName)
+	public static boolean writeToNbtStream(DataOutput output, BaseData data, String tagName)
+	{
+		return writeToNbtStream(output, data, tagName, SizeTracker.DEFAULT_MAX_BYTES);
+	}
+
+	public static boolean writeToNbtStream(DataOutput output, BaseData data, String tagName, long maxBytes)
     {
         try
         {
-            output.writeByte(data.getType());
+	        DataOutput dost = new DataOutputSizeTracker(output, new SizeTracker(maxBytes));
+
+	        dost.writeByte(data.getType());
 
             if (data.getType() != Constants.NBT.TAG_END)
             {
-                output.writeUTF(tagName);
-                data.write(output);
+	            dost.writeUTF(tagName);
+                data.write(dost);
             }
 
             return true;
         }
-        catch (Exception e)
+        catch (SizeTrackerException e)
         {
-            MaLiLib.LOGGER.warn("DataFileUtils.writeToNbtStream: Exception while writing NBT data", e);
+	        MaLiLib.LOGGER.warn("DataFileUtils.writeToNbtStream: SizeTrackerException while writing NBT data; {}", e.getLocalizedMessage());
+        }
+        catch (IOException e)
+        {
+            MaLiLib.LOGGER.warn("DataFileUtils.writeToNbtStream: IOException while writing NBT data; {}", e.getLocalizedMessage());
         }
 
         return false;
