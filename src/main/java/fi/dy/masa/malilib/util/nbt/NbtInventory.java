@@ -8,8 +8,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
+import org.jspecify.annotations.NonNull;
 
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentPatch;
@@ -23,6 +25,7 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.ItemStackWithSlot;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
@@ -57,7 +60,9 @@ public class NbtInventory implements AutoCloseable
         {
             DataComponentPatch.Builder builder = DataComponentPatch.builder();
             builder.set(DataComponents.LORE, new ItemLore(List.of(StringUtils.translateAsText("malilib.gui.tooltip.nbt.has_loot_table"))));
-            inv.setItem(0, new ItemStack(Items.BARRIER.builtInRegistryHolder(), 1, builder.build()));
+            Holder<Item> ref = BuiltInRegistries.ITEM.wrapAsHolder(Items.BARRIER);
+            inv.setItem(0, new ItemStack(ref, 1, builder.build()));
+            // Items.BARRIER.builtInRegistryHolder()
         }
         catch (Exception _) {}
         return inv;
@@ -87,8 +92,8 @@ public class NbtInventory implements AutoCloseable
     public static NbtInventory create(int size)
     {
         NbtInventory newInv = new NbtInventory();
-        //LOGGER.info("init() size: [{}]", size);
-        size = getAdjustedSize(Mth.clamp(size, 1, MAX_SIZE));
+//        LOGGER.info("create() size: [{}]", size);
+        size = getAdjustedSize(MathUtils.clamp(size, 1, MAX_SIZE));
         newInv.buildEmptyList(size);
         return newInv;
     }
@@ -196,6 +201,34 @@ public class NbtInventory implements AutoCloseable
     }
 
     /**
+     * Ensure this {@link NbtInventory} is at least this size.
+     * @param totalSize Size
+     * @return -
+     */
+    public NbtInventory ensureSize(final int totalSize)
+    {
+        final int adjSize = getAdjustedSize(totalSize);
+
+        if (this.size() < adjSize)
+        {
+            List<Integer> slotsUsed = new ArrayList<>();
+
+            this.items.forEach((slot) -> slotsUsed.add(slot.slot()));
+
+            for (int i = 0; i < adjSize; i++)
+            {
+                if (!slotsUsed.contains(i))
+                {
+//                    LOGGER.debug("ensureSize(): [{}]: found unused slot Number; adding Empty slot...", i);
+                    this.items.add(new EntrySlot(i, ItemStack.EMPTY));
+                }
+            }
+        }
+
+        return this;
+    }
+
+    /**
      * Return if this NbtInventory is Empty
      * @return -
      */
@@ -270,13 +303,13 @@ public class NbtInventory implements AutoCloseable
      * @param list -
      * @return -
      */
-    public static @Nullable NbtInventory fromVanillaList(@Nonnull NonNullList<@NotNull ItemStack> list)
+    public static @NonNull NbtInventory fromVanillaList(@Nonnull NonNullList<@NotNull ItemStack> list)
     {
         int size = list.size();
 
         if (size < 1)
         {
-            return null;
+            return create(1);
         }
 
         size = getAdjustedSize(Mth.clamp(size, 1, MAX_SIZE));
@@ -299,13 +332,13 @@ public class NbtInventory implements AutoCloseable
      * @param list -
      * @return -
      */
-    public static @Nullable NbtInventory fromVanillaSlotList(@Nonnull NonNullList<@NotNull Slot> list)
+    public static @NonNull NbtInventory fromVanillaSlotList(@Nonnull NonNullList<@NotNull Slot> list)
     {
         int size = list.size();
 
         if (size < 1)
         {
-            return null;
+            return create(1);
         }
 
         size = getAdjustedSize(Mth.clamp(size, 1, MAX_SIZE));
@@ -331,21 +364,21 @@ public class NbtInventory implements AutoCloseable
      */
     public @Nullable Container toInventory(final int size)
     {
-        if (this.isEmpty())
-        {
-            return null;
-        }
+//        if (this.isEmpty())
+//        {
+//            return null;
+//        }
 
         int sizeAdj = getAdjustedSize(Math.clamp(size, this.size(), MAX_SIZE));
         Container inv = new SimpleContainer(sizeAdj);
 
-        //LOGGER.warn("toInventory(): sizeAdj [{}] -> inv size [{}]", sizeAdj, inv.getContainerSize());
+//        LOGGER.warn("toInventory(): sizeAdj [{}] -> inv size [{}]", sizeAdj, inv.getContainerSize());
         AtomicInteger i = new AtomicInteger(0);
 
         this.items.forEach(
                 (slot) ->
                 {
-                    //LOGGER.info("toInventory():[{}]: slot [{}], stack: [{}]", i.get(), slot.slot(), slot.stack().toString());
+//                    LOGGER.info("toInventory():[{}]: slot [{}], stack: [{}]", i.get(), slot.slot(), slot.stack().toString());
                     inv.setItem(slot.slot(), slot.stack());
                     i.getAndIncrement();
                 }
@@ -396,10 +429,10 @@ public class NbtInventory implements AutoCloseable
      */
     public @Nullable NbtView toNbtWriterView(@Nonnull RegistryAccess registry)
     {
-        if (this.isEmpty())
-        {
-            return null;
-        }
+//        if (this.isEmpty())
+//        {
+//            return null;
+//        }
 
         final int size = getAdjustedSize(this.size());
 
@@ -418,11 +451,11 @@ public class NbtInventory implements AutoCloseable
      * @return -
      * @implNote This is used after 1.21.6
      */
-    public static @Nullable NbtInventory fromNbtReaderView(@Nonnull NbtView view, int size)
+    public static @NonNull NbtInventory fromNbtReaderView(@Nonnull NbtView view, int size)
     {
         if (size < 1)
         {
-            return null;
+            return create(1);
         }
 
         size = getAdjustedSize(Mth.clamp(size, 1, MAX_SIZE));
@@ -679,11 +712,11 @@ public class NbtInventory implements AutoCloseable
      * @return -
      * @throws RuntimeException -
      */
-    public static @Nullable NbtInventory fromNbtSingle(@Nonnull CompoundTag tag, @Nonnull RegistryAccess registry) throws RuntimeException
+    public static @NonNull NbtInventory fromNbtSingle(@Nonnull CompoundTag tag, @Nonnull RegistryAccess registry) throws RuntimeException
     {
         if (tag.isEmpty())
         {
-            return null;
+            return create(1);
         }
 
         NbtInventory newInv = new NbtInventory();
@@ -705,11 +738,11 @@ public class NbtInventory implements AutoCloseable
      * @return -
      * @throws RuntimeException -
      */
-	public static @Nullable NbtInventory fromDataSingle(@Nonnull CompoundData data, @Nonnull RegistryAccess registry) throws RuntimeException
+	public static @NonNull NbtInventory fromDataSingle(@Nonnull CompoundData data, @Nonnull RegistryAccess registry) throws RuntimeException
 	{
         if (data.isEmpty())
         {
-            return null;
+            return create(1);
         }
 
         NbtInventory newInv = new NbtInventory();
@@ -732,12 +765,12 @@ public class NbtInventory implements AutoCloseable
      * @return -
      * @throws RuntimeException -
      */
-    public static @Nullable NbtInventory fromNbtList(@Nonnull ListTag list, boolean noSlotId, @Nonnull RegistryAccess registry)
+    public static @NonNull NbtInventory fromNbtList(@Nonnull ListTag list, boolean noSlotId, @Nonnull RegistryAccess registry)
             throws RuntimeException
     {
         if (list.isEmpty())
         {
-            return null;
+            return create(1);
         }
         else if (list.size() > MAX_SIZE)
         {
@@ -796,12 +829,12 @@ public class NbtInventory implements AutoCloseable
      * @return -
      * @throws RuntimeException -
      */
-	public static @Nullable NbtInventory fromDataList(@Nonnull ListData list, boolean noSlotId, @Nonnull RegistryAccess registry)
+	public static @NonNull NbtInventory fromDataList(@Nonnull ListData list, boolean noSlotId, @Nonnull RegistryAccess registry)
             throws RuntimeException
 	{
         if (list.isEmpty())
         {
-            return null;
+            return create(1);
         }
         else if (list.size() > MAX_SIZE)
         {
@@ -999,11 +1032,12 @@ public class NbtInventory implements AutoCloseable
         public static EntrySlot fromData(CompoundData data, @Nonnull RegistryAccess registry)
         {
             final int slot = data.getByteOrDefault(NbtKeys.SLOT, (byte) 0) & 0xFF;
+            DynamicOps<BaseData> ops = registry.createSerializationContext(DataOps.INSTANCE);
             ItemStack stack;
 
             try
             {
-                stack = ItemStack.CODEC.parse(registry.createSerializationContext(DataOps.INSTANCE), data).getOrThrow();
+                stack = ItemStack.CODEC.parse(ops, data).getOrThrow();
             }
             catch (Exception e)
             {
@@ -1017,6 +1051,14 @@ public class NbtInventory implements AutoCloseable
                 builder.set(DataComponents.LORE, lore);
                 ItemStack fallback = new ItemStack(BuiltInRegistries.ITEM.wrapAsHolder(Items.BARRIER), 1, builder.build());
                 stack = fallback.copy();
+            }
+
+            ItemStackWithSlot test = ItemStackWithSlot.CODEC.parse(ops, data).getOrThrow();
+
+            if (test.slot() != slot)
+            {
+                LOGGER.debug("EntrySlot#fromData/test : slot: [{}], stack: [{}]", test.slot(), test.stack().toString());
+                LOGGER.fatal("EntrySlot#fromData/entry: slot: [{}], stack: [{}]", slot, stack.toString());
             }
 
             return new EntrySlot(slot, stack.copy());
@@ -1052,11 +1094,12 @@ public class NbtInventory implements AutoCloseable
         public static EntrySlot fromNbt(CompoundTag nbt, @Nonnull RegistryAccess registry)
         {
             final int slot = nbt.getByteOr(NbtKeys.SLOT, (byte) 0) & 0xFF;
+            DynamicOps<Tag> ops = registry.createSerializationContext(NbtOps.INSTANCE);
             ItemStack stack;
 
             try
             {
-                stack = ItemStack.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), nbt).getOrThrow();
+                stack = ItemStack.CODEC.parse(ops, nbt).getOrThrow();
             }
             catch (Exception e)
             {

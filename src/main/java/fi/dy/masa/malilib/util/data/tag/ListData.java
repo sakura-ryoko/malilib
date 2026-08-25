@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTrackerException;
 
 public class ListData extends BaseData implements ArrayData
 {
@@ -259,14 +260,14 @@ public class ListData extends BaseData implements ArrayData
     @Override
     public int sizeInBytes()
     {
-        int size = 36 + (4 * this.list.size());
+        long size = Byte.BYTES + Integer.BYTES;
 
         for (BaseData data : this.list)
         {
             size += data.sizeInBytes();
         }
 
-        return size;
+        return (int) Math.min(size, Integer.MAX_VALUE);
     }
 
     @Override
@@ -276,7 +277,7 @@ public class ListData extends BaseData implements ArrayData
     }
 
     @Override
-    public void write(DataOutput output) throws IOException
+    public void write(DataOutput output) throws IOException, SizeTrackerException
     {
         int containedType = this.list.isEmpty() ? Constants.NBT.TAG_END : this.getContainedType();
         int listSize = this.list.size();
@@ -290,7 +291,8 @@ public class ListData extends BaseData implements ArrayData
         }
     }
 
-    public static ListData read(DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+    public static ListData read(DataInput input, int depth, SizeTracker sizeTracker)
+            throws IOException, SizeTrackerException
     {
         if (depth > 512)
         {
@@ -299,7 +301,7 @@ public class ListData extends BaseData implements ArrayData
 
         int tagType = input.readByte();
         int len = input.readInt();
-        sizeTracker.increment(5);
+        sizeTracker.increment(Byte.BYTES + Integer.BYTES);
 
         if (tagType == Constants.NBT.TAG_END && len > 0)
         {

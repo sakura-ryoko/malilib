@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.util.data.tag;
 
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTrackerException;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -52,10 +53,10 @@ public abstract class BaseData
         return Optional.empty();
     }
 
-    public abstract void write(DataOutput output) throws IOException;
+    public abstract void write(DataOutput output) throws IOException, SizeTrackerException;
 
     public static BaseData createTag(int tagType, DataInput input, int depth, SizeTracker sizeTracker)
-            throws IOException
+            throws IOException, SizeTrackerException
     {
 	    return switch (tagType)
 	    {

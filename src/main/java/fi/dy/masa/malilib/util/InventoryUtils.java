@@ -1136,25 +1136,33 @@ public class InventoryUtils
 			slotCount = NbtInventory.MAX_SIZE;
 		}
 
+		final int origSize = slotCount;
+
 		if (data.contains(NbtKeys.LOOT_TABLE, Constants.NBT.TAG_COMPOUND)) { return NbtInventory.LOOTABLE_INVENTORY; }
 		if (data.contains(NbtKeys.ITEMS, Constants.NBT.TAG_LIST))
 		{
 			// Standard 'Items' tag for most Block Entities --
 			// -- Furnace, Brewing Stand, Shulker Box, Crafter, Barrel, Chest, Dispenser, Hopper, Bookshelf, Campfire
+			ListData list = data.getList(NbtKeys.ITEMS);
+
 			if (slotCount < 0)
 			{
 				// Uses slots
-				ListData list = data.getList(NbtKeys.ITEMS);
 				slotCount = list.size();
 			}
 
 			slotCount = NbtInventory.getAdjustedSize(slotCount);
 
-			NbtInventory nbtInv = NbtInventory.fromData(data, NbtKeys.ITEMS, false, registry);
+			NbtInventory nbtInv = NbtInventory.fromDataList(list, false, registry);
 
-			if (nbtInv == null || nbtInv.isEmpty())
+//			if (nbtInv == null) //  || (nbtInv.isEmpty() && origSize < 1)
+//			{
+//				return null;
+//			}
+
+			if (origSize > 0 && nbtInv.size() < origSize)
 			{
-				return null;
+				nbtInv = nbtInv.ensureSize(origSize).sorted();
 			}
 
 			return nbtInv.sorted().toInventory(slotCount);
@@ -1176,11 +1184,16 @@ public class InventoryUtils
 			slotCount = NbtInventory.getAdjustedSize(slotCount);
 
 			// "Inventory" tags might not include Slot ID's, but a Player will.
-			NbtInventory nbtInv = NbtInventory.fromData(data, NbtKeys.INVENTORY, noSlotId, registry);
+			NbtInventory nbtInv = NbtInventory.fromDataList(list, noSlotId, registry);
 
-			if (nbtInv == null || nbtInv.isEmpty())
+//			if (nbtInv == null)  //  || (nbtInv.isEmpty() && origSize < 1)
+//			{
+//				return null;
+//			}
+
+			if (origSize > 0 && nbtInv.size() < origSize)
 			{
-				return null;
+				nbtInv = nbtInv.ensureSize(origSize).sorted();
 			}
 
 			return nbtInv.sorted().toInventory(slotCount);
@@ -1199,9 +1212,14 @@ public class InventoryUtils
 			slotCount = NbtInventory.getAdjustedSize(slotCount);
 			NbtInventory nbtInv = NbtInventory.fromDataList(list, false, registry);
 
-			if (nbtInv == null || nbtInv.isEmpty())
+//			if (nbtInv == null) //  || (nbtInv.isEmpty() && origSize < 1)
+//			{
+//				return null;
+//			}
+
+			if (origSize > 0 && nbtInv.size() < origSize)
 			{
-				return null;
+				nbtInv = nbtInv.ensureSize(origSize).sorted();
 			}
 
 			return nbtInv.sorted().toInventory(Math.max(slotCount, NbtInventory.DEFAULT_SIZE));

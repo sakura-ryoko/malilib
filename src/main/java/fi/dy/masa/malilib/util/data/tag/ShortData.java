@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.tag.util.SizeTracker;
+import fi.dy.masa.malilib.util.data.tag.util.SizeTrackerException;
 
 public class ShortData extends BaseData implements NumberData
 {
@@ -57,14 +58,15 @@ public class ShortData extends BaseData implements NumberData
     }
 
     @Override
-    public void write(DataOutput output) throws IOException
+    public void write(DataOutput output) throws IOException, SizeTrackerException
     {
         output.writeShort(this.value);
     }
 
-    public static ShortData read(DataInput input, int depth, SizeTracker sizeTracker) throws IOException
+    public static ShortData read(DataInput input, int depth, SizeTracker sizeTracker)
+            throws IOException, SizeTrackerException
     {
-        sizeTracker.increment(2);
+        sizeTracker.increment(Short.BYTES);
         return new ShortData(input.readShort());
     }
 
