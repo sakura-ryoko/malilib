@@ -1053,14 +1053,6 @@ public class NbtInventory implements AutoCloseable
                 stack = fallback.copy();
             }
 
-            ItemStackWithSlot test = ItemStackWithSlot.CODEC.parse(ops, data).getOrThrow();
-
-            if (test.slot() != slot)
-            {
-                LOGGER.debug("EntrySlot#fromData/test : slot: [{}], stack: [{}]", test.slot(), test.stack().toString());
-                LOGGER.fatal("EntrySlot#fromData/entry: slot: [{}], stack: [{}]", slot, stack.toString());
-            }
-
             return new EntrySlot(slot, stack.copy());
         }
 
