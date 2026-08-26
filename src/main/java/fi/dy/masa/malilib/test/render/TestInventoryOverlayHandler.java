@@ -332,7 +332,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 		if (data != null && !data.isEmpty())
 		{
-			if (MaLiLibReference.EXPERIMENTAL_MODE)
+			if (MaLiLibReference.DEBUG_MODE && MaLiLibReference.EXPERIMENTAL_MODE)
 			{
 				ListData test = data.getList(NbtKeys.ITEMS);
 

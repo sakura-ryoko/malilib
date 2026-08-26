@@ -261,15 +261,12 @@ public class MaLiLibConfigs implements IConfigHandler
                     ConfigUtils.readConfigBase(root, "TestOptions", Test.OPTIONS);
                     ConfigUtils.readConfigBase(root, "TestHotkeys", TestHotkeys.HOTKEY_LIST);
                     ConfigUtils.readHotkeyToggleOptions(root, "TestEnumHotkeys", "TestEnumToggles", ConfigTestEnum.VALUES);
-                }
 
-                if (MaLiLibReference.EXPERIMENTAL_MODE)
-                {
-                    ConfigUtils.readConfigBase(root, "Experimental", Experimental.OPTIONS);
-                }
+                    if (MaLiLibReference.EXPERIMENTAL_MODE)
+                    {
+                        ConfigUtils.readConfigBase(root, "Experimental", Experimental.OPTIONS);
+                    }
 
-                if (MaLiLibReference.DEBUG_MODE)
-                {
                     MaLiLib.LOGGER.warn("loadFromFile(): Successfully loaded config file '{}'.", configFile.toAbsolutePath());
                 }
             }
@@ -312,11 +309,11 @@ public class MaLiLibConfigs implements IConfigHandler
                 ConfigUtils.writeConfigBase(root, "TestOptions", Test.OPTIONS);
                 ConfigUtils.writeConfigBase(root, "TestHotkeys", TestHotkeys.HOTKEY_LIST);
                 ConfigUtils.writeHotkeyToggleOptions(root, "TestEnumHotkeys", "TestEnumToggles", ConfigTestEnum.VALUES);
-            }
 
-            if (MaLiLibReference.EXPERIMENTAL_MODE)
-            {
-                ConfigUtils.writeConfigBase(root, "Experimental", Experimental.OPTIONS);
+                if (MaLiLibReference.EXPERIMENTAL_MODE)
+                {
+                    ConfigUtils.writeConfigBase(root, "Experimental", Experimental.OPTIONS);
+                }
             }
 
             Path config = dir.resolve(CONFIG_FILE_NAME);
