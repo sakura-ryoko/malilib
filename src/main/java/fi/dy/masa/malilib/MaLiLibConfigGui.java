@@ -119,7 +119,7 @@ public class MaLiLibConfigGui extends GuiConfigsBase implements IConfigGuiAllTab
             configs.addAll(ConfigOptionWrapper.createFor(TEST_ENUM_LIST.stream().map(this::wrapConfig).toList()));
         }
 
-        if (MaLiLibReference.EXPERIMENTAL_MODE)
+        if (MaLiLibReference.DEBUG_MODE && MaLiLibReference.EXPERIMENTAL_MODE)
         {
             configs.addAll(ConfigOptionWrapper.createFor(MaLiLibConfigs.Experimental.OPTIONS));
         }
@@ -157,7 +157,7 @@ public class MaLiLibConfigGui extends GuiConfigsBase implements IConfigGuiAllTab
         {
             return ConfigOptionWrapper.createFor(TEST_ENUM_LIST.stream().map(this::wrapConfig).toList());
         }
-        else if (tab == ConfigGuiTab.EXPERIMENTAL && MaLiLibReference.EXPERIMENTAL_MODE)
+        else if (tab == ConfigGuiTab.EXPERIMENTAL && MaLiLibReference.DEBUG_MODE && MaLiLibReference.EXPERIMENTAL_MODE)
         {
             configs = MaLiLibConfigs.Experimental.OPTIONS;
         }
