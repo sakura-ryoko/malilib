@@ -920,7 +920,7 @@ public class LayerRange
     {
         JsonObject obj = new JsonObject();
 
-        obj.add("mode", new JsonPrimitive(this.layerMode.name()));
+        obj.add("mode", new JsonPrimitive(this.layerMode.getStringValue()));
         obj.add("axis", new JsonPrimitive(this.axis.getName()));
         obj.add("follow_player", new JsonPrimitive(this.followPlayer));
         obj.add("layer_single", new JsonPrimitive(this.layerSingle));
@@ -938,8 +938,8 @@ public class LayerRange
     public void fromJson(JsonObject obj)
     {
         this.layerMode = LayerMode.fromStringStatic(JsonUtils.getString(obj, "mode"));
-        this.axis = Direction.Axis.byName(JsonUtils.getStringOrDefault(obj, "axis", "y"));
-
+        final String axis = JsonUtils.getStringOrDefault(obj, "axis", "y");
+        this.axis = Direction.Axis.byName(axis != null ? axis.toLowerCase() : "y");
         if (this.axis == null) { this.axis = Direction.Axis.Y; }
 
         this.followPlayer = JsonUtils.getBoolean(obj, "follow_player");
