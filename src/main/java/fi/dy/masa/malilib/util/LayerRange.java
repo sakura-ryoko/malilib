@@ -855,7 +855,7 @@ public class LayerRange
         JsonObject obj = new JsonObject();
 
         obj.add("mode", new JsonPrimitive(this.layerMode.name()));
-        obj.add("axis", new JsonPrimitive(this.axis.name()));
+        obj.add("axis", new JsonPrimitive(this.axis.getName()));
         obj.add("layer_single", new JsonPrimitive(this.layerSingle));
         obj.add("layer_above", new JsonPrimitive(this.layerAbove));
         obj.add("layer_below", new JsonPrimitive(this.layerBelow));
