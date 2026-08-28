@@ -12,10 +12,12 @@ import net.minecraft.world.World;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.netty.buffer.ByteBuf;
+import org.jspecify.annotations.NonNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRangeChangeListener;
 
@@ -26,21 +28,21 @@ public class LayerRange
 {
     public static final Codec<LayerRange> CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
-                    LayerMode.CODEC.fieldOf("mode").forGetter(get -> get.layerMode),
-                    Direction.Axis.CODEC.fieldOf("axis").forGetter(get -> get.axis),
-                    PrimitiveCodec.INT.fieldOf("layer_single").forGetter(get -> get.layerSingle),
-                    PrimitiveCodec.INT.fieldOf("layer_above").forGetter(get -> get.layerAbove),
-                    PrimitiveCodec.INT.fieldOf("layer_below").forGetter(get -> get.layerBelow),
-                    PrimitiveCodec.INT.fieldOf("layer_range_min").forGetter(get -> get.layerRangeMin),
-                    PrimitiveCodec.INT.fieldOf("layer_range_max").forGetter(get -> get.layerRangeMax),
-                    PrimitiveCodec.BOOL.fieldOf("hotkey_range_min").forGetter(get -> get.hotkeyRangeMin),
-                    PrimitiveCodec.BOOL.fieldOf("hotkey_range_max").forGetter(get -> get.hotkeyRangeMax)
+		            LayerMode.CODEC.fieldOf("mode").forGetter(get -> get.layerMode),
+		            Direction.Axis.CODEC.fieldOf("axis").forGetter(get -> get.axis),
+		            PrimitiveCodec.INT.fieldOf("layer_single").forGetter(get -> get.layerSingle),
+		            PrimitiveCodec.INT.fieldOf("layer_above").forGetter(get -> get.layerAbove),
+		            PrimitiveCodec.INT.fieldOf("layer_below").forGetter(get -> get.layerBelow),
+		            PrimitiveCodec.INT.fieldOf("layer_range_min").forGetter(get -> get.layerRangeMin),
+		            PrimitiveCodec.INT.fieldOf("layer_range_max").forGetter(get -> get.layerRangeMax),
+		            PrimitiveCodec.BOOL.fieldOf("hotkey_range_min").forGetter(get -> get.hotkeyRangeMin),
+		            PrimitiveCodec.BOOL.fieldOf("hotkey_range_max").forGetter(get -> get.hotkeyRangeMax)
             ).apply(inst, LayerRange::new)
     );
     public static final PacketCodec<ByteBuf, LayerRange> PACKET_CODEC = new PacketCodec<ByteBuf, LayerRange>()
     {
         @Override
-        public void encode(ByteBuf buf, LayerRange value)
+        public void encode(@NonNull ByteBuf buf, LayerRange value)
         {
             LayerMode.PACKET_CODEC.encode(buf, value.layerMode);
             PacketCodecs.STRING.encode(buf, value.axis.asString());
@@ -54,7 +56,7 @@ public class LayerRange
         }
 
         @Override
-        public LayerRange decode(ByteBuf buf)
+        public @NonNull LayerRange decode(@NonNull ByteBuf buf)
         {
             return new LayerRange(
                     LayerMode.PACKET_CODEC.decode(buf),
@@ -804,8 +806,8 @@ public class LayerRange
     {
         JsonObject obj = new JsonObject();
 
-        obj.add("mode", new JsonPrimitive(this.layerMode.name()));
-        obj.add("axis", new JsonPrimitive(this.axis.name()));
+        obj.add("mode", new JsonPrimitive(this.layerMode.getStringValue()));
+        obj.add("axis", new JsonPrimitive(this.axis.getId()));
         obj.add("layer_single", new JsonPrimitive(this.layerSingle));
         obj.add("layer_above", new JsonPrimitive(this.layerAbove));
         obj.add("layer_below", new JsonPrimitive(this.layerBelow));
@@ -827,7 +829,8 @@ public class LayerRange
     public void fromJson(JsonObject obj)
     {
         this.layerMode = LayerMode.fromStringStatic(JsonUtils.getString(obj, "mode"));
-        this.axis = Direction.Axis.fromId(JsonUtils.getString(obj, "axis"));
+        final String axis = JsonUtils.getStringOrDefault(obj, "axis", "y");
+        this.axis = Direction.Axis.fromId(axis != null ? axis.toLowerCase() : "y");
         if (this.axis == null) { this.axis = Direction.Axis.Y; }
 
         this.layerSingle = JsonUtils.getInteger(obj, "layer_single");
