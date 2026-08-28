@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.PrimitiveCodec;
@@ -43,7 +44,7 @@ public class LayerRange
     public static final StreamCodec<@NotNull ByteBuf, @NotNull LayerRange> PACKET_CODEC = new StreamCodec<>()
     {
         @Override
-        public void encode(ByteBuf buf, LayerRange value)
+        public void encode(@NonNull ByteBuf buf, LayerRange value)
         {
             LayerMode.PACKET_CODEC.encode(buf, value.layerMode);
             ByteBufCodecs.STRING_UTF8.encode(buf, value.axis.getSerializedName());
@@ -57,7 +58,7 @@ public class LayerRange
         }
 
         @Override
-        public LayerRange decode(ByteBuf buf)
+        public @NonNull LayerRange decode(@NonNull ByteBuf buf)
         {
             return new LayerRange(
                     LayerMode.PACKET_CODEC.decode(buf),
@@ -852,8 +853,8 @@ public class LayerRange
     {
         JsonObject obj = new JsonObject();
 
-        obj.add("mode", new JsonPrimitive(this.layerMode.name()));
-        obj.add("axis", new JsonPrimitive(this.axis.name()));
+        obj.add("mode", new JsonPrimitive(this.layerMode.getStringValue()));
+        obj.add("axis", new JsonPrimitive(this.axis.getName()));
         obj.add("layer_single", new JsonPrimitive(this.layerSingle));
         obj.add("layer_above", new JsonPrimitive(this.layerAbove));
         obj.add("layer_below", new JsonPrimitive(this.layerBelow));
@@ -875,11 +876,9 @@ public class LayerRange
     public void fromJson(JsonObject obj)
     {
         this.layerMode = LayerMode.fromStringStatic(JsonUtils.getString(obj, "mode"));
-        this.axis = Direction.Axis.byName(JsonUtils.getString(obj, "axis"));
-        if (this.axis == null)
-        {
-            this.axis = Direction.Axis.Y;
-        }
+        final String axis = JsonUtils.getStringOrDefault(obj, "axis", "y");
+        this.axis = Direction.Axis.byName(axis != null ? axis.toLowerCase() : "y");
+        if (this.axis == null) { this.axis = Direction.Axis.Y; }
 
         this.layerSingle = JsonUtils.getInteger(obj, "layer_single");
         this.layerAbove = JsonUtils.getInteger(obj, "layer_above");
