@@ -4,18 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.Container;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.util.data.DataBlockUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
-import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
-import fi.dy.masa.malilib.util.nbt.NbtInventory;
-import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 public class EntityDataRegistry
 {
@@ -134,31 +124,14 @@ public class EntityDataRegistry
 		return this.chestTracker;
 	}
 
-	protected void addTEToCache(Level level, BlockEntity te, Container slotInv)
+	public void register()
 	{
-		if (MaLiLibConfigs.Generic.ENABLE_CHEST_DATA_TRACKER.getBooleanValue())
-		{
-			if (te != null && slotInv != null && !slotInv.isEmpty())
-			{
-				NbtInventory nbtInv = NbtInventory.fromInventory(slotInv);
+		this.chestTracker().onRegister();
+	}
 
-				if (!nbtInv.isEmpty())
-				{
-					CompoundData data = DataBlockUtils.setBlockEntityType(te.getType(), null);
-					BlockPos pos = te.getBlockPos();
-
-					DataTypeUtils.writeBlockPos(pos, data);
-					data.put(NbtKeys.ITEMS, nbtInv.toDataList(level.registryAccess()));
-
-					if (MaLiLibReference.DEBUG_MODE)
-					{
-						MaLiLib.LOGGER.warn("addTEToCache: pos: [{}] -> {}", pos.toShortString(), data.toString());
-					}
-
-					this.entityDataCaches.forEach(entry -> entry.addToCache(te.getBlockPos(), te, data));
-				}
-			}
-		}
+	public void reset()
+	{
+		this.chestTracker().onReset();
 	}
 
 	public record ScanResult(EntityDataEntry entry, long timeout)
