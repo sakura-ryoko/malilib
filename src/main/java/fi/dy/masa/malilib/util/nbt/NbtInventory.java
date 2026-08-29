@@ -11,6 +11,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.NonNull;
 
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
@@ -20,15 +21,16 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
-import net.minecraft.world.ContainerHelper;
-import net.minecraft.world.ItemStackWithSlot;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.*;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.MathUtils;
@@ -62,10 +64,32 @@ public class NbtInventory implements AutoCloseable
             builder.set(DataComponents.LORE, new ItemLore(List.of(StringUtils.translateAsText("malilib.gui.tooltip.nbt.has_loot_table"))));
             Holder<Item> ref = BuiltInRegistries.ITEM.wrapAsHolder(Items.BARRIER);
             inv.setItem(0, new ItemStack(ref, 1, builder.build()));
-            // Items.BARRIER.builtInRegistryHolder()
         }
         catch (Exception ignored) {}
         return inv;
+    }
+
+    /**
+     * We provide this in case of network problems; and the method requires a BlockEntity object.
+     * A {@link DecoratedPotBlockEntity} only provides a single slot; and
+     * it also extends {@link RandomizableContainer}; so it's perfect to use here.
+     * @param pos -
+     * @return -
+     */
+    public static BlockEntity createLootableTileEntityAt(@Nonnull BlockPos pos)
+    {
+        DecoratedPotBlockEntity pot = BlockEntityType.DECORATED_POT.create(pos, Blocks.DECORATED_POT.defaultBlockState());
+
+        try
+        {
+            DataComponentPatch.Builder builder = DataComponentPatch.builder();
+            builder.set(DataComponents.LORE, new ItemLore(List.of(StringUtils.translateAsText("malilib.gui.tooltip.nbt.has_loot_table"))));
+            Holder<Item> ref = BuiltInRegistries.ITEM.wrapAsHolder(Items.BARRIER);
+            pot.setTheItem(new ItemStack(ref, 1, builder.build()));
+        }
+        catch (Exception ignored) {}
+
+        return pot;
     }
 
     public static final int SINGLE_SIZE = 1;

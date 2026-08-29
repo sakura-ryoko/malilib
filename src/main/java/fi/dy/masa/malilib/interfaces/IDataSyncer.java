@@ -25,11 +25,11 @@ import net.minecraft.world.entity.monster.piglin.Piglin;
 import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ChestType;
@@ -329,69 +329,75 @@ public interface IDataSyncer
 			return null;
 		}
 
-		EntityDataPairEntry pair = this.getCache().getBlockEntityPairFromCache(pos);
-		final long now = System.currentTimeMillis();
+		ChunkPos cp = new ChunkPos(pos);
 
-		if (pair != null)
+		// Not sure why we need to check this now; but here we are.
+		if (world.getChunkSource().hasChunk(cp.x, cp.z))
 		{
-			if (!this.hasSingleplayerServer() && (this.isEnabled() || this.isBackupEnabled()))
+			EntityDataPairEntry pair = this.getCache().getBlockEntityPairFromCache(pos);
+			final long now = System.currentTimeMillis();
+
+			if (pair != null)
 			{
-				if ((now - pair.time()) > this.getRefreshTime())
+				if (!this.hasSingleplayerServer() && (this.isEnabled() || this.isBackupEnabled()))
+				{
+					if ((now - pair.time()) > this.getRefreshTime())
+					{
+						this.getRequestTracker().schedulePendingBlockEntity(pos);
+					}
+				}
+
+				if (world instanceof ServerLevel sl)
+				{
+					if (this.isOnLocalServerThread())
+					{
+						return this.refreshBlockEntityFromWorld(sl, pos);
+					}
+					else if ((now - pair.time()) > this.getRefreshTime() && !this.getRequestTracker().hasPendingLocalBlockEntity(pos))
+					{
+						this.getRequestTracker().setPendingLocalBlockEntityRequest(pos, true);
+						this.requestBlockEntityFromLocalServer(Minecraft.getInstance(), world, pos);
+					}
+				}
+
+				CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos, this.ignoredIds());
+
+				if (!globalData.isEmpty())
+				{
+					return Pair.of(pair.be(), globalData);
+				}
+
+				return Pair.of(pair.be(), pair.data());
+			}
+			else if (world.getBlockState(pos).getBlock() instanceof EntityBlock)
+			{
+				CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos, this.ignoredIds());
+				BlockEntity be = this.getClientWorld() != null ? this.getClientWorld().getBlockEntity(pos) : null;
+
+				if (be != null && !globalData.isEmpty())
+				{
+					this.getCache().removeFromCache(pos);
+					this.getCache().addToCache(pos, be, globalData);
+					return Pair.of(be, globalData);
+				}
+
+				if (!this.hasSingleplayerServer() && (this.isEnabled() || this.isBackupEnabled()))
 				{
 					this.getRequestTracker().schedulePendingBlockEntity(pos);
 				}
-			}
 
-			if (world instanceof ServerLevel sl)
-			{
-				if (this.isOnLocalServerThread())
+				if (world instanceof ServerLevel sl && this.isOnLocalServerThread())
 				{
 					return this.refreshBlockEntityFromWorld(sl, pos);
 				}
-				else if ((now - pair.time()) > this.getRefreshTime() && !this.getRequestTracker().hasPendingLocalBlockEntity(pos))
+				else if (this.hasSingleplayerServer() && !this.getRequestTracker().hasPendingLocalBlockEntity(pos))
 				{
 					this.getRequestTracker().setPendingLocalBlockEntityRequest(pos, true);
 					this.requestBlockEntityFromLocalServer(Minecraft.getInstance(), world, pos);
 				}
+
+				return this.refreshBlockEntityFromWorld(this.getClientWorld(), pos);
 			}
-
-			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos, this.ignoredIds());
-
-			if (!globalData.isEmpty())
-			{
-				return Pair.of(pair.be(), globalData);
-			}
-
-			return Pair.of(pair.be(), pair.data());
-		}
-		else if (world.getBlockState(pos).getBlock() instanceof EntityBlock)
-		{
-			CompoundData globalData = Registry.ENTITY_DATA_REGISTRY.scanForBlockEntityData(pos, this.ignoredIds());
-			BlockEntity be = this.getClientWorld() != null ? this.getClientWorld().getBlockEntity(pos) : null;
-
-			if (be != null && !globalData.isEmpty())
-			{
-				this.getCache().removeFromCache(pos);
-				this.getCache().addToCache(pos, be, globalData);
-				return Pair.of(be, globalData);
-			}
-
-			if (!this.hasSingleplayerServer() && (this.isEnabled() || this.isBackupEnabled()))
-			{
-				this.getRequestTracker().schedulePendingBlockEntity(pos);
-			}
-
-			if (world instanceof ServerLevel sl && this.isOnLocalServerThread())
-			{
-				return this.refreshBlockEntityFromWorld(sl, pos);
-			}
-			else if (this.hasSingleplayerServer() && !this.getRequestTracker().hasPendingLocalBlockEntity(pos))
-			{
-				this.getRequestTracker().setPendingLocalBlockEntityRequest(pos, true);
-				this.requestBlockEntityFromLocalServer(Minecraft.getInstance(), world, pos);
-			}
-
-			return this.refreshBlockEntityFromWorld(this.getClientWorld(), pos);
 		}
 
 		return null;
@@ -623,7 +629,6 @@ public interface IDataSyncer
 	 * @return (Inventory|EmptyInventory|Null)
 	 */
 	@Nullable
-	@SuppressWarnings("deprecation")
 	default Container getBlockInventory(Level world, BlockPos pos, boolean useNbt)
 	{
 		if (world == null)
@@ -636,93 +641,45 @@ public interface IDataSyncer
 			return null;
 		}
 
-		EntityDataPairEntry pair = this.getCache().getBlockEntityPairFromCache(pos);
+		ChunkPos cp = new ChunkPos(pos);
 
-		if (pair != null)
+		// Not sure why we need to check this now; but here we are.
+		if (world.getChunkSource().hasChunk(cp.x, cp.z))
 		{
-			Container inv = null;
-			BlockState state = world.getBlockState(pos);
-			boolean shouldCombine = false;
+			EntityDataPairEntry pair = this.getCache().getBlockEntityPairFromCache(pos);
 
-			if (!useNbt && (state.is(BlockTags.AIR) || !state.hasBlockEntity()))
+			if (pair != null)
 			{
-				this.getCache().removeFromCache(pos);
-				return null;
-			}
+				Container inv = null;
+				BlockState state = world.getBlockState(pos);
+				boolean shouldCombine = false;
 
-			Pair<BlockPos, BlockState> barrelAdj = InventoryUtils.getCarpetTISLargeBarrel(world, pos, state);
-
-			if (barrelAdj != null)
-			{
-				if (!world.hasChunkAt(barrelAdj.getLeft()))
+				if (!useNbt && (state.is(BlockTags.AIR) || !state.hasBlockEntity()))
 				{
+					this.getCache().removeFromCache(pos);
 					return null;
 				}
 
-				BlockPos posAdj = barrelAdj.getLeft();
-				BlockState stateAdj = barrelAdj.getRight();
-				EntityDataPairEntry pairAdj = this.getCache().getBlockEntityPairFromCache(posAdj);
+				Pair<BlockPos, BlockState> barrelAdj = InventoryUtils.getCarpetTISLargeBarrel(world, pos, state);
 
-				if (pairAdj == null)
+				if (barrelAdj != null)
 				{
-					this.requestBlockEntity(world, posAdj);
-				}
-				else
-				{
-					shouldCombine = true;
-					Container inv1 = null;
-					Container inv2 = null;
+					cp = new ChunkPos(barrelAdj.getLeft());
 
-					if (useNbt)
-					{
-						inv1 = InventoryUtils.getDataInventory(pair.data(), NbtInventory.DEFAULT_SIZE, world.registryAccess());
-						inv2 = InventoryUtils.getDataInventory(pairAdj.data(), NbtInventory.DEFAULT_SIZE, world.registryAccess());
-					}
-					else if (pair.be() instanceof Container c1 && pairAdj.be() instanceof Container c2)
-					{
-						inv1 = c1;
-						inv2 = c2;
-					}
-
-					// Just recycling "ChestType" here.  Negative Axis Direction == First Side.
-					ChestType type = state.getValue(BarrelBlock.FACING).getAxisDirection() == net.minecraft.core.Direction.AxisDirection.NEGATIVE ? ChestType.RIGHT : ChestType.LEFT;
-
-					if (inv1 != null && inv2 != null)
-					{
-						Container invRight = type == ChestType.RIGHT ? inv1 : inv2;
-						Container invLeft = type == ChestType.RIGHT ? inv2 : inv1;
-
-						inv = new CompoundContainer(invRight, invLeft);
-					}
-				}
-			}
-			else if (state.hasProperty(BlockStateProperties.CHEST_TYPE) && state.hasProperty(BlockStateProperties.HORIZONTAL_FACING))
-			{
-				ChestType type = state.getValue(BlockStateProperties.CHEST_TYPE);
-
-				if (type != ChestType.SINGLE)
-				{
-					Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
-					Direction offsetDir = type == ChestType.LEFT ? facing.getClockWise() : facing.getCounterClockWise();
-					BlockPos posAdj = pos.relative(offsetDir);
-
-					if (!world.hasChunkAt(posAdj))
+					if (!world.getChunkSource().hasChunk(cp.x, cp.z))
 					{
 						return null;
 					}
 
-					BlockState stateAdj = world.getBlockState(posAdj);
+					BlockPos posAdj = barrelAdj.getLeft();
+					BlockState stateAdj = barrelAdj.getRight();
 					EntityDataPairEntry pairAdj = this.getCache().getBlockEntityPairFromCache(posAdj);
 
 					if (pairAdj == null)
 					{
 						this.requestBlockEntity(world, posAdj);
 					}
-					else if (stateAdj.getBlock() == state.getBlock() &&
-							 stateAdj.hasProperty(BlockStateProperties.CHEST_TYPE) &&
-							 stateAdj.hasProperty(BlockStateProperties.HORIZONTAL_FACING) &&
-							 stateAdj.getValue(BlockStateProperties.CHEST_TYPE) != ChestType.SINGLE &&
-							 stateAdj.getValue(BlockStateProperties.HORIZONTAL_FACING) == facing)
+					else
 					{
 						shouldCombine = true;
 						Container inv1 = null;
@@ -739,6 +696,9 @@ public interface IDataSyncer
 							inv2 = c2;
 						}
 
+						// Just recycling "ChestType" here.  Negative Axis Direction == First Side.
+						ChestType type = state.getValue(BarrelBlock.FACING).getAxisDirection() == net.minecraft.core.Direction.AxisDirection.NEGATIVE ? ChestType.RIGHT : ChestType.LEFT;
+
 						if (inv1 != null && inv2 != null)
 						{
 							Container invRight = type == ChestType.RIGHT ? inv1 : inv2;
@@ -748,32 +708,90 @@ public interface IDataSyncer
 						}
 					}
 				}
-			}
-
-			if (inv == null)
-			{
-				// Don't unpack Loot Tables
-				if (pair.be() instanceof RandomizableContainer rc && rc.getLootTable() != null) { return NbtInventory.LOOTABLE_INVENTORY; }
-				if (useNbt)
+				else if (state.hasProperty(BlockStateProperties.CHEST_TYPE) && state.hasProperty(BlockStateProperties.HORIZONTAL_FACING))
 				{
-					final int slotCount = shouldCombine ? NbtInventory.DOUBLE_SIZE : -1;
-					inv = InventoryUtils.getDataInventory(pair.data(), slotCount, world.registryAccess());
+					ChestType type = state.getValue(BlockStateProperties.CHEST_TYPE);
+
+					if (type != ChestType.SINGLE)
+					{
+						Direction facing = state.getValue(BlockStateProperties.HORIZONTAL_FACING);
+						Direction offsetDir = type == ChestType.LEFT ? facing.getClockWise() : facing.getCounterClockWise();
+						BlockPos posAdj = pos.relative(offsetDir);
+
+						cp = new ChunkPos(posAdj);
+
+						if (!world.getChunkSource().hasChunk(cp.x, cp.z))
+						{
+							return null;
+						}
+
+						BlockState stateAdj = world.getBlockState(posAdj);
+						EntityDataPairEntry pairAdj = this.getCache().getBlockEntityPairFromCache(posAdj);
+
+						if (pairAdj == null)
+						{
+							this.requestBlockEntity(world, posAdj);
+						}
+						else if (stateAdj.getBlock() == state.getBlock() &&
+								stateAdj.hasProperty(BlockStateProperties.CHEST_TYPE) &&
+								stateAdj.hasProperty(BlockStateProperties.HORIZONTAL_FACING) &&
+								stateAdj.getValue(BlockStateProperties.CHEST_TYPE) != ChestType.SINGLE &&
+								stateAdj.getValue(BlockStateProperties.HORIZONTAL_FACING) == facing)
+						{
+							shouldCombine = true;
+							Container inv1 = null;
+							Container inv2 = null;
+
+							if (useNbt)
+							{
+								inv1 = InventoryUtils.getDataInventory(pair.data(), NbtInventory.DEFAULT_SIZE, world.registryAccess());
+								inv2 = InventoryUtils.getDataInventory(pairAdj.data(), NbtInventory.DEFAULT_SIZE, world.registryAccess());
+							}
+							else if (pair.be() instanceof Container c1 && pairAdj.be() instanceof Container c2)
+							{
+								inv1 = c1;
+								inv2 = c2;
+							}
+
+							if (inv1 != null && inv2 != null)
+							{
+								Container invRight = type == ChestType.RIGHT ? inv1 : inv2;
+								Container invLeft = type == ChestType.RIGHT ? inv2 : inv1;
+
+								inv = new CompoundContainer(invRight, invLeft);
+							}
+						}
+					}
 				}
-				else if (pair.be() instanceof Container inv2)
+
+				if (inv == null)
 				{
-					inv = inv2;
+					// Don't unpack Loot Tables
+					if (pair.be() instanceof RandomizableContainer rc && rc.getLootTable() != null)
+					{
+						return NbtInventory.LOOTABLE_INVENTORY;
+					}
+					if (useNbt)
+					{
+						final int slotCount = shouldCombine ? NbtInventory.DOUBLE_SIZE : -1;
+						inv = InventoryUtils.getDataInventory(pair.data(), slotCount, world.registryAccess());
+					}
+					else if (pair.be() instanceof Container inv2)
+					{
+						inv = inv2;
+					}
+				}
+
+				if (inv != null)
+				{
+					return inv;
 				}
 			}
 
-			if (inv != null)
+			if (this.isEnabled() || this.isBackupEnabled())
 			{
-				return inv;
+				this.requestBlockEntity(this.getBestWorld(), pos);
 			}
-		}
-
-		if (this.isEnabled() || this.isBackupEnabled())
-		{
-			this.requestBlockEntity(this.getBestWorld(), pos);
 		}
 
 		return null;
@@ -918,32 +936,41 @@ public interface IDataSyncer
 			return null;
 		}
 
-		BlockEntity be = this.getClientWorld().getBlockEntity(pos);
+		ChunkPos cp = new ChunkPos(pos);
 
-		if (be != null)
+		// Not sure why we need to check this now; but here we are.
+		if (this.getClientWorld().getChunkSource().hasChunk(cp.x, cp.z))
 		{
-			// Don't unpack Loot Tables
-			if (be instanceof RandomizableContainer rc && rc.getLootTable() != null) { return (RandomizableContainerBlockEntity) NbtInventory.LOOTABLE_INVENTORY; }
-			if (!data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
-			{
-				Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType());
+			BlockEntity be = this.getClientWorld().getBlockEntity(pos);
 
-				if (id != null)
+			if (be != null)
+			{
+				// Don't unpack Loot Tables (And we need to return a BlockEntity here)
+				if (be instanceof RandomizableContainer rc && rc.getLootTable() != null)
 				{
-					data.putString(NbtKeys.ID, id.toString());
+					return NbtInventory.createLootableTileEntityAt(pos);
 				}
+				if (!data.contains(NbtKeys.ID, Constants.NBT.TAG_STRING))
+				{
+					Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(be.getType());
+
+					if (id != null)
+					{
+						data.putString(NbtKeys.ID, id.toString());
+					}
+				}
+
+				this.getCache().removeFromCache(pos);
+				this.getCache().addToCache(pos, be, data);
+
+				if (this.loadContainerBlockEntities() && be instanceof Container)
+				{
+					NbtView view = NbtView.getReader(data, this.getClientWorld().registryAccess());
+					be.loadWithComponents(view.getReader());
+				}
+
+				return be;
 			}
-
-			this.getCache().removeFromCache(pos);
-			this.getCache().addToCache(pos, be, data);
-
-			if (this.loadContainerBlockEntities() && be instanceof Container)
-			{
-				NbtView view = NbtView.getReader(data, this.getClientWorld().registryAccess());
-				be.loadWithComponents(view.getReader());
-			}
-
-			return be;
 		}
 
 		return null;
@@ -963,6 +990,7 @@ public interface IDataSyncer
 		{
 			return null;
 		}
+
 		Entity entity = this.getClientWorld().getEntity(entityId);
 
 		if (entity != null)
