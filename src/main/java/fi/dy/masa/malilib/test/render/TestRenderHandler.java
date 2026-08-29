@@ -39,6 +39,7 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
+import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.test.config.ConfigTestEnum;
@@ -354,6 +355,7 @@ public class TestRenderHandler implements IRenderer
                 if (player != null)
                 {
                     Pair<Entity, CompoundData> pair = TestDataSyncer.INSTANCE.requestEntity(world, player.getId());
+                    NbtInventory enderCache = Registry.ENTITY_DATA_REGISTRY.chestTracker().getEnderCache();
                     PlayerEnderChestContainer inv;
 
                     if (pair != null && pair.getRight() != null && pair.getRight().contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
@@ -370,7 +372,15 @@ public class TestRenderHandler implements IRenderer
                         inv = player.getEnderChestInventory();
                     }
 
-                    if (inv != null)
+                    if (enderCache != null && !enderCache.isEmpty())
+                    {
+                        ListData list = enderCache.sorted().toDataList(world.registryAccess());
+                        CompoundData data = new CompoundData();
+
+                        data.put(NbtKeys.ENDER_ITEMS, list);
+                        RenderUtils.renderDataItemsPreview(ctx, stack, data, x, y, false);
+                    }
+                    else if (inv != null)
                     {
                         try (NbtInventory nbtInv = NbtInventory.fromInventory(inv))
                         {

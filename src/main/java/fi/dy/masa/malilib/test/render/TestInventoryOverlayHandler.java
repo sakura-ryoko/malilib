@@ -37,6 +37,7 @@ import fi.dy.masa.malilib.interfaces.IDataSyncer;
 import fi.dy.masa.malilib.interfaces.IInventoryOverlayHandler;
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
 import fi.dy.masa.malilib.mixin.entity.IMixinAbstractNautilus;
+import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.InventoryOverlayContext;
@@ -50,7 +51,6 @@ import fi.dy.masa.malilib.util.data.DataBlockUtils;
 import fi.dy.masa.malilib.util.data.DataEntityUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
-import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
 import fi.dy.masa.malilib.util.game.RayTraceUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
 import fi.dy.masa.malilib.util.nbt.NbtKeys;
@@ -199,17 +199,18 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 			if (blockTmp instanceof EntityBlock)
 			{
-				if (world instanceof ServerLevel)
-				{
-					be = world.getChunkAt(pos).getBlockEntity(pos);
-
-					if (be != null)
-					{
-						data = DataConverterNbt.fromVanillaCompound(be.saveWithFullMetadata(world.registryAccess()));
-					}
-				}
-				else
-				{
+				// Redundant code.  IDataSyncer manages this.
+//				if (world instanceof ServerLevel)
+//				{
+//					be = world.getChunkAt(pos).getBlockEntity(pos);
+//
+//					if (be != null)
+//					{
+//						data = DataConverterNbt.fromVanillaCompound(be.saveWithFullMetadata(world.registryAccess()));
+//					}
+//				}
+//				else
+//				{
 					Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
 
 					if (pair != null)
@@ -217,7 +218,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 						data = pair.getRight();
 						be = pair.getLeft();
 					}
-				}
+//				}
 
 				MaLiLib.LOGGER.warn("getTarget():2: pos [{}], be [{}], data [{}]", pos.toShortString(), be != null, data != null);
 				return this.getTargetInventoryFromBlock(world, pos, be, data);
@@ -269,6 +270,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 	{
 		Container inv;
 
+		// Redundant code.  IDataSyncer manages this.
 //		if (be != null)
 //		{
 //			if (data.isEmpty())
@@ -291,7 +293,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 //				}
 //			}
 
-			inv = this.getDataSyncer().getBlockInventory(world, pos, false);
+			inv = this.getDataSyncer().getBlockInventory(world, pos, true);
 //		}
 
 		BlockEntityType<?> beType = data != null ? DataBlockUtils.getBlockEntityType(data) : null;
@@ -309,6 +311,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 					// Fetch your own EnderItems from Server ...
 					Pair<Entity, CompoundData> enderPair = this.getDataSyncer().requestEntity(world, player.getId());
 					PlayerEnderChestContainer enderItems = null;
+					NbtInventory enderCache = Registry.ENTITY_DATA_REGISTRY.chestTracker().getEnderCache();
 
 					if (enderPair != null && enderPair.getRight() != null && enderPair.getRight().contains(NbtKeys.ENDER_ITEMS, Constants.NBT.TAG_LIST))
 					{
@@ -319,7 +322,11 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 						enderItems = player.getEnderChestInventory();
 					}
 
-					if (enderItems != null)
+					if (enderCache != null && !enderCache.isEmpty())
+					{
+						inv = enderCache.toInventory(-1);
+					}
+					else if (enderItems != null)
 					{
 						inv = enderItems;
 					}
