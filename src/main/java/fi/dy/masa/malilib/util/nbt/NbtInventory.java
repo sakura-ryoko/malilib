@@ -11,6 +11,10 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.NonNull;
 
 import com.mojang.serialization.DynamicOps;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
@@ -18,14 +22,17 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.inventory.StackWithSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -58,10 +65,34 @@ public class NbtInventory implements AutoCloseable
         {
             ComponentChanges.Builder builder = ComponentChanges.builder();
             builder.add(DataComponentTypes.LORE, new LoreComponent(List.of(StringUtils.translateAsText("malilib.gui.tooltip.nbt.has_loot_table"))));
-            inv.setStack(0, new ItemStack(Items.BARRIER.getRegistryEntry(), 1, builder.build()));
+            RegistryEntry<Item> ref = Registries.ITEM.getEntry(Items.BARRIER);
+            inv.setStack(0, new ItemStack(ref, 1, builder.build()));
         }
         catch (Exception ignored) {}
         return inv;
+    }
+
+    /**
+     * We provide this in case of network problems; and the method requires a BlockEntity object.
+     * A {@link DecoratedPotBlockEntity} only provides a single slot; and
+     * it also extends {@link net.minecraft.inventory.LootableInventory}; so it's perfect to use here.
+     * @param pos -
+     * @return -
+     */
+    public static BlockEntity createLootableTileEntityAt(@Nonnull BlockPos pos)
+    {
+        DecoratedPotBlockEntity pot = BlockEntityType.DECORATED_POT.instantiate(pos, Blocks.DECORATED_POT.getDefaultState());
+
+        try
+        {
+            ComponentChanges.Builder builder = ComponentChanges.builder();
+            builder.add(DataComponentTypes.LORE, new LoreComponent(List.of(StringUtils.translateAsText("malilib.gui.tooltip.nbt.has_loot_table"))));
+            RegistryEntry<Item> ref = Registries.ITEM.getEntry(Items.BARRIER);
+            pot.setStack(new ItemStack(ref, 1, builder.build()));
+        }
+        catch (Exception ignored) {}
+
+        return pot;
     }
 
     public static final int SINGLE_SIZE = 1;
