@@ -3,28 +3,7 @@ package fi.dy.masa.malilib.test.render;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.MaLiLibReference;
-import fi.dy.masa.malilib.interfaces.IDataSyncer;
-import fi.dy.masa.malilib.interfaces.IInventoryOverlayHandler;
-import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
-import fi.dy.masa.malilib.mixin.entity.IMixinAbstractNautilus;
-import fi.dy.masa.malilib.registry.Registry;
-import fi.dy.masa.malilib.render.InventoryOverlay;
-import fi.dy.masa.malilib.render.InventoryOverlayContext;
-import fi.dy.masa.malilib.render.InventoryOverlayRefresher;
-import fi.dy.masa.malilib.test.data.TestDataSyncer;
-import fi.dy.masa.malilib.util.EntityUtils;
-import fi.dy.masa.malilib.util.InventoryUtils;
-import fi.dy.masa.malilib.util.WorldUtils;
-import fi.dy.masa.malilib.util.data.Constants;
-import fi.dy.masa.malilib.util.data.DataBlockUtils;
-import fi.dy.masa.malilib.util.data.DataEntityUtils;
-import fi.dy.masa.malilib.util.data.tag.CompoundData;
-import fi.dy.masa.malilib.util.data.tag.ListData;
-import fi.dy.masa.malilib.util.game.RayTraceUtils;
-import fi.dy.masa.malilib.util.nbt.*;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -53,6 +32,31 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+
+import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.interfaces.IDataSyncer;
+import fi.dy.masa.malilib.interfaces.IInventoryOverlayHandler;
+import fi.dy.masa.malilib.mixin.entity.IMixinAbstractHorseEntity;
+import fi.dy.masa.malilib.registry.Registry;
+import fi.dy.masa.malilib.render.InventoryOverlay;
+import fi.dy.masa.malilib.render.InventoryOverlayContext;
+import fi.dy.masa.malilib.render.InventoryOverlayRefresher;
+import fi.dy.masa.malilib.test.data.TestDataSyncer;
+import fi.dy.masa.malilib.util.EntityUtils;
+import fi.dy.masa.malilib.util.InventoryUtils;
+import fi.dy.masa.malilib.util.WorldUtils;
+import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.DataBlockUtils;
+import fi.dy.masa.malilib.util.data.DataEntityUtils;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.ListData;
+import fi.dy.masa.malilib.util.game.RayTraceUtils;
+import fi.dy.masa.malilib.util.nbt.NbtBlockUtils;
+import fi.dy.masa.malilib.util.nbt.NbtEntityUtils;
+import fi.dy.masa.malilib.util.nbt.NbtInventory;
+import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 @ApiStatus.Experimental
 public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
@@ -263,17 +267,18 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
             if (blockTmp instanceof BlockEntityProvider)
             {
-                if (world instanceof ServerWorld)
-                {
-                    be = world.getWorldChunk(pos).getBlockEntity(pos);
-
-                    if (be != null)
-                    {
-                        nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
-                    }
-                }
-                else
-                {
+	            // Redundant code.  IDataSyncer manages this.
+//                if (world instanceof ServerWorld)
+//                {
+//                    be = world.getWorldChunk(pos).getBlockEntity(pos);
+//
+//                    if (be != null)
+//                    {
+//                        nbt = be.createNbtWithIdentifyingData(world.getRegistryManager());
+//                    }
+//                }
+//                else
+//                {
                     Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
 
                     if (pair != null)
@@ -281,7 +286,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
                         nbt = pair.getRight();
                         be = pair.getLeft();
                     }
-                }
+//                }
 
                 MaLiLib.LOGGER.warn("getTarget():2: pos [{}], be [{}], nbt [{}]", pos.toShortString(), be != null, nbt != null);
                 return this.getTargetInventoryFromBlock(world, pos, be, nbt);

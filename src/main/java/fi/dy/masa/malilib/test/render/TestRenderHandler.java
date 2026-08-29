@@ -7,6 +7,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
+import org.joml.Matrix4f;
+
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CrafterBlockEntity;
@@ -21,11 +25,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.CopperGolemEntity;
-import net.minecraft.entity.passive.HappyGhastEntity;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
@@ -43,21 +43,19 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.Profilers;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4f;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.HudAlignment;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.interfaces.IRenderer;
-import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.registry.Registry;
+import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.test.misc.TestSelector;
 import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.test.data.TestDataSyncer;
+import fi.dy.masa.malilib.test.misc.TestSelector;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -402,7 +400,7 @@ public class TestRenderHandler implements IRenderer
                         NbtCompound nbt = new NbtCompound();
 
                         nbt.put(NbtKeys.ENDER_ITEMS, list);
-                        RenderUtils.renderNbtItemsPreview(drawContext, stack, data, x, y, false);
+                        RenderUtils.renderNbtItemsPreview(drawContext, stack, nbt, x, y, false);
                     }
                     else if (inv != null)
                     {

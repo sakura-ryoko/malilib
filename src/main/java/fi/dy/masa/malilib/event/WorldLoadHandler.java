@@ -6,6 +6,9 @@ import javax.annotation.Nullable;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.registry.DynamicRegistryManager;
+
+import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.data.CachedTagManager;
 import org.jetbrains.annotations.ApiStatus;
 import fi.dy.masa.malilib.config.ConfigManager;

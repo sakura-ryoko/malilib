@@ -224,7 +224,7 @@ public class EntityDataChestTracker
 		this.lastInteractPos = null;
 	}
 
-	private void addTEToCache(Level level, BlockEntity te, Container slotInv)
+	private void addTEToCache(World level, BlockEntity te, Inventory slotInv)
 	{
 		if (!MaLiLibConfigs.Generic.ENABLE_CHEST_DATA_TRACKER.getBooleanValue()) { return; }
 
@@ -232,7 +232,7 @@ public class EntityDataChestTracker
 		{
 			try (NbtInventory nbtInv = NbtInventory.fromInventory(slotInv))
 			{
-				BlockPos pos = te.getBlockPos();
+				BlockPos pos = te.getPos();
 				this.cache().removeFromCache(pos);
 
 				if (!nbtInv.isEmpty())
@@ -240,7 +240,7 @@ public class EntityDataChestTracker
 					CompoundData data = DataBlockUtils.setBlockEntityType(te.getType(), null);
 
 					DataTypeUtils.writeBlockPos(pos, data);
-					data.put(NbtKeys.ITEMS, nbtInv.toDataList(level.registryAccess()));
+					data.put(NbtKeys.ITEMS, nbtInv.toDataList(level.getRegistryManager()));
 
 					if (MaLiLibReference.DEBUG_MODE)
 					{
