@@ -49,25 +49,32 @@ public class EntityDataCache
 
 	public void tickCache(final long nowTime)
 	{
-		this.blockEntityCache.forEach((pos, pair) -> {
-			if (pair != null)
-			{
-				if ((nowTime - pair.getLeft()) > this.getTimeout() || pair.getLeft() > nowTime)
-				{
-					this.blockEntityCache.remove(pos, pair);
-				}
-			}
-		});
+		if (this.timeout > 0)
+		{
+			this.blockEntityCache.forEach(
+					(pos, pair) ->
+					{
+						if (pair != null)
+						{
+							if ((nowTime - pair.getLeft()) > this.getTimeout() || pair.getLeft() > nowTime)
+							{
+								this.blockEntityCache.remove(pos, pair);
+							}
+						}
+					});
 
-		this.entityCache.forEach((entityId, pair) -> {
-			if (pair != null)
-			{
-				if ((nowTime - pair.getLeft()) > this.getTimeout() || pair.getLeft() > nowTime)
-				{
-					this.entityCache.remove(entityId, pair);
-				}
-			}
-		});
+			this.entityCache.forEach(
+					(entityId, pair) ->
+					{
+						if (pair != null)
+						{
+							if ((nowTime - pair.getLeft()) > this.getTimeout() || pair.getLeft() > nowTime)
+							{
+								this.entityCache.remove(entityId, pair);
+							}
+						}
+					});
+		}
 	}
 
 	public boolean isEmpty()

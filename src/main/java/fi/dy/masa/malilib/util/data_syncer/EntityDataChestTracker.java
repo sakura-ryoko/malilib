@@ -19,22 +19,31 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
+import fi.dy.masa.malilib.util.data.DataBlockUtils;
+import fi.dy.masa.malilib.util.data.tag.CompoundData;
+import fi.dy.masa.malilib.util.data.tag.util.DataTypeUtils;
 import fi.dy.masa.malilib.util.nbt.NbtInventory;
+import fi.dy.masa.malilib.util.nbt.NbtKeys;
 
 public class EntityDataChestTracker
 {
 	private final HashMap<BlockPos, Pair<Integer, BlockEntity>> lastOpenedContainers;
 	private BlockPos lastInteractPos;
+	private final EntityDataCache cache;
 	private NbtInventory enderCache;
+	private boolean registered;
 
 	public EntityDataChestTracker()
 	{
 		this.lastOpenedContainers = new HashMap<>();
+		this.cache = new EntityDataCache(MaLiLibReference.MOD_ID, -1L);
 		this.enderCache = null;
+		this.registered = false;
 	}
 
 	public void setLastInteractPos(BlockPos pos)
@@ -62,6 +71,37 @@ public class EntityDataChestTracker
 		return this.enderCache;
 	}
 
+	public EntityDataCache cache()
+	{
+		return this.cache;
+	}
+
+	protected void onRegister()
+	{
+		this.onReset();
+
+		if (!this.registered)
+		{
+			Registry.ENTITY_DATA_REGISTRY.registerEntityDataCache(this.cache);
+			this.registered = true;
+		}
+	}
+
+	protected void onReset()
+	{
+		if (this.enderCache != null)
+		{
+			try
+			{
+				this.enderCache.close();
+			}
+			catch (Exception ignored) {}
+		}
+
+		this.enderCache = null;
+		this.cache.clearAll();
+	}
+
 	public void onCloseEnderChest(@Nonnull Inventory inv)
 	{
 		if (this.enderCache != null)
@@ -84,6 +124,7 @@ public class EntityDataChestTracker
 
 	public void onContainerMenuClosed(ScreenHandler menu)
 	{
+		if (!MaLiLibConfigs.Generic.ENABLE_CHEST_DATA_TRACKER.getBooleanValue()) { return; }
 		MinecraftClient mc = MinecraftClient.getInstance();
 		World level = WorldUtils.getBestWorld(mc);
 
@@ -138,17 +179,17 @@ public class EntityDataChestTracker
 
 							if (InventoryUtils.areStacksAndNbtEqual(stackA, stackB))
 							{
-								Registry.ENTITY_DATA_REGISTRY.addTEToCache(level, pair.getRight(), inv);
+								this.addTEToCache(level, pair.getRight(), inv);
 							}
 						}
 						else
 						{
-							Registry.ENTITY_DATA_REGISTRY.addTEToCache(level, pair.getRight(), inv);     // On a Server; we cannot verify the slots
+							this.addTEToCache(level, pair.getRight(), inv);     // On a Server; we cannot verify the slots
 						}
 					}
 					else if (inv.size() > cc.size() && !mc.isIntegratedServerRunning())
 					{
-						Registry.ENTITY_DATA_REGISTRY.addTEToCache(level, pair.getRight(), inv);        // On a Server; we cannot verify the slots
+						this.addTEToCache(level, pair.getRight(), inv);        // On a Server; we cannot verify the slots
 					}
 					else
 					{
@@ -169,8 +210,8 @@ public class EntityDataChestTracker
 
 								if (InventoryUtils.areStacksAndNbtEqual(stackA, stackB))
 								{
-									Registry.ENTITY_DATA_REGISTRY.addTEToCache(level, tempTE, tempInv);
-									Registry.ENTITY_DATA_REGISTRY.addTEToCache(level, pair.getRight(), cc);
+									this.addTEToCache(level, tempTE, tempInv);
+									this.addTEToCache(level, pair.getRight(), cc);
 								}
 							}
 						}
@@ -181,5 +222,35 @@ public class EntityDataChestTracker
 
 		this.lastOpenedContainers.clear();
 		this.lastInteractPos = null;
+	}
+
+	private void addTEToCache(Level level, BlockEntity te, Container slotInv)
+	{
+		if (!MaLiLibConfigs.Generic.ENABLE_CHEST_DATA_TRACKER.getBooleanValue()) { return; }
+
+		if (te != null && slotInv != null && !slotInv.isEmpty())
+		{
+			try (NbtInventory nbtInv = NbtInventory.fromInventory(slotInv))
+			{
+				BlockPos pos = te.getBlockPos();
+				this.cache().removeFromCache(pos);
+
+				if (!nbtInv.isEmpty())
+				{
+					CompoundData data = DataBlockUtils.setBlockEntityType(te.getType(), null);
+
+					DataTypeUtils.writeBlockPos(pos, data);
+					data.put(NbtKeys.ITEMS, nbtInv.toDataList(level.registryAccess()));
+
+					if (MaLiLibReference.DEBUG_MODE)
+					{
+						MaLiLib.LOGGER.warn("addTEToCache: pos: [{}] -> {}", pos.toShortString(), data.toString());
+					}
+
+					this.cache().addToCache(pos, te, data);
+				}
+			}
+			catch (Exception ignored) {}
+		}
 	}
 }
