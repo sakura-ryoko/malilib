@@ -1033,7 +1033,7 @@ public class NbtInventory implements AutoCloseable
 
             try
             {
-                data = (CompoundData) ItemStack.CODEC.encodeStart(ops, this.stack).getOrThrow();
+                data = (CompoundData) ItemStack.CODEC.encodeStart(ops, this.stack).getPartialOrThrow();
             }
             catch (Exception e)
             {
@@ -1046,7 +1046,7 @@ public class NbtInventory implements AutoCloseable
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
                 ItemStack fallback = new ItemStack(BuiltInRegistries.ITEM.wrapAsHolder(Items.BARRIER), 1, builder.build());
-                data = (CompoundData) ItemStack.CODEC.encodeStart(ops, fallback).getOrThrow();
+                data = (CompoundData) ItemStack.CODEC.encodeStart(ops, fallback).getPartialOrThrow();
             }
 
             data.putByte(NbtKeys.SLOT, (byte) this.slot);
@@ -1061,7 +1061,7 @@ public class NbtInventory implements AutoCloseable
 
             try
             {
-                stack = ItemStack.CODEC.parse(ops, data).getOrThrow();
+                stack = ItemStack.CODEC.parse(ops, data).getPartialOrThrow();
             }
             catch (Exception e)
             {
@@ -1087,7 +1087,7 @@ public class NbtInventory implements AutoCloseable
 
             try
             {
-                nbt = (CompoundTag) ItemStack.CODEC.encodeStart(ops, this.stack).getOrThrow();
+                nbt = (CompoundTag) ItemStack.CODEC.encodeStart(ops, this.stack).getPartialOrThrow();
             }
             catch (Exception e)
             {
@@ -1100,7 +1100,7 @@ public class NbtInventory implements AutoCloseable
                 DataComponentPatch.Builder builder = DataComponentPatch.builder();
                 builder.set(DataComponents.LORE, lore);
                 ItemStack fallback = new ItemStack(BuiltInRegistries.ITEM.wrapAsHolder(Items.BARRIER), 1, builder.build());
-                nbt = (CompoundTag) ItemStack.CODEC.encodeStart(ops, fallback).getOrThrow();
+                nbt = (CompoundTag) ItemStack.CODEC.encodeStart(ops, fallback).getPartialOrThrow();
             }
 
             nbt.putByte(NbtKeys.SLOT, (byte) this.slot);
@@ -1115,7 +1115,7 @@ public class NbtInventory implements AutoCloseable
 
             try
             {
-                stack = ItemStack.CODEC.parse(ops, nbt).getOrThrow();
+                stack = ItemStack.CODEC.parse(ops, nbt).getPartialOrThrow();
             }
             catch (Exception e)
             {
