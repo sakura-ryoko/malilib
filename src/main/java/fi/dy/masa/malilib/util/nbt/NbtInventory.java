@@ -6,6 +6,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.jspecify.annotations.NonNull;
@@ -36,6 +38,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.ImmutableCopy;
 import fi.dy.masa.malilib.util.data.tag.BaseData;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
@@ -119,6 +122,24 @@ public class NbtInventory implements AutoCloseable
 //        LOGGER.info("create() size: [{}]", size);
         size = getAdjustedSize(MathUtils.clamp(size, 1, MAX_SIZE));
         newInv.buildEmptyList(size);
+        return newInv;
+    }
+
+    /**
+     * Create a new {@link NbtInventory} from a Set of {@link EntrySlot}
+     * @param items -
+     * @return -
+     */
+    public static NbtInventory create(@Nonnull Set<EntrySlot> items)
+    {
+        NbtInventory newInv = new NbtInventory();
+
+//        LOGGER.info("create() size: [{}]", items.size());
+        items.forEach(
+                (slot) ->
+		                newInv.items.add(new EntrySlot(slot.slot(), slot.stack().copy()))
+        );
+
         return newInv;
     }
 
@@ -409,6 +430,47 @@ public class NbtInventory implements AutoCloseable
         );
 
         return inv;
+    }
+
+    /**
+     * Split this Inventory into equal halves.  This is meant to be used to
+     * split up a Double Chest into two halves; for example.
+     *
+     * @return -
+     */
+    public Pair<Container, Container> splitInventory() throws IllegalStateException
+    {
+        if (this.size() % 2 != 0)
+        {
+            throw new IllegalStateException("Inventory Size of '"+this.size()+"' must be even number!");
+        }
+
+        final int splitSize = this.size() / 2;
+        final int sizeAdj = getAdjustedSize(Math.clamp((splitSize * 2L), this.size(), MAX_SIZE));
+        final int halfSize = sizeAdj / 2;
+        Container inv1 = new SimpleContainer(halfSize);
+        Container inv2 = new SimpleContainer(halfSize);
+        ImmutableList<EntrySlot> list = ImmutableCopy.of(this.items.stream().toList()).toList();
+//        LOGGER.warn("splitInventory(): sizeAdj [{}] -> halfSize [{}]", sizeAdj, halfSize);
+
+        for (int i = 0; i < list.size(); i++)
+        {
+            EntrySlot entry = list.get(i);
+            int slot = entry.slot();
+            ItemStack stack = entry.stack();
+
+            if (slot < halfSize)
+            {
+                inv1.setItem(slot, stack.copy());
+            }
+            else
+            {
+                inv2.setItem((slot - halfSize), stack.copy());
+            }
+        }
+
+//        LOGGER.debug("splitInventory(): inv1 [{}] -> inv2 [{}]", inv1.getContainerSize(), inv2.getContainerSize());
+        return Pair.of(inv1, inv2);
     }
 
     /**

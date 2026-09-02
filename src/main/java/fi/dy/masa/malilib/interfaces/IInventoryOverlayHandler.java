@@ -6,7 +6,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -130,26 +129,22 @@ public interface IInventoryOverlayHandler
 	@Nullable
 	default Pair<BlockEntity, CompoundData> requestBlockEntityAt(Level world, BlockPos pos)
 	{
-		if (!(world instanceof ServerLevel))
+		// The Data syncer will manage the Client/Server stuff for us.
+		Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+
+		BlockState state = world.getBlockState(pos);
+
+		if (state.getBlock() instanceof ChestBlock)
 		{
-			Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+			ChestType type = state.getValue(ChestBlock.TYPE);
 
-			BlockState state = world.getBlockState(pos);
-
-			if (state.getBlock() instanceof ChestBlock)
+			if (type != ChestType.SINGLE)
 			{
-				ChestType type = state.getValue(ChestBlock.TYPE);
-
-				if (type != ChestType.SINGLE)
-				{
-					return this.getDataSyncer().requestBlockEntity(world, pos.relative(ChestBlock.getConnectedDirection(state)));
-				}
+				return this.getDataSyncer().requestBlockEntity(world, pos.relative(ChestBlock.getConnectedDirection(state)));
 			}
-
-			return pair;
 		}
 
-		return null;
+		return pair;
 	}
 
 	/**
