@@ -44,8 +44,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.*;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
@@ -61,6 +60,7 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.compat.carpet.CarpetCompat;
 import fi.dy.masa.malilib.mixin.entity.IMixinPlayerEntity;
+import fi.dy.masa.malilib.mixin.menu.*;
 import fi.dy.masa.malilib.render.InventoryOverlay;
 import fi.dy.masa.malilib.render.InventoryOverlayType;
 import fi.dy.masa.malilib.util.data.Constants;
@@ -2262,5 +2262,68 @@ public class InventoryUtils
 		}
 
 		return slot.getHand();
+	}
+
+	/**
+	 * Returns the Container object from any Compatible Menu Type.
+	 * @param menu -
+	 * @return -
+	 */
+	@Nullable
+	public static Inventory getMenuAsContainer(@Nonnull ScreenHandler menu)
+	{
+		return switch (menu)
+		{
+			case GenericContainerScreenHandler cm -> cm.getInventory();
+			case Generic3x3ContainerScreenHandler dm -> ((IMixinGeneric3x3ContainerScreenHandler) dm).malilib_getDispenser();
+			case CrafterScreenHandler cm -> cm.getInputInventory();
+			case AbstractFurnaceScreenHandler fm -> ((IMixinAbstractFurnaceScreenHandler) fm).malilib_getContainer();
+			case BrewingStandScreenHandler bm -> ((IMixinBrewingStandScreenHandler) bm).malilib_getBrewingStand();
+			case HopperScreenHandler hm -> ((IMixinHopperScreenHandler) hm).malilib_getHopper();
+			case LecternScreenHandler lm -> ((IMixinLecternScreenHandler) lm).malilib_getLectern();
+			case ShulkerBoxScreenHandler sbm -> ((IMixinShulkerBoxScreenHandler) sbm).malilib_getContainer();
+			default -> null;
+		};
+	}
+
+	/**
+	 * Return an Item List from a slotted Menu Screen.<br>
+	 * This should Ignore the Player Inventory; by only checking the containerSize.
+	 * The First slot refers to the "top most" container on the screen; meaning it will be
+	 * the actual containerSize; because each "Slot" actually holds a copy of the entire Inventory; but
+	 * checking each slot by slot number; is the correct way to get a copy of the Container's inventory.
+	 * @param slots As obtained from an {@link ScreenHandler}, synced by the Server.
+	 * @return Return a slotted {@link DefaultedList} of items
+	 */
+	public static DefaultedList<ItemStack> getItemsFromSlots(@Nonnull final DefaultedList<Slot> slots)
+	{
+		final int containerSize = slots.getFirst().inventory.size();
+
+		if (containerSize < 1 || containerSize > NbtInventory.MAX_SIZE)
+		{
+			return DefaultedList.of();
+		}
+
+		DefaultedList<ItemStack> list = DefaultedList.ofSize(containerSize, ItemStack.EMPTY);
+
+		for (int i = 0; i < containerSize; i++)
+		{
+			Slot slot = slots.get(i);
+
+			if (slot.getIndex() == slot.id ||
+				slot.getIndex() > containerSize)
+			{
+				if (slot.hasStack() && !slot.isEnabled())
+				{
+					list.set(i, slot.getStack().copy());
+				}
+				else
+				{
+					list.set(i, ItemStack.EMPTY);
+				}
+			}
+		}
+
+		return list;
 	}
 }

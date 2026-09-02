@@ -210,26 +210,21 @@ public interface IInventoryOverlayHandler
     @Nullable
     default Pair<BlockEntity, NbtCompound> requestBlockEntityAt(World world, BlockPos pos)
     {
-        if (!(world instanceof ServerWorld))
+        Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+
+        BlockState state = world.getBlockState(pos);
+
+        if (state.getBlock() instanceof ChestBlock)
         {
-            Pair<BlockEntity, NbtCompound> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+            ChestType type = state.get(ChestBlock.CHEST_TYPE);
 
-            BlockState state = world.getBlockState(pos);
-
-            if (state.getBlock() instanceof ChestBlock)
+            if (type != ChestType.SINGLE)
             {
-                ChestType type = state.get(ChestBlock.CHEST_TYPE);
-
-                if (type != ChestType.SINGLE)
-                {
-                    return this.getDataSyncer().requestBlockEntity(world, pos.offset(ChestBlock.getFacing(state)));
-                }
+                return this.getDataSyncer().requestBlockEntity(world, pos.offset(ChestBlock.getFacing(state)));
             }
-
-            return pair;
         }
 
-        return null;
+        return pair;
     }
 
 	/**
@@ -243,26 +238,22 @@ public interface IInventoryOverlayHandler
 	@ApiStatus.Experimental
 	default Pair<BlockEntity, CompoundData> requestBlockEntityAtNew(World world, BlockPos pos)
 	{
-		if (!(world instanceof ServerWorld))
+		// The Data syncer will manage the Client/Server stuff for us.
+		Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntityNew(world, pos);
+
+		BlockState state = world.getBlockState(pos);
+
+		if (state.getBlock() instanceof ChestBlock)
 		{
-			Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntityNew(world, pos);
+			ChestType type = state.get(ChestBlock.CHEST_TYPE);
 
-			BlockState state = world.getBlockState(pos);
-
-			if (state.getBlock() instanceof ChestBlock)
+			if (type != ChestType.SINGLE)
 			{
-				ChestType type = state.get(ChestBlock.CHEST_TYPE);
-
-				if (type != ChestType.SINGLE)
-				{
-					return this.getDataSyncer().requestBlockEntityNew(world, pos.offset(ChestBlock.getFacing(state)));
-				}
+				return this.getDataSyncer().requestBlockEntityNew(world, pos.offset(ChestBlock.getFacing(state)));
 			}
-
-			return pair;
 		}
 
-		return null;
+		return pair;
 	}
 
 	/**
