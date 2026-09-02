@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.test.data;
 import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -95,6 +96,24 @@ public class TestDataSyncer implements IDataSyncer, IClientTickHandler
         if ((now - this.lastTick) > this.tickRate())
         {
             this.cache.tickCache(now);
+
+            for (int i = 0; i < 4; i++)
+            {
+                BlockPos pos = this.requestTracker.pollNextBlockEntity();
+                Integer entityId = this.requestTracker.pollNextEntity();
+
+                if (pos != null)
+                {
+                    this.cache.removeFromCache(pos);
+                    this.requestBlockEntity(this.getBestWorld(), pos);
+                }
+                if (entityId != null)
+                {
+                    this.cache.removeFromCache(entityId);
+                    this.requestEntity(this.getBestWorld(), entityId);
+                }
+            }
+
             this.lastTick = now;
         }
     }

@@ -2298,45 +2298,64 @@ public class InventoryUtils
 
 	/**
 	 * Returns the Container object from any Compatible Menu Type.
-	 * @param menu
+	 * @param menu -
 	 * @return -
 	 */
 	@Nullable
 	public static Container getMenuAsContainer(@Nonnull AbstractContainerMenu menu)
 	{
-		if (menu instanceof ChestMenu cm)
+		return switch (menu)
 		{
-			return cm.getContainer();
-		}
-		else if (menu instanceof DispenserMenu dm)
+			case ChestMenu cm -> cm.getContainer();
+			case DispenserMenu dm -> ((IMixinDispenserMenu) dm).malilib_getDispenser();
+			case CrafterMenu cm -> cm.getContainer();
+			case AbstractFurnaceMenu fm -> ((IMixinAbstractFurnaceMenu) fm).malilib_getContainer();
+			case BrewingStandMenu bm -> ((IMixinBrewingStandMenu) bm).malilib_getBrewingStand();
+			case HopperMenu hm -> ((IMixinHopperMenu) hm).malilib_getHopper();
+			case LecternMenu lm -> ((IMixinLecternMenu) lm).malilib_getLectern();
+			case ShulkerBoxMenu sbm -> ((IMixinShulkerBoxMenu) sbm).malilib_getContainer();
+			default -> null;
+		};
+	}
+
+	/**
+	 * Return an Item List from a slotted Menu Screen.<br>
+	 * This should Ignore the Player Inventory; by only checking the containerSize.
+	 * The First slot refers to the "top most" container on the screen; meaning it will be
+	 * the actual containerSize; because each "Slot" actually holds a copy of the entire Inventory; but
+	 * checking each slot by slot number; is the correct way to get a copy of the Container's inventory.
+	 * @param slots As obtained from an {@link AbstractContainerMenu}, synced by the Server.
+	 * @return Return a slotted {@link NonNullList} of items
+	 */
+	public static NonNullList<ItemStack> getItemsFromSlots(@Nonnull final NonNullList<Slot> slots)
+	{
+		final int containerSize = slots.getFirst().container.getContainerSize();
+
+		if (containerSize < 1 || containerSize > NbtInventory.MAX_SIZE)
 		{
-			return ((IMixinDispenserMenu) dm).malilib_getDispenser();
-		}
-		else if (menu instanceof CrafterMenu cm)
-		{
-			return cm.getContainer();
-		}
-		else if (menu instanceof AbstractFurnaceMenu fm)
-		{
-			return ((IMixinAbstractFurnaceMenu) fm).malilib_getContainer();
-		}
-		else if (menu instanceof BrewingStandMenu bm)
-		{
-			return ((IMixinBrewingStandMenu) bm).malilib_getBrewingStand();
-		}
-		else if (menu instanceof HopperMenu hm)
-		{
-			return ((IMixinHopperMenu) hm).malilib_getHopper();
-		}
-		else if (menu instanceof LecternMenu lm)
-		{
-			return ((IMixinLecternMenu) lm).malilib_getLectern();
-		}
-		else if (menu instanceof ShulkerBoxMenu sbm)
-		{
-			return ((IMixinShulkerBoxMenu) sbm).malilib_getContainer();
+			return NonNullList.create();
 		}
 
-		return null;
+		NonNullList<ItemStack> list = NonNullList.withSize(containerSize, ItemStack.EMPTY);
+
+		for (int i = 0; i < containerSize; i++)
+		{
+			Slot slot = slots.get(i);
+
+			if (slot.getContainerSlot() == slot.index ||
+				slot.getContainerSlot() > containerSize)
+			{
+				if (slot.hasItem() && !slot.isFake())
+				{
+					list.set(i, slot.getItem().copy());
+				}
+				else
+				{
+					list.set(i, ItemStack.EMPTY);
+				}
+			}
+		}
+
+		return list;
 	}
 }
