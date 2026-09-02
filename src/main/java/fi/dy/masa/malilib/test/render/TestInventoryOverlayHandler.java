@@ -48,7 +48,6 @@ import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.data.Constants;
 import fi.dy.masa.malilib.util.data.DataBlockUtils;
-import fi.dy.masa.malilib.util.data.DataEntityUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.ListData;
 import fi.dy.masa.malilib.util.game.RayTraceUtils;
@@ -242,24 +241,25 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 			MaLiLib.LOGGER.warn("getTarget(): entityUUID [{}] vs targetedUUID [{}]", entity.getStringUUID(), mc.crosshairPickEntity != null ? mc.crosshairPickEntity.getStringUUID() : "<NULL>");
 
-			if (world instanceof ServerLevel)
-			{
-				entity = world.getEntity(entity.getId());
-
-				if (entity != null)
-				{
-					return this.getTargetInventoryFromEntity(entity, DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entity.getId()));
-				}
-			}
-			else
-			{
+			// Redundant code.  IDataSyncer manages this.
+//			if (world instanceof ServerLevel)
+//			{
+//				entity = world.getEntity(entity.getId());
+//
+//				if (entity != null)
+//				{
+//					return this.getTargetInventoryFromEntity(entity, DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entity.getId()));
+//				}
+//			}
+//			else
+//			{
 				Pair<Entity, CompoundData> pair = this.getDataSyncer().requestEntity(world, entity.getId());
 
 				if (pair != null)
 				{
 					return this.getTargetInventoryFromEntity(world.getEntity(pair.getLeft().getId()), pair.getRight());
 				}
-			}
+//			}
 		}
 
 		return null;
@@ -525,6 +525,8 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		@Override
 		public InventoryOverlayContext onContextRefresh(InventoryOverlayContext data, Level world)
 		{
+			MaLiLib.LOGGER.warn("onContextRefresh()");
+
 			// Refresh data
 			if (data.be() != null)
 			{
@@ -538,6 +540,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 				data = TestInventoryOverlayHandler.getInstance().getTargetInventoryFromEntity(data.entity(), data.data());
 			}
 
+//			TestInventoryOverlayHandler.dumpContext(data);
 			return data;
 		}
 	}
