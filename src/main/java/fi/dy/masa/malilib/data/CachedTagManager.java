@@ -16,7 +16,7 @@ public class CachedTagManager
     public static final CachedTagKey GLASS_PANES_KEY              = new CachedTagKey(MaLiLibReference.MOD_ID, "glass_panes");
     public static final CachedTagKey SCULK_BLOCKS_KEY             = new CachedTagKey(MaLiLibReference.MOD_ID, "sculk_blocks");
     public static final CachedTagKey REPLACEABLE_BLOCKS_KEY       = new CachedTagKey(MaLiLibReference.MOD_ID, "replaceable_blocks");
-    public static final CachedTagKey ORE_BLOCKS_KEY               = new CachedTagKey(MaLiLibReference.MOD_ID, "ore_blocks");
+    // BlockTags.ORES
 
     public static List<CachedTagKey> getKeys()
     {
@@ -26,7 +26,6 @@ public class CachedTagManager
         list.add(GLASS_PANES_KEY);
         list.add(SCULK_BLOCKS_KEY);
         list.add(REPLACEABLE_BLOCKS_KEY);
-        list.add(ORE_BLOCKS_KEY);
 
         return list;
     }
@@ -39,7 +38,6 @@ public class CachedTagManager
         CachedBlockTags.getInstance().build(GLASS_PANES_KEY, buildGlassPanesCache());
         CachedBlockTags.getInstance().build(SCULK_BLOCKS_KEY, buildSculkCache());
         CachedBlockTags.getInstance().build(REPLACEABLE_BLOCKS_KEY, buildReplaceableCache());
-        CachedBlockTags.getInstance().build(ORE_BLOCKS_KEY, buildOreCache());
 	}
 
     private static void clearCache()
@@ -48,7 +46,6 @@ public class CachedTagManager
         CachedBlockTags.getInstance().clearEntry(GLASS_PANES_KEY);
         CachedBlockTags.getInstance().clearEntry(SCULK_BLOCKS_KEY);
         CachedBlockTags.getInstance().clearEntry(REPLACEABLE_BLOCKS_KEY);
-        CachedBlockTags.getInstance().clearEntry(ORE_BLOCKS_KEY);
 	}
 
     private static List<String> buildAllCoralFansCache()
@@ -164,32 +161,6 @@ public class CachedTagManager
         list.add("#"+BlockTags.WOODEN_SHELVES.location().toString());
         list.add("#"+BlockTags.WOOL.location().toString());
         list.add("#"+BlockTags.WOOL_CARPETS.location().toString());
-
-        return list;
-    }
-
-    private static List<String> buildOreCache()
-    {
-        List<String> list = new ArrayList<>();
-
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.COAL_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.COPPER_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.DEEPSLATE_COAL_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.DEEPSLATE_COPPER_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.DEEPSLATE_DIAMOND_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.DEEPSLATE_EMERALD_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.DEEPSLATE_GOLD_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.DEEPSLATE_IRON_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.DEEPSLATE_LAPIS_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.DEEPSLATE_REDSTONE_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.DIAMOND_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.EMERALD_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.GOLD_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.IRON_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.LAPIS_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.NETHER_GOLD_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.NETHER_QUARTZ_ORE).toString());
-        list.add(BuiltInRegistries.BLOCK.getKey(Blocks.REDSTONE_ORE).toString());
 
         return list;
     }

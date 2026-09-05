@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.client.gui.screens.Screen;
 
@@ -12,7 +11,6 @@ import fi.dy.masa.malilib.interfaces.IStringDualConsumer;
 import fi.dy.masa.malilib.interfaces.IStringDualConsumerFeedback;
 import fi.dy.masa.malilib.util.data.Color4f;
 
-@ApiStatus.Experimental
 public class GuiTextInputStackedMultiLine extends GuiTextInputStackedMultiLineBase implements ICompletionListener
 {
     protected final IStringDualConsumer consumer;

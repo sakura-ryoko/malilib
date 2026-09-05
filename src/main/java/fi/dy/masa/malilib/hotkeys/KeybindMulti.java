@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.hotkeys;
 import java.util.*;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
-import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;

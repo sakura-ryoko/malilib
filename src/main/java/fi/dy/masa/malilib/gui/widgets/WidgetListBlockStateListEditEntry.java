@@ -3,6 +3,8 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.List;
 import java.util.Objects;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,6 +24,7 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.game.BlockUtils;
 
+@ApiStatus.Experimental
 public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<BlockState>
 {
 	protected final WidgetListBlockStateListEdit parent;

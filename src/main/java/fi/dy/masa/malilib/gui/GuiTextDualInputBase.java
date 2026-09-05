@@ -1,8 +1,6 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -19,7 +17,6 @@ import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
-@ApiStatus.Experimental
 public abstract class GuiTextDualInputBase extends GuiDialogBase
 {
     protected final GuiTextFieldGeneric textField1;

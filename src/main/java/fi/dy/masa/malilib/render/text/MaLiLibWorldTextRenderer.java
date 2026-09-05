@@ -4,7 +4,7 @@ import java.util.List;
 import org.joml.Matrix4f;
 import org.jspecify.annotations.NonNull;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.MeshData;
 import net.minecraft.client.gui.Font;

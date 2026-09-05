@@ -3,7 +3,7 @@ package fi.dy.masa.malilib.render.on_demand.state;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

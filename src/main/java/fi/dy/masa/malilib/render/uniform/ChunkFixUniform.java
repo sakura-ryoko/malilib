@@ -5,11 +5,11 @@ import javax.annotation.Nonnull;
 
 import org.lwjgl.system.MemoryStack;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.buffers.Std140Builder;
 import com.mojang.blaze3d.buffers.Std140SizeCalculator;
-import com.mojang.blaze3d.systems.RenderPass;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.commands.RenderPass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.TextureFilteringMethod;
 import net.minecraft.client.renderer.MappableRingBuffer;
@@ -19,7 +19,7 @@ import fi.dy.masa.malilib.compat.iris.IrisCompat;
 
 public class ChunkFixUniform implements AutoCloseable
 {
-	private static final int UBO_SIZE = new Std140SizeCalculator().putIVec2().putFloat().putInt().putInt().get();
+	private static final int UBO_SIZE = new Std140SizeCalculator().putIVec2().putIVec3().putFloat().putInt().putInt().get();
 	private final MappableRingBuffer ubo;
 
 	public ChunkFixUniform()
@@ -29,7 +29,11 @@ public class ChunkFixUniform implements AutoCloseable
 		try (MemoryStack stack = MemoryStack.stackPush())
 		{
 			ByteBuffer buffer = stack.malloc(UBO_SIZE);
-			this.fillBuffer(buffer, 0, Integer.MAX_VALUE, Integer.MAX_VALUE, Float.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
+			this.fillBuffer(buffer, 0,
+			                Integer.MAX_VALUE, Integer.MAX_VALUE,
+			                Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE,
+			                Float.MAX_VALUE,
+			                Integer.MAX_VALUE, Integer.MAX_VALUE);
 		}
 	}
 
@@ -40,7 +44,9 @@ public class ChunkFixUniform implements AutoCloseable
 	 * @param atlasHeight ()
 	 * @param chunkVisibility ()
 	 */
-	public void updateBuffer(int atlasWidth, int atlasHeight, float chunkVisibility)
+	public void updateBuffer(int atlasWidth, int atlasHeight,
+	                         int chunkX, int chunkY, int chunkZ,
+	                         float chunkVisibility)
 			throws IllegalArgumentException
 	{
 		if (atlasWidth <= 0 || atlasHeight <= 0)
@@ -53,14 +59,19 @@ public class ChunkFixUniform implements AutoCloseable
 
 		try (GpuBufferSlice.MappedView mappedView = this.ubo.currentBuffer().map(false, true))
 		{
-			this.fillBuffer(mappedView.data(), 0, atlasWidth, atlasHeight, chunkVisibility, useRGSS, hasShadersOn);
+			this.fillBuffer(mappedView.data(), 0, atlasWidth, atlasHeight, chunkX, chunkY, chunkZ, chunkVisibility, useRGSS, hasShadersOn);
 		}
 	}
 
-	public void fillBuffer(final ByteBuffer buffer, final int offset, int atlasWidth, int atlasHeight, float chunkVisibility, int useRGSS, int hasShadersOn)
+	public void fillBuffer(final ByteBuffer buffer,
+	                       final int offset,
+	                       int atlasWidth, int atlasHeight,
+	                       int chunkX, int chunkY, int chunkZ,
+	                       float chunkVisibility,
+	                       int useRGSS, int hasShadersOn)
 	{
 		buffer.position(offset);
-		Std140Builder.intoBuffer(buffer).putIVec2(atlasWidth, atlasHeight).putFloat(chunkVisibility).putInt(useRGSS).putInt(hasShadersOn);
+		Std140Builder.intoBuffer(buffer).putIVec2(atlasWidth, atlasHeight).putIVec3(chunkX, chunkY, chunkZ).putFloat(chunkVisibility).putInt(useRGSS).putInt(hasShadersOn);
 	}
 
 	/**

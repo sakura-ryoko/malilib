@@ -11,26 +11,30 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.phys.Vec3;
-import com.mojang.blaze3d.IndexType;
-import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.systems.*;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuSampler;
-import com.mojang.blaze3d.textures.GpuTextureView;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexSorting;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.device.GpuDevice;
+import com.mojang.renderpearl.api.pipeline.IndexType;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.textures.FilterMode;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.mixin.render.IMixinBufferBuilder;
@@ -141,7 +145,7 @@ public class RenderContext implements AutoCloseable
         return this.format;
     }
 
-    public VertexFormat[] getShaderFormats()
+    public List<VertexFormat> getShaderFormats()
     {
         return this.pipeline.getVertexFormatBindings();
     }
@@ -767,12 +771,12 @@ public class RenderContext implements AutoCloseable
             if (otherTarget != null)
             {
                 texture1 = otherTarget.getColorTextureView();
-                texture2 = otherTarget.useDepth ? otherTarget.getDepthTextureView() : null;
+                texture2 = otherTarget.hasDepth() ? otherTarget.getDepthTextureView() : null;
             }
             else
             {
                 texture1 = mainTarget.getColorTextureView();
-                texture2 = mainTarget.useDepth ? mainTarget.getDepthTextureView() : null;
+                texture2 = mainTarget.hasDepth() ? mainTarget.getDepthTextureView() : null;
             }
 
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] --> new renderPass", this.name.get());
@@ -781,7 +785,7 @@ public class RenderContext implements AutoCloseable
             //MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setUniform() // lineWidth [{}]", this.name.get(), width);
 
             GpuBufferSlice gpuSlice = RenderSystem.getDynamicUniforms()
-                                                        .writeTransform(
+                                                  .writeTransform(
                                                                 RenderSystem.getModelViewMatrixCopy(),
                                                                 colorMod,
                                                                 modelOffset,
@@ -789,7 +793,7 @@ public class RenderContext implements AutoCloseable
 
             // Attach Frame buffers
             try (RenderPass pass = device.createCommandEncoder()
-                    .createRenderPass(this.name,
+                                         .createRenderPass(this.name,
                                       texture1, Optional.empty(),
                                       texture2, OptionalDouble.empty())
             )

@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.gui.button;
 
 import javax.annotation.Nullable;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.client.input.MouseButtonEvent;
 
 import fi.dy.masa.malilib.config.IConfigBlockStateList;
@@ -12,6 +14,7 @@ import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
+@ApiStatus.Experimental
 public class ConfigButtonBlockStateList extends ButtonGeneric
 {
     private final IConfigBlockStateList config;

@@ -10,11 +10,11 @@ import net.minecraft.core.Vec3i;
 
 public class SubChunkPos extends Vec3i
 {
-    public static final Codec<SubChunkPos> BLOCK_POS_CODEC = RecordCodecBuilder.create(
-            inst -> inst.group(
-                    BlockPos.CODEC.fieldOf("pos").forGetter(BlockPos::new)
-            ).apply(inst, SubChunkPos::new)
-    );
+//    public static final Codec<SubChunkPos> BLOCK_POS_CODEC = RecordCodecBuilder.create(
+//            inst -> inst.group(
+//                    BlockPos.CODEC.fieldOf("pos").forGetter(BlockPos::new)
+//            ).apply(inst, SubChunkPos::new)
+//    );
     public static final Codec<SubChunkPos> VEC3I_CODEC = RecordCodecBuilder.create(
             inst -> inst.group(
                     PrimitiveCodec.INT.fieldOf("x").forGetter(Vec3i::getX),

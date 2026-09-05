@@ -156,7 +156,6 @@ public class NbtEntityUtils
         if (type != null && nbt.contains(NbtKeys.ATTRIB))
         {
             AttributeMap container = new AttributeMap(DefaultAttributes.getSupplier((EntityType<? extends @NotNull LivingEntity>) type));
-//            container.readNbt(nbt.getListOrEmpty(NbtKeys.ATTRIB));
             container.apply(AttributeInstance.Packed.LIST_CODEC.parse(NbtOps.INSTANCE, nbt.getListOrEmpty(NbtKeys.ATTRIB)).getPartialOrThrow());
             return container;
         }
@@ -253,16 +252,6 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.CUSTOM_NAME))
         {
-            /*
-            String string = nbt.getString(NbtKeys.CUSTOM_NAME);
-
-            try
-            {
-                return Text.Serialization.fromJson(string, registry);
-            }
-            catch (Exception ignored) { }
-             */
-
             return nbt.read(NbtKeys.CUSTOM_NAME, ComponentSerialization.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(null);
         }
 
@@ -281,22 +270,6 @@ public class NbtEntityUtils
     public static CompoundTag setCustomNameToNbt(@Nonnull Component name, @Nonnull RegistryAccess registry, @Nullable CompoundTag nbtIn, String key)
     {
         CompoundTag nbt = nbtIn != null ? nbtIn.copy() : new CompoundTag();
-
-        /*
-        try
-        {
-            if (nbtIn != null)
-            {
-                nbtIn.putString(NbtKeys.CUSTOM_NAME, Text.Serialization.toJsonString(name, registry));
-                return nbtIn;
-            }
-            else
-            {
-                nbt.putString(NbtKeys.CUSTOM_NAME, Text.Serialization.toJsonString(name, registry));
-            }
-        }
-        catch (Exception ignored) {}
-         */
 
         if (key == null || key.isEmpty())
         {
@@ -343,11 +316,6 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.EQUIPMENT))
         {
             return EntityEquipment.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), Objects.requireNonNull(nbt.get(NbtKeys.EQUIPMENT))).result().orElse(null);
-
-//			if (opt.isPresent())
-//			{
-//				return opt.get();
-//			}
         }
 
         return null;
@@ -614,15 +582,6 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.OFFERS))
         {
-            /*
-            Optional<TradeOfferList> opt = TradeOfferList.CODEC.parse(registry.getOps(NbtOps.INSTANCE), nbt.get(NbtKeys.OFFERS)).resultOrPartial();
-
-            if (opt.isPresent())
-            {
-                return opt.get();
-            }
-             */
-
             return nbt.read(NbtKeys.OFFERS, MerchantOffers.CODEC, registry.createSerializationContext(NbtOps.INSTANCE)).orElse(null);
         }
 
@@ -639,15 +598,6 @@ public class NbtEntityUtils
     {
         if (nbt.contains(NbtKeys.VILLAGER))
         {
-            /*
-            Optional<VillagerData> opt = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get(NbtKeys.VILLAGER))).resultOrPartial();
-
-            if (opt.isPresent())
-            {
-                return opt.get();
-            }
-             */
-
             return nbt.read(NbtKeys.VILLAGER, VillagerData.CODEC).orElse(null);
         }
 
@@ -810,7 +760,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static @Nullable Axolotl.Variant getAxolotlVariantFromNbt(@Nonnull CompoundTag nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2))
@@ -828,7 +777,6 @@ public class NbtEntityUtils
      * @param registry ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<ResourceKey<@NotNull CatVariant>, DyeColor> getCatVariantFromNbt(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry)
     {
         ResourceKey<@NotNull CatVariant> variantKey = null;
@@ -992,7 +940,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static @Nullable Parrot.Variant getParrotVariantFromNbt(@Nonnull CompoundTag nbt)
     {
         if (nbt.contains(NbtKeys.VARIANT_2))
@@ -1014,6 +961,7 @@ public class NbtEntityUtils
         if (nbt.contains(NbtKeys.VARIANT_2))
         {
             TropicalFish.Variant variant = nbt.read(NbtKeys.VARIANT_2, TropicalFish.Variant.CODEC).orElse(TropicalFish.DEFAULT_VARIANT);
+            return variant.pattern();
         }
         else if (nbt.contains(NbtKeys.BUCKET_VARIANT))
         {
@@ -1049,7 +997,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<ResourceKey<@NotNull WolfVariant>, DyeColor> getWolfVariantFromNbt(@Nonnull CompoundTag nbt, @Nonnull RegistryAccess registry)
     {
         ResourceKey<@NotNull WolfVariant> variantKey = null;
@@ -1115,7 +1062,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static @Nullable DyeColor getSheepColorFromNbt(@Nonnull CompoundTag nbt)
     {
         if (nbt.contains(NbtKeys.COLOR))
@@ -1132,7 +1078,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static @Nullable Rabbit.Variant getRabbitTypeFromNbt(@Nonnull CompoundTag nbt)
     {
         if (nbt.contains(NbtKeys.RABBIT_TYPE))
@@ -1149,7 +1094,6 @@ public class NbtEntityUtils
      * @param nbt ()
      * @return ()
      */
-    @SuppressWarnings("deprecation")
     public static Pair<Llama.Variant, Integer> getLlamaTypeFromNbt(@Nonnull CompoundTag nbt)
     {
         Llama.Variant variant = null;

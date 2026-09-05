@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import com.mojang.blaze3d.textures.GpuSampler;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
@@ -1287,7 +1287,8 @@ public class InventoryOverlay
 			ctx.tooltip(
 					ctx.fontRenderer(), list, x, y,
 					DefaultTooltipPositioner.INSTANCE,
-					stack.get(DataComponents.TOOLTIP_STYLE)
+					stack.get(DataComponents.TOOLTIP_STYLE),
+					false
 			);
 
             // Extra Hook for this tooltip style

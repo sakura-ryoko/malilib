@@ -2,12 +2,15 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.Collection;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 import fi.dy.masa.malilib.config.IConfigBlockStateList;
 import fi.dy.masa.malilib.gui.GuiBlockStateListEdit;
 
+@ApiStatus.Experimental
 public class WidgetListBlockStateListEdit extends WidgetListConfigOptionsBase<BlockState, WidgetListBlockStateListEditEntry>
 {
 	protected final BlockState air = Blocks.AIR.defaultBlockState();

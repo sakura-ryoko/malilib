@@ -5,16 +5,10 @@ import net.minecraft.client.gui.Font;
 
 public class GuiTextFieldDouble extends GuiTextFieldGeneric
 {
-    // Regex doesn't allow commas or other locale-specific notations
-//    private static final Pattern PATTERN_NUMBER = Pattern.compile("[-+]?([0-9]*[.])?[0-9]+([eE][-+]?\\d+)?");
-//    private static final Pattern PATTERN_NUMBER = Pattern.compile("^-?([0-9]+(\\.[0-9]*)?)?");
-//    private static final Pattern PATTERN_NUMBER = Pattern.compile("^\\b\\d[\\d,.' ]*\\b");
-
     public GuiTextFieldDouble(int x, int y, int width, int height, Font fontRenderer)
     {
         super(x, y, width, height, fontRenderer);
 
-//        this.setTextPredicate(input -> input.isEmpty() || PATTERN_NUMBER.matcher(input).matches());
 	    this.setResponder(this::onTextChanged);
     }
 
@@ -72,48 +66,4 @@ public class GuiTextFieldDouble extends GuiTextFieldGeneric
 			}
 		}
 	}
-
-	// todo from Masa
-//    @Override
-//    protected String getValueStringForTextfield()
-//    {
-//        String val = super.getValueStringForTextfield();
-//
-//        if (MaLiLibConfigs.Generic.COORDINATE_DECIMAL_CLAMPING.getBooleanValue())
-//        {
-//            int decimals = MaLiLibConfigs.Generic.COORDINATE_DECIMAL_CLAMPING.getIntegerValue();
-//            int expIndex = val.indexOf('E');
-//            int dotIndex = val.indexOf('.');
-//
-//            if (dotIndex > 0)
-//            {
-//                // Scientific notation, yeet the decimals from the middle
-//                if (expIndex > dotIndex && val.length() > expIndex + 1)
-//                {
-//                    // 123.456789E12 => 123.45E12
-//
-//                    try
-//                    {
-//                        int expValue = Integer.parseInt(val.substring(expIndex + 1));
-//                        decimals += expValue;
-//                    }
-//                    catch (Exception ignore)
-//                    {
-//                        return val;
-//                    }
-//
-//                    int last = Math.min(val.length(), dotIndex + decimals + 1);
-//                    val = val.substring(0, last) + val.substring(expIndex);
-//                }
-//                // Normal decimal format
-//                else
-//                {
-//                    int last = Math.min(val.length(), dotIndex + decimals + 1);
-//                    val = val.substring(0, last);
-//                }
-//            }
-//        }
-//
-//        return val;
-//    }
 }

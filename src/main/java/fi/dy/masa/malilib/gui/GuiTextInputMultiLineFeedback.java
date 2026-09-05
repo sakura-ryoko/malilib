@@ -2,15 +2,12 @@ package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
 
-import org.jetbrains.annotations.ApiStatus;
-
 import net.minecraft.client.gui.screens.Screen;
 
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.IStringConsumerFeedback;
 import fi.dy.masa.malilib.util.data.Color4f;
 
-@ApiStatus.Experimental
 public class GuiTextInputMultiLineFeedback extends GuiTextInputMultiLineBase
 {
     protected final IStringConsumerFeedback consumer;

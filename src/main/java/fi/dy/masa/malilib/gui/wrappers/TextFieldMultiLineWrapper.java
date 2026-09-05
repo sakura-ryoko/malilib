@@ -1,6 +1,5 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.input.CharacterEvent;
@@ -12,7 +11,6 @@ import fi.dy.masa.malilib.gui.interfaces.ITextFieldMultiLineListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.KeyCodes;
 
-@ApiStatus.Experimental
 public class TextFieldMultiLineWrapper<T extends GuiTextFieldMultiLine>
 {
 	private final T textField;

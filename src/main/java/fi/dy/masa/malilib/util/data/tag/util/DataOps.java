@@ -70,7 +70,7 @@ public class DataOps implements DynamicOps<BaseData>
 			case Constants.NBT.TAG_COMPOUND -> this.convertMap(ops, data);
 			case Constants.NBT.TAG_LIST -> this.convertList(ops, data);
 			case Constants.NBT.TAG_END -> ops.empty();
-			default -> throw new RuntimeException("(DataOps) Invalid data type: " + data.getType());
+			default -> throw new MatchException("(DataOps) Invalid data type: " + data.getType(), null);
 		};
 	}
 
@@ -154,7 +154,10 @@ public class DataOps implements DynamicOps<BaseData>
 			}
 		}
 
-		return DataResult.error(() -> "(DataOps) Not a boolean: "+data.toString());
+		Optional<Number> num = data.asNumber();
+
+		return num.map(number -> DataResult.success(number.doubleValue() != 0.0))
+		          .orElseGet(() -> DataResult.error(() -> "(DataOps) Not a boolean: " + data.toString()));
 	}
 
 	@Override
@@ -226,27 +229,25 @@ public class DataOps implements DynamicOps<BaseData>
 			{
 				return data == this.empty() ? DataResult.success(this.emptyMap()) : DataResult.success(data);
 			}
-			else
-			{
-				CompoundData compoundData = data instanceof CompoundData comp ? comp.copy() : new CompoundData();
-				List<BaseData> list = new ArrayList<>();
 
-				iter.forEachRemaining(pair ->
-				                      {
-										  BaseData entry = pair.getFirst();
+			CompoundData compoundData = data instanceof CompoundData comp ? comp.copy() : new CompoundData();
+			List<BaseData> list = new ArrayList<>();
 
-										  if (entry.getType() == Constants.NBT.TAG_STRING)
-										  {
-											  compoundData.put(((StringData) pair.getFirst()).value, pair.getSecond());
-										  }
-										  else
-										  {
-											  list.add(entry);
-										  }
-				                      });
+			iter.forEachRemaining(pair ->
+			                      {
+									  BaseData entry = pair.getFirst();
 
-				return !list.isEmpty() ? DataResult.error(() -> "(DataOps) Some keys are not strings: "+list.toString(), compoundData) : DataResult.success(compoundData);
-			}
+									  if (entry.getType() == Constants.NBT.TAG_STRING)
+									  {
+										  compoundData.put(((StringData) pair.getFirst()).value, pair.getSecond());
+									  }
+									  else
+									  {
+										  list.add(entry);
+									  }
+			                      });
+
+			return !list.isEmpty() ? DataResult.error(() -> "(DataOps) Some keys are not strings: "+list.toString(), compoundData) : DataResult.success(compoundData);
 		}
 	}
 
@@ -261,27 +262,25 @@ public class DataOps implements DynamicOps<BaseData>
 		{
 			return data == this.empty() ? DataResult.success(this.emptyMap()) : DataResult.success(data);
 		}
-		else
+
+		CompoundData compoundData = data instanceof CompoundData comp ? comp.copy() : new CompoundData();
+		List<BaseData> list = new ArrayList<>();
+
+		for (Map.Entry<BaseData, BaseData> entry : map.entrySet())
 		{
-			CompoundData compoundData = data instanceof CompoundData comp ? comp.copy() : new CompoundData();
-			List<BaseData> list = new ArrayList<>();
+			BaseData key = entry.getKey();
 
-			for (Map.Entry<BaseData, BaseData> entry : map.entrySet())
+			if (key.getType() == Constants.NBT.TAG_STRING)
 			{
-				BaseData key = entry.getKey();
-
-				if (key.getType() == Constants.NBT.TAG_STRING)
-				{
-					compoundData.put(((StringData) key).value, entry.getValue());
-				}
-				else
-				{
-					list.add(key);
-				}
+				compoundData.put(((StringData) key).value, entry.getValue());
 			}
-
-			return !list.isEmpty() ? DataResult.error(() -> "(DataOps) Some keys are not strings: "+list.toString(), compoundData) : DataResult.success(compoundData);
+			else
+			{
+				list.add(key);
+			}
 		}
+
+		return !list.isEmpty() ? DataResult.error(() -> "(DataOps) Some keys are not strings: "+list.toString(), compoundData) : DataResult.success(compoundData);
 	}
 
 	@Override
@@ -351,6 +350,12 @@ public class DataOps implements DynamicOps<BaseData>
 				{
 					return comp.entrySet().stream().map(
 							entry -> Pair.of(DataOps.this.createString(entry.getKey()), entry.getValue()));
+				}
+
+				@Override
+				public String toString()
+				{
+					return "MapLike["+comp+"]";
 				}
 			});
 		}
@@ -477,12 +482,16 @@ public class DataOps implements DynamicOps<BaseData>
 	@Nullable
 	public BaseData remove(BaseData data, String key)
 	{
-		if (data.getType() == Constants.NBT.TAG_COMPOUND)
+		Optional<CompoundData> opt = data.asCompound();
+
+		if (opt.isPresent())
 		{
-			return ((CompoundData) data).getData(key).orElse(null);
+			CompoundData comp = opt.get().copy();
+			comp.remove(key);
+			return comp;
 		}
 
-		return null;
+		return data;
 	}
 
 	private static Optional<ArrayFactory> createArrayFactory(BaseData data)
@@ -491,21 +500,17 @@ public class DataOps implements DynamicOps<BaseData>
 		{
 			return Optional.of(new GenericArrayFactory());
 		}
-		else if (data.getType() == Constants.NBT.TAG_LIST)
+
+		if (data instanceof ArrayData)
 		{
-			return Optional.of(new GenericArrayFactory(((ListData) data)));
-		}
-		else if (data.getType() == Constants.NBT.TAG_BYTE_ARRAY)
-		{
-			return Optional.of(new ByteArrayFactory(((ByteArrayData) data).value));
-		}
-		else if (data.getType() == Constants.NBT.TAG_INT_ARRAY)
-		{
-			return Optional.of(new IntArrayFactory(((IntArrayData) data).value));
-		}
-		else if (data.getType() == Constants.NBT.TAG_LONG_ARRAY)
-		{
-			return Optional.of(new LongArrayFactory(((LongArrayData) data).value));
+			return switch (data.getType())
+			{
+				case Constants.NBT.TAG_LIST -> Optional.of(new GenericArrayFactory(((ListData) data)));
+				case Constants.NBT.TAG_BYTE_ARRAY -> Optional.of(new ByteArrayFactory(((ByteArrayData) data).value));
+				case Constants.NBT.TAG_INT_ARRAY -> Optional.of(new IntArrayFactory(((IntArrayData) data).value));
+				case Constants.NBT.TAG_LONG_ARRAY -> Optional.of(new LongArrayFactory(((LongArrayData) data).value));
+				default -> throw new MatchException("(DataOps) Not a Array: "+data.toString(), null);
+			};
 		}
 		else
 		{
@@ -696,11 +701,11 @@ public class DataOps implements DynamicOps<BaseData>
 			}
 			else if (prefix.getType() != Constants.NBT.TAG_COMPOUND)
 			{
-				return DataResult.error(() -> "(DataOps) Not a map: "+prefix.toString());
+				return DataResult.error(() -> "(DataOps) Not a map: "+prefix.toString(), prefix);
 			}
 			else
 			{
-				CompoundData result = ((CompoundData) prefix).copy();
+				CompoundData result = prefix.asCompound().orElse(new CompoundData()).copy();
 
 				for (Map.Entry<String, BaseData> entry : data.entrySet())
 				{

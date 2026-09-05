@@ -1,6 +1,5 @@
 package fi.dy.masa.malilib.gui;
 
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.gui.Font;
@@ -18,7 +17,6 @@ import fi.dy.masa.malilib.mixin.gui.IMixinAbstractWidget;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 
-@ApiStatus.Experimental
 public class GuiTextFieldMultiLine extends MultiLineEditBox
 {
     protected int x;

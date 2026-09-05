@@ -1,7 +1,7 @@
 package fi.dy.masa.malilib.render;
 
-import com.mojang.blaze3d.pipeline.BindGroupLayout;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.BindGroupLayout;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 
 /**
  * This is meant as a central place to manage all custom Render Pipelines

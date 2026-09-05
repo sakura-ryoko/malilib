@@ -15,7 +15,7 @@ public class MaLiLibReference
 	public static final String MOD_TYPE = "fabric";
 	public static final String MOD_STRING = MOD_ID+"-"+MOD_TYPE+"-"+MC_VERSION+"-"+MOD_VERSION;
 
-	public static final boolean LOCAL_DEBUG = false;                // Enforce DEBUG_MODE ON (Or use Property/Environment Variable)
+	public static final boolean LOCAL_DEBUG = true;                // Enforce DEBUG_MODE ON (Or use Property/Environment Variable)
 	public static final boolean EXPERIMENTAL_MODE = false;          // Enforce EXPERIMENTAL_MODE when TRUE (Experimental code)
 
 	public static final boolean RUNNING_IN_IDE = isRunningInIde();  // Enable IDE capabilities (Sets Vanilla in IDE mode)

@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joml.Matrix3x2fStack;
 
-import com.mojang.blaze3d.textures.GpuSampler;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import com.mojang.renderpearl.api.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -346,6 +346,11 @@ public class GuiContext extends GuiGraphicsExtractor
 
 	public void renderTooltip(final Font font, final List<ClientTooltipComponent> lines, final int xo, final int yo, final ClientTooltipPositioner positioner, @Nullable final Identifier style)
 	{
-		this.tooltip(font, lines, xo, yo, positioner, style);
+		this.tooltip(font, lines, xo, yo, positioner, style, false);
+	}
+
+	public void renderTooltip(final Font font, final List<ClientTooltipComponent> lines, final int xo, final int yo, final ClientTooltipPositioner positioner, @Nullable final Identifier style, boolean extraSpace)
+	{
+		this.tooltip(font, lines, xo, yo, positioner, style, extraSpace);
 	}
 }

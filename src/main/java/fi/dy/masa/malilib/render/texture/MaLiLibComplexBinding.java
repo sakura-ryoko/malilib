@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 
-import com.mojang.blaze3d.textures.GpuSampler;
+import com.mojang.renderpearl.api.textures.GpuSampler;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.resources.Identifier;
 

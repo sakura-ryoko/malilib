@@ -1,14 +1,12 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.client.gui.screens.Screen;
 
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.IStringDualConsumerFeedback;
 
-@ApiStatus.Experimental
 public class GuiTextDualInputFeedback extends GuiTextDualInputBase
 {
     protected final IStringDualConsumerFeedback consumer;

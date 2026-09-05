@@ -2,7 +2,7 @@ package fi.dy.masa.malilib.render.on_demand.state;
 
 import org.jspecify.annotations.NonNull;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.core.BlockPos;

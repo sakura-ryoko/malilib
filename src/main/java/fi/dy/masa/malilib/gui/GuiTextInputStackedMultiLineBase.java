@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -20,7 +19,6 @@ import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 
-@ApiStatus.Experimental
 public abstract class GuiTextInputStackedMultiLineBase extends GuiDialogBase
 {
     protected final GuiTextFieldGeneric textField1;

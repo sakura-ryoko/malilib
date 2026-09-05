@@ -212,13 +212,13 @@ public class DataBlockUtils
 		if (data.contains(NbtKeys.FRONT_TEXT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.FRONT_TEXT);
-			SignText.DIRECT_CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(front::set);
+			SignText.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(front::set);
 		}
 
 		if (data.contains(NbtKeys.BACK_TEXT, Constants.NBT.TAG_COMPOUND))
 		{
 			CompoundData comp = data.getCompound(NbtKeys.BACK_TEXT);
-			SignText.DIRECT_CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(back::set);
+			SignText.CODEC.parse(registry.createSerializationContext(NbtOps.INSTANCE), DataConverterNbt.toVanillaCompound(comp)).resultOrPartial().ifPresent(back::set);
 		}
 
 		if (data.contains(NbtKeys.WAXED, Constants.NBT.TAG_BYTE))
