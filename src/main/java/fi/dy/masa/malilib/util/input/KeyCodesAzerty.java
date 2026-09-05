@@ -4,22 +4,22 @@ import javax.annotation.Nullable;
 
 public enum KeyCodesAzerty
 {
-	KEY_U_GRAVE             (39,  40,  "U_GRAVE", "APOSTROPHE"),
-	KEY_SEMICOLON           (44,  51,  "SEMICOLON", "COMMA"),
-	KEY_RIGHT_PARENTHESIS   (45,  12,  "RIGHT_PARENTHESIS", "MINUS"),
-	KEY_COLON               (46,  52,  "COLON", "PERIOD"),
-	KEY_EXCLAMATION_MARK    (47,  53,  "EXCLAMATION_MARK", "SLASH"),
-	KEY_M                   (59,  39,  "M", "SEMICOLON"),
-	KEY_Q                   (65,  30,  "Q", "A"),
-	KEY_COMMA               (77,  50,  "COMMA", "M"),
-	KEY_A                   (81,  16,  "A", "Q"),
-	KEY_Z                   (87,  17,  "Z", "W"),
-	KEY_W                   (90,  44,  "W", "Z"),
-	KEY_CIRCUMFLEX_ACCENT   (91,  26,  "CIRCUMFLEX_ACCENT", "LEFT_BRACKET"),
-	KEY_ASTERISK            (92,  43,  "ASTERISK", "BACKSLASH"),
-	KEY_DOLLAR_SIGN         (93,  27,  "DOLLAR_SIGN", "RIGHT_BRACKET"),
-	KEY_SUPERSCRIPT_2       (96,  41,  "SUPERSCRIPT_2", "GRAVE_ACCENT"),
-	KEY_ALT_GR              (346, 312, "ALT_GR", "RIGHT_ALT"),
+	KEY_U_GRAVE             (KeyCodes.KEY_APOSTROPHE,       ScanCodes.SCAN_APOSTROPHE,      "U_GRAVE",          "APOSTROPHE"),
+	KEY_SEMICOLON           (KeyCodes.KEY_COMMA,            ScanCodes.SCAN_COMMA,           "SEMICOLON",        "COMMA"),
+	KEY_RIGHT_PARENTHESIS   (KeyCodes.KEY_MINUS,            ScanCodes.SCAN_MINUS,           "RIGHT_PARENTHESIS","MINUS"),
+	KEY_COLON               (KeyCodes.KEY_PERIOD,           ScanCodes.SCAN_PERIOD,          "COLON",            "PERIOD"),
+	KEY_EXCLAMATION_MARK    (KeyCodes.KEY_SLASH,            ScanCodes.SCAN_SLASH,           "EXCLAMATION_MARK", "SLASH"),
+	KEY_M                   (KeyCodes.KEY_SEMICOLON,        ScanCodes.SCAN_SEMICOLON,       "M",                "SEMICOLON"),
+	KEY_Q                   (KeyCodes.KEY_A,                ScanCodes.SCAN_A,               "Q",                "A"),
+	KEY_COMMA               (KeyCodes.KEY_M,                ScanCodes.SCAN_M,               "COMMA",            "M"),
+	KEY_A                   (KeyCodes.KEY_Q,                ScanCodes.SCAN_Q,               "A",                "Q"),
+	KEY_Z                   (KeyCodes.KEY_W,                ScanCodes.SCAN_W,               "Z",                "W"),
+	KEY_W                   (KeyCodes.KEY_Z,                ScanCodes.SCAN_Z,               "W",                "Z"),
+	KEY_CIRCUMFLEX_ACCENT   (KeyCodes.KEY_LEFT_BRACKET,     ScanCodes.SCAN_LEFT_BRACKET,    "CIRCUMFLEX_ACCENT","LEFT_BRACKET"),
+	KEY_ASTERISK            (KeyCodes.KEY_BACKSLASH,        ScanCodes.SCAN_BACKSLASH,       "ASTERISK",         "BACKSLASH"),
+	KEY_DOLLAR_SIGN         (KeyCodes.KEY_RIGHT_BRACKET,    ScanCodes.SCAN_RIGHT_BRACKET,   "DOLLAR_SIGN",      "RIGHT_BRACKET"),
+	KEY_SUPERSCRIPT_2       (KeyCodes.KEY_GRAVE_ACCENT,     ScanCodes.SCAN_GRAVE_ACCENT,    "SUPERSCRIPT_2",    "GRAVE_ACCENT"),
+	KEY_ALT_GR              (KeyCodes.KEY_RIGHT_ALT,        ScanCodes.SCAN_RIGHT_ALT,       "ALT_GR",           "RIGHT_ALT"),
 	;
 
 	private final int keyCode;

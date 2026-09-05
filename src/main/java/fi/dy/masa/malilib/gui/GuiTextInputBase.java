@@ -7,13 +7,14 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public abstract class GuiTextInputBase extends GuiDialogBase
 {
@@ -95,7 +96,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
     @Override
     public boolean onKeyTyped(KeyEvent input)
     {
-        if (input.key() == KeyCodes.KEY_ENTER)
+        if (input.key() == ScanCodes.SCAN_ENTER)
         {
             // Only close the GUI if the value was successfully applied
             if (this.applyValue(this.textField.getValue()))
@@ -105,7 +106,7 @@ public abstract class GuiTextInputBase extends GuiDialogBase
 
             return true;
         }
-        else if (input.key() == KeyCodes.KEY_ESCAPE)
+        else if (input.key() == ScanCodes.SCAN_ESCAPE)
         {
             GuiBase.openGui(this.getParent());
             return true;

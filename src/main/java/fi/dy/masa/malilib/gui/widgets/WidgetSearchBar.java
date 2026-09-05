@@ -1,13 +1,14 @@
 package fi.dy.masa.malilib.gui.widgets;
 
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.util.KeyCodes;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class WidgetSearchBar extends WidgetBase
 {
@@ -82,7 +83,7 @@ public class WidgetSearchBar extends WidgetBase
             {
                 return true;
             }
-            else if (input.key() == KeyCodes.KEY_ESCAPE)
+            else if (input.key() == ScanCodes.SCAN_ESCAPE)
             {
                 if (input.hasShiftDown() && this.mc.gui.screen() != null)
                 {

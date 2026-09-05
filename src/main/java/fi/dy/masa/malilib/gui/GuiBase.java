@@ -37,7 +37,7 @@ import fi.dy.masa.malilib.interfaces.IStringConsumer;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.MessageRenderer;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public abstract class GuiBase extends Screen implements IMessageConsumer, IStringConsumer
 {
@@ -478,7 +478,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
             if (entry.isFocused())
             {
-                if (input.key() == KeyCodes.KEY_TAB)
+                if (input.key() == ScanCodes.SCAN_TAB)
                 {
                     entry.setFocused(false);
                     selected = i;
@@ -488,7 +488,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
                     entry.onKeyTyped(input);
                 }
 
-                handled = input.key() != KeyCodes.KEY_ESCAPE;
+                handled = input.key() != ScanCodes.SCAN_ESCAPE;
                 break;
             }
         }
@@ -501,7 +501,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
                 if (entry.isFocused())
                 {
-                    if (input.key() == KeyCodes.KEY_TAB)
+                    if (input.key() == ScanCodes.SCAN_TAB)
                     {
                         entry.setFocused(false);
                         selectedMultiLine = i;
@@ -511,7 +511,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
                         entry.onKeyTyped(input);
                     }
 
-                    handled = input.key() != KeyCodes.KEY_ESCAPE;
+                    handled = input.key() != ScanCodes.SCAN_ESCAPE;
                     break;
                 }
             }
@@ -532,7 +532,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (handled == false)
         {
-            if (input.key() == KeyCodes.KEY_ESCAPE)
+            if (input.key() == ScanCodes.SCAN_ESCAPE)
             {
                 this.closeGui(input.hasShiftDown() == false);
 
@@ -905,22 +905,22 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
 	public static boolean isShiftDown()
 	{
-		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT)
-				|| InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_SHIFT);
+		return InputConstants.isKeyDown(ScanCodes.SCAN_LEFT_SHIFT)
+                || InputConstants.isKeyDown(ScanCodes.SCAN_RIGHT_SHIFT);
 	}
 
 	public static boolean isCtrlDown()
 	{
 		return Util.getPlatform() == Util.OS.OSX
-			   ? InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SUPER)
-					   || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_SUPER)
-			   : InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_CONTROL)
-					   || InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_CONTROL);
+			   ? InputConstants.isKeyDown(ScanCodes.SCAN_LEFT_SUPER)
+					   || InputConstants.isKeyDown(ScanCodes.SCAN_RIGHT_SUPER)
+			   : InputConstants.isKeyDown(ScanCodes.SCAN_LEFT_CONTROL)
+					   || InputConstants.isKeyDown(ScanCodes.SCAN_RIGHT_CONTROL);
 	}
 
 	public static boolean isAltDown()
 	{
-		return InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_ALT)
-				|| InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_ALT);
+		return InputConstants.isKeyDown(ScanCodes.SCAN_LEFT_ALT)
+                || InputConstants.isKeyDown(ScanCodes.SCAN_RIGHT_ALT);
 	}
 }

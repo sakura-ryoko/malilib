@@ -17,8 +17,8 @@ import fi.dy.masa.malilib.gui.widgets.WidgetListBlockStateListEditEntry;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiBlockStateListEdit extends GuiListBase<BlockState, WidgetListBlockStateListEditEntry, WidgetListBlockStateListEdit>
 {
@@ -128,7 +128,7 @@ public class GuiBlockStateListEdit extends GuiListBase<BlockState, WidgetListBlo
 	@Override
 	public boolean onKeyTyped(KeyEvent input)
 	{
-		if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+		if (input.key() == ScanCodes.SCAN_ESCAPE && this.dialogHandler != null)
 		{
 			this.dialogHandler.closeDialog();
 			return true;

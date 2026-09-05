@@ -3,15 +3,17 @@ package fi.dy.masa.malilib.gui.button;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.input.MouseButtonEvent;
+
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.interfaces.IKeybindConfigGui;
 import fi.dy.masa.malilib.hotkeys.IHotkey;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindCategory;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class ConfigButtonKeybind extends ButtonGeneric
 {
@@ -59,7 +61,7 @@ public class ConfigButtonKeybind extends ButtonGeneric
     {
         if (this.selected)
         {
-            if (keyCode == KeyCodes.KEY_ESCAPE)
+            if (keyCode == ScanCodes.SCAN_ESCAPE)
             {
                 if (this.firstKey)
                 {

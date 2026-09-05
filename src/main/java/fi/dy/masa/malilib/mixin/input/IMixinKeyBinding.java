@@ -8,6 +8,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(KeyMapping.class)
 public interface IMixinKeyBinding
 {
+	@Accessor("name")
+	String malilib$getName();
+
 	@Accessor("defaultKey")
 	InputConstants.Key malilib$getDefaultKey();
 

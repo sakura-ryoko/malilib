@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
+
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigColorList;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
@@ -15,9 +16,9 @@ import fi.dy.masa.malilib.gui.widgets.WidgetColorListEditEntry;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiColorListEdit extends GuiListBase<Color4f, WidgetColorListEditEntry, WidgetColorListEdit>
 {
@@ -147,7 +148,7 @@ public class GuiColorListEdit extends GuiListBase<Color4f, WidgetColorListEditEn
     @Override
     public boolean onKeyTyped(KeyEvent input)
     {
-        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+        if (input.key() == ScanCodes.SCAN_ESCAPE && this.dialogHandler != null)
         {
             this.dialogHandler.closeDialog();
             return true;

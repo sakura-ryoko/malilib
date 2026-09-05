@@ -3,7 +3,12 @@ package fi.dy.masa.malilib.gui;
 import java.awt.*;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import org.apache.commons.lang3.math.Fraction;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix3x2f;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.render.TextureSetup;
 import net.minecraft.client.gui.screens.Screen;
@@ -14,13 +19,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 
-import org.apache.commons.lang3.math.Fraction;
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2f;
-
-import com.mojang.blaze3d.platform.NativeImage;
-
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigColor;
@@ -30,8 +28,8 @@ import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.render.element.*;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiColorEditorHSV extends GuiDialogBase
 {
@@ -213,7 +211,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     @Override
     public boolean onKeyTyped(KeyEvent input)
     {
-        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+        if (input.key() == ScanCodes.SCAN_ESCAPE && this.dialogHandler != null)
         {
             this.dialogHandler.closeDialog();
             return true;

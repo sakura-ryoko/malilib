@@ -28,9 +28,9 @@ import fi.dy.masa.malilib.gui.widgets.WidgetDropDownList;
 import fi.dy.masa.malilib.gui.widgets.WidgetListConfigOptions;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.ModInfo;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, WidgetConfigOption, WidgetListConfigOptions> implements IKeybindConfigGui
 {
@@ -214,7 +214,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
                 return true;
             }
 
-            if (input.key() == KeyCodes.KEY_ESCAPE && this.getParent() != GuiUtils.getCurrentScreen())
+            if (input.key() == ScanCodes.SCAN_ESCAPE && this.getParent() != GuiUtils.getCurrentScreen())
             {
                 this.closeGui(true);
                 return true;

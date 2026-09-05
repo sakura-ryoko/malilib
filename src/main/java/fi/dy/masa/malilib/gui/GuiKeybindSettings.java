@@ -2,12 +2,12 @@ package fi.dy.masa.malilib.gui;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
-import com.google.common.collect.ImmutableList;
-import org.jetbrains.annotations.NotNull;
 
 import fi.dy.masa.malilib.config.options.ConfigBase;
 import fi.dy.masa.malilib.config.options.ConfigBoolean;
@@ -21,8 +21,8 @@ import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiKeybindSettings extends GuiDialogBase
 {
@@ -163,7 +163,7 @@ public class GuiKeybindSettings extends GuiDialogBase
     @Override
     public boolean onKeyTyped(KeyEvent input)
     {
-        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+        if (input.key() == ScanCodes.SCAN_ESCAPE && this.dialogHandler != null)
         {
             this.dialogHandler.closeDialog();
             return true;

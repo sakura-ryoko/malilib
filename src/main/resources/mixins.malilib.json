@@ -53,6 +53,7 @@
         "input.IMixinKeyBinding",
         "input.MixinKeyboard",
         "input.MixinMouse",
+        "input.MixinSDLEventHandler",
         "network.IMixinDebugQueryHandler",
         "network.MixinClientConfigurationPacketListenerImpl",
         "network.MixinClientPacketListener",

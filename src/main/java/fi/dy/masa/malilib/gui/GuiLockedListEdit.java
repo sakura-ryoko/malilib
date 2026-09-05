@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
+
 import fi.dy.masa.malilib.config.ConfigManager;
 import fi.dy.masa.malilib.config.IConfigLockedList;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGui;
@@ -15,8 +16,8 @@ import fi.dy.masa.malilib.gui.widgets.WidgetLockedListEditEntry;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiLockedListEdit extends GuiListBase<String, WidgetLockedListEditEntry, WidgetListLockedListEdit>
 {
@@ -145,14 +146,14 @@ public class GuiLockedListEdit extends GuiListBase<String, WidgetLockedListEditE
     @Override
     public boolean onKeyTyped(KeyEvent input)
     {
-        if (input.key() == KeyCodes.KEY_ESCAPE && this.dialogHandler != null)
+        if (input.key() == ScanCodes.SCAN_ESCAPE && this.dialogHandler != null)
         {
             this.dialogHandler.closeDialog();
             return true;
         }
-        else if (input.key() == KeyCodes.KEY_ESCAPE)
+        else if (input.key() == ScanCodes.SCAN_ESCAPE)
         {
-			return super.onKeyTyped(new KeyEvent(KeyCodes.KEY_ESCAPE, KeyCodes.KEY_NONE, KeyCodes.KEY_NONE));
+			return super.onKeyTyped(new KeyEvent(ScanCodes.SCAN_ESCAPE, ScanCodes.SCAN_UNKNOWN, 0));
         }
 
         return false;

@@ -1,4 +1,7 @@
-package fi.dy.masa.malilib.util;
+package fi.dy.masa.malilib.util.input;
+
+import java.nio.ByteBuffer;
+import org.lwjgl.sdl.SDLKeyboard;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
@@ -77,5 +80,21 @@ public class InputUtils
 	{
 		key.setKey(((IMixinKeyBinding) key).malilib$getDefaultKey());
 		KeyMapping.resetMapping();
+	}
+
+	public static boolean isKeyHeld(final int scanCode)
+	{
+		ByteBuffer state = SDLKeyboard.SDL_GetKeyboardState();
+		return state != null && state.get(scanCode) != 0;
+	}
+
+	public static int getInputModifiers()
+	{
+		return SDLKeyboard.SDL_GetModState();
+	}
+
+	public static void resetKeyboardState()
+	{
+		SDLKeyboard.SDL_ResetKeyboard();
 	}
 }

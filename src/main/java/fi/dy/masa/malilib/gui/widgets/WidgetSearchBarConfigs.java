@@ -13,7 +13,7 @@ import fi.dy.masa.malilib.hotkeys.KeybindMulti;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings.Context;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class WidgetSearchBarConfigs extends WidgetSearchBar
 {
@@ -75,7 +75,7 @@ public class WidgetSearchBarConfigs extends WidgetSearchBar
         {
             this.button.onKeyPressed(input.key());
 
-            if (input.key() == KeyCodes.KEY_ESCAPE)
+            if (input.key() == ScanCodes.SCAN_ESCAPE)
             {
                 this.button.onClearSelection();
             }

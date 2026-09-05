@@ -2,15 +2,17 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.*;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiScrollBar;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.MathUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>> extends GuiBase
 {
@@ -178,12 +180,12 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         }
         else if (this.allowKeyboardNavigation)
         {
-                 if (input.key() == KeyCodes.KEY_UP)        this.offsetSelectionOrScrollbar(-1, true);
-            else if (input.key() == KeyCodes.KEY_DOWN)      this.offsetSelectionOrScrollbar( 1, true);
-            else if (input.key() == KeyCodes.KEY_PAGE_UP)   this.offsetSelectionOrScrollbar(-this.maxVisibleBrowserEntries / 2, true);
-            else if (input.key() == KeyCodes.KEY_PAGE_DOWN) this.offsetSelectionOrScrollbar( this.maxVisibleBrowserEntries / 2, true);
-            else if (input.key() == KeyCodes.KEY_HOME)      this.offsetSelectionOrScrollbar(-this.listContents.size(), true);
-            else if (input.key() == KeyCodes.KEY_END)       this.offsetSelectionOrScrollbar( this.listContents.size(), true);
+                 if (input.key() == ScanCodes.SCAN_UP)        this.offsetSelectionOrScrollbar(-1, true);
+            else if (input.key() == ScanCodes.SCAN_DOWN)      this.offsetSelectionOrScrollbar( 1, true);
+            else if (input.key() == ScanCodes.SCAN_PAGE_UP)   this.offsetSelectionOrScrollbar(-this.maxVisibleBrowserEntries / 2, true);
+            else if (input.key() == ScanCodes.SCAN_PAGE_DOWN) this.offsetSelectionOrScrollbar( this.maxVisibleBrowserEntries / 2, true);
+            else if (input.key() == ScanCodes.SCAN_HOME)      this.offsetSelectionOrScrollbar(-this.listContents.size(), true);
+            else if (input.key() == ScanCodes.SCAN_END)       this.offsetSelectionOrScrollbar( this.listContents.size(), true);
             else return false;
 
             return true;

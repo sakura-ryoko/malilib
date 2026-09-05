@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+
 import net.minecraft.client.input.KeyEvent;
+
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryCache;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
@@ -18,7 +20,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntry;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.FileUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntry, WidgetDirectoryEntry>
 		implements IDirectoryNavigator
@@ -61,12 +63,12 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
             return true;
         }
 
-        if ((input.key() == KeyCodes.KEY_BACKSPACE || input.key() == KeyCodes.KEY_LEFT) && this.currentDirectoryIsRoot() == false)
+        if ((input.key() == ScanCodes.SCAN_BACKSPACE || input.key() == ScanCodes.SCAN_LEFT) && this.currentDirectoryIsRoot() == false)
         {
             this.switchToParentDirectory();
             return true;
         }
-        else if ((input.key() == KeyCodes.KEY_RIGHT || input.key() == KeyCodes.KEY_ENTER) &&
+        else if ((input.key() == ScanCodes.SCAN_RIGHT || input.key() == ScanCodes.SCAN_ENTER) &&
                   this.getLastSelectedEntry() != null && this.getLastSelectedEntry().type() == DirectoryEntryType.DIRECTORY)
         {
             this.switchToDirectory(this.getLastSelectedEntry().getDirectory().resolve(this.getLastSelectedEntry().name()));

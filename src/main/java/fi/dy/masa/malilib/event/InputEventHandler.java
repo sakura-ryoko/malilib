@@ -4,25 +4,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
+import org.lwjgl.sdl.SDL_Event;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import org.jetbrains.annotations.ApiStatus;
+
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.Message;
-import fi.dy.masa.malilib.hotkeys.IHotkey;
-import fi.dy.masa.malilib.hotkeys.IInputManager;
-import fi.dy.masa.malilib.hotkeys.IKeybind;
-import fi.dy.masa.malilib.hotkeys.IKeybindManager;
-import fi.dy.masa.malilib.hotkeys.IKeybindProvider;
-import fi.dy.masa.malilib.hotkeys.IKeyboardInputHandler;
-import fi.dy.masa.malilib.hotkeys.IMouseInputHandler;
-import fi.dy.masa.malilib.hotkeys.KeybindCategory;
-import fi.dy.masa.malilib.hotkeys.KeybindMulti;
+import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.util.InfoUtils;
+import fi.dy.masa.malilib.util.input.ActionCodes;
+import fi.dy.masa.malilib.util.input.EventCodes;
+import fi.dy.masa.malilib.util.input.KeyState;
 
 public class InputEventHandler implements IKeybindManager, IInputManager
 {
@@ -34,6 +34,8 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     private final List<IKeyboardInputHandler> keyboardHandlers = new ArrayList<>();
     private final List<IMouseInputHandler> mouseHandlers = new ArrayList<>();
     private double mouseWheelDeltaSum;
+    private KeyState lastKeyState;
+    private int lastScanCode;
 
     private InputEventHandler() { }
 
@@ -132,10 +134,42 @@ public class InputEventHandler implements IKeybindManager, IInputManager
         this.mouseHandlers.remove(handler);
     }
 
+    @Nullable
+    public Pair<Integer, KeyState> getLastKeyState()
+    {
+        if (this.lastKeyState != null)
+        {
+            return Pair.of(this.lastScanCode, this.lastKeyState);
+        }
+
+        return null;
+    }
+
+    @ApiStatus.Internal
+    public void onHandleEvent(final SDL_Event event)
+    {
+        this.lastKeyState = KeyState.fromEventType(event.type());
+
+        switch (event.type())
+        {
+            case EventCodes.EVENT_KEY_PRESS,
+                 EventCodes.EVENT_KEY_RELEASE ->
+                this.lastScanCode = event.key().scancode();
+            case EventCodes.EVENT_MOUSE_PRESS,
+                 EventCodes.EVENT_MOUSE_RELEASE ->
+                this.lastScanCode = event.button().button() - 100;
+	        default ->
+	        {
+	            this.lastKeyState = null;
+                this.lastScanCode = -1;
+	        }
+        }
+    }
+
     @ApiStatus.Internal
     public boolean onKeyInput(KeyEvent input, int action, @Nonnull Minecraft mc)
     {
-        boolean eventKeyState = action != GLFW.GLFW_RELEASE;
+        boolean eventKeyState = action != ActionCodes.RELEASED;
 
         // Update the cached pressed keys status
         KeybindMulti.onKeyInputPre(input, action);
@@ -164,7 +198,7 @@ public class InputEventHandler implements IKeybindManager, IInputManager
 
         if (click.input() != -1)
         {
-            boolean eventButtonState = action == GLFW.GLFW_PRESS;
+            boolean eventButtonState = action == ActionCodes.PRESSED;
 
             // Update the cached pressed keys status
 			KeybindMulti.onKeyInputPre(new KeyEvent(click.input() - 100, 0, 0), action);

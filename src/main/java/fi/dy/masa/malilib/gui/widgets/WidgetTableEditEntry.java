@@ -1,5 +1,14 @@
 package fi.dy.masa.malilib.gui.widgets;
 
+import java.util.*;
+import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
+
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+
 import fi.dy.masa.malilib.config.IConfigTable;
 import fi.dy.masa.malilib.config.options.table.ConfigTable;
 import fi.dy.masa.malilib.config.options.table.Label;
@@ -14,17 +23,9 @@ import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import java.util.*;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.NotNull;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 @ApiStatus.Experimental
 public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
@@ -520,7 +521,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 					{
 						button.onKeyPressed(input.key());
 
-						if (input.key() == KeyCodes.KEY_ESCAPE)
+						if (input.key() == ScanCodes.SCAN_ESCAPE)
 						{
 							button.onClearSelection();
 						}
@@ -732,7 +733,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		{
 			if (tfw != null && tfw.textField().isFocused())
 			{
-				if (input.key() == KeyCodes.KEY_ENTER)
+				if (input.key() == ScanCodes.SCAN_ENTER)
 				{
 					this.applyNewValueToConfig();
 					return true;

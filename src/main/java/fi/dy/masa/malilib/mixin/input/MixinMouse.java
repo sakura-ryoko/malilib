@@ -26,7 +26,7 @@ public abstract class MixinMouse
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/MouseHandler;ignoreFirstMove:Z",
                      ordinal = 0,
                      opcode = Opcodes.GETFIELD))
-    private void malilib_hookOnMouseMove(long handle, double xpos, double ypos, CallbackInfo ci)
+    private void malilib_hookOnMouseMove(long handle, double xpos, double ypos, double xrel, double yrel, CallbackInfo ci)
     {
 		Window clientWindow = this.minecraft.getWindow();
 		double mouseX = ((MouseHandler) (Object) this).xpos() * (double) clientWindow.getGuiScaledWidth() / (double) clientWindow.getScreenWidth();

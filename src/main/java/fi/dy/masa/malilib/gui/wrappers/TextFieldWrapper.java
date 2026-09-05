@@ -13,8 +13,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.util.KeyCodes;
 import fi.dy.masa.malilib.util.game.BlockUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 {
@@ -103,14 +103,14 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 
 		if (this.textField.isFocused() && this.textField.keyPressed(input))
 		{
-			if (this.textField().hasTooltip() && input.key() == KeyCodes.KEY_BACKSPACE ||
+			if (this.textField().hasTooltip() && input.key() == ScanCodes.SCAN_BACKSPACE ||
 				!this.textField.getValueWrapper().equals(textPre))
 			{
 				this.validateType();
 			}
 
 			if (this.listener != null &&
-				(input.key() == KeyCodes.KEY_ENTER || input.key() == KeyCodes.KEY_TAB ||
+				(input.key() == ScanCodes.SCAN_ENTER || input.key() == ScanCodes.SCAN_TAB ||
 				 this.textField.getValue().equals(textPre) == false))
 			{
 				this.listener.onTextChange(this.textField);

@@ -1,14 +1,16 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
+
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetListBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.util.KeyCodes;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>, WIDGETLIST extends WidgetListBase<TYPE, WIDGET>> extends GuiBase
 {
@@ -125,7 +127,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     public boolean onKeyTyped(KeyEvent input)
     {
         // Try to handle everything except ESC in the parent first
-        if (input.key() != KeyCodes.KEY_ESCAPE && super.onKeyTyped(input))
+        if (input.key() != ScanCodes.SCAN_ESCAPE && super.onKeyTyped(input))
         {
             return true;
         }
@@ -136,7 +138,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
         }
 
         // If the list widget or its sub widgets didn't consume the ESC, then send that to the parent (to close the GUI)
-	    return input.key() == KeyCodes.KEY_ESCAPE && super.onKeyTyped(input);
+	    return input.key() == ScanCodes.SCAN_ESCAPE && super.onKeyTyped(input);
     }
 
     @Override
