@@ -57,6 +57,7 @@ public class NbtKeys
     public static final String ON_GROUND           = "OnGround";
     public static final String FALL_DISTANCE       = "fall_distance";
     public static final String INVULNERABLE        = "Invulnerable";
+    public static final String INVULNERABLE_TIME   = "invulnerable_time";
     public static final String PORTAL_COOLDOWN     = "PortalCooldown";
     public static final String CUSTOM_NAME_VISIBLE = "CustomNameVisible";
     public static final String SILENT              = "Silent";

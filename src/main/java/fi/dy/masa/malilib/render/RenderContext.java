@@ -799,7 +799,7 @@ public class RenderContext implements AutoCloseable
             )
             {
 //                MaLiLib.LOGGER.warn("RenderContext#drawInternal() [{}] renderPass --> setPipeline() [{}] // isDevelopment [{}]", this.name.get(), this.shader.getLocation().toString(), RenderPassImpl.IS_DEVELOPMENT);
-                pass.setPipeline(this.pipeline);
+                pass.setPipeline(RenderSystem.getCompiledPipeline(this.pipeline));
 
                 ScissorState scissorState = RenderSystem.getScissorStateForRenderTypeDraws();
 
@@ -828,7 +828,7 @@ public class RenderContext implements AutoCloseable
                 {
                     for (MaLiLibComplexTexture entry : this.complexTextures)
                     {
-                        pass.bindTexture(entry.name(), entry.texture(), entry.sampler());
+                        pass.setUniform(entry.name(), entry.texture(), entry.sampler());
                     }
                 }
                 else if (!this.simpleTextures.isEmpty())
@@ -841,7 +841,7 @@ public class RenderContext implements AutoCloseable
 
 							if (tex != null)
 							{
-								pass.bindTexture("Sampler"+i, tex.getTextureView(), tex.getSampler());
+								pass.setUniform("Sampler"+i, tex.getTextureView(), tex.getSampler());
 							}
 						}
 	                }

@@ -41,7 +41,7 @@ public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRendere
 	        matrices.scale(state.size(), -state.size(), state.size());
 
 			// FIXME -- Transformation
-			matrices.mulPose(state.rotation());
+			matrices.rotate(state.rotation());
 	        matrices.scale(state.scale(), state.scale(), state.scale());
 	        matrices.translate(-0.5F, (0.5F + state.yOffset()), -0.5F);
 

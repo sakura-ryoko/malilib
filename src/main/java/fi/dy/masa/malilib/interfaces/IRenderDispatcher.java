@@ -21,7 +21,7 @@ public interface IRenderDispatcher
      * method called before the vanilla Weather rendering is done
      * @param renderer ()
      */
-    void registerWorldPreWeatherRenderer(IRenderer renderer);
+    void registerWorldPreMainRenderer(IRenderer renderer);
 
     /**
      * Registers a renderer which will have its {@link IRenderer.onExtractWorldLast}

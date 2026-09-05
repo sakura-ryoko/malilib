@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -202,13 +201,13 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 
 	@ApiStatus.Internal
 	@Override
-	public void onRenderWorldLast(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
+	public void onRenderWorldLast(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
 	{
-		this.onDrawStates(modelViewMatrix, cameraState, profiler);
+		this.onDrawStates(cameraState, profiler);
 	}
 
 	@ApiStatus.Internal
-	private void onDrawStates(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
+	private void onDrawStates(CameraRenderState cameraState, ProfilerFiller profiler)
 	{
 		synchronized (this.rendererMap)
 		{
@@ -220,19 +219,19 @@ public class OnDemandRenderer implements IOnDemandRenderManager, IClientTickHand
 
 				if (renderer != null)
 				{
-					this.onDrawEachState(key, renderer, modelViewMatrix, cameraState, profiler);
+					this.onDrawEachState(key, renderer, cameraState, profiler);
 				}
 			}
 		}
 	}
 
 	@ApiStatus.Internal
-	private void onDrawEachState(String key, IOnDemandRenderer<?> renderer, Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
+	private void onDrawEachState(String key, IOnDemandRenderer<?> renderer, CameraRenderState cameraState, ProfilerFiller profiler)
 	{
 		this.lock.lock();
 		try
 		{
-			IOnDemandRenderState state = renderer.drawPre(modelViewMatrix, cameraState, profiler);
+			IOnDemandRenderState state = renderer.drawPre(cameraState, profiler);
 
 			if (state != null && renderer.shouldUseRenderContext())
 			{

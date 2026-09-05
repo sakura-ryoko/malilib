@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import com.google.common.collect.ImmutableMap;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
@@ -20,9 +19,11 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.GuiRenderer;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
@@ -44,9 +45,11 @@ public class RenderEventHandler implements IRenderDispatcher
 
     private final List<IRenderer> inGameGuiRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
-    private final List<IRenderer> worldPreWeatherRenderers = new ArrayList<>();
+    private final List<IRenderer> worldPreMainRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
     private final List<IRenderer> specialGuiRenderers = new ArrayList<>();
+    private boolean shouldCancelAlwaysOnTop;
+    private boolean alwaysOnTopCancelled;
 
     public static IRenderDispatcher getInstance()
     {
@@ -72,11 +75,11 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @Override
-    public void registerWorldPreWeatherRenderer(IRenderer renderer)
+    public void registerWorldPreMainRenderer(IRenderer renderer)
     {
-        if (this.worldPreWeatherRenderers.contains(renderer) == false)
+        if (this.worldPreMainRenderers.contains(renderer) == false)
         {
-            this.worldPreWeatherRenderers.add(renderer);
+            this.worldPreMainRenderers.add(renderer);
         }
     }
 
@@ -180,15 +183,15 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void runExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
+    public void runExtractWorldPreMain(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
     {
-        if (this.worldPreWeatherRenderers.isEmpty() == false)
+        if (this.worldPreMainRenderers.isEmpty() == false)
         {
-            profiler.push(MaLiLibReference.MOD_ID+"_extract_pre_weather");
+            profiler.push(MaLiLibReference.MOD_ID+"_extract_pre_main");
 
-            for (IRenderer renderer : this.worldPreWeatherRenderers)
+            for (IRenderer renderer : this.worldPreMainRenderers)
             {
-                renderer.onExtractWorldPreWeather(deltaTracker, camera, ticks, profiler);
+                renderer.onExtractWorldPreMain(deltaTracker, camera, ticks, profiler);
             }
 
             profiler.pop();
@@ -196,16 +199,18 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void runRenderWorldPreWeather(Matrix4fc modelViewMatrix, Minecraft mc,
-                                         FrameGraphBuilder frameGraphBuilder, LevelTargetBundle fbSet,
-                                         Frustum cullFrustum, CameraRenderState cameraState, RenderBuffers buffers,
-                                         GpuBufferSlice terrainFog, Vector4f fogColor,
-                                         ProfilerFiller profiler)
+    public void runRenderWorldPreMain(Minecraft mc, LevelRenderer vanilla,
+                                      FrameGraphBuilder frameGraphBuilder, FeatureRenderDispatcher.PreparedFrame preparedFrame,
+                                      LevelTargetBundle fbSet,
+                                      Frustum cullFrustum, CameraRenderState cameraState,
+                                      RenderBuffers buffers, boolean consistentDepthRequired,
+                                      GpuBufferSlice terrainFog, Vector4f fogColor,
+                                      ProfilerFiller profiler)
     {
-        if (this.worldPreWeatherRenderers.isEmpty() == false)
+        if (this.worldPreMainRenderers.isEmpty() == false)
         {
-            profiler.push(MaLiLibReference.MOD_ID+"_render_pre_weather");
-            FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID+"_pre_weather");
+            profiler.push(MaLiLibReference.MOD_ID+"_render_pre_main");
+            FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID+"_pre_main");
 
             fbSet.main = pass.readsAndWrites(fbSet.main);
 
@@ -226,13 +231,13 @@ public class RenderEventHandler implements IRenderDispatcher
 //                    handleTranslucent.get().copyDepthFrom(handleMain.get());
 //                }
 
-                for (IRenderer renderer : this.worldPreWeatherRenderers)
+                for (IRenderer renderer : this.worldPreMainRenderers)
                 {
                     profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldPreWeather(
+                    renderer.onRenderWorldPreMain(
 //                            handleTranslucent != null ? handleTranslucent.get() : handleMain.get(),
                             handleMain.get(),
-                            modelViewMatrix, cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
+                            cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
                     profiler.pop();
                 }
 
@@ -244,7 +249,7 @@ public class RenderEventHandler implements IRenderDispatcher
                 RenderSystem.setShaderFog(fog);
             });
 
-            if (!this.worldPreWeatherRenderers.isEmpty())
+            if (!this.worldPreMainRenderers.isEmpty())
             {
                 pass.disableCulling();
             }
@@ -270,16 +275,51 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
-    public void runRenderWorldLast(Matrix4fc modelViewMatrix, Minecraft mc,
-                                   FrameGraphBuilder frameGraphBuilder, LevelTargetBundle fbSet,
-                                   Frustum cullFrustum, CameraRenderState cameraState, RenderBuffers buffers,
+    public boolean shouldCancelAlwaysOnTop(LevelRenderer vanilla)
+    {
+        return false;
+//        boolean result = !this.worldLastRenderers.isEmpty() && vanilla.frameHasAlwaysOnTopGizmos();
+//        this.shouldCancelAlwaysOnTop = result;
+//        return result;
+    }
+
+    @ApiStatus.Internal
+    public boolean shouldCancelAlwaysOnTop()
+    {
+        if (this.shouldCancelAlwaysOnTop)
+        {
+            this.alwaysOnTopCancelled = true;
+            return true;
+        }
+
+        return false;
+    }
+
+    @ApiStatus.Internal
+    private void runAlwaysOnTop(LevelRenderer vanilla, FeatureRenderDispatcher.PreparedFrame preparedFrame, RenderTarget mainTarget, boolean consistentDepth)
+    {
+        if (this.alwaysOnTopCancelled)
+        {
+            MaLiLib.LOGGER.error("RenderEventHandler#runAlwaysOnTop()");
+            vanilla.executeAlwaysOnTop(preparedFrame, mainTarget, consistentDepth);
+            this.alwaysOnTopCancelled = false;
+            this.shouldCancelAlwaysOnTop = false;
+        }
+    }
+
+    @ApiStatus.Internal
+    public void runRenderWorldLast(Minecraft mc, LevelRenderer vanilla,
+                                   FrameGraphBuilder frameGraphBuilder, FeatureRenderDispatcher.PreparedFrame preparedFrame,
+                                   LevelTargetBundle fbSet,
+                                   Frustum cullFrustum, CameraRenderState cameraState,
+                                   RenderBuffers buffers, boolean consistentDepthRequired,
                                    GpuBufferSlice terrainFog, Vector4f fogColor,
                                    ProfilerFiller profiler)
     {
         if (this.worldLastRenderers.isEmpty() == false)
         {
-            profiler.push(MaLiLibReference.MOD_ID+"_render_world_last");
-            FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID+"_world_last");
+            profiler.push(MaLiLibReference.MOD_ID + "_render_world_last");
+            FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID + "_world_last");
 
             fbSet.main = pass.readsAndWrites(fbSet.main);
 
@@ -292,31 +332,29 @@ public class RenderEventHandler implements IRenderDispatcher
 //            ResourceHandle<RenderTarget> handleTranslucent = fbSet.translucent;
 
             pass.executes(() ->
-            {
-                GpuBufferSlice fog = RenderSystem.getShaderFog();
+                          {
+                              GpuBufferSlice fog = RenderSystem.getShaderFog();
 
 //                if (handleTranslucent != null)
 //                {
 //                    handleTranslucent.get().copyDepthFrom(handleMain.get());
 //                }
 
-                for (IRenderer renderer : this.worldLastRenderers)
-                {
-                    profiler.push(renderer.getProfilerSectionSupplier());
-                    renderer.onRenderWorldLast(
+                              for (IRenderer renderer : this.worldLastRenderers)
+                              {
+                                  profiler.push(renderer.getProfilerSectionSupplier());
+                                  renderer.onRenderWorldLast(
 //                            handleTranslucent != null ? handleTranslucent.get() : handleMain.get(),
-                            handleMain.get(),
-                            modelViewMatrix, cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
-                    profiler.pop();
-                }
+                                          handleMain.get(),
+                                          cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
+                                  profiler.pop();
+                              }
 
-//                if (!this.worldLastRenderers.isEmpty())
-//                {
-//                    fb.blitToScreen();
-//                }
-
-                RenderSystem.setShaderFog(fog);
-            });
+                              // Hack Fix for "Always On Top Gizmos" to render after we do;
+                              // because they break our Depth Texture.
+                              this.runAlwaysOnTop(vanilla, preparedFrame, handleMain.get(), consistentDepthRequired);
+                              RenderSystem.setShaderFog(fog);
+                          });
 
             if (!this.worldLastRenderers.isEmpty())
             {

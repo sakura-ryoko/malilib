@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
-import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -19,7 +18,9 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.interfaces.IOnDemandRenderer;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 import fi.dy.masa.malilib.render.RenderContext;
-import fi.dy.masa.malilib.render.on_demand.state.*;
+import fi.dy.masa.malilib.render.on_demand.state.AbstractWallOverlayRenderState;
+import fi.dy.masa.malilib.render.on_demand.state.BoxWallOutlinesOverlayRenderState;
+import fi.dy.masa.malilib.render.on_demand.state.BoxWallQuadsOverlayRenderState;
 
 public class WallOverlayRenderer implements IOnDemandRenderer<AbstractWallOverlayRenderState>
 {
@@ -106,7 +107,7 @@ public class WallOverlayRenderer implements IOnDemandRenderer<AbstractWallOverla
 	}
 
 	@Override
-	public @Nullable AbstractWallOverlayRenderState drawPre(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
+	public @Nullable AbstractWallOverlayRenderState drawPre(CameraRenderState cameraState, ProfilerFiller profiler)
 	{
 		if (!this.hasCurrentData()) { return null; }
 		this.setupRenderContext();

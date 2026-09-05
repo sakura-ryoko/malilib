@@ -12,7 +12,7 @@ import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.test.misc.TestSelector;
 import net.minecraft.client.Minecraft;
 
-@Mixin(Minecraft.class)
+@Mixin(value = Minecraft.class, priority = 1001)
 public class MixinMinecraft_testSelector
 {
 	@Inject(method = "startAttack", at = @At("HEAD"), cancellable = true)

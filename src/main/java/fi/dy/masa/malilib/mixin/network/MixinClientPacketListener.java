@@ -30,7 +30,7 @@ import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.time.TickUtils;
 
-@Mixin(ClientPacketListener.class)
+@Mixin(value = ClientPacketListener.class, priority = 800)
 public abstract class MixinClientPacketListener
 {
     @Shadow private ClientLevel level;

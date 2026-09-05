@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import fi.dy.masa.malilib.interfaces.IGuiRendererInvoker;
 
-@Mixin(value = GuiRenderer.class, priority = 990)
+@Mixin(value = GuiRenderer.class, priority = 800)
 public abstract class MixinGuiRenderer implements IGuiRendererInvoker
 {
     @Mutable @Shadow @Final private Map<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> pictureInPictureRenderers;

@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.render.on_demand;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import org.joml.Matrix4fStack;
-import org.joml.Matrix4fc;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -346,7 +345,7 @@ public class BlockTargetingOverlayRenderer implements IOnDemandRenderer<Abstract
 	}
 
 	@Override
-	public @Nullable AbstractBlockTargetingOverlayRenderState drawPre(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
+	public @Nullable AbstractBlockTargetingOverlayRenderState drawPre(CameraRenderState cameraState, ProfilerFiller profiler)
 	{
 		if (this.hasEntry())
 		{

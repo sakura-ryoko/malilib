@@ -59,6 +59,21 @@ public record Vec3f(float x, float y, float z)
         this((float) x, (float) y, (float) z);
     }
 
+    public float getX()
+    {
+        return this.x;
+    }
+
+    public float getY()
+    {
+        return this.y;
+    }
+
+    public float getZ()
+    {
+        return this.z;
+    }
+
     public Vec3f normalize()
     {
         return normalized(this.x, this.y, this.z);

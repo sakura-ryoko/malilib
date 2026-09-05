@@ -1,5 +1,10 @@
 package fi.dy.masa.malilib.event;
 
+import java.io.FileFilter;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -7,7 +12,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 import org.lwjgl.sdl.SDL_Event;
 
@@ -19,10 +23,10 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.hotkeys.*;
+import fi.dy.masa.malilib.util.FileNameUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
-import fi.dy.masa.malilib.util.input.ActionCodes;
-import fi.dy.masa.malilib.util.input.EventCodes;
-import fi.dy.masa.malilib.util.input.KeyState;
+import fi.dy.masa.malilib.util.input.*;
+import fi.dy.masa.malilib.util.position.Vec2d;
 
 public class InputEventHandler implements IKeybindManager, IInputManager
 {
@@ -35,7 +39,9 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     private final List<IMouseInputHandler> mouseHandlers = new ArrayList<>();
     private double mouseWheelDeltaSum;
     private KeyState lastKeyState;
+    private int lastAction;
     private int lastScanCode;
+    private Vec2d lastMousePos;
 
     private InputEventHandler() { }
 
@@ -135,35 +141,86 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @Nullable
-    public Pair<Integer, KeyState> getLastKeyState()
+    public KeyState getLastKeyState()
     {
-        if (this.lastKeyState != null)
-        {
-            return Pair.of(this.lastScanCode, this.lastKeyState);
-        }
-
-        return null;
+        return this.lastKeyState;
     }
 
+    public int getLastScanCode()
+    {
+        return this.lastScanCode;
+    }
+
+    public int getLastActionCode()
+    {
+        return this.lastAction;
+    }
+
+    private void setLastMousePos(final double mouseX, final double mouseY)
+    {
+        this.lastMousePos = new Vec2d(mouseX, mouseY);
+    }
+
+    public Vec2d getLastMousePos()
+    {
+        return this.lastMousePos;
+    }
+
+    // todo - WARNING (Does not run on Minecraft Thread)
     @ApiStatus.Internal
-    public void onHandleEvent(final SDL_Event event)
+    public boolean onHandleEvent(final SDL_Event event)
     {
         this.lastKeyState = KeyState.fromEventType(event.type());
 
         switch (event.type())
         {
-            case EventCodes.EVENT_KEY_PRESS,
-                 EventCodes.EVENT_KEY_RELEASE ->
+            case EventCodes.EVENT_KEY_PRESS ->
+            {
+                this.lastAction = event.key().repeat() ? ActionCodes.REPEAT : ActionCodes.PRESSED;
                 this.lastScanCode = event.key().scancode();
-            case EventCodes.EVENT_MOUSE_PRESS,
-                 EventCodes.EVENT_MOUSE_RELEASE ->
-                this.lastScanCode = event.button().button() - 100;
+            }
+            case EventCodes.EVENT_KEY_RELEASE ->
+            {
+                this.lastAction = ActionCodes.RELEASED;
+                this.lastScanCode = event.key().scancode();
+            }
+            case EventCodes.EVENT_MOUSE_PRESS ->
+            {
+                this.lastAction = ActionCodes.PRESSED;
+                this.lastScanCode = event.button().button() - ScanCodes.OFFSET_MOUSE;
+            }
+            case EventCodes.EVENT_MOUSE_RELEASE ->
+            {
+                this.lastAction = ActionCodes.RELEASED;
+                this.lastScanCode = event.button().button() - ScanCodes.OFFSET_MOUSE;
+            }
 	        default ->
 	        {
-	            this.lastKeyState = null;
-                this.lastScanCode = -1;
+                this.lastAction = ActionCodes.NONE;
+                this.lastScanCode = ScanCodes.SCAN_UNKNOWN;
 	        }
         }
+
+        System.out.printf("onHandleEvent():%s: state: %s, scanCode: %d\n", Thread.currentThread().getName(),
+                          this.lastKeyState != null ? this.lastKeyState.toString() : "<>",
+                          this.lastScanCode);
+
+        // Cancel further processing -> true
+        return false;
+    }
+
+    // todo - WARNING (Does not run on Minecraft Thread)
+    @ApiStatus.Internal
+    public void onHandleKeymapChange()
+    {
+        // TODO
+    }
+
+    // todo - WARNING (Does not run on Minecraft Thread)
+    @ApiStatus.Internal
+    public void onHandleDropStart()
+    {
+        // TODO
     }
 
     @ApiStatus.Internal
@@ -192,18 +249,19 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onMouseClick(MouseButtonEvent click, int action, @Nonnull Minecraft mc)
+    public boolean onMouseClick(MouseButtonEvent click, int action)
     {
         boolean cancel = false;
+        this.setLastMousePos(click.x(), click.y());
 
-        if (click.input() != -1)
+        if (click.input() != ScanCodes.SCAN_UNKNOWN)
         {
             boolean eventButtonState = action == ActionCodes.PRESSED;
 
             // Update the cached pressed keys status
-			KeybindMulti.onKeyInputPre(new KeyEvent(click.input() - 100, 0, 0), action);
+			KeybindMulti.onKeyInputPre(new KeyEvent(click.input() - ScanCodes.OFFSET_MOUSE, KeyCodes.KEY_UNKNOWN, KeyCodes.KMOD_NONE), action);
 
-            cancel = this.checkKeyBindsForChanges(click.input() - 100);
+            cancel = this.checkKeyBindsForChanges(click.input() - ScanCodes.OFFSET_MOUSE);
 
             if (this.mouseHandlers.isEmpty() == false)
             {
@@ -232,11 +290,14 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public boolean onMouseScroll(final double mouseX, final double mouseY, final double xOffset, final double yOffset, @Nonnull Minecraft mc)
+    public boolean onMouseScroll(final double mouseX, final double mouseY, final double xOffset, final double yOffset)
     {
+        Minecraft mc = Minecraft.getInstance();
         boolean discrete = mc.options.discreteMouseScroll().get();
         double sensitivity = mc.options.mouseWheelSensitivity().get();
         double amount = (discrete ? Math.signum(yOffset) : yOffset) * sensitivity;
+
+        this.setLastMousePos(mouseX, mouseY);
 
         if (MaLiLibConfigs.Debug.MOUSE_SCROLL_DEBUG.getBooleanValue())
         {
@@ -276,8 +337,10 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     }
 
     @ApiStatus.Internal
-    public void onMouseMove(final double mouseX, final double mouseY, @Nonnull Minecraft mc)
+    public void onMouseMove(final double mouseX, final double mouseY)
     {
+        this.setLastMousePos(mouseX, mouseY);
+
         if (this.mouseHandlers.isEmpty() == false)
         {
             for (IMouseInputHandler handler : this.mouseHandlers)
@@ -285,6 +348,65 @@ public class InputEventHandler implements IKeybindManager, IInputManager
                 handler.onMouseMove(mouseX, mouseY);
             }
         }
+    }
+
+    @ApiStatus.Internal
+    public boolean onMouseDrop(final double mouseX, final double mouseY, final List<String> filePaths)
+    {
+        this.setLastMousePos(mouseX, mouseY);
+
+        if (this.mouseHandlers.isEmpty() == false)
+        {
+            List<Path> paths = new ArrayList<>();
+
+            for (String entry : filePaths)
+            {
+                try
+                {
+                    final String sanitizedFile = FileNameUtils.generateSafeFileName(FileNameUtils.generateSimpleUnicodeSafeFileName(entry));
+                    Path path = Paths.get(sanitizedFile).normalize();
+
+                    if (Files.exists(path) && Files.isReadable(path) &&
+                        Files.isRegularFile(path))
+                    {
+                        paths.add(path);
+                    }
+                }
+                catch (InvalidPathException e)
+                {
+                    MaLiLib.LOGGER.error("Exception; not a valid path '{}'; {}", entry, e.getMessage());
+                }
+            }
+
+            for (IMouseInputHandler handler : this.mouseHandlers)
+            {
+                FileFilter filter = handler.dropFileFilter();
+                List<Path> filteredPaths = new ArrayList<>();
+
+                if (filter != null)
+                {
+                    for (Path path : paths)
+                    {
+                        if (filter.accept(path.toFile()))
+                        {
+                            filteredPaths.add(path);
+                        }
+                    }
+                }
+                else
+                {
+                    filteredPaths.addAll(paths);
+                }
+
+                if (handler.onMouseFilesDrop(mouseX, mouseY, filteredPaths))
+                {
+                    this.printInputCancellationDebugMessage(handler);
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private boolean checkKeyBindsForChanges(int eventKey)

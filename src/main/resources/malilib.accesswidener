@@ -30,3 +30,5 @@ accessible field net/minecraft/client/renderer/rendertype/RenderSetup outlinePro
 accessible field net/minecraft/client/renderer/rendertype/RenderSetup layeringTransform Lnet/minecraft/client/renderer/rendertype/LayeringTransform;
 accessible method net/minecraft/world/item/ItemStack <init> (Lnet/minecraft/core/Holder;ILnet/minecraft/core/component/PatchedDataComponentMap;)V
 accessible field net/minecraft/client/Minecraft sdlEventHandler Lcom/mojang/blaze3d/platform/SDLEventHandler;
+accessible method net/minecraft/client/renderer/LevelRenderer frameHasAlwaysOnTopGizmos ()Z
+accessible method net/minecraft/client/renderer/LevelRenderer executeAlwaysOnTop (Lnet/minecraft/client/renderer/feature/FeatureRenderDispatcher$PreparedFrame;Lcom/mojang/blaze3d/pipeline/RenderTarget;Z)V

@@ -41,7 +41,7 @@ public abstract class MixinItemStack
     @Inject(method = "addDetailsToTooltip(Lnet/minecraft/world/item/Item$TooltipContext;Lnet/minecraft/world/item/component/TooltipDisplay;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/TooltipFlag;Ljava/util/function/Consumer;)V",
             at = @At(value = "INVOKE",
                      target = "Lnet/minecraft/world/item/ItemStack;addToTooltip(Lnet/minecraft/core/component/DataComponentType;Lnet/minecraft/world/item/Item$TooltipContext;Lnet/minecraft/world/item/component/TooltipDisplay;Ljava/util/function/Consumer;Lnet/minecraft/world/item/TooltipFlag;)V",
-                     ordinal = 23,
+                     ordinal = 24,
                      shift = At.Shift.AFTER))
     private void onGetTooltipComponentsLast(Item.TooltipContext context, TooltipDisplay display,
                                             Player player, TooltipFlag tooltipFlag, Consumer<Component> builder, CallbackInfo ci)

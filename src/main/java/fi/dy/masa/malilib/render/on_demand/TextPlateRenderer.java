@@ -6,7 +6,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fStack;
-import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -111,7 +110,7 @@ public class TextPlateRenderer implements IOnDemandRenderer<AbstractTextPlateRen
 	}
 
 	@Override
-	public @Nullable AbstractTextPlateRenderState drawPre(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
+	public @Nullable AbstractTextPlateRenderState drawPre(CameraRenderState cameraState, ProfilerFiller profiler)
 	{
 		if (this.hasCurrentData())
 		{

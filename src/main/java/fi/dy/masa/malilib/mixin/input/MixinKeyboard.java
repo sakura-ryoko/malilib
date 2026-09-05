@@ -14,7 +14,7 @@ import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
 
-@Mixin(value = KeyboardHandler.class, priority = 900)
+@Mixin(value = KeyboardHandler.class, priority = 500)
 public abstract class MixinKeyboard implements IF3KeyStateSetter
 {
     @Shadow private boolean usedDebugKeyAsModifier;

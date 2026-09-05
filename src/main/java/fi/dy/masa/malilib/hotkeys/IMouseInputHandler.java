@@ -1,5 +1,9 @@
 package fi.dy.masa.malilib.hotkeys;
 
+import java.io.FileFilter;
+import java.nio.file.Path;
+import java.util.List;
+
 import net.minecraft.client.input.MouseButtonEvent;
 
 public interface IMouseInputHandler
@@ -10,7 +14,7 @@ public interface IMouseInputHandler
      * @param eventButtonState ()
      * @return true if further processing of this mouse button event should be cancelled
      */
-    default boolean onMouseClick(MouseButtonEvent click, boolean eventButtonState)
+    default boolean onMouseClick(final MouseButtonEvent click, final boolean eventButtonState)
     {
         return false;
     }
@@ -22,7 +26,7 @@ public interface IMouseInputHandler
      * @param amount ()
      * @return ()
      */
-    default boolean onMouseScroll(double mouseX, double mouseY, double amount)
+    default boolean onMouseScroll(final double mouseX, final double mouseY, final double amount)
     {
         return false;
     }
@@ -32,5 +36,19 @@ public interface IMouseInputHandler
      * @param mouseX ()
      * @param mouseY ()
      */
-    default void onMouseMove(double mouseX, double mouseY) {}
+    default void onMouseMove(final double mouseX, final double mouseY) {}
+
+    /**
+     * Called when someone drags files into the Window.<br>
+     * This Bypasses the current screen check; so that it can work InGame also.<br>
+     * Returned list can be filtered by <b>dropFileFilter()</b>
+     * @param files ()
+     */
+    default boolean onMouseFilesDrop(final double mouseX, final double mouseY, final List<Path> files) { return false; }
+
+    /**
+     * Filter any dropped-in files
+     * @return -
+     */
+    default FileFilter dropFileFilter() { return null; }
 }

@@ -11,11 +11,10 @@ import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 
 /**
- * @deprecated You should use {@link ScanCodes}.
+ * @implSpec You should use {@link ScanCodes}.
  * Vanilla from 26.3+ flipped using scanCodes vs keyCodes.
  * This data is still valid; but more or less it is for reference purposes.
  */
-@Deprecated
 public class KeyCodes
 {
     private static final Int2ObjectOpenHashMap<String> MAP_KEY_TO_NAME = new Int2ObjectOpenHashMap<>();

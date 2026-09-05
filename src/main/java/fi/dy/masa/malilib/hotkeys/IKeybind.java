@@ -59,17 +59,17 @@ public interface IKeybind extends IConfigResettable, IStringRepresentable
 
     void clearKeys();
 
-    void addKey(int keyCode);
+    void addKey(int scanCode);
 
-    void removeKey(int keyCode);
+    void removeKey(int scanCode);
 
     /**
      * Check if this keybind is only a single key, matching the given key code.
      * This is mainly meant for checking equality against vanilla keybinds.
-     * @param keyCode ()
+     * @param scanCode ()
      * @return ()
      */
-    boolean matches(int keyCode);
+    boolean matches(int scanCode);
 
     boolean overlaps(IKeybind other);
 

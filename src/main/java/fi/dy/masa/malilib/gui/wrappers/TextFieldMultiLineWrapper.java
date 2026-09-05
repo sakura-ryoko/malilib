@@ -1,15 +1,19 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
+import java.nio.file.Path;
+import java.util.List;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
+import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.GuiTextFieldMultiLine;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldMultiLineListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.input.ScanCodes;
+import fi.dy.masa.malilib.util.position.Vec2d;
 
 public class TextFieldMultiLineWrapper<T extends GuiTextFieldMultiLine>
 {
@@ -84,6 +88,23 @@ public class TextFieldMultiLineWrapper<T extends GuiTextFieldMultiLine>
 			this.textField.setFocused(false);
 		}
 
+		return false;
+	}
+
+	public boolean onMouseDropFiles(final List<Path> files)
+	{
+		final Vec2d pos = ((InputEventHandler) InputEventHandler.getInputManager()).getLastMousePos();
+
+		if (this.textField.isMouseOver(pos.x(), pos.y()))
+		{
+			return this.onMouseDropFilesImpl(pos.getX(), pos.getY(), files);
+		}
+
+		return false;
+	}
+
+	public boolean onMouseDropFilesImpl(final double mouseX, final double mouseY, final List<Path> files)
+	{
 		return false;
 	}
 

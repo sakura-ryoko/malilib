@@ -12,7 +12,7 @@ import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 
-@Mixin(MultiPlayerGameMode.class)
+@Mixin(value = MultiPlayerGameMode.class, priority = 1001)
 public class MixinClientPlayInteractionManager_testSelector
 {
     @Inject(method = "startDestroyBlock", at = @At("HEAD"), cancellable = true)

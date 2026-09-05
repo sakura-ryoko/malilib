@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.interfaces;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import com.google.common.collect.ImmutableMap;
-import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
@@ -34,12 +33,12 @@ public interface IRenderer
     /**
      * Called during the Render Level "Extraction" phase
      */
-    default void onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler) {}
+    default void onExtractWorldPreMain(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler) {}
 
     /**
-     * Called before vanilla Weather rendering
+     * Called before vanilla Main rendering
      */
-    default void onRenderWorldPreWeather(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler) {}
+    default void onRenderWorldPreMain(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler) {}
 
     /**
      * Called during the Render Level "Extraction" phase
@@ -48,8 +47,9 @@ public interface IRenderer
 
     /**
      * Called after vanilla world rendering, with advanced Parameters, such as Frustum, Camera, and Fog
+     * @implNote Note: This is "Post" alwaysOnTop
      */
-    default void onRenderWorldLast(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler) {}
+    default void onRenderWorldLast(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler) {}
 
     /**
      * Called only after the tooltip text adds the Item Name.

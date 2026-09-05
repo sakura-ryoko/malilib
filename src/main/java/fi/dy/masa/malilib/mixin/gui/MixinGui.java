@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.render.GuiContext;
 
-@Mixin(value = Gui.class, priority = 900)
+@Mixin(value = Gui.class, priority = 800)
 public abstract class MixinGui
 {
     @Inject(method = "extractRenderState", at = @At("TAIL"))

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
-import org.joml.Matrix4fc;
 import org.jspecify.annotations.Nullable;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -142,7 +141,7 @@ public class SelectionBoxRenderer implements IOnDemandRenderer<AbstractSelection
 	}
 
 	@Override
-	public @Nullable AbstractSelectionBoxRenderState drawPre(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler)
+	public @Nullable AbstractSelectionBoxRenderState drawPre(CameraRenderState cameraState, ProfilerFiller profiler)
 	{
 		if (!this.hasCurrentData()) { return null; }
 		this.setupRenderContext();

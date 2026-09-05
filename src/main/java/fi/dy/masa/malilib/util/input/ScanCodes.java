@@ -288,14 +288,15 @@ public class ScanCodes
 	public static final int SCAN_COUNT           = SDLScancode.SDL_SCANCODE_COUNT;
 
 	// Mouse
-	public static final int MOUSE_BUTTON_1      = SDLMouse.SDL_BUTTON_LEFT      - 100;
-	public static final int MOUSE_BUTTON_2      = SDLMouse.SDL_BUTTON_MIDDLE    - 100;
-	public static final int MOUSE_BUTTON_3      = SDLMouse.SDL_BUTTON_RIGHT     - 100;
-	public static final int MOUSE_BUTTON_4      = SDLMouse.SDL_BUTTON_X1        - 100;
-	public static final int MOUSE_BUTTON_5      = SDLMouse.SDL_BUTTON_X2        - 100;
-	public static final int MOUSE_BUTTON_6      = SDLMouse.SDL_BUTTON_X2 + 1    - 100;
-	public static final int MOUSE_BUTTON_7      = SDLMouse.SDL_BUTTON_X2 + 2    - 100;
-	public static final int MOUSE_BUTTON_8      = SDLMouse.SDL_BUTTON_X2 + 3    - 100;
+	public static final int OFFSET_MOUSE        = 100;
+	public static final int MOUSE_BUTTON_1      = SDLMouse.SDL_BUTTON_LEFT      - OFFSET_MOUSE;
+	public static final int MOUSE_BUTTON_2      = SDLMouse.SDL_BUTTON_MIDDLE    - OFFSET_MOUSE;
+	public static final int MOUSE_BUTTON_3      = SDLMouse.SDL_BUTTON_RIGHT     - OFFSET_MOUSE;
+	public static final int MOUSE_BUTTON_4      = SDLMouse.SDL_BUTTON_X1        - OFFSET_MOUSE;
+	public static final int MOUSE_BUTTON_5      = SDLMouse.SDL_BUTTON_X2        - OFFSET_MOUSE;
+	public static final int MOUSE_BUTTON_6      = SDLMouse.SDL_BUTTON_X2 + 1    - OFFSET_MOUSE;      // ???
+	public static final int MOUSE_BUTTON_7      = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // ???
+	public static final int MOUSE_BUTTON_8      = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // ???
 
 	@Nullable
 	public static String getNameForScanCode(final int scanCode)

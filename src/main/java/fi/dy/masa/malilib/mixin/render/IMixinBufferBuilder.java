@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(value = BufferBuilder.class, priority = 900)
+@Mixin(value = BufferBuilder.class, priority = 800)
 public interface IMixinBufferBuilder
 {
     @Accessor("building")

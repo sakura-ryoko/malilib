@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4fc;
 import org.joml.Vector4f;
 import org.jspecify.annotations.NonNull;
 
@@ -170,13 +169,13 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onExtractWorldPreWeather(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
+    public void onExtractWorldPreMain(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
     {
         // TODO
     }
 
     @Override
-    public void onRenderWorldPreWeather(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
+    public void onRenderWorldPreMain(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
     {
 //        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
 //        {
@@ -228,7 +227,7 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onRenderWorldLast(RenderTarget fb, Matrix4fc modelViewMatrix, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
+    public void onRenderWorldLast(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
     {
         boolean result = false;
 

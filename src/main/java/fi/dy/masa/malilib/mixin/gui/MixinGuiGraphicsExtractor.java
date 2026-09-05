@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.render.GuiContext;
 
-@Mixin(value = GuiGraphicsExtractor.class, priority = 900)
+@Mixin(value = GuiGraphicsExtractor.class, priority = 800)
 public abstract class MixinGuiGraphicsExtractor
 {
     @Inject(method = "setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;II)V", at = @At(value = "TAIL"))

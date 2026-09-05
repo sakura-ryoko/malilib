@@ -1,8 +1,14 @@
 package fi.dy.masa.malilib.gui.widgets;
 
+import java.nio.file.Path;
+import java.util.List;
+
+import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
+import fi.dy.masa.malilib.util.position.Vec2d;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.input.CharacterEvent;
@@ -120,6 +126,23 @@ public abstract class WidgetBase
             return this.onMouseDraggedImpl(click, dragXAmount, dragYAmount);
         }
 
+        return false;
+    }
+
+    public boolean onMouseDropFiles(final List<Path> files)
+    {
+        final Vec2d pos = ((InputEventHandler) InputEventHandler.getInputManager()).getLastMousePos();
+
+        if (this.isMouseOver((int) pos.x(), (int) pos.y()))
+        {
+            return this.onMouseDropFilesImpl(pos.x(), pos.y(), files);
+        }
+
+        return false;
+    }
+
+    public boolean onMouseDropFilesImpl(final double mouseX, final double mouseY, final List<Path> files)
+    {
         return false;
     }
 

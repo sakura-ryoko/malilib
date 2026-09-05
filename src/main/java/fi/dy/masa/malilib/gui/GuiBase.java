@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.gui;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -290,6 +291,15 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
+    public void onFilesDrop(final @NonNull List<Path> files)
+    {
+        if (this.onMouseDropFiles(files) == false)
+        {
+            super.onFilesDrop(files);
+        }
+    }
+
+    @Override
     public boolean keyPressed(@NotNull KeyEvent input)
     {
         this.keyInputCount++;
@@ -416,6 +426,47 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         for (WidgetBase widget : this.widgets)
         {
             if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
+            {
+                // Don't call super if the action got handled
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean onMouseDropFiles(@NonNull List<Path> files)
+    {
+        for (ButtonBase button : this.buttons)
+        {
+            if (button.onMouseDropFiles(files))
+            {
+                // Don't call super if the button press got handled
+                return true;
+            }
+        }
+
+        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
+        {
+            if (entry.onMouseDropFiles(files))
+            {
+                // Don't call super if the button press got handled
+                return true;
+            }
+        }
+
+        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
+        {
+            if (entry.onMouseDropFiles(files))
+            {
+                // Don't call super if the button press got handled
+                return true;
+            }
+        }
+
+        for (WidgetBase widget : this.widgets)
+        {
+            if (widget.onMouseDropFiles(files))
             {
                 // Don't call super if the action got handled
                 return true;

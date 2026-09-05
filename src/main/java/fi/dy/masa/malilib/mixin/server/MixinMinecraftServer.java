@@ -11,7 +11,7 @@ import fi.dy.masa.malilib.event.ServerHandler;
 /**
  * For invoking IntegratedServer() calls
  */
-@Mixin(value = MinecraftServer.class, priority = 999)
+@Mixin(value = MinecraftServer.class, priority = 800)
 public abstract class MixinMinecraftServer
 {
     @Inject(method = "runServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;initServer()Z"))
@@ -39,7 +39,7 @@ public abstract class MixinMinecraftServer
     }
 
     @Inject(method = "logTickMethodTime", at = @At("HEAD"))
-    private void malilib_onServerTick(long tickStartTime, CallbackInfo ci)
+    private void malilib_onServerTick(long startTime, CallbackInfo ci)
     {
         ((ServerHandler) ServerHandler.getInstance()).onServerTick((MinecraftServer) (Object) this);
     }

@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.interfaces;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
-import org.joml.Matrix4fc;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -38,7 +37,7 @@ public interface IOnDemandRenderer<T extends IOnDemandRenderState>
 	default void onUpdatePost(IOnDemandRenderState state) {}
 
 	@Nullable
-	T drawPre(Matrix4fc modelViewMatrix, CameraRenderState cameraState, ProfilerFiller profiler);
+	T drawPre(CameraRenderState cameraState, ProfilerFiller profiler);
 
 	default void onDrawPost(IOnDemandRenderState state) {}
 }

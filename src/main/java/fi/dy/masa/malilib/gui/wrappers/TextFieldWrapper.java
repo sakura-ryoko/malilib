@@ -1,5 +1,7 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import org.jspecify.annotations.NonNull;
 
@@ -10,11 +12,13 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 
+import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.game.BlockUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
+import fi.dy.masa.malilib.util.position.Vec2d;
 
 public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 {
@@ -171,6 +175,23 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 			this.textField.setFocused(false);
 		}
 
+		return false;
+	}
+
+	public boolean onMouseDropFiles(final List<Path> files)
+	{
+		final Vec2d pos = ((InputEventHandler) InputEventHandler.getInputManager()).getLastMousePos();
+
+		if (this.textField.isMouseOver(pos.x(), pos.y()))
+		{
+			return this.onMouseDropFilesImpl(pos.x(), pos.y(), files);
+		}
+
+		return false;
+	}
+
+	public boolean onMouseDropFilesImpl(final double mouseX, final double mouseY, final List<Path> files)
+	{
 		return false;
 	}
 

@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.hotkeys;
 
 import java.util.*;
 import javax.annotation.Nullable;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -18,7 +17,9 @@ import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings.Context;
-import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.GuiUtils;
+import fi.dy.masa.malilib.util.IF3KeyStateSetter;
+import fi.dy.masa.malilib.util.InfoUtils;
 import fi.dy.masa.malilib.util.input.*;
 
 public class KeybindMulti implements IKeybind
@@ -245,11 +246,11 @@ public class KeybindMulti implements IKeybind
     }
 
     @Override
-    public void addKey(int keyCode)
+    public void addKey(int scanCode)
     {
-        if (this.scanCodes.contains(keyCode) == false)
+        if (this.scanCodes.contains(scanCode) == false)
         {
-            this.scanCodes.add(keyCode);
+            this.scanCodes.add(scanCode);
 	        this.markDirty();
         }
     }
@@ -266,9 +267,9 @@ public class KeybindMulti implements IKeybind
     }
 
     @Override
-    public void removeKey(int keyCode)
+    public void removeKey(int scanCode)
     {
-        this.scanCodes.remove(keyCode);
+        this.scanCodes.remove(scanCode);
 	    this.markDirty();
     }
 
@@ -382,9 +383,9 @@ public class KeybindMulti implements IKeybind
     }
 
     @Override
-    public boolean matches(int keyCode)
+    public boolean matches(int scanCode)
     {
-        return this.scanCodes.size() == 1 && this.scanCodes.get(0) == keyCode;
+        return this.scanCodes.size() == 1 && this.scanCodes.getFirst() == scanCode;
     }
 
     public static int getKeyCode(KeyMapping keybind)
@@ -395,7 +396,7 @@ public class KeybindMulti implements IKeybind
 		}
 
 	    InputConstants.Key input = InputUtils.getBoundKey(keybind);
-        return input.getType() == InputConstants.Type.MOUSE ? input.getValue() - 100 : input.getValue();
+        return input.getType() == InputConstants.Type.MOUSE ? input.getValue() - ScanCodes.OFFSET_MOUSE : input.getValue();
     }
 
     public static boolean hotkeyMatchesKeybind(IHotkey hotkey, KeyMapping keybind)
@@ -427,8 +428,8 @@ public class KeybindMulti implements IKeybind
                 return false;
             }
 
-            if ((this.settings.getAllowExtraKeys() == false && l1 < l2 && keys1.get(0) != keys2.get(0)) ||
-                (settingsOther.getAllowExtraKeys() == false && l2 < l1 && keys1.get(0) != keys2.get(0)))
+            if ((!this.settings.getAllowExtraKeys() && l1 < l2 && !Objects.equals(keys1.getFirst(), keys2.getFirst())) ||
+                (!settingsOther.getAllowExtraKeys() && l2 < l1 && !Objects.equals(keys1.getFirst(), keys2.getFirst())))
             {
                 return false;
             }
@@ -485,23 +486,25 @@ public class KeybindMulti implements IKeybind
 
     public static boolean isKeyDown(int scanCode)
     {
-        if (scanCode == -1)
-        {
-            return false;
-        }
+        if (scanCode == ScanCodes.SCAN_UNKNOWN) { return false; }
 
-        long window = Minecraft.getInstance().getWindow().handle();
+//        long window = Minecraft.getInstance().getWindow().handle();
 
-        if (scanCode >= 0)
+        if (scanCode >= ScanCodes.SCAN_UNKNOWN)
         {
             return InputConstants.isKeyDown(scanCode);
         }
 
-        scanCode += 100;
+        scanCode += ScanCodes.OFFSET_MOUSE;
 
-        Pair<Integer, KeyState> pair = ((InputEventHandler) InputEventHandler.getInputManager()).getLastKeyState();
+        final KeyState state = ((InputEventHandler) InputEventHandler.getInputManager()).getLastKeyState();
+        final int code = ((InputEventHandler) InputEventHandler.getInputManager()).getLastScanCode();
+        final int action = ((InputEventHandler) InputEventHandler.getInputManager()).getLastActionCode();
 
-        return scanCode >= 0 && pair != null && pair.getLeft() == scanCode && pair.getRight() == KeyState.MOUSE_PRESSED;
+        return scanCode >= 0 && state != null &&
+                (state == KeyState.MOUSE_PRESSED ||
+                        (code == scanCode && action == ActionCodes.PRESSED)
+                );
     }
 
     @ApiStatus.Internal

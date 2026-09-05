@@ -10,7 +10,7 @@ import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
-@Mixin(value = ChatScreen.class, priority = 980)
+@Mixin(value = ChatScreen.class, priority = 800)
 public abstract class MixinChatScreen extends Screen
 {
     private MixinChatScreen(Component title)
