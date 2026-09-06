@@ -24,8 +24,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.event.RenderEventHandler;
 
+/**
+ * To other Modders: PLEASE use this SAME Mixin point here to create your own Render Pass; and let MaLiLib fix the "executeAlwaysOnTop" Problem for you.
+ */
 @Mixin(value = LevelRenderer.class)
-public abstract class MixinLevelRenderer
+public abstract class MixinLevelRenderer_runRenderWorldLast
 {
 	@Shadow @Final private LevelTargetBundle targets;
 	@Shadow @Final private RenderBuffers renderBuffers;
@@ -52,7 +55,8 @@ public abstract class MixinLevelRenderer
 	}
 
 	/**
-	 * @implNote This 'executeAlwaysOnTop' clears the Depth Texture --> Breaks "malilib_onRenderWorldLast()" without it
+	 * @implNote This 'executeAlwaysOnTop' clears the Depth Texture --> Breaks "malilib_onRenderWorldLast()"'s Depth without it<br>
+	 * See {@link MixinLevelRenderer_runRenderWorldAlwaysOnTop}
 	 */
 	@Inject(method = "executeAlwaysOnTop", at = @At("HEAD"), cancellable = true)
 	private void malilib_onExecuteAlwaysOnTop(CallbackInfo ci)

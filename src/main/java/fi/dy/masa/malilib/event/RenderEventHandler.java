@@ -193,7 +193,7 @@ public class RenderEventHandler implements IRenderDispatcher
                                 RenderTarget mainTarget, boolean consistentDepthRequired)
     {
         // See LevelRenderer.executeAlwaysOnTop()
-        if (this.shouldCancelAlwaysOnTop)
+        if (this.shouldCancelAlwaysOnTop)   // ConfigTestEnum.TEST_ENUM_CONFIG.getBooleanValue()
         {
             GpuTextureView depthTextureView = consistentDepthRequired ? targets.alwaysOnTopDepth.get().getDepthTextureView() : mainTarget.getDepthTextureView();
 
@@ -239,13 +239,6 @@ public class RenderEventHandler implements IRenderDispatcher
 
             targets.main = pass.readsAndWrites(targets.main);
 
-            boolean hasAlwaysOnTopGizmos = vanilla.frameHasAlwaysOnTopGizmos();
-
-            if (hasAlwaysOnTopGizmos && consistentDepthRequired)
-            {
-                targets.alwaysOnTopDepth = pass.readsAndWrites(targets.alwaysOnTopDepth);
-            }
-
             ResourceHandle<@NotNull RenderTarget> handleMain = targets.main;
 
             pass.executes(() ->
@@ -265,19 +258,55 @@ public class RenderEventHandler implements IRenderDispatcher
                               {
                                   RenderSystem.setShaderFog(fog);
                               }
-
-                              // Hack Fix for "Always On Top Gizmos" to render after we do;
-                              // because they break our Pass's Depth Texture.
-                              if (hasAlwaysOnTopGizmos)
-                              {
-                                  this.runAlwaysOnTop(preparedFrame, targets, handleMain.get(), consistentDepthRequired);
-                              }
                           });
 
             if (!this.worldLastRenderers.isEmpty())
             {
                 pass.disableCulling();
             }
+
+            profiler.pop();
+        }
+    }
+
+    @ApiStatus.Internal
+    public void runRenderWorldAlwaysOnTop(Minecraft mc, LevelRenderer vanilla,
+                                          FrameGraphBuilder frameGraphBuilder, FeatureRenderDispatcher.PreparedFrame preparedFrame,
+                                          LevelTargetBundle targets,
+                                          Frustum cullFrustum, CameraRenderState cameraState,
+                                          RenderBuffers buffers, boolean consistentDepthRequired,
+                                          GpuBufferSlice terrainFog, Vector4f fogColor,
+                                          ProfilerFiller profiler)
+    {
+        boolean hasAlwaysOnTopGizmos = vanilla.frameHasAlwaysOnTopGizmos();
+
+        if (hasAlwaysOnTopGizmos)
+        {
+            profiler.push(MaLiLibReference.MOD_ID + "_render_gizmos_on_top");
+            FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID + "_gizmos_on_top");
+
+            targets.main = pass.readsAndWrites(targets.main);
+
+            if (consistentDepthRequired)
+            {
+                targets.alwaysOnTopDepth = pass.readsAndWrites(targets.alwaysOnTopDepth);
+            }
+
+            ResourceHandle<@NotNull RenderTarget> handleMain = targets.main;
+
+            pass.executes(() ->
+                          {
+                              GpuBufferSlice fog = RenderSystem.getShaderFog();
+
+                              if (fog != null)
+                              {
+                                  RenderSystem.setShaderFog(fog);
+                              }
+
+                              // Hack Fix for "Always On Top Gizmos" to render after we do;
+                              // because it breaks our Pass's Depth Texture.
+                              this.runAlwaysOnTop(preparedFrame, targets, handleMain.get(), consistentDepthRequired);
+                          });
 
             profiler.pop();
         }

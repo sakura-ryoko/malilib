@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 
 @Mixin(value = LevelExtractor.class)
-public abstract class MixinLevelExtractor
+public abstract class MixinLevelExtractor_extractOnRenderWorldLast
 {
 	@Shadow private @Nullable ClientLevel level;
 
