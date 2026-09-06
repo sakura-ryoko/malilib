@@ -13,6 +13,8 @@ public class ModIds
 	public static final String sodiumExtra = "sodium-extra";
 	public static final String immediatelyFast = "immediatelyfast";
 	public static final String entityCulling = "entityculling";
+	public static final String moonrise = "moonrise";
+	public static final String c2me = "c2me";
 	public static final String xaeroMiniMap = "xaerominimap";
 	public static final String xaeroWorldMap = "xaeroworldmap";
 	public static final String bobby = "bobby";

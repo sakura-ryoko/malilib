@@ -24,6 +24,9 @@ public enum Schema implements IEnumCodecProvider
     // TODO --> Add Schema Versions to this as versions get released
     // Minecraft Data Versions
     SCHEMA_FUTURE       (9999, "FUTURE"),
+    SCHEMA_26_3_PR2     (5018, "26.3-pre-2"),
+    SCHEMA_26_3_SS8     (5010, "26.3-snapshot-8"),
+    SCHEMA_26_3_SS4     (5003, "26.3-snapshot-4"),
     SCHEMA_26W14A       (5000, "26w14a"),        // Herd craft April Fools update (Why is this Data Version 5000?)
     SCHEMA_26_3_SS2     (4999, "26.3-snapshot-2"),
     SCHEMA_26_2         (4903, "26.2"),

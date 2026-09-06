@@ -43,7 +43,7 @@ public class EquipmentUtils
 		if (stack == null || stack.isEmpty()) return false;
 		Item item = stack.getItem();
 
-		if (item instanceof MaceItem || item instanceof AxeItem)
+		if (item instanceof MaceItem || isAxe(stack))
 		{
 			return true;
 		}

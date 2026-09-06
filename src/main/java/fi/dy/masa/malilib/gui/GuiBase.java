@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.gui;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -291,6 +292,15 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
+    public void onFilesDrop(final @NonNull List<Path> files)
+    {
+        if (this.onMouseDropFiles(files) == false)
+        {
+            super.onFilesDrop(files);
+        }
+    }
+
+    @Override
     public boolean keyPressed(@NotNull KeyEvent input)
     {
         this.keyInputCount++;
@@ -423,6 +433,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             }
         }
 
+        return false;
+    }
+
+    public boolean onMouseDropFiles(@NonNull List<Path> files)
+    {
         return false;
     }
 

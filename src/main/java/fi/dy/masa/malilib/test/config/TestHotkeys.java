@@ -2,12 +2,14 @@ package fi.dy.masa.malilib.test.config;
 
 import java.util.List;
 import com.google.common.collect.ImmutableList;
+import org.jetbrains.annotations.ApiStatus;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.options.ConfigHotkey;
 import fi.dy.masa.malilib.hotkeys.KeyAction;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 
+@ApiStatus.Experimental
 public class TestHotkeys
 {
 	private static final String HOTKEYS_KEY = MaLiLibReference.MOD_ID+".config.test_hotkeys";
