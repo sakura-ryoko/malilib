@@ -6,7 +6,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(value = Ingredient.class, priority = 900)
+@Mixin(value = Ingredient.class)
 public interface IMixinIngredient
 {
     @Accessor("values")

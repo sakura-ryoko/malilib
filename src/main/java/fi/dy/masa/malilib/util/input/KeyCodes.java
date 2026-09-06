@@ -321,15 +321,20 @@ public class KeyCodes
     public static final int KMOD_ALT            = SDLKeycode.SDL_KMOD_ALT;
     public static final int KMOD_SUPER          = SDLKeycode.SDL_KMOD_GUI;
 
-    // Mouse
-    public static final int MOUSE_BUTTON_1      = SDLMouse.SDL_BUTTON_LEFT      - 100;
-    public static final int MOUSE_BUTTON_2      = SDLMouse.SDL_BUTTON_MIDDLE    - 100;
-    public static final int MOUSE_BUTTON_3      = SDLMouse.SDL_BUTTON_RIGHT     - 100;
-    public static final int MOUSE_BUTTON_4      = SDLMouse.SDL_BUTTON_X1        - 100;
-    public static final int MOUSE_BUTTON_5      = SDLMouse.SDL_BUTTON_X2        - 100;
-    public static final int MOUSE_BUTTON_6      = SDLMouse.SDL_BUTTON_X2 + 1    - 100;
-    public static final int MOUSE_BUTTON_7      = SDLMouse.SDL_BUTTON_X2 + 2    - 100;
-    public static final int MOUSE_BUTTON_8      = SDLMouse.SDL_BUTTON_X2 + 3    - 100;
+    // Mouse (Use ScanCodes :shrug:)
+    public static final int OFFSET_MOUSE            = 100;
+    public static final int OFFSET_MOUSE_BUTTON_1   = SDLMouse.SDL_BUTTON_LEFT;     // Was 0
+    public static final int OFFSET_MOUSE_BUTTON_2   = SDLMouse.SDL_BUTTON_MIDDLE;   // Was 2
+    public static final int OFFSET_MOUSE_BUTTON_3   = SDLMouse.SDL_BUTTON_RIGHT;    // Was 1
+
+    public static final int MOUSE_BUTTON_1          = SDLMouse.SDL_BUTTON_LEFT      - OFFSET_MOUSE;
+    public static final int MOUSE_BUTTON_2          = SDLMouse.SDL_BUTTON_MIDDLE    - OFFSET_MOUSE;
+    public static final int MOUSE_BUTTON_3          = SDLMouse.SDL_BUTTON_RIGHT     - OFFSET_MOUSE;
+    public static final int MOUSE_BUTTON_4          = SDLMouse.SDL_BUTTON_X1        - OFFSET_MOUSE;
+    public static final int MOUSE_BUTTON_5          = SDLMouse.SDL_BUTTON_X2        - OFFSET_MOUSE;
+    public static final int MOUSE_BUTTON_6          = SDLMouse.SDL_BUTTON_X2 + 1    - OFFSET_MOUSE;      // ???
+    public static final int MOUSE_BUTTON_7          = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // ???
+    public static final int MOUSE_BUTTON_8          = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // ???
 
     @Nullable
     public static String getNameForKey(int keyCode)

@@ -70,7 +70,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     @Override
     public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
-        if (click.input() == 0 && this.scrollBar.wasMouseOver())
+        if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1 && this.scrollBar.wasMouseOver())
         {
             this.scrollBar.setIsDragging(true);
             return true;
@@ -114,7 +114,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     @Override
     public boolean onMouseReleased(MouseButtonEvent click)
     {
-        if (click.input() == 0)
+        if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1)
         {
             this.scrollBar.setIsDragging(false);
         }

@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import fi.dy.masa.malilib.event.ServerHandler;
 
-@Mixin(value = IntegratedServer.class, priority = 800)
+@Mixin(value = IntegratedServer.class)
 public class MixinIntegratedServer
 {
     @Shadow @Final private Minecraft minecraft;

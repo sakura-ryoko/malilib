@@ -31,13 +31,11 @@ import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.game.BlockUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiBlockStateEditor extends GuiDialogSplitBase
 {
-	public static final String BLOCK_NAME = "Name";
-	public static final String BLOCK_PROPERTIES = "Properties";
-
 	protected final IConfigBlockState config;
 	protected final String configName;
 	protected final @Nullable IDialogHandler dialogHandler;
@@ -145,8 +143,14 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		CompoundTag tag = new CompoundTag();
 		CompoundTag tagProps = new CompoundTag();
 
+		if (MaLiLibReference.DEBUG_MODE)
+		{
+			CompoundTag testResult = (CompoundTag) BlockState.FULL_CODEC.encodeStart(NbtOps.INSTANCE, this.blockState).getPartialOrThrow();
+			MaLiLib.LOGGER.error("trySaveBlockState: [{}] -> testResult: {}", this.blockState.toString(), testResult.toString());
+		}
+
 		// TODO -- 26.3 (name)
-		tag.putString(BLOCK_NAME, BuiltInRegistries.BLOCK.getKey(this.block).toString());
+		tag.putString(BlockUtils.VANILLA_BLOCK_STATE_NAME, BuiltInRegistries.BLOCK.getKey(this.block).toString());
 
 		if (!this.blockState.isSingletonState())
 		{
@@ -170,7 +174,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			}
 
 			// TODO -- 26.3 (properties)
-			tag.put(BLOCK_PROPERTIES, tagProps);        // Ugly method, but if it works? ~_^
+			tag.put(BlockUtils.VANILLA_BLOCK_STATE_PROPERTIES, tagProps);        // Ugly method, but if it works? ~_^
 		}
 
 		if (MaLiLibReference.DEBUG_MODE)
@@ -178,7 +182,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			MaLiLib.LOGGER.error("trySaveBlockState: nbt: {}", tag.toString());
 		}
 
-		this.blockState = BlockState.CODEC.parse(NbtOps.INSTANCE, tag).getPartialOrThrow();
+		this.blockState = BlockState.FULL_CODEC.parse(NbtOps.INSTANCE, tag).getPartialOrThrow();
 		this.refreshBlockState();
 	}
 

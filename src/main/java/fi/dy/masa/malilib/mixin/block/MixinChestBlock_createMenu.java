@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.registry.Registry;
 
-@Mixin(targets = "net.minecraft.world.level.block.ChestBlock$2$1", priority = 1001)
+@Mixin(targets = "net.minecraft.world.level.block.ChestBlock$2$1")
 public class MixinChestBlock_createMenu
 {
 	@Shadow @Final ChestBlockEntity val$first;

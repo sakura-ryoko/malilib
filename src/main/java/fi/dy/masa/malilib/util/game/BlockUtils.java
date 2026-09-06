@@ -34,6 +34,12 @@ import fi.dy.masa.malilib.util.nbt.NbtView;
  */
 public class BlockUtils
 {
+    // 26.3+ uses "id" and "properties"
+    public static final String BLOCK_STATE_NAME = "Name";
+    public static final String BLOCK_STATE_PROPERTIES = "Properties";
+    public static final String VANILLA_BLOCK_STATE_NAME = "id";
+    public static final String VANILLA_BLOCK_STATE_PROPERTIES = "properties";
+
     private static final Splitter COMMA_SPLITTER = Splitter.on(',');
     private static final Splitter EQUAL_SPLITTER = Splitter.on('=').limit(2);
 
@@ -109,7 +115,7 @@ public class BlockUtils
         String blockName = index != -1 ? stateString.substring(0, index) : stateString;
         CompoundTag tag = new CompoundTag();
 
-        tag.putString("Name", blockName);
+        tag.putString(BLOCK_STATE_NAME, blockName);
 
         if (index != -1 && stateString.length() > (index + 4) && stateString.charAt(stateString.length() - 1) == ']')
         {
@@ -137,7 +143,7 @@ public class BlockUtils
                 propsTag.putString(propName, valStr);
             }
 
-            tag.put("Properties", propsTag);
+            tag.put(BLOCK_STATE_PROPERTIES, propsTag);
         }
 
         return tag;
@@ -151,18 +157,18 @@ public class BlockUtils
      */
     public static String getBlockStateStringFromTag(CompoundTag stateTag)
     {
-        String name = stateTag.contains("name")
-                      ? stateTag.getStringOr("name", "")
-                      : stateTag.getStringOr("Name", "");
+        String name = stateTag.contains(VANILLA_BLOCK_STATE_NAME)
+                      ? stateTag.getStringOr(VANILLA_BLOCK_STATE_NAME, "")
+                      : stateTag.getStringOr(BLOCK_STATE_NAME, "");
 
-        if (!stateTag.contains("properties") && !stateTag.contains("Properties"))
+        if (!stateTag.contains(VANILLA_BLOCK_STATE_PROPERTIES) && !stateTag.contains(BLOCK_STATE_PROPERTIES))
         {
             return name;
         }
 
-        CompoundTag propTag = stateTag.contains("properties")
-                              ? stateTag.getCompoundOrEmpty("properties")
-                              : stateTag.getCompoundOrEmpty("Properties");
+        CompoundTag propTag = stateTag.contains(VANILLA_BLOCK_STATE_PROPERTIES)
+                              ? stateTag.getCompoundOrEmpty(VANILLA_BLOCK_STATE_PROPERTIES)
+                              : stateTag.getCompoundOrEmpty(BLOCK_STATE_PROPERTIES);
         ArrayList<Pair<String, String>> props = new ArrayList<>();
 
         for (String key : propTag.keySet())

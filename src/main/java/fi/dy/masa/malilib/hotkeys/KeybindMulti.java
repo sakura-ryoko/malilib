@@ -510,7 +510,7 @@ public class KeybindMulti implements IKeybind
     @ApiStatus.Internal
     public static void onKeyInputPre(KeyEvent input, int action)
     {
-        if (input.key() != -1)
+        if (input.key() != ScanCodes.SCAN_UNKNOWN)
         {
             Integer valObj = input.key();
             boolean state = action != ActionCodes.RELEASED;
@@ -546,9 +546,9 @@ public class KeybindMulti implements IKeybind
 
         while (iter.hasNext())
         {
-            int keyCode = iter.next().intValue();
+            int scanCode = iter.next().intValue();
 
-            if (isKeyDown(keyCode) == false)
+            if (isKeyDown(scanCode) == false)
             {
                 iter.remove();
             }
@@ -566,9 +566,9 @@ public class KeybindMulti implements IKeybind
         String keyName = scanCode != ScanCodes.SCAN_UNKNOWN ? ScanCodes.getNameForScanCode(scanCode) : "<unknown>";
         String type = action == ActionCodes.PRESSED ? "PRESS" : (action == ActionCodes.RELEASED ? "RELEASE" : "REPEAT");
         String held = getActiveKeysString();
-        String msg = String.format("%s %s (%d, m: %d), held: %s", type, keyName, keyCode, modifiers, held);
-        String msgConsole = String.format("%s %s (keyCode: %d, scanCode: %d, modifiers: %d), held keys: %s",
-                                          type, keyName, keyCode, scanCode, modifiers, held);
+        String msg = String.format("%s %s (sc: %d, m: %d), held: %s", type, keyName, scanCode, modifiers, held);
+        String msgConsole = String.format("%s %s (scanCode: %d, keyCode: %d, modifiers: %d), held keys: %s",
+                                          type, keyName, scanCode, keyCode, modifiers, held);
 
         if (action != ActionCodes.RELEASED)
         {

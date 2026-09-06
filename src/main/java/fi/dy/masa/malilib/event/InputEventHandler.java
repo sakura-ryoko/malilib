@@ -166,7 +166,6 @@ public class InputEventHandler implements IKeybindManager, IInputManager
         return this.lastMousePos;
     }
 
-    // todo - WARNING (Does not run on Minecraft Thread)
     @ApiStatus.Internal
     public boolean onHandleEvent(final SDL_Event event)
     {
@@ -201,26 +200,26 @@ public class InputEventHandler implements IKeybindManager, IInputManager
 	        }
         }
 
-        System.out.printf("onHandleEvent():%s: state: %s, scanCode: %d\n", Thread.currentThread().getName(),
-                          this.lastKeyState != null ? this.lastKeyState.toString() : "<>",
-                          this.lastScanCode);
+//        MaLiLib.LOGGER.warn("onHandleEvent():{}: state: {}, scanCode: {}", Thread.currentThread().getName(),
+//                          this.lastKeyState != null ? this.lastKeyState.toString() : "<>",
+//                          this.lastScanCode);
 
         // Cancel further processing -> true
         return false;
     }
 
-    // todo - WARNING (Does not run on Minecraft Thread)
     @ApiStatus.Internal
     public void onHandleKeymapChange()
     {
         // TODO
+//        MaLiLib.LOGGER.warn("onHandleKeymapChange():{}:", Thread.currentThread().getName());
     }
 
-    // todo - WARNING (Does not run on Minecraft Thread)
     @ApiStatus.Internal
     public void onHandleDropStart()
     {
         // TODO
+//        MaLiLib.LOGGER.warn("onHandleDropStart():{}:", Thread.currentThread().getName());
     }
 
     @ApiStatus.Internal

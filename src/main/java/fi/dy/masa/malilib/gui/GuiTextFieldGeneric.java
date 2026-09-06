@@ -5,6 +5,8 @@ import org.joml.Matrix3x2fStack;
 
 import fi.dy.masa.malilib.mixin.gui.IMixinAbstractWidget;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
+
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.EditBox;
@@ -42,7 +44,7 @@ public class GuiTextFieldGeneric extends EditBox
 
         if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
-            if (click.input() == 1)
+            if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_3)
             {
                 this.setValue("");
             }

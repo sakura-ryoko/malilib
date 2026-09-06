@@ -32,7 +32,7 @@ dependencies {
 	include(implementation("me.fallenbreath:conditional-mixin-fabric:${project.conditionalmixin_version}"))
 
 	compileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
-	compileOnly "maven.modrinth:iris:${project.iris_version}+${project.iris_mc_version}-fabric"
+//	compileOnly "maven.modrinth:iris:${project.iris_version}+${project.iris_mc_version}-fabric"
 //	runtimeOnly 'me.fallenbreath:mixin-auditor:0.2.0-u'
 }
 

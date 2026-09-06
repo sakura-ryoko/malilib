@@ -79,7 +79,7 @@
         "test.MixinMinecraft_testSelector"
     ],
     "server": [],
-    "mixinPriority": 900,
+    "mixinPriority": 500,
     "injectors": {
         "defaultRequire": 1
     }

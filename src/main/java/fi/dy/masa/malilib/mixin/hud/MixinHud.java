@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import fi.dy.masa.malilib.util.game.IGameHud;
 
-@Mixin(value = Hud.class, priority = 900)
+@Mixin(value = Hud.class)
 public abstract class MixinHud implements IGameHud
 {
 	@Shadow private int overlayMessageTime;

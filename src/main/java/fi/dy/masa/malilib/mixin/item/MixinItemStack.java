@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 
-@Mixin(value = ItemStack.class, priority = 900)
+@Mixin(value = ItemStack.class)
 public abstract class MixinItemStack
 {
     // This Goes before the Item Additional Tooltips.

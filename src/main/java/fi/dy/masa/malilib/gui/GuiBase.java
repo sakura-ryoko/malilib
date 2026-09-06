@@ -435,44 +435,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return false;
     }
 
-    private boolean onMouseDropFiles(@NonNull List<Path> files)
+    public boolean onMouseDropFiles(@NonNull List<Path> files)
     {
-        for (ButtonBase button : this.buttons)
-        {
-            if (button.onMouseDropFiles(files))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
-        {
-            if (entry.onMouseDropFiles(files))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
-        {
-            if (entry.onMouseDropFiles(files))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (WidgetBase widget : this.widgets)
-        {
-            if (widget.onMouseDropFiles(files))
-            {
-                // Don't call super if the action got handled
-                return true;
-            }
-        }
-
         return false;
     }
 

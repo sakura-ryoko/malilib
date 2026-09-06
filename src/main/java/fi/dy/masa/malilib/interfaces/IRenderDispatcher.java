@@ -17,22 +17,9 @@ public interface IRenderDispatcher
     void registerTooltipLastRenderer(IRenderer renderer);
 
     /**
-     * Registers a renderer which will have its {@link IRenderer.onExtractWorldPreWeather}
-     * method called before the vanilla Weather rendering is done
-     * @param renderer ()
-     */
-    void registerWorldPreMainRenderer(IRenderer renderer);
-
-    /**
      * Registers a renderer which will have its {@link IRenderer.onExtractWorldLast}
      * method called after the vanilla rendering is done except for debug
      * @param renderer ()
      */
     void registerWorldLastRenderer(IRenderer renderer);
-
-    /**
-     * Register this renderer with a Special Gui Render State / Renderer callback from Vanilla.
-     * @param renderer ()
-     */
-    void registerSpecialGuiRenderer(IRenderer renderer);
 }

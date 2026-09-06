@@ -24,16 +24,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.event.RenderEventHandler;
 
-@Mixin(value = LevelRenderer.class, priority = 800)
+@Mixin(value = LevelRenderer.class)
 public abstract class MixinLevelRenderer
 {
 	@Shadow @Final private LevelTargetBundle targets;
 	@Shadow @Final private RenderBuffers renderBuffers;
 	@Shadow @Final private GameRenderer gameRenderer;
+	@Shadow public abstract boolean frameHasAlwaysOnTopGizmos();
 
 	@Unique private boolean cancelAlwaysOnTop;
 
-	// Effected by Improved Transparency
 	@Inject(method = "render",
 	        at = @At(value = "INVOKE",
 	                 target = "Lnet/minecraft/client/renderer/LevelRenderer;addMainPass(Lcom/mojang/blaze3d/framegraph/FrameGraphBuilder;Lnet/minecraft/client/renderer/feature/FeatureRenderDispatcher$PreparedFrame;Lcom/mojang/renderpearl/api/buffers/GpuBufferSlice;Lnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;Z)V",
@@ -41,25 +41,23 @@ public abstract class MixinLevelRenderer
 	        ))
 	private void malilib_onRenderWorldPreMain(GraphicsResourceAllocator resourceAllocator, boolean renderOutline,
 	                                          CameraRenderState cameraState, GpuBufferSlice terrainFog, Vector4f fogColor,
-	                                          boolean shouldRenderSky, boolean consistentDepthRequired, CallbackInfo ci,
-	                                          @Local(name = "profiler") ProfilerFiller profiler,
-	                                          @Local(name = "frame") FrameGraphBuilder frame,
-	                                          @Local(name = "featureFrame") FeatureRenderDispatcher.PreparedFrame featureFrame)
+	                                          boolean shouldRenderSky, boolean consistentDepthRequired, CallbackInfo ci)
 	{
-		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldPreMain(Minecraft.getInstance(), (LevelRenderer) (Object) this,
-		                                                                              frame, featureFrame, this.targets,
-		                                                                              this.gameRenderer.mainCamera().getCullFrustum(), cameraState,
-		                                                                              this.renderBuffers, consistentDepthRequired,
-		                                                                              terrainFog, fogColor, profiler);
+		this.cancelAlwaysOnTop = false;
 
-		this.cancelAlwaysOnTop = ((RenderEventHandler) RenderEventHandler.getInstance()).shouldCancelAlwaysOnTop((LevelRenderer) (Object) this);
+		if (this.frameHasAlwaysOnTopGizmos())
+		{
+			this.cancelAlwaysOnTop = ((RenderEventHandler) RenderEventHandler.getInstance()).shouldCancelAlwaysOnTop();
+		}
 	}
 
-	// 'executeAlwaysOnTop' clears the Depth Texture --> Breaks "onWorldLast"
+	/**
+	 * @implNote This 'executeAlwaysOnTop' clears the Depth Texture --> Breaks "malilib_onRenderWorldLast()" without it
+	 */
 	@Inject(method = "executeAlwaysOnTop", at = @At("HEAD"), cancellable = true)
-	private void malilib_cancelAlwaysOnTop(CallbackInfo ci)
+	private void malilib_onExecuteAlwaysOnTop(CallbackInfo ci)
 	{
-		if (this.cancelAlwaysOnTop && ((RenderEventHandler) RenderEventHandler.getInstance()).shouldCancelAlwaysOnTop())
+		if (this.cancelAlwaysOnTop)
 		{
 			ci.cancel();
 		}
@@ -78,7 +76,6 @@ public abstract class MixinLevelRenderer
 	                                       @Local(name = "frame") FrameGraphBuilder frame,
 	                                       @Local(name = "featureFrame") FeatureRenderDispatcher.PreparedFrame featureFrame)
 	{
-		this.cancelAlwaysOnTop = false;
 		((RenderEventHandler) RenderEventHandler.getInstance()).runRenderWorldLast(Minecraft.getInstance(), (LevelRenderer) (Object) this,
 		                                                                           frame, featureFrame, this.targets,
 		                                                                           this.gameRenderer.mainCamera().getCullFrustum(), cameraState,

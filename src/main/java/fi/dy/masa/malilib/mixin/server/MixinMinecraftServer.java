@@ -11,7 +11,7 @@ import fi.dy.masa.malilib.event.ServerHandler;
 /**
  * For invoking IntegratedServer() calls
  */
-@Mixin(value = MinecraftServer.class, priority = 800)
+@Mixin(value = MinecraftServer.class)
 public abstract class MixinMinecraftServer
 {
     @Inject(method = "runServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;initServer()Z"))

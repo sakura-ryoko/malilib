@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.MaLiLibReference;
 
-@Mixin(value = SharedConstants.class, priority = 800)
+@Mixin(value = SharedConstants.class)
 public class MixinSharedConstants
 {
     @Shadow public static boolean IS_RUNNING_IN_IDE;

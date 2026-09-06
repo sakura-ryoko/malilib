@@ -1,8 +1,12 @@
 package fi.dy.masa.malilib.test.gui;
 
 import java.nio.file.Path;
+import java.util.List;
 import javax.annotation.Nullable;
 
+import org.jspecify.annotations.NonNull;
+
+import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.gui.*;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -77,6 +81,14 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 		x += this.createButton(x, y, ButtonType.COPY);
 		x += this.createButton(x, y, ButtonType.RENAME);
 		x += this.createButton(x, y, ButtonType.DELETE);
+	}
+
+	@Override
+	public boolean onMouseDropFiles(@NonNull List<Path> files)
+	{
+		// TODO
+		MaLiLib.LOGGER.error("GuiTestFileBrowser#onMouseDropFiles(): File Drop: {} files [First: {}]", files.size(), files.getFirst().toAbsolutePath().toString());
+		return false;
 	}
 
 	protected int createButton(int x, int y, ButtonType type)

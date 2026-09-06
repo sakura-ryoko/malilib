@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import fi.dy.masa.malilib.event.RenderEventHandler;
 import fi.dy.masa.malilib.render.GuiContext;
 
-@Mixin(value = AbstractContainerScreen.class, priority = 800)
+@Mixin(value = AbstractContainerScreen.class)
 public abstract class MixinAbstractContainerScreen_renderTooltip
 {
     @Shadow @Nullable protected Slot hoveredSlot;

@@ -7,6 +7,14 @@
 #include <minecraft:sample_lightmap.glsl>
 #include <minecraft:oit.glsl>
 
+layout(std140) uniform ChunkFix {
+    ivec2 TextureSize;
+    ivec3 ChunkPosition;
+    float ChunkVisibility;
+    int UseRgss;
+    int hasShadersOn;
+};
+
 layout(location = 0) in vec3 Position;
 layout(location = 1) in vec4 Color;
 layout(location = 2) in vec2 UV0;

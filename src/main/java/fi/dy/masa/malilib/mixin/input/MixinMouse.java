@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.event.InputEventHandler;
 
-@Mixin(value = MouseHandler.class, priority = 500)
+@Mixin(value = MouseHandler.class)
 public abstract class MixinMouse
 {
     @Shadow @Final private Minecraft minecraft;

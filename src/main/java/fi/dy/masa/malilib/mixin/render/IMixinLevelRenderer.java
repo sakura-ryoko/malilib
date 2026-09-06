@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.SubmitNodeStorage;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(value = LevelRenderer.class, priority = 800)
+@Mixin(value = LevelRenderer.class)
 public interface IMixinLevelRenderer
 {
 	@Accessor("submitNodeStorage")

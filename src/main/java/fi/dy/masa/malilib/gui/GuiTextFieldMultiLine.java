@@ -16,6 +16,7 @@ import net.minecraft.network.chat.Component;
 import fi.dy.masa.malilib.mixin.gui.IMixinAbstractWidget;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiTextFieldMultiLine extends MultiLineEditBox
 {
@@ -49,7 +50,7 @@ public class GuiTextFieldMultiLine extends MultiLineEditBox
 
         if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
-            if (click.input() == 1)
+            if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_3)
             {
                 this.setValue("");
             }

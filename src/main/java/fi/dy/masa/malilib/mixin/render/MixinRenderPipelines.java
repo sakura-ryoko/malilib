@@ -19,7 +19,7 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.compat.iris.IrisCompat;
 import fi.dy.masa.malilib.render.MaLiLibPipelines;
 
-@Mixin(value = RenderPipelines.class, priority = 800)
+@Mixin(value = RenderPipelines.class)
 public abstract class MixinRenderPipelines
 {
     @Shadow @Final private static Map<Identifier, RenderPipeline> PIPELINES_BY_LOCATION;

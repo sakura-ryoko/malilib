@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.event.InputEventHandler;
 
-@Mixin(value = SDLEventHandler.class, priority = 500)
+@Mixin(value = SDLEventHandler.class)
 public class MixinSDLEventHandler
 {
 	@Inject(method = "handleKeymapChangedEvent", at = @At("HEAD"))

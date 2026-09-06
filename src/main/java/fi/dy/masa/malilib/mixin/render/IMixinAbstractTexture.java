@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(value = AbstractTexture.class, priority = 800)
+@Mixin(value = AbstractTexture.class)
 public interface IMixinAbstractTexture
 {
     @Accessor("texture")

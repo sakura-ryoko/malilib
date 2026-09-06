@@ -41,10 +41,10 @@ public class ConfigButtonKeybind extends ButtonGeneric
 
         if (this.selected)
         {
-            this.addKey(click.input() - 100);
+            this.addKey(click.input() - ScanCodes.OFFSET_MOUSE);
             this.updateDisplayString();
         }
-        else if (click.input() == 0)
+        else if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1)
         {
             this.selected = true;
 

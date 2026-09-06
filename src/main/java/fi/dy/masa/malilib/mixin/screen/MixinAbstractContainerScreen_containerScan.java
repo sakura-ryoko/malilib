@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.registry.Registry;
 
-@Mixin(value = AbstractContainerScreen.class, priority = 900)
+@Mixin(value = AbstractContainerScreen.class)
 public abstract class MixinAbstractContainerScreen_containerScan<T extends AbstractContainerMenu>
 {
     @Shadow public abstract T getMenu();

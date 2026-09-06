@@ -17,6 +17,8 @@ import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.KeyCodes;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public abstract class ButtonBase extends WidgetBase
 {
@@ -93,8 +95,8 @@ public abstract class ButtonBase extends WidgetBase
     @Override
     public boolean onMouseScrolledImpl(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
-        int mouseButton = verticalAmount < 0 ? 1 : 0;
-        return this.onMouseClickedImpl(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(mouseButton, -1)), false);
+        int mouseButton = verticalAmount < ScanCodes.OFFSET_MOUSE_BUTTON_1 ? ScanCodes.OFFSET_MOUSE_BUTTON_3 : ScanCodes.OFFSET_MOUSE_BUTTON_1;
+        return this.onMouseClickedImpl(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(mouseButton, KeyCodes.KMOD_NONE)), false);
     }
 
     @Override

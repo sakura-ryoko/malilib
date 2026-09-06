@@ -169,35 +169,6 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
-    public void onExtractWorldPreMain(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
-    {
-        // TODO
-    }
-
-    @Override
-    public void onRenderWorldPreMain(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
-    {
-//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
-//        {
-//            MinecraftClient mc = MinecraftClient.getInstance();
-//
-//            profiler.push(MaLiLibReference.MOD_ID + "_test_walls");
-//
-//            if (ConfigTestEnum.TEST_WALLS_HOTKEY.getBooleanValue())
-//            {
-//                if (TestWalls.INSTANCE.needsUpdate(mc.getCameraEntity(), mc))
-//                {
-//                    TestWalls.INSTANCE.update(camera, mc.getCameraEntity(), mc);
-//                }
-//
-//                TestWalls.INSTANCE.render(camera, posMatrix, projMatrix, mc, profiler);
-//            }
-//
-//            profiler.pop();
-//        }
-    }
-
-    @Override
     public void onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
@@ -229,8 +200,6 @@ public class TestRenderHandler implements IRenderer
     @Override
     public void onRenderWorldLast(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler)
     {
-        boolean result = false;
-
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
         {
             Minecraft mc = Minecraft.getInstance();

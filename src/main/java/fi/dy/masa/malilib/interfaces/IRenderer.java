@@ -2,19 +2,14 @@ package fi.dy.masa.malilib.interfaces;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import com.google.common.collect.ImmutableMap;
 import org.joml.Vector4f;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.render.GuiRenderer;
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.RenderBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
-import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -33,21 +28,11 @@ public interface IRenderer
     /**
      * Called during the Render Level "Extraction" phase
      */
-    default void onExtractWorldPreMain(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler) {}
-
-    /**
-     * Called before vanilla Main rendering
-     */
-    default void onRenderWorldPreMain(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler) {}
-
-    /**
-     * Called during the Render Level "Extraction" phase
-     */
     default void onExtractWorldLast(DeltaTracker deltaTracker, Camera camera, float ticks, ProfilerFiller profiler) {}
 
     /**
      * Called after vanilla world rendering, with advanced Parameters, such as Frustum, Camera, and Fog
-     * @implNote Note: This is "Post" alwaysOnTop
+     * @implNote Note: This has a hack-fix to deal with "executeAlwaysOnTop()"
      */
     default void onRenderWorldLast(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler) {}
 
@@ -83,16 +68,4 @@ public interface IRenderer
     {
         return () -> this.getClass().getName();
     }
-
-    /**
-     * Register your Special Gui Element (PIP) Renderer.
-     * Simply bind your sSpecial Gui Element State / Renderer to the Immutable Map Builder using this.
-     * -
-     * !!!WARNING!!!  This is called in the early Game Pre-Init() 'clinit' phase!
-     *
-     * @param guiRenderer ()
-     * @param mc ()
-     * @param builder ()
-     */
-    default void onRegisterSpecialGuiRenderer(GuiRenderer guiRenderer, Minecraft mc, ImmutableMap.Builder<Class<? extends PictureInPictureRenderState>, PictureInPictureRenderer<?>> builder) { }
 }

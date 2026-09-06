@@ -1,12 +1,8 @@
 package fi.dy.masa.malilib.compat.iris;
 
-import net.irisshaders.iris.api.v0.IrisApi;
-import net.irisshaders.iris.api.v0.IrisProgram;
-
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibFabricData;
 import fi.dy.masa.malilib.compat.ModIds;
-import fi.dy.masa.malilib.render.MaLiLibPipelines;
 
 public class IrisCompat
 {
@@ -43,20 +39,20 @@ public class IrisCompat
 
 	public static boolean isShaderActive()
 	{
-		if (hasIris())
-		{
-			return IrisApi.getInstance().isShaderPackInUse();
-		}
+//		if (hasIris())
+//		{
+//			return IrisApi.getInstance().isShaderPackInUse();
+//		}
 
 		return false;
 	}
 
 	public static boolean isShadowPassActive()
 	{
-		if (hasIris())
-		{
-			return IrisApi.getInstance().isRenderingShadowPass();
-		}
+//		if (hasIris())
+//		{
+//			return IrisApi.getInstance().isRenderingShadowPass();
+//		}
 
 		return false;
 	}

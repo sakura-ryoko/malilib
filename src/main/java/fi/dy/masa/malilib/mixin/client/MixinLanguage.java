@@ -19,7 +19,7 @@ import fi.dy.masa.malilib.config.ConfigManager;
  * This Mixin fixes all %f and %d String.format() params for
  * any mod with a registered Config Handler; for the i18n translations
  */
-@Mixin(value = Language.class, priority = 900)
+@Mixin(value = Language.class)
 public class MixinLanguage
 {
 	@ModifyArgs(

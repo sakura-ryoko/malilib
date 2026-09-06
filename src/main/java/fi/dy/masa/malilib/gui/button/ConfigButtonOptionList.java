@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.config.IConfigOptionList;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class ConfigButtonOptionList extends ButtonGeneric
 {
@@ -27,7 +28,7 @@ public class ConfigButtonOptionList extends ButtonGeneric
     @Override
     protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
-        this.config.setOptionListValue(this.config.getOptionListValue().cycle(click.input() == 0));
+        this.config.setOptionListValue(this.config.getOptionListValue().cycle(click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1));
         this.updateDisplayString();
 
         return super.onMouseClickedImpl(click, doubleClick);

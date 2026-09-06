@@ -23,9 +23,9 @@ public class ConfigBlockState extends ConfigBase<ConfigBlockState> implements IC
 	public static final Codec<ConfigBlockState> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 					                    PrimitiveCodec.STRING.fieldOf("name").forGetter(ConfigBase::getName),
-					                    BlockState.CODEC.fieldOf("defaultValue").forGetter(get -> get.defaultValue),
-					                    BlockState.CODEC.fieldOf("value").forGetter(get -> get.value),
-					                    BlockState.CODEC.fieldOf("previousValue").forGetter(get -> get.previousValue),
+					                    BlockState.FULL_CODEC.fieldOf("defaultValue").forGetter(get -> get.defaultValue),
+					                    BlockState.FULL_CODEC.fieldOf("value").forGetter(get -> get.value),
+					                    BlockState.FULL_CODEC.fieldOf("previousValue").forGetter(get -> get.previousValue),
 					                    PrimitiveCodec.STRING.fieldOf("comment").forGetter(get -> get.comment),
 					                    PrimitiveCodec.STRING.fieldOf("prettyName").forGetter(get -> get.prettyName),
 					                    PrimitiveCodec.STRING.fieldOf("translatedName").forGetter(get -> get.translatedName)

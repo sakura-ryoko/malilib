@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Minecraft.class)
+@Mixin(value = Minecraft.class, priority = 1001)
 public abstract class MixinMinecraft_test
 {
 	@Inject(method = "stop", at = @At("HEAD"))

@@ -33,6 +33,7 @@ import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
 import fi.dy.masa.malilib.util.data.BooleanConsumer;
 import fi.dy.masa.malilib.util.data.FloatConsumer;
+import fi.dy.masa.malilib.util.game.BlockUtils;
 import fi.dy.masa.malilib.util.position.BlockMirror;
 import fi.dy.masa.malilib.util.position.BlockRotation;
 import fi.dy.masa.malilib.util.position.Vec3d;
@@ -304,10 +305,10 @@ public class JsonUtils
                     return Optional.of(defaultValue);
                 }
 
-                final String objName = hasString(o, "Name")
-                                       ? getStringOrDefault(o, "Name", "")
-                                       : hasString(o, "name")
-                                         ? getStringOrDefault(o, "name", "")
+                final String objName = hasString(o, BlockUtils.BLOCK_STATE_NAME)
+                                       ? getStringOrDefault(o, BlockUtils.BLOCK_STATE_NAME, "")
+                                       : hasString(o, BlockUtils.VANILLA_BLOCK_STATE_NAME)
+                                         ? getStringOrDefault(o, BlockUtils.VANILLA_BLOCK_STATE_NAME, "")
                                          : "";
 
                 if (objName == null || objName.isEmpty())
@@ -329,10 +330,10 @@ public class JsonUtils
                     Block block = opt.get();
                     BlockState state = block.defaultBlockState();
 
-                    JsonObject p = hasObject(o, "Properties")
-                                   ? o.getAsJsonObject("Properties")
-                                   : hasObject(o, "properties")
-                                     ? o.getAsJsonObject("Properties")
+                    JsonObject p = hasObject(o, BlockUtils.BLOCK_STATE_PROPERTIES)
+                                   ? o.getAsJsonObject(BlockUtils.BLOCK_STATE_PROPERTIES)
+                                   : hasObject(o, BlockUtils.VANILLA_BLOCK_STATE_PROPERTIES)
+                                     ? o.getAsJsonObject(BlockUtils.VANILLA_BLOCK_STATE_PROPERTIES)
                                      : new JsonObject();
 
                     if (p != null && !p.isEmpty())
@@ -381,7 +382,7 @@ public class JsonUtils
     public static JsonObject getBlockStateAsObject(@Nonnull final BlockState state)
     {
         JsonObject o = new JsonObject();
-        o.addProperty("Name", BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
+        o.addProperty(BlockUtils.BLOCK_STATE_NAME, BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
         addStateProperties(o, state);
         return o;
     }
@@ -389,7 +390,7 @@ public class JsonUtils
     public static JsonObject getFluidStateAsObject(@Nonnull final FluidState state)
     {
         JsonObject o = new JsonObject();
-        o.addProperty("Name", BuiltInRegistries.FLUID.getKey(state.getType()).toString());
+        o.addProperty(BlockUtils.BLOCK_STATE_NAME, BuiltInRegistries.FLUID.getKey(state.getType()).toString());
         addStateProperties(o, state);
         return o;
     }
@@ -405,7 +406,7 @@ public class JsonUtils
 		                    o.addProperty(v.property().getName(), v.valueName())
             );
 
-            obj.add("Properties", o);
+            obj.add(BlockUtils.BLOCK_STATE_PROPERTIES, o);
         }
     }
 

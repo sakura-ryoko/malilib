@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import fi.dy.masa.malilib.render.RenderUtils;
 
-@Mixin(value = GameRenderer.class, priority = 800)
+@Mixin(value = GameRenderer.class)
 public class MixinGameRenderer
 {
     @Shadow @Final private GuiRenderer guiRenderer;
