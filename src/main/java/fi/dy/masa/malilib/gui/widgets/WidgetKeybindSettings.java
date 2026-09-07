@@ -57,7 +57,7 @@ public class WidgetKeybindSettings extends WidgetBase
             return true;
         }
         // Reset the settings to defaults on right click
-        else if (click.input() == ScanCodes.OFFSET_BUTTON_RIGHT)
+        else if (click.input() == ScanCodes.OFFSET_MOUSE_RIGHT)
         {
             this.keybind.resetSettingsToDefaults();
             this.widgetList.refreshEntries();

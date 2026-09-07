@@ -325,7 +325,9 @@ public class KeyCodes
     public static final int OFFSET_MOUSE            = 100;
     public static final int OFFSET_MOUSE_LEFT       = SDLMouse.SDL_BUTTON_LEFT;     // Was 0
     public static final int OFFSET_MOUSE_MIDDLE     = SDLMouse.SDL_BUTTON_MIDDLE;   // Was 2
-    public static final int OFFSET_BUTTON_RIGHT     = SDLMouse.SDL_BUTTON_RIGHT;    // Was 1
+    public static final int OFFSET_MOUSE_RIGHT      = SDLMouse.SDL_BUTTON_RIGHT;    // Was 1
+    public static final int OFFSET_MOUSE_BACK       = SDLMouse.SDL_BUTTON_X1;
+    public static final int OFFSET_MOUSE_FORWARD    = SDLMouse.SDL_BUTTON_X2;
 
     public static final int MOUSE_LEFT              = SDLMouse.SDL_BUTTON_LEFT      - OFFSET_MOUSE;
     public static final int MOUSE_MIDDLE            = SDLMouse.SDL_BUTTON_MIDDLE    - OFFSET_MOUSE;

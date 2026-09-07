@@ -50,7 +50,7 @@ public class GuiTextFieldMultiLine extends MultiLineEditBox
 
         if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
-            if (click.input() == ScanCodes.OFFSET_BUTTON_RIGHT)
+            if (click.input() == ScanCodes.OFFSET_MOUSE_RIGHT)
             {
                 this.setValue("");
             }

@@ -35,7 +35,7 @@ public class ConfigButtonOptionValues extends ButtonGeneric
             // Left Click
             this.config.cycleValue(false);
         }
-        else if (click.input() == ScanCodes.OFFSET_BUTTON_RIGHT)  // Was 1
+        else if (click.input() == ScanCodes.OFFSET_MOUSE_RIGHT)  // Was 1
         {
             // Right Click
             this.config.cycleValue(true);

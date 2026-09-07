@@ -65,7 +65,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
                 {
                     this.navigator.switchToRootDirectory();
                 }
-                else if (click.input() == ScanCodes.OFFSET_BUTTON_RIGHT && this.navigator instanceof WidgetFileBrowserBase fb)
+                else if (click.input() == ScanCodes.OFFSET_MOUSE_RIGHT && this.navigator instanceof WidgetFileBrowserBase fb)
                 {
                     Util.getPlatform().openPath(fb.getRootDirectory());
                 }
