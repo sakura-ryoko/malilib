@@ -348,71 +348,6 @@ public class ScanCodes
 			}
 		}
 
-		// Remap old configs
-		switch (name)
-		{
-			case "ENTER" ->
-			{
-				return SCAN_RETURN;
-			}
-			case "GRAVE_ACCENT" ->
-			{
-				return SCAN_GRAVE;
-			}
-			case "LEFT_SUPER" ->
-			{
-				return SCAN_LEFT_GUI;
-			}
-			case "RIGHT_SUPER" ->
-			{
-				return SCAN_RIGHT_GUI;
-			}
-			case "KP_ADD" ->
-			{
-				return SCAN_KP_PLUS;
-			}
-			case "KP_SUBTRACT" ->
-			{
-				return SCAN_KP_MINUS;
-			}
-			case "KP_EQUAL" ->
-			{
-				return SCAN_KP_EQUALS;
-			}
-			case "BUTTON_1" ->
-			{
-				return MOUSE_LEFT;
-			}
-			case "BUTTON_2" ->
-			{
-				return MOUSE_RIGHT;
-			}
-			case "BUTTON_3" ->
-			{
-				return MOUSE_MIDDLE;
-			}
-			case "BUTTON_4" ->
-			{
-				return MOUSE_BACK;
-			}
-			case "BUTTON_5" ->
-			{
-				return MOUSE_FORWARD;
-			}
-			case "BUTTON_6" ->
-			{
-				return MOUSE_EXTRA_3;
-			}
-			case "BUTTON_7" ->
-			{
-				return MOUSE_EXTRA_4;
-			}
-			case "BUTTON_8" ->
-			{
-				return MOUSE_EXTRA_5;
-			}
-		}
-
 		return MAP_NAME_TO_SCAN_CODE.getInt(name);
 	}
 
@@ -460,5 +395,22 @@ public class ScanCodes
 				MaLiLib.LOGGER.error("(ScanCodes) Failed to initialize the key name lookup!", e);
 			}
 		}
+
+		// Remap old configs
+		MAP_NAME_TO_SCAN_CODE.put("ENTER",          SCAN_RETURN);
+		MAP_NAME_TO_SCAN_CODE.put("GRAVE_ACCENT",   SCAN_GRAVE);
+		MAP_NAME_TO_SCAN_CODE.put("LEFT_SUPER",     SCAN_LEFT_GUI);
+		MAP_NAME_TO_SCAN_CODE.put("RIGHT_SUPER",    SCAN_RIGHT_GUI);
+		MAP_NAME_TO_SCAN_CODE.put("KP_ADD",         SCAN_KP_PLUS);
+		MAP_NAME_TO_SCAN_CODE.put("KP_SUBTRACT",    SCAN_KP_MINUS);
+		MAP_NAME_TO_SCAN_CODE.put("KP_EQUAL",       SCAN_KP_EQUALS);
+		MAP_NAME_TO_SCAN_CODE.put("BUTTON_1",       MOUSE_LEFT);
+		MAP_NAME_TO_SCAN_CODE.put("BUTTON_2",       MOUSE_RIGHT);
+		MAP_NAME_TO_SCAN_CODE.put("BUTTON_3",       MOUSE_MIDDLE);
+		MAP_NAME_TO_SCAN_CODE.put("BUTTON_4",       MOUSE_BACK);
+		MAP_NAME_TO_SCAN_CODE.put("BUTTON_5",       MOUSE_FORWARD);
+		MAP_NAME_TO_SCAN_CODE.put("BUTTON_6",       MOUSE_EXTRA_3);
+		MAP_NAME_TO_SCAN_CODE.put("BUTTON_7",       MOUSE_EXTRA_4);
+		MAP_NAME_TO_SCAN_CODE.put("BUTTON_8",       MOUSE_EXTRA_5);
 	}
 }

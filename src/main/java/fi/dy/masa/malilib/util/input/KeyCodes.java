@@ -332,9 +332,9 @@ public class KeyCodes
     public static final int MOUSE_RIGHT             = SDLMouse.SDL_BUTTON_RIGHT     - OFFSET_MOUSE;
     public static final int MOUSE_BACK              = SDLMouse.SDL_BUTTON_X1        - OFFSET_MOUSE;
     public static final int MOUSE_FORWARD           = SDLMouse.SDL_BUTTON_X2        - OFFSET_MOUSE;
-    public static final int MOUSE_EXTRA_1           = SDLMouse.SDL_BUTTON_X2 + 1    - OFFSET_MOUSE;      // Mouse Macro button X3
-    public static final int MOUSE_EXTRA_2           = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // Mouse Macro button X4
-    public static final int MOUSE_EXTRA_3           = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // Mouse Macro button X5
+    public static final int MOUSE_EXTRA_3           = SDLMouse.SDL_BUTTON_X2 + 1    - OFFSET_MOUSE;      // Mouse Macro button X3
+    public static final int MOUSE_EXTRA_4           = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // Mouse Macro button X4
+    public static final int MOUSE_EXTRA_5           = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // Mouse Macro button X5
 
     @Nullable
     public static String getNameForKey(int keyCode)
@@ -379,71 +379,6 @@ public class KeyCodes
             if (transform != null)
             {
                 return transform.keyCode();
-            }
-        }
-
-        // Remap old configs (Hopefully)
-        switch (name)
-        {
-            case "ENTER" ->
-            {
-                return KEY_RETURN;
-            }
-            case "GRAVE_ACCENT" ->
-            {
-                return KEY_GRAVE;
-            }
-            case "LEFT_SUPER" ->
-            {
-                return KEY_LEFT_GUI;
-            }
-            case "RIGHT_SUPER" ->
-            {
-                return KEY_RIGHT_GUI;
-            }
-            case "KP_ADD" ->
-            {
-                return KEY_KP_PLUS;
-            }
-            case "KP_SUBTRACT" ->
-            {
-                return KEY_KP_MINUS;
-            }
-            case "KP_EQUAL" ->
-            {
-                return KEY_KP_EQUALS;
-            }
-            case "BUTTON_1" ->
-            {
-                return MOUSE_LEFT;
-            }
-            case "BUTTON_2" ->
-            {
-                return MOUSE_RIGHT;
-            }
-            case "BUTTON_3" ->
-            {
-                return MOUSE_MIDDLE;
-            }
-            case "BUTTON_4" ->
-            {
-                return MOUSE_BACK;
-            }
-            case "BUTTON_5" ->
-            {
-                return MOUSE_FORWARD;
-            }
-            case "BUTTON_6" ->
-            {
-                return MOUSE_EXTRA_1;
-            }
-            case "BUTTON_7" ->
-            {
-                return MOUSE_EXTRA_2;
-            }
-            case "BUTTON_8" ->
-            {
-                return MOUSE_EXTRA_3;
             }
         }
 
@@ -494,5 +429,22 @@ public class KeyCodes
                 MaLiLib.LOGGER.error("Failed to initialize the key name lookup!", e);
             }
         }
+
+        // Remap old configs
+        MAP_NAME_TO_KEY.put("ENTER",            KEY_RETURN);
+        MAP_NAME_TO_KEY.put("GRAVE_ACCENT",     KEY_GRAVE);
+        MAP_NAME_TO_KEY.put("LEFT_SUPER",       KEY_LEFT_GUI);
+        MAP_NAME_TO_KEY.put("RIGHT_SUPER",      KEY_RIGHT_GUI);
+        MAP_NAME_TO_KEY.put("KP_ADD",           KEY_KP_PLUS);
+        MAP_NAME_TO_KEY.put("KP_SUBTRACT",      KEY_KP_MINUS);
+        MAP_NAME_TO_KEY.put("KP_EQUAL",         KEY_KP_EQUALS);
+        MAP_NAME_TO_KEY.put("BUTTON_1",         MOUSE_LEFT);
+        MAP_NAME_TO_KEY.put("BUTTON_2",         MOUSE_RIGHT);
+        MAP_NAME_TO_KEY.put("BUTTON_3",         MOUSE_MIDDLE);
+        MAP_NAME_TO_KEY.put("BUTTON_4",         MOUSE_BACK);
+        MAP_NAME_TO_KEY.put("BUTTON_5",         MOUSE_FORWARD);
+        MAP_NAME_TO_KEY.put("BUTTON_6",         MOUSE_EXTRA_3);
+        MAP_NAME_TO_KEY.put("BUTTON_7",         MOUSE_EXTRA_4);
+        MAP_NAME_TO_KEY.put("BUTTON_8",         MOUSE_EXTRA_5);
     }
 }
