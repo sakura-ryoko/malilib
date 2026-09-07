@@ -154,23 +154,4 @@ public class MaLiLibPipelines
     public static RenderPipeline DEBUG_LINE_STRIP_MASA_SIMPLE_OFFSET_2;
     public static RenderPipeline DEBUG_LINE_STRIP_MASA_SIMPLE_OFFSET_3;
     public static RenderPipeline DEBUG_LINE_STRIP_MASA_SIMPLE;
-
-	// todo LEGACY_TERRAIN Snippet
-	public static BindGroupLayout LEGACY_TERRAIN_GROUP;
-	public static RenderPipeline.Snippet LEGACY_TERRAIN_STAGE;
-	public static RenderPipeline.Snippet LEGACY_TERRAIN_TRANSLUCENT_STAGE;
-
-	// LEGACY_TERRAIN
-	public static RenderPipeline LEGACY_SOLID_TERRAIN;
-	public static RenderPipeline LEGACY_WIREFRAME;
-	public static RenderPipeline LEGACY_CUTOUT_TERRAIN;
-
-	// LEGACY_TERRAIN_OFFSET
-	public static RenderPipeline LEGACY_SOLID_TERRAIN_OFFSET;
-	public static RenderPipeline LEGACY_WIREFRAME_OFFSET;
-	public static RenderPipeline LEGACY_CUTOUT_TERRAIN_OFFSET;
-
-	// LEGACY_TERRAIN_TRANSLUCENT
-	public static RenderPipeline LEGACY_TRANSLUCENT;
-	public static RenderPipeline LEGACY_TRANSLUCENT_OFFSET;
 }
