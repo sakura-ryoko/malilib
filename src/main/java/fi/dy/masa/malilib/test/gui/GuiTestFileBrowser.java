@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.test.gui;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -86,8 +87,33 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 	@Override
 	public boolean onMouseDropFiles(@NonNull List<Path> files)
 	{
-		// TODO
 		MaLiLib.LOGGER.error("GuiTestFileBrowser#onMouseDropFiles(): File Drop: {} files [First: {}]", files.size(), files.getFirst().toAbsolutePath().toString());
+
+		if (this.getListWidget() != null)
+		{
+			Path dest;
+
+			if (this.getListWidget().getLastSelectedEntry() != null && Files.isDirectory(this.getListWidget().getLastSelectedEntry().getFullPath()))
+			{
+				dest = this.getListWidget().getLastSelectedEntry().getFullPath();
+			}
+			else if (this.getListWidget().getCurrentDirectory() != null && Files.isDirectory(this.getListWidget().getCurrentDirectory()))
+			{
+				dest = this.getListWidget().getCurrentDirectory();
+			}
+			else
+			{
+				return false;
+			}
+
+			if (Files.isDirectory(dest) && Files.isWritable(dest))
+			{
+				FileCopierMulti copier = new FileCopierMulti(dest, this.getListWidget(), true);
+				GuiBase.openGui(new GuiConfirmFileDrop(256, "malilib.gui.title.file_drop_confirm", files, copier, this, "malilib.message.file_drop_confirm", files.size(), dest.toAbsolutePath().toString()));
+				return true;
+			}
+		}
+
 		return false;
 	}
 
@@ -120,7 +146,7 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 		if (entry != null && entry.type() != WidgetFileBrowserBase.DirectoryEntryType.DIRECTORY &&
 			entry.type() != WidgetFileBrowserBase.DirectoryEntryType.INVALID)
 		{
-			this.setTextFieldText(FileNameUtils.getFileNameWithoutExtension(entry.name()));
+			this.setTextFieldText(entry.name());
 		}
 	}
 
