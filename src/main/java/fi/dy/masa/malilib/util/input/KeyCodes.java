@@ -427,11 +427,11 @@ public class KeyCodes
             }
             case "BUTTON_4" ->
             {
-                return MOUSE_FORWARD;
+                return MOUSE_BACK;
             }
             case "BUTTON_5" ->
             {
-                return MOUSE_BACK;
+                return MOUSE_FORWARD;
             }
             case "BUTTON_6" ->
             {
