@@ -23,7 +23,7 @@ public class KeyCodes
     public static final int KEY_UNKNOWN         = SDLKeycode.SDLK_UNKNOWN;
 
     // Control Keys
-    public static final int KEY_ENTER           = SDLKeycode.SDLK_RETURN;
+    public static final int KEY_RETURN          = SDLKeycode.SDLK_RETURN;
     public static final int KEY_ESCAPE          = SDLKeycode.SDLK_ESCAPE;
     public static final int KEY_BACKSPACE       = SDLKeycode.SDLK_BACKSPACE;
     public static final int KEY_TAB             = SDLKeycode.SDLK_TAB;
@@ -35,8 +35,8 @@ public class KeyCodes
     public static final int KEY_PERCENT         = SDLKeycode.SDLK_PERCENT;
     public static final int KEY_AMPERSAND       = SDLKeycode.SDLK_AMPERSAND;
     public static final int KEY_APOSTROPHE      = SDLKeycode.SDLK_APOSTROPHE;
-    public static final int KEY_LEFT_PARENTHESIS= SDLKeycode.SDLK_LEFTPAREN;
-    public static final int KEY_RIGHT_PARENTHESIS= SDLKeycode.SDLK_RIGHTPAREN;
+    public static final int KEY_LEFT_PAREN      = SDLKeycode.SDLK_LEFTPAREN;
+    public static final int KEY_RIGHT_PAREN     = SDLKeycode.SDLK_RIGHTPAREN;
     public static final int KEY_ASTERISK        = SDLKeycode.SDLK_ASTERISK;
     public static final int KEY_PLUS            = SDLKeycode.SDLK_PLUS;
     public static final int KEY_COMMA           = SDLKeycode.SDLK_COMMA;
@@ -57,7 +57,7 @@ public class KeyCodes
     public static final int KEY_COLON           = SDLKeycode.SDLK_COLON;
     public static final int KEY_SEMICOLON       = SDLKeycode.SDLK_SEMICOLON;
     public static final int KEY_LESS            = SDLKeycode.SDLK_LESS;
-    public static final int KEY_EQUAL           = SDLKeycode.SDLK_EQUALS;
+    public static final int KEY_EQUALS          = SDLKeycode.SDLK_EQUALS;
     public static final int KEY_GREATER         = SDLKeycode.SDLK_GREATER;
     public static final int KEY_QUESTION        = SDLKeycode.SDLK_QUESTION;
     public static final int KEY_AT              = SDLKeycode.SDLK_AT;
@@ -66,7 +66,7 @@ public class KeyCodes
     public static final int KEY_RIGHT_BRACKET   = SDLKeycode.SDLK_RIGHTBRACKET;
     public static final int KEY_CARET           = SDLKeycode.SDLK_CARET;
     public static final int KEY_UNDERSCORE      = SDLKeycode.SDLK_UNDERSCORE;
-    public static final int KEY_GRAVE_ACCENT    = SDLKeycode.SDLK_GRAVE;
+    public static final int KEY_GRAVE           = SDLKeycode.SDLK_GRAVE;
 
     // Printable
     public static final int KEY_A               = SDLKeycode.SDLK_A;
@@ -134,8 +134,8 @@ public class KeyCodes
     public static final int KEY_NUM_LOCK        = SDLKeycode.SDLK_NUMLOCKCLEAR;
     public static final int KEY_KP_DIVIDE       = SDLKeycode.SDLK_KP_DIVIDE;
     public static final int KEY_KP_MULTIPLY     = SDLKeycode.SDLK_KP_MULTIPLY;
-    public static final int KEY_KP_SUBTRACT     = SDLKeycode.SDLK_KP_MINUS;
-    public static final int KEY_KP_ADD          = SDLKeycode.SDLK_KP_PLUS;
+    public static final int KEY_KP_MINUS        = SDLKeycode.SDLK_KP_MINUS;
+    public static final int KEY_KP_PLUS         = SDLKeycode.SDLK_KP_PLUS;
     public static final int KEY_KP_ENTER        = SDLKeycode.SDLK_KP_ENTER;
     public static final int KEY_KP_1            = SDLKeycode.SDLK_KP_1;
     public static final int KEY_KP_2            = SDLKeycode.SDLK_KP_2;
@@ -249,11 +249,11 @@ public class KeyCodes
     public static final int KEY_LEFT_CONTROL    = SDLKeycode.SDLK_LCTRL;
     public static final int KEY_LEFT_SHIFT      = SDLKeycode.SDLK_LSHIFT;
     public static final int KEY_LEFT_ALT        = SDLKeycode.SDLK_LALT;
-    public static final int KEY_LEFT_SUPER      = SDLKeycode.SDLK_LGUI;
+    public static final int KEY_LEFT_GUI        = SDLKeycode.SDLK_LGUI;
     public static final int KEY_RIGHT_CONTROL   = SDLKeycode.SDLK_RCTRL;
     public static final int KEY_RIGHT_SHIFT     = SDLKeycode.SDLK_RSHIFT;
     public static final int KEY_RIGHT_ALT       = SDLKeycode.SDLK_RALT;
-    public static final int KEY_RIGHT_SUPER     = SDLKeycode.SDLK_RGUI;
+    public static final int KEY_RIGHT_GUI       = SDLKeycode.SDLK_RGUI;
 
     public static final int KEY_MODE                = SDLKeycode.SDLK_MODE;
     public static final int KEY_SLEEP               = SDLKeycode.SDLK_SLEEP;
@@ -310,8 +310,8 @@ public class KeyCodes
     public static final int KMOD_RIGHT_CONTROL  = SDLKeycode.SDL_KMOD_RCTRL;
     public static final int KMOD_LEFT_ALT       = SDLKeycode.SDL_KMOD_LALT;
     public static final int KMOD_RIGHT_ALT      = SDLKeycode.SDL_KMOD_RALT;
-    public static final int KMOD_LEFT_SUPER     = SDLKeycode.SDL_KMOD_LGUI;
-    public static final int KMOD_RIGHT_SUPER    = SDLKeycode.SDL_KMOD_RGUI;
+    public static final int KMOD_LEFT_GUI       = SDLKeycode.SDL_KMOD_LGUI;
+    public static final int KMOD_RIGHT_GUI      = SDLKeycode.SDL_KMOD_RGUI;
     public static final int KMOD_NUM_LOCK       = SDLKeycode.SDL_KMOD_NUM;
     public static final int KMOD_CAPS_LOCK      = SDLKeycode.SDL_KMOD_CAPS;
     public static final int KMOD_MODE           = SDLKeycode.SDL_KMOD_MODE;
@@ -319,22 +319,22 @@ public class KeyCodes
     public static final int KMOD_CONTROL        = SDLKeycode.SDL_KMOD_CTRL;
     public static final int KMOD_SHIFT          = SDLKeycode.SDL_KMOD_SHIFT;
     public static final int KMOD_ALT            = SDLKeycode.SDL_KMOD_ALT;
-    public static final int KMOD_SUPER          = SDLKeycode.SDL_KMOD_GUI;
+    public static final int KMOD_GUI            = SDLKeycode.SDL_KMOD_GUI;
 
-    // Mouse (Use ScanCodes :shrug:)
+    // Mouse
     public static final int OFFSET_MOUSE            = 100;
-    public static final int OFFSET_MOUSE_BUTTON_1   = SDLMouse.SDL_BUTTON_LEFT;     // Was 0
-    public static final int OFFSET_MOUSE_BUTTON_2   = SDLMouse.SDL_BUTTON_MIDDLE;   // Was 2
-    public static final int OFFSET_MOUSE_BUTTON_3   = SDLMouse.SDL_BUTTON_RIGHT;    // Was 1
+    public static final int OFFSET_MOUSE_LEFT       = SDLMouse.SDL_BUTTON_LEFT;     // Was 0
+    public static final int OFFSET_MOUSE_MIDDLE     = SDLMouse.SDL_BUTTON_MIDDLE;   // Was 2
+    public static final int OFFSET_BUTTON_RIGHT     = SDLMouse.SDL_BUTTON_RIGHT;    // Was 1
 
-    public static final int MOUSE_BUTTON_1          = SDLMouse.SDL_BUTTON_LEFT      - OFFSET_MOUSE;
-    public static final int MOUSE_BUTTON_2          = SDLMouse.SDL_BUTTON_MIDDLE    - OFFSET_MOUSE;
-    public static final int MOUSE_BUTTON_3          = SDLMouse.SDL_BUTTON_RIGHT     - OFFSET_MOUSE;
-    public static final int MOUSE_BUTTON_4          = SDLMouse.SDL_BUTTON_X1        - OFFSET_MOUSE;
-    public static final int MOUSE_BUTTON_5          = SDLMouse.SDL_BUTTON_X2        - OFFSET_MOUSE;
-    public static final int MOUSE_BUTTON_6          = SDLMouse.SDL_BUTTON_X2 + 1    - OFFSET_MOUSE;      // ???
-    public static final int MOUSE_BUTTON_7          = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // ???
-    public static final int MOUSE_BUTTON_8          = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // ???
+    public static final int MOUSE_LEFT              = SDLMouse.SDL_BUTTON_LEFT      - OFFSET_MOUSE;
+    public static final int MOUSE_MIDDLE            = SDLMouse.SDL_BUTTON_MIDDLE    - OFFSET_MOUSE;
+    public static final int MOUSE_RIGHT             = SDLMouse.SDL_BUTTON_RIGHT     - OFFSET_MOUSE;
+    public static final int MOUSE_BACK              = SDLMouse.SDL_BUTTON_X1        - OFFSET_MOUSE;
+    public static final int MOUSE_FORWARD           = SDLMouse.SDL_BUTTON_X2        - OFFSET_MOUSE;
+    public static final int MOUSE_EXTRA_1           = SDLMouse.SDL_BUTTON_X2 + 1    - OFFSET_MOUSE;      // Mouse Macro button X3
+    public static final int MOUSE_EXTRA_2           = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // Mouse Macro button X4
+    public static final int MOUSE_EXTRA_3           = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // Mouse Macro button X5
 
     @Nullable
     public static String getNameForKey(int keyCode)
@@ -382,6 +382,71 @@ public class KeyCodes
             }
         }
 
+        // Remap old configs (Hopefully)
+        switch (name)
+        {
+            case "ENTER" ->
+            {
+                return KEY_RETURN;
+            }
+            case "GRAVE_ACCENT" ->
+            {
+                return KEY_GRAVE;
+            }
+            case "LEFT_SUPER" ->
+            {
+                return KEY_LEFT_GUI;
+            }
+            case "RIGHT_SUPER" ->
+            {
+                return KEY_RIGHT_GUI;
+            }
+            case "KP_ADD" ->
+            {
+                return KEY_KP_PLUS;
+            }
+            case "KP_SUBTRACT" ->
+            {
+                return KEY_KP_MINUS;
+            }
+            case "KP_EQUAL" ->
+            {
+                return KEY_KP_EQUALS;
+            }
+            case "BUTTON_1" ->
+            {
+                return MOUSE_LEFT;
+            }
+            case "BUTTON_2" ->
+            {
+                return MOUSE_RIGHT;
+            }
+            case "BUTTON_3" ->
+            {
+                return MOUSE_MIDDLE;
+            }
+            case "BUTTON_4" ->
+            {
+                return MOUSE_FORWARD;
+            }
+            case "BUTTON_5" ->
+            {
+                return MOUSE_BACK;
+            }
+            case "BUTTON_6" ->
+            {
+                return MOUSE_EXTRA_1;
+            }
+            case "BUTTON_7" ->
+            {
+                return MOUSE_EXTRA_2;
+            }
+            case "BUTTON_8" ->
+            {
+                return MOUSE_EXTRA_3;
+            }
+        }
+
         return MAP_NAME_TO_KEY.getInt(name);
     }
 
@@ -415,7 +480,6 @@ public class KeyCodes
                 }
                 else if (name.startsWith("MOUSE_"))
                 {
-                    name = name.substring(6);
                     keyCode = field.getInt(null);
                 }
 

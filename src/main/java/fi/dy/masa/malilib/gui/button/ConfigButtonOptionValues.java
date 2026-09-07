@@ -30,17 +30,17 @@ public class ConfigButtonOptionValues extends ButtonGeneric
     @Override
     protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
-        if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1)   // Was 0
+        if (click.input() == ScanCodes.OFFSET_MOUSE_LEFT)   // Was 0
         {
             // Left Click
             this.config.cycleValue(false);
         }
-        else if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_3)  // Was 1
+        else if (click.input() == ScanCodes.OFFSET_BUTTON_RIGHT)  // Was 1
         {
             // Right Click
             this.config.cycleValue(true);
         }
-        else if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_2)  // Was 2
+        else if (click.input() == ScanCodes.OFFSET_MOUSE_MIDDLE)  // Was 2
         {
             // Middle Click
             this.config.resetToDefault();

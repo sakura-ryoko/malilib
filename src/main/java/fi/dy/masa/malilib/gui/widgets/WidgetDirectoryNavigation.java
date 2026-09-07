@@ -61,11 +61,11 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
 
             if (hoveredIcon == this.iconRoot)
             {
-                if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1)
+                if (click.input() == ScanCodes.OFFSET_MOUSE_LEFT)
                 {
                     this.navigator.switchToRootDirectory();
                 }
-                else if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_3 && this.navigator instanceof WidgetFileBrowserBase fb)
+                else if (click.input() == ScanCodes.OFFSET_BUTTON_RIGHT && this.navigator instanceof WidgetFileBrowserBase fb)
                 {
                     Util.getPlatform().openPath(fb.getRootDirectory());
                 }
@@ -74,7 +74,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             }
             else if (hoveredIcon == this.iconOpenDir)
             {
-                if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1)
+                if (click.input() == ScanCodes.OFFSET_MOUSE_LEFT)
                 {
                     Util.getPlatform().openPath(this.navigator.getCurrentDirectory());
                 }
@@ -83,7 +83,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             }
             else if (hoveredIcon == this.iconUp)
             {
-                if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1)
+                if (click.input() == ScanCodes.OFFSET_MOUSE_LEFT)
                 {
                     this.navigator.switchToParentDirectory();
                 }
@@ -92,7 +92,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             }
             else if (hoveredIcon == this.iconCreateDir)
             {
-                if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1)
+                if (click.input() == ScanCodes.OFFSET_MOUSE_LEFT)
                 {
                     String title = "malilib.gui.title.create_directory";
                     DirectoryCreator creator = new DirectoryCreator(this.currentDir, this.navigator, false);

@@ -108,7 +108,7 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     {
         if (this.textField != null && this.textField.isFocused())
         {
-            if (input.key() == ScanCodes.SCAN_ENTER)
+            if (input.key() == ScanCodes.SCAN_RETURN)
             {
                 this.applyNewValueToConfig();
                 return true;

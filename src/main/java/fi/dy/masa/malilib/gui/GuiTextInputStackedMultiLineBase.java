@@ -150,7 +150,7 @@ public abstract class GuiTextInputStackedMultiLineBase extends GuiDialogBase
     @Override
     public boolean onKeyTyped(KeyEvent input)
     {
-        if (input.key() == ScanCodes.SCAN_ENTER && this.selectedBox == 1)
+        if (input.key() == ScanCodes.SCAN_RETURN && this.selectedBox == 1)
         {
             // Only close the GUI if the value was successfully applied
             if (this.applyValues(this.textField1.getValue(), this.textField2.getValue()))

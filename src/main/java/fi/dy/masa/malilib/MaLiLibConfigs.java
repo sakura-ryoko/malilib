@@ -30,6 +30,7 @@ import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
 import fi.dy.masa.malilib.util.data.json.JsonUtils;
 import fi.dy.masa.malilib.util.i18n.*;
+import fi.dy.masa.malilib.util.input.InputUtils;
 import fi.dy.masa.malilib.util.input.KeyboardType;
 import fi.dy.masa.malilib.util.time.DurationFormat;
 import fi.dy.masa.malilib.util.time.TimeFormat;
@@ -278,6 +279,23 @@ public class MaLiLibConfigs implements IConfigHandler
         else
         {
             MaLiLib.LOGGER.error("loadFromFile(): Failed to load config file '{}'", configFile.toAbsolutePath());
+        }
+
+        if (MaLiLibReference.EXPERIMENTAL_MODE)
+        {
+            // Attempt AZERTY Detection
+            boolean isAzerty = InputUtils.isAzertyLayout();
+
+            if (isAzerty && Generic.KEYBOARD_TYPE.getOptionListValue() != KeyboardType.AZERTY)
+            {
+                Generic.KEYBOARD_TYPE.setOptionListValue(KeyboardType.AZERTY);
+                MaLiLib.LOGGER.warn("loadFromFile(): KEYBOARD_TYPE --> AZERTY");
+            }
+            else if (!isAzerty && Generic.KEYBOARD_TYPE.getOptionListValue() != KeyboardType.QWERTY)
+            {
+                Generic.KEYBOARD_TYPE.setOptionListValue(KeyboardType.QWERTY);
+                MaLiLib.LOGGER.warn("loadFromFile(): KEYBOARD_TYPE --> QWERTY");
+            }
         }
 
         checkBaseLanguage();

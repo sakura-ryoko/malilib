@@ -24,7 +24,7 @@ public record FileCopierMulti(Path destDir, @Nullable IDirectoryNavigator naviga
 		implements IPathListConsumerFeedback
 {
 	@Override
-	public boolean setPaths(List<Path> sources)
+	public boolean onSetPathsCompleted(List<Path> sources)
 	{
 		if (sources.isEmpty() || this.destDir() == null)
 		{
@@ -41,7 +41,7 @@ public record FileCopierMulti(Path destDir, @Nullable IDirectoryNavigator naviga
 			Path eachFile = source.getFileName();
 			Path newFile = this.destDir().resolve(eachFile).normalize();
 
-			if (source.getFileName().equals(newFile.getFileName()))
+			if (source.toAbsolutePath().equals(newFile.toAbsolutePath()))
 			{
 				MaLiLib.LOGGER.warn("FileCopierMulti: Failed to copy file '{}'; Destination is the same.", source.toAbsolutePath());
 				failed++;

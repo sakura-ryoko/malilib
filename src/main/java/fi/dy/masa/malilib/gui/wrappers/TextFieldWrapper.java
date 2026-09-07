@@ -110,7 +110,7 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 			}
 
 			if (this.listener != null &&
-				(input.key() == ScanCodes.SCAN_ENTER || input.key() == ScanCodes.SCAN_TAB ||
+				(input.key() == ScanCodes.SCAN_RETURN || input.key() == ScanCodes.SCAN_TAB ||
 				 this.textField.getValue().equals(textPre) == false))
 			{
 				this.listener.onTextChange(this.textField);

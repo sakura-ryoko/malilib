@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.jetbrains.annotations.ApiStatus;
-import org.lwjgl.sdl.SDL_Event;
+import org.lwjgl.sdl.*;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
@@ -21,6 +21,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.hotkeys.*;
 import fi.dy.masa.malilib.util.FileNameUtils;
@@ -211,8 +212,22 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     @ApiStatus.Internal
     public void onHandleKeymapChange()
     {
-        // TODO
-//        MaLiLib.LOGGER.warn("onHandleKeymapChange():{}:", Thread.currentThread().getName());
+        if (MaLiLibReference.EXPERIMENTAL_MODE)
+        {
+            // Attempt AZERTY Detection
+            boolean isAzerty = InputUtils.isAzertyLayout();
+
+            if (isAzerty && MaLiLibConfigs.Generic.KEYBOARD_TYPE.getOptionListValue() != KeyboardType.AZERTY)
+            {
+                MaLiLibConfigs.Generic.KEYBOARD_TYPE.setOptionListValue(KeyboardType.AZERTY);
+                MaLiLib.LOGGER.warn("onHandleKeymapChange(): KEYBOARD_TYPE --> AZERTY");
+            }
+            else if (!isAzerty && MaLiLibConfigs.Generic.KEYBOARD_TYPE.getOptionListValue() != KeyboardType.QWERTY)
+            {
+                MaLiLibConfigs.Generic.KEYBOARD_TYPE.setOptionListValue(KeyboardType.QWERTY);
+                MaLiLib.LOGGER.warn("onHandleKeymapChange(): KEYBOARD_TYPE --> QWERTY");
+            }
+        }
     }
 
     @ApiStatus.Internal

@@ -927,8 +927,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 	public static boolean isCtrlDown()
 	{
 		return Util.getPlatform() == Util.OS.OSX
-			   ? InputConstants.isKeyDown(ScanCodes.SCAN_LEFT_SUPER)
-					   || InputConstants.isKeyDown(ScanCodes.SCAN_RIGHT_SUPER)
+			   ? InputConstants.isKeyDown(ScanCodes.SCAN_LEFT_GUI)
+					   || InputConstants.isKeyDown(ScanCodes.SCAN_RIGHT_GUI)
 			   : InputConstants.isKeyDown(ScanCodes.SCAN_LEFT_CONTROL)
 					   || InputConstants.isKeyDown(ScanCodes.SCAN_RIGHT_CONTROL);
 	}

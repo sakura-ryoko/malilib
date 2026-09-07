@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.util.input;
 
 import java.nio.ByteBuffer;
 import org.lwjgl.sdl.SDLKeyboard;
+import org.lwjgl.sdl.SDLKeycode;
+import org.lwjgl.sdl.SDLScancode;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
@@ -96,5 +98,12 @@ public class InputUtils
 	public static void resetKeyboardState()
 	{
 		SDLKeyboard.SDL_ResetKeyboard();
+	}
+
+	public static boolean isAzertyLayout()
+	{
+		int scanCodeForQ = SDLKeyboard.nSDL_GetScancodeFromKey(SDLKeycode.SDLK_Q, SDLKeycode.SDL_KMOD_NONE);
+		int scanCodeForW = SDLKeyboard.nSDL_GetScancodeFromKey(SDLKeycode.SDLK_W, SDLKeycode.SDL_KMOD_NONE);
+		return scanCodeForQ == SDLScancode.SDL_SCANCODE_A && scanCodeForW == SDLScancode.SDL_SCANCODE_Z;
 	}
 }

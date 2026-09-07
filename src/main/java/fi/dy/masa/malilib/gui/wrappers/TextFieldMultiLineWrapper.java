@@ -109,7 +109,7 @@ public class TextFieldMultiLineWrapper<T extends GuiTextFieldMultiLine>
 		if (this.textField.isFocused() && this.textField.keyPressed(input))
 		{
 			if (this.listener != null &&
-				(input.key() == ScanCodes.SCAN_ENTER || input.key() == ScanCodes.SCAN_TAB ||
+				(input.key() == ScanCodes.SCAN_RETURN || input.key() == ScanCodes.SCAN_TAB ||
 				 this.textField.getValue().equals(textPre) == false))
 			{
 				this.listener.onTextChange(this.textField);

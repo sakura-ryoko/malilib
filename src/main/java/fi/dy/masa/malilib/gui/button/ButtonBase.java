@@ -95,7 +95,7 @@ public abstract class ButtonBase extends WidgetBase
     @Override
     public boolean onMouseScrolledImpl(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
-        int mouseButton = verticalAmount < ScanCodes.OFFSET_MOUSE_BUTTON_1 ? ScanCodes.OFFSET_MOUSE_BUTTON_3 : ScanCodes.OFFSET_MOUSE_BUTTON_1;
+        int mouseButton = verticalAmount < ScanCodes.OFFSET_MOUSE_LEFT ? ScanCodes.OFFSET_BUTTON_RIGHT : ScanCodes.OFFSET_MOUSE_LEFT;
         return this.onMouseClickedImpl(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(mouseButton, KeyCodes.KMOD_NONE)), false);
     }
 

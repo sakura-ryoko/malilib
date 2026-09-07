@@ -56,20 +56,20 @@ public class ScanCodes
 	public static final int SCAN_0               = SDLScancode.SDL_SCANCODE_0;
 
 	// Control Keys
-	public static final int SCAN_ENTER           = SDLScancode.SDL_SCANCODE_RETURN;
+	public static final int SCAN_RETURN          = SDLScancode.SDL_SCANCODE_RETURN;
 	public static final int SCAN_ESCAPE          = SDLScancode.SDL_SCANCODE_ESCAPE;
 	public static final int SCAN_BACKSPACE       = SDLScancode.SDL_SCANCODE_BACKSPACE;
 	public static final int SCAN_TAB             = SDLScancode.SDL_SCANCODE_TAB;
 	public static final int SCAN_SPACE           = SDLScancode.SDL_SCANCODE_SPACE;
 	public static final int SCAN_MINUS           = SDLScancode.SDL_SCANCODE_MINUS;
-	public static final int SCAN_EQUAL           = SDLScancode.SDL_SCANCODE_EQUALS;
+	public static final int SCAN_EQUALS          = SDLScancode.SDL_SCANCODE_EQUALS;
 	public static final int SCAN_LEFT_BRACKET    = SDLScancode.SDL_SCANCODE_LEFTBRACKET;
 	public static final int SCAN_RIGHT_BRACKET   = SDLScancode.SDL_SCANCODE_RIGHTBRACKET;
 	public static final int SCAN_BACKSLASH       = SDLScancode.SDL_SCANCODE_BACKSLASH;
 	public static final int SCAN_NON_US_HASH     = SDLScancode.SDL_SCANCODE_NONUSHASH;
 	public static final int SCAN_SEMICOLON       = SDLScancode.SDL_SCANCODE_SEMICOLON;
 	public static final int SCAN_APOSTROPHE      = SDLScancode.SDL_SCANCODE_APOSTROPHE;
-	public static final int SCAN_GRAVE_ACCENT    = SDLScancode.SDL_SCANCODE_GRAVE;
+	public static final int SCAN_GRAVE           = SDLScancode.SDL_SCANCODE_GRAVE;
 	public static final int SCAN_COMMA           = SDLScancode.SDL_SCANCODE_COMMA;
 	public static final int SCAN_PERIOD          = SDLScancode.SDL_SCANCODE_PERIOD;
 	public static final int SCAN_SLASH           = SDLScancode.SDL_SCANCODE_SLASH;
@@ -106,8 +106,8 @@ public class ScanCodes
 	public static final int SCAN_NUM_LOCK        = SDLScancode.SDL_SCANCODE_NUMLOCKCLEAR;
 	public static final int SCAN_KP_DIVIDE       = SDLScancode.SDL_SCANCODE_KP_DIVIDE;
 	public static final int SCAN_KP_MULTIPLY     = SDLScancode.SDL_SCANCODE_KP_MULTIPLY;
-	public static final int SCAN_KP_SUBTRACT     = SDLScancode.SDL_SCANCODE_KP_MINUS;
-	public static final int SCAN_KP_ADD          = SDLScancode.SDL_SCANCODE_KP_PLUS;
+	public static final int SCAN_KP_MINUS        = SDLScancode.SDL_SCANCODE_KP_MINUS;
+	public static final int SCAN_KP_PLUS         = SDLScancode.SDL_SCANCODE_KP_PLUS;
 	public static final int SCAN_KP_ENTER        = SDLScancode.SDL_SCANCODE_KP_ENTER;
 	public static final int SCAN_KP_1            = SDLScancode.SDL_SCANCODE_KP_1;
 	public static final int SCAN_KP_2            = SDLScancode.SDL_SCANCODE_KP_2;
@@ -123,7 +123,7 @@ public class ScanCodes
 	public static final int SCAN_NON_US_BACKSLASH= SDLScancode.SDL_SCANCODE_NONUSBACKSLASH;
 	public static final int SCAN_APPLICATION     = SDLScancode.SDL_SCANCODE_APPLICATION;
 	public static final int SCAN_POWER           = SDLScancode.SDL_SCANCODE_POWER;
-	public static final int SCAN_KP_EQUAL        = SDLScancode.SDL_SCANCODE_KP_EQUALS;
+	public static final int SCAN_KP_EQUALS       = SDLScancode.SDL_SCANCODE_KP_EQUALS;
 
 	public static final int SCAN_F13             = SDLScancode.SDL_SCANCODE_F13;
 	public static final int SCAN_F14             = SDLScancode.SDL_SCANCODE_F14;
@@ -241,11 +241,11 @@ public class ScanCodes
 	public static final int SCAN_LEFT_CONTROL    = SDLScancode.SDL_SCANCODE_LCTRL;
 	public static final int SCAN_LEFT_SHIFT      = SDLScancode.SDL_SCANCODE_LSHIFT;
 	public static final int SCAN_LEFT_ALT        = SDLScancode.SDL_SCANCODE_LALT;
-	public static final int SCAN_LEFT_SUPER      = SDLScancode.SDL_SCANCODE_LGUI;
+	public static final int SCAN_LEFT_GUI        = SDLScancode.SDL_SCANCODE_LGUI;
 	public static final int SCAN_RIGHT_CONTROL   = SDLScancode.SDL_SCANCODE_RCTRL;
 	public static final int SCAN_RIGHT_SHIFT     = SDLScancode.SDL_SCANCODE_RSHIFT;
 	public static final int SCAN_RIGHT_ALT       = SDLScancode.SDL_SCANCODE_RALT;
-	public static final int SCAN_RIGHT_SUPER     = SDLScancode.SDL_SCANCODE_RGUI;
+	public static final int SCAN_RIGHT_GUI       = SDLScancode.SDL_SCANCODE_RGUI;
 
 	public static final int SCAN_MODE            = SDLScancode.SDL_SCANCODE_MODE;
 	public static final int SCAN_SLEEP           = SDLScancode.SDL_SCANCODE_SLEEP;
@@ -289,18 +289,18 @@ public class ScanCodes
 
 	// Mouse
 	public static final int OFFSET_MOUSE            = 100;
-	public static final int OFFSET_MOUSE_BUTTON_1   = SDLMouse.SDL_BUTTON_LEFT;     // Was 0
-	public static final int OFFSET_MOUSE_BUTTON_2   = SDLMouse.SDL_BUTTON_MIDDLE;   // Was 2
-	public static final int OFFSET_MOUSE_BUTTON_3   = SDLMouse.SDL_BUTTON_RIGHT;    // Was 1
+	public static final int OFFSET_MOUSE_LEFT       = SDLMouse.SDL_BUTTON_LEFT;     // Was 0
+	public static final int OFFSET_MOUSE_MIDDLE     = SDLMouse.SDL_BUTTON_MIDDLE;   // Was 2
+	public static final int OFFSET_BUTTON_RIGHT     = SDLMouse.SDL_BUTTON_RIGHT;    // Was 1
 
-	public static final int MOUSE_BUTTON_1          = SDLMouse.SDL_BUTTON_LEFT      - OFFSET_MOUSE;
-	public static final int MOUSE_BUTTON_2          = SDLMouse.SDL_BUTTON_MIDDLE    - OFFSET_MOUSE;
-	public static final int MOUSE_BUTTON_3          = SDLMouse.SDL_BUTTON_RIGHT     - OFFSET_MOUSE;
-	public static final int MOUSE_BUTTON_4          = SDLMouse.SDL_BUTTON_X1        - OFFSET_MOUSE;
-	public static final int MOUSE_BUTTON_5          = SDLMouse.SDL_BUTTON_X2        - OFFSET_MOUSE;
-	public static final int MOUSE_BUTTON_6          = SDLMouse.SDL_BUTTON_X2 + 1    - OFFSET_MOUSE;      // ???
-	public static final int MOUSE_BUTTON_7          = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // ???
-	public static final int MOUSE_BUTTON_8          = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // ???
+	public static final int MOUSE_LEFT              = SDLMouse.SDL_BUTTON_LEFT      - OFFSET_MOUSE;
+	public static final int MOUSE_MIDDLE            = SDLMouse.SDL_BUTTON_MIDDLE    - OFFSET_MOUSE;
+	public static final int MOUSE_RIGHT             = SDLMouse.SDL_BUTTON_RIGHT     - OFFSET_MOUSE;
+	public static final int MOUSE_BACK              = SDLMouse.SDL_BUTTON_X1        - OFFSET_MOUSE;
+	public static final int MOUSE_FORWARD           = SDLMouse.SDL_BUTTON_X2        - OFFSET_MOUSE;
+	public static final int MOUSE_EXTRA_3           = SDLMouse.SDL_BUTTON_X2 + 1    - OFFSET_MOUSE;      // Mouse Macro button X3
+	public static final int MOUSE_EXTRA_4           = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // Mouse Macro button X4
+	public static final int MOUSE_EXTRA_5           = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // Mouse Macro button X5
 
 	@Nullable
 	public static String getNameForScanCode(final int scanCode)
@@ -348,6 +348,71 @@ public class ScanCodes
 			}
 		}
 
+		// Remap old configs
+		switch (name)
+		{
+			case "ENTER" ->
+			{
+				return SCAN_RETURN;
+			}
+			case "GRAVE_ACCENT" ->
+			{
+				return SCAN_GRAVE;
+			}
+			case "LEFT_SUPER" ->
+			{
+				return SCAN_LEFT_GUI;
+			}
+			case "RIGHT_SUPER" ->
+			{
+				return SCAN_RIGHT_GUI;
+			}
+			case "KP_ADD" ->
+			{
+				return SCAN_KP_PLUS;
+			}
+			case "KP_SUBTRACT" ->
+			{
+				return SCAN_KP_MINUS;
+			}
+			case "KP_EQUAL" ->
+			{
+				return SCAN_KP_EQUALS;
+			}
+			case "BUTTON_1" ->
+			{
+				return MOUSE_LEFT;
+			}
+			case "BUTTON_2" ->
+			{
+				return MOUSE_RIGHT;
+			}
+			case "BUTTON_3" ->
+			{
+				return MOUSE_MIDDLE;
+			}
+			case "BUTTON_4" ->
+			{
+				return MOUSE_FORWARD;
+			}
+			case "BUTTON_5" ->
+			{
+				return MOUSE_BACK;
+			}
+			case "BUTTON_6" ->
+			{
+				return MOUSE_EXTRA_3;
+			}
+			case "BUTTON_7" ->
+			{
+				return MOUSE_EXTRA_4;
+			}
+			case "BUTTON_8" ->
+			{
+				return MOUSE_EXTRA_5;
+			}
+		}
+
 		return MAP_NAME_TO_SCAN_CODE.getInt(name);
 	}
 
@@ -381,7 +446,6 @@ public class ScanCodes
 				}
 				else if (name.startsWith("MOUSE_"))
 				{
-					name = name.substring(6);
 					scanCode = field.getInt(null);
 				}
 

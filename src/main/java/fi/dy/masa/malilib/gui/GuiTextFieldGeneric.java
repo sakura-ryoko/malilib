@@ -44,7 +44,7 @@ public class GuiTextFieldGeneric extends EditBox
 
         if (this.isMouseOver((int) click.x(), (int) click.y()))
         {
-            if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_3)
+            if (click.input() == ScanCodes.OFFSET_BUTTON_RIGHT)
             {
                 this.setValue("");
             }

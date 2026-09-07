@@ -43,7 +43,7 @@ public class WidgetKeybindSettings extends WidgetBase
     @Override
     protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
-        if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_1)
+        if (click.input() == ScanCodes.OFFSET_MOUSE_LEFT)
         {
             if (this.dialogHandler != null)
             {
@@ -57,7 +57,7 @@ public class WidgetKeybindSettings extends WidgetBase
             return true;
         }
         // Reset the settings to defaults on right click
-        else if (click.input() == ScanCodes.OFFSET_MOUSE_BUTTON_3)
+        else if (click.input() == ScanCodes.OFFSET_BUTTON_RIGHT)
         {
             this.keybind.resetSettingsToDefaults();
             this.widgetList.refreshEntries();

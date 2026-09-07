@@ -733,7 +733,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		{
 			if (tfw != null && tfw.textField().isFocused())
 			{
-				if (input.key() == ScanCodes.SCAN_ENTER)
+				if (input.key() == ScanCodes.SCAN_RETURN)
 				{
 					this.applyNewValueToConfig();
 					return true;
