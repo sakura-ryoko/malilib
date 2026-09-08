@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.CharacterEvent;
@@ -45,6 +46,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     protected int scrollbarWidth = 10;
     @Nullable protected final IStringRetriever<T> stringRetriever;
     @Nullable protected T selectedEntry;
+    protected @Nullable Consumer<T> callback;
 
     public WidgetDropDownList(int x, int y, int width, int height, int maxHeight,
             int maxVisibleEntries, List<T> entries)
@@ -146,6 +148,12 @@ public class WidgetDropDownList<T> extends WidgetBase
             {
                 int relIndex = (mouseY - this.y - this.height) / this.height;
                 this.setSelectedEntry(this.scrollBar.getValue() + relIndex);
+
+                if (this.callback != null)
+                {
+                    this.callback.accept(this.getSelectedEntry());
+                }
+                // TODO: decide if it should be closed here, this is the behaviour i've seen everywhere else
             }
             else
             {
@@ -366,7 +374,13 @@ public class WidgetDropDownList<T> extends WidgetBase
         }
     }
 
-	protected record TextFieldListener(WidgetDropDownList<?> widget) implements ITextFieldListener<GuiTextFieldGeneric>
+    // TODO: figure out if a custom interface is better
+	public void setSelectedEntryChangeCallback(Consumer<T> callback)
+    {
+        this.callback = callback;
+	}
+
+    protected record TextFieldListener(WidgetDropDownList<?> widget) implements ITextFieldListener<GuiTextFieldGeneric>
 	{
 		@Override
 		public boolean onTextChange(GuiTextFieldGeneric textField)
