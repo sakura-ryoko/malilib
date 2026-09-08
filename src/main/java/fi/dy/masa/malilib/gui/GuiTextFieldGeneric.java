@@ -310,4 +310,14 @@ public class GuiTextFieldGeneric extends EditBox
     {
         return this.mouseClicked(click, doubleClick);
     }
+
+    @Override
+    public void setFocused(boolean focused)
+    {
+        if (focused == false)
+        {
+            this.setHighlightPos(this.getCursorWrapper());
+        }
+        super.setFocused(focused);
+    }
 }
