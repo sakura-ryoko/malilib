@@ -146,14 +146,15 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 
 	public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
 	{
+		if (this.textField.isMouseOver(mouseX, mouseY) == false)
+		{
+			this.textField.setHighlightPos(this.textField.getCursorWrapper());
+			this.textField.setFocused(false);
+			return false;
+		}
 		if (this.textField.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
 		{
 			return true;
-		}
-
-		if (this.textField.isMouseOver(mouseX, mouseY) == false)
-		{
-			this.textField.setFocused(false);
 		}
 
 		return false;
@@ -161,14 +162,15 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 
 	public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
 	{
+		if (this.textField.isMouseOver(click.x(), click.y()) == false)
+		{
+			this.textField.setHighlightPos(this.textField.getCursorWrapper());
+			this.textField.setFocused(false);
+			return false;
+		}
 		if (this.textField.mouseDragged(click, dragXAmount, dragYAmount))
 		{
 			return true;
-		}
-
-		if (this.textField.isMouseOver(click.x(), click.y()) == false)
-		{
-			this.textField.setFocused(false);
 		}
 
 		return false;
