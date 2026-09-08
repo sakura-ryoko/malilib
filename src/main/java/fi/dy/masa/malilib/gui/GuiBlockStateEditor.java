@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
 import fi.dy.masa.malilib.gui.widgets.WidgetDropDownList;
 import fi.dy.masa.malilib.gui.widgets.WidgetSlider;
+import fi.dy.masa.malilib.util.GuiUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -67,7 +68,6 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.buttonHeight = 20;
 		this.maxLength = MathUtils.max(this.modelSize - 12, 128);
 		this.blockState = this.config.getBlockStateValue();
-		this.init(this.dialogTotalWidth, this.dialogTotalHeight);
 	}
 
 	@Override
@@ -75,12 +75,27 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	{
 		super.initGui();
 
+		int leftPaneWidth = MathUtils.max(this.modelSize, this.maxLength) + 24;
+		int maxPropLabelWidth = 120;
+
+		int propSize = this.blockState.getProperties().size();
+		int modelSizeLines = (this.modelSize + (this.elementHeight + 2) + (this.buttonHeight + 4));
+		int blockNameLines = ((this.elementHeight + 2) * 3) + (modelSizeLines + 6);
+		int propLines = ((this.elementHeight + 2) * 4) * propSize;
+
+		int largerSide = MathUtils.max(blockNameLines + 6, propLines + 10);
+		int totalWidth = leftPaneWidth + maxPropLabelWidth + 30;
+		totalWidth = MathUtils.clamp(totalWidth, 240, GuiUtils.getScaledWindowWidth() - 40);
+
+		this.setTotalWidthAndHeight(totalWidth, (largerSide + 6));      // adjWidth, (largerSide + 6)
+		this.setLeftSideWidth(leftPaneWidth);   //  + 2
+		this.centerOnScreen();
+
 		int x = this.dialogLeft + 10;
 		int y = this.dialogTop + (this.elementHeight) + 2 + 6;
-		final int xCenter = this.dialogCenter + 10;
-		final int yCenter = y;
+		int xCenter = this.dialogCenter + 10;
+		int yCenter = y;
 
-		// todo Left Side
 		// Block Name / Entry Box
 		this.addBlockName(x, y);
 		y += (this.elementHeight * 2) + 6;
@@ -100,26 +115,34 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.modelY = yScaled;
 
 		// Buttons (Centered on Left Pane)
-		final int buttonBLen = this.getStringWidth(ButtonType.RESET.getDisplayName()) + 10;
-		final int totalButtonWidth = (2 + buttonBLen + 2);
+		int buttonBLen = this.getStringWidth(ButtonType.RESET.getDisplayName()) + 10;
+		int totalButtonWidth = (2 + buttonBLen + 2);
 		int xAdj = (this.dialogLeftSideCenter - ((totalButtonWidth) / 2)); //  + 14
 		int yAdj = this.dialogBottom - this.buttonHeight - 4;
 
 		xAdj += this.createButton(xAdj, yAdj, this.buttonHeight, ButtonType.RESET);
 
-		// todo Right Side
 		// Properties List / Entry Boxes
 		this.addBlockProperties(xCenter, yCenter);
 	}
 
+	private void reInitProperties() {
+        GuiTextFieldGeneric oldWidget = this.textFieldBlockName;
+		this.init();
+		this.textFieldBlockName.setFocused(oldWidget.isFocused());
+		this.textFieldBlockName.setCursorPosition(oldWidget.getCursorPosition());
+//		this.textFieldBlockName.setHighlightPos(oldWidget.highl);
+		this.setFocused(this.textFieldBlockName);
+	}
+
 	private void addBlockName(int x, int y)
 	{
-		final String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_name");
+		String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_name");
 		this.addLabel(x, y, this.getStringWidth(str), this.elementHeight, COLOR_WHITE, str);
 		y += this.elementHeight + 2;
 
 		this.textFieldBlockName = new GuiTextFieldGeneric(x, y, this.maxLength + 2, this.elementHeight, this.font);
-		this.textFieldBlockName.setValue(BuiltInRegistries.BLOCK.getKey(this.blockState.getBlock()).toShortString());
+		this.textFieldBlockName.setValue(BuiltInRegistries.BLOCK.getKey(this.blockState.getBlock()).toString());
 		this.textFieldBlockName.setMaxLength(this.maxLength);
 		this.addTextField(this.textFieldBlockName, new BlockNameTextFieldListener(this), TextFieldType.BLOCK_ID);
 		y += this.elementHeight + 2;
@@ -127,9 +150,9 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 
 	private int addBlockStateDisplay(int x, int y)
 	{
-		final String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_display");
-		final int width = this.getStringWidth(str);
-		final int xAdj = (this.dialogLeftSideCenter - (width / 2)); //  + 14
+		String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_display");
+		int width = this.getStringWidth(str);
+		int xAdj = (this.dialogLeftSideCenter - (width / 2)); //  + 14
 		this.addLabel(xAdj, y, width, this.elementHeight, COLOR_WHITE, str);
 		return this.elementHeight + 2;
 	}
@@ -137,7 +160,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	private void addBlockProperties(int x, int y)
 	{
 		int count = 1;
-		final String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_properties");
+		String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_properties");
 		this.addLabel(x, y, this.getStringWidth(str), this.elementHeight, COLOR_WHITE, str);
 		y += this.elementHeight + 2;
 
@@ -157,11 +180,11 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		y += this.elementHeight + 2;
 
 		if (prop instanceof IntegerProperty integerProperty) {
-			WidgetSlider slider = getSlider(x, y, integerProperty);
+			WidgetSlider slider = getSlider(x, y, prop.getPossibleValues().indexOf(this.blockState.getValue(prop)), integerProperty);
 			this.addWidget(slider);
 		} else {
 			List<T> validValues = prop.getPossibleValues();
-			WidgetDropDownList<T> dropDown = new WidgetDropDownList<>(x, y, this.maxLength+2, this.elementHeight, 500, 10, validValues);
+			WidgetDropDownList<T> dropDown = new WidgetDropDownList<>(x, y, this.maxLength+2, this.elementHeight + 2, 500, 10, validValues);
 			dropDown.setSelectedEntryChangeCallback(t -> {
 				setValue(prop, t);
 			});
@@ -175,10 +198,10 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.blockState = this.blockState.setValue(prop, t);
 	}
 
-	private @NonNull WidgetSlider getSlider(int x, int y, IntegerProperty integerProperty) {
+	private @NonNull WidgetSlider getSlider(int x, int y, int initialIndex, IntegerProperty integerProperty) {
 		List<Integer> validValues = integerProperty.getPossibleValues();
 		return new WidgetSlider(x, y, this.maxLength + 2, this.elementHeight, new ISliderCallback() {
-			private int valueIndex = 0;
+			private int valueIndex = initialIndex;
 
 			@Override
 			public int getMaxSteps() {
@@ -217,7 +240,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 
 	private int createButton(int x, int y, int height, ButtonType type)
 	{
-		final String text = type.getDisplayName();
+		String text = type.getDisplayName();
 		ButtonGeneric button = new ButtonGeneric(x, y, -1, height, text);
 		this.addButton(button, this.createActionListener(type));
 		return button.getWidth() + 2;
@@ -309,6 +332,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 				Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(id);
 				if (block.isPresent()) {
 					this.gui.blockState = block.get().defaultBlockState().withPropertiesOf(this.gui.blockState);
+					this.gui.reInitProperties();
 					return true;
 				}
 			}
@@ -329,7 +353,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
 		{
 			this.gui().blockState = this.gui().config.getBlockStateValue();
-			this.gui().init(this.gui().dialogTotalWidth, this.gui().dialogTotalHeight);
+			this.gui().init();
 		}
 	}
 
