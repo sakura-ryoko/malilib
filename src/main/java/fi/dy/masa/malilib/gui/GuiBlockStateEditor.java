@@ -76,7 +76,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.refreshBlockState();
 	}
 
-	private <T extends Comparable<T>> void refreshBlockState()
+	private void refreshBlockState()
 	{
 		this.textFieldBlockProps.clear();
 		this.tempProps.clear();
@@ -91,11 +91,9 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		{
 			for (Property<?> prop : this.props)
 			{
-				@SuppressWarnings("unchecked")
-				Property<T> entry = (Property<T>) prop;
 				String name = prop.getName();
 				int propWidth = this.getStringWidth(name);
-				T value = this.blockState.getValue(entry);
+				Comparable<?> value = this.blockState.getValue(prop);
 				String valStr = value.toString().toLowerCase();
 				this.tempProps.put(name, valStr);
 
@@ -125,7 +123,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.init(this.dialogTotalWidth, this.dialogTotalHeight);
 	}
 
-	private <T extends Comparable<T>> void trySaveBlockState() throws Exception
+	private void trySaveBlockState() throws Exception
 	{
 		Optional<Block> opt = BuiltInRegistries.BLOCK.getOptional(this.tempBlockId);
 
@@ -156,19 +154,17 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		{
 			for (Property<?> prop : this.props)
 			{
-				@SuppressWarnings("unchecked")
-				Property<T> entry = (Property<T>) prop;
 				final String name = prop.getName();
 				final String tmp = this.tempProps.get(name);
 
 				if (tmp != null && !tmp.isEmpty())
 				{
-					Optional<T> newVal = entry.getValue(tmp);
+					Optional<?> newVal = prop.getValue(tmp);
 					newVal.ifPresent(value -> tagProps.putString(name, value.toString().toLowerCase()));
 				}
 				else
 				{
-					T value = this.blockState.getValue(entry);
+					Comparable<?> value = this.blockState.getValue(prop);
 					tagProps.putString(name, value.toString().toLowerCase());
 				}
 			}
@@ -209,21 +205,18 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			yScaled = y;
 		}
 
-		this.addBlockStateDisplay(x, yScaled);
-		yScaled += (this.elementHeight) + 2;
+		yScaled += this.addBlockStateDisplay(x, yScaled);
 
 		// Model Pos
 		this.modelX = (this.dialogLeftSideCenter - (this.modelSize / 2)); //  + 14
 		this.modelY = yScaled;
 
 		// Buttons (Centered on Left Pane)
-		final int buttonALen = this.getStringWidth(ButtonType.UPDATE.getDisplayName()) + 10;
 		final int buttonBLen = this.getStringWidth(ButtonType.RESET.getDisplayName()) + 10;
-		final int totalButtonWidth = (buttonALen + 2 + buttonBLen + 2);
+		final int totalButtonWidth = (2 + buttonBLen + 2);
 		int xAdj = (this.dialogLeftSideCenter - ((totalButtonWidth) / 2)); //  + 14
 		int yAdj = this.dialogBottom - this.buttonHeight - 4;
 
-		xAdj += this.createButton(xAdj, yAdj, this.buttonHeight, ButtonType.UPDATE);
 		xAdj += this.createButton(xAdj, yAdj, this.buttonHeight, ButtonType.RESET);
 
 		// todo Right Side
@@ -244,13 +237,13 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		y += this.elementHeight + 2;
 	}
 
-	private void addBlockStateDisplay(int x, int y)
+	private int addBlockStateDisplay(int x, int y)
 	{
 		final String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_display");
 		final int width = this.getStringWidth(str);
 		final int xAdj = (this.dialogLeftSideCenter - (width / 2)); //  + 14
 		this.addLabel(xAdj, y, width, this.elementHeight, COLOR_WHITE, str);
-		y += this.elementHeight + 2;
+		return this.elementHeight + 2;
 	}
 
 	private void addBlockProperties(int x, int y)
@@ -316,7 +309,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.textFieldBlockProps.get(name).setValue(valStr);
 		this.textFieldBlockProps.get(name).setMaxLength(this.maxLength);
 		this.addTextField(this.textFieldBlockProps.get(name), new PropertyValueTextFieldListener(this, name), TextFieldType.VALID_STRING.setValidStrings(validValueStrings));
-		y += this.elementHeight + 2;
+//		y += this.elementHeight + 2;
 	}
 
 	private int createButton(int x, int y, int height, ButtonType type)
@@ -348,7 +341,10 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	{
 		if (this.getParent() != null)
 		{
-			this.getParent().extractRenderState(ctx, mouseX, mouseY, partialTicks);
+			// TODO sakura: decide whether or not this (0, 0) is better, it effectively
+			//  removes the "white outline" from buttons when you hover over them.
+			//  Would need to apply this to all GUIs that render their parent
+			this.getParent().extractRenderState(ctx, 0, 0, partialTicks);
 		}
 
 		super.extractRenderState(ctx, mouseX, mouseY, partialTicks);
@@ -447,28 +443,13 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		@Override
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
 		{
-			if (this.type() == ButtonType.UPDATE)
-			{
-				try
-				{
-					this.gui().trySaveBlockState();
-				}
-				catch (Exception e)
-				{
-					MaLiLib.LOGGER.error("GuiBlockStateEditor: Exception saving block state; {}", e.getLocalizedMessage());
-				}
-			}
-			else if (this.type() == ButtonType.RESET)
-			{
-				this.gui().blockState = this.gui().config.getBlockStateValue();
-				this.gui().refreshBlockState();
-			}
+			this.gui().blockState = this.gui().config.getBlockStateValue();
+			this.gui().refreshBlockState();
 		}
 	}
 
 	private enum ButtonType
 	{
-		UPDATE          ("malilib.gui.button.update"),
 		RESET           ("malilib.gui.button.reset"),
 		;
 
