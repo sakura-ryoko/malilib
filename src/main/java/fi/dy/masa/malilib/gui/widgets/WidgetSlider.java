@@ -53,14 +53,13 @@ public class WidgetSlider extends WidgetBase
             this.lastMouseX = mouseX;
         }
 
-	    ctx.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_DISABLE_TEXTURE, this.x + 1, this.y, this.width - 3, 20);
+	    ctx.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_DISABLE_TEXTURE, this.x + 1, this.y, this.width - 3, this.height);
 
         double relPos = this.callback.getValueRelative();
         int sw = this.sliderWidth;
         int usableWidth = this.width - 4 - sw;
-        int s = sw / 2;
 
-	    ctx.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, 20);
+	    ctx.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, this.height);
 
         String str = this.callback.getFormattedDisplayValue();
         int w = this.getStringWidth(str);
