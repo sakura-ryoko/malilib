@@ -6,7 +6,6 @@ import java.util.List;
 public interface IPathListConsumerFeedback
 {
 	/**
-	 *
 	 * @param sources ()
 	 * @return true if the operation succeeded, false if there was some kind of an error
 	 */

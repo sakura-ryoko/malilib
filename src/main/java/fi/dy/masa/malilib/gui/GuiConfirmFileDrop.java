@@ -32,13 +32,13 @@ public class GuiConfirmFileDrop<T extends WidgetFileBrowserBase.FileFilter> exte
     @SuppressWarnings("unchecked")
     public GuiConfirmFileDrop(int width, List<Path> files, IPathListConsumerFeedback consumer, @Nullable Screen parent, String messageKey, Object... args)
     {
-        this(width, files, consumer, (T) FILE_FILTER_ANY, parent, messageKey, Arrays.asList(args));
+        this(width, "malilib.gui.title.file_drop_confirm", files, consumer, (T) FILE_FILTER_ANY, parent, messageKey, Arrays.asList(args));
     }
 
-    public GuiConfirmFileDrop(int width, List<Path> files, IPathListConsumerFeedback consumer, @Nullable T filter, @Nullable Screen parent, String messageKey, Object... args)
+    public GuiConfirmFileDrop(int width, String title, List<Path> files, IPathListConsumerFeedback consumer, @Nullable T filter, @Nullable Screen parent, String messageKey, Object... args)
     {
         this.setParent(parent);
-        this.title = StringUtils.translate("malilib.gui.title.file_drop_confirm");
+        this.title = StringUtils.translate(title);
         this.fileFilter = filter;
         this.files = filter != null ? files.stream().filter(f ->
                                                             {
@@ -150,6 +150,11 @@ public class GuiConfirmFileDrop<T extends WidgetFileBrowserBase.FileFilter> exte
         {
             super.addMessage(type, lifeTime, messageKey, args);
         }
+    }
+
+    public @Nullable T getFileFilter()
+    {
+        return this.fileFilter;
     }
 
     @Override
