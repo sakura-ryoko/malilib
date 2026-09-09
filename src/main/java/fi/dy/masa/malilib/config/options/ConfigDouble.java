@@ -247,9 +247,12 @@ public class ConfigDouble extends ConfigBase<ConfigDouble> implements IConfigDou
 
                 if (this.getLastDoubleValue() != this.getDoubleValue())
                 {
-//                    MaLiLib.LOGGER.error("[DOUBLE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                         this.getLastDoubleValue(), oldValue, this.getDoubleValue()
-//                    );
+                    if (CONFIG_TYPE_DEBUG)
+                    {
+                        MaLiLib.LOGGER.error("[DOUBLE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+                                             this.getLastDoubleValue(), oldValue, this.getDoubleValue()
+                        );
+                    }
 
                     this.onValueChanged();
                 }

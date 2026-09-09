@@ -4,8 +4,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.Blaze3D;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.util.Util;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiTextInputFeedback;
@@ -67,7 +67,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
                 }
                 else if (click.input() == ScanCodes.OFFSET_MOUSE_RIGHT && this.navigator instanceof WidgetFileBrowserBase fb)
                 {
-                    Util.getPlatform().openPath(fb.getRootDirectory());
+                    Blaze3D.openPath(fb.getRootDirectory());
                 }
 
                 return true;
@@ -76,7 +76,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             {
                 if (click.input() == ScanCodes.OFFSET_MOUSE_LEFT)
                 {
-                    Util.getPlatform().openPath(this.navigator.getCurrentDirectory());
+                    Blaze3D.openPath(this.navigator.getCurrentDirectory());
                 }
 
                 return true;

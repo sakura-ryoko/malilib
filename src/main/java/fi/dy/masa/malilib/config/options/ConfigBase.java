@@ -32,7 +32,7 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
     public static final String TRANSLATED_NAME_KEY = "name";
 
     // Boolean override debug toggle, because it's not smart to use the Config to debug the Config.
-    private static final boolean CONFIG_TYPE_DEBUG = MaLiLibReference.DEBUG_MODE;
+    protected static final boolean CONFIG_TYPE_DEBUG = MaLiLibReference.LOCAL_DEBUG;
 
     public ConfigBase(ConfigType type, String name)
     {
@@ -250,11 +250,6 @@ public abstract class ConfigBase<T extends IConfigBase> implements IConfigBase, 
 	@SuppressWarnings("unchecked")
     public void onValueChanged()
     {
-//        if (this.isDirty())
-//        {
-//            this.markClean();
-//        }
-
         if (CONFIG_TYPE_DEBUG || (MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG != null && MaLiLibConfigs.Debug.CONFIG_ELEMENT_DEBUG.getBooleanValue()))
         {
             MaLiLib.LOGGER.info("CONFIG: onValueChanged() -> type [{}], name [{}], hasCallback [{}]", type.name(), this.name, this.callback != null);

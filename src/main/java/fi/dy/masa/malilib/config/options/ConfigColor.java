@@ -243,11 +243,14 @@ public class ConfigColor extends ConfigBase<ConfigColor> implements IConfigColor
 
                 if (!this.getLastColorValue().equals(this.getColor()))
                 {
-//                    MaLiLib.LOGGER.error("[COLOR/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                         this.getLastColorValue().toHexString(),
-//                                         oldColor.toHexString(),
-//                                         this.getColor().toHexString()
-//                    );
+                    if (CONFIG_TYPE_DEBUG)
+                    {
+                        MaLiLib.LOGGER.error("[COLOR/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+                                             this.getLastColorValue().toHexString(),
+                                             oldColor.toHexString(),
+                                             this.getColor().toHexString()
+                        );
+                    }
 
                     this.onValueChanged();
                     this.updateLastColorValue();

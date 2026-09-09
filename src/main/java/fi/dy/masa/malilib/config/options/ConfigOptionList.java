@@ -175,11 +175,14 @@ public class ConfigOptionList extends ConfigBase<ConfigOptionList> implements IC
 
                 if (!this.getLastOptionListValue().equals(this.getOptionListValue()))
                 {
-//                    MaLiLib.LOGGER.error("[OPTION/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                         this.getLastOptionListValue().getStringValue(),
-//                                         oldValue.getStringValue(),
-//                                         this.getOptionListValue().getStringValue()
-//                    );
+                    if (CONFIG_TYPE_DEBUG)
+                    {
+                        MaLiLib.LOGGER.error("[OPTION/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+                                             this.getLastOptionListValue().getStringValue(),
+                                             oldValue.getStringValue(),
+                                             this.getOptionListValue().getStringValue()
+                        );
+                    }
 
                     this.onValueChanged();
                 }

@@ -248,9 +248,12 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 //		this.defaultTable = ImmutableCopy.of(defaultValue).toList();
 		this.table.addAll(this.defaultTable.stream().toList());
 
-//		MaLiLib.LOGGER.error("[TABLE/{}]: default rows: [{}], types: [{}], labels: [{}] // Table: [{}]",
-//		                     this.getName(), this.defaultTable.size(), this.types.size(),
-//		                     this.labels.size(), this.table.size());
+		if (CONFIG_TYPE_DEBUG)
+		{
+			MaLiLib.LOGGER.error("[TABLE/{}]: default rows: [{}], types: [{}], labels: [{}] // Table: [{}]",
+			                     this.getName(), this.defaultTable.size(), this.types.size(),
+			                     this.labels.size(), this.table.size());
+		}
 
 		this.updateLastTableValue();
 	}
@@ -444,11 +447,14 @@ public class ConfigTable extends ConfigBase<ConfigTable> implements IConfigTable
 
 				if (!this.getLastTableValue().equals(this.getTable()))
 				{
-//					MaLiLib.LOGGER.error("[TABLE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//					                     this.getLastTableValue().size(),
-//					                     oldTable.size(),
-//					                     this.getTable().size()
-//					);
+					if (CONFIG_TYPE_DEBUG)
+					{
+						MaLiLib.LOGGER.error("[TABLE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+						                     this.getLastTableValue().size(),
+						                     oldTable.size(),
+						                     this.getTable().size()
+						);
+					}
 
 					this.setModified();
 				}

@@ -144,9 +144,12 @@ public class ConfigString extends ConfigBase<ConfigString> implements IConfigVal
 
                 if (!Objects.equals(this.getLastStringValue(), this.getStringValue()))
                 {
-//                    MaLiLib.LOGGER.error("[STRING/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                         this.getLastStringValue(), oldValue, this.getStringValue()
-//                    );
+                    if (CONFIG_TYPE_DEBUG)
+                    {
+                        MaLiLib.LOGGER.error("[STRING/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+                                             this.getLastStringValue(), oldValue, this.getStringValue()
+                        );
+                    }
 
                     this.onValueChanged();
                 }

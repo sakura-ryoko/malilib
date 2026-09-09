@@ -229,11 +229,14 @@ public class ConfigOptionValues<T extends OptionListConfigValue> extends ConfigB
 
 				if (!this.getLastOptionValue().equals(this.getOptionValue()))
 				{
-//                    MaLiLib.LOGGER.error("[OPTION/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                         this.getLastOptionListValue().getStringValue(),
-//                                         oldValue.getStringValue(),
-//                                         this.getOptionListValue().getStringValue()
-//                    );
+					if (CONFIG_TYPE_DEBUG)
+					{
+						MaLiLib.LOGGER.error("[OPTION/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+						                     this.getLastOptionValue().getName(),
+						                     oldValue.getName(),
+						                     this.getOptionValue().getName()
+						);
+					}
 
 					this.onValueChanged();
 				}

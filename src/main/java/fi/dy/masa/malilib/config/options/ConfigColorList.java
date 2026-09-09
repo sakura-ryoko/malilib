@@ -163,11 +163,14 @@ public class ConfigColorList extends ConfigBase<ConfigColorList> implements ICon
 
                     if (!this.getLastColorsValue().equals(this.getColors()))
                     {
-//                        MaLiLib.LOGGER.error("[COLOR-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                             this.getLastColorsValue().size(),
-//                                             oldList.size(),
-//                                             this.getColors().size()
-//                        );
+                        if (CONFIG_TYPE_DEBUG)
+                        {
+                            MaLiLib.LOGGER.error("[COLOR-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+                                                 this.getLastColorsValue().size(),
+                                                 oldList.size(),
+                                                 this.getColors().size()
+                            );
+                        }
 
                         this.setModified();
                     }

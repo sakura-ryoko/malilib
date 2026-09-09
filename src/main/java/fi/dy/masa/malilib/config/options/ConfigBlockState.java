@@ -163,11 +163,14 @@ public class ConfigBlockState extends ConfigBase<ConfigBlockState> implements IC
 
 					if (!Objects.equals(this.getLastBlockStateValue(), this.getBlockStateValue()))
 					{
-//						MaLiLib.LOGGER.error("[BLOCK_STATE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//						                     BlockStateParser.serialize(this.getLastBlockStateValue()),
-//						                     BlockStateParser.serialize(oldValue),
-//						                     BlockStateParser.serialize(this.getBlockStateValue())
-//						);
+						if (CONFIG_TYPE_DEBUG)
+						{
+							MaLiLib.LOGGER.error("[BLOCK_STATE/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+							                     BlockStateParser.serialize(this.getLastBlockStateValue()),
+							                     BlockStateParser.serialize(oldValue),
+							                     BlockStateParser.serialize(this.getBlockStateValue())
+							);
+						}
 
 						this.onValueChanged();
 					}

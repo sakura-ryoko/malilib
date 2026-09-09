@@ -157,11 +157,14 @@ public class ConfigBlockStateList extends ConfigBase<ConfigBlockStateList> imple
 
 					if (!this.getLastBlockStateListValue().equals(this.getBlockStates()))
 					{
-//                        MaLiLib.LOGGER.error("[BLOCK-STATE-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                             this.getLastBlockStateListValue().size(),
-//                                             oldList.size(),
-//                                             this.getBlockStates().size()
-//                        );
+						if (CONFIG_TYPE_DEBUG)
+						{
+							MaLiLib.LOGGER.error("[BLOCK-STATE-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+							                     this.getLastBlockStateListValue().size(),
+							                     oldList.size(),
+							                     this.getBlockStates().size()
+							);
+						}
 
 						this.setModified();
 					}

@@ -214,9 +214,12 @@ public class ConfigHotkey extends ConfigBase<ConfigHotkey> implements IHotkey, I
 
 				if (!Objects.equals(this.getLastHotkeyStringValue(), this.getHotkeyStringValue()))
 				{
-//					MaLiLib.LOGGER.error("[HOTKEY/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//					                     this.getLastHotkeyStringValue(), oldValue, this.getHotkeyStringValue()
-//					);
+					if (CONFIG_TYPE_DEBUG)
+					{
+						MaLiLib.LOGGER.error("[HOTKEY/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+						                     this.getLastHotkeyStringValue(), oldValue, this.getHotkeyStringValue()
+						);
+					}
 
 					this.onValueChanged();
 					this.updateLastHotkeyStringValue();

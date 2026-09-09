@@ -167,11 +167,14 @@ public class ConfigStringList extends ConfigBase<ConfigStringList> implements IC
 
                     if (!this.getLastStringListValue().equals(this.getStrings()))
                     {
-//                        MaLiLib.LOGGER.error("[STRING-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                             this.getLastStringListValue().size(),
-//                                             oldList.size(),
-//                                             this.getStrings().size()
-//                        );
+                        if (CONFIG_TYPE_DEBUG)
+                        {
+                            MaLiLib.LOGGER.error("[STRING-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+                                                 this.getLastStringListValue().size(),
+                                                 oldList.size(),
+                                                 this.getStrings().size()
+                            );
+                        }
 
                         this.setModified();
                     }

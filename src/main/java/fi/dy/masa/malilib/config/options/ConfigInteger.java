@@ -249,9 +249,12 @@ public class ConfigInteger extends ConfigBase<ConfigInteger> implements IConfigI
 
                 if (this.getLastIntegerValue() != this.getIntegerValue())
                 {
-//                    MaLiLib.LOGGER.error("[INT/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                         this.getLastIntegerValue(), oldValue, this.getIntegerValue()
-//                    );
+                    if (CONFIG_TYPE_DEBUG)
+                    {
+                        MaLiLib.LOGGER.error("[INT/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+                                             this.getLastIntegerValue(), oldValue, this.getIntegerValue()
+                        );
+                    }
 
                     this.onValueChanged();
                     this.updateLastIntegerValue();

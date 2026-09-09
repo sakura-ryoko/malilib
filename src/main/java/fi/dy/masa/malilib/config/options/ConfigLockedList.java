@@ -234,11 +234,14 @@ public class ConfigLockedList extends ConfigBase<ConfigLockedList> implements IC
 
                     if (!this.getLastLockedListValue().equals(this.getEntries()))
                     {
-//                        MaLiLib.LOGGER.error("[LOCKED-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                             this.getLastLockedListValue().size(),
-//                                             oldEntries.size(),
-//                                             this.getEntries().size()
-//                        );
+                        if (CONFIG_TYPE_DEBUG)
+                        {
+                            MaLiLib.LOGGER.error("[LOCKED-LIST/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+                                                 this.getLastLockedListValue().size(),
+                                                 oldEntries.size(),
+                                                 this.getEntries().size()
+                            );
+                        }
 
                         this.setModified();
                     }

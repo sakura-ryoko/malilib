@@ -242,9 +242,12 @@ public class ConfigFloat extends ConfigBase<ConfigFloat> implements IConfigFloat
 
                 if (this.getLastFloatValue() != this.getFloatValue())
                 {
-//                    MaLiLib.LOGGER.error("[FLOAT/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
-//                                         this.getLastFloatValue(), oldValue, this.getFloatValue()
-//                    );
+                    if (CONFIG_TYPE_DEBUG)
+                    {
+                        MaLiLib.LOGGER.error("[FLOAT/{}]: setValueFromJsonElement(): LV: [{}], OV: [{}], NV: [{}]", this.getName(),
+                                             this.getLastFloatValue(), oldValue, this.getFloatValue()
+                        );
+                    }
 
                     this.onValueChanged();
                 }
