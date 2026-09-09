@@ -384,7 +384,6 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     @Override
     public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
-        WidgetBase hovered = null;
         int scrollbarHeight = this.browserHeight - this.browserEntriesOffsetY - 8;
         int totalHeight = 0;
 
@@ -412,24 +411,12 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             TYPE entry = widget.getEntry();
             boolean isSelected = this.allowMultiSelection ? this.selectedEntries.contains(entry) : entry != null && entry.equals(this.getLastSelectedEntry());
             widget.render(ctx, mouseX, mouseY, isSelected);
-
-            if (widget.isMouseOver(mouseX, mouseY))
-            {
-                hovered = widget;
-            }
         }
 
         if (this.widgetSearchBar != null)
         {
             this.widgetSearchBar.render(ctx, mouseX, mouseY, false);
         }
-
-        if (hovered == null && this.widgetSearchBar != null && this.widgetSearchBar.isMouseOver(mouseX, mouseY))
-        {
-            hovered = this.widgetSearchBar;
-        }
-
-        this.hoveredWidget = hovered;
     }
 
     public void setSize(int width, int height)
