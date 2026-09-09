@@ -7,6 +7,8 @@ import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
 import fi.dy.masa.malilib.gui.widgets.WidgetDropDownList;
 import fi.dy.masa.malilib.gui.widgets.WidgetSlider;
 import fi.dy.masa.malilib.util.GuiUtils;
+import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -278,7 +280,8 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 
 	private void drawBlockStateInGui(GuiContext ctx)
 	{
-		RenderUtils.renderModelInGui(ctx, this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F);
+		RenderUtils.renderModelInGui(ctx, this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F, 0.125f * Mth.PI, ((Util.getMillis() % 16000f) / 16000f) * Mth.TWO_PI, Mth.PI);
+//		RenderUtils.renderModelInGui(ctx, this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F, 0, 0, 0);
 	}
 
 	@Override

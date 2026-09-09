@@ -371,8 +371,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         for (TextFieldWrapper<?> entry : this.textFields)
         {
-            if (entry.mouseClicked(click, doubleClick))
+            if (entry.onMouseClicked(click, doubleClick))
             {
+                if (entry.textField().isMouseOver((int) click.x(), (int) click.y()))
+                {
+                    this.focusedWidget = entry;
+                }
                 // Don't call super if the button press got handled
                 handled = true;
             }
@@ -406,6 +410,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             }
         }
 
+        if (handled == false)
+        {
+            this.focusedWidget = null;
+        }
+
         return handled;
     }
 
@@ -430,41 +439,44 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             }
         }
 
-        for (ButtonBase button : this.buttons)
-        {
-            if (button.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
-        {
-            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
-        {
-            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (WidgetBase widget : this.widgets)
-        {
-            if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the action got handled
-                return true;
-            }
-        }
+        // TODO: test this more. it *should* work as ive tested it a lot, but its quite a drastic change
+        //  Basically, if there is any widget that handles drags even though it has never been clicked, it
+        //  will work differently if this are commented out.
+//        for (ButtonBase button : this.buttons)
+//        {
+//            if (button.onMouseDragged(click, dragXAmount, dragYAmount))
+//            {
+//                // Don't call super if the button press got handled
+//                return true;
+//            }
+//        }
+//
+//        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
+//        {
+//            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
+//            {
+//                // Don't call super if the button press got handled
+//                return true;
+//            }
+//        }
+//
+//        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
+//        {
+//            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
+//            {
+//                // Don't call super if the button press got handled
+//                return true;
+//            }
+//        }
+//
+//        for (WidgetBase widget : this.widgets)
+//        {
+//            if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
+//            {
+//                // Don't call super if the action got handled
+//                return true;
+//            }
+//        }
 
         return false;
     }

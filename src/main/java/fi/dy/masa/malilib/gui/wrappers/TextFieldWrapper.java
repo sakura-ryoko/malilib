@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
 import java.util.Optional;
+
+import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.input.CharacterEvent;
@@ -16,7 +18,7 @@ import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.game.BlockUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
-public class TextFieldWrapper<T extends GuiTextFieldGeneric>
+public class TextFieldWrapper<T extends GuiTextFieldGeneric> extends WidgetBase
 {
 	private final T textField;
 	private final ITextFieldListener<T> listener;
@@ -29,7 +31,8 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 
 	public TextFieldWrapper(T textField, ITextFieldListener<T> listener, TextFieldType type)
 	{
-		this.textField = textField;
+        super(textField.getX(), textField.getY(), textField.getWidth(), textField.getHeight());
+        this.textField = textField;
 		this.listener = listener;
 		this.type = type;
 
@@ -68,21 +71,19 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 		this.textField.setFocused(isFocused);
 	}
 
-	public void onGuiClosed()
-	{
-		if (this.listener != null)
-		{
-			this.listener.onGuiClosed(this.textField);
-		}
-	}
-
 	// Using the GuiContext here breaks the Hover Text from working
 	public void draw(GuiContext ctx, int mouseX, int mouseY)
 	{
 		this.textField.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
 	}
 
-	public boolean mouseClicked(MouseButtonEvent click, boolean doubleClick)
+	@Override
+	public boolean isMouseOver(int mouseX, int mouseY) {
+		return this.textField.isMouseOver(mouseX, mouseY);
+	}
+
+	@Override
+	public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
 	{
 		if (this.textField.mouseClicked(click, doubleClick))
 		{
@@ -97,6 +98,7 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 		return false;
 	}
 
+	@Override
 	public boolean onKeyTyped(KeyEvent input)
 	{
 		String textPre = this.textField.getValue();
@@ -122,6 +124,7 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 		return false;
 	}
 
+	@Override
 	public boolean onCharTyped(CharacterEvent input)
 	{
 		String textPre = this.textField.getValue();
@@ -144,6 +147,7 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 		return false;
 	}
 
+	@Override
 	public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
 	{
 		if (this.textField.isMouseOver(mouseX, mouseY) == false)
@@ -160,14 +164,9 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric>
 		return false;
 	}
 
+	@Override
 	public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
 	{
-		if (this.textField.isMouseOver(click.x(), click.y()) == false)
-		{
-			this.textField.setHighlightPos(this.textField.getCursorWrapper());
-			this.textField.setFocused(false);
-			return false;
-		}
 		if (this.textField.mouseDragged(click, dragXAmount, dragYAmount))
 		{
 			return true;

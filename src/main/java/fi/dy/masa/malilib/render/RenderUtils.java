@@ -2668,7 +2668,12 @@ public class RenderUtils
 		// scale: 0.625f ?
 	}
 
-	public static void renderModelInGui(GuiContext ctx, int x, int y, int size, BlockState state, float scale, float yOffset)
+    public static void renderModelInGui(GuiContext ctx, int x, int y, int size, BlockState state, float scale, float yOffset)
+    {
+        renderModelInGui(ctx, x, y, size, state, scale, yOffset, 30 * (float) (Math.PI / 180), 225 * (float) (Math.PI / 180), 0);
+    }
+
+	public static void renderModelInGui(GuiContext ctx, int x, int y, int size, BlockState state, float scale, float yOffset, float angleX, float angleY, float angleZ)
     {
         if (state.getBlock() == Blocks.AIR)
         {
@@ -2679,7 +2684,7 @@ public class RenderUtils
 				new MaLiLibBlockStateGuiElement(
 						state,
 //						new Vector3f((float) (x + 8.0), (float) (y + 8.0), (float) (z + 100.0)),
-						new Quaternionf().rotationXYZ(30 * (float) (Math.PI / 180.0), 225 * (float) (Math.PI / 180.0), 0.0F),
+						new Quaternionf().rotationXYZ(angleX, angleY, angleZ),
 						x, y,
 						size,
 						scale,
