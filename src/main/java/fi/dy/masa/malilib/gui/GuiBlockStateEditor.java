@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
 import fi.dy.masa.malilib.gui.widgets.WidgetDropDownList;
 import fi.dy.masa.malilib.gui.widgets.WidgetSlider;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.util.GuiUtils;
 import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
@@ -46,7 +47,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	protected int maxLength;
 	protected int elementHeight;
 	protected int buttonHeight;
-	protected GuiTextFieldGeneric textFieldBlockName;
+	protected TextFieldWrapper<GuiTextFieldGeneric> textFieldBlockName;
 
 	private BlockState blockState;
 
@@ -126,12 +127,13 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	}
 
 	private void reInitProperties() {
-        GuiTextFieldGeneric oldWidget = this.textFieldBlockName;
+        GuiTextFieldGeneric oldWidget = this.textFieldBlockName.textField();
 		this.init();
-		this.textFieldBlockName.setFocused(oldWidget.isFocused());
-		this.textFieldBlockName.setCursorPosition(oldWidget.getCursorPosition());
+		this.textFieldBlockName.textField().setFocused(oldWidget.isFocused());
+		this.textFieldBlockName.textField().setCursorPosition(oldWidget.getCursorPosition());
+		this.textFieldBlockName.textField().setHighlightPos(oldWidget.getCursorPosition());
 //		this.textFieldBlockName.setHighlightPos(oldWidget.highl);
-		this.setFocused(this.textFieldBlockName);
+		this.focusedWidget = this.textFieldBlockName;
 	}
 
 	private void addBlockName(int x, int y)
@@ -140,10 +142,10 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.addLabel(x, y, this.getStringWidth(str), this.elementHeight, COLOR_WHITE, str);
 		y += this.elementHeight + 2;
 
-		this.textFieldBlockName = new GuiTextFieldGeneric(x, y, this.maxLength + 2, this.elementHeight, this.font);
-		this.textFieldBlockName.setValue(BuiltInRegistries.BLOCK.getKey(this.blockState.getBlock()).toString());
-		this.textFieldBlockName.setMaxLength(this.maxLength);
-		this.addTextField(this.textFieldBlockName, new BlockNameTextFieldListener(this), TextFieldType.BLOCK_ID);
+        GuiTextFieldGeneric textField = new GuiTextFieldGeneric(x, y, this.maxLength + 2, this.elementHeight, this.font);
+		textField.setValue(BuiltInRegistries.BLOCK.getKey(this.blockState.getBlock()).toString());
+		textField.setMaxLength(this.maxLength);
+		this.textFieldBlockName = this.addTextField(textField, new BlockNameTextFieldListener(this), TextFieldType.BLOCK_ID);
 	}
 
 	private int addBlockStateDisplay(int x, int y)
