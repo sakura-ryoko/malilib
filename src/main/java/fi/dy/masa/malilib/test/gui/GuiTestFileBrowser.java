@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.Nullable;
-
 import org.jspecify.annotations.NonNull;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -109,7 +108,7 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 			if (Files.isDirectory(dest) && Files.isWritable(dest))
 			{
 				FileCopierMulti copier = new FileCopierMulti(dest, this.getListWidget(), true);
-				GuiBase.openGui(new GuiConfirmFileDrop(256, "malilib.gui.title.file_drop_confirm", files, copier, this, "malilib.message.file_drop_confirm", files.size(), dest.toAbsolutePath().toString()));
+				GuiBase.openGui(new GuiConfirmFileDrop<>(256, files, copier, this, "malilib.message.file_drop_confirm", files.size(), dest.toAbsolutePath().toString()));
 				return true;
 			}
 		}

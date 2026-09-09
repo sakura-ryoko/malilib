@@ -1,37 +1,56 @@
 package fi.dy.masa.malilib.gui;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.client.gui.screens.Screen;
+
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
 import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
-import fi.dy.masa.malilib.interfaces.ICompletionListener;
-import fi.dy.masa.malilib.interfaces.IConfirmationListener;
+import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase;
 import fi.dy.masa.malilib.interfaces.IPathListConsumerFeedback;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
-@ApiStatus.Experimental
-public class GuiConfirmFileDrop extends GuiDialogBase implements IPathListConsumerFeedback
+public class GuiConfirmFileDrop<T extends WidgetFileBrowserBase.FileFilter> extends GuiDialogBase implements IPathListConsumerFeedback
 {
+    public static final WidgetFileBrowserBase.FileFilter FILE_FILTER_ANY = new WidgetFileBrowserBase.FileFilter();
     protected final List<String> messageLines = new ArrayList<>();
     protected final List<Path> files;
     protected final IPathListConsumerFeedback consumer;
+    protected @Nullable T fileFilter;
     protected int textColor = 0xFFC0C0C0;
 
-    public GuiConfirmFileDrop(int width, String titleKey, List<Path> files, IPathListConsumerFeedback consumer, @Nullable Screen parent, String messageKey, Object... args)
+    @SuppressWarnings("unchecked")
+    public GuiConfirmFileDrop(int width, List<Path> files, IPathListConsumerFeedback consumer, @Nullable Screen parent, String messageKey, Object... args)
+    {
+        this(width, files, consumer, (T) FILE_FILTER_ANY, parent, messageKey, Arrays.asList(args));
+    }
+
+    public GuiConfirmFileDrop(int width, List<Path> files, IPathListConsumerFeedback consumer, @Nullable T filter, @Nullable Screen parent, String messageKey, Object... args)
     {
         this.setParent(parent);
-        this.title = StringUtils.translate(titleKey);
-        this.files = files;
+        this.title = StringUtils.translate("malilib.gui.title.file_drop_confirm");
+        this.fileFilter = filter;
+        this.files = filter != null ? files.stream().filter(f ->
+                                                            {
+	                                                            try
+	                                                            {
+		                                                            return filter.accept(f);
+	                                                            }
+	                                                            catch (IOException _)
+                                                                {
+                                                                    return false;
+                                                                }
+                                                            }).toList() : files;
         this.consumer = consumer;
         this.useTitleHierarchy = false;
 
@@ -153,7 +172,7 @@ public class GuiConfirmFileDrop extends GuiDialogBase implements IPathListConsum
         }
     }
 
-    protected record ButtonListener(ButtonType type, GuiConfirmFileDrop gui) implements IButtonActionListener
+    protected record ButtonListener(ButtonType type, GuiConfirmFileDrop<?> gui) implements IButtonActionListener
 	{
 		@Override
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton)

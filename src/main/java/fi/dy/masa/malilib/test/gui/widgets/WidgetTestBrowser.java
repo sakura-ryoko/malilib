@@ -1,22 +1,15 @@
 package fi.dy.masa.malilib.test.gui.widgets;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nullable;
-
 import com.google.common.collect.ImmutableList;
 
-import org.spongepowered.asm.mixin.Overwrite;
-
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
-import fi.dy.masa.malilib.gui.widgets.WidgetDirectoryEntry;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase;
 import fi.dy.masa.malilib.test.data.TestDirectoryCache;
 import fi.dy.masa.malilib.test.gui.GuiTestFileBrowser;
 import fi.dy.masa.malilib.test.gui.TestFileIcons;
 import fi.dy.masa.malilib.util.FileUtils;
-import fi.dy.masa.malilib.util.data.ImmutableCopy;
 
 public class WidgetTestBrowser extends WidgetFileBrowserBase
 {

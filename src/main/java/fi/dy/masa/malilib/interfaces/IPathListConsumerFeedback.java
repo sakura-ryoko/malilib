@@ -2,9 +2,7 @@ package fi.dy.masa.malilib.interfaces;
 
 import java.nio.file.Path;
 import java.util.List;
-import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Experimental
 public interface IPathListConsumerFeedback
 {
 	/**

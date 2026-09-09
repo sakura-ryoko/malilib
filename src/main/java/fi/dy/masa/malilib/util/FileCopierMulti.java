@@ -4,7 +4,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.Nullable;
-import org.jetbrains.annotations.ApiStatus;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.gui.GuiBase;
@@ -19,7 +18,6 @@ import fi.dy.masa.malilib.interfaces.IPathListConsumerFeedback;
  * @param navigator
  * @param feedback
  */
-@ApiStatus.Experimental
 public record FileCopierMulti(Path destDir, @Nullable IDirectoryNavigator navigator, boolean feedback)
 		implements IPathListConsumerFeedback
 {
