@@ -51,6 +51,7 @@ public class DropDownListWidget<T> extends ContainerWidget
     protected int dropdownHeight;
     protected int textColor = 0xFFF0F0F0;
     protected int totalHeight;
+    protected int keyboardSelectionIndex = -1;
 
     public DropDownListWidget(int height, int maxVisibleEntries, List<T> entries,
                               @Nullable Function<T, String> stringFactory)
@@ -340,6 +341,36 @@ public class DropDownListWidget<T> extends ContainerWidget
 
                 return true;
             }
+            else if (keyCode == Keys.KEY_SPACE || keyCode == Keys.KEY_ENTER)
+            {
+                if (this.keyboardSelectionIndex >= 0 &&
+                    this.keyboardSelectionIndex < this.filteredEntries.size())
+                {
+                    this.onEntryClicked(this.filteredEntries.get(this.keyboardSelectionIndex));
+                }
+
+                return true;
+            }
+            else if (keyCode == Keys.KEY_UP ||
+                     keyCode == Keys.KEY_DOWN ||
+                     keyCode == Keys.KEY_PAGE_UP ||
+                     keyCode == Keys.KEY_PAGE_DOWN)
+            {
+                int changeAmount = 0;
+
+                if (keyCode == Keys.KEY_UP)
+                    changeAmount = -1;
+                else if (keyCode == Keys.KEY_DOWN)
+                    changeAmount = 1;
+                else if (keyCode == Keys.KEY_PAGE_UP)
+                    changeAmount = -5;
+                else if (keyCode == Keys.KEY_PAGE_DOWN)
+                    changeAmount = 5;
+
+                this.onKeyboardNavigationChange(changeAmount);
+
+                return true;
+            }
 
             return this.searchTextField.onKeyTyped(keyCode, scanCode, modifiers);
         }
@@ -361,6 +392,34 @@ public class DropDownListWidget<T> extends ContainerWidget
         }
 
         return super.onCharTyped(charIn, modifiers);
+    }
+
+    protected void onKeyboardNavigationChange(int changeAmount)
+    {
+        this.keyboardSelectionIndex += changeAmount;
+
+        if (this.keyboardSelectionIndex < 0)
+        {
+            this.keyboardSelectionIndex = 0;
+        }
+        else if (this.keyboardSelectionIndex >= this.filteredEntries.size())
+        {
+            this.keyboardSelectionIndex = this.filteredEntries.size() - 1;
+        }
+
+        int maxEntries = this.currentMaxVisibleEntries;
+
+        if (this.keyboardSelectionIndex < this.scrollBar.getValue())
+        {
+            this.scrollBar.setValue(this.keyboardSelectionIndex - maxEntries + 1);
+        }
+        else if (this.keyboardSelectionIndex >= this.scrollBar.getValue() + maxEntries)
+        {
+            this.scrollBar.setValue(this.keyboardSelectionIndex);
+        }
+
+        this.reAddSubWidgets();
+        this.updateSubWidgetPositions();
     }
 
     public void setNoEntryBar(int buttonX, int buttonY, Supplier<Icon> iconSupplier)
@@ -479,6 +538,8 @@ public class DropDownListWidget<T> extends ContainerWidget
 
     protected void setOpen(boolean isOpen)
     {
+        // Reset the index when closing or opening, so that it defaults to the currently selected entry after open
+        this.keyboardSelectionIndex = -1;
         this.isOpen = isOpen && this.isEnabled();
 
         this.clearWidgets();
@@ -536,6 +597,7 @@ public class DropDownListWidget<T> extends ContainerWidget
         }
 
         this.updateFilteredEntries(searchText);
+        this.keyboardSelectionIndex = 0;
         this.reAddSubWidgets();
     }
 
@@ -663,10 +725,22 @@ public class DropDownListWidget<T> extends ContainerWidget
 
             if (this.selectionHandler.isEntrySelected(entry))
             {
+                // If not set/changed yet, then initialize to the currently selected entry
+                if (this.keyboardSelectionIndex == -1)
+                {
+                    this.keyboardSelectionIndex = i;
+                }
+
                 widget.getTextSettings().setTextColor(0xFFFFFF50);
                 widget.getBorderRenderer().getNormalSettings().setBorderWidth(2);
                 widget.getBorderRenderer().getNormalSettings().getColor().setTopBottom(0);
                 widget.getBorderRenderer().getNormalSettings().getColor().setLeftRight(0xFF00FF90);
+            }
+            else if (this.keyboardSelectionIndex == i)
+            {
+                widget.getBorderRenderer().getNormalSettings().setBorderWidth(2);
+                widget.getBorderRenderer().getNormalSettings().getColor().setTopBottom(0);
+                widget.getBorderRenderer().getNormalSettings().getColor().setLeftRight(0xFFFF9000);
             }
 
             widget.setPosition(x + 2, y);
