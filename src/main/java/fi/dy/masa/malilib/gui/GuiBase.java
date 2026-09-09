@@ -372,11 +372,10 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets)
             {
-                if (widget.isMouseOver((int) click.x(), (int) click.y()) && widget.onMouseClicked(click, doubleClick))
+                if (widget.onMouseClicked(click, doubleClick))
                 {
                     // Don't call super if the button press got handled
                     handled = true;
-                    break;
                 }
             }
         }
