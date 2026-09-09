@@ -22,9 +22,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.config.IConfigBlockState;
-import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
@@ -116,12 +114,10 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.modelY = yScaled;
 
 		// Buttons (Centered on Left Pane)
-		int buttonBLen = this.getStringWidth(ButtonType.RESET.getDisplayName()) + 10;
-		int totalButtonWidth = (2 + buttonBLen + 2);
-		int xAdj = (this.dialogLeftSideCenter - ((totalButtonWidth) / 2)); //  + 14
 		int yAdj = this.dialogBottom - this.buttonHeight - 4;
 
-		xAdj += this.createButton(xAdj, yAdj, this.buttonHeight, ButtonType.RESET);
+		var resetButton = this.createResetButton(0, yAdj, this.buttonHeight);
+		resetButton.setX((this.dialogLeftSideCenter - resetButton.getWidth() / 2));
 
 		// Properties List / Entry Boxes
 		this.addBlockProperties(xCenter, yCenter);
@@ -146,7 +142,6 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.textFieldBlockName.setValue(BuiltInRegistries.BLOCK.getKey(this.blockState.getBlock()).toString());
 		this.textFieldBlockName.setMaxLength(this.maxLength);
 		this.addTextField(this.textFieldBlockName, new BlockNameTextFieldListener(this), TextFieldType.BLOCK_ID);
-		y += this.elementHeight + 2;
 	}
 
 	private int addBlockStateDisplay(int x, int y)
@@ -187,7 +182,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			List<T> validValues = prop.getPossibleValues();
 			WidgetDropDownList<T> dropDown = new WidgetDropDownList<>(x, y, this.maxLength+2, this.elementHeight + 2, 500, 10, validValues);
 			dropDown.setSelectedEntryChangeCallback(t -> {
-				setValue(prop, t);
+				this.blockState = this.blockState.setValue(prop, t);
 			});
 			T value = this.blockState.getValue(prop);
 			dropDown.setSelectedEntry(value);
@@ -195,22 +190,22 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		}
 	}
 
-	private <T extends Comparable<T>> void setValue(Property<@NonNull T> prop, T t) {
-		this.blockState = this.blockState.setValue(prop, t);
-	}
-
-	private @NonNull WidgetSlider getSlider(int x, int y, int initialIndex, IntegerProperty integerProperty) {
+	private @NonNull WidgetSlider getSlider(int x, int y, int initialIndex, IntegerProperty integerProperty)
+	{
 		List<Integer> validValues = integerProperty.getPossibleValues();
-		return new WidgetSlider(x, y, this.maxLength + 2, this.elementHeight + 6, new ISliderCallback() {
+		return new WidgetSlider(x, y, this.maxLength + 2, this.elementHeight + 6, new ISliderCallback()
+		{
 			private int valueIndex = initialIndex;
 
 			@Override
-			public int getMaxSteps() {
+			public int getMaxSteps()
+			{
 				return validValues.size() - 1;
 			}
 
 			@Override
-			public double getValueRelative() {
+			public double getValueRelative()
+			{
 				if (validValues.size() <= 1)
 					return 0.0;
 
@@ -218,7 +213,8 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			}
 
 			@Override
-			public void setValueRelative(double relativeValue) {
+			public void setValueRelative(double relativeValue)
+			{
 				if (validValues.size() <= 1) {
 					valueIndex = 0;
 					return;
@@ -229,22 +225,24 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 				);
 				valueIndex = Math.clamp(valueIndex, 0, validValues.size() - 1);
 
-				setValue(integerProperty, validValues.get(valueIndex));
+				blockState = blockState.setValue(integerProperty, validValues.get(valueIndex));
 			}
 
 			@Override
-			public String getFormattedDisplayValue() {
+			public String getFormattedDisplayValue()
+			{
 				return String.valueOf(validValues.get(valueIndex));
 			}
 		});
 	}
 
-	private int createButton(int x, int y, int height, ButtonType type)
+	private ButtonGeneric createResetButton(int x, int y, int height)
 	{
-		String text = type.getDisplayName();
-		ButtonGeneric button = new ButtonGeneric(x, y, -1, height, text);
-		this.addButton(button, this.createActionListener(type));
-		return button.getWidth() + 2;
+        ButtonGeneric button = new ButtonGeneric(x, y, -1, height, ButtonType.RESET.getDisplayName());
+		return this.addButton(button, (_, _) -> {
+			this.blockState = this.config.getBlockStateValue();
+			this.init();
+		});
 	}
 
 	@Override
@@ -339,22 +337,6 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			}
 
 			return false;
-		}
-	}
-
-	private ButtonListener createActionListener(ButtonType type)
-	{
-		return new ButtonListener(type, this);
-	}
-
-	private record ButtonListener(ButtonType type, GuiBlockStateEditor gui)
-			implements IButtonActionListener
-	{
-		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-		{
-			this.gui().blockState = this.gui().config.getBlockStateValue();
-			this.gui().init();
 		}
 	}
 
