@@ -78,10 +78,11 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		int leftPaneWidth = MathUtils.max(this.modelSize, this.maxLength) + 24;
 		int maxPropLabelWidth = 120;
 
+		// this is bad but I can't be asked to fix it... proper way would be to return the heights in each method
 		int propSize = this.blockState.getProperties().size();
 		int modelSizeLines = (this.modelSize + (this.elementHeight + 2) + (this.buttonHeight + 4));
 		int blockNameLines = ((this.elementHeight + 2) * 3) + (modelSizeLines + 6);
-		int propLines = ((this.elementHeight + 2) * 4) * propSize;
+		int propLines = ((this.elementHeight + 2) * 3) * propSize;
 
 		int largerSide = MathUtils.max(blockNameLines + 6, propLines + 10);
 		int totalWidth = leftPaneWidth + maxPropLabelWidth + 30;
@@ -152,7 +153,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	{
 		String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_display");
 		int width = this.getStringWidth(str);
-		int xAdj = (this.dialogLeftSideCenter - (width / 2)); //  + 14
+		int xAdj = x + (width / 2) + 2; //  + 14
 		this.addLabel(xAdj, y, width, this.elementHeight, COLOR_WHITE, str);
 		return this.elementHeight + 2;
 	}
@@ -167,7 +168,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		for (Property<?> prop : this.blockState.getProperties())
 		{
 			this.addEachBlockProperty(x, y, prop, count++);
-			y += (this.elementHeight * 4) + 2;
+			y += (this.elementHeight * 3) + 2;
 		}
 	}
 
@@ -200,7 +201,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 
 	private @NonNull WidgetSlider getSlider(int x, int y, int initialIndex, IntegerProperty integerProperty) {
 		List<Integer> validValues = integerProperty.getPossibleValues();
-		return new WidgetSlider(x, y, this.maxLength + 2, this.elementHeight, new ISliderCallback() {
+		return new WidgetSlider(x, y, this.maxLength + 2, this.elementHeight + 6, new ISliderCallback() {
 			private int valueIndex = initialIndex;
 
 			@Override
