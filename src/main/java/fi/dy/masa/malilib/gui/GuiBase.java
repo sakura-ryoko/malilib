@@ -86,7 +86,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     private final List<TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine>> textFieldsMultiLine = new ArrayList<>();
     private final MessageRenderer messageRenderer = new MessageRenderer(0xDD000000, COLOR_HORIZONTAL_BAR);
     private long openTime;
-    protected WidgetBase hoveredWidget = null;
+    protected WidgetBase focusedWidget = null;
     protected String title = "";
     protected boolean useTitleHierarchy = true;
     private int keyInputCount;
@@ -225,6 +225,15 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
+        // Handle focussed widget first
+        if (this.focusedWidget != null)
+        {
+            if (this.focusedWidget.onMouseScrolled(mouseX,  mouseY, horizontalAmount, verticalAmount))
+            {
+                return true;
+            }
+        }
+
         if (this.mouseWheelHorizontalDeltaSum != 0.0 &&
             Math.signum(horizontalAmount) != Math.signum(this.mouseWheelHorizontalDeltaSum))
         {
@@ -336,10 +345,23 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
+        // Handle focussed widget first
+        if (this.focusedWidget != null)
+        {
+            if (this.focusedWidget.onMouseClicked(click, doubleClick))
+            {
+                return true;
+            }
+        }
+
         for (ButtonBase button : this.buttons)
         {
             if (button.onMouseClicked(click, doubleClick))
             {
+                if (button.isMouseOver((int) click.x(), (int) click.y()))
+                {
+                    this.focusedWidget = button;
+                }
                 // Don't call super if the button press got handled
                 return true;
             }
@@ -374,6 +396,10 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             {
                 if (widget.onMouseClicked(click, doubleClick))
                 {
+                    if (widget.isMouseOver((int) click.x(), (int) click.y()))
+                    {
+                        this.focusedWidget = widget;
+                    }
                     // Don't call super if the button press got handled
                     handled = true;
                 }
@@ -395,6 +421,15 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
     {
+        // Handle focussed widget first
+        if (this.focusedWidget != null)
+        {
+            if (this.focusedWidget.onMouseDragged(click, dragXAmount, dragYAmount))
+            {
+                return true;
+            }
+        }
+
         for (ButtonBase button : this.buttons)
         {
             if (button.onMouseDragged(click, dragXAmount, dragYAmount))
@@ -830,18 +865,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     protected void drawWidgets(GuiContext ctx, int mouseX, int mouseY)
     {
-        this.hoveredWidget = null;
-
         if (this.widgets.isEmpty() == false)
         {
             for (WidgetBase widget : this.widgets)
             {
                 widget.render(ctx, mouseX, mouseY, false);
-
-                if (widget.isMouseOver(mouseX, mouseY))
-                {
-                    this.hoveredWidget = widget;
-                }
             }
         }
     }
@@ -874,9 +902,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             return;
         }
 
-        if (this.hoveredWidget != null)
+        if (this.focusedWidget != null)
         {
-            this.hoveredWidget.postRenderHovered(ctx, mouseX, mouseY, false);
+            this.focusedWidget.postRenderHovered(ctx, mouseX, mouseY, false);
         }
     }
 
