@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.util;
+package fi.dy.masa.malilib.util.file_ops;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.interfaces.IPathListConsumerFeedback;
+import fi.dy.masa.malilib.util.InfoUtils;
 
 /**
  * Used to Copy Multiple Files via the GUI (Using the "File Drag" mechanism)

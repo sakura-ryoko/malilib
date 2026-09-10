@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
 
-import com.mojang.blaze3d.Blaze3D;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -273,12 +272,6 @@ public class GameWrap
     public static void profilerPop()
     {
         Profiler.get().pop();
-    }
-
-    public static void openFile(Path file)
-    {
-//        OpenGlHelper.openFile(file.toFile());
-        Blaze3D.openPath(file);
     }
 
     @Nullable

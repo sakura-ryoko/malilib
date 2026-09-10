@@ -16,6 +16,10 @@ import fi.dy.masa.malilib.gui.widgets.WidgetDirectoryEntry;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase;
 import fi.dy.masa.malilib.test.gui.widgets.WidgetTestBrowser;
 import fi.dy.masa.malilib.util.*;
+import fi.dy.masa.malilib.util.file_ops.FileCopier;
+import fi.dy.masa.malilib.util.file_ops.FileCopierMulti;
+import fi.dy.masa.malilib.util.file_ops.FileDeleter;
+import fi.dy.masa.malilib.util.file_ops.FileRenamerDualInput;
 
 public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.DirectoryEntry, WidgetDirectoryEntry, WidgetTestBrowser>
 	implements ISelectionListener<WidgetFileBrowserBase.DirectoryEntry>

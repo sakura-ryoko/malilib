@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.util;
+package fi.dy.masa.malilib.util.file_ops;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,15 +10,17 @@ import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.interfaces.IStringDualConsumerFeedback;
+import fi.dy.masa.malilib.util.FileNameUtils;
+import fi.dy.masa.malilib.util.InfoUtils;
 
 /**
- * Used to Copy Files via the GUI (EXPERIMENTAL)
+ * Used to Rename / Move files via the GUI (EXPERIMENTAL)
  *
  * @param navigator
  * @param feedback
  */
 @ApiStatus.Experimental
-public record FileCopierDualInput(Path dir, @Nullable IDirectoryNavigator navigator, boolean feedback)
+public record FileRenamerDualInput(Path dir, @Nullable IDirectoryNavigator navigator, boolean feedback)
 		implements IStringDualConsumerFeedback
 {
 	@Override
@@ -27,17 +29,21 @@ public record FileCopierDualInput(Path dir, @Nullable IDirectoryNavigator naviga
 		if (string1.isEmpty() || string2.isEmpty())
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.invalid_file_or_directory");
-			MaLiLib.LOGGER.warn("FileCopier: Failed to copy file; File is invalid/empty.");
+			MaLiLib.debugLog("FileRenamer: Failed to rename file; File is invalid/empty.");
 			return false;
 		}
+
+		MaLiLib.LOGGER.error("string1: [{}], string2: [{}]", string1, string2);
 
 		final Path file = this.dir().resolve(FileNameUtils.generateSafeFileName(string1)).normalize();
 		final Path newFile = this.dir().resolve(FileNameUtils.generateSafeFileName(string2)).normalize();
 
+//	    MaLiLib.LOGGER.error("RENAME: [{}] --> [{}] (dir: '{}')", this.file.toAbsolutePath(), newFile.toAbsolutePath(), dir.toAbsolutePath());
+
 		if (file.getFileName().equals(newFile.getFileName()))
 		{
-			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_copy_file.destination_exists", file.toAbsolutePath(), newFile.toAbsolutePath());
-			MaLiLib.LOGGER.warn("FileCopier: Failed to copy file '{}'; Destination is the same.", file.toAbsolutePath());
+			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.file_rename.same_name", newFile.toAbsolutePath());
+			MaLiLib.debugLog("FileRenamer: Failed to rename file '{}'; Destination is the same.", file.toAbsolutePath());
 			return true;        // Closes Dialog box
 		}
 
@@ -45,7 +51,7 @@ public record FileCopierDualInput(Path dir, @Nullable IDirectoryNavigator naviga
 		{
 			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.file_or_directory_does_not_exist",
 			                                    file.toAbsolutePath());
-			MaLiLib.LOGGER.warn("FileCopier: Failed to copy file '{}'; Source does not exist.", file.toAbsolutePath());
+			MaLiLib.debugLog("FileRenamer: Failed to rename file '{}'; Source does not exist.", file.toAbsolutePath());
 			return false;
 		}
 
@@ -61,37 +67,37 @@ public record FileCopierDualInput(Path dir, @Nullable IDirectoryNavigator naviga
 				catch (Exception err)
 				{
 					InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.error.failed_to_delete_file", file.toAbsolutePath());
-					MaLiLib.debugLog("FileCopier: Failed to delete file '{}'; {}", file.toAbsolutePath(), err.getLocalizedMessage());
+					MaLiLib.debugLog("FileRenamer: Failed to delete file '{}'; {}", file.toAbsolutePath(), err.getLocalizedMessage());
 					return false;
 				}
 			}
 			else
 			{
-				InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_copy_file.destination_exists",
+				InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_rename_file.exists",
 				                                    file.toAbsolutePath(), newFile.toAbsolutePath());
-				MaLiLib.debugLog("FileCopier: Failed to copy file '{}'; Destination file exists.", file.toAbsolutePath());
+				MaLiLib.debugLog("FileRenamer: Failed to rename file '{}'; Destination file exists.", file.toAbsolutePath());
 				return false;
 			}
 		}
 
 		try
 		{
-			Files.copy(file, newFile);
+			Files.move(file, newFile);
 		}
 		catch (Exception err)
 		{
-			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_copy_file.exception",
+			InfoUtils.showGuiOrActionBarMessage(MessageType.ERROR, "malilib.message.error.failed_to_rename_file.exception",
 			                                    file.toAbsolutePath(), newFile.toAbsolutePath(), err.getLocalizedMessage());
-			MaLiLib.debugLog("FileCopier: Exception copying file '{}'; {}", file.toAbsolutePath(), err.getLocalizedMessage());
+			MaLiLib.debugLog("FileRenamer: Exception renaming file '{}'; {}", file.toAbsolutePath(), err.getLocalizedMessage());
 			return false;
 		}
 
 		if (feedback())
 		{
-			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_copied", file.getFileName(), newFile.getFileName());
+			InfoUtils.showGuiOrActionBarMessage(MessageType.SUCCESS, "malilib.message.file_or_directory_renamed", file.getFileName(), newFile.getFileName());
 		}
 
-		MaLiLib.debugLog("FileCopier: Copied file '{}' -> '{}'", file.toAbsolutePath(), newFile.toAbsolutePath());
+		MaLiLib.debugLog("FileRenamer: Renamed file '{}' -> '{}'", file.toAbsolutePath(), newFile.toAbsolutePath());
 		return true;
 	}
 }

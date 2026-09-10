@@ -4,6 +4,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.SharedConstants;
 
+import fi.dy.masa.malilib.util.OperatingSystem;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class MaLiLibReference
@@ -14,6 +15,7 @@ public class MaLiLibReference
 	public static final String MC_VERSION = getMcVersion();
 	public static final String MOD_TYPE = "fabric";
 	public static final String MOD_STRING = MOD_ID+"-"+MOD_TYPE+"-"+MC_VERSION+"-"+MOD_VERSION;
+	public static final OperatingSystem OS = OperatingSystem.get();
 
 	public static final boolean LOCAL_DEBUG = false;                // Enforce DEBUG_MODE ON (Or use Property/Environment Variable)
 	public static final boolean EXPERIMENTAL_MODE = false;          // Enforce EXPERIMENTAL_MODE when TRUE (Experimental code)
