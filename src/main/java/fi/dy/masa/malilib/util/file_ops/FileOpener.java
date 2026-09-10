@@ -55,7 +55,6 @@ public record FileOpener(@Nonnull Path jail)
 
 		pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
 		pb.redirectError(ProcessBuilder.Redirect.DISCARD);
-		pb.redirectInput(ProcessBuilder.Redirect.DISCARD);
 
 		try
 		{
