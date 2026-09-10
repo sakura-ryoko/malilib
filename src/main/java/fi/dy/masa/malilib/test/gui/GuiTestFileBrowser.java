@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import fi.dy.masa.malilib.MaLiLib;
+import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.*;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
@@ -90,7 +91,17 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 	@Override
 	public boolean onMouseDropFiles(@NonNull List<Path> files)
 	{
-		MaLiLib.LOGGER.error("GuiTestFileBrowser#onMouseDropFiles(): File Drop: {} files [First: {}]", files.size(), files.getFirst().toAbsolutePath().toString());
+		if (MaLiLibReference.DEBUG_MODE)
+		{
+			MaLiLib.LOGGER.warn("GuiTestFileBrowser#onMouseDropFiles(): File Drop: {} files", files.size());
+			int count = 0;
+
+			for (Path file : files)
+			{
+				MaLiLib.LOGGER.warn("GuiTestFileBrowser#onMouseDropFiles(): [{}]: {}", count, file.toAbsolutePath().toString());
+				count++;
+			}
+		}
 
 		if (this.getListWidget() != null)
 		{

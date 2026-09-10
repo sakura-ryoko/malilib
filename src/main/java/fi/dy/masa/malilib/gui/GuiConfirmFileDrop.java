@@ -1,9 +1,9 @@
 package fi.dy.masa.malilib.gui;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -32,7 +32,7 @@ public class GuiConfirmFileDrop<T extends WidgetFileBrowserBase.FileFilter> exte
     @SuppressWarnings("unchecked")
     public GuiConfirmFileDrop(int width, List<Path> files, IPathListConsumerFeedback consumer, @Nullable Screen parent, String messageKey, Object... args)
     {
-        this(width, "malilib.gui.title.file_drop_confirm", files, consumer, (T) FILE_FILTER_ANY, parent, messageKey, Arrays.asList(args));
+        this(width, "malilib.gui.title.file_drop_confirm", files, consumer, (T) FILE_FILTER_ANY, parent, messageKey, args);
     }
 
     public GuiConfirmFileDrop(int width, String title, List<Path> files, IPathListConsumerFeedback consumer, @Nullable T filter, @Nullable Screen parent, String messageKey, Object... args)
@@ -42,6 +42,7 @@ public class GuiConfirmFileDrop<T extends WidgetFileBrowserBase.FileFilter> exte
         this.fileFilter = filter;
         this.files = filter != null ? files.stream().filter(f ->
                                                             {
+//                                                                if (Files.isDirectory(f)) { return true; }
 	                                                            try
 	                                                            {
 		                                                            return filter.accept(f);
@@ -158,11 +159,11 @@ public class GuiConfirmFileDrop<T extends WidgetFileBrowserBase.FileFilter> exte
     }
 
     @Override
-    public boolean onSetPathsCompleted(List<Path> sources)
+    public boolean onSetPathsCompleted(List<Path> sources, WidgetFileBrowserBase.FileFilter filter)
     {
         if (this.getParent() instanceof IPathListConsumerFeedback)
         {
-            return ((IPathListConsumerFeedback) this.getParent()).onSetPathsCompleted(sources);
+            return ((IPathListConsumerFeedback) this.getParent()).onSetPathsCompleted(sources, filter);
         }
 
         return false;
@@ -184,7 +185,7 @@ public class GuiConfirmFileDrop<T extends WidgetFileBrowserBase.FileFilter> exte
 		{
 			if (this.type == ButtonType.OK)
 			{
-				this.gui().consumer.onSetPathsCompleted(this.gui().files);
+				this.gui().consumer.onSetPathsCompleted(this.gui().files, this.gui().getFileFilter());
 			}
 			else if (this.type == ButtonType.CANCEL)
 			{
