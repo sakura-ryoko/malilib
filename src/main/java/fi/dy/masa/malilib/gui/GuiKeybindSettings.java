@@ -86,7 +86,7 @@ public class GuiKeybindSettings extends GuiDialogBase
     @Override
     public void initGui()
     {
-        this.clearElements();
+        super.initGui();
 
         int x = this.dialogLeft + 10;
         int y = this.dialogTop + 24;
