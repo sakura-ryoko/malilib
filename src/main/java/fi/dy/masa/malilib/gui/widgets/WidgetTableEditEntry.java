@@ -193,7 +193,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						configHeight - 3,
 						((BooleanEntry) value).getBooleanValue());
 
-				booleanButton.setActionListener((button, mouseButton) -> checkResetButtonState());
+				booleanButton.setActionListener(IButtonActionListener.handling((_, _) -> checkResetButtonState()));
 
 				this.subWidgets.add(booleanButton);
 				this.booleanWidgets.add(booleanButton);
@@ -225,7 +225,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 			resetEnabled |= value.wasConfigModified(this.defaultValue.get(i));
 		}
 
-		this.addButton(buttonReset, (button, mouseButton) -> reset());
+		this.addButton(buttonReset, IButtonActionListener.handling((button, mouseButton) -> reset()));
 
 		buttonReset.setEnabled(resetEnabled);
 
@@ -580,7 +580,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		return false;
 	}
 
-	private void reset()
+	private boolean reset()
 	{
 		for (int i = 0; i < this.types.size(); i++)
 		{
@@ -608,7 +608,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				this.booleanWidgets.get(i).updateDisplayString();
 			}
 		}
-		this.checkResetButtonState();
+		return this.checkResetButtonState();
 	}
 
 	private record ListenerListActions(ButtonType type, WidgetTableEditEntry parent) implements IButtonActionListener

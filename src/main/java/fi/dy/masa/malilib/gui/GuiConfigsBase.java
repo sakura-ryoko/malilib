@@ -54,6 +54,7 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
     @Override
     public void initGui()
     {
+        this.reCreateListWidget();
         super.initGui();
         this.buildConfigSwitcher();
     }

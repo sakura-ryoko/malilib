@@ -229,12 +229,13 @@ public class WidgetDropDownList<T> extends WidgetBase
                 return true;
             }
 
-            if (input.keycode() == KeyCodes.KEY_RETURN)
+            if (input.keycode() == ScanCodes.SCAN_RETURN)
             {
                 if (this.filteredEntries.isEmpty() == false)
                 {
                     this.setSelectedEntry(0);
                     this.isOpen = false;
+                    this.searchBar.textField().setValue("");
                     return true;
                 }
             }

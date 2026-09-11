@@ -112,7 +112,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     @Override
     public void initGui()
     {
-        this.clearElements();
+        super.initGui();
 
         int xLabel = this.dialogLeft + 148;
         int xTextField = xLabel + 110;

@@ -18,6 +18,7 @@ import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.game.BlockUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
+//TODO?: implement our own proper text field widget
 public class TextFieldWrapper<T extends GuiTextFieldGeneric> extends WidgetBase
 {
 	private final T textField;
@@ -266,5 +267,10 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric> extends WidgetBase
 				}
 			}
 		}
+	}
+
+	@Override
+	public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected) {
+		this.textField.renderWrapper(ctx, mouseX, mouseY, 0);
 	}
 }
