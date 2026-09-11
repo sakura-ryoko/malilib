@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.util.input.KeyCodes;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -23,6 +26,8 @@ import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.MathUtils;
+import org.lwjgl.sdl.SDL;
+import org.lwjgl.sdl.SDLScancode;
 
 /**
  * A dropdown selection widget for entries in the given list.
@@ -218,6 +223,22 @@ public class WidgetDropDownList<T> extends WidgetBase
     {
         if (this.isOpen)
         {
+            if (input.isEscape())
+            {
+                this.isOpen = false;
+                return true;
+            }
+
+            if (input.keycode() == KeyCodes.KEY_RETURN)
+            {
+                if (this.filteredEntries.isEmpty() == false)
+                {
+                    this.setSelectedEntry(0);
+                    this.isOpen = false;
+                    return true;
+                }
+            }
+
             return this.searchBar.onKeyTyped(input);
         }
 
