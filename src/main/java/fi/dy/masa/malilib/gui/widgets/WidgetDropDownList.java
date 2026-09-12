@@ -191,7 +191,6 @@ public class WidgetDropDownList<T> extends WidgetBase
                     {
                         this.callback.accept(this.getSelectedEntry());
                     }
-                    // TODO: decide if it should be closed here, this is the behaviour i've seen everywhere else
                 }
                 else
                 {
@@ -425,7 +424,6 @@ public class WidgetDropDownList<T> extends WidgetBase
         matrixStackIn.popMatrix();
     }
 
-    // TODO: make focused widget draw on top again
     private void renderOpen(GuiContext ctx, int mouseX, int mouseY, int txtX, int txtY)
     {
         List<T> list = this.filteredEntries;
