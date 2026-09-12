@@ -399,16 +399,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             }
         }
 
-        for (WidgetBase widget : this.widgets)
-        {
-            if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the action got handled
-                this.focusedWidget = widget;
-                return true;
-            }
-        }
-
         return false;
     }
 
@@ -686,6 +676,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (this.focusedWidget != null  && this.focusedWidget.isMouseOver(mouseX, mouseY))
         {
+            this.focusedWidget.render(ctx, mouseX, mouseY, true);
             this.focusedWidget.postRenderHovered(ctx, mouseX, mouseY, true);
         }
 
