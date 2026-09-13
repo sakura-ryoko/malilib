@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
-import fi.dy.masa.malilib.util.input.KeyCodes;
 import fi.dy.masa.malilib.util.input.ScanCodes;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -26,8 +24,6 @@ import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.MathUtils;
-import org.lwjgl.sdl.SDL;
-import org.lwjgl.sdl.SDLScancode;
 
 /**
  * A dropdown selection widget for entries in the given list.
@@ -43,7 +39,6 @@ public class WidgetDropDownList<T> extends WidgetBase
     protected final List<T> entries;
     protected final List<T> filteredEntries;
     protected final TextFieldWrapper<GuiTextFieldGeneric> searchBar;
-    protected final int maxHeight;
     protected final int maxVisibleEntries;
     protected final int totalHeight;
     protected boolean isOpen;
@@ -65,8 +60,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     {
         super(x, y, width, height);
 
-        this.width = this.getRequiredWidth(width, entries, this.mc);
-        this.maxHeight = maxHeight;
+        this.width = this.getRequiredWidth(width, entries);
         this.entries = entries;
         this.filteredEntries = new ArrayList<>();
         this.stringRetriever = stringRetriever;
@@ -102,15 +96,15 @@ public class WidgetDropDownList<T> extends WidgetBase
         this.searchBar.textField().setY(y - 18);
     }
 
-    protected int getRequiredWidth(int width, List<T> entries, Minecraft mc)
+    protected int getRequiredWidth(int width, List<T> entries)
     {
         if (width == -1)
         {
             width = 0;
 
-            for (int i = 0; i < entries.size(); ++i)
+            for (T entry : entries)
             {
-                width = MathUtils.max(width, this.getStringWidth(this.getDisplayString(entries.get(i))) + 20);
+                width = MathUtils.max(width, this.getStringWidth(this.getDisplayString(entry)) + 20);
             }
         }
 
@@ -279,7 +273,7 @@ public class WidgetDropDownList<T> extends WidgetBase
                     input.key() == ScanCodes.SCAN_PAGE_UP ||
                     input.key() == ScanCodes.SCAN_PAGE_DOWN)
             {
-                int changeAmount = 0;
+                int changeAmount;
 
                 if (input.key() == ScanCodes.SCAN_UP)
                     changeAmount = -1;
@@ -344,10 +338,8 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         if (this.isOpen && filterText.isEmpty() == false)
         {
-            for (int i = 0; i < this.entries.size(); ++i)
+            for (T entry : this.entries)
             {
-                T entry = this.entries.get(i);
-
                 if (this.entryMatchesFilter(entry, filterText))
                 {
                     this.filteredEntries.add(entry);
@@ -366,7 +358,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
     protected boolean entryMatchesFilter(T entry, String filterText)
     {
-        return filterText.isEmpty() || this.getDisplayString(entry).toLowerCase().indexOf(filterText) != -1;
+        return filterText.isEmpty() || this.getDisplayString(entry).toLowerCase().contains(filterText);
     }
 
     protected String getDisplayString(T entry)

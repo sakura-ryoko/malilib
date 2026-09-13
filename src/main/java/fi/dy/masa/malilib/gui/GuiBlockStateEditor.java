@@ -119,8 +119,13 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 
 		// Buttons (Centered on Left Pane)
 		int yAdj = this.dialogBottom - this.buttonHeight - 4;
-
-		var resetButton = this.createResetButton(0, yAdj, this.buttonHeight);
+        ButtonGeneric resetButton = this.addButton(
+				new ButtonGeneric(x, yAdj, -1, height, ButtonType.RESET.getDisplayName()),
+				IButtonActionListener.simple((_, _) -> {
+					this.blockState = this.config.getBlockStateValue();
+					this.init();
+				})
+		);
 		resetButton.setX((this.dialogLeftSideCenter - resetButton.getWidth() / 2));
 
 		// Properties List / Entry Boxes
@@ -186,12 +191,9 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		} else {
 			List<T> validValues = prop.getPossibleValues();
 			WidgetDropDownList<T> dropDown = new WidgetDropDownList<>(x, y, this.maxLength+2, this.elementHeight + 2, 500, 10, validValues);
-			dropDown.setSelectedEntryChangeCallback(t -> {
-				this.blockState = this.blockState.setValue(prop, t);
-			});
+			dropDown.setSelectedEntryChangeCallback(t -> GuiBlockStateEditor.this.blockState = GuiBlockStateEditor.this.blockState.setValue(prop, t));
 			T value = this.blockState.getValue(prop);
-			dropDown.setSelectedEntry(value);
-			this.addWidget(dropDown);
+			this.addWidget(dropDown.setSelectedEntry(value));
 		}
 	}
 
@@ -239,15 +241,6 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 				return String.valueOf(validValues.get(valueIndex));
 			}
 		});
-	}
-
-	private ButtonGeneric createResetButton(int x, int y, int height)
-	{
-        ButtonGeneric button = new ButtonGeneric(x, y, -1, height, ButtonType.RESET.getDisplayName());
-		return this.addButton(button, IButtonActionListener.simple((_, _) -> {
-			this.blockState = this.config.getBlockStateValue();
-			this.init();
-		}));
 	}
 
 	@Override
