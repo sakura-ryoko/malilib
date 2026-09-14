@@ -5,7 +5,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public class WidgetHoverComponent extends WidgetBase
 {
@@ -48,6 +47,6 @@ public class WidgetHoverComponent extends WidgetBase
     public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(ctx, mouseX, mouseY, selected);
-        RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.text);
+        ctx.drawHoverText(mouseX, mouseY, this.text);
     }
 }

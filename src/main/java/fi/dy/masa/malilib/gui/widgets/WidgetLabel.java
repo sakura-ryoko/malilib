@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public class WidgetLabel extends WidgetBase
@@ -97,12 +96,12 @@ public class WidgetLabel extends WidgetBase
             int xStart = this.x - this.borderSize;
             int yStart = this.y - this.borderSize;
 
-            RenderUtils.drawRect(ctx, xStart, yStart, bgWidth, bgHeight, this.backgroundColor);
+            ctx.drawRect(xStart, yStart, bgWidth, bgHeight, this.backgroundColor);
 
-            RenderUtils.drawHorizontalLine(ctx, xStart, yStart           , bgWidth, this.borderULColor);
-            RenderUtils.drawHorizontalLine(ctx, xStart, yStart + bgHeight, bgWidth, this.borderBRColor);
-            RenderUtils.drawVerticalLine(ctx, xStart          , yStart, bgHeight, this.borderULColor);
-            RenderUtils.drawVerticalLine(ctx, xStart + bgWidth, yStart, bgHeight, this.borderBRColor);
+            ctx.drawHorizontalLine(xStart, yStart           , bgWidth, this.borderULColor);
+            ctx.drawHorizontalLine(xStart, yStart + bgHeight, bgWidth, this.borderBRColor);
+            ctx.drawVerticalLine(xStart          , yStart, bgHeight, this.borderULColor);
+            ctx.drawVerticalLine(xStart + bgWidth, yStart, bgHeight, this.borderBRColor);
         }
     }
 }

@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.gui.widgets;
 import javax.annotation.Nullable;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<TYPE>
 {
@@ -61,7 +60,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
             int xStart = this.getColumnPosX(i);
             int xEnd = this.getColumnPosX(i + 1);
 
-            RenderUtils.drawOutline(ctx, xStart - 3, this.y + 1, xEnd - xStart - 2, this.height - 2, outlineColor);
+            ctx.drawOutline(xStart - 3, this.y + 1, xEnd - xStart - 2, this.height - 2, outlineColor);
         }
     }
 }

@@ -10,7 +10,6 @@ import fi.dy.masa.malilib.config.options.ConfigColor;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.GuiColorEditorHSV;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
@@ -47,7 +46,7 @@ public class WidgetColorIndicator extends WidgetBase
     public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(ctx, mouseX, mouseY, selected);
-        RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.hoverText);
+        ctx.drawHoverText(mouseX, mouseY, this.hoverText);
     }
 
     @Override
@@ -60,8 +59,8 @@ public class WidgetColorIndicator extends WidgetBase
         int width = this.getWidth();
         int height = this.getHeight();
 
-        RenderUtils.drawRect(ctx, x    , y    , width    , height    , 0xFFFFFFFF);
-        RenderUtils.drawRect(ctx, x + 1, y + 1, width - 2, height - 2, 0xFF000000);
-        RenderUtils.drawRect(ctx, x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue());
+        ctx.drawRect(x    , y    , width    , height    , 0xFFFFFFFF);
+        ctx.drawRect(x + 1, y + 1, width - 2, height - 2, 0xFF000000);
+        ctx.drawRect(x + 2, y + 2, width - 4, height - 4, 0xFF000000 | this.config.getIntegerValue());
     }
 }

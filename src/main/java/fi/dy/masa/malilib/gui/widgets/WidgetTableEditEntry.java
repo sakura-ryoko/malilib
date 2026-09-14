@@ -22,7 +22,6 @@ import fi.dy.masa.malilib.gui.button.*;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
@@ -424,11 +423,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 
 		if (this.isOdd)
 		{
-			RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x20FFFFFF);
+			ctx.drawRect(this.x, this.y, this.width, this.height, 0x20FFFFFF);
 		}
 		else
 		{
-			RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x30FFFFFF);
+			ctx.drawRect(this.x, this.y, this.width, this.height, 0x30FFFFFF);
 		}
 
 		this.drawSubWidgets(ctx, mouseX, mouseY);
@@ -466,7 +465,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
             {
                 if (correspondingLabel.comment().isEmpty() == false)
                 {
-                    RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(correspondingLabel.comment()));
+					ctx.drawHoverText(mouseX, mouseY, Collections.singletonList(correspondingLabel.comment()));
                 }
             }
         }

@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public class ButtonGeneric extends ButtonBase
 {
@@ -120,7 +119,7 @@ public class ButtonGeneric extends ButtonBase
             int y = this.y + (this.height - this.icon.getHeight()) / 2;
             int u = this.icon.getU() + this.getTextureOffset(this.hovered) * this.icon.getWidth(); // FIXME: What happened here.
 
-            RenderUtils.drawTexturedRect(ctx, this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
+            ctx.drawTexturedRect(this.icon.getTexture(), x, y, u, this.icon.getV(), this.icon.getWidth(), this.icon.getHeight());
         }
     }
 

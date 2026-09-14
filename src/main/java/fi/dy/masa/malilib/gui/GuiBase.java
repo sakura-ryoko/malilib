@@ -39,7 +39,6 @@ import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.MessageRenderer;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public abstract class GuiBase extends Screen implements IMessageConsumer, IStringConsumer
@@ -611,7 +610,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
         // Draw the dark background
-        RenderUtils.drawRect(ctx, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
+        ctx.drawRect(0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
     }
 
     /**
@@ -686,7 +685,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             {
                 if (hoverable.hasHoverText() && widget.isMouseOver(mouseX, mouseY))
                 {
-                    RenderUtils.drawHoverText(ctx, mouseX, mouseY, hoverable.getHoverStrings());
+                    ctx.drawHoverText(mouseX, mouseY, hoverable.getHoverStrings());
                 }
             }
 
