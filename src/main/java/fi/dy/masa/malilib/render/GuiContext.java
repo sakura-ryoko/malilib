@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import org.apache.commons.lang3.tuple.Pair;
-import org.joml.Matrix3x2fStack;
 
 import com.mojang.renderpearl.api.textures.GpuSampler;
 import com.mojang.renderpearl.api.textures.GpuTextureView;
@@ -39,18 +39,12 @@ import fi.dy.masa.malilib.util.WorldUtils;
  * -
  * When you need a GuiGraphics, you can just use this in its place and move on.
  */
-public class GuiContext extends GuiGraphicsExtractor
+@SuppressWarnings({"unused", "resource"})
+public class GuiContext extends DelegatingGuiGraphicsExtractor
 {
-	private GuiGraphicsExtractor guiGraphics;
-
-	public GuiContext(Minecraft client, GuiRenderState state, int mouseX, int mouseY)
+	public GuiContext(GuiGraphicsExtractor context)
 	{
-		super(client, state, mouseX, mouseY);
-	}
-
-	public GuiContext(final Minecraft client, final Matrix3x2fStack pose, final GuiRenderState state, final int mouseX, final int mouseY)
-	{
-		super(client, pose, state, mouseX, mouseY);
+		super(context);
 	}
 
 	/**
@@ -60,21 +54,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public static GuiContext fromGuiGraphics(GuiGraphicsExtractor gui)
 	{
-		// Copy with Pose Stack
-		GuiContext ctx = new GuiContext(
-				gui.minecraft,
-				gui.pose, gui.guiRenderState,
-				gui.mouseX, gui.mouseY
-		);
-
-		ctx.pendingCursor = gui.pendingCursor;
-		ctx.deferredTooltip = gui.deferredTooltip;
-		ctx.hoveredTextStyle = gui.hoveredTextStyle;
-		ctx.clickableTextStyle = gui.clickableTextStyle;
-
-		// Store the proper reference
-		ctx.guiGraphics = gui;
-		return ctx;
+		return new GuiContext(gui);
 	}
 
 	/**
@@ -88,7 +68,7 @@ public class GuiContext extends GuiGraphicsExtractor
 			return this.guiGraphics;
 		}
 
-		return (GuiGraphicsExtractor) this;
+		return this;
 	}
 
 	public Minecraft mc()
@@ -111,7 +91,7 @@ public class GuiContext extends GuiGraphicsExtractor
 		if (id == null) return null;
 		AbstractTexture tex = this.mc().getTextureManager().getTexture(id);
 
-		if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTextureView() != null)
+		if (((IMixinAbstractTexture) tex).malilib_getGlTextureView() != null)
 		{
 			return Pair.of(tex.getTextureView(), tex.getSampler());
 		}
@@ -144,7 +124,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void elementUp()
 	{
-		this.guiRenderState.up();
+		this.guiGraphics.guiRenderState.up();
 	}
 
 	/**
@@ -153,7 +133,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addSimpleElement(GuiElementRenderState element)
 	{
-		this.guiRenderState.addGuiElement(element);
+		this.guiGraphics.guiRenderState.addGuiElement(element);
 	}
 
 	/**
@@ -162,16 +142,16 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addSpecialElement(PictureInPictureRenderState specialElement)
 	{
-		this.guiRenderState.addPicturesInPictureState(specialElement);
+		this.guiGraphics.guiRenderState.addPicturesInPictureState(specialElement);
 	}
 
 	/**
-	 * Add a Item GUI Element
+	 * Add an Item GUI Element
 	 * @param itemElement ()
 	 */
 	public void addItemElement(GuiItemRenderState itemElement)
 	{
-		this.guiRenderState.addItem(itemElement);
+		this.guiGraphics.guiRenderState.addItem(itemElement);
 	}
 
 	/**
@@ -180,7 +160,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addTextElement(GuiTextRenderState textElement)
 	{
-		this.guiRenderState.addText(textElement);
+		this.guiGraphics.guiRenderState.addText(textElement);
 	}
 
 	/**
@@ -189,7 +169,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addPreparedTextElement(GuiElementRenderState element)
 	{
-		this.guiRenderState.addGlyphToCurrentLayer(element);
+		this.guiGraphics.guiRenderState.addGlyphToCurrentLayer(element);
 	}
 
 	/**
@@ -198,7 +178,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void addSimpleElementToCurrentLayer(BlitRenderState element)
 	{
-		this.guiRenderState.addBlitToCurrentLayer(element);
+		this.guiGraphics.guiRenderState.addBlitToCurrentLayer(element);
 	}
 
 	/**
@@ -207,7 +187,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void pushScissor(@Nonnull ScreenRectangle rect)
 	{
-		this.scissorStack.push(rect);
+		this.guiGraphics.scissorStack.push(rect);
 	}
 
 	/**
@@ -218,7 +198,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public boolean containsScissor(int x, int y)
 	{
-		return this.scissorStack.containsPoint(x, y);
+		return this.guiGraphics.scissorStack.containsPoint(x, y);
 	}
 
 	/**
@@ -227,7 +207,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public ScreenRectangle peekLastScissor()
 	{
-		return this.scissorStack.peek();
+		return this.guiGraphics.scissorStack.peek();
 	}
 
 	/**
@@ -235,7 +215,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	 */
 	public void popScissor()
 	{
-		this.scissorStack.pop();
+		this.guiGraphics.scissorStack.pop();
 	}
 
 	/**
