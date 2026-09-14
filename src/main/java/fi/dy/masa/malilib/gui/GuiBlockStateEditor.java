@@ -31,7 +31,6 @@ import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
@@ -276,7 +275,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 
 	private void drawBlockStateInGui(GuiContext ctx)
 	{
-		RenderUtils.renderModelInGui(ctx, this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F, 0.125f * Mth.PI, ((Util.getMillis() % 16000f) / 16000f) * Mth.TWO_PI, Mth.PI);
+		ctx.renderModel(this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F, 0.125f * Mth.PI, ((Util.getMillis() % 16000f) / 16000f) * Mth.TWO_PI, Mth.PI);
 //		RenderUtils.renderModelInGui(ctx, this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F, 0, 0, 0);
 	}
 
@@ -284,11 +283,11 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
 	{
 		// Background
-		RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogTotalWidth, this.dialogTotalHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
+		ctx.drawOutlinedBox(this.dialogLeft, this.dialogTop, this.dialogTotalWidth, this.dialogTotalHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
 		this.drawDividerBars(ctx, mouseX, mouseY);
 
 		// Model Display Box
-		RenderUtils.drawOutlinedBox(ctx, this.modelX, this.modelY, (this.modelSize), (this.modelSize), 0xFF202020, COLOR_HORIZONTAL_BAR);
+		ctx.drawOutlinedBox(this.modelX, this.modelY, (this.modelSize), (this.modelSize), 0xFF202020, COLOR_HORIZONTAL_BAR);
 	}
 
 	@Override

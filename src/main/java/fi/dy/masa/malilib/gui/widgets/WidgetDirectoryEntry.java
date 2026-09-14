@@ -10,7 +10,6 @@ import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntry;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase.DirectoryEntryType;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.FileNameUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
@@ -63,16 +62,16 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY))
         {
-            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x70FFFFFF);
+            ctx.drawRect(this.x, this.y, this.width, this.height, 0x70FFFFFF);
         }
         else if (this.isOdd)
         {
-            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x20FFFFFF);
+            ctx.drawRect(this.x, this.y, this.width, this.height, 0x20FFFFFF);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x38FFFFFF);
+            ctx.drawRect(this.x, this.y, this.width, this.height, 0x38FFFFFF);
         }
 
         IGuiIcon icon = null;
@@ -98,7 +97,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         // Draw an outline if this is the currently selected entry
         if (selected)
         {
-            RenderUtils.drawOutline(ctx, this.x, this.y, this.width, this.height, 0xEEEEEEEE);
+            ctx.drawOutline(this.x, this.y, this.width, this.height, 0xEEEEEEEE);
         }
 
         int yOffset = (this.height - this.fontHeight) / 2 + 1;
@@ -108,7 +107,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
 
         if (this.isMouseOver(mouseX, mouseY) && this.entry.displayHoverInfo())
         {
-            RenderUtils.drawHoverText(ctx, mouseX + 10, mouseY, List.of(this.entry.getHoverText()));
+            ctx.drawHoverText(mouseX + 10, mouseY, List.of(this.entry.getHoverText()));
         }
     }
 

@@ -26,7 +26,6 @@ import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.render.element.*;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
@@ -193,7 +192,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     @Override
     protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
-        RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
+        ctx.drawOutlinedBox(this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
     }
 
     @Override
@@ -496,28 +495,28 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int cw = 32;
         int ch = 32;
 
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // H
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // H
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // S
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // S
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // V
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // V
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // R
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // R
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // G
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // G
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // B
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // B
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // A
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // A
 
         x = this.xHS;
         y = this.yHS;
         w = this.sizeHS;
         h = this.sizeHS;
 
-        RenderUtils.drawOutline(ctx, x - 1, y - 1, w + 2, h + 2, 0xC0FFFFFF);                      // main color selector
-        RenderUtils.drawOutline(ctx, cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF);                  // current color indicator
-        RenderUtils.drawOutline(ctx, this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
+        ctx.drawOutline(x - 1, y - 1, w + 2, h + 2, 0xC0FFFFFF);                      // main color selector
+        ctx.drawOutline(cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF);                  // current color indicator
+        ctx.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
         // Full SV Square --
         int r = (int) (this.relR * 255f);

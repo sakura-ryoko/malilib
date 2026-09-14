@@ -21,7 +21,6 @@ import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringRetriever;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.MathUtils;
 
@@ -390,7 +389,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         matrixStackIn.translate(0, 0);
         //RenderSystem.applyModelViewMatrix();
 
-        RenderUtils.drawOutlinedBox(ctx, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
+        ctx.drawOutlinedBox(this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
 
         String str = this.getDisplayString(this.getSelectedEntry());
         int txtX = this.x + 4;
@@ -404,12 +403,12 @@ public class WidgetDropDownList<T> extends WidgetBase
             this.renderOpen(ctx, mouseX, mouseY, txtX, txtY);
 
             MaLiLibIcons i = MaLiLibIcons.ARROW_UP;
-            RenderUtils.drawTexturedRect(ctx, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            ctx.drawTexturedRect(MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
         else
         {
             MaLiLibIcons i = MaLiLibIcons.ARROW_DOWN;
-            RenderUtils.drawTexturedRect(ctx, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            ctx.drawTexturedRect(MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
 
         matrixStack.popMatrix();
@@ -430,7 +429,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         }
 
 //        RenderUtils.drawOutline(ctx, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
-        RenderUtils.drawOutlinedBox(ctx, this.x + 1, this.y + this.height, this.width - 2, visibleEntries * this.height, 0xFF101010, 0xFFE0E0E0);
+        ctx.drawOutlinedBox(this.x + 1, this.y + this.height, this.width - 2, visibleEntries * this.height, 0xFF101010, 0xFFE0E0E0);
 
         int y = this.y + this.height;
         int startIndex = Math.max(0, this.scrollBar.getValue());
@@ -457,12 +456,12 @@ public class WidgetDropDownList<T> extends WidgetBase
                 bg = 0x60FFFFFF;
             }
 
-            RenderUtils.drawRect(ctx, this.x, y, maxWidthEntry-2, this.height, bg);
+            ctx.drawRect(this.x, y, maxWidthEntry-2, this.height, bg);
 
             if (this.keyboardSelectionIndex == i)
             {
-                RenderUtils.drawRect(ctx, this.x+1, y, 2, this.height, 0xFFEE1111);
-                RenderUtils.drawRect(ctx, this.x+maxWidthEntry-4, y, 2, this.height, 0xFFEE1111);
+                ctx.drawRect(this.x+1, y, 2, this.height, 0xFFEE1111);
+                ctx.drawRect(this.x+maxWidthEntry-4, y, 2, this.height, 0xFFEE1111);
             }
 
             str = this.getDisplayString(list.get(i));
@@ -478,7 +477,7 @@ public class WidgetDropDownList<T> extends WidgetBase
             int h = visibleEntries * this.height + 1;
             int totalHeight = Math.max(h, list.size() * this.height);
 
-            RenderUtils.drawRect(ctx, x-1, y, 1, h, 0xFFE0E0E0);
+            ctx.drawRect(x-1, y, 1, h, 0xFFE0E0E0);
             this.scrollBar.render(ctx, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
         }
     }

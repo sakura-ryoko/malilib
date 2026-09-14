@@ -136,14 +136,14 @@ public class MessageRenderer
             {
                 // this.zLevel
                 int bw = this.useBorder ? 1 : 0;
-                RenderUtils.drawTexturedRect(ctx, BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw);
-                RenderUtils.drawRect(ctx, x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor);
+                ctx.drawTexturedRect(BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw);
+                ctx.drawRect(x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor);
             }
 
             if (this.useBorder)
             {
                 // this.zLevel
-                RenderUtils.drawOutline(ctx, x, y, boxWidth, boxHeight, this.borderColor);
+                ctx.drawOutline(x, y, boxWidth, boxHeight, this.borderColor);
             }
 
             x += 10;

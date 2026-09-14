@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public class WidgetIcon extends WidgetBase
 {
@@ -21,7 +20,7 @@ public class WidgetIcon extends WidgetBase
 
         if (selected)
         {
-            RenderUtils.drawOutlinedBox(ctx, this.x, this.y, this.width, this.height, 0x20C0C0C0, 0xE0FFFFFF);
+            ctx.drawOutlinedBox(this.x, this.y, this.width, this.height, 0x20C0C0C0, 0xE0FFFFFF);
         }
     }
 }

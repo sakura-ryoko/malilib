@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
 public abstract class ButtonBase extends WidgetBase implements IHoverable
@@ -172,7 +171,7 @@ public abstract class ButtonBase extends WidgetBase implements IHoverable
 
         if (this.hasHoverText() && this.isMouseOver(mouseX, mouseY))
         {
-            RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.getHoverStrings());
+            ctx.drawHoverText(mouseX, mouseY, this.getHoverStrings());
         }
     }
 }
