@@ -18,7 +18,6 @@ public class MessageRenderer
     private boolean centeredH = true;
     private boolean centeredV = true;
     private boolean expandUp;
-//    private float zLevel;
 
     protected static final Identifier BG_TEXTURE = Identifier.withDefaultNamespace("textures/gui/inworld_menu_list_background.png");
 
@@ -66,12 +65,6 @@ public class MessageRenderer
         this.expandUp = expandUp;
         return this;
     }
-
-//    public MessageRenderer setZLevel(float zLevel)
-//    {
-//        this.zLevel = zLevel;
-//        return this;
-//    }
 
     public int getMessageBoxWidth()
     {
@@ -134,16 +127,14 @@ public class MessageRenderer
 
             if (this.useBackground)
             {
-                // this.zLevel
                 int bw = this.useBorder ? 1 : 0;
-                RenderUtils.drawTexturedRect(ctx, BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw);
-                RenderUtils.drawRect(ctx, x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor);
+                ctx.drawTexturedRect(BG_TEXTURE, x + bw, y + bw, 0, 0, boxWidth - 2 * bw, boxHeight - 2 * bw);
+                ctx.drawRect(x + bw, y + bw, boxWidth - 2 * bw, boxHeight - 2 * bw, this.backgroundColor);
             }
 
             if (this.useBorder)
             {
-                // this.zLevel
-                RenderUtils.drawOutline(ctx, x, y, boxWidth, boxHeight, this.borderColor);
+                ctx.drawOutline(x, y, boxWidth, boxHeight, this.borderColor);
             }
 
             x += 10;

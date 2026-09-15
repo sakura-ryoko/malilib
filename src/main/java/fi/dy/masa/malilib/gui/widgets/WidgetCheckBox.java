@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public class WidgetCheckBox extends WidgetBase
 {
@@ -93,7 +92,7 @@ public class WidgetCheckBox extends WidgetBase
         super.render(ctx, mouseX, mouseY, selected);
         IGuiIcon icon = this.checked ? this.widgetChecked : this.widgetUnchecked;
 
-        icon.renderAt(ctx, this.x, this.y, this.zLevel, false, false);
+        icon.renderAt(ctx, this.x, this.y, false, false);
 
         int iw = icon.getWidth();
         int y = this.y + 1 + (this.height - this.fontHeight) / 2;
@@ -109,7 +108,7 @@ public class WidgetCheckBox extends WidgetBase
 
         if (this.hoverInfo.isEmpty() == false)
         {
-            RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.hoverInfo);
+            ctx.drawHoverText(mouseX, mouseY, this.hoverInfo);
         }
     }
 }

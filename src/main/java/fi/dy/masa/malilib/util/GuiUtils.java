@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.util;
 
 import java.util.Locale;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -218,13 +220,16 @@ public class GuiUtils
         }
 
         @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+        public boolean handleAction(ButtonBase button, int mouseButton)
         {
-            int amount = mouseButton == 1 ? -1 : 1;
+            if ((mouseButton == ScanCodes.OFFSET_MOUSE_LEFT || mouseButton == ScanCodes.OFFSET_MOUSE_RIGHT) == false) return false;
+
+            int amount = mouseButton == ScanCodes.OFFSET_MOUSE_LEFT ? -1 : 1;
             if (GuiBase.isShiftDown()) { amount *= 8; }
             if (GuiBase.isAltDown())   { amount *= 4; }
 
             this.modifier.modifyValue(this.type, amount);
+            return true;
         }
 
         public enum Type

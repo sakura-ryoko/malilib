@@ -18,7 +18,6 @@ import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.widgets.WidgetListTableEdit;
 import fi.dy.masa.malilib.gui.widgets.WidgetTableEditEntry;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
@@ -130,7 +129,7 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
 	@Override
 	protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
 	{
-		RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
+		ctx.drawOutlinedBox(this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
 	}
 
 	@Override
@@ -167,7 +166,7 @@ public class GuiTableEdit extends GuiListBase<TableRow, WidgetTableEditEntry, Wi
 
             if (label.comment().isEmpty() == false && (mouseX >= minLabelX && mouseX <= maxLabelX && mouseY >= minLabelY && mouseY <= maxLabelY))
             {
-                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(label.comment()));
+				ctx.drawHoverText(mouseX, mouseY, Collections.singletonList(label.comment()));
             }
 		}
 	}

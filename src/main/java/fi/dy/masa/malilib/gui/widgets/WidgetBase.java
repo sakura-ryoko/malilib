@@ -8,7 +8,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public abstract class WidgetBase
 {
@@ -20,7 +19,6 @@ public abstract class WidgetBase
     protected int y;
     protected int width;
     protected int height;
-    protected int zLevel;
 
     public WidgetBase(int x, int y, int width, int height)
     {
@@ -57,11 +55,6 @@ public abstract class WidgetBase
     public void setY(int y)
     {
         this.y = y;
-    }
-
-    public void setZLevel(int zLevel)
-    {
-        this.zLevel = zLevel;
     }
 
     public int getWidth()
@@ -199,7 +192,7 @@ public abstract class WidgetBase
 
     public void drawBackgroundMask(GuiContext ctx)
     {
-        RenderUtils.drawTexturedRect(ctx, GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2);
+        ctx.drawTexturedRect(GuiBase.BG_TEXTURE, this.x + 1, this.y + 1, 0, 0, this.width - 2, this.height - 2);
     }
 
     public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)

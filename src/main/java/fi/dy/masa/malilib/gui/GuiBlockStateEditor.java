@@ -2,6 +2,15 @@ package fi.dy.masa.malilib.gui;
 
 import java.util.*;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
+import fi.dy.masa.malilib.gui.widgets.WidgetDropDownList;
+import fi.dy.masa.malilib.gui.widgets.WidgetSlider;
+import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
+import fi.dy.masa.malilib.util.GuiUtils;
+import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -9,8 +18,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,20 +25,14 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import fi.dy.masa.malilib.MaLiLib;
-import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.config.IConfigBlockState;
-import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
-import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.game.BlockUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiBlockStateEditor extends GuiDialogSplitBase
@@ -46,14 +47,9 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	protected int maxLength;
 	protected int elementHeight;
 	protected int buttonHeight;
-	protected GuiTextFieldGeneric textFieldBlockName;
-	protected HashMap<String, GuiTextFieldGeneric> textFieldBlockProps = new HashMap<>();
+	protected TextFieldWrapper<GuiTextFieldGeneric> textFieldBlockName;
 
 	private BlockState blockState;
-	private Block block;
-	private Collection<Property<?>> props;
-	private Identifier tempBlockId = null;
-	private final HashMap<String, String> tempProps = new HashMap<>();
 
 	public GuiBlockStateEditor(IConfigBlockState config, String name, @Nullable IDialogHandler dialogHandler, Screen parent)
 	{
@@ -73,130 +69,35 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.buttonHeight = 20;
 		this.maxLength = MathUtils.max(this.modelSize - 12, 128);
 		this.blockState = this.config.getBlockStateValue();
-		this.refreshBlockState();
-	}
-
-	private <T extends Comparable<T>> void refreshBlockState()
-	{
-		this.textFieldBlockProps.clear();
-		this.tempProps.clear();
-		this.block = this.blockState.getBlock();
-		this.props = this.blockState.getProperties();
-		this.tempBlockId = BuiltInRegistries.BLOCK.getKey(this.block);
-
-		int leftPaneWidth = MathUtils.max(this.modelSize, this.maxLength) + 24;
-		int maxPropLabelWidth = 120;
-
-		if (!this.props.isEmpty())
-		{
-			for (Property<?> prop : this.props)
-			{
-				@SuppressWarnings("unchecked")
-				Property<T> entry = (Property<T>) prop;
-				String name = prop.getName();
-				int propWidth = this.getStringWidth(name);
-				T value = this.blockState.getValue(entry);
-				String valStr = value.toString().toLowerCase();
-				this.tempProps.put(name, valStr);
-
-				if (propWidth > maxPropLabelWidth)
-				{
-					maxPropLabelWidth = propWidth;
-				}
-			}
-
-			maxPropLabelWidth += 100;
-		}
-
-		final int propSize = this.props.size();
-		final int modelSizeLines = (this.modelSize + (this.elementHeight + 2) + (this.buttonHeight + 4));
-		final int blockNameLines = ((this.elementHeight + 2) * 3) + (modelSizeLines + 6);
-		final int propLines = ((this.elementHeight + 2) * 4) * propSize;
-
-		final int largerSide = MathUtils.max(blockNameLines + 6, propLines + 10);
-//		final int adjWidth = MathUtils.max(MathUtils.max((this.maxLength * 2) + 6, (this.titleWidth * 2) + 6), 256) + 8;
-		int totalWidth = leftPaneWidth + maxPropLabelWidth + 30;
-		totalWidth = MathUtils.clamp(totalWidth, 240, GuiUtils.getScaledWindowWidth() - 40);
-
-		// (this.elementHeight + 2)
-		this.setTotalWidthAndHeight(totalWidth, (largerSide + 6));      // adjWidth, (largerSide + 6)
-		this.setLeftSideWidth(leftPaneWidth);   //  + 2
-		this.centerOnScreen();
-		this.init(this.dialogTotalWidth, this.dialogTotalHeight);
-	}
-
-	private <T extends Comparable<T>> void trySaveBlockState() throws Exception
-	{
-		Optional<Block> opt = BuiltInRegistries.BLOCK.getOptional(this.tempBlockId);
-
-		if (opt.isPresent())
-		{
-			this.block = opt.get();
-		}
-		else
-		{
-			throw new InvalidPropertiesFormatException(String.format("Block %s not found", this.tempBlockId.toString()));
-		}
-
-		this.blockState = this.block.defaultBlockState();
-		this.props = this.blockState.getProperties();
-		CompoundTag tag = new CompoundTag();
-		CompoundTag tagProps = new CompoundTag();
-
-		if (MaLiLibReference.DEBUG_MODE)
-		{
-			CompoundTag testResult = (CompoundTag) BlockState.FULL_CODEC.encodeStart(NbtOps.INSTANCE, this.blockState).getPartialOrThrow();
-			MaLiLib.LOGGER.error("trySaveBlockState: [{}] -> testResult: {}", this.blockState.toString(), testResult.toString());
-		}
-
-		// TODO -- 26.3 (name)
-		tag.putString(BlockUtils.VANILLA_BLOCK_STATE_NAME, BuiltInRegistries.BLOCK.getKey(this.block).toString());
-
-		if (!this.blockState.isSingletonState())
-		{
-			for (Property<?> prop : this.props)
-			{
-				@SuppressWarnings("unchecked")
-				Property<T> entry = (Property<T>) prop;
-				final String name = prop.getName();
-				final String tmp = this.tempProps.get(name);
-
-				if (tmp != null && !tmp.isEmpty())
-				{
-					Optional<T> newVal = entry.getValue(tmp);
-					newVal.ifPresent(value -> tagProps.putString(name, value.toString().toLowerCase()));
-				}
-				else
-				{
-					T value = this.blockState.getValue(entry);
-					tagProps.putString(name, value.toString().toLowerCase());
-				}
-			}
-
-			// TODO -- 26.3 (properties)
-			tag.put(BlockUtils.VANILLA_BLOCK_STATE_PROPERTIES, tagProps);        // Ugly method, but if it works? ~_^
-		}
-
-		if (MaLiLibReference.DEBUG_MODE)
-		{
-			MaLiLib.LOGGER.error("trySaveBlockState: nbt: {}", tag.toString());
-		}
-
-		this.blockState = BlockState.FULL_CODEC.parse(NbtOps.INSTANCE, tag).getPartialOrThrow();
-		this.refreshBlockState();
 	}
 
 	@Override
 	public void initGui()
 	{
-		this.clearElements();
+		super.initGui();
+
+		int leftPaneWidth = MathUtils.max(this.modelSize, this.maxLength) + 24;
+		int maxPropLabelWidth = 120;
+
+		// this is bad but I can't be asked to fix it... proper way would be to return the heights in each method
+		int propSize = this.blockState.getProperties().size();
+		int modelSizeLines = (this.modelSize + (this.elementHeight + 2) + (this.buttonHeight + 4));
+		int blockNameLines = ((this.elementHeight + 2) * 3) + (modelSizeLines + 6);
+		int propLines = ((this.elementHeight + 2) * 3) * propSize;
+
+		int largerSide = MathUtils.max(blockNameLines + 6, propLines + 10);
+		int totalWidth = leftPaneWidth + maxPropLabelWidth + 30;
+		totalWidth = MathUtils.clamp(totalWidth, 240, GuiUtils.getScaledWindowWidth() - 40);
+
+		this.setTotalWidthAndHeight(totalWidth, (largerSide + 6));      // adjWidth, (largerSide + 6)
+		this.setLeftSideWidth(leftPaneWidth);   //  + 2
+		this.centerOnScreen();
 
 		int x = this.dialogLeft + 10;
 		int y = this.dialogTop + (this.elementHeight) + 2 + 6;
-		final int xCenter = this.dialogCenter + 10;
-		final int yCenter = y;
+		int xCenter = this.dialogCenter + 10;
+		int yCenter = y;
 
-		// todo Left Side
 		// Block Name / Entry Box
 		this.addBlockName(x, y);
 		y += (this.elementHeight * 2) + 6;
@@ -209,122 +110,136 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			yScaled = y;
 		}
 
-		this.addBlockStateDisplay(x, yScaled);
-		yScaled += (this.elementHeight) + 2;
+		yScaled += this.addBlockStateDisplay(x, yScaled);
 
 		// Model Pos
 		this.modelX = (this.dialogLeftSideCenter - (this.modelSize / 2)); //  + 14
 		this.modelY = yScaled;
 
 		// Buttons (Centered on Left Pane)
-		final int buttonALen = this.getStringWidth(ButtonType.UPDATE.getDisplayName()) + 10;
-		final int buttonBLen = this.getStringWidth(ButtonType.RESET.getDisplayName()) + 10;
-		final int totalButtonWidth = (buttonALen + 2 + buttonBLen + 2);
-		int xAdj = (this.dialogLeftSideCenter - ((totalButtonWidth) / 2)); //  + 14
 		int yAdj = this.dialogBottom - this.buttonHeight - 4;
+        ButtonGeneric resetButton = this.addButton(
+				new ButtonGeneric(x, yAdj, -1, this.buttonHeight, ButtonType.RESET.getDisplayName()),
+				IButtonActionListener.simple((_, _) -> {
+					this.blockState = this.config.getBlockStateValue();
+					this.init();
+				})
+		);
+		resetButton.setX((this.dialogLeftSideCenter - resetButton.getWidth() / 2));
 
-		xAdj += this.createButton(xAdj, yAdj, this.buttonHeight, ButtonType.UPDATE);
-		xAdj += this.createButton(xAdj, yAdj, this.buttonHeight, ButtonType.RESET);
-
-		// todo Right Side
 		// Properties List / Entry Boxes
 		this.addBlockProperties(xCenter, yCenter);
 	}
 
+	private void reInitProperties() {
+        GuiTextFieldGeneric oldWidget = this.textFieldBlockName.textField();
+		this.init();
+		this.textFieldBlockName.textField().setFocused(oldWidget.isFocused());
+		this.textFieldBlockName.textField().setCursorPosition(oldWidget.getCursorPosition());
+		this.textFieldBlockName.textField().setHighlightPos(oldWidget.getCursorPosition());
+//		this.textFieldBlockName.setHighlightPos(oldWidget.highl);
+		this.focusedWidget = this.textFieldBlockName;
+	}
+
 	private void addBlockName(int x, int y)
 	{
-		final String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_name");
+		String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_name");
 		this.addLabel(x, y, this.getStringWidth(str), this.elementHeight, COLOR_WHITE, str);
 		y += this.elementHeight + 2;
 
-		this.textFieldBlockName = new GuiTextFieldGeneric(x, y, this.maxLength + 2, this.elementHeight, this.font);
-		this.textFieldBlockName.setValue(this.tempBlockId.toString());
-		this.textFieldBlockName.setMaxLength(this.maxLength);
-		this.addTextField(this.textFieldBlockName, new BlockNameTextFieldListener(this), TextFieldType.BLOCK_ID);
-		y += this.elementHeight + 2;
+        GuiTextFieldGeneric textField = new GuiTextFieldGeneric(x, y, this.maxLength + 2, this.elementHeight, this.font);
+		textField.setValue(BuiltInRegistries.BLOCK.getKey(this.blockState.getBlock()).toString());
+		textField.setMaxLength(this.maxLength);
+		this.textFieldBlockName = this.addTextField(textField, new BlockNameTextFieldListener(this), TextFieldType.BLOCK_ID);
 	}
 
-	private void addBlockStateDisplay(int x, int y)
+	private int addBlockStateDisplay(int x, int y)
 	{
-		final String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_display");
-		final int width = this.getStringWidth(str);
-		final int xAdj = (this.dialogLeftSideCenter - (width / 2)); //  + 14
+		String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_display");
+		int width = this.getStringWidth(str);
+		int xAdj = x + (width / 2) + 2; //  + 14
 		this.addLabel(xAdj, y, width, this.elementHeight, COLOR_WHITE, str);
-		y += this.elementHeight + 2;
+		return this.elementHeight + 2;
 	}
 
 	private void addBlockProperties(int x, int y)
 	{
 		int count = 1;
-		final String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_properties");
+		String str = StringUtils.translate("malilib.gui.label.block_state_editor.block_properties");
 		this.addLabel(x, y, this.getStringWidth(str), this.elementHeight, COLOR_WHITE, str);
 		y += this.elementHeight + 2;
 
-		for (Property<?> prop : this.props)
+		for (Property<?> prop : this.blockState.getProperties())
 		{
 			this.addEachBlockProperty(x, y, prop, count++);
-			y += (this.elementHeight * 4) + 2;
+			y += (this.elementHeight * 3) + 2;
 		}
 	}
 
 	private <T extends Comparable<T>> void addEachBlockProperty(int x, int y, Property<@NonNull T> prop, int index)
 	{
-		final String name = prop.getName();
-		final List<T> validValues = prop.getPossibleValues();
+		String name = prop.getName();
 		String str = StringUtils.translate("malilib.gui.label.block_state_editor.property.name", index, name);
-		final int propWidth = this.getStringWidth(str);
+		int propWidth = this.getStringWidth(str);
 		this.addLabel(x, y, propWidth, this.elementHeight, COLOR_WHITE, str);
 		y += this.elementHeight + 2;
 
-		List<String> validValueStrings = new ArrayList<>();
-
-		for (T value : validValues)
-		{
-			validValueStrings.add(value.toString().toLowerCase());
+		if (prop instanceof IntegerProperty integerProperty) {
+			WidgetSlider slider = getSlider(x, y, prop.getPossibleValues().indexOf(this.blockState.getValue(prop)), integerProperty);
+			this.addWidget(slider);
+		} else {
+			List<T> validValues = prop.getPossibleValues();
+			WidgetDropDownList<T> dropDown = new WidgetDropDownList<>(x, y, this.maxLength+2, this.elementHeight + 2, 500, 10, validValues);
+			dropDown.setSelectedEntryChangeCallback(t -> GuiBlockStateEditor.this.blockState = GuiBlockStateEditor.this.blockState.setValue(prop, t));
+			T value = this.blockState.getValue(prop);
+			this.addWidget(dropDown.setSelectedEntry(value));
 		}
-
-		// Truncate large lists of Integers, such as '1 - 15'
-		if (prop instanceof IntegerProperty)
-		{
-			String adjStr = String.format("[%s - %s]", validValueStrings.getFirst(), validValueStrings.getLast());
-			str = StringUtils.translate("malilib.gui.label.block_state_editor.property.potenial_values", adjStr);
-		}
-		else
-		{
-			str = StringUtils.translate("malilib.gui.label.block_state_editor.property.potenial_values",
-			                            StringUtils.getClampedDisplayStringRenderlen(validValueStrings, (this.dialogRightSideWidth - propWidth) - 30, "[ ", " ]"));
-		}
-
-		this.addLabel(x, y, this.getStringWidth(str), this.elementHeight, COLOR_WHITE, str);
-		y += this.elementHeight + 2;
-		this.textFieldBlockProps.put(name, new GuiTextFieldGeneric(x, y, this.maxLength + 2, this.elementHeight, this.font));
-
-		T value = null;
-		String valStr = "";
-
-		try
-		{
-			value = this.blockState.getValue(prop);
-		}
-		catch (Exception ignored) {}
-
-		if (value != null)
-		{
-			valStr = value.toString().toLowerCase();
-		}
-
-		this.textFieldBlockProps.get(name).setValue(valStr);
-		this.textFieldBlockProps.get(name).setMaxLength(this.maxLength);
-		this.addTextField(this.textFieldBlockProps.get(name), new PropertyValueTextFieldListener(this, name), TextFieldType.VALID_STRING.setValidStrings(validValueStrings));
-		y += this.elementHeight + 2;
 	}
 
-	private int createButton(int x, int y, int height, ButtonType type)
+	private @NonNull WidgetSlider getSlider(int x, int y, int initialIndex, IntegerProperty integerProperty)
 	{
-		final String text = type.getDisplayName();
-		ButtonGeneric button = new ButtonGeneric(x, y, -1, height, text);
-		this.addButton(button, this.createActionListener(type));
-		return button.getWidth() + 2;
+		List<Integer> validValues = integerProperty.getPossibleValues();
+		return new WidgetSlider(x, y, this.maxLength + 2, this.elementHeight + 6, new ISliderCallback()
+		{
+			private int valueIndex = initialIndex;
+
+			@Override
+			public int getMaxSteps()
+			{
+				return validValues.size() - 1;
+			}
+
+			@Override
+			public double getValueRelative()
+			{
+				if (validValues.size() <= 1)
+					return 0.0;
+
+				return (double) valueIndex / (validValues.size() - 1);
+			}
+
+			@Override
+			public void setValueRelative(double relativeValue)
+			{
+				if (validValues.size() <= 1) {
+					valueIndex = 0;
+					return;
+				}
+
+				valueIndex = (int) Math.round(
+						relativeValue * (validValues.size() - 1)
+				);
+				valueIndex = Math.clamp(valueIndex, 0, validValues.size() - 1);
+
+				blockState = blockState.setValue(integerProperty, validValues.get(valueIndex));
+			}
+
+			@Override
+			public String getFormattedDisplayValue()
+			{
+				return String.valueOf(validValues.get(valueIndex));
+			}
+		});
 	}
 
 	@Override
@@ -332,7 +247,6 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	{
 		try
 		{
-			this.trySaveBlockState();
 			this.config.setBlockStateValue(this.blockState);
 		}
 		catch (Exception e)
@@ -348,39 +262,38 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	{
 		if (this.getParent() != null)
 		{
-			this.getParent().extractRenderState(ctx, mouseX, mouseY, partialTicks);
+			// TODO sakura: decide whether or not this (0, 0) is better, it effectively
+			//  removes the "white outline" from buttons in the parent screen when you
+			//  hover over them. Would need to apply this to all GUIs that render their
+			//  parent
+			this.getParent().extractRenderState(ctx, 0, 0, partialTicks);
 		}
 
 		super.extractRenderState(ctx, mouseX, mouseY, partialTicks);
-		this.drawBlockStateInGui(GuiContext.fromGuiGraphics(ctx), mouseX, mouseY);
+		this.drawBlockStateInGui(GuiContext.fromGuiGraphics(ctx));
 	}
 
-	private void drawBlockStateInGui(GuiContext ctx, int mouseX, int mouseY)
+	private void drawBlockStateInGui(GuiContext ctx)
 	{
-		RenderUtils.renderModelInGui(ctx, this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F);
+		ctx.renderModel(this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F, 0.125f * Mth.PI, ((Util.getMillis() % 16000f) / 16000f) * Mth.TWO_PI, Mth.PI);
+//		RenderUtils.renderModelInGui(ctx, this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F, 0, 0, 0);
 	}
 
 	@Override
 	protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
 	{
 		// Background
-		RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogTotalWidth, this.dialogTotalHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
+		ctx.drawOutlinedBox(this.dialogLeft, this.dialogTop, this.dialogTotalWidth, this.dialogTotalHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
 		this.drawDividerBars(ctx, mouseX, mouseY);
 
 		// Model Display Box
-		RenderUtils.drawOutlinedBox(ctx, this.modelX, this.modelY, (this.modelSize), (this.modelSize), 0xFF202020, COLOR_HORIZONTAL_BAR);
+		ctx.drawOutlinedBox(this.modelX, this.modelY, (this.modelSize), (this.modelSize), 0xFF202020, COLOR_HORIZONTAL_BAR);
 	}
 
 	@Override
 	protected void drawTitle(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
 	{
 		this.drawStringWithShadow(ctx, this.title, this.dialogLeft + 10, this.dialogTop + 6, COLOR_WHITE);
-	}
-
-	@Override
-	public boolean keyPressed(@NotNull KeyEvent input)
-	{
-		return this.onKeyTyped(input);
 	}
 
 	@Override
@@ -405,29 +318,12 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		{
 			Identifier id = Identifier.tryParse(textField.getValue());
 
-			if (id != null && BuiltInRegistries.BLOCK.getOptional(id).isPresent())
+			if (id != null)
 			{
-				this.gui.tempBlockId = id;
-				return true;
-			}
-
-			return false;
-		}
-	}
-
-	protected record PropertyValueTextFieldListener(GuiBlockStateEditor gui, String name)
-			implements ITextFieldListener<GuiTextFieldGeneric>
-	{
-		@Override
-		public boolean onTextChange(GuiTextFieldGeneric textField)
-		{
-			final String val = textField.getValue();
-
-			for (Property<?> prop : this.gui().props)
-			{
-				if (prop.getName().equals(this.name()) && prop.getValue(val).isPresent())
-				{
-					this.gui().tempProps.put(this.name(), val.toLowerCase());
+				Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(id);
+				if (block.isPresent()) {
+					this.gui.blockState = block.get().defaultBlockState().withPropertiesOf(this.gui.blockState);
+					this.gui.reInitProperties();
 					return true;
 				}
 			}
@@ -436,39 +332,8 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		}
 	}
 
-	private ButtonListener createActionListener(ButtonType type)
-	{
-		return new ButtonListener(type, this);
-	}
-
-	private record ButtonListener(ButtonType type, GuiBlockStateEditor gui)
-			implements IButtonActionListener
-	{
-		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
-		{
-			if (this.type() == ButtonType.UPDATE)
-			{
-				try
-				{
-					this.gui().trySaveBlockState();
-				}
-				catch (Exception e)
-				{
-					MaLiLib.LOGGER.error("GuiBlockStateEditor: Exception saving block state; {}", e.getLocalizedMessage());
-				}
-			}
-			else if (this.type() == ButtonType.RESET)
-			{
-				this.gui().blockState = this.gui().config.getBlockStateValue();
-				this.gui().refreshBlockState();
-			}
-		}
-	}
-
 	private enum ButtonType
 	{
-		UPDATE          ("malilib.gui.button.update"),
 		RESET           ("malilib.gui.button.reset"),
 		;
 

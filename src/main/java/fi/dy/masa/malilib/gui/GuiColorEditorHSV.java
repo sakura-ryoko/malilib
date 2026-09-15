@@ -26,7 +26,6 @@ import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.render.element.*;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
@@ -112,7 +111,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     @Override
     public void initGui()
     {
-        this.clearElements();
+        super.initGui();
 
         int xLabel = this.dialogLeft + 148;
         int xTextField = xLabel + 110;
@@ -193,7 +192,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
     @Override
     protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
-        RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
+        ctx.drawOutlinedBox(this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xFF000000, COLOR_HORIZONTAL_BAR);
     }
 
     @Override
@@ -488,7 +487,6 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int y = this.yH - 1;
         int w = this.widthSlider + 2;
         int h = this.heightSlider + 2;
-        int z = 0;
         int yd = this.heightSlider + this.gapSlider;
         int cx = this.xHS;
         int cy = this.yHS + this.sizeHS + 8;
@@ -496,28 +494,28 @@ public class GuiColorEditorHSV extends GuiDialogBase
         int cw = 32;
         int ch = 32;
 
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // H
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // H
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // S
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // S
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // V
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // V
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // R
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // R
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // G
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // G
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // B
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // B
         y += yd;
-        RenderUtils.drawOutline(ctx, x, y, w, h, 0xC0FFFFFF); // A
+        ctx.drawOutline(x, y, w, h, 0xC0FFFFFF); // A
 
         x = this.xHS;
         y = this.yHS;
         w = this.sizeHS;
         h = this.sizeHS;
 
-        RenderUtils.drawOutline(ctx, x - 1, y - 1, w + 2, h + 2, 0xC0FFFFFF);                      // main color selector
-        RenderUtils.drawOutline(ctx, cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF);                  // current color indicator
-        RenderUtils.drawOutline(ctx, this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
+        ctx.drawOutline(x - 1, y - 1, w + 2, h + 2, 0xC0FFFFFF);                      // main color selector
+        ctx.drawOutline(cx - 1, cy - 1, cw + 2, ch + 2, 0xC0FFFFFF);                  // current color indicator
+        ctx.drawOutline(this.xHFullSV, y - 1, this.widthHFullSV, this.sizeHS + 2, 0xC0FFFFFF); // Hue vertical/full value
 
         // Full SV Square --
         int r = (int) (this.relR * 255f);
@@ -604,55 +602,55 @@ public class GuiColorEditorHSV extends GuiDialogBase
         yd = this.heightSlider + this.gapSlider;
 
         // Full value Saturation & Value, Hue slider
-        renderHueBarVertical(ctx, this.xHFullSV + 1, this.yHS, z, this.widthHFullSV - 2, this.sizeHS, 1f, 1f);
-        renderBarMarkerVerticalBar(ctx, this.xHFullSV, this.yHS, z, this.widthHFullSV, this.sizeHS, this.relH);
+        renderHueBarVertical(ctx, this.xHFullSV + 1, this.yHS, this.widthHFullSV - 2, this.sizeHS, 1f, 1f);
+        renderBarMarkerVerticalBar(ctx, this.xHFullSV, this.yHS, this.widthHFullSV, this.sizeHS, this.relH);
 
         // Hue slider
-        renderHueBarHorizontal(ctx, x, y, z, w, h, this.relS, this.relV);
-        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, this.relH);
+        renderHueBarHorizontal(ctx, x, y, w, h, this.relS, this.relV);
+        renderBarMarkerHorizontalBar(ctx, x, y, w, h, this.relH);
         y += yd;
 
         // Saturation slider
         int color1 = Color.HSBtoRGB(this.relH, 0, this.relV);
         int color2 = Color.HSBtoRGB(this.relH, 1, this.relV);
-        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, this.relS);
+        renderGradientColorBar(ctx, x, y, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, w, h, this.relS);
         y += yd;
 
         // Value/Brightness slider
         color1 = Color.HSBtoRGB(this.relH, this.relS, 0);
         color2 = Color.HSBtoRGB(this.relH, this.relS, 1);
-        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, this.relV);
+        renderGradientColorBar(ctx, x, y, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, w, h, this.relV);
         y += yd;
 
         // Red slider
         color1 = (this.color & 0xFF00FFFF) | 0xFF000000;
         color2 = this.color | 0xFFFF0000;
-        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, (float) r / 255f);
+        renderGradientColorBar(ctx, x, y, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, w, h, (float) r / 255f);
         y += yd;
 
         // Green slider
         color1 = (this.color & 0xFFFF00FF) | 0xFF000000;
         color2 = this.color | 0xFF00FF00;
-        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, (float) g / 255f);
+        renderGradientColorBar(ctx, x, y, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, w, h, (float) g / 255f);
         y += yd;
 
         // Blue slider
         color1 = (this.color & 0xFFFFFF00) | 0xFF000000;
         color2 = this.color | 0xFF0000FF;
-        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, (float) b / 255f);
+        renderGradientColorBar(ctx, x, y, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, w, h, (float) b / 255f);
         y += yd;
 
         // Alpha slider
         a = (int) (this.relA * 255f);
         color1 = this.color & 0x00FFFFFF;
         color2 = this.color | 0xFF000000;
-        renderGradientColorBar(ctx, x, y, z, w, h, color1, color2);
-        renderBarMarkerHorizontalBar(ctx, x, y, z, w, h, (float) a / 255f);
+        renderGradientColorBar(ctx, x, y, w, h, color1, color2);
+        renderBarMarkerHorizontalBar(ctx, x, y, w, h, (float) a / 255f);
         y += yd;
     }
 
@@ -730,7 +728,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         }
     }
 
-    public static void renderGradientColorBar(GuiContext ctx, int x, int y, float z, int width, int height, int colorStart, int colorEnd)
+    public static void renderGradientColorBar(GuiContext ctx, int x, int y, int width, int height, int colorStart, int colorEnd)
     {
 	    ctx.addSimpleElement(new MaLiLibHSV2ColorGradientGuiElement(
 				RenderPipelines.GUI,
@@ -743,55 +741,55 @@ public class GuiColorEditorHSV extends GuiDialogBase
         );
     }
 
-    public static void renderHueBarHorizontal(GuiContext ctx, int x, int y, float z, int width, int height, float saturation, float value)
+    public static void renderHueBarHorizontal(GuiContext ctx, int x, int y, int width, int height, float saturation, float value)
     {
-        renderHueBar(ctx, x, y, z, 0, height, width / 6, 0, saturation, value);
+        renderHueBar(ctx, x, y, 0, height, width / 6, 0, saturation, value);
     }
 
-    public static void renderHueBarVertical(GuiContext ctx, int x, int y, float z, int width, int height, float saturation, float value)
+    public static void renderHueBarVertical(GuiContext ctx, int x, int y, int width, int height, float saturation, float value)
     {
         y = y + height - height / 6;
-        renderHueBar(ctx, x, y, z, width, 0, 0, height / 6, saturation, value);
+        renderHueBar(ctx, x, y, width, 0, 0, height / 6, saturation, value);
     }
 
-    public static void renderHueBar(GuiContext ctx, int x, int y, float z, int width, int height, int segmentWidth, int segmentHeight, float saturation, float value)
+    public static void renderHueBar(GuiContext ctx, int x, int y, int width, int height, int segmentWidth, int segmentHeight, float saturation, float value)
     {
         int color1 = Color.HSBtoRGB(0f   , saturation, value);
         int color2 = Color.HSBtoRGB(1f/6f, saturation, value);
-        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(1f/6f, saturation, value);
         color2 = Color.HSBtoRGB(2f/6f, saturation, value);
-        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(2f/6f, saturation, value);
         color2 = Color.HSBtoRGB(3f/6f, saturation, value);
-        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(3f/6f, saturation, value);
         color2 = Color.HSBtoRGB(4f/6f, saturation, value);
-        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(4f/6f, saturation, value);
         color2 = Color.HSBtoRGB(5f/6f, saturation, value);
-        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, width, height, segmentWidth, segmentHeight, color1, color2);
         x += segmentWidth;
         y -= segmentHeight;
 
         color1 = Color.HSBtoRGB(5f/6f, saturation, value);
         color2 = Color.HSBtoRGB(6f/6f, saturation, value);
-        renderHueBarSegment(ctx, x, y, z, width, height, segmentWidth, segmentHeight, color1, color2);
+        renderHueBarSegment(ctx, x, y, width, height, segmentWidth, segmentHeight, color1, color2);
     }
 
-    public static void renderHueBarSegment(GuiContext ctx, int x, int y, float z, int width, int height,
+    public static void renderHueBarSegment(GuiContext ctx, int x, int y, int width, int height,
             int segmentWidth, int segmentHeight, int color1, int color2)
     {
 	    ctx.addSimpleElement(new MaLiLibHSV2ColorSegmentedHueGuiElement(
@@ -806,7 +804,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         );
     }
 
-    public static void renderHSSelector(GuiContext ctx, int xStart, int yStart, float z, int width, int height, float hue)
+    public static void renderHSSelector(GuiContext ctx, int xStart, int yStart, int width, int height, float hue)
     {
 	    ctx.addSimpleElement(new MaLiLibHSVColorSelectorGuiElement(
 				RenderPipelines.GUI,
@@ -819,7 +817,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         );
     }
 
-    public static void renderBarMarkerHorizontalBar(GuiContext ctx, int x, int y, float z, int barWidth, int barHeight, float value)
+    public static void renderBarMarkerHorizontalBar(GuiContext ctx, int x, int y, int barWidth, int barHeight, float value)
     {
 	    ctx.addSimpleElement(new MaLiLibHSVColorHorizontalBarMarkerGuiElement(
 				RenderPipelines.GUI,
@@ -832,7 +830,7 @@ public class GuiColorEditorHSV extends GuiDialogBase
         );
     }
 
-    public static void renderBarMarkerVerticalBar(GuiContext ctx, int x, int y, float z, int barWidth, int barHeight, float value)
+    public static void renderBarMarkerVerticalBar(GuiContext ctx, int x, int y, int barWidth, int barHeight, float value)
     {
 	    ctx.addSimpleElement(new MaLiLibHSVColorVerticalBarMarkerGuiElement(
 				RenderPipelines.GUI,
@@ -967,5 +965,48 @@ public class GuiColorEditorHSV extends GuiDialogBase
         SV,
         H_FULL_SV,
         HEX
+    }
+
+    @Deprecated(forRemoval = true)
+    public static void renderGradientColorBar(GuiContext ctx, int x, int y, float z, int width, int height, int colorStart, int colorEnd)
+    {
+        renderGradientColorBar(ctx, x, y, width, height, colorStart, colorEnd);
+    }
+
+    @Deprecated(forRemoval = true)
+    public static void renderHueBarHorizontal(GuiContext ctx, int x, int y, float z, int width, int height, float saturation, float value)
+    {
+        renderHueBarHorizontal(ctx, x, y, width, height, saturation, value);
+    }
+
+    @Deprecated(forRemoval = true)
+    public static void renderHueBarVertical(GuiContext ctx, int x, int y, float z, int width, int height, float saturation, float value)
+    {
+        renderHueBarVertical(ctx, x, y, width, height, saturation, value);
+    }
+
+    @Deprecated(forRemoval = true)
+    public static void renderHueBarSegment(GuiContext ctx, int x, int y, float z, int width, int height,
+                                           int segmentWidth, int segmentHeight, int color1, int color2)
+    {
+        renderHueBarSegment(ctx, x, y, width, height, segmentWidth, segmentHeight, color1, color2);
+    }
+
+    @Deprecated(forRemoval = true)
+    public static void renderHSSelector(GuiContext ctx, int xStart, int yStart, float z, int width, int height, float hue)
+    {
+        renderBarMarkerVerticalBar(ctx, xStart, yStart, z, width, height, hue);
+    }
+
+    @Deprecated(forRemoval = true)
+    public static void renderBarMarkerVerticalBar(GuiContext ctx, int x, int y, float z, int barWidth, int barHeight, float value)
+    {
+        renderBarMarkerVerticalBar(ctx, x, y, barWidth, barHeight, value);
+    }
+
+    @Deprecated(forRemoval = true)
+    public static void renderBarMarkerHorizontalBar(GuiContext ctx, int x, int y, float z, int barWidth, int barHeight, float value)
+    {
+        renderBarMarkerVerticalBar(ctx, x, y, barWidth, barHeight, value);
     }
 }

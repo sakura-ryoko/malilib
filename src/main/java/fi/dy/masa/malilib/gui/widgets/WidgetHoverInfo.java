@@ -2,11 +2,12 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import fi.dy.masa.malilib.interfaces.IHoverable;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
-public class WidgetHoverInfo extends WidgetBase
+public class WidgetHoverInfo extends WidgetBase implements IHoverable
 {
     protected final List<String> lines = new ArrayList<>();
 
@@ -61,6 +62,11 @@ public class WidgetHoverInfo extends WidgetBase
     public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
         super.postRenderHovered(ctx, mouseX, mouseY, selected);
-        RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.lines);
+        ctx.drawHoverText(mouseX, mouseY, this.lines);
+    }
+
+    @Override
+    public List<String> getHoverStrings() {
+        return this.lines;
     }
 }

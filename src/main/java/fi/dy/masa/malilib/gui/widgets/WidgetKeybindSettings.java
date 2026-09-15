@@ -13,7 +13,6 @@ import fi.dy.masa.malilib.gui.interfaces.IDialogHandler;
 import fi.dy.masa.malilib.hotkeys.IKeybind;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
@@ -83,18 +82,17 @@ public class WidgetKeybindSettings extends WidgetBase
         int y = this.y;
 
         int edgeColor = this.keybind.areSettingsModified() ? 0xFFFFBB33 : 0xFFFFFFFF;
-        RenderUtils.drawRect(ctx, x, y, 20, 20, edgeColor);
-        RenderUtils.drawRect(ctx, x + 1, y + 1, 18, 18, 0xFF000000);
+        ctx.drawRect(x, y, 20, 20, edgeColor);
+        ctx.drawRect(x + 1, y + 1, 18, 18, 0xFF000000);
 
         x += 1;
         y += 1;
-        float z = 0;
 
-        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  0,  v1, w, w, z);
-        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  18, v2, w, w, z);
-        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  36, v3, w, w, z);
-        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  54, v4, w, w, z);
-        RenderUtils.drawTexturedRect(ctx, TEXTURE, x, y,  72, v5, w, w, z);
+        ctx.drawTexturedRect(TEXTURE, x, y,  0,  v1, w, w);
+        ctx.drawTexturedRect(TEXTURE, x, y,  18, v2, w, w);
+        ctx.drawTexturedRect(TEXTURE, x, y,  36, v3, w, w);
+        ctx.drawTexturedRect(TEXTURE, x, y,  54, v4, w, w);
+        ctx.drawTexturedRect(TEXTURE, x, y,  72, v5, w, w);
     }
 
     @Override
@@ -141,6 +139,6 @@ public class WidgetKeybindSettings extends WidgetBase
 
         text.addAll(Arrays.asList(parts));
 
-        RenderUtils.drawHoverText(ctx, mouseX + 10, mouseY, text);
+        ctx.drawHoverText(mouseX + 10, mouseY, text);
     }
 }
