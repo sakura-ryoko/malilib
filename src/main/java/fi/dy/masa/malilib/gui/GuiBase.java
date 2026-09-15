@@ -206,7 +206,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         // Draw base widgets
         this.drawWidgets(ctx, mouseX, mouseY);
-        this.drawButtons(ctx, mouseX, mouseY, partialTicks);
         this.drawContents(ctx, mouseX, mouseY, partialTicks);
         this.drawHoveredWidget(ctx, mouseX, mouseY);
         this.drawHoverTexts(ctx, mouseX, mouseY, partialTicks);
@@ -644,6 +643,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
     }
 
+    @Deprecated(forRemoval = true)
     protected void drawButtons(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         for (WidgetBase widget : this.widgets.stream().toList())

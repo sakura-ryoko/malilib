@@ -93,11 +93,11 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
     }
 
     @Override
-    public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
+    public void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
         if (this.getParent() != null)
         {
-            this.getParent().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+            this.getParent().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0);
         }
 
 	    ctx.pose().pushMatrix();
@@ -110,9 +110,8 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
         this.drawStringWithShadow(ctx, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
 
         //super.drawScreen(mouseX, mouseY, partialTicks);
-        this.textField.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+        this.textField.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0);
 
-        this.drawButtons(ctx, mouseX, mouseY, partialTicks);
 	    ctx.pose().popMatrix();
     }
 
