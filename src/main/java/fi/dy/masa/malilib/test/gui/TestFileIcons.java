@@ -60,9 +60,9 @@ public enum TestFileIcons implements IGuiIcon, IFileBrowserIconProvider
 	}
 
 	@Override
-	public void renderAt(GuiContext ctx, int x, int y, float zLevel, boolean enabled, boolean selected)
+	public void renderAt(GuiContext ctx, int x, int y, boolean enabled, boolean selected)
 	{
-		ctx.drawTexturedRect(this.getTexture(), x, y, this.u, this.v, this.w, this.h, zLevel);
+		ctx.drawTexturedRect(this.getTexture(), x, y, this.u, this.v, this.w, this.h);
 	}
 
 	@Override

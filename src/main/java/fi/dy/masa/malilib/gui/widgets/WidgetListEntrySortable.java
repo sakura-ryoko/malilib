@@ -52,7 +52,7 @@ public abstract class WidgetListEntrySortable<TYPE> extends WidgetListEntryBase<
         int iconX = this.getColumnPosX(sortColumn + 1) - 21; // align to the right edge
 
         IGuiIcon icon = reverse ? iconReverse : iconNatural;
-        icon.renderAt(ctx, iconX, this.y + 3, this.zLevel, true, sortColumn == mouseOverColumn);
+        icon.renderAt(ctx, iconX, this.y + 3, true, sortColumn == mouseOverColumn);
 
         for (int i = 0; i < this.getColumnCount(); ++i)
         {

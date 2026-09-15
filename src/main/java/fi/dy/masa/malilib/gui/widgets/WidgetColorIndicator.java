@@ -55,7 +55,6 @@ public class WidgetColorIndicator extends WidgetBase
         super.render(ctx, mouseX, mouseY, selected);
         int x = this.getX();
         int y = this.getY();
-        int z = this.zLevel;
         int width = this.getWidth();
         int height = this.getHeight();
 

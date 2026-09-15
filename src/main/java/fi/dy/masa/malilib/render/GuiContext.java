@@ -77,13 +77,8 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public GuiGraphicsExtractor getGuiGraphics()
 	{
-		if (this.guiGraphics != null)
-		{
-			return this.guiGraphics;
-		}
-
-		return this;
-	}
+        return this.guiGraphics;
+    }
 
 	public Minecraft mc()
 	{
@@ -323,15 +318,10 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 
 	public void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height)
 	{
-		drawTexturedRect(texture, x, y, u, v, width, height, 0F, -1);
+		drawTexturedRect(texture, x, y, u, v, width, height, -1);
 	}
 
-	public void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel)
-	{
-		drawTexturedRect(texture, x, y, u, v, width, height, zLevel, -1);
-	}
-
-	public void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
+	public void drawTexturedRect(Identifier texture, int x, int y, int u, int v, int width, int height, int argb)
 	{
 		float pixelWidth = 0.00390625F;
 		Pair<GpuTextureView, GpuSampler> pair = this.bindTexture(texture);
@@ -359,21 +349,13 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void drawTexturedRectBatched(@Nonnull Pair<GpuTextureView, GpuSampler> pair, int x, int y, int u, int v, int width, int height)
 	{
-		drawTexturedRectBatched(pair, x, y, u, v, width, height, 0, -1);
+		drawTexturedRectBatched(pair, x, y, u, v, width, height, -1);
 	}
 
 	/**
 	 * New GuiGraphics-based DrawTexturedBatched
 	 */
 	public void drawTexturedRectBatched(@Nonnull Pair<GpuTextureView, GpuSampler> pair, int x, int y, int u, int v, int width, int height, int argb)
-	{
-		drawTexturedRectBatched(pair, x, y, u, v, width, height, 0, argb);
-	}
-
-	/**
-	 * New GuiGraphics-based DrawTexturedBatched
-	 */
-	public void drawTexturedRectBatched(@Nonnull Pair<GpuTextureView, GpuSampler> pair, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
 	{
 		this.addSimpleElement(new MaLiLibTexturedRectGuiElement(
 				RenderPipelines.GUI_TEXTURED,
@@ -429,7 +411,6 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 			this.pose().pushMatrix();
 			this.pose().translate(0, 0);
 
-//            float zLevel = (float) 300;
 			int borderColor = 0xF0100010;
 			drawGradientRectBatched(textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
 			drawGradientRectBatched(textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);

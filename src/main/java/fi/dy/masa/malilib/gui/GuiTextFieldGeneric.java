@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.gui;
 
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix3x2fStack;
 
 import fi.dy.masa.malilib.mixin.gui.IMixinAbstractWidget;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -23,7 +22,6 @@ public class GuiTextFieldGeneric extends EditBox
     protected int y;
     protected int width;
     protected int height;
-    protected int zLevel;
 
     public GuiTextFieldGeneric(int x, int y, int width, int height, Font textRenderer)
     {
@@ -89,33 +87,6 @@ public class GuiTextFieldGeneric extends EditBox
     {
         return mouseX >= this.x && mouseX < this.x + this.width &&
                mouseY >= this.y && mouseY < this.y + this.height;
-    }
-
-    @Deprecated(forRemoval = true)
-    public GuiTextFieldGeneric setZLevel(int zLevel)
-    {
-        this.zLevel = zLevel;
-        return this;
-    }
-
-    @Override
-    public void extractWidgetRenderState(@NotNull GuiGraphicsExtractor context, int mouseX, int mouseY, float delta)
-    {
-        if (this.zLevel != 0)
-        {
-            Matrix3x2fStack matrixStack = context.pose();
-            matrixStack.pushMatrix();
-            // this.zLevel
-            matrixStack.translate(0, 0);
-
-            super.extractWidgetRenderState(context, mouseX, mouseY, delta);
-
-            matrixStack.popMatrix();
-        }
-        else
-        {
-            super.extractWidgetRenderState(context, mouseX, mouseY, delta);
-        }
     }
 
 	/**

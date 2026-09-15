@@ -16,7 +16,7 @@ public class WidgetIcon extends WidgetBase
 
     public void render(GuiContext ctx, boolean enabled, boolean selected)
     {
-        this.icon.renderAt(ctx, this.x, this.y, this.zLevel, enabled, selected);
+        this.icon.renderAt(ctx, this.x, this.y, enabled, selected);
 
         if (selected)
         {
