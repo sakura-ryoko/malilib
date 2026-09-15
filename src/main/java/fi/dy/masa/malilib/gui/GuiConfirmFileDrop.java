@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.gui;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,11 +107,11 @@ public class GuiConfirmFileDrop<T extends WidgetFileBrowserBase.FileFilter> exte
     }
 
     @Override
-    public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
+    public void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
         if (this.getParent() != null)
         {
-            this.getParent().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+            this.getParent().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0);
         }
 
 	    ctx.pose().pushMatrix();
@@ -130,7 +129,6 @@ public class GuiConfirmFileDrop<T extends WidgetFileBrowserBase.FileFilter> exte
             y += this.fontHeight + 1;
         }
 
-        this.drawButtons(ctx, mouseX, mouseY, partialTicks);
 	    ctx.pose().popMatrix();
     }
 
