@@ -359,7 +359,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             {
                 if (widget.onMouseClicked(click, doubleClick))
                 {
-                    if (widget.isMouseOver((int) click.x(), (int) click.y()))
+                    if (widget.isMouseOver((int) click.x(), (int) click.y()) && this.widgets.contains(widget))
                     {
                         this.focusedWidget = widget;
                     }
