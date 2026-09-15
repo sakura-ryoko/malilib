@@ -297,12 +297,6 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	}
 
 	@Override
-	public boolean keyPressed(@NotNull KeyEvent input)
-	{
-		return this.onKeyTyped(input);
-	}
-
-	@Override
 	public boolean onKeyTyped(KeyEvent input)
 	{
 		if (input.key() == ScanCodes.SCAN_ESCAPE && this.dialogHandler != null)

@@ -347,6 +347,7 @@ public class WidgetDropDownList<T> extends WidgetBase
             this.filteredEntries.addAll(this.entries);
         }
 
+        this.useScrollbar = this.filteredEntries.size() > this.maxVisibleEntries;
         this.scrollBar.setMaxValue(this.filteredEntries.size() - this.maxVisibleEntries);
     }
 
@@ -432,7 +433,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         int maxWidthEntry;
 
-        if (this.entries.size() > this.maxVisibleEntries) // scrollbar visible
+        if (this.useScrollbar)
         {
             maxWidthEntry = this.width - this.scrollbarWidth;
         }
@@ -453,7 +454,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
             ctx.drawRect(this.x, y, maxWidthEntry-2, this.height, bg);
 
-            if (this.keyboardSelectionIndex == i)
+            if (this.keyboardSelectionIndex == i && this.filteredEntries.size() > 1)
             {
                 ctx.drawRect(this.x+1, y, 2, this.height, 0xFFEE1111);
                 ctx.drawRect(this.x+maxWidthEntry-4, y, 2, this.height, 0xFFEE1111);
@@ -465,7 +466,7 @@ public class WidgetDropDownList<T> extends WidgetBase
             txtY += this.height;
         }
 
-        if (this.entries.size() > this.maxVisibleEntries)
+        if (this.useScrollbar)
         {
             int x = this.x + maxWidthEntry-1;
             y = this.y + this.height;
