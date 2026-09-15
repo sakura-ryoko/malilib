@@ -91,7 +91,7 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
 
         if (icon != null)
         {
-            icon.renderAt(ctx, this.x, this.y + (this.height - icon.getHeight()) / 2, this.zLevel + 10, false, false);
+            icon.renderAt(ctx, this.x, this.y + (this.height - icon.getHeight()) / 2, false, false);
         }
 
         // Draw an outline if this is the currently selected entry

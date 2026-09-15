@@ -65,7 +65,7 @@ public enum MaLiLibIcons implements IGuiIcon
     }
 
     @Override
-    public void renderAt(GuiContext ctx, int x, int y, float zLevel, boolean enabled, boolean selected)
+    public void renderAt(GuiContext ctx, int x, int y, boolean enabled, boolean selected)
     {
         int u = this.u;
         int v = this.v;
@@ -82,7 +82,7 @@ public enum MaLiLibIcons implements IGuiIcon
             v += this.hoverOffV;
         }
 
-        ctx.drawTexturedRect(this.getTexture(), x, y, u, v, this.w, this.h, zLevel);
+        ctx.drawTexturedRect(this.getTexture(), x, y, u, v, this.w, this.h);
     }
 
     @Override

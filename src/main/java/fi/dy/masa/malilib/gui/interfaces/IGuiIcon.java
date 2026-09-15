@@ -13,7 +13,13 @@ public interface IGuiIcon
 
     int getV();
 
-    void renderAt(GuiContext ctx, int x, int y, float zLevel, boolean enabled, boolean selected);
+    void renderAt(GuiContext ctx, int x, int y, boolean enabled, boolean selected);
+
+    @Deprecated(forRemoval = true)
+    default void renderAt(GuiContext ctx, int x, int y, float z, boolean enabled, boolean selected)
+    {
+        renderAt(ctx, x, y, enabled, selected);
+    }
 
     Identifier getTexture();
 }
