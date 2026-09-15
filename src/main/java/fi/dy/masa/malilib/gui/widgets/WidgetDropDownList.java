@@ -132,6 +132,11 @@ public class WidgetDropDownList<T> extends WidgetBase
         {
             this.selectedEntry = this.filteredEntries.get(index);
         }
+
+        if (this.callback != null)
+        {
+            this.callback.accept(this.selectedEntry);
+        }
     }
 
     @Override
@@ -179,11 +184,6 @@ public class WidgetDropDownList<T> extends WidgetBase
                 {
                     int relIndex = (mouseY - this.y - this.height) / this.height;
                     this.setSelectedEntry(this.scrollBar.getValue() + relIndex);
-
-                    if (this.callback != null)
-                    {
-                        this.callback.accept(this.getSelectedEntry());
-                    }
                 }
                 else
                 {
@@ -206,11 +206,6 @@ public class WidgetDropDownList<T> extends WidgetBase
                 {
                     int relIndex = (mouseY - this.y - this.height) / this.height;
                     this.setSelectedEntry(this.scrollBar.getValue() + relIndex);
-
-                    if (this.callback != null)
-                    {
-                        this.callback.accept(this.getSelectedEntry());
-                    }
                 }
             }
         }

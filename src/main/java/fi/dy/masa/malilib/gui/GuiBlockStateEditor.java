@@ -119,7 +119,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		// Buttons (Centered on Left Pane)
 		int yAdj = this.dialogBottom - this.buttonHeight - 4;
         ButtonGeneric resetButton = this.addButton(
-				new ButtonGeneric(x, yAdj, -1, height, ButtonType.RESET.getDisplayName()),
+				new ButtonGeneric(x, yAdj, -1, this.buttonHeight, ButtonType.RESET.getDisplayName()),
 				IButtonActionListener.simple((_, _) -> {
 					this.blockState = this.config.getBlockStateValue();
 					this.init();
