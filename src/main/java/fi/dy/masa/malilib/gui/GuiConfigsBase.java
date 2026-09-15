@@ -83,30 +83,21 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
         if (thisMod != null && MaLiLibConfigs.Generic.ENABLE_CONFIG_SWITCHER.getBooleanValue())
         {
             // Was: y = 13
-            this.modSwitchWidget = new WidgetDropDownList<>(GuiUtils.getScaledWindowWidth() - 155, 6, 130, 18, 200, 10, Registry.CONFIG_SCREEN.getAllModsWithConfigScreens())
+            this.modSwitchWidget = new WidgetDropDownList<>(
+                    GuiUtils.getScaledWindowWidth() - 155, 6, 130, 18, 200,
+                    10, Registry.CONFIG_SCREEN.getAllModsWithConfigScreens(), ModInfo::modName
+            );
+
+            this.modSwitchWidget.setSelectedEntryChangeCallback(modInfo ->
             {
+                if (modInfo != null && this.mc != null &&
+                        modInfo.configScreenSupplier() != null)
                 {
-                    this.selectedEntry = thisMod;
+                    this.mc.gui.setScreen(modInfo.configScreenSupplier().get());
                 }
+            });
 
-                @Override
-                protected void setSelectedEntry(int index)
-                {
-                    super.setSelectedEntry(index);
-
-                    if (this.selectedEntry != null && this.mc != null &&
-						this.selectedEntry.configScreenSupplier() != null)
-                    {
-                        this.mc.gui.setScreen(this.selectedEntry.configScreenSupplier().get());
-                    }
-                }
-
-                @Override
-                protected String getDisplayString(ModInfo entry)
-                {
-                    return entry.modName();
-                }
-            };
+            this.modSwitchWidget.setSelectedEntry(thisMod);
 
             addWidget(this.modSwitchWidget);
         }
