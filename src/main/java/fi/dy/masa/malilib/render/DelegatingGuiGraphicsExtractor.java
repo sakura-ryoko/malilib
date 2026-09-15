@@ -46,8 +46,8 @@ public class DelegatingGuiGraphicsExtractor extends GuiGraphicsExtractor
 
     public DelegatingGuiGraphicsExtractor(GuiGraphicsExtractor context)
     {
-        super(context.minecraft, context.pose, context.guiRenderState, context.mouseX, context.mouseY);
         this.guiGraphics = context;
+        super(context.minecraft, context.pose, context.guiRenderState, context.mouseX, context.mouseY);
     }
 
     @Override
