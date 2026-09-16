@@ -198,26 +198,13 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 			if (blockTmp instanceof EntityBlock)
 			{
-				// Redundant code.  IDataSyncer manages this.
-//				if (world instanceof ServerLevel)
-//				{
-//					be = world.getChunkAt(pos).getBlockEntity(pos);
-//
-//					if (be != null)
-//					{
-//						data = DataConverterNbt.fromVanillaCompound(be.saveWithFullMetadata(world.registryAccess()));
-//					}
-//				}
-//				else
-//				{
-					Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
+				Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
 
-					if (pair != null)
-					{
-						data = pair.getRight();
-						be = pair.getLeft();
-					}
-//				}
+				if (pair != null)
+				{
+					data = pair.getRight();
+					be = pair.getLeft();
+				}
 
 				MaLiLib.LOGGER.warn("getTarget():2: pos [{}], be [{}], data [{}]", pos.toShortString(), be != null, data != null);
 				return this.getTargetInventoryFromBlock(world, pos, be, data);
@@ -241,25 +228,12 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 
 			MaLiLib.LOGGER.warn("getTarget(): entityUUID [{}] vs targetedUUID [{}]", entity.getStringUUID(), mc.crosshairPickEntity != null ? mc.crosshairPickEntity.getStringUUID() : "<NULL>");
 
-			// Redundant code.  IDataSyncer manages this.
-//			if (world instanceof ServerLevel)
-//			{
-//				entity = world.getEntity(entity.getId());
-//
-//				if (entity != null)
-//				{
-//					return this.getTargetInventoryFromEntity(entity, DataEntityUtils.invokeEntityDataTagNoPassengers(entity, entity.getId()));
-//				}
-//			}
-//			else
-//			{
-				Pair<Entity, CompoundData> pair = this.getDataSyncer().requestEntity(world, entity.getId());
+			Pair<Entity, CompoundData> pair = this.getDataSyncer().requestEntity(world, entity.getId());
 
-				if (pair != null)
-				{
-					return this.getTargetInventoryFromEntity(world.getEntity(pair.getLeft().getId()), pair.getRight());
-				}
-//			}
+			if (pair != null)
+			{
+				return this.getTargetInventoryFromEntity(world.getEntity(pair.getLeft().getId()), pair.getRight());
+			}
 		}
 
 		return null;
@@ -268,33 +242,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 	@Override
 	public @Nullable InventoryOverlayContext getTargetInventoryFromBlock(Level world, BlockPos pos, @Nullable BlockEntity be, CompoundData data)
 	{
-		Container inv;
-
-		// Redundant code.  IDataSyncer manages this.
-//		if (be != null)
-//		{
-//			if (data.isEmpty())
-//			{
-//				data = DataConverterNbt.fromVanillaCompound(be.saveWithFullMetadata(world.registryAccess()));
-//			}
-//
-//			inv = InventoryUtils.getInventory(world, pos);
-//		}
-//		else
-//		{
-//			if (data.isEmpty())
-//			{
-//				Pair<BlockEntity, CompoundData> pair = this.getDataSyncer().requestBlockEntity(world, pos);
-//
-//				if (pair != null)
-//				{
-//					data = pair.getRight();
-//					be = pair.getLeft();
-//				}
-//			}
-
-			inv = this.getDataSyncer().getBlockInventory(world, pos, true);
-//		}
+		Container inv = this.getDataSyncer().getBlockInventory(world, pos, true);
 
 		BlockEntityType<?> beType = data != null ? DataBlockUtils.getBlockEntityType(data) : null;
 		MaLiLib.LOGGER.error("getTargetInventoryFromBlock() beType: [{}], inv [{}]", beType != null ? beType.getClass().getSimpleName() : "<null>", inv != null ? inv.getContainerSize() : "<null>");
@@ -392,6 +340,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		this.context = new InventoryOverlayContext(InventoryOverlay.getBestInventoryType(inv, data), inv,
 		                                              be != null ? be : world.getBlockEntity(pos), null,
 		                                              data, this.getRefreshHandler());
+//		dumpContext(this.context);
 
 		return this.context;
 	}
@@ -495,6 +444,7 @@ public class TestInventoryOverlayHandler implements IInventoryOverlayHandler
 		                                              ? InventoryOverlay.getBestInventoryType(inv, data)
 		                                              : InventoryOverlay.getInventoryType(data),
 		                                              inv, null, entityLivingBase, data, this.getRefreshHandler());
+//		dumpContext(this.context);
 
 		return this.context;
 	}
