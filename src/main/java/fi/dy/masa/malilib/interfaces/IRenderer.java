@@ -37,11 +37,6 @@ public interface IRenderer
     default void onRenderWorldLast(RenderTarget fb, CameraRenderState cameraState, Frustum culling, RenderBuffers buffers, GpuBufferSlice terrainFog, Vector4f fogColor, ProfilerFiller profiler) {}
 
     /**
-     * Called after the Block Outlines after block layer's have been rendered by either Vanilla or Sodium's Layer Groups.
-     */
-    default void onRenderLayerGroups() {}
-
-    /**
      * Called only after the tooltip text adds the Item Name.
      * If you want to 'Modify' the item name/Title, this is where
      * you should do it; or just insert text below it as normal.

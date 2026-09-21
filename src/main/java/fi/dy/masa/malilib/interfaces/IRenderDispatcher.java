@@ -22,11 +22,4 @@ public interface IRenderDispatcher
      * @param renderer ()
      */
     void registerWorldLastRenderer(IRenderer renderer);
-
-    /**
-     * Registers a renderer which will have its {@link IRenderer.onExtractWorldLast}
-     * method called after the vanilla rendering is done except for debug
-     * @param renderer ()
-     */
-    void registerWorldLayerGroupRenderer(IRenderer renderer);
 }

@@ -50,7 +50,6 @@ public class RenderEventHandler implements IRenderDispatcher
     private final List<IRenderer> inGameGuiRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
-    private final List<IRenderer> worldLayerGroupRenderers = new ArrayList<>();
     private boolean shouldCancelAlwaysOnTop;
 
     public static IRenderDispatcher getInstance()
@@ -82,15 +81,6 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.worldLastRenderers.contains(renderer) == false)
         {
             this.worldLastRenderers.add(renderer);
-        }
-    }
-
-    @Override
-    public void registerWorldLayerGroupRenderer(IRenderer renderer)
-    {
-        if (this.worldLayerGroupRenderers.contains(renderer) == false)
-        {
-            this.worldLayerGroupRenderers.add(renderer);
         }
     }
 
@@ -188,18 +178,6 @@ public class RenderEventHandler implements IRenderDispatcher
             }
 
             profiler.pop();
-        }
-    }
-
-    @ApiStatus.Internal
-    public void runWorldLayerGroups()
-    {
-        if (this.worldLayerGroupRenderers.isEmpty() == false)
-        {
-            for (IRenderer renderer : this.worldLayerGroupRenderers)
-            {
-                renderer.onRenderLayerGroups();
-            }
         }
     }
 
