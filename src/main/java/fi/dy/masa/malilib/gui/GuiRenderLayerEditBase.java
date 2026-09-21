@@ -10,6 +10,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetCheckBox;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.util.EntityUtils;
 import fi.dy.masa.malilib.util.LayerMode;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import fi.dy.masa.malilib.util.position.LayerRange;
 import fi.dy.masa.malilib.util.StringUtils;
 import net.minecraft.core.Direction;
@@ -135,20 +136,20 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
         this.addButton(button, listener);
     }
 
-	protected record ButtonListenerLayerEdit(Type type, LayerRange layerRange,
-	                                         GuiRenderLayerEditBase parent) implements IButtonActionListener
+	protected record ButtonListenerLayerEdit(Type type, LayerRange layerRange, GuiRenderLayerEditBase parent)
+			implements IButtonActionListener
 	{
 		@Override
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
 		{
 			if (this.type == Type.MODE)
 			{
-				this.layerRange.setLayerMode((LayerMode) this.layerRange.getLayerMode().cycle(mouseButton == 0));
+				this.layerRange.setLayerMode((LayerMode) this.layerRange.getLayerMode().cycle(mouseButton == ScanCodes.OFFSET_MOUSE_LEFT));
 			}
 			else if (this.type == Type.AXIS)
 			{
 				Direction.Axis axis = this.layerRange.getAxis();
-				int next = mouseButton == 0 ? ((axis.ordinal() + 1) % 3) : (axis.ordinal() == 0 ? 2 : axis.ordinal() - 1);
+				int next = mouseButton == ScanCodes.OFFSET_MOUSE_LEFT ? ((axis.ordinal() + 1) % 3) : (axis.ordinal() == 0 ? 2 : axis.ordinal() - 1);
 				axis = Direction.Axis.values()[next % 3];
 				this.layerRange.setAxis(axis);
 			}
@@ -162,9 +163,9 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 
 		public enum Type
 		{
-			MODE("malilib.gui.button.render_layers_gui.layers"),
-			AXIS("malilib.gui.button.render_layers_gui.axis"),
-			SET_HERE("malilib.gui.button.render_layers_gui.set_here");
+			MODE        ("malilib.gui.button.render_layers_gui.layers"),
+			AXIS        ("malilib.gui.button.render_layers_gui.axis"),
+			SET_HERE    ("malilib.gui.button.render_layers_gui.set_here");
 
 			private final String translationKey;
 
@@ -188,13 +189,13 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 		}
 	}
 
-	protected record ButtonListenerChangeValue(LayerMode mode, LayerRange layerRange, boolean isSecondLimit,
-	                                           GuiRenderLayerEditBase parent) implements IButtonActionListener
+	protected record ButtonListenerChangeValue(LayerMode mode, LayerRange layerRange, boolean isSecondLimit, GuiRenderLayerEditBase parent)
+			implements IButtonActionListener
 	{
 		@Override
 		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
 		{
-			int change = mouseButton == 1 ? -1 : 1;
+			int change = mouseButton == ScanCodes.OFFSET_MOUSE_RIGHT ? -1 : 1;
 
 			if (GuiBase.isShiftDown())
 			{
@@ -226,8 +227,8 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 		}
 	}
 
-	protected record TextFieldListener(LayerMode mode, LayerRange layerRange,
-	                                   boolean isSecondLimit) implements ITextFieldListener<GuiTextFieldGeneric>
+	protected record TextFieldListener(LayerMode mode, LayerRange layerRange, boolean isSecondLimit)
+			implements ITextFieldListener<GuiTextFieldGeneric>
 	{
 		@Override
 		public boolean onTextChange(GuiTextFieldGeneric textField)
@@ -275,8 +276,8 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 		}
 	}
 
-	public record RangeHotkeyListener(LayerRange layerRange,
-	                                  boolean isMax) implements ISelectionListener<WidgetCheckBox>
+	public record RangeHotkeyListener(LayerRange layerRange, boolean isMax)
+			implements ISelectionListener<WidgetCheckBox>
 	{
 		@Override
 		public void onSelectionChange(WidgetCheckBox entry)

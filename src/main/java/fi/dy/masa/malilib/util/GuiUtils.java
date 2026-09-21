@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.interfaces.ICoordinateValueModifier;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import fi.dy.masa.malilib.util.position.PositionUtils.CoordinateType;
 import fi.dy.masa.malilib.util.position.Vec3d;
 
@@ -220,7 +221,7 @@ public class GuiUtils
         @Override
         public void actionPerformedWithButton(ButtonBase button, int mouseButton)
         {
-            int amount = mouseButton == 1 ? -1 : 1;
+            int amount = mouseButton == ScanCodes.OFFSET_MOUSE_RIGHT ? -1 : 1;
             if (GuiBase.isShiftDown()) { amount *= 8; }
             if (GuiBase.isAltDown())   { amount *= 4; }
 

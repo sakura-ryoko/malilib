@@ -1,5 +1,5 @@
 plugins {
-	id 'net.fabricmc.fabric-loom' version '1.17.+'
+	id 'net.fabricmc.fabric-loom' version '1.18.+'
 	id 'maven-publish'
 }
 
@@ -27,13 +27,12 @@ dependencies {
 
 	include(api(fabricApi.module("fabric-api-base", project.fabric_api_version)))
 	include(api(fabricApi.module("fabric-networking-api-v1", project.fabric_api_version)))
-//    include(api(fabricApi.module("fabric-resource-loader-v0", project.fabric_api_version)))
 	include(api(fabricApi.module("fabric-resource-loader-v1", project.fabric_api_version)))
 	include(implementation("me.fallenbreath:conditional-mixin-fabric:${project.conditionalmixin_version}"))
 
 	compileOnly "com.terraformersmc:modmenu:${project.mod_menu_version}"
-//	compileOnly "maven.modrinth:iris:${project.iris_version}+${project.iris_mc_version}-fabric"
-//	runtimeOnly 'me.fallenbreath:mixin-auditor:0.2.0-u'
+	compileOnly "maven.modrinth:iris:${project.iris_version}+${project.iris_mc_version}-fabric"
+	runtimeOnly 'me.fallenbreath:mixin-auditor:0.2.0-u'
 }
 
 base {
