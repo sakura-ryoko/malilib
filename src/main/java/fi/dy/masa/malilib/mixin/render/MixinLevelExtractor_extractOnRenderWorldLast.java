@@ -21,12 +21,23 @@ public abstract class MixinLevelExtractor_extractOnRenderWorldLast
 {
 	@Shadow private @Nullable ClientLevel level;
 
-	@Inject(method = "extract",
-	        at = @At(value = "INVOKE",
-	                 target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
-	                 ordinal = 11,
-	                 shift = At.Shift.BEFORE
-	        ))
+//	@Inject(method = "extract",
+//	        at = @At(value = "INVOKE",
+//	                 target = "Lnet/minecraft/util/profiling/ProfilerFiller;popPush(Ljava/lang/String;)V",
+//	                 ordinal = 11,
+//	                 shift = At.Shift.BEFORE
+//	        ))
+//	private void malilib_onExtractWorldLast(DeltaTracker deltaTracker, Camera camera,
+//	                                        float deltaPartialTick, CallbackInfo ci,
+//	                                        @Local(name = "profiler") ProfilerFiller profiler)
+//	{
+//		if (this.level != null)
+//		{
+//			((RenderEventHandler) RenderEventHandler.getInstance()).runExtractWorldLast(deltaTracker, camera, deltaPartialTick, profiler);
+//		}
+//	}
+
+	@Inject(method = "extract", at = @At(value = "RETURN"))
 	private void malilib_onExtractWorldLast(DeltaTracker deltaTracker, Camera camera,
 	                                        float deltaPartialTick, CallbackInfo ci,
 	                                        @Local(name = "profiler") ProfilerFiller profiler)
@@ -36,4 +47,5 @@ public abstract class MixinLevelExtractor_extractOnRenderWorldLast
 			((RenderEventHandler) RenderEventHandler.getInstance()).runExtractWorldLast(deltaTracker, camera, deltaPartialTick, profiler);
 		}
 	}
+
 }

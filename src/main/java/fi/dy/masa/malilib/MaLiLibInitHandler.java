@@ -47,6 +47,7 @@ public class MaLiLibInitHandler implements IInitializationHandler
             RenderEventHandler.getInstance().registerInGameGuiRenderer(renderer);
             RenderEventHandler.getInstance().registerTooltipLastRenderer(renderer);
             RenderEventHandler.getInstance().registerWorldLastRenderer(renderer);
+            RenderEventHandler.getInstance().registerWorldLayerGroupRenderer(renderer);
 
             ClientCommandHandler.INSTANCE.registerCommand(new TestCommand());
             TickHandler.getInstance().registerClientTickHandler(TestSelector.INSTANCE);

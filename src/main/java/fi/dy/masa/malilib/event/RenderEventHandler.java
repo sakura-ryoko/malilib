@@ -7,6 +7,7 @@ import java.util.OptionalDouble;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Matrix4fStack;
 import org.joml.Vector4f;
 
 import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
@@ -49,6 +50,7 @@ public class RenderEventHandler implements IRenderDispatcher
     private final List<IRenderer> inGameGuiRenderers = new ArrayList<>();
     private final List<IRenderer> tooltipLastRenderers = new ArrayList<>();
     private final List<IRenderer> worldLastRenderers = new ArrayList<>();
+    private final List<IRenderer> worldLayerGroupRenderers = new ArrayList<>();
     private boolean shouldCancelAlwaysOnTop;
 
     public static IRenderDispatcher getInstance()
@@ -80,6 +82,15 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.worldLastRenderers.contains(renderer) == false)
         {
             this.worldLastRenderers.add(renderer);
+        }
+    }
+
+    @Override
+    public void registerWorldLayerGroupRenderer(IRenderer renderer)
+    {
+        if (this.worldLayerGroupRenderers.contains(renderer) == false)
+        {
+            this.worldLayerGroupRenderers.add(renderer);
         }
     }
 
@@ -181,6 +192,19 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
+    public void runWorldLayerGroups()
+    {
+        if (this.worldLayerGroupRenderers.isEmpty() == false)
+        {
+            for (IRenderer renderer : this.worldLayerGroupRenderers)
+            {
+                renderer.onRenderLayerGroups();
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    @Deprecated
     public boolean shouldCancelAlwaysOnTop()
     {
         this.shouldCancelAlwaysOnTop = !this.worldLastRenderers.isEmpty();
@@ -188,6 +212,13 @@ public class RenderEventHandler implements IRenderDispatcher
     }
 
     @ApiStatus.Internal
+    public boolean hasOnWorldLastRenderer()
+    {
+        return !this.worldLastRenderers.isEmpty();
+    }
+
+    @ApiStatus.Internal
+    @Deprecated
     private void runAlwaysOnTop(FeatureRenderDispatcher.PreparedFrame featureFrame,
                                 LevelTargetBundle targets,
                                 RenderTarget mainTarget, boolean consistentDepthRequired)
@@ -235,21 +266,27 @@ public class RenderEventHandler implements IRenderDispatcher
         if (this.worldLastRenderers.isEmpty() == false)
         {
             profiler.push(MaLiLibReference.MOD_ID + "_render_world_last");
-            FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID + "_world_last");
+//            FramePass pass = frameGraphBuilder.addPass(MaLiLibReference.MOD_ID + "_world_last");
 
-            targets.main = pass.readsAndWrites(targets.main);
+//            targets.main = pass.readsAndWrites(targets.main);
 
-            ResourceHandle<@NotNull RenderTarget> handleMain = targets.main;
+//            ResourceHandle<@NotNull RenderTarget> handleMain = targets.main;
 
-            pass.executes(() ->
-                          {
+//            pass.executes(() ->
+//                          {
                               GpuBufferSlice fog = RenderSystem.getShaderFog();
+                              Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
+
+                              matrixStack.pushMatrix();
+                              matrixStack.mul(cameraState.viewRotationMatrix);
+//                              mc.gameRenderer.mainCamera().extractRenderState(cameraState, mc.getDeltaTracker());
+
 
                               for (IRenderer renderer : this.worldLastRenderers)
                               {
                                   profiler.push(renderer.getProfilerSectionSupplier());
                                   renderer.onRenderWorldLast(
-                                          handleMain.get(),
+                                          mc.gameRenderer.mainRenderTarget(),
                                           cameraState, cullFrustum, buffers, terrainFog, fogColor, profiler);
                                   profiler.pop();
                               }
@@ -258,18 +295,21 @@ public class RenderEventHandler implements IRenderDispatcher
                               {
                                   RenderSystem.setShaderFog(fog);
                               }
-                          });
 
-            if (!this.worldLastRenderers.isEmpty())
-            {
-                pass.disableCulling();
-            }
+                              matrixStack.popMatrix();
+//                          });
+
+//            if (!this.worldLastRenderers.isEmpty())
+//            {
+//                pass.disableCulling();
+//            }
 
             profiler.pop();
         }
     }
 
     @ApiStatus.Internal
+    @Deprecated
     public void runRenderWorldAlwaysOnTop(Minecraft mc, LevelRenderer vanilla,
                                           FrameGraphBuilder frameGraphBuilder, FeatureRenderDispatcher.PreparedFrame preparedFrame,
                                           LevelTargetBundle targets,

@@ -241,6 +241,15 @@ public class TestRenderHandler implements IRenderer
     }
 
     @Override
+    public void onRenderLayerGroups()
+    {
+//        if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())
+//        {
+//            System.out.print("DRAW LAYER GROUPS\n");
+//        }
+    }
+
+    @Override
     public void onRenderTooltipComponentInsertFirst(Item.TooltipContext context, ItemStack stack, Consumer<Component> list)
     {
         if (MaLiLibConfigs.Test.TEST_CONFIG_BOOLEAN.getBooleanValue())

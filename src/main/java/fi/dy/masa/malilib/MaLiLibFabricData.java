@@ -5,6 +5,9 @@ import java.util.HashMap;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 
+import fi.dy.masa.malilib.compat.iris.IrisCompat;
+import fi.dy.masa.malilib.compat.sodium.SodiumCompat;
+
 public class MaLiLibFabricData
 {
 	public static HashMap<String, String> ALL_MOD_VERSIONS = collectAllModIds();
@@ -12,6 +15,8 @@ public class MaLiLibFabricData
 	protected static void onInitialize()
 	{
 		collectAllModIds();
+		SodiumCompat.register();
+		IrisCompat.register();
 	}
 
 	private static HashMap<String, String> collectAllModIds()
