@@ -2,8 +2,10 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
-import net.minecraft.client.Minecraft;
+
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -19,7 +21,6 @@ import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringRetriever;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.MathUtils;
 
@@ -37,14 +38,15 @@ public class WidgetDropDownList<T> extends WidgetBase
     protected final List<T> entries;
     protected final List<T> filteredEntries;
     protected final TextFieldWrapper<GuiTextFieldGeneric> searchBar;
-    protected final int maxHeight;
     protected final int maxVisibleEntries;
     protected final int totalHeight;
     protected boolean isOpen;
-    protected int selectedIndex;
-    protected int scrollbarWidth = 10;
+    protected boolean useScrollbar = true;
+    protected int scrollbarWidth = 6;
     @Nullable protected final IStringRetriever<T> stringRetriever;
     @Nullable protected T selectedEntry;
+    @Nullable protected Consumer<T> callback;
+    protected int keyboardSelectionIndex = -1;
 
     public WidgetDropDownList(int x, int y, int width, int height, int maxHeight,
             int maxVisibleEntries, List<T> entries)
@@ -57,8 +59,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     {
         super(x, y, width, height);
 
-        this.width = this.getRequiredWidth(width, entries, this.mc);
-        this.maxHeight = maxHeight;
+        this.width = this.getRequiredWidth(width, entries);
         this.entries = entries;
         this.filteredEntries = new ArrayList<>();
         this.stringRetriever = stringRetriever;
@@ -77,6 +78,12 @@ public class WidgetDropDownList<T> extends WidgetBase
         this.searchBar.textField().setFocused(true);
 
         this.updateFilteredEntries();
+
+        if (this.entries.size() <= this.maxVisibleEntries)
+        {
+            this.useScrollbar = false;
+            this.scrollbarWidth = 0;
+        }
     }
 
     @Override
@@ -88,15 +95,15 @@ public class WidgetDropDownList<T> extends WidgetBase
         this.searchBar.textField().setY(y - 18);
     }
 
-    protected int getRequiredWidth(int width, List<T> entries, Minecraft mc)
+    protected int getRequiredWidth(int width, List<T> entries)
     {
         if (width == -1)
         {
             width = 0;
 
-            for (int i = 0; i < entries.size(); ++i)
+            for (T entry : entries)
             {
-                width = MathUtils.max(width, this.getStringWidth(this.getDisplayString(entries.get(i))) + 20);
+                width = MathUtils.max(width, this.getStringWidth(this.getDisplayString(entry)) + 20);
             }
         }
 
@@ -125,6 +132,11 @@ public class WidgetDropDownList<T> extends WidgetBase
         {
             this.selectedEntry = this.filteredEntries.get(index);
         }
+
+        if (this.callback != null)
+        {
+            this.callback.accept(this.selectedEntry);
+        }
     }
 
     @Override
@@ -135,6 +147,30 @@ public class WidgetDropDownList<T> extends WidgetBase
     }
 
     @Override
+    public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick) {
+        if (this.isOpen && this.isMouseOver((int) click.x(), (int) click.y()) == false)
+        {
+            setOpen(false);
+            return false;
+        }
+        return super.onMouseClicked(click, doubleClick);
+    }
+
+    private void setOpen(boolean open) {
+        this.isOpen = open;
+
+        if (open)
+        {
+            this.keyboardSelectionIndex = this.entries.indexOf(this.selectedEntry);
+            this.scrollBar.setValue(this.keyboardSelectionIndex - this.maxVisibleEntries / 2);
+        }
+        else
+        {
+            this.keyboardSelectionIndex = -1;
+        }
+    }
+
+    @Override
     protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
 		int mouseX = (int) click.x();
@@ -142,30 +178,41 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         if (this.isOpen && mouseY > this.y + this.height)
         {
-            if (mouseX < this.x + this.width - this.scrollbarWidth)
+            if (this.useScrollbar)
             {
-                int relIndex = (mouseY - this.y - this.height) / this.height;
-                this.setSelectedEntry(this.scrollBar.getValue() + relIndex);
+                if (mouseX < this.x + this.width - this.scrollbarWidth-1)
+                {
+                    int relIndex = (mouseY - this.y - this.height) / this.height;
+                    this.setSelectedEntry(this.scrollBar.getValue() + relIndex);
+                }
+                else
+                {
+                    if (this.scrollBar.wasMouseOver() == false)
+                    {
+                        int relY = mouseY - this.y - this.height;
+                        int ddHeight = this.height * this.maxVisibleEntries;
+                        int newPos = (int) (((double) relY / (double) ddHeight) * this.scrollBar.getMaxValue());
+
+                        this.scrollBar.setValue(newPos);
+                        this.scrollBar.handleDrag(mouseY, 123);
+                    }
+
+                    this.scrollBar.setIsDragging(true);
+                }
             }
             else
             {
-                if (this.scrollBar.wasMouseOver() == false)
+                if (mouseX < this.x + this.width)
                 {
-                    int relY = mouseY - this.y - this.height;
-                    int ddHeight = this.height * this.maxVisibleEntries;
-                    int newPos = (int) (((double) relY / (double) ddHeight) * this.scrollBar.getMaxValue());
-
-                    this.scrollBar.setValue(newPos);
-                    this.scrollBar.handleDrag(mouseY, 123);
+                    int relIndex = (mouseY - this.y - this.height) / this.height;
+                    this.setSelectedEntry(this.scrollBar.getValue() + relIndex);
                 }
-
-                this.scrollBar.setIsDragging(true);
             }
         }
 
-        if (this.isOpen == false || (mouseX < this.x + this.width - this.scrollbarWidth || mouseY < this.y + this.height))
+        if (this.isOpen == false || (mouseX < this.x + this.width - this.scrollbarWidth-1 || mouseY < this.y + this.height))
         {
-            this.isOpen = ! this.isOpen;
+            setOpen(!this.isOpen);
 
             if (this.isOpen == false)
             {
@@ -200,10 +247,71 @@ public class WidgetDropDownList<T> extends WidgetBase
     {
         if (this.isOpen)
         {
+            if (input.isEscape())
+            {
+                setOpen(false);
+                return true;
+            }
+            else if (input.key() == ScanCodes.SCAN_RETURN)
+            {
+                if (this.keyboardSelectionIndex >= 0 && this.keyboardSelectionIndex < this.filteredEntries.size())
+                {
+                    this.setSelectedEntry(this.keyboardSelectionIndex);
+                    setOpen(false);
+                    this.searchBar.textField().setValue("");
+                    return true;
+                }
+            }
+            else if (input.key() == ScanCodes.SCAN_UP ||
+                    input.key() == ScanCodes.SCAN_DOWN ||
+                    input.key() == ScanCodes.SCAN_PAGE_UP ||
+                    input.key() == ScanCodes.SCAN_PAGE_DOWN)
+            {
+                int changeAmount;
+
+                if (input.key() == ScanCodes.SCAN_UP)
+                    changeAmount = -1;
+                else if (input.key() == ScanCodes.SCAN_DOWN)
+                    changeAmount = 1;
+                else if (input.key() == ScanCodes.SCAN_PAGE_UP)
+                    changeAmount = -5;
+                else
+                    changeAmount = 5;
+
+                this.onKeyboardNavigationChange(changeAmount);
+
+                return true;
+            }
+
             return this.searchBar.onKeyTyped(input);
         }
 
         return false;
+    }
+
+    protected void onKeyboardNavigationChange(int changeAmount)
+    {
+        this.keyboardSelectionIndex += changeAmount;
+
+        if (this.keyboardSelectionIndex < 0)
+        {
+            this.keyboardSelectionIndex = 0;
+        }
+        else if (this.keyboardSelectionIndex >= this.filteredEntries.size())
+        {
+            this.keyboardSelectionIndex = this.filteredEntries.size() - 1;
+        }
+
+        int maxEntries = this.maxVisibleEntries;
+
+        if (this.keyboardSelectionIndex < this.scrollBar.getValue())
+        {
+            this.scrollBar.setValue(this.keyboardSelectionIndex - maxEntries + 1);
+        }
+        else if (this.keyboardSelectionIndex >= this.scrollBar.getValue() + maxEntries)
+        {
+            this.scrollBar.setValue(this.keyboardSelectionIndex);
+        }
     }
 
     @Override
@@ -224,10 +332,8 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         if (this.isOpen && filterText.isEmpty() == false)
         {
-            for (int i = 0; i < this.entries.size(); ++i)
+            for (T entry : this.entries)
             {
-                T entry = this.entries.get(i);
-
                 if (this.entryMatchesFilter(entry, filterText))
                 {
                     this.filteredEntries.add(entry);
@@ -241,12 +347,13 @@ public class WidgetDropDownList<T> extends WidgetBase
             this.filteredEntries.addAll(this.entries);
         }
 
+        this.useScrollbar = this.filteredEntries.size() > this.maxVisibleEntries;
         this.scrollBar.setMaxValue(this.filteredEntries.size() - this.maxVisibleEntries);
     }
 
     protected boolean entryMatchesFilter(T entry, String filterText)
     {
-        return filterText.isEmpty() || this.getDisplayString(entry).toLowerCase().indexOf(filterText) != -1;
+        return filterText.isEmpty() || this.getDisplayString(entry).toLowerCase().contains(filterText);
     }
 
     protected String getDisplayString(T entry)
@@ -278,7 +385,7 @@ public class WidgetDropDownList<T> extends WidgetBase
         matrixStackIn.translate(0, 0);
         //RenderSystem.applyModelViewMatrix();
 
-        RenderUtils.drawOutlinedBox(ctx, this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
+        ctx.drawOutlinedBox(this.x + 1, this.y, this.width - 2, this.height - 1, 0xFF101010, 0xFFC0C0C0);
 
         String str = this.getDisplayString(this.getSelectedEntry());
         int txtX = this.x + 4;
@@ -292,12 +399,12 @@ public class WidgetDropDownList<T> extends WidgetBase
             this.renderOpen(ctx, mouseX, mouseY, txtX, txtY);
 
             MaLiLibIcons i = MaLiLibIcons.ARROW_UP;
-            RenderUtils.drawTexturedRect(ctx, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            ctx.drawTexturedRect(MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
         else
         {
             MaLiLibIcons i = MaLiLibIcons.ARROW_DOWN;
-            RenderUtils.drawTexturedRect(ctx, MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            ctx.drawTexturedRect(MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
 
         matrixStack.popMatrix();
@@ -311,7 +418,6 @@ public class WidgetDropDownList<T> extends WidgetBase
         String str;
 
         txtY += this.height + 1;
-        int scrollWidth = 10;
 
         if (this.searchBar.textField().getValue().isEmpty() == false)
         {
@@ -319,35 +425,57 @@ public class WidgetDropDownList<T> extends WidgetBase
         }
 
 //        RenderUtils.drawOutline(ctx, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
-        RenderUtils.drawOutlinedBox(ctx, this.x + 1, this.y + this.height, this.width - 2, visibleEntries * this.height + 1, 0xFF101010, 0xFFE0E0E0);
+        ctx.drawOutlinedBox(this.x + 1, this.y + this.height, this.width - 2, visibleEntries * this.height, 0xFF101010, 0xFFE0E0E0);
 
-        int y = this.y + this.height + 1;
+        int y = this.y + this.height;
         int startIndex = Math.max(0, this.scrollBar.getValue());
         int max = Math.min(startIndex + this.maxVisibleEntries, list.size());
+
+        int maxWidthEntry;
+
+        if (this.useScrollbar)
+        {
+            maxWidthEntry = this.width - this.scrollbarWidth;
+        }
+        else
+        {
+            maxWidthEntry = this.width + 1;
+        }
 
         for (int i = startIndex; i < max; ++i)
         {
             int bg = (i & 0x1) != 0 ? 0x20FFFFFF : 0x30FFFFFF;
 
-            if (mouseX >= this.x && mouseX < this.x + this.width - scrollWidth &&
+            if (mouseX >= this.x && mouseX < this.x + maxWidthEntry-1 &&
                 mouseY >= y && mouseY < y + this.height)
             {
                 bg = 0x60FFFFFF;
             }
 
-            RenderUtils.drawRect(ctx, this.x, y, this.width - scrollWidth, this.height, bg);
+            ctx.drawRect(this.x, y, maxWidthEntry-2, this.height, bg);
+
+            if (this.keyboardSelectionIndex == i && this.filteredEntries.size() > 1)
+            {
+                ctx.drawRect(this.x+1, y, 2, this.height, 0xFFEE1111);
+                ctx.drawRect(this.x+maxWidthEntry-4, y, 2, this.height, 0xFFEE1111);
+            }
+
             str = this.getDisplayString(list.get(i));
             this.drawString(ctx, txtX, txtY, 0xFFE0E0E0, str);
             y += this.height;
             txtY += this.height;
         }
 
-        int x = this.x + this.width - this.scrollbarWidth - 1;
-        y = this.y + this.height + 1;
-        int h = visibleEntries * this.height;
-        int totalHeight = Math.max(h, list.size() * this.height);
+        if (this.useScrollbar)
+        {
+            int x = this.x + maxWidthEntry-1;
+            y = this.y + this.height;
+            int h = visibleEntries * this.height + 1;
+            int totalHeight = Math.max(h, list.size() * this.height);
 
-        this.scrollBar.render(ctx, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
+            ctx.drawRect(x-1, y, 1, h, 0xFFE0E0E0);
+            this.scrollBar.render(ctx, mouseX, mouseY, 0, x, y, this.scrollbarWidth, h, totalHeight);
+        }
     }
 
     @Override
@@ -366,11 +494,18 @@ public class WidgetDropDownList<T> extends WidgetBase
         }
     }
 
-	protected record TextFieldListener(WidgetDropDownList<?> widget) implements ITextFieldListener<GuiTextFieldGeneric>
+    // TODO: figure out if a custom interface is better
+	public void setSelectedEntryChangeCallback(Consumer<T> callback)
+    {
+        this.callback = callback;
+	}
+
+    protected record TextFieldListener(WidgetDropDownList<?> widget) implements ITextFieldListener<GuiTextFieldGeneric>
 	{
 		@Override
 		public boolean onTextChange(GuiTextFieldGeneric textField)
 		{
+            this.widget.keyboardSelectionIndex = 0;
 			this.widget.updateFilteredEntries();
 			return true;
 		}

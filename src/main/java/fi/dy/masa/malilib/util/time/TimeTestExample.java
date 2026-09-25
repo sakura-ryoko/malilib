@@ -7,13 +7,7 @@ public class TimeTestExample
     public static String runDurationTest()
     {
         StringBuilder result = new StringBuilder("*** Duration Test:\n");
-        long duration = new Random(System.currentTimeMillis()).nextInt();
-
-        // Cannot use a negative duration.
-        while (duration < 1)
-        {
-            duration = new Random(System.currentTimeMillis()).nextInt();
-        }
+        long duration = new Random(System.currentTimeMillis()).nextInt(Integer.MAX_VALUE)+1;
 
         result.append("Random Value: ").append(duration).append("\n");
 

@@ -29,7 +29,6 @@ public class WidgetSearchBar extends WidgetBase
         this.iconAlignment = iconAlignment;
         this.searchBox = new GuiTextFieldGeneric(tx, y, width - iw - 7 - Math.abs(searchBarOffsetX), height, this.textRenderer);
         this.searchBox.setValue("");
-//        this.searchBox.setZLevel(this.zLevel);
     }
 
     public String getFilter()

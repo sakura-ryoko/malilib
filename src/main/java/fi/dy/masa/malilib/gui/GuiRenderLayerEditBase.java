@@ -140,8 +140,9 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 			implements IButtonActionListener
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if ((mouseButton == ScanCodes.OFFSET_MOUSE_LEFT || mouseButton == ScanCodes.OFFSET_MOUSE_RIGHT) == false) return false;
 			if (this.type == Type.MODE)
 			{
 				this.layerRange.setLayerMode((LayerMode) this.layerRange.getLayerMode().cycle(mouseButton == ScanCodes.OFFSET_MOUSE_LEFT));
@@ -155,10 +156,12 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 			}
 			else if (this.type == Type.SET_HERE && this.parent.mc.player != null)
 			{
+				if (mouseButton == ScanCodes.OFFSET_MOUSE_RIGHT) return false;
 				this.layerRange.setToPosition(EntityUtils.getCameraEntity());
 			}
 
 			this.parent.initGui();
+			return true;
 		}
 
 		public enum Type
@@ -193,8 +196,9 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 			implements IButtonActionListener
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if ((mouseButton == ScanCodes.OFFSET_MOUSE_LEFT || mouseButton == ScanCodes.OFFSET_MOUSE_RIGHT) == false) return false;
 			int change = mouseButton == ScanCodes.OFFSET_MOUSE_RIGHT ? -1 : 1;
 
 			if (GuiBase.isShiftDown())
@@ -224,6 +228,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 			}
 
 			this.parent.updateTextFieldValues(this.layerRange);
+			return true;
 		}
 	}
 

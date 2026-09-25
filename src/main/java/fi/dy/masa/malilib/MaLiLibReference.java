@@ -18,7 +18,7 @@ public class MaLiLibReference
 	public static final OperatingSystem OS = OperatingSystem.get();
 
 	public static final boolean LOCAL_DEBUG = false;                // Enforce DEBUG_MODE ON (Or use Property/Environment Variable)
-	public static final boolean EXPERIMENTAL_MODE = false;          // Enforce EXPERIMENTAL_MODE when TRUE (Experimental code)
+	public static final boolean EXPERIMENTAL_MODE = true;          // Enforce EXPERIMENTAL_MODE when TRUE (Experimental code)
 
 	public static final boolean RUNNING_IN_IDE = isRunningInIde();  // Enable IDE capabilities (Sets Vanilla in IDE mode)
 	public static final boolean DEBUG_MODE = isDebug();             // Enable Debug Mode (Allows Test Library)
