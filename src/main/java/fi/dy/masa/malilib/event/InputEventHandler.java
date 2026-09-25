@@ -176,23 +176,41 @@ public class InputEventHandler implements IKeybindManager, IInputManager
         {
             case EventCodes.EVENT_KEY_PRESS ->
             {
-                this.lastAction = event.key().repeat() ? ActionCodes.REPEAT : ActionCodes.PRESSED;
-                this.lastScanCode = event.key().scancode();
+                SDL_KeyboardEvent keyEvent = event.key();
+                this.lastAction = keyEvent.repeat() ? ActionCodes.REPEAT : ActionCodes.PRESSED;
+                this.lastScanCode = keyEvent.scancode();
+
+                // Update the cached pressed keys status
+                KeybindMulti.onKeyInputPre(new KeyEvent(keyEvent.scancode(), keyEvent.key(), keyEvent.mod()), this.lastAction);
             }
             case EventCodes.EVENT_KEY_RELEASE ->
             {
+                SDL_KeyboardEvent keyEvent = event.key();
                 this.lastAction = ActionCodes.RELEASED;
-                this.lastScanCode = event.key().scancode();
+                this.lastScanCode = keyEvent.scancode();
+
+                // Update the cached pressed keys status
+                KeybindMulti.onKeyInputPre(new KeyEvent(keyEvent.scancode(), keyEvent.key(), keyEvent.mod()), ActionCodes.RELEASED);
             }
             case EventCodes.EVENT_MOUSE_PRESS ->
             {
+                SDL_MouseButtonEvent buttonEvent = event.button();
                 this.lastAction = ActionCodes.PRESSED;
-                this.lastScanCode = event.button().button() - ScanCodes.OFFSET_MOUSE;
+                this.lastScanCode = buttonEvent.button() - ScanCodes.OFFSET_MOUSE;
+                this.setLastMousePos(buttonEvent.x(), buttonEvent.y());
+
+                // Update the cached pressed keys status
+                KeybindMulti.onKeyInputPre(new KeyEvent(buttonEvent.button() - ScanCodes.OFFSET_MOUSE, KeyCodes.KEY_UNKNOWN, SDLKeyboard.SDL_GetModState()), ActionCodes.PRESSED);
             }
             case EventCodes.EVENT_MOUSE_RELEASE ->
             {
+                SDL_MouseButtonEvent buttonEvent = event.button();
                 this.lastAction = ActionCodes.RELEASED;
-                this.lastScanCode = event.button().button() - ScanCodes.OFFSET_MOUSE;
+                this.lastScanCode = buttonEvent.button() - ScanCodes.OFFSET_MOUSE;
+                this.setLastMousePos(buttonEvent.x(), buttonEvent.y());
+
+                // Update the cached pressed keys status
+                KeybindMulti.onKeyInputPre(new KeyEvent(buttonEvent.button() - ScanCodes.OFFSET_MOUSE, KeyCodes.KEY_UNKNOWN, SDLKeyboard.SDL_GetModState()), ActionCodes.RELEASED);
             }
 	        default ->
 	        {
@@ -242,8 +260,8 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     {
         boolean eventKeyState = action != ActionCodes.RELEASED;
 
-        // Update the cached pressed keys status
-        KeybindMulti.onKeyInputPre(input, action);
+//        // Update the cached pressed keys status
+//        KeybindMulti.onKeyInputPre(input, action);
 
         boolean cancel = this.checkKeyBindsForChanges(input.key());
 
@@ -272,8 +290,8 @@ public class InputEventHandler implements IKeybindManager, IInputManager
         {
             boolean eventButtonState = action == ActionCodes.PRESSED;
 
-            // Update the cached pressed keys status
-			KeybindMulti.onKeyInputPre(new KeyEvent(click.input() - ScanCodes.OFFSET_MOUSE, KeyCodes.KEY_UNKNOWN, KeyCodes.KMOD_NONE), action);
+//            // Update the cached pressed keys status
+//			KeybindMulti.onKeyInputPre(new KeyEvent(click.input() - ScanCodes.OFFSET_MOUSE, KeyCodes.KEY_UNKNOWN, KeyCodes.KMOD_NONE), action);
 
             cancel = this.checkKeyBindsForChanges(click.input() - ScanCodes.OFFSET_MOUSE);
 
