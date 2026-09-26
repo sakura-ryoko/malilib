@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import net.fabricmc.api.ModInitializer;
 
 import fi.dy.masa.malilib.event.InitializationHandler;
+import fi.dy.masa.malilib.input.gamepad.GamepadManager;
 import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.data.ModInfo;
 import fi.dy.masa.malilib.util.log.AnsiLogger;
@@ -20,6 +21,7 @@ public class MaLiLib implements ModInitializer
     {
         if (MaLiLibReference.DEBUG_MODE) { ANSI_LOGGER.debug("DEBUG_MODE: Active"); }
         MaLiLibFabricData.onInitialize();
+        GamepadManager.INSTANCE.onInitialize();
         InitializationHandler.getInstance().registerInitializationHandler(new MaLiLibInitHandler());
         Registry.CONFIG_SCREEN.registerConfigScreenFactory(
                 new ModInfo(MaLiLibReference.MOD_ID, MaLiLibReference.MOD_NAME, MaLiLibConfigGui::new)

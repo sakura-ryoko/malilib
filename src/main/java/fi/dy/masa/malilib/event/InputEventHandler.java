@@ -22,8 +22,11 @@ import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
 import fi.dy.masa.malilib.MaLiLibReference;
+import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.hotkeys.*;
+import fi.dy.masa.malilib.input.gamepad.GamepadManager;
+import fi.dy.masa.malilib.input.gamepad.GamepadButtonEvent;
 import fi.dy.masa.malilib.util.FileNameUtils;
 import fi.dy.masa.malilib.util.InfoUtils;
 import fi.dy.masa.malilib.util.input.*;
@@ -170,6 +173,10 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     @ApiStatus.Internal
     public boolean onHandleEvent(final SDL_Event event)
     {
+        boolean cancel = false;
+
+        this.lastAction = ActionCodes.NONE;
+        this.lastScanCode = ScanCodes.SCAN_UNKNOWN;
         this.lastKeyState = KeyState.fromEventType(event.type());
 
         switch (event.type())
@@ -212,19 +219,32 @@ public class InputEventHandler implements IKeybindManager, IInputManager
                 // Update the cached pressed keys status
                 KeybindMulti.onKeyInputPre(new KeyEvent(buttonEvent.button() - ScanCodes.OFFSET_MOUSE, KeyCodes.KEY_UNKNOWN, SDLKeyboard.SDL_GetModState()), ActionCodes.RELEASED);
             }
+            case EventCodes.EVENT_GAMEPAD_ADDED -> GamepadManager.INSTANCE.onGamepadAdded(event);
+            case EventCodes.EVENT_GAMEPAD_REMOVED -> GamepadManager.INSTANCE.onGamepadRemoved(event);
+            case EventCodes.EVENT_GAMEPAD_REMAPPED -> GamepadManager.INSTANCE.onGamepadRemapped(event);
+            case EventCodes.EVENT_GAMEPAD_BUTTON_DOWN, EventCodes.EVENT_GAMEPAD_BUTTON_UP ->
+                    cancel = GamepadManager.INSTANCE.onGamepadButton(event);
+            case EventCodes.EVENT_GAMEPAD_AXIS_MOTION ->
+                    cancel = GamepadManager.INSTANCE.onGamepadAxisMotion(event);
 	        default ->
 	        {
                 this.lastAction = ActionCodes.NONE;
                 this.lastScanCode = ScanCodes.SCAN_UNKNOWN;
-	        }
+            }
         }
 
-//        MaLiLib.LOGGER.warn("onHandleEvent():{}: state: {}, scanCode: {}", Thread.currentThread().getName(),
-//                          this.lastKeyState != null ? this.lastKeyState.toString() : "<>",
-//                          this.lastScanCode);
+//        if (this.lastKeyState != null &&
+//            (this.lastKeyState != KeyState.MOUSE_MOVED &&
+//             this.lastKeyState != KeyState.GAMEPAD_UPDATE_COMPLETE &&
+//             this.lastKeyState != KeyState.GAMEPAD_AXIS_MOTION))
+//        {
+//            MaLiLib.LOGGER.warn("onHandleEvent(): state: {}, scanCode: {}",
+//                                this.lastKeyState.toString(),
+//                                this.lastScanCode);
+//        }
 
         // Cancel further processing -> true
-        return false;
+        return cancel;
     }
 
     @ApiStatus.Internal
@@ -258,11 +278,10 @@ public class InputEventHandler implements IKeybindManager, IInputManager
     @ApiStatus.Internal
     public boolean onKeyInput(KeyEvent input, int action, @Nonnull Minecraft mc)
     {
-        boolean eventKeyState = action != ActionCodes.RELEASED;
-
 //        // Update the cached pressed keys status
 //        KeybindMulti.onKeyInputPre(input, action);
 
+        boolean eventKeyState = action != ActionCodes.RELEASED;
         boolean cancel = this.checkKeyBindsForChanges(input.key());
 
         if (this.keyboardHandlers.isEmpty() == false)
@@ -278,6 +297,61 @@ public class InputEventHandler implements IKeybindManager, IInputManager
         }
 
         return cancel;
+    }
+
+    @ApiStatus.Internal
+    public boolean onGamepadButton(GamepadButtonEvent input)
+    {
+        final int scanCode = input.scanCode() - ScanCodes.OFFSET_GAMEPAD;
+        final int action = input.action();
+        // Wrap it into a KeyEvent
+        KeyEvent key = new KeyEvent(scanCode, KeyCodes.KEY_UNKNOWN, KeyCodes.KMOD_NONE);
+        Minecraft mc = Minecraft.getInstance();
+
+        this.lastAction = action;
+        this.lastScanCode = scanCode;
+
+        // Update the cached pressed keys status
+        KeybindMulti.onKeyInputPre(key, action);
+
+        // Handle GUI clicks
+        if (mc.gui.screen() != null && mc.gui.screen() instanceof GuiBase gui)
+        {
+            if (gui.keyPressed(key))
+            {
+                this.printInputCancellationDebugMessage(InputEventHandler.class);
+                return true;
+            }
+        }
+
+        return this.onKeyInput(key, action, mc);
+    }
+
+    @ApiStatus.Internal
+    public boolean onGamepadAxisMotion(GamepadButtonEvent input, final short amount)
+    {
+        final int scanCode = input.scanCode() - ScanCodes.OFFSET_GAMEPAD_AXIS;
+        final int action = input.action();
+        // Wrap it into a KeyEvent
+        KeyEvent key = new KeyEvent(scanCode, KeyCodes.KEY_UNKNOWN, KeyCodes.KMOD_NONE);
+        Minecraft mc = Minecraft.getInstance();
+
+        this.lastAction = action;
+        this.lastScanCode = scanCode;
+
+        // Update the cached pressed keys status
+        KeybindMulti.onKeyInputPre(key, action);
+
+        // Handle GUI clicks
+        if (mc.gui.screen() != null && mc.gui.screen() instanceof GuiBase gui)
+        {
+            if (gui.keyPressed(key))
+            {
+                this.printInputCancellationDebugMessage(InputEventHandler.class);
+                return true;
+            }
+        }
+        return this.onKeyInput(key, action, mc);
     }
 
     @ApiStatus.Internal

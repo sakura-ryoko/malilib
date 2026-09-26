@@ -43,6 +43,7 @@
     "client": [
         "client.IMixinMinecraft",
         "client.MixinMinecraft",
+        "client.MixinWindow",
         "data.MixinLanguageManager",
         "gui.IMixinAbstractWidget",
         "gui.IMixinGuiRenderer",

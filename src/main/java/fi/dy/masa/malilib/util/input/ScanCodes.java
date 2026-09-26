@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import javax.annotation.Nullable;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import org.lwjgl.sdl.SDLGamepad;
 import org.lwjgl.sdl.SDLMouse;
 import org.lwjgl.sdl.SDLScancode;
 
@@ -304,6 +305,79 @@ public class ScanCodes
 	public static final int MOUSE_EXTRA_4           = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // Mouse Macro button X4
 	public static final int MOUSE_EXTRA_5           = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // Mouse Macro button X5
 
+	// Gamepad
+	public static final int OFFSET_GAMEPAD                  = 200;
+	public static final int OFFSET_GAMEPAD_AXIS             = 300;
+
+	// Gamepad Buttons
+	public static final int GAMEPAD_INVALID                 = SDLGamepad.SDL_GAMEPAD_BUTTON_INVALID         - OFFSET_GAMEPAD;
+
+	public static final int GAMEPAD_SOUTH                   = SDLGamepad.SDL_GAMEPAD_BUTTON_SOUTH           - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_EAST                    = SDLGamepad.SDL_GAMEPAD_BUTTON_EAST            - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_WEST                    = SDLGamepad.SDL_GAMEPAD_BUTTON_WEST            - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_NORTH                   = SDLGamepad.SDL_GAMEPAD_BUTTON_NORTH           - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_BACK                    = SDLGamepad.SDL_GAMEPAD_BUTTON_BACK            - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_GUIDE                   = SDLGamepad.SDL_GAMEPAD_BUTTON_GUIDE           - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_START                   = SDLGamepad.SDL_GAMEPAD_BUTTON_START           - OFFSET_GAMEPAD;
+
+	public static final int GAMEPAD_LEFT_STICK              = SDLGamepad.SDL_GAMEPAD_BUTTON_LEFT_STICK      - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_RIGHT_STICK             = SDLGamepad.SDL_GAMEPAD_BUTTON_RIGHT_STICK     - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_LEFT_SHOULDER           = SDLGamepad.SDL_GAMEPAD_BUTTON_LEFT_SHOULDER   - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_RIGHT_SHOULDER          = SDLGamepad.SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER  - OFFSET_GAMEPAD;
+
+	public static final int GAMEPAD_DPAD_UP                 = SDLGamepad.SDL_GAMEPAD_BUTTON_DPAD_UP         - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_DPAD_DOWN               = SDLGamepad.SDL_GAMEPAD_BUTTON_DPAD_DOWN       - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_DPAD_LEFT               = SDLGamepad.SDL_GAMEPAD_BUTTON_DPAD_LEFT       - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_DPAD_RIGHT              = SDLGamepad.SDL_GAMEPAD_BUTTON_DPAD_RIGHT      - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_MISC_1                  = SDLGamepad.SDL_GAMEPAD_BUTTON_MISC1           - OFFSET_GAMEPAD;
+
+	public static final int GAMEPAD_RIGHT_PADDLE_1          = SDLGamepad.SDL_GAMEPAD_BUTTON_RIGHT_PADDLE1   - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_LEFT_PADDLE_1           = SDLGamepad.SDL_GAMEPAD_BUTTON_LEFT_PADDLE1    - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_RIGHT_PADDLE_2          = SDLGamepad.SDL_GAMEPAD_BUTTON_RIGHT_PADDLE2   - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_LEFT_PADDLE_2           = SDLGamepad.SDL_GAMEPAD_BUTTON_LEFT_PADDLE2    - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_TOUCHPAD                = SDLGamepad.SDL_GAMEPAD_BUTTON_TOUCHPAD        - OFFSET_GAMEPAD;
+
+	public static final int GAMEPAD_MISC_2                  = SDLGamepad.SDL_GAMEPAD_BUTTON_MISC2           - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_MISC_3                  = SDLGamepad.SDL_GAMEPAD_BUTTON_MISC3           - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_MISC_4                  = SDLGamepad.SDL_GAMEPAD_BUTTON_MISC4           - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_MISC_5                  = SDLGamepad.SDL_GAMEPAD_BUTTON_MISC5           - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_MISC_6                  = SDLGamepad.SDL_GAMEPAD_BUTTON_MISC6           - OFFSET_GAMEPAD;
+	public static final int GAMEPAD_COUNT                   = SDLGamepad.SDL_GAMEPAD_BUTTON_COUNT           - OFFSET_GAMEPAD;
+
+	// Gamepad Axis
+	public static final int GAMEPAD_AXIS_INVALID            = SDLGamepad.SDL_GAMEPAD_AXIS_INVALID           - OFFSET_GAMEPAD_AXIS;
+	public static final int GAMEPAD_LEFT_X                  = SDLGamepad.SDL_GAMEPAD_AXIS_LEFTX             - OFFSET_GAMEPAD_AXIS;
+	public static final int GAMEPAD_LEFT_Y                  = SDLGamepad.SDL_GAMEPAD_AXIS_LEFTY             - OFFSET_GAMEPAD_AXIS;
+	public static final int GAMEPAD_RIGHT_X                 = SDLGamepad.SDL_GAMEPAD_AXIS_RIGHTX            - OFFSET_GAMEPAD_AXIS;
+	public static final int GAMEPAD_RIGHT_Y                 = SDLGamepad.SDL_GAMEPAD_AXIS_RIGHTY            - OFFSET_GAMEPAD_AXIS;
+	public static final int GAMEPAD_LEFT_TRIGGER            = SDLGamepad.SDL_GAMEPAD_AXIS_LEFT_TRIGGER      - OFFSET_GAMEPAD_AXIS;
+	public static final int GAMEPAD_RIGHT_TRIGGER           = SDLGamepad.SDL_GAMEPAD_AXIS_RIGHT_TRIGGER     - OFFSET_GAMEPAD_AXIS;
+	public static final int GAMEPAD_AXIS_COUNT              = SDLGamepad.SDL_GAMEPAD_AXIS_COUNT             - OFFSET_GAMEPAD_AXIS;
+
+	// [> 0]
+	public static boolean isKeyboard(int scanCode)
+	{
+		return scanCode > SCAN_UNKNOWN;
+	}
+
+	// [-100 through -1]
+	public static boolean isMouse(int scanCode)
+	{
+		return scanCode >= -OFFSET_MOUSE && scanCode < SCAN_UNKNOWN;
+	}
+
+	// [-200 through -101]
+	public static boolean isGamepadButton(int scanCode)
+	{
+		return scanCode >= -OFFSET_GAMEPAD && scanCode < -OFFSET_MOUSE;
+	}
+
+	// [-300 through -201]
+	public static boolean isGamepadAxis(int scanCode)
+	{
+		return scanCode >= -OFFSET_GAMEPAD_AXIS && scanCode < -OFFSET_GAMEPAD;
+	}
+
 	@Nullable
 	public static String getNameForScanCode(final int scanCode)
 	{
@@ -364,7 +438,7 @@ public class ScanCodes
 	{
 		return KeyCodesAzerty.fromQwertyName(name);
 	}
-	
+
 	static
 	{
 		MAP_NAME_TO_SCAN_CODE.defaultReturnValue(SCAN_UNKNOWN);
@@ -382,6 +456,10 @@ public class ScanCodes
 					scanCode = field.getInt(null);
 				}
 				else if (name.startsWith("MOUSE_"))
+				{
+					scanCode = field.getInt(null);
+				}
+				else if (name.startsWith("GAMEPAD_"))
 				{
 					scanCode = field.getInt(null);
 				}
