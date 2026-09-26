@@ -41,8 +41,8 @@
         "fabric-resource-loader-v1": "*"
 	},
 	"breaks": {
-        "sodium": "<0.8.9-",
-		"iris": "<1.10.9-",
+        "sodium": "<0.9.1-",
+		"iris": "<1.11.2-",
 		"itemscroller": "<0.31.4-",
 		"litematica": "<0.27.11-",
 		"minihud": "<0.39.9-",
