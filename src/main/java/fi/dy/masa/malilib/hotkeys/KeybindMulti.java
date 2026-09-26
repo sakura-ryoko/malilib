@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.hotkeys;
 import java.util.*;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
@@ -279,6 +280,12 @@ public class KeybindMulti implements IKeybind
         return this.scanCodes;
     }
 
+    @VisibleForTesting
+    public static boolean isPressedKey(final int scanCode)
+    {
+        return PRESSED_KEYS.contains(scanCode);
+    }
+
     @Override
     public String getKeysDisplayString()
     {
@@ -490,6 +497,11 @@ public class KeybindMulti implements IKeybind
 
 //        long window = Minecraft.getInstance().getWindow().handle();
 
+//        if (PRESSED_KEYS.contains(scanCode))
+//        {
+//            return true;
+//        }
+
         if (scanCode > ScanCodes.SCAN_UNKNOWN)
         {
             return InputUtils.isKeyHeld(scanCode);
@@ -508,7 +520,7 @@ public class KeybindMulti implements IKeybind
         else if (ScanCodes.isMouse(scanCode))
         {
             scanCode += ScanCodes.OFFSET_MOUSE;
-            return InputUtils.isMouseHeld(scanCode);
+            return InputUtils.isMouseHeld(scanCode) || InputConstants.isKeyDown(scanCode);
         }
 
 //        final KeyState state = ((InputEventHandler) InputEventHandler.getInputManager()).getLastKeyState();
