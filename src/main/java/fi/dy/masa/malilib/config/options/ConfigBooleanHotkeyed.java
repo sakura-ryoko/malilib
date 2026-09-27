@@ -190,7 +190,12 @@ public class ConfigBooleanHotkeyed extends ConfigBoolean implements IHotkeyToggl
         if (this.isDirty())
         {
             this.markClean();
-            this.onValueChanged();
+
+            if (!this.getLastBooleanHotkeyValue().equals(this.getBooleanHotkeyValue()))
+            {
+                this.onValueChanged();
+                this.updateLastBooleanHotkeyValue();
+            }
         }
     }
 
