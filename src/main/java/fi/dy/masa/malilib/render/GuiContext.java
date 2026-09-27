@@ -372,67 +372,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void drawHoverText(int x, int y, List<String> textLines)
 	{
-		if (textLines.isEmpty() == false && GuiUtils.getCurrentScreen() != null)
-		{
-			Font font = mc().font;
-			int maxLineLength = 0;
-			int maxWidth = GuiUtils.getCurrentScreen().width;
-			List<String> linesNew = new ArrayList<>();
-
-			for (String lineOrig : textLines)
-			{
-				String[] lines = lineOrig.split("\\n");
-
-				for (String line : lines)
-				{
-					int length = font.width(line);
-
-					if (length > maxLineLength)
-					{
-						maxLineLength = length;
-					}
-
-					linesNew.add(line);
-				}
-			}
-
-			textLines = linesNew;
-
-			final int lineHeight = font.lineHeight + 1;
-			int textHeight = textLines.size() * lineHeight - 2;
-			int textStartX = x + 4;
-			int textStartY = Math.max(8, y - textHeight - 6);
-
-			if (textStartX + maxLineLength + 6 > maxWidth)
-			{
-				textStartX = Math.max(2, maxWidth - maxLineLength - 8);
-			}
-
-			this.pose().pushMatrix();
-			this.pose().translate(0, 0);
-
-			int borderColor = 0xF0100010;
-			drawGradientRectBatched(textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
-			drawGradientRectBatched(textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
-			drawGradientRectBatched(textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY + textHeight + 3, borderColor, borderColor);
-			drawGradientRectBatched(textStartX - 4, textStartY - 3, textStartX - 3, textStartY + textHeight + 3, borderColor, borderColor);
-			drawGradientRectBatched(textStartX + maxLineLength + 3, textStartY - 3, textStartX + maxLineLength + 4, textStartY + textHeight + 3, borderColor, borderColor);
-
-			int fillColor1 = 0x505000FF;
-			int fillColor2 = 0x5028007F;
-			drawGradientRectBatched(textStartX - 3, textStartY - 3 + 1, textStartX - 3 + 1, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
-			drawGradientRectBatched(textStartX + maxLineLength + 2, textStartY - 3 + 1, textStartX + maxLineLength + 3, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
-			drawGradientRectBatched(textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY - 3 + 1, fillColor1, fillColor1);
-			drawGradientRectBatched(textStartX - 3, textStartY + textHeight + 2, textStartX + maxLineLength + 3, textStartY + textHeight + 3, fillColor2, fillColor2);
-
-            for (String str : textLines)
-            {
-                this.text(font, str, textStartX, textStartY, 0xFFFFFFFF, false);
-                textStartY += lineHeight;
-            }
-
-			this.pose().popMatrix();
-		}
+		RenderUtils.drawHoverText(this, x, y, textLines);
 	}
 
 	/**
@@ -441,43 +381,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	@ApiStatus.Experimental
 	public void drawHoverText(int x, int y, Component text)
 	{
-		if (text != null && GuiUtils.getCurrentScreen() != null)
-		{
-			Font font = mc().font;
-			int maxLineLength = font.width(text);
-			int maxWidth = GuiUtils.getCurrentScreen().width;
-
-			final int lineHeight = font.lineHeight + 1;
-			int textHeight = lineHeight - 2;
-			int textStartX = x + 4;
-			int textStartY = Math.max(8, y - textHeight - 6);
-
-			if (textStartX + maxLineLength + 6 > maxWidth)
-			{
-				textStartX = Math.max(2, maxWidth - maxLineLength - 8);
-			}
-
-			this.pose().pushMatrix();
-			this.pose().translate(0, 0);
-
-			int borderColor = 0xF0100010;
-			drawGradientRectBatched(textStartX - 3, textStartY - 4, textStartX + maxLineLength + 3, textStartY - 3, borderColor, borderColor);
-			drawGradientRectBatched(textStartX - 3, textStartY + textHeight + 3, textStartX + maxLineLength + 3, textStartY + textHeight + 4, borderColor, borderColor);
-			drawGradientRectBatched(textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY + textHeight + 3, borderColor, borderColor);
-			drawGradientRectBatched(textStartX - 4, textStartY - 3, textStartX - 3, textStartY + textHeight + 3, borderColor, borderColor);
-			drawGradientRectBatched(textStartX + maxLineLength + 3, textStartY - 3, textStartX + maxLineLength + 4, textStartY + textHeight + 3, borderColor, borderColor);
-
-			int fillColor1 = 0x505000FF;
-			int fillColor2 = 0x5028007F;
-			drawGradientRectBatched(textStartX - 3, textStartY - 3 + 1, textStartX - 3 + 1, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
-			drawGradientRectBatched(textStartX + maxLineLength + 2, textStartY - 3 + 1, textStartX + maxLineLength + 3, textStartY + textHeight + 3 - 1, fillColor1, fillColor2);
-			drawGradientRectBatched(textStartX - 3, textStartY - 3, textStartX + maxLineLength + 3, textStartY - 3 + 1, fillColor1, fillColor1);
-			drawGradientRectBatched(textStartX - 3, textStartY + textHeight + 2, textStartX + maxLineLength + 3, textStartY + textHeight + 3, fillColor2, fillColor2);
-
-			this.text(font, text, textStartX, textStartY, 0xFFFFFFFF, false);
-
-			this.pose().popMatrix();
-		}
+		RenderUtils.drawHoverText(this, x, y, text);
 	}
 
 	/**
@@ -581,10 +485,9 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 								 boolean useBackground, boolean useShadow,
 								 List<String> lines)
 	{
-		return renderText(xOff, yOff, scale,
-				textColor, bgColor, alignment,
-				useBackground, useShadow, true,
-				lines);
+		return RenderUtils.renderText(this, xOff, yOff, scale,
+				textColor, bgColor, alignment, useBackground,
+				useShadow, lines);
 	}
 
 	/**
@@ -596,78 +499,9 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 								 boolean useBackground, boolean useShadow, boolean useStatusShift,
 								 List<String> lines)
 	{
-		Font fontRenderer = mc().font;
-		final int scaledWidth = GuiUtils.getScaledWindowWidth();
-		final int lineHeight = fontRenderer.lineHeight + 2;
-		final int contentHeight = lines.size() * lineHeight - 2;
-		final int bgMargin = 2;
-
-		// Only Chuck Norris can divide by zero
-		if (scale < 0.0125)
-		{
-			return 0;
-		}
-
-		//Matrix4fStack global4fStack = RenderSystem.getModelViewStack();
-		boolean scaled = scale != 1.0;
-
-		if (scaled)
-		{
-//            if (scale != 0)
-//            {
-//                xOff = (int) (xOff * scale);
-//                yOff = (int) (yOff * scale);
-//            }
-
-			this.pose().pushMatrix();
-			this.pose().scale((float) scale, (float) scale);      // z = 1.0f
-		}
-
-		double posX = xOff + bgMargin;
-		double posY = yOff + bgMargin;
-
-		posY = RenderUtils.getHudPosY((int) posY, yOff, contentHeight, scale, alignment);
-
-		if (useStatusShift && mc().player != null)
-		{
-			posY += RenderUtils.getHudOffsetForPotions(alignment, scale, mc().player);
-		}
-
-		for (String line : lines)
-		{
-			final int width = fontRenderer.width(line);
-
-			switch (alignment)
-			{
-				case TOP_RIGHT:
-				case BOTTOM_RIGHT:
-					posX = (scaledWidth / scale) - width - xOff - bgMargin;
-					break;
-				case CENTER:
-					posX = (scaledWidth / scale / 2) - ((double) width / 2) - xOff;
-					break;
-				default:
-			}
-
-			final int x = (int) posX;
-			final int y = (int) posY;
-			posY += lineHeight;
-
-			if (useBackground)
-			{
-//                drawRect(drawContext, x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.fontHeight, backgroundColor, (float) (scale * 2));
-				drawRect(x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.lineHeight, bgColor);
-			}
-
-			this.text(fontRenderer, line, x, y, textColor, useShadow);
-		}
-
-		if (scaled)
-		{
-			this.pose().popMatrix();
-		}
-
-		return contentHeight + bgMargin * 2;
+		return RenderUtils.renderText(this, xOff, yOff, scale,
+				textColor, bgColor, alignment, useBackground,
+				useShadow, useStatusShift, lines);
 	}
 
 	/**
@@ -679,7 +513,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 								 boolean useBackground, boolean useShadow,
 								 Component text)
 	{
-		return renderText(xOff, yOff, scale,
+		return RenderUtils.renderText(this, xOff, yOff, scale,
 				textColor, bgColor, alignment,
 				useBackground, useShadow, true,
 				text);
@@ -694,66 +528,10 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 						  boolean useBackground, boolean useShadow, boolean useStatusShift, 
 						  Component text)
 	{
-		Font fontRenderer = mc().font;
-		final int scaledWidth = GuiUtils.getScaledWindowWidth();
-		final int lineHeight = fontRenderer.lineHeight + 2;
-		final int contentHeight = lineHeight - 2;
-		final int bgMargin = 2;
-
-		// Only Chuck Norris can divide by zero
-		if (scale < 0.0125)
-		{
-			return 0;
-		}
-
-		boolean scaled = scale != 1.0;
-
-		if (scaled)
-		{
-			this.pose().pushMatrix();
-			this.pose().scale((float) scale, (float) scale);      // z = 1.0f
-		}
-
-		double posX = xOff + bgMargin;
-		double posY = yOff + bgMargin;
-
-		posY = RenderUtils.getHudPosY((int) posY, yOff, contentHeight, scale, alignment);
-
-		if (useStatusShift && mc().player != null)
-		{
-			posY += RenderUtils.getHudOffsetForPotions(alignment, scale, mc().player);
-		}
-
-		final int width = fontRenderer.width(text);
-
-		switch (alignment)
-		{
-			case TOP_RIGHT:
-			case BOTTOM_RIGHT:
-				posX = (scaledWidth / scale) - width - xOff - bgMargin;
-				break;
-			case CENTER:
-				posX = (scaledWidth / scale / 2) - ((double) width / 2) - xOff;
-				break;
-			default:
-		}
-
-		final int x = (int) posX;
-		final int y = (int) posY;
-
-		if (useBackground)
-		{
-			drawRect(x - bgMargin, y - bgMargin, width + bgMargin, bgMargin + fontRenderer.lineHeight, bgColor);
-		}
-
-		this.text(fontRenderer, text, x, y, textColor, useShadow);
-
-		if (scaled)
-		{
-			this.pose().popMatrix();
-		}
-
-		return contentHeight + bgMargin * 2;
+		return RenderUtils.renderText(this, xOff, yOff, scale,
+				textColor, bgColor, alignment,
+				useBackground, useShadow, useStatusShift,
+				text);
 	}
 
 	public void renderModel(int x, int y, BlockState state)

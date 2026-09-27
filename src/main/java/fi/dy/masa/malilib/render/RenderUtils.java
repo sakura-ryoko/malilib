@@ -475,7 +475,6 @@ public class RenderUtils
 	/**
 	 * Draw a 'Hover Text' Bubble object, simillar to Vanilla.
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
     public static void drawHoverText(GuiContext ctx, int x, int y, List<String> textLines)
     {
         if (textLines.isEmpty() == false && GuiUtils.getCurrentScreen() != null)
@@ -547,7 +546,6 @@ public class RenderUtils
 	 * Draw a 'Hover Text' Bubble object, simillar to Vanilla.
 	 */
 	@ApiStatus.Experimental
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
 	public static void drawHoverText(GuiContext ctx, int x, int y, Component text)
 	{
 		if (text != null && GuiUtils.getCurrentScreen() != null)
@@ -738,7 +736,6 @@ public class RenderUtils
 	/**
 	 * Render Scaled Text with a background (GUI)
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
     public static int renderText(GuiContext ctx, int xOff, int yOff, double scale,
                                  int textColor, int bgColor, HudAlignment alignment,
                                  boolean useBackground, boolean useShadow,
@@ -753,7 +750,6 @@ public class RenderUtils
 	/**
 	 * Render Scaled Text with a background (GUI)
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
     public static int renderText(GuiContext ctx,
                                  int xOff, int yOff, double scale,
                                  int textColor, int bgColor, HudAlignment alignment,
@@ -854,7 +850,6 @@ public class RenderUtils
 	 * Render Scaled Text with a background (GUI)
 	 */
 	@ApiStatus.Experimental
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
 	public static int renderText(GuiContext ctx,
 	                             int xOff, int yOff, double scale,
 	                             int textColor, int bgColor, HudAlignment alignment,
