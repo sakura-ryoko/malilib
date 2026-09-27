@@ -19,7 +19,7 @@ public class WidgetListConfigOptions extends WidgetListConfigOptionsBase<ConfigO
     protected final GuiConfigsBase parent;
     protected final WidgetSearchBarConfigs widgetSearchConfigs;
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public WidgetListConfigOptions(int x, int y, int width, int height, int configWidth, float zLevel, boolean useKeybindSearch, GuiConfigsBase parent)
     {
         this(x, y, width, height, configWidth, useKeybindSearch, parent);
