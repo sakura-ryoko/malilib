@@ -7,12 +7,13 @@ import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.MaLiLibIcons;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 {
@@ -253,11 +254,13 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
     }
 
 	private record ListenerResetConfig(ButtonGeneric buttonReset, WidgetColorListEditEntry parent)
-            implements IButtonActionListener
+            implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+            if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.parent.textField != null)
 			{
 				this.parent.textField.textField().setValue(this.parent.defaultValue.toString());
@@ -266,15 +269,18 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 			}
 
 			this.parent.parent.refreshEntries();
+            return true;
 		}
 	}
 
 	private record ListenerListActions(ButtonType type, WidgetColorListEditEntry parent)
-            implements IButtonActionListener
+            implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+            if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.type == ButtonType.ADD)
 			{
 				this.parent.insertEntryBefore();
@@ -287,6 +293,7 @@ public class WidgetColorListEditEntry extends WidgetConfigOptionBase<Color4f>
 			{
 				this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
 			}
+            return true;
 		}
 	}
 

@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -10,7 +12,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
@@ -194,7 +195,7 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
 
     protected abstract boolean applyValue(String string);
 
-    protected static class ButtonListener implements IButtonActionListener
+    protected static class ButtonListener implements IButtonActionHandler
     {
         private final GuiTextInputMultiLineBase gui;
         private final ButtonType type;
@@ -206,8 +207,10 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
         }
 
         @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+        public boolean handleAction(ButtonBase button, int mouseButton)
         {
+            if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
             if (this.type == ButtonType.OK)
             {
                 // Only close the GUI if the value was successfully applied
@@ -225,6 +228,8 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
                 this.gui.textField.setValue(this.gui.originalText);
                 this.gui.textField.setFocused(true);
             }
+
+            return true;
         }
     }
 

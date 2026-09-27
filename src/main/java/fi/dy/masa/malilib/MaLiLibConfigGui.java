@@ -10,11 +10,12 @@ import fi.dy.masa.malilib.config.options.BooleanHotkeyGuiWrapper;
 import fi.dy.masa.malilib.gui.GuiConfigsBase;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.gui.interfaces.IConfigGuiAllTab;
 import fi.dy.masa.malilib.test.config.ConfigTestEnum;
 import fi.dy.masa.malilib.test.config.TestHotkeys;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class MaLiLibConfigGui extends GuiConfigsBase implements IConfigGuiAllTab
 {
@@ -174,11 +175,12 @@ public class MaLiLibConfigGui extends GuiConfigsBase implements IConfigGuiAllTab
         return new BooleanHotkeyGuiWrapper(config.getName(), config, config.getKeybind());
     }
 
-    private record ButtonListener(ConfigGuiTab tab, MaLiLibConfigGui parent) implements IButtonActionListener
+    private record ButtonListener(ConfigGuiTab tab, MaLiLibConfigGui parent) implements IButtonActionHandler
     {
         @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+        public boolean handleAction(ButtonBase button, int mouseButton)
         {
+            if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
             MaLiLibConfigGui.tab = this.tab;
 
             this.parent.reCreateListWidget(); // apply the new config width
@@ -187,6 +189,7 @@ public class MaLiLibConfigGui extends GuiConfigsBase implements IConfigGuiAllTab
                 this.parent.getListWidget().resetScrollbarPosition();
             }
             this.parent.initGui();
+            return true;
         }
     }
 

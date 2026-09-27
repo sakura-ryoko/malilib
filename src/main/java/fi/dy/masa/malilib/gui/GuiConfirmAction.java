@@ -3,11 +3,13 @@ package fi.dy.masa.malilib.gui;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import net.minecraft.client.gui.screens.Screen;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.interfaces.ICompletionListener;
 import fi.dy.masa.malilib.interfaces.IConfirmationListener;
@@ -142,11 +144,13 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
         }
     }
 
-	protected record ButtonListener(ButtonType type, GuiConfirmAction gui) implements IButtonActionListener
+	protected record ButtonListener(ButtonType type, GuiConfirmAction gui) implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+            if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.type == ButtonType.OK)
 			{
 				this.gui.listener.onActionConfirmed();
@@ -157,6 +161,7 @@ public class GuiConfirmAction extends GuiDialogBase implements ICompletionListen
 			}
 
 			GuiBase.openGui(this.gui.getParent());
+            return true;
 		}
 	}
 

@@ -2,7 +2,7 @@ package fi.dy.masa.malilib.gui;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
@@ -137,7 +137,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
     }
 
 	protected record ButtonListenerLayerEdit(Type type, LayerRange layerRange, GuiRenderLayerEditBase parent)
-			implements IButtonActionListener
+			implements IButtonActionHandler
 	{
 		@Override
 		public boolean handleAction(ButtonBase button, int mouseButton)
@@ -193,7 +193,7 @@ public abstract class GuiRenderLayerEditBase extends GuiBase
 	}
 
 	protected record ButtonListenerChangeValue(LayerMode mode, LayerRange layerRange, boolean isSecondLimit, GuiRenderLayerEditBase parent)
-			implements IButtonActionListener
+			implements IButtonActionHandler
 	{
 		@Override
 		public boolean handleAction(ButtonBase button, int mouseButton)

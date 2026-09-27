@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.interfaces.IHoverable;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
@@ -27,7 +28,6 @@ import net.minecraft.util.Util;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldMultiLineListener;
@@ -513,7 +513,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.messageRenderer.drawMessages(ctx, this.width / 2, this.height / 2);
     }
 
-    public <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)
+    public <T extends ButtonBase> T addButton(T button, IButtonActionHandler listener)
     {
         button.setActionListener(listener);
         return addWidget(button);

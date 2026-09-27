@@ -192,7 +192,14 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						configHeight - 3,
 						((BooleanEntry) value).getBooleanValue());
 
-				booleanButton.setActionListener(IButtonActionListener.handling((_, _) -> checkResetButtonState()));
+				booleanButton.setActionListener((_, button) -> {
+					if (button == ScanCodes.OFFSET_MOUSE_LEFT)
+					{
+						checkResetButtonState();
+						return true;
+					}
+					return false;
+				});
 
 				this.subWidgets.add(booleanButton);
 				this.booleanWidgets.add(booleanButton);
@@ -224,7 +231,12 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 			resetEnabled |= value.wasConfigModified(this.defaultValue.get(i));
 		}
 
-		this.addButton(buttonReset, IButtonActionListener.handling((button, mouseButton) -> reset()));
+		this.addButton(buttonReset, ((_, mouseButton) -> {
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
+			reset();
+			return true;
+		}));
 
 		buttonReset.setEnabled(resetEnabled);
 
@@ -610,11 +622,13 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		return this.checkResetButtonState();
 	}
 
-	private record ListenerListActions(ButtonType type, WidgetTableEditEntry parent) implements IButtonActionListener
+	private record ListenerListActions(ButtonType type, WidgetTableEditEntry parent) implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.type == ButtonType.ADD)
 			{
 				this.parent.insertEntryBefore();
@@ -627,6 +641,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 			{
 				this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
 			}
+
+			return true;
 		}
 	}
 

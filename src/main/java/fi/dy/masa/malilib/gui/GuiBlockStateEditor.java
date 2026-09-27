@@ -3,7 +3,6 @@ package fi.dy.masa.malilib.gui;
 import java.util.*;
 import javax.annotation.Nullable;
 
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.ISliderCallback;
 import fi.dy.masa.malilib.gui.widgets.WidgetDropDownList;
 import fi.dy.masa.malilib.gui.widgets.WidgetSlider;
@@ -120,10 +119,13 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		int yAdj = this.dialogBottom - this.buttonHeight - 4;
         ButtonGeneric resetButton = this.addButton(
 				new ButtonGeneric(x, yAdj, -1, this.buttonHeight, ButtonType.RESET.getDisplayName()),
-				IButtonActionListener.simple((_, _) -> {
+				(_, mouseButton) -> {
+					if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 					this.blockState = this.config.getBlockStateValue();
 					this.init();
-				})
+					return true;
+				}
 		);
 		resetButton.setX((this.dialogLeftSideCenter - resetButton.getWidth() / 2));
 

@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.render.GuiContext;
 
 public abstract class WidgetContainer extends WidgetBase
@@ -29,7 +29,7 @@ public abstract class WidgetContainer extends WidgetBase
         return widget;
     }
 
-    protected <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)
+    protected <T extends ButtonBase> T addButton(T button, IButtonActionHandler listener)
     {
         button.setActionListener(listener);
         this.addWidget(button);

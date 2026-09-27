@@ -2,6 +2,8 @@ package fi.dy.masa.malilib.util;
 
 import java.util.Locale;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -9,7 +11,6 @@ import net.minecraft.world.phys.Vec3;
 import fi.dy.masa.malilib.gui.*;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.interfaces.ICoordinateValueModifier;
@@ -207,7 +208,7 @@ public class GuiUtils
         }
     }
 
-    public static class ButtonListenerCoordinateInput implements IButtonActionListener
+    public static class ButtonListenerCoordinateInput implements IButtonActionHandler
     {
         protected final ICoordinateValueModifier modifier;
         protected final CoordinateType type;

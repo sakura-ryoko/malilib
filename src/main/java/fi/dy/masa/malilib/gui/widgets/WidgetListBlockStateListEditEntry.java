@@ -3,6 +3,8 @@ package fi.dy.masa.malilib.gui.widgets;
 import java.util.List;
 import java.util.Objects;
 
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import org.jetbrains.annotations.ApiStatus;
 
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
@@ -15,7 +17,6 @@ import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.MaLiLibIcons;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.interfaces.IBlockStateConsumer;
@@ -286,11 +287,13 @@ public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<Bl
 	}
 
 	private record ListenerResetConfig(ButtonGeneric buttonReset, WidgetListBlockStateListEditEntry parent)
-			implements IButtonActionListener
+			implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.parent.textField != null)
 			{
 				this.parent.textField.textField().setValue(this.parent.defaultValueString);
@@ -299,15 +302,18 @@ public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<Bl
 			}
 
 			this.parent.parent.refreshEntries();
+			return true;
 		}
 	}
 
 	private record ListenerListActions(ButtonType type, WidgetListBlockStateListEditEntry parent)
-			implements IButtonActionListener
+			implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.type == ButtonType.ADD)
 			{
 				this.parent.insertEntryBefore();
@@ -320,6 +326,7 @@ public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<Bl
 			{
 				this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
 			}
+			return true;
 		}
 	}
 

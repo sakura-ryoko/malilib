@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -487,11 +489,13 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
         }
     }
 
-	public record ListenerSliderToggle(IConfigSlider config) implements IButtonActionListener
+	public record ListenerSliderToggle(IConfigSlider config) implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			this.config.toggleUseSlider();
 
 			Screen gui = GuiUtils.getCurrentScreen();
@@ -500,20 +504,24 @@ public class WidgetConfigOption extends WidgetConfigOptionBase<ConfigOptionWrapp
 			{
 				((GuiBase) gui).initGui();
 			}
+			return true;
 		}
 	}
 
 	public record HotkeyedBooleanResetListener(IConfigResettable config, ButtonGeneric booleanButton,
 	                                           ConfigButtonKeybind hotkeyButton, ButtonGeneric resetButton,
-	                                           IKeybindConfigGui host) implements IButtonActionListener
+	                                           IKeybindConfigGui host) implements IButtonActionHandler
 	{
 
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			this.config.resetToDefault();
-			this.host.getButtonPressListener().actionPerformedWithButton(button, mouseButton);
+			this.host.getButtonPressListener().handleAction(button, mouseButton);
 			this.updateButtons();
+			return true;
 		}
 
 		public void updateButtons()

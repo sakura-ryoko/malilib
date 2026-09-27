@@ -7,11 +7,12 @@ import fi.dy.masa.malilib.gui.GuiTextFieldGeneric;
 import fi.dy.masa.malilib.gui.MaLiLibIcons;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
 {
@@ -240,25 +241,30 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
     }
 
 	private record ListenerResetConfig(ButtonGeneric buttonReset,
-	                                   WidgetStringListEditEntry parent) implements IButtonActionListener
+	                                   WidgetStringListEditEntry parent) implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+            if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.parent.textField != null)
 			{
 				this.parent.textField.textField().setValue(this.parent.defaultValue);
 				this.buttonReset.setEnabled(!this.parent.textField.textField().getValue().equals(this.parent.defaultValue));
 			}
+            return true;
 		}
 	}
 
 	private record ListenerListActions(ButtonType type,
-	                                   WidgetStringListEditEntry parent) implements IButtonActionListener
+	                                   WidgetStringListEditEntry parent) implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+            if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.type == ButtonType.ADD)
 			{
 				this.parent.insertEntryBefore();
@@ -271,6 +277,7 @@ public class WidgetStringListEditEntry extends WidgetConfigOptionBase<String>
 			{
 				this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
 			}
+            return true;
 		}
 	}
 

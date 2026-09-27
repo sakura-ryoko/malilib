@@ -56,7 +56,7 @@ public class ButtonGeneric extends ButtonBase
     }
 
     @Override
-    public ButtonGeneric setActionListener(@Nullable IButtonActionListener actionListener)
+    public ButtonGeneric setActionListener(@Nullable IButtonActionHandler actionListener)
     {
         this.actionListener = actionListener;
         return this;

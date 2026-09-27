@@ -31,7 +31,7 @@ public abstract class ButtonBase extends WidgetBase implements IHoverable
     protected boolean visible = true;
     protected boolean hovered;
     protected boolean hoverInfoRequiresShift;
-    @Nullable protected IButtonActionListener actionListener;
+    @Nullable protected IButtonActionHandler actionListener;
 
     public ButtonBase(int x, int y, int width, int height)
     {
@@ -43,7 +43,7 @@ public abstract class ButtonBase extends WidgetBase implements IHoverable
         this(x, y, width, height, text, null);
     }
 
-    public ButtonBase(int x, int y, int width, int height, String text, @Nullable IButtonActionListener actionListener)
+    public ButtonBase(int x, int y, int width, int height, String text, @Nullable IButtonActionHandler actionListener)
     {
         super(x, y, width, height);
 
@@ -56,7 +56,7 @@ public abstract class ButtonBase extends WidgetBase implements IHoverable
         this.hoverHelp = ImmutableList.of(StringUtils.translate("malilib.gui.button.hover.hold_shift_for_info"));
     }
 
-    public ButtonBase setActionListener(@Nullable IButtonActionListener actionListener)
+    public ButtonBase setActionListener(@Nullable IButtonActionHandler actionListener)
     {
         this.actionListener = actionListener;
         return this;
@@ -86,14 +86,15 @@ public abstract class ButtonBase extends WidgetBase implements IHoverable
             if (handled)
             {
                 this.mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
             }
+            return false;
         }
         else
         {
             this.mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            return true;
         }
-
-        return true;
     }
 
     @Override
