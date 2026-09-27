@@ -661,9 +661,14 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             for (WidgetBase widget : this.widgets.stream().toList())
             {
-                widget.render(ctx, mouseX, mouseY, false);
+                widget.render(ctx, mouseX, mouseY, isSelected(widget));
             }
         }
+    }
+
+    public boolean isSelected(WidgetBase widget)
+    {
+        return this.focusedWidget != null && this.focusedWidget.equals(widget);
     }
 
     protected void drawHoverTexts(GuiContext ctx, int mouseX, int mouseY, float partialTicks)

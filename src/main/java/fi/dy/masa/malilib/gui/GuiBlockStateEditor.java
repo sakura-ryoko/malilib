@@ -133,7 +133,8 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.addBlockProperties(xCenter, yCenter);
 	}
 
-	private void reInitProperties() {
+	private void reInitProperties()
+	{
         GuiTextFieldGeneric oldWidget = this.textFieldBlockName.textField();
 		this.init();
 		this.textFieldBlockName.textField().setFocused(oldWidget.isFocused());
@@ -186,10 +187,13 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		this.addLabel(x, y, propWidth, this.elementHeight, COLOR_WHITE, str);
 		y += this.elementHeight + 2;
 
-		if (prop instanceof IntegerProperty integerProperty) {
+		if (prop instanceof IntegerProperty integerProperty)
+		{
 			WidgetSlider slider = getSlider(x, y, prop.getPossibleValues().indexOf(this.blockState.getValue(prop)), integerProperty);
 			this.addWidget(slider);
-		} else {
+		}
+		else
+		{
 			List<T> validValues = prop.getPossibleValues();
 			WidgetDropDownList<T> dropDown = new WidgetDropDownList<>(x, y, this.maxLength+2, this.elementHeight + 2, 500, 10, validValues);
 			dropDown.setSelectedEntryChangeCallback(t -> GuiBlockStateEditor.this.blockState = GuiBlockStateEditor.this.blockState.setValue(prop, t));
@@ -223,7 +227,8 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			@Override
 			public void setValueRelative(double relativeValue)
 			{
-				if (validValues.size() <= 1) {
+				if (validValues.size() <= 1)
+				{
 					valueIndex = 0;
 					return;
 				}
@@ -323,7 +328,8 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 			if (id != null)
 			{
 				Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(id);
-				if (block.isPresent()) {
+				if (block.isPresent())
+				{
 					this.gui.blockState = block.get().defaultBlockState().withPropertiesOf(this.gui.blockState);
 					this.gui.reInitProperties();
 					return true;

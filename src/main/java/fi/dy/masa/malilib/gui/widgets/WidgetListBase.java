@@ -75,6 +75,35 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             return true;
         }
 
+        final int relativeY = (int) (click.y() - this.browserEntriesStartY - this.browserEntriesOffsetY);
+
+        if (relativeY >= 0 &&
+                click.x() >= this.browserEntriesStartX &&
+                click.x() < this.browserEntriesStartX + this.browserEntryWidth)
+        {
+            for (int i = 0; i < this.widgets.size(); ++i)
+            {
+                if (this.widgets.get(i) instanceof WidgetListEntryBase<?> widget)
+                {
+                    if (widget.isMouseOver((int) click.x(), (int) click.y()))
+                    {
+                        if (widget.canSelectAt(click))
+                        {
+                            int entryIndex = widget.getListIndex();
+
+                            if (entryIndex >= 0 && entryIndex < this.listContents.size())
+                            {
+                                // IMPORTANT
+                                this.onEntryClicked(this.listContents.get(entryIndex), entryIndex);
+                            }
+                        }
+
+                        return widget.onMouseClicked(click, doubleClick);
+                    }
+                }
+            }
+        }
+
         if (this.onMouseClickedSearchBar(click, doubleClick))
         {
             return true;
@@ -376,6 +405,17 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         {
             this.widgetSearchBar.render(ctx, mouseX, mouseY, false);
         }
+    }
+
+    @Override
+    public boolean isSelected(WidgetBase widget) {
+        if (widget instanceof WidgetListEntryBase<?> entry)
+        {
+	        //noinspection SuspiciousMethodCalls
+	        return this.allowMultiSelection ? this.selectedEntries.contains(entry) : entry.equals(this.getLastSelectedEntry());
+        }
+
+        return super.isSelected(widget);
     }
 
     public void setSize(int width, int height)

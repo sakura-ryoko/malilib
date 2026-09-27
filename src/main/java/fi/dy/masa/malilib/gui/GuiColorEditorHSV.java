@@ -967,44 +967,44 @@ public class GuiColorEditorHSV extends GuiDialogBase
         HEX
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public static void renderGradientColorBar(GuiContext ctx, int x, int y, float z, int width, int height, int colorStart, int colorEnd)
     {
         renderGradientColorBar(ctx, x, y, width, height, colorStart, colorEnd);
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public static void renderHueBarHorizontal(GuiContext ctx, int x, int y, float z, int width, int height, float saturation, float value)
     {
         renderHueBarHorizontal(ctx, x, y, width, height, saturation, value);
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public static void renderHueBarVertical(GuiContext ctx, int x, int y, float z, int width, int height, float saturation, float value)
     {
         renderHueBarVertical(ctx, x, y, width, height, saturation, value);
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public static void renderHueBarSegment(GuiContext ctx, int x, int y, float z, int width, int height,
                                            int segmentWidth, int segmentHeight, int color1, int color2)
     {
         renderHueBarSegment(ctx, x, y, width, height, segmentWidth, segmentHeight, color1, color2);
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public static void renderHSSelector(GuiContext ctx, int xStart, int yStart, float z, int width, int height, float hue)
     {
         renderBarMarkerVerticalBar(ctx, xStart, yStart, z, width, height, hue);
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public static void renderBarMarkerVerticalBar(GuiContext ctx, int x, int y, float z, int barWidth, int barHeight, float value)
     {
         renderBarMarkerVerticalBar(ctx, x, y, barWidth, barHeight, value);
     }
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     public static void renderBarMarkerHorizontalBar(GuiContext ctx, int x, int y, float z, int barWidth, int barHeight, float value)
     {
         renderBarMarkerVerticalBar(ctx, x, y, barWidth, barHeight, value);
