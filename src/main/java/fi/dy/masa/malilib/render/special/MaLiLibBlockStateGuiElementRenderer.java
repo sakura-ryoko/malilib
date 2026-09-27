@@ -41,13 +41,10 @@ public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRendere
 	        matrices.scale(state.size(), state.size(), state.size());
             matrices.scale(state.scale(), state.scale(), state.scale());
 
-            // i dunno.
-            matrices.translate(-0.5, -1.5 + 0.0625, 0);
+            matrices.translate(-0.5, -1.5 + state.yOffset(), 0);
 
             // apply rotation around the center of the block
-            matrices.translate(0.5, 0.5, 0.5);
-            matrices.rotate(state.rotation());
-            matrices.translate(-0.5, -0.5, -0.5);
+            matrices.rotateAround(state.rotation(), 0.5f, 0.5F, 0.5f);
 
 	        this.submitBlockStateModel(state.state(), matrices, nodes);
 	        matrices.popPose();

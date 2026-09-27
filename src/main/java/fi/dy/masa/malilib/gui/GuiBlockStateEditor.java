@@ -282,7 +282,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 
 	private void drawBlockStateInGui(GuiContext ctx)
 	{
-		ctx.renderModel(this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F, 0.125f * Mth.PI, ((Util.getMillis() % 16000f) / 16000f) * Mth.TWO_PI, Mth.PI);
+		ctx.renderModel(this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0625F, 0.125f * Mth.PI, ((Util.getMillis() % 16000f) / 16000f) * Mth.TWO_PI, Mth.PI);
 //		RenderUtils.renderModelInGui(ctx, this.modelX + 1, this.modelY + 1, this.modelSize, this.blockState, 0.75F, 0.0F, 0, 0, 0);
 	}
 
