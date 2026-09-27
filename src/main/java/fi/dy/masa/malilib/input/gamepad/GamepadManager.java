@@ -12,11 +12,12 @@ import org.lwjgl.sdl.SDL_Event;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.event.InputEventHandler;
-import fi.dy.masa.malilib.util.input.ActionCodes;
+import fi.dy.masa.malilib.util.input.*;
 
 public class GamepadManager
 {
 //	private static final AnsiLogger LOGGER = new AnsiLogger(GamepadManager.class);
+	public static final short AXIS_THRESHOLD = 16000;       // 50% of button press
 	public static final GamepadManager INSTANCE = new GamepadManager();
 	private final ConcurrentHashMap<Integer, Gamepad> gamepads;
 
@@ -26,9 +27,10 @@ public class GamepadManager
 	}
 
 	// Register SDL's Gamepad event polling
+	@ApiStatus.Internal
 	public void onInitialize()
 	{
-		if (SDLInit.SDL_InitSubSystem(SDLInit.SDL_INIT_GAMEPAD))
+		if (SDLInit.SDL_InitSubSystem(SDLCodes.INIT_GAMEPAD))
 		{
 			MaLiLib.LOGGER.info("SDL Gamepad subsystem initialized");
 		}
@@ -100,6 +102,7 @@ public class GamepadManager
 	}
 
 	@Nullable
+	@ApiStatus.Internal
 	public Gamepad getFirstGamepad()
 	{
 		if (this.gamepads.isEmpty())
@@ -110,6 +113,8 @@ public class GamepadManager
 		return this.gamepads.values().iterator().next();
 	}
 
+	// TODO (We need the static config names)
+	@ApiStatus.Internal
 	public String checkForLabelTransform(final int code, @Nonnull String fallback)
 	{
 		Gamepad gp = this.getFirstGamepad();
@@ -140,6 +145,7 @@ public class GamepadManager
 			case GamepadCodes.LABEL_CIRCLE -> "○";
 			case GamepadCodes.LABEL_SQUARE -> "□";
 			case GamepadCodes.LABEL_TRIANGLE -> "△";
+//			case GamepadCodes.LABEL_UNKNOWN -> fallback;
 			default -> fallback;
 		};
 	}
@@ -174,7 +180,7 @@ public class GamepadManager
 		final int id = event.gdevice().which();
 		GamepadType type = GamepadType.fromTypeCode(event.gdevice().type());
 
-		if (this.hasId(id))
+		if (this.hasId(id) && type != null)
 		{
 			Gamepad gp = this.gamepads.get(id);
 
@@ -211,9 +217,10 @@ public class GamepadManager
 
 		if (this.hasId(id))
 		{
-			if (axis == SDLGamepad.SDL_GAMEPAD_AXIS_LEFT_TRIGGER || axis == SDLGamepad.SDL_GAMEPAD_AXIS_RIGHT_TRIGGER)
+			if (axis == ScanCodes.OFFSET_GAMEPAD_LEFT_TRIGGER ||
+				axis == ScanCodes.OFFSET_GAMEPAD_RIGHT_TRIGGER)
 			{
-				boolean pressed = amount > 16000;
+				boolean pressed = amount > AXIS_THRESHOLD;
 				cancel = ((InputEventHandler) InputEventHandler.getInputManager()).onGamepadAxisMotion(
 						new GamepadButtonEvent(axis, pressed ? ActionCodes.PRESSED : ActionCodes.RELEASED, event.gaxis().timestamp()),
 						amount
@@ -243,7 +250,7 @@ public class GamepadManager
 		{
 			final short amount = SDLGamepad.SDL_GetGamepadAxis(entry.getValue().ptr(), axis);
 
-			if (amount > 16000)
+			if (amount > AXIS_THRESHOLD)
 			{
 				return true;
 			}

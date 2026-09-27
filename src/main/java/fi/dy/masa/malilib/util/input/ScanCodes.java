@@ -345,6 +345,15 @@ public class ScanCodes
 	public static final int GAMEPAD_COUNT                   = SDLGamepad.SDL_GAMEPAD_BUTTON_COUNT           - OFFSET_GAMEPAD;
 
 	// Gamepad Axis
+	public static final int OFFSET_GAMEPAD_AXIS_INVALID     = SDLGamepad.SDL_GAMEPAD_AXIS_INVALID;
+	public static final int OFFSET_GAMEPAD_LEFT_X           = SDLGamepad.SDL_GAMEPAD_AXIS_LEFTX;
+	public static final int OFFSET_GAMEPAD_LEFT_Y           = SDLGamepad.SDL_GAMEPAD_AXIS_LEFTY;
+	public static final int OFFSET_GAMEPAD_RIGHT_X          = SDLGamepad.SDL_GAMEPAD_AXIS_RIGHTX;
+	public static final int OFFSET_GAMEPAD_RIGHT_Y          = SDLGamepad.SDL_GAMEPAD_AXIS_RIGHTY;
+	public static final int OFFSET_GAMEPAD_LEFT_TRIGGER     = SDLGamepad.SDL_GAMEPAD_AXIS_LEFT_TRIGGER;
+	public static final int OFFSET_GAMEPAD_RIGHT_TRIGGER    = SDLGamepad.SDL_GAMEPAD_AXIS_RIGHT_TRIGGER;
+	public static final int OFFSET_GAMEPAD_AXIS_COUNT       = SDLGamepad.SDL_GAMEPAD_AXIS_COUNT;
+
 	public static final int GAMEPAD_AXIS_INVALID            = SDLGamepad.SDL_GAMEPAD_AXIS_INVALID           - OFFSET_GAMEPAD_AXIS;
 	public static final int GAMEPAD_LEFT_X                  = SDLGamepad.SDL_GAMEPAD_AXIS_LEFTX             - OFFSET_GAMEPAD_AXIS;
 	public static final int GAMEPAD_LEFT_Y                  = SDLGamepad.SDL_GAMEPAD_AXIS_LEFTY             - OFFSET_GAMEPAD_AXIS;

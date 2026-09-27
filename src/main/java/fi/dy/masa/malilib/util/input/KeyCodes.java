@@ -338,7 +338,11 @@ public class KeyCodes
     public static final int MOUSE_EXTRA_4           = SDLMouse.SDL_BUTTON_X2 + 2    - OFFSET_MOUSE;      // Mouse Macro button X4
     public static final int MOUSE_EXTRA_5           = SDLMouse.SDL_BUTTON_X2 + 3    - OFFSET_MOUSE;      // Mouse Macro button X5
 
+    /**
+     * @deprecated - Use {@link ScanCodes}
+     */
     @Nullable
+    @Deprecated
     public static String getNameForKey(int keyCode)
     {
         // Transform to AZERTY if a Transform is found
@@ -357,6 +361,10 @@ public class KeyCodes
         return MAP_KEY_TO_NAME.get(keyCode);
     }
 
+    /**
+     * @deprecated - Use {@link ScanCodes}
+     */
+    @Deprecated
     public static int getKeyCodeFromName(String name)
     {
         // Transform to AZERTY if a Transform is found;

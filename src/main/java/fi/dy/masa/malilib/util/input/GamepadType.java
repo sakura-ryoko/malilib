@@ -1,4 +1,4 @@
-package fi.dy.masa.malilib.input.gamepad;
+package fi.dy.masa.malilib.util.input;
 
 import javax.annotation.Nullable;
 

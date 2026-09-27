@@ -3,6 +3,8 @@ package fi.dy.masa.malilib.input.gamepad;
 import javax.annotation.Nonnull;
 import org.lwjgl.sdl.SDLGamepad;
 
+import fi.dy.masa.malilib.util.input.GamepadType;
+
 public record Gamepad(String name, int instanceId, long ptr, GamepadType type)
 {
 	public static Gamepad build(final int instanceId, long ptr, @Nonnull GamepadType type)
