@@ -15,7 +15,7 @@ public interface IGuiIcon
 
     void renderAt(GuiContext ctx, int x, int y, boolean enabled, boolean selected);
 
-    @Deprecated(forRemoval = true)
+    @Deprecated
     default void renderAt(GuiContext ctx, int x, int y, float z, boolean enabled, boolean selected)
     {
         renderAt(ctx, x, y, enabled, selected);

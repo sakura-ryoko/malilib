@@ -149,7 +149,7 @@ public class RenderUtils
         System.out.print("DUMP END\n");
     }
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawOutlinedBox(GuiContext ctx, int x, int y, int width, int height, int colorBg, int colorBorder)
     {
         // Draw the background
@@ -159,7 +159,7 @@ public class RenderUtils
         drawOutline(ctx, x - 1, y - 1, width + 2, height + 2, colorBorder);
     }
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawOutlinedBox(GuiContext ctx, int x, int y, int width, int height, float scale, int colorBg, int colorBorder)
     {
         // Draw the background
@@ -169,19 +169,19 @@ public class RenderUtils
         drawOutline(ctx, x - 1, y - 1, width + 2, height + 2, scale, colorBorder);
     }
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawOutline(GuiContext ctx, int x, int y, int width, int height, int colorBorder)
     {
         drawOutline(ctx, x, y, width, height, 1, colorBorder);
     }
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawOutline(GuiContext ctx, int x, int y, int width, int height, float scale, int colorBorder)
     {
         drawOutline(ctx, x, y, width, height, scale, 1, colorBorder);
     }
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawOutline(GuiContext ctx, int x, int y, int width, int height, int borderWidth, int colorBorder)
     {
         drawRect(ctx, x, y, borderWidth, height, colorBorder); // left edge
@@ -190,7 +190,7 @@ public class RenderUtils
         drawRect(ctx, x + borderWidth, y + height - borderWidth, width - 2 * borderWidth, borderWidth, colorBorder); // bottom edge
     }
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawOutline(GuiContext ctx, int x, int y, int width, int height, float scale, int borderWidth, int colorBorder)
     {
         drawRect(ctx, x, y, borderWidth, height, colorBorder, scale); // left edge
@@ -276,7 +276,7 @@ public class RenderUtils
     /**
      * New drawRect() for GUI Rendering.
      */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawRect(GuiContext ctx, int x, int y, int width, int height, int color)
     {
         drawRect(ctx, x, y, width, height, color, 1.0f);
@@ -285,7 +285,7 @@ public class RenderUtils
 	/**
 	 * New drawRect() for GUI Rendering.
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawRect(GuiContext ctx, int x, int y, int width, int height, int color, float scale)
     {
         ctx.addSimpleElement(new MaLiLibBasicRectGuiElement(
@@ -364,7 +364,7 @@ public class RenderUtils
     /**
      * New GuiGraphics-based Textured Rect method.
      */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawTexturedRect(GuiContext ctx, Identifier texture, int x, int y, int u, int v, int width, int height)
     {
         drawTexturedRect(ctx, texture, x, y, u, v, width, height, 0F, -1);
@@ -373,7 +373,7 @@ public class RenderUtils
     /**
      * New GuiGraphics-based Textured Rect method.
      */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawTexturedRect(GuiContext ctx, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel)
     {
         drawTexturedRect(ctx, texture, x, y, u, v, width, height, zLevel, -1);
@@ -382,7 +382,7 @@ public class RenderUtils
     /**
      * New GuiGraphics-based Textured Rect method.
      */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawTexturedRect(GuiContext ctx, Identifier texture, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
     {
         float pixelWidth = 0.00390625F;
@@ -441,7 +441,7 @@ public class RenderUtils
 	/**
 	 * New GuiGraphics-based DrawTexturedBatched
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawTexturedRectBatched(GuiContext ctx, @Nonnull Pair<GpuTextureView, GpuSampler> pair, int x, int y, int u, int v, int width, int height)
     {
         drawTexturedRectBatched(ctx, pair, x, y, u, v, width, height, 0, -1);
@@ -450,7 +450,7 @@ public class RenderUtils
 	/**
 	 * New GuiGraphics-based DrawTexturedBatched
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawTexturedRectBatched(GuiContext ctx, @Nonnull Pair<GpuTextureView, GpuSampler> pair, int x, int y, int u, int v, int width, int height, int argb)
     {
         drawTexturedRectBatched(ctx, pair, x, y, u, v, width, height, 0, argb);
@@ -459,7 +459,7 @@ public class RenderUtils
 	/**
 	 * New GuiGraphics-based DrawTexturedBatched
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawTexturedRectBatched(GuiContext ctx, @Nonnull Pair<GpuTextureView, GpuSampler> pair, int x, int y, int u, int v, int width, int height, float zLevel, int argb)
     {
         ctx.addSimpleElement(new MaLiLibTexturedRectGuiElement(
@@ -590,7 +590,7 @@ public class RenderUtils
 	/**
 	 * Draw a Gradient Rect Element
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawGradientRectBatched(GuiContext ctx, float left, float top, float right, float bottom, int startColor, int endColor)
     {
         ctx.addSimpleElement(new MaLiLibGradientRectGuiElement(
@@ -648,7 +648,7 @@ public class RenderUtils
 	/**
 	 * Render a Centered String (GUI)
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawCenteredString(GuiContext ctx, int x, int y, int color, String text)
     {
 	    ctx.centeredText(mc().font, text, x, y, color);
@@ -657,7 +657,7 @@ public class RenderUtils
 	/**
 	 * Render a Horizontal Line (GUI)
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawHorizontalLine(GuiContext ctx, int x, int y, int width, int color)
     {
         drawRect(ctx, x, y, width, 1, color);
@@ -666,7 +666,7 @@ public class RenderUtils
 	/**
 	 * Render a Vertical Line (GUI)
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void drawVerticalLine(GuiContext ctx, int x, int y, int height, int color)
     {
         drawRect(ctx, x, y, 1, height, color);
@@ -675,7 +675,7 @@ public class RenderUtils
 	/**
 	 * Render a Texture Atlas Sprite (GUI)
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void renderSprite(GuiContext ctx, Identifier atlas, Identifier texture, int x, int y, int width, int height)
     {
         if (texture != null)
@@ -692,7 +692,7 @@ public class RenderUtils
 	/**
 	 * Render Text (GUI)
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void renderText(GuiContext ctx, int x, int y, int color, String text)
     {
         String[] parts = text.split("\\\\n");
@@ -709,7 +709,7 @@ public class RenderUtils
 	 * Render Text (GUI)
 	 */
 	@ApiStatus.Experimental
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
 	public static void renderText(GuiContext ctx, int x, int y, int color, Component text)
 	{
 		ctx.text(mc().font, text, x, y, color, true);
@@ -718,7 +718,7 @@ public class RenderUtils
 	/**
 	 * Render Text (GUI)
 	 */
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void renderText(GuiContext ctx, int x, int y, int color, List<String> lines)
     {
         if (lines.isEmpty() == false)
@@ -834,7 +834,7 @@ public class RenderUtils
 	 * Render Scaled Text with a background (GUI)
 	 */
 	@ApiStatus.Experimental
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
 	public static int renderText(GuiContext ctx, int xOff, int yOff, double scale,
 	                             int textColor, int bgColor, HudAlignment alignment,
 	                             boolean useBackground, boolean useShadow,
@@ -2380,27 +2380,27 @@ public class RenderUtils
         return totalSize > 0;
     }
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void renderModelInGui(GuiContext ctx, int x, int y, BlockState state)
     {
         renderModelInGui(ctx, x, y, 16, state, 0.75F, 0.50F);
 		// scale: 0.625f ?
     }
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
 	public static void renderModelInGui(GuiContext ctx, int x, int y, BlockState state, float scale)
 	{
 		renderModelInGui(ctx, x, y, 16, state, scale, 0.0F);
 		// scale: 0.625f ?
 	}
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
     public static void renderModelInGui(GuiContext ctx, int x, int y, int size, BlockState state, float scale, float yOffset)
     {
         renderModelInGui(ctx, x, y, size, state, scale, yOffset, 30 * (float) (Math.PI / 180), 225 * (float) (Math.PI / 180), 0);
     }
 
-    @Deprecated(forRemoval = true) // use the GuiContext method instead
+    @Deprecated // use the GuiContext method instead
 	public static void renderModelInGui(GuiContext ctx, int x, int y, int size, BlockState state, float scale, float yOffset, float angleX, float angleY, float angleZ)
     {
         if (state.getBlock() == Blocks.AIR)
