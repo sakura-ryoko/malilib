@@ -44,6 +44,7 @@ import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.util.WorldUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fStack;
 import org.joml.Quaternionf;
 
 /**
@@ -54,20 +55,31 @@ import org.joml.Quaternionf;
  * When you need a GuiGraphics, you can just use this in its place and move on.
  */
 @SuppressWarnings({"unused", "resource"})
-public class GuiContext extends DelegatingGuiGraphicsExtractor
+public class GuiContext extends GuiGraphicsExtractor
 {
-	public GuiContext(GuiGraphicsExtractor context)
-	{
-		super(context);
+	private final GuiGraphicsExtractor guiGraphics;
+
+	public GuiContext(GuiGraphicsExtractor from) {
+		super(from.minecraft, from.pose, from.guiRenderState, from.mouseX, from.mouseY);
+
+		this.guiGraphics = from;
+
+		this.pendingCursor = from.pendingCursor;
+		this.deferredTooltip = from.deferredTooltip;
+		this.hoveredTextStyle = from.hoveredTextStyle;
+		this.preeditOverlay = from.preeditOverlay;
 	}
 
 	/**
 	 * Create from GuiGraphics
-	 * @param gui ()
-	 * @return ()
 	 */
 	public static GuiContext fromGuiGraphics(GuiGraphicsExtractor gui)
 	{
+		if (gui instanceof GuiContext context)
+		{
+			return context;
+		}
+
 		return new GuiContext(gui);
 	}
 
@@ -133,7 +145,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void elementUp()
 	{
-		this.guiGraphics.guiRenderState.up();
+		this.guiRenderState.up();
 	}
 
 	/**
@@ -142,7 +154,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void addSimpleElement(GuiElementRenderState element)
 	{
-		this.guiGraphics.guiRenderState.addGuiElement(element);
+		this.guiRenderState.addGuiElement(element);
 	}
 
 	/**
@@ -151,7 +163,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void addSpecialElement(PictureInPictureRenderState specialElement)
 	{
-		this.guiGraphics.guiRenderState.addPicturesInPictureState(specialElement);
+		this.guiRenderState.addPicturesInPictureState(specialElement);
 	}
 
 	/**
@@ -160,7 +172,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void addItemElement(GuiItemRenderState itemElement)
 	{
-		this.guiGraphics.guiRenderState.addItem(itemElement);
+		this.guiRenderState.addItem(itemElement);
 	}
 
 	/**
@@ -169,7 +181,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void addTextElement(GuiTextRenderState textElement)
 	{
-		this.guiGraphics.guiRenderState.addText(textElement);
+		this.guiRenderState.addText(textElement);
 	}
 
 	/**
@@ -178,7 +190,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void addPreparedTextElement(GuiElementRenderState element)
 	{
-		this.guiGraphics.guiRenderState.addGlyphToCurrentLayer(element);
+		this.guiRenderState.addGlyphToCurrentLayer(element);
 	}
 
 	/**
@@ -187,7 +199,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void addSimpleElementToCurrentLayer(BlitRenderState element)
 	{
-		this.guiGraphics.guiRenderState.addBlitToCurrentLayer(element);
+		this.guiRenderState.addBlitToCurrentLayer(element);
 	}
 
 	/**
@@ -196,7 +208,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void pushScissor(@Nonnull ScreenRectangle rect)
 	{
-		this.guiGraphics.scissorStack.push(rect);
+		this.scissorStack.push(rect);
 	}
 
 	/**
@@ -207,7 +219,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public boolean containsScissor(int x, int y)
 	{
-		return this.guiGraphics.scissorStack.containsPoint(x, y);
+		return this.scissorStack.containsPoint(x, y);
 	}
 
 	/**
@@ -216,7 +228,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public ScreenRectangle peekLastScissor()
 	{
-		return this.guiGraphics.scissorStack.peek();
+		return this.scissorStack.peek();
 	}
 
 	/**
@@ -224,7 +236,7 @@ public class GuiContext extends DelegatingGuiGraphicsExtractor
 	 */
 	public void popScissor()
 	{
-		this.guiGraphics.scissorStack.pop();
+		this.scissorStack.pop();
 	}
 
 	/**
