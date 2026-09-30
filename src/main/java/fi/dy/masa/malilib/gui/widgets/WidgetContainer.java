@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
+import fi.dy.masa.malilib.interfaces.IHoverable;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -12,7 +13,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.render.GuiContext;
 
-public abstract class WidgetContainer extends WidgetBase
+public abstract class WidgetContainer extends WidgetBase implements IHoverable
 {
     protected final List<WidgetBase> subWidgets = new ArrayList<>();
     @Nullable protected WidgetBase hoveredSubWidget = null;
@@ -223,5 +224,35 @@ public abstract class WidgetContainer extends WidgetBase
         {
             this.hoveredSubWidget.postRenderHovered(ctx, mouseX, mouseY, false);
         }
+    }
+
+    @Override
+    public List<String> getHoverStrings(int mouseX, int mouseY) {
+        for (var widget : this.subWidgets)
+        {
+            if (widget instanceof IHoverable hoverable)
+            {
+                if (hoverable.hasHoverText(mouseX, mouseY))
+                {
+                    return hoverable.getHoverStrings(mouseX, mouseY);
+                }
+            }
+        }
+        return List.of();
+    }
+
+    @Override
+    public boolean hasHoverText(int mouseX, int mouseY) {
+        for (var widget : this.subWidgets)
+        {
+            if (widget instanceof IHoverable hoverable)
+            {
+                if (hoverable.hasHoverText(mouseX, mouseY))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

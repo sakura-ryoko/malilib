@@ -688,9 +688,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             if (widget instanceof IHoverable hoverable)
             {
-                if (hoverable.hasHoverText() && widget.isMouseOver(mouseX, mouseY))
+                if (hoverable.hasHoverText(mouseX, mouseY) && widget.isMouseOver(mouseX, mouseY))
                 {
-                    ctx.drawHoverText(mouseX, mouseY, hoverable.getHoverStrings());
+                    ctx.drawHoverText(mouseX, mouseY, hoverable.getHoverStrings(mouseX, mouseY));
                 }
             }
 

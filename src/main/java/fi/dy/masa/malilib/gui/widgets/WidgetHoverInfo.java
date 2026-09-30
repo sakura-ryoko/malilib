@@ -66,7 +66,7 @@ public class WidgetHoverInfo extends WidgetBase implements IHoverable
     }
 
     @Override
-    public List<String> getHoverStrings() {
+    public List<String> getHoverStrings(int mouseX, int mouseY) {
         return this.lines;
     }
 }

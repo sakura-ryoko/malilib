@@ -134,8 +134,14 @@ public abstract class ButtonBase extends WidgetBase implements IHoverable
         }
     }
 
-    @Override
+    @Deprecated
     public List<String> getHoverStrings()
+    {
+        return getHoverStrings(0, 0);
+    }
+
+    @Override
+    public List<String> getHoverStrings(int mouseX, int mouseY)
     {
         if (this.hoverInfoRequiresShift && GuiBase.isShiftDown() == false)
         {
@@ -146,7 +152,7 @@ public abstract class ButtonBase extends WidgetBase implements IHoverable
     }
 
     @Override
-    public boolean hasHoverText() {
+    public boolean hasHoverText(int mouseX, int mouseY) {
         return this.hoverStrings.isEmpty() == false;
     }
 
@@ -170,9 +176,9 @@ public abstract class ButtonBase extends WidgetBase implements IHoverable
     {
         super.postRenderHovered(ctx, mouseX, mouseY, selected);
 
-        if (this.hasHoverText() && this.isMouseOver(mouseX, mouseY))
+        if (this.hasHoverText(mouseX, mouseY) && this.isMouseOver(mouseX, mouseY))
         {
-            ctx.drawHoverText(mouseX, mouseY, this.getHoverStrings());
+            ctx.drawHoverText(mouseX, mouseY, this.getHoverStrings(mouseX, mouseY));
         }
     }
 }
