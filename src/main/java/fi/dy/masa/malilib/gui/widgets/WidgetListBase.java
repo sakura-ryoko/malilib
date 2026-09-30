@@ -78,8 +78,8 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         final int relativeY = (int) (click.y() - this.browserEntriesStartY - this.browserEntriesOffsetY);
 
         if (relativeY >= 0 &&
-                click.x() >= this.browserEntriesStartX &&
-                click.x() < this.browserEntriesStartX + this.browserEntryWidth)
+            click.x() >= this.browserEntriesStartX &&
+            click.x() < this.browserEntriesStartX + this.browserEntryWidth)
         {
             for (int i = 0; i < this.widgets.size(); ++i)
             {
@@ -133,7 +133,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
 
         if (super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount) == false) {
             if (mouseX >= this.posX && mouseX <= this.posX + this.browserWidth &&
-                    mouseY >= this.posY && mouseY <= this.posY + this.browserHeight)
+                mouseY >= this.posY && mouseY <= this.posY + this.browserHeight)
             {
                 this.offsetSelectionOrScrollbar(verticalAmount < 0 ? 3 : -3, false);
                 return true;

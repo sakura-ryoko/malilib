@@ -131,7 +131,8 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
     }
 
     @Override
-    public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount) {
+    public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
+    {
         if (super.onMouseDragged(click, dragXAmount, dragYAmount))
         {
             return true;

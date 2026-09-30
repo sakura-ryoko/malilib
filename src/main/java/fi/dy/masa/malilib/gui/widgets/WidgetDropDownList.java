@@ -247,7 +247,7 @@ public class WidgetDropDownList<T> extends WidgetBase
     {
         if (this.isOpen)
         {
-            if (input.isEscape())
+            if (input.key() == ScanCodes.SCAN_ESCAPE)
             {
                 setOpen(false);
                 return true;
