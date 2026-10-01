@@ -4,12 +4,13 @@ import java.util.Collection;
 import com.google.common.collect.ImmutableList;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.gui.interfaces.IStringListConsumer;
 import fi.dy.masa.malilib.gui.widgets.WidgetListStringSelection;
 import fi.dy.masa.malilib.gui.widgets.WidgetStringListEntry;
 import fi.dy.masa.malilib.interfaces.IStringListProvider;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiStringListSelection extends GuiListBase<String, WidgetStringListEntry, WidgetListStringSelection> implements IStringListProvider
 {
@@ -76,11 +77,13 @@ public class GuiStringListSelection extends GuiListBase<String, WidgetStringList
         return width;
     }
 
-	private record ButtonListener(Type type, GuiStringListSelection parent) implements IButtonActionListener
+	private record ButtonListener(Type type, GuiStringListSelection parent) implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.type == Type.OK && this.parent.getListWidget() != null)
 			{
 				this.parent.consumer.consume(this.parent.getListWidget().getSelectedEntries());
@@ -89,6 +92,8 @@ public class GuiStringListSelection extends GuiListBase<String, WidgetStringList
 			{
 				GuiBase.openGui(this.parent.getParent());
 			}
+
+			return true;
 		}
 
 		public enum Type

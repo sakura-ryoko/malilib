@@ -88,7 +88,7 @@ public class TestRenderHandler implements IRenderer
                 if (ConfigTestEnum.TEST_TEXT_LINES.getBooleanValue())
                 {
                     List<String> list = getTestTextStrings();
-                    RenderUtils.renderText(ctx, 4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
+                    ctx.renderText(4, 4, MaLiLibConfigs.Test.TEST_CONFIG_FLOAT.getFloatValue(), 0xFFE0E0E0, 0xA0505050, HudAlignment.TOP_LEFT, true, false, true, list);
                 }
             }
         }

@@ -140,22 +140,22 @@ public class InventoryOverlay
 			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_FURNACE);
 			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0,   4,  64, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  4, y     ,  84,   0,  92,   4, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 64,   0, 162,  92,   4, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 92, y +  4, 172, 102,   4,  64, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  4, y +  4,  52,  13,  88,  60, color); // middle
+			ctx.drawTexturedRectBatched(pair, x     , y     ,   0,   0,   4,  64, color); // left (top)
+			ctx.drawTexturedRectBatched(pair, x +  4, y     ,  84,   0,  92,   4, color); // top (right)
+			ctx.drawTexturedRectBatched(pair, x     , y + 64,   0, 162,  92,   4, color); // bottom (left)
+			ctx.drawTexturedRectBatched(pair, x + 92, y +  4, 172, 102,   4,  64, color); // right (bottom)
+			ctx.drawTexturedRectBatched(pair, x +  4, y +  4,  52,  13,  88,  60, color); // middle
 		}
 		else if (type == InventoryOverlayType.BREWING_STAND)
 		{
 			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_BREWING_STAND);
 			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y     ,   0,   0,   4,  68, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   4, y     ,  63,   0, 113,   4, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + 68,   0, 162, 113,   4, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 113, y +  4, 172,  98,   4,  68, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   4, y +  4,  13,  13, 109,  64, color); // middle
+			ctx.drawTexturedRectBatched(pair, x      , y     ,   0,   0,   4,  68, color); // left (top)
+			ctx.drawTexturedRectBatched(pair, x +   4, y     ,  63,   0, 113,   4, color); // top (right)
+			ctx.drawTexturedRectBatched(pair, x      , y + 68,   0, 162, 113,   4, color); // bottom (left)
+			ctx.drawTexturedRectBatched(pair, x + 113, y +  4, 172,  98,   4,  68, color); // right (bottom)
+			ctx.drawTexturedRectBatched(pair, x +   4, y +  4,  13,  13, 109,  64, color); // middle
 		}
 		else if (type == InventoryOverlayType.CRAFTER)
 		{
@@ -163,33 +163,33 @@ public class InventoryOverlay
 			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DISPENSER);
 			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0,   7,  61, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y     , 115,   0,  61,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y +  7,  61,  16,  54,  54, color); // middle
+			ctx.drawTexturedRectBatched(pair, x     , y     ,   0,   0,   7,  61, color); // left (top)
+			ctx.drawTexturedRectBatched(pair, x +  7, y     , 115,   0,  61,   7, color); // top (right)
+			ctx.drawTexturedRectBatched(pair, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
+			ctx.drawTexturedRectBatched(pair, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
+			ctx.drawTexturedRectBatched(pair, x +  7, y +  7,  61,  16,  54,  54, color); // middle
 		}
 		else if (type == InventoryOverlayType.DISPENSER)
 		{
 			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DISPENSER);
 			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0,   7,  61, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y     , 115,   0,  61,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y +  7,  61,  16,  54,  54, color); // middle
+			ctx.drawTexturedRectBatched(pair, x     , y     ,   0,   0,   7,  61, color); // left (top)
+			ctx.drawTexturedRectBatched(pair, x +  7, y     , 115,   0,  61,   7, color); // top (right)
+			ctx.drawTexturedRectBatched(pair, x     , y + 61,   0, 159,  61,   7, color); // bottom (left)
+			ctx.drawTexturedRectBatched(pair, x + 61, y +  7, 169, 105,   7,  61, color); // right (bottom)
+			ctx.drawTexturedRectBatched(pair, x +  7, y +  7,  61,  16,  54,  54, color); // middle
 		}
 		else if (type == InventoryOverlayType.HOPPER)
 		{
 			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_HOPPER);
 			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y     ,   0,   0,   7,  25, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y     ,  79,   0,  97,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + 25,   0, 126,  97,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  97, y +  7, 169, 108,   7,  25, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y +  7,  43,  19,  90,  18, color); // middle
+			ctx.drawTexturedRectBatched(pair, x      , y     ,   0,   0,   7,  25, color); // left (top)
+			ctx.drawTexturedRectBatched(pair, x +   7, y     ,  79,   0,  97,   7, color); // top (right)
+			ctx.drawTexturedRectBatched(pair, x      , y + 25,   0, 126,  97,   7, color); // bottom (left)
+			ctx.drawTexturedRectBatched(pair, x +  97, y +  7, 169, 108,   7,  25, color); // right (bottom)
+			ctx.drawTexturedRectBatched(pair, x +   7, y +  7,  43,  19,  90,  18, color); // middle
 		}
 		// Most likely a Villager, or possibly a Llama
 		else if (type == InventoryOverlayType.VILLAGER)
@@ -197,11 +197,11 @@ public class InventoryOverlay
 			Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DOUBLE_CHEST);
 			if (pair == null) return;
 
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0,   7,  79, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y     , 133,   0,  43,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 79,   0, 215,  43,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x + 43, y +  7, 169, 143,   7,  79, color); // right (bottom)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +  7, y +  7,   7,  17,  36,  72, color); // 2x4 slots
+			ctx.drawTexturedRectBatched(pair, x     , y     ,   0,   0,   7,  79, color); // left (top)
+			ctx.drawTexturedRectBatched(pair, x +  7, y     , 133,   0,  43,   7, color); // top (right)
+			ctx.drawTexturedRectBatched(pair, x     , y + 79,   0, 215,  43,   7, color); // bottom (left)
+			ctx.drawTexturedRectBatched(pair, x + 43, y +  7, 169, 143,   7,  79, color); // right (bottom)
+			ctx.drawTexturedRectBatched(pair, x +  7, y +  7,   7,  17,  36,  72, color); // 2x4 slots
 		}
 		else if (type == InventoryOverlayType.FIXED_27)
 		{
@@ -221,22 +221,22 @@ public class InventoryOverlay
 			int bgw = Math.min(totalSlots, slotsPerRow) * 18 + 7;
 			int bgh = rows * 18 + 7;
 
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y      ,         0,         0,   7, bgh, color); // left (top)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y      , 176 - bgw,         0, bgw,   7, color); // top (right)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + bgh,         0,       215, bgw,   7, color); // bottom (left)
-			RenderUtils.drawTexturedRectBatched(ctx, pair, x + bgw, y +   7,       169, 222 - bgh,   7, bgh, color); // right (bottom)
+			ctx.drawTexturedRectBatched(pair, x      , y      ,         0,         0,   7, bgh, color); // left (top)
+			ctx.drawTexturedRectBatched(pair, x +   7, y      , 176 - bgw,         0, bgw,   7, color); // top (right)
+			ctx.drawTexturedRectBatched(pair, x      , y + bgh,         0,       215, bgw,   7, color); // bottom (left)
+			ctx.drawTexturedRectBatched(pair, x + bgw, y +   7,       169, 222 - bgh,   7, bgh, color); // right (bottom)
 
 			for (int row = 0; row < rows; row++)
 			{
 				int rowLen = Mth.clamp(totalSlots - (row * slotsPerRow), 1, slotsPerRow);
-				RenderUtils.drawTexturedRectBatched(ctx, pair, x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, color);
+				ctx.drawTexturedRectBatched(pair, x + 7, y + row * 18 + 7, 7, 17, rowLen * 18, 18, color);
 
 				// Render the background for the last non-existing slots on the last row,
 				// in two strips of the background texture from the double chest texture's top part.
 				if (rows > 1 && rowLen < slotsPerRow)
 				{
-					RenderUtils.drawTexturedRectBatched(ctx, pair, x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
-					RenderUtils.drawTexturedRectBatched(ctx, pair, x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
+					ctx.drawTexturedRectBatched(pair, x + rowLen * 18 + 7, y + row * 18 +  7, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
+					ctx.drawTexturedRectBatched(pair, x + rowLen * 18 + 7, y + row * 18 + 16, 7, 3, (slotsPerRow - rowLen) * 18, 9, color);
 				}
 			}
 		}
@@ -247,11 +247,11 @@ public class InventoryOverlay
 	    Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_SINGLE_CHEST);
 	    if (pair == null) return;
 
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y     ,   0,   0,   7,  61, color); // left (top)
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y     ,   7,   0, 169,   7, color); // top (right)
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + 61,   0, 159, 169,   7, color); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 169, y +  7, 169, 105,   7,  61, color); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y +  7,   7,  17, 162,  54, color); // middle
+        ctx.drawTexturedRectBatched(pair, x      , y     ,   0,   0,   7,  61, color); // left (top)
+        ctx.drawTexturedRectBatched(pair, x +   7, y     ,   7,   0, 169,   7, color); // top (right)
+        ctx.drawTexturedRectBatched(pair, x      , y + 61,   0, 159, 169,   7, color); // bottom (left)
+        ctx.drawTexturedRectBatched(pair, x + 169, y +  7, 169, 105,   7,  61, color); // right (bottom)
+        ctx.drawTexturedRectBatched(pair, x +   7, y +  7,   7,  17, 162,  54, color); // middle
     }
 
     public static void renderInventoryBackground54(GuiContext ctx, int x, int y, int color)
@@ -259,11 +259,11 @@ public class InventoryOverlay
 	    Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DOUBLE_CHEST);
 	    if (pair == null) return;
 
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y      ,   0,   0,   7, 115, color); // left (top)
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y      ,   7,   0, 169,   7, color); // top (right)
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x      , y + 115,   0, 215, 169,   7, color); // bottom (left)
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 169, y +   7, 169, 107,   7, 115, color); // right (bottom)
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x +   7, y +   7,   7,  17, 162, 108, color); // middle
+        ctx.drawTexturedRectBatched(pair, x      , y      ,   0,   0,   7, 115, color); // left (top)
+        ctx.drawTexturedRectBatched(pair, x +   7, y      ,   7,   0, 169,   7, color); // top (right)
+        ctx.drawTexturedRectBatched(pair, x      , y + 115,   0, 215, 169,   7, color); // bottom (left)
+        ctx.drawTexturedRectBatched(pair, x + 169, y +   7, 169, 107,   7, 115, color); // right (bottom)
+        ctx.drawTexturedRectBatched(pair, x +   7, y +   7,   7,  17, 162, 108, color); // middle
     }
 
 	public static void renderInventoryBackgroundSlots(GuiContext ctx, InventoryOverlayType type, Container inv, int x, int y)
@@ -382,19 +382,19 @@ public class InventoryOverlay
 	    Pair<GpuTextureView, GpuSampler> pair = ctx.bindTexture(TEXTURE_DISPENSER);
 	    if (pair == null) return;
 
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y     ,   0,   0, 50, 83); // top-left (main part)
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 50, y     , 173,   0,  3, 83); // right edge top
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x     , y + 83,   0, 163, 50,  3); // bottom edge left
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 50, y + 83, 173, 163,  3,  3); // bottom right corner
+        ctx.drawTexturedRectBatched(pair, x     , y     ,   0,   0, 50, 83); // top-left (main part)
+		ctx.drawTexturedRectBatched(pair, x + 50, y     , 173,   0,  3, 83); // right edge top
+		ctx.drawTexturedRectBatched(pair, x     , y + 83,   0, 163, 50,  3); // bottom edge left
+		ctx.drawTexturedRectBatched(pair, x + 50, y + 83, 173, 163,  3,  3); // bottom right corner
 
         for (int i = 0, xOff = 7, yOff = 7; i < 4; ++i, yOff += 18)
         {
-            RenderUtils.drawTexturedRectBatched(ctx, pair, x + xOff, y + yOff, 61, 16, 18, 18);
+			ctx.drawTexturedRectBatched(pair, x + xOff, y + yOff, 61, 16, 18, 18);
         }
 
         // Main hand and offhand
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18);
-        RenderUtils.drawTexturedRectBatched(ctx, pair, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18);
+		ctx.drawTexturedRectBatched(pair, x + 28, y + 2 * 18 + 7, 61, 16, 18, 18);
+		ctx.drawTexturedRectBatched(pair, x + 28, y + 3 * 18 + 7, 61, 16, 18, 18);
 
 	    if (entity.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty())
 	    {
@@ -1257,7 +1257,7 @@ public class InventoryOverlay
 				}
 			}
 
-			RenderUtils.drawHoverText(ctx, x, y, lines);
+			ctx.drawHoverText(x, y, lines);
 		}
     }
 

@@ -40,13 +40,13 @@ public class WidgetListBlockStateListEdit extends WidgetListConfigOptionsBase<Bl
 		// Add a dummy entry that allows adding the first actual string to the list
 		if (this.listContents.size() == 0)
 		{
-			this.listWidgets.clear();
+			this.clearWidgets();
 			this.maxVisibleBrowserEntries = 1;
 
 			int x = this.posX + 2;
 			int y = this.posY + 4 + this.browserEntriesOffsetY;
 
-			this.listWidgets.add(this.createListEntryWidget(x, y, -1, false, this.air));
+			this.addWidget(this.createListEntryWidget(x, y, -1, false, this.air));
 			this.scrollBar.setMaxValue(0);
 		}
 		else

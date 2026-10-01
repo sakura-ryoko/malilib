@@ -4,6 +4,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import org.jspecify.annotations.NonNull;
 
 import fi.dy.masa.malilib.MaLiLib;
@@ -11,7 +14,6 @@ import fi.dy.masa.malilib.MaLiLibReference;
 import fi.dy.masa.malilib.gui.*;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetDirectoryEntry;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase;
@@ -164,11 +166,13 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 		}
 	}
 
-	protected record ButtonListener(ButtonType type, GuiTestFileBrowser gui) implements IButtonActionListener
+	protected record ButtonListener(ButtonType type, GuiTestFileBrowser gui) implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			WidgetFileBrowserBase.DirectoryEntry entry = this.gui.getListWidget().getLastSelectedEntry();
 
 			if (entry == null)
@@ -184,7 +188,7 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 			else if (entry.type() == WidgetFileBrowserBase.DirectoryEntryType.INVALID)
 			{
 				// Ignored
-				return;
+				return true;
 			}
 			else
 			{
@@ -209,6 +213,8 @@ public class GuiTestFileBrowser extends GuiListBase<WidgetFileBrowserBase.Direct
 					GuiBase.openGui(new GuiConfirmAction(180, "malilib.gui.title.delete_confirm", deleter, this.gui, "malilib.message.delete_confirm", target.getFileName().toString()));
 				}
 			}
+
+			return true;
 		}
 	}
 

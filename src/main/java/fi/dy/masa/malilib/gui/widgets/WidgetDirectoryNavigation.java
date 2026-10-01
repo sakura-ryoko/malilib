@@ -12,7 +12,6 @@ import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
 import fi.dy.masa.malilib.gui.interfaces.IFileBrowserIconProvider;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.file_ops.DirectoryCreator;
 import fi.dy.masa.malilib.util.FileUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
@@ -155,7 +154,7 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
             int pathStartX = this.iconOpenDir.x + this.iconOpenDir.getWidth() + 6;
 
             // Draw the directory path text background
-            RenderUtils.drawRect(ctx, pathStartX, this.y, this.width - pathStartX - 2, this.height, 0x20FFFFFF);
+            ctx.drawRect(pathStartX, this.y, this.width - pathStartX - 2, this.height, 0x20FFFFFF);
 
             int textColor = 0xC0C0C0C0;
             int maxLen = (this.width - 40) / this.getStringWidth("a") - 4; // FIXME
@@ -175,19 +174,19 @@ public class WidgetDirectoryNavigation extends WidgetSearchBar
 
             if (hoveredIcon == this.iconRoot)
             {
-                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.root")));
+                ctx.drawHoverText(mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.root")));
             }
             else if (hoveredIcon == this.iconUp)
             {
-                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.up")));
+                ctx.drawHoverText(mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.up")));
             }
             else if (hoveredIcon == this.iconCreateDir)
             {
-                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.create_directory")));
+                ctx.drawHoverText(mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.create_directory")));
             }
             else if (hoveredIcon == this.iconOpenDir)
             {
-                RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.open_directory")));
+                ctx.drawHoverText(mouseX, mouseY, Collections.singletonList(StringUtils.translate("malilib.gui.button.hover.directory_widget.open_directory")));
             }
         }
     }

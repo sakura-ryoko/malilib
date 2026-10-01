@@ -14,7 +14,6 @@ public class WidgetSlider extends WidgetBase
 
     protected final ISliderCallback callback;
     protected int sliderWidth;
-    protected int lastMouseX;
     protected boolean dragging;
 
     public WidgetSlider(int x, int y, int width, int height, ISliderCallback callback)
@@ -29,16 +28,26 @@ public class WidgetSlider extends WidgetBase
     @Override
     protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
-        this.callback.setValueRelative(this.getRelativePosition((int) click.x()));
-        this.lastMouseX = (int) click.x();
         this.dragging = true;
+        this.callback.setValueRelative(this.getRelativePosition((int) click.x()));
 
         return true;
     }
 
     @Override
-    public void onMouseReleasedImpl(MouseButtonEvent click)
-    {
+    public boolean onMouseDragged(MouseButtonEvent click, double dragXAmount, double dragYAmount) {
+        if (this.dragging)
+        {
+            this.callback.setValueRelative(this.getRelativePosition((int) click.x()));
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onMouseReleasedImpl(MouseButtonEvent click) {
         this.dragging = false;
     }
 
@@ -47,20 +56,13 @@ public class WidgetSlider extends WidgetBase
     {
         super.render(ctx, mouseX, mouseY, selected);
 
-        if (this.dragging && mouseX != this.lastMouseX)
-        {
-            this.callback.setValueRelative(this.getRelativePosition(mouseX));
-            this.lastMouseX = mouseX;
-        }
-
-	    ctx.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_DISABLE_TEXTURE, this.x + 1, this.y, this.width - 3, 20);
+	    ctx.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_DISABLE_TEXTURE, this.x + 1, this.y, this.width - 3, this.height);
 
         double relPos = this.callback.getValueRelative();
         int sw = this.sliderWidth;
         int usableWidth = this.width - 4 - sw;
-        int s = sw / 2;
 
-	    ctx.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, 20);
+	    ctx.blitSprite(RenderPipelines.GUI_TEXTURED, WidgetSlider.BUTTON_TEXTURE, this.x + 2 + (int) (relPos * usableWidth), this.y, sw, this.height);
 
         String str = this.callback.getFormattedDisplayValue();
         int w = this.getStringWidth(str);
@@ -69,7 +71,7 @@ public class WidgetSlider extends WidgetBase
 
     protected double getRelativePosition(int mouseX)
     {
-        int relPos = mouseX - this.x - this.sliderWidth / 2;
+        int relPos = mouseX - this.x;
         return Mth.clamp((double) relPos / (double) (this.width - this.sliderWidth - 4), 0, 1);
     }
 }

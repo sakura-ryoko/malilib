@@ -20,6 +20,6 @@ public class WidgetInfoIconComponent extends WidgetHoverComponent
     public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
     {
         super.render(ctx, mouseX, mouseY, selected);
-        this.icon.renderAt(ctx, this.x, this.y, this.zLevel, false, selected);
+        this.icon.renderAt(ctx, this.x, this.y, false, selected);
     }
 }
