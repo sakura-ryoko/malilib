@@ -13,6 +13,7 @@ import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
+import net.minecraft.client.input.PreeditEvent;
 
 public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>> extends GuiBase
 {
@@ -211,6 +212,24 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         }
 
         return super.onCharTyped(input);
+    }
+
+    @Override
+    public boolean preeditUpdated(PreeditEvent event) {
+        if (this.widgetSearchBar != null && this.widgetSearchBar.onPreeditUpdated(event))
+        {
+            return true;
+        }
+
+        for (var entry : this.listWidgets)
+        {
+            if (entry.onPreeditUpdated(event))
+            {
+                return true;
+            }
+        }
+
+        return super.preeditUpdated(event);
     }
 
     protected boolean onKeyTypedSearchBar(KeyEvent input)

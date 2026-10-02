@@ -9,6 +9,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.RenderUtils;
+import net.minecraft.client.input.PreeditEvent;
 
 public abstract class WidgetBase
 {
@@ -160,6 +161,16 @@ public abstract class WidgetBase
     }
 
     protected boolean onCharTypedImpl(CharacterEvent input)
+    {
+        return false;
+    }
+
+    public boolean onPreeditUpdated(PreeditEvent event)
+    {
+        return this.onPreeditUpdatedImpl(event);
+    }
+
+    protected boolean onPreeditUpdatedImpl(PreeditEvent event)
     {
         return false;
     }

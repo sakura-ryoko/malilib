@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
+import net.minecraft.client.input.PreeditEvent;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -239,6 +240,17 @@ public abstract class GuiConfigsBase extends GuiListBase<ConfigOptionWrapper, Wi
         }
 
         return super.onCharTyped(input);
+    }
+
+    @Override
+    public boolean preeditUpdated(PreeditEvent event)
+    {
+        if (super.preeditUpdated(event))
+        {
+            return true;
+        }
+
+        return this.getListWidget() != null && this.getListWidget().preeditUpdated(event);
     }
 
     @Override
