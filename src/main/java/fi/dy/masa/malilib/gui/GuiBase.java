@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
+
+import net.minecraft.client.input.PreeditEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -332,6 +334,28 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
 
         return super.charTyped(input);
+    }
+
+    @Override
+    public boolean preeditUpdated(PreeditEvent event)
+    {
+        for (var entry : this.textFields)
+        {
+            if (entry.isFocused() && entry.textField().preeditUpdated(event))
+            {
+                return true;
+            }
+        }
+
+        for (var entry : this.textFieldsMultiLine)
+        {
+            if (entry.isFocused() && entry.textField().preeditUpdated(event))
+            {
+                return true;
+            }
+        }
+
+        return super.preeditUpdated(event);
     }
 
     public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
