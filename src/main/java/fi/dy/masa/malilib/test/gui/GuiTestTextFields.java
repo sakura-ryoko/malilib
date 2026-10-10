@@ -6,13 +6,14 @@ import java.util.function.Supplier;
 import fi.dy.masa.malilib.gui.*;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldType;
 import fi.dy.masa.malilib.interfaces.IStringConsumerFeedback;
 import fi.dy.masa.malilib.interfaces.IStringDualConsumerFeedback;
 import fi.dy.masa.malilib.util.InfoUtils;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public class GuiTestTextFields extends GuiBase
 {
@@ -146,11 +147,13 @@ public class GuiTestTextFields extends GuiBase
 	}
 
 	private record ButtonListener(ButtonType type, GuiTestTextFields gui)
-			implements IButtonActionListener
+			implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.type() == ButtonType.SINGLE_TEXT)
 			{
 				GuiBase.openGui(new GuiTextInputFeedback(256,
@@ -215,6 +218,8 @@ public class GuiTestTextFields extends GuiBase
 				this.gui().string5 = () -> this.gui().defaultString5;
 				this.gui().longField.setValue(this.gui().defaultString5);
 			}
+
+			return true;
 		}
 	}
 

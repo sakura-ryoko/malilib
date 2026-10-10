@@ -22,7 +22,6 @@ import fi.dy.masa.malilib.gui.button.*;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
@@ -193,7 +192,14 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 						configHeight - 3,
 						((BooleanEntry) value).getBooleanValue());
 
-				booleanButton.setActionListener((button, mouseButton) -> checkResetButtonState());
+				booleanButton.setActionListener((_, button) -> {
+					if (button == ScanCodes.OFFSET_MOUSE_LEFT)
+					{
+						checkResetButtonState();
+						return true;
+					}
+					return false;
+				});
 
 				this.subWidgets.add(booleanButton);
 				this.booleanWidgets.add(booleanButton);
@@ -225,7 +231,12 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 			resetEnabled |= value.wasConfigModified(this.defaultValue.get(i));
 		}
 
-		this.addButton(buttonReset, (button, mouseButton) -> reset());
+		this.addButton(buttonReset, ((_, mouseButton) -> {
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
+			reset();
+			return true;
+		}));
 
 		buttonReset.setEnabled(resetEnabled);
 
@@ -424,11 +435,11 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 
 		if (this.isOdd)
 		{
-			RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x20FFFFFF);
+			ctx.drawRect(this.x, this.y, this.width, this.height, 0x20FFFFFF);
 		}
 		else
 		{
-			RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0x30FFFFFF);
+			ctx.drawRect(this.x, this.y, this.width, this.height, 0x30FFFFFF);
 		}
 
 		this.drawSubWidgets(ctx, mouseX, mouseY);
@@ -466,7 +477,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
             {
                 if (correspondingLabel.comment().isEmpty() == false)
                 {
-                    RenderUtils.drawHoverText(ctx, mouseX, mouseY, Collections.singletonList(correspondingLabel.comment()));
+					ctx.drawHoverText(mouseX, mouseY, Collections.singletonList(correspondingLabel.comment()));
                 }
             }
         }
@@ -580,7 +591,7 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 		return false;
 	}
 
-	private void reset()
+	private boolean reset()
 	{
 		for (int i = 0; i < this.types.size(); i++)
 		{
@@ -608,14 +619,16 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 				this.booleanWidgets.get(i).updateDisplayString();
 			}
 		}
-		this.checkResetButtonState();
+		return this.checkResetButtonState();
 	}
 
-	private record ListenerListActions(ButtonType type, WidgetTableEditEntry parent) implements IButtonActionListener
+	private record ListenerListActions(ButtonType type, WidgetTableEditEntry parent) implements IButtonActionHandler
 	{
 		@Override
-		public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+		public boolean handleAction(ButtonBase button, int mouseButton)
 		{
+			if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 			if (this.type == ButtonType.ADD)
 			{
 				this.parent.insertEntryBefore();
@@ -628,6 +641,8 @@ public class WidgetTableEditEntry extends WidgetConfigOptionBase<TableRow>
 			{
 				this.parent.moveEntry(this.type == ButtonType.MOVE_DOWN);
 			}
+
+			return true;
 		}
 	}
 

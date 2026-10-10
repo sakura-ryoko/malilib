@@ -1,5 +1,6 @@
 package fi.dy.masa.malilib.gui.wrappers;
 
+import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.input.CharacterEvent;
@@ -11,13 +12,14 @@ import fi.dy.masa.malilib.gui.interfaces.ITextFieldMultiLineListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
-public class TextFieldMultiLineWrapper<T extends GuiTextFieldMultiLine>
+public class TextFieldMultiLineWrapper<T extends GuiTextFieldMultiLine> extends WidgetBase
 {
 	private final T textField;
 	private final ITextFieldMultiLineListener<T> listener;
 
 	public TextFieldMultiLineWrapper(T textField, int lines, ITextFieldMultiLineListener<T> listener)
 	{
+		super(textField.getX(), textField.getY(), textField.getWidth(), textField.getHeight());
 		this.textField = textField;
 		this.listener = listener;
 		this.textField.setLineLimit(lines);
@@ -136,5 +138,11 @@ public class TextFieldMultiLineWrapper<T extends GuiTextFieldMultiLine>
 		}
 
 		return false;
+	}
+
+
+	@Override
+	public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected) {
+		this.textField.renderWrapper(ctx, mouseX, mouseY, 0);
 	}
 }

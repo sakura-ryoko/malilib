@@ -1,6 +1,8 @@
 package fi.dy.masa.malilib.gui;
 
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import org.jspecify.annotations.NonNull;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -10,9 +12,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.data.Color4f;
@@ -94,26 +94,25 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
     }
 
     @Override
-    public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
+    public void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
         if (this.getParent() != null)
         {
-            this.getParent().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+            this.getParent().extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0);
         }
 
 	    ctx.pose().pushMatrix();
         // 1.f
 	    ctx.pose().translate(0, 0);
 
-        RenderUtils.drawOutlinedBox(ctx, this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xE0000000, COLOR_HORIZONTAL_BAR);
+        ctx.drawOutlinedBox(this.dialogLeft, this.dialogTop, this.dialogWidth, this.dialogHeight, 0xE0000000, COLOR_HORIZONTAL_BAR);
 
         // Draw the title
         this.drawStringWithShadow(ctx, this.getTitleString(), this.dialogLeft + 10, this.dialogTop + 4, COLOR_WHITE);
 
         //super.drawScreen(mouseX, mouseY, partialTicks);
-        this.textField.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, partialTicks);
+        this.textField.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0);
 
-        this.drawButtons(ctx, mouseX, mouseY, partialTicks);
 	    ctx.pose().popMatrix();
     }
 
@@ -196,7 +195,7 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
 
     protected abstract boolean applyValue(String string);
 
-    protected static class ButtonListener implements IButtonActionListener
+    protected static class ButtonListener implements IButtonActionHandler
     {
         private final GuiTextInputMultiLineBase gui;
         private final ButtonType type;
@@ -208,8 +207,10 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
         }
 
         @Override
-        public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+        public boolean handleAction(ButtonBase button, int mouseButton)
         {
+            if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
             if (this.type == ButtonType.OK)
             {
                 // Only close the GUI if the value was successfully applied
@@ -227,6 +228,8 @@ public abstract class GuiTextInputMultiLineBase extends GuiDialogBase
                 this.gui.textField.setValue(this.gui.originalText);
                 this.gui.textField.setFocused(true);
             }
+
+            return true;
         }
     }
 

@@ -60,30 +60,8 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
         }
         else
         {
-            for (WIDGET widget : this.listWidgets)
-            {
-                if (widget.onKeyTyped(input))
-                {
-                    return true;
-                }
-            }
-
             return super.onKeyTyped(input);
         }
-    }
-
-    @Override
-    public boolean onCharTyped(CharacterEvent input)
-    {
-        for (WIDGET widget : this.listWidgets)
-        {
-            if (widget.onCharTyped(input))
-            {
-                return true;
-            }
-        }
-
-        return super.onCharTyped(input);
     }
 
     public void addTextField(TextFieldWrapper<? extends GuiTextFieldGeneric> wrapper)
@@ -164,12 +142,15 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
             return true;
         }
 
-        for (WidgetConfigOptionBase<TYPE> widget : this.listWidgets)
+        for (WidgetBase widget : this.widgets)
         {
-            if (widget.wasConfigModified())
+            if (widget instanceof WidgetConfigOptionBase<?> configWidget)
             {
-                this.configsModified = true;
-                return true;
+                if (configWidget.wasConfigModified())
+                {
+                    this.configsModified = true;
+                    return true;
+                }
             }
         }
 
@@ -183,13 +164,16 @@ public abstract class WidgetListConfigOptionsBase<TYPE, WIDGET extends WidgetCon
 
     public void applyPendingModifications()
     {
-        for (WidgetConfigOptionBase<TYPE> widget : this.listWidgets)
+        for (WidgetBase widget : this.widgets)
         {
-            if (widget.hasPendingModifications())
+            if (widget instanceof WidgetConfigOptionBase<?> configWidget)
             {
-                widget.applyNewValueToConfig();
-                // Cache the modified status before scrolling etc. and thus re-creating the widgets
-                this.configsModified = true;
+                if (configWidget.hasPendingModifications())
+                {
+                    configWidget.applyNewValueToConfig();
+                    // Cache the modified status before scrolling etc. and thus re-creating the widgets
+                    this.configsModified = true;
+                }
             }
         }
     }

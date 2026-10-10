@@ -18,7 +18,6 @@ import fi.dy.masa.malilib.gui.GuiBlockStateEditor;
 import fi.dy.masa.malilib.interfaces.IBlockStateConsumer;
 import fi.dy.masa.malilib.mixin.item.IMixinItem;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 
@@ -58,7 +57,7 @@ public class WidgetBlockStateIcon extends WidgetBase
 	public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
 	{
 		super.postRenderHovered(ctx, mouseX, mouseY, selected);
-		RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.hoverText);
+		ctx.drawHoverText(mouseX, mouseY, this.hoverText);
 	}
 
 	@Override
@@ -70,8 +69,8 @@ public class WidgetBlockStateIcon extends WidgetBase
 		int width = this.getWidth();
 		int height = this.getHeight();
 
-		RenderUtils.drawRect(ctx, x    , y    , width    , height    , 0xFFFFFFFF);
-		RenderUtils.drawRect(ctx, x + 1, y + 1, width - 2, height - 2, 0xFF000000);
+		ctx.drawRect(x    , y    , width    , height    , 0xFFFFFFFF);
+		ctx.drawRect(x + 1, y + 1, width - 2, height - 2, 0xFF000000);
 
 		final ItemStack stack = this.createItemStackForRendering();
 
