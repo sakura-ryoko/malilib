@@ -9,6 +9,7 @@ import fi.dy.masa.malilib.gui.LeftRight;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.input.ScanCodes;
+import net.minecraft.client.input.PreeditEvent;
 
 public class WidgetSearchBar extends WidgetBase
 {
@@ -116,6 +117,12 @@ public class WidgetSearchBar extends WidgetBase
         }
 
         return false;
+    }
+
+    @Override
+    protected boolean onPreeditUpdatedImpl(PreeditEvent event)
+    {
+        return this.searchOpen && this.searchBox.isFocused() && this.searchBox.preeditUpdated(event);
     }
 
     @Override

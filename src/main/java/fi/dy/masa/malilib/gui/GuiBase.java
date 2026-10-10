@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.interfaces.IHoverable;
+import net.minecraft.client.input.PreeditEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -339,6 +340,15 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return super.charTyped(input);
     }
 
+    @Override
+    public boolean preeditUpdated(PreeditEvent event) {
+        if (this.onPreeditUpdated(event))
+        {
+            return true;
+        }
+        return super.preeditUpdated(event);
+    }
+
     public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
         // Handle focussed widget first
@@ -478,6 +488,17 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
 
         return handled;
+    }
+
+    public boolean onPreeditUpdated(PreeditEvent event) {
+        for (WidgetBase widget : this.widgets.stream().toList())
+        {
+            if (widget.onPreeditUpdated(event))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
