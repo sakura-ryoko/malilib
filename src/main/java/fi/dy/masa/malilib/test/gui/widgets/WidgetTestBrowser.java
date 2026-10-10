@@ -48,11 +48,11 @@ public class WidgetTestBrowser extends WidgetFileBrowserBase
 		return true;
 	}
 
-	@Override
-	protected String getEntryHoverInfoOverride(DirectoryEntry entry)
-	{
-		return "This is a test of the File Browser System";
-	}
+//	@Override
+//	protected String getEntryHoverInfoOverride(DirectoryEntry entry)
+//	{
+//		return "This is a test of the File Browser System";
+//	}
 
 	public static class FileFilterAny extends FileFilter
 	{
