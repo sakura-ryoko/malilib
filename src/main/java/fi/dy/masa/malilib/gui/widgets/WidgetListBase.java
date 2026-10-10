@@ -98,6 +98,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
                             }
                         }
 
+                        this.focusedWidget = widget;
                         return widget.onMouseClicked(click, doubleClick);
                     }
                 }
