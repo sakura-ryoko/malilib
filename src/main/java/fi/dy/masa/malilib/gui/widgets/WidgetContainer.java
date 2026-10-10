@@ -232,7 +232,7 @@ public abstract class WidgetContainer extends WidgetBase implements IHoverable
         {
             if (widget instanceof IHoverable hoverable)
             {
-                if (hoverable.hasHoverText(mouseX, mouseY))
+                if (hoverable.hasHoverText(mouseX, mouseY) && widget.isMouseOver(mouseX, mouseY))
                 {
                     return hoverable.getHoverStrings(mouseX, mouseY);
                 }
@@ -247,7 +247,7 @@ public abstract class WidgetContainer extends WidgetBase implements IHoverable
         {
             if (widget instanceof IHoverable hoverable)
             {
-                if (hoverable.hasHoverText(mouseX, mouseY))
+                if (hoverable.hasHoverText(mouseX, mouseY) && widget.isMouseOver(mouseX, mouseY))
                 {
                     return true;
                 }

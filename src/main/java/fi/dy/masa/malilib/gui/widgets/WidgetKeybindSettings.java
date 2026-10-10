@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.interfaces.IHoverable;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.resources.Identifier;
 import fi.dy.masa.malilib.MaLiLibReference;
@@ -17,7 +19,7 @@ import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.StringUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
-public class WidgetKeybindSettings extends WidgetBase
+public class WidgetKeybindSettings extends WidgetBase implements IHoverable
 {
     public static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(MaLiLibReference.MOD_ID, "textures/gui/gui_widgets.png");
 
@@ -96,9 +98,7 @@ public class WidgetKeybindSettings extends WidgetBase
     }
 
     @Override
-    public void postRenderHovered(GuiContext ctx, int mouseX, int mouseY, boolean selected)
-    {
-        super.postRenderHovered(ctx, mouseX, mouseY, selected);
+    public List<String> getHoverStrings(int mouseX, int mouseY) {
         List<String> text = new ArrayList<>();
         String name, val;
         String strYes = StringUtils.translate("malilib.gui.label.yes");
@@ -138,7 +138,6 @@ public class WidgetKeybindSettings extends WidgetBase
         String[] parts = StringUtils.translate("malilib.gui.label.keybind_settings.tips").split("\\n");
 
         text.addAll(Arrays.asList(parts));
-
-        ctx.drawHoverText(mouseX + 10, mouseY, text);
+        return text;
     }
 }
