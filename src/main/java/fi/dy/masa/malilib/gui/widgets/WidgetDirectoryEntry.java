@@ -108,7 +108,12 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
 
         if (this.isMouseOver(mouseX, mouseY) && this.entry.displayHoverInfo())
         {
-            RenderUtils.drawHoverText(ctx, mouseX + 10, mouseY, List.of(this.entry.getHoverText()));
+            final String text = this.entry.getHoverText();
+
+            if (text != null && !text.isEmpty())
+            {
+                RenderUtils.drawHoverText(ctx, mouseX + 10, mouseY, List.of(text));
+            }
         }
     }
 

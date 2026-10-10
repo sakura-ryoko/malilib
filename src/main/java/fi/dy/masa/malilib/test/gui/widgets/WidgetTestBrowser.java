@@ -2,7 +2,6 @@ package fi.dy.masa.malilib.test.gui.widgets;
 
 import java.nio.file.Path;
 import javax.annotation.Nullable;
-import com.google.common.collect.ImmutableList;
 
 import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.gui.widgets.WidgetFileBrowserBase;
@@ -15,7 +14,6 @@ public class WidgetTestBrowser extends WidgetFileBrowserBase
 {
 	protected static final FileFilter FILE_FILTER_ANY = new FileFilterAny();
 	protected final GuiTestFileBrowser parent;
-	protected ImmutableList<String> hoverText;
 
 	public WidgetTestBrowser(int x, int y, int width, int height,
 	                         GuiTestFileBrowser parent, @Nullable ISelectionListener<DirectoryEntry> selectionListener)
@@ -27,7 +25,6 @@ public class WidgetTestBrowser extends WidgetFileBrowserBase
 
 		this.parent = parent;
 		TestDirectoryCache.getInstance().clear();
-		this.hoverText = ImmutableList.of();
 	}
 
 	@Override
@@ -48,6 +45,7 @@ public class WidgetTestBrowser extends WidgetFileBrowserBase
 		return true;
 	}
 
+	// Uncomment to test the Override
 //	@Override
 //	protected String getEntryHoverInfoOverride(DirectoryEntry entry)
 //	{
