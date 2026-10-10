@@ -11,7 +11,6 @@ import fi.dy.masa.malilib.render.element.MaLiLibGradientRectGuiElement;
 import fi.dy.masa.malilib.render.element.MaLiLibTexturedGuiElement;
 import fi.dy.masa.malilib.render.element.MaLiLibTexturedRectGuiElement;
 import fi.dy.masa.malilib.render.special.MaLiLibBlockStateGuiElement;
-import fi.dy.masa.malilib.util.GuiUtils;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.level.block.Blocks;
@@ -42,9 +41,7 @@ import net.minecraft.world.item.component.TooltipDisplay;
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.mixin.render.IMixinAbstractTexture;
 import fi.dy.masa.malilib.util.WorldUtils;
-import org.jetbrains.annotations.ApiStatus;
 import org.joml.Matrix3x2f;
-import org.joml.Matrix3x2fStack;
 import org.joml.Quaternionf;
 
 /**
@@ -59,11 +56,11 @@ public class GuiContext extends GuiGraphicsExtractor
 {
 	private final GuiGraphicsExtractor guiGraphics;
 
-	public GuiContext(GuiGraphicsExtractor from) {
+	public GuiContext(GuiGraphicsExtractor from)
+	{
 		super(from.minecraft, from.pose, from.guiRenderState, from.mouseX, from.mouseY);
 
 		this.guiGraphics = from;
-
 		this.pendingCursor = from.pendingCursor;
 		this.deferredTooltip = from.deferredTooltip;
 		this.hoveredTextStyle = from.hoveredTextStyle;
@@ -112,7 +109,7 @@ public class GuiContext extends GuiGraphicsExtractor
 		if (id == null) return null;
 		AbstractTexture tex = this.mc().getTextureManager().getTexture(id);
 
-		if (((IMixinAbstractTexture) tex).malilib_getGlTextureView() != null)
+		if (tex != null && ((IMixinAbstractTexture) tex).malilib_getGlTextureView() != null)
 		{
 			return Pair.of(tex.getTextureView(), tex.getSampler());
 		}
@@ -390,7 +387,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	/**
 	 * Draw a 'Hover Text' Bubble object, similar to Vanilla.
 	 */
-	@ApiStatus.Experimental
 	public void drawHoverText(int x, int y, Component text)
 	{
 		RenderUtils.drawHoverText(this, x, y, text);
@@ -466,7 +462,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	/**
 	 * Render Text (GUI)
 	 */
-	@ApiStatus.Experimental
 	public void renderText(int x, int y, int color, Component text)
 	{
 		this.text(mc().font, text, x, y, color, true);
@@ -519,7 +514,6 @@ public class GuiContext extends GuiGraphicsExtractor
 	/**
 	 * Render Scaled Text with a background (GUI)
 	 */
-	@ApiStatus.Experimental
 	public int renderText(int xOff, int yOff, double scale,
 								 int textColor, int bgColor, HudAlignment alignment,
 								 boolean useBackground, boolean useShadow,
@@ -534,8 +528,7 @@ public class GuiContext extends GuiGraphicsExtractor
 	/**
 	 * Render Scaled Text with a background (GUI)
 	 */
-	@ApiStatus.Experimental
-	public int renderText(int xOff, int yOff, double scale, 
+	public int renderText(int xOff, int yOff, double scale,
 						  int textColor, int bgColor, HudAlignment alignment, 
 						  boolean useBackground, boolean useShadow, boolean useStatusShift, 
 						  Component text)

@@ -47,7 +47,6 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 	protected int elementHeight;
 	protected int buttonHeight;
 	protected TextFieldWrapper<GuiTextFieldGeneric> textFieldBlockName;
-
 	private BlockState blockState;
 
 	public GuiBlockStateEditor(IConfigBlockState config, String name, @Nullable IDialogHandler dialogHandler, Screen parent)

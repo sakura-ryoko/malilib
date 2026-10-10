@@ -601,7 +601,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     /**
-     * Draw's an Screen Tooltip Background
+     * Draw a Screen Tooltip Background
      * @param ctx ()
      * @param mouseX ()
      * @param mouseY ()
@@ -643,7 +643,10 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
     }
 
-    @Deprecated(forRemoval = true)
+    /**
+     * @implSpec No longer used
+     */
+    @Deprecated
     protected void drawButtons(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         for (WidgetBase widget : this.widgets.stream().toList())
