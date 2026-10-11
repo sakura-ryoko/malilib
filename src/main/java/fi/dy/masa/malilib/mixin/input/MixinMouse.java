@@ -40,9 +40,11 @@ public abstract class MixinMouse
     }
 
     @Inject(method = "onScroll", cancellable = true,
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;overlay()Lnet/minecraft/client/gui/screens/Overlay;",
-                    ordinal = 0,
-                     shift = At.Shift.AFTER))
+            at = @At(value = "INVOKE",
+                     target = "Lcom/mojang/blaze3d/platform/FramerateLimitTracker;onInputReceived()V",
+                     shift = At.Shift.AFTER
+            )
+    )
     private void malilib_hookOnMouseScroll(long handle, double xoffset, double yoffset, CallbackInfo ci)
     {
 		Window window = this.minecraft.getWindow();

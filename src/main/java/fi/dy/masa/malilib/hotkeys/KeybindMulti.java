@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.hotkeys;
 import java.util.*;
 import javax.annotation.Nullable;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.Codec;
@@ -14,9 +15,9 @@ import net.minecraft.client.input.KeyEvent;
 
 import fi.dy.masa.malilib.MaLiLib;
 import fi.dy.masa.malilib.MaLiLibConfigs;
-import fi.dy.masa.malilib.event.InputEventHandler;
 import fi.dy.masa.malilib.gui.Message;
 import fi.dy.masa.malilib.hotkeys.KeybindSettings.Context;
+import fi.dy.masa.malilib.input.gamepad.GamepadManager;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.IF3KeyStateSetter;
 import fi.dy.masa.malilib.util.InfoUtils;
@@ -279,6 +280,12 @@ public class KeybindMulti implements IKeybind
         return this.scanCodes;
     }
 
+    @VisibleForTesting
+    public static boolean isPressedKey(final int scanCode)
+    {
+        return PRESSED_KEYS.contains(scanCode);
+    }
+
     @Override
     public String getKeysDisplayString()
     {
@@ -490,21 +497,42 @@ public class KeybindMulti implements IKeybind
 
 //        long window = Minecraft.getInstance().getWindow().handle();
 
-        if (scanCode >= ScanCodes.SCAN_UNKNOWN)
+//        if (PRESSED_KEYS.contains(scanCode))
+//        {
+//            return true;
+//        }
+
+        if (scanCode > ScanCodes.SCAN_UNKNOWN)
         {
-            return InputConstants.isKeyDown(scanCode);
+            return InputUtils.isKeyHeld(scanCode);
         }
 
-        scanCode += ScanCodes.OFFSET_MOUSE;
+        if (ScanCodes.isGamepadAxis(scanCode))
+        {
+            scanCode += ScanCodes.OFFSET_GAMEPAD_AXIS;
+            return GamepadManager.INSTANCE.isAxisTriggerDown(scanCode);
+        }
+        else if (ScanCodes.isGamepadButton(scanCode))
+        {
+            scanCode += ScanCodes.OFFSET_GAMEPAD;
+            return GamepadManager.INSTANCE.isButtonDown(scanCode);
+        }
+        else if (ScanCodes.isMouse(scanCode))
+        {
+            scanCode += ScanCodes.OFFSET_MOUSE;
+            return InputUtils.isMouseHeld(scanCode) || InputConstants.isKeyDown(scanCode);
+        }
 
-        final KeyState state = ((InputEventHandler) InputEventHandler.getInputManager()).getLastKeyState();
-        final int code = ((InputEventHandler) InputEventHandler.getInputManager()).getLastScanCode();
-        final int action = ((InputEventHandler) InputEventHandler.getInputManager()).getLastActionCode();
+//        final KeyState state = ((InputEventHandler) InputEventHandler.getInputManager()).getLastKeyState();
+//        final int scanCode = ((InputEventHandler) InputEventHandler.getInputManager()).getLastScanCode();
+//        final int action = ((InputEventHandler) InputEventHandler.getInputManager()).getLastActionCode();
+//
+//        return scanCode > ScanCodes.SCAN_UNKNOWN && state != null &&
+//                (state == KeyState.MOUSE_PRESSED || state == KeyState.GAMEPAD_BUTTON_DOWN ||
+//                        (scanCode == scanCode && action == ActionCodes.PRESSED)
+//                );
 
-        return scanCode >= 0 && state != null &&
-                (state == KeyState.MOUSE_PRESSED ||
-                        (code == scanCode && action == ActionCodes.PRESSED)
-                );
+        return false;
     }
 
     @ApiStatus.Internal

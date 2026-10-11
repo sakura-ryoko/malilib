@@ -30,6 +30,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BarrelBlock;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityTypes;
+import net.minecraft.world.level.block.entity.CrafterBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.ChestType;
@@ -41,6 +44,7 @@ import fi.dy.masa.malilib.registry.Registry;
 import fi.dy.masa.malilib.util.InventoryUtils;
 import fi.dy.masa.malilib.util.WorldUtils;
 import fi.dy.masa.malilib.util.data.Constants;
+import fi.dy.masa.malilib.util.data.DataBlockUtils;
 import fi.dy.masa.malilib.util.data.DataEntityUtils;
 import fi.dy.masa.malilib.util.data.tag.CompoundData;
 import fi.dy.masa.malilib.util.data.tag.converter.DataConverterNbt;
@@ -773,7 +777,22 @@ public interface IDataSyncer
 					}
 					if (useNbt)
 					{
-						final int slotCount = shouldCombine ? NbtInventory.DOUBLE_SIZE : -1;
+						boolean isCrafter = false;
+						BlockEntityType<?> beType = DataBlockUtils.getBlockEntityType(pair.data());
+
+						if (beType != null && beType.equals(BlockEntityTypes.CRAFTER))
+						{
+							isCrafter = true;
+						}
+						else if (pair.be() instanceof CrafterBlockEntity)
+						{
+							isCrafter = true;
+						}
+
+						final int slotCount = shouldCombine
+						                      ? NbtInventory.DOUBLE_SIZE
+						                      : isCrafter ? 9 : -1;
+
 						inv = InventoryUtils.getDataInventory(pair.data(), slotCount, world.registryAccess());
 					}
 					else if (pair.be() instanceof Container inv2)
@@ -826,6 +845,7 @@ public interface IDataSyncer
 
 			if (useData)
 			{
+//				EntityType<?> entType = DataEntityUtils.getEntityType(pair.data());
 				inv = InventoryUtils.getDataInventory(pair.data(), -1, world.registryAccess());
 			}
 			else

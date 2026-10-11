@@ -179,6 +179,19 @@ public class ConfigBoolean extends ConfigBase<ConfigBoolean> implements IConfigB
             MaLiLib.LOGGER.warn("Failed to set config value for '{}' from the JSON element '{}'", this.getName(), element, e);
         }
     }
+    @Override
+    public void checkIfClean()
+    {
+        if (this.isDirty())
+        {
+            this.markClean();
+            if (this.getBooleanValue() != this.getLastBooleanValue())
+            {
+                this.onValueChanged();
+                this.updateLastBooleanValue();
+            }
+        }
+    }
 
     @Override
     public JsonElement getAsJsonElement()

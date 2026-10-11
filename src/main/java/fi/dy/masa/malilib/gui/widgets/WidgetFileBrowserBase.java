@@ -214,11 +214,11 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
                 if (filterText == null || this.matchesFilter(name, filterText))
                 {
                     DirectoryEntry newEntry = new DirectoryEntry(DirectoryEntryType.fromFile(file), dir, file.getFileName().toString(), displayNamePrefix, this.displayHoverInfo());
-                    final String overrideHoverInfo = this.getEntryHoverInfoOverride(newEntry);
+                    String hoverInfo = this.getEntryHoverInfoOverride(newEntry);
 
-                    if (!overrideHoverInfo.isEmpty())
+                    if (this.displayHoverInfo() && hoverInfo != null && !hoverInfo.isEmpty())
                     {
-                        newEntry.setOverrideHoverInfo(overrideHoverInfo);
+                        newEntry.setOverrideHoverInfo(hoverInfo);
                     }
 
                     list.add(newEntry);
@@ -239,11 +239,11 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
                 if (filterText == null || this.matchesFilter(name, filterText))
                 {
                     DirectoryEntry newEntry = new DirectoryEntry(DirectoryEntryType.fromFile(file), dir, file.getFileName().toString(), displayNamePrefix, this.displayHoverInfo());
-                    final String overrideHoverInfo = this.getEntryHoverInfoOverride(newEntry);
+                    String hoverInfo = this.getEntryHoverInfoOverride(newEntry);
 
-                    if (!overrideHoverInfo.isEmpty())
+                    if (this.displayHoverInfo() && hoverInfo != null && !hoverInfo.isEmpty())
                     {
-                        newEntry.setOverrideHoverInfo(overrideHoverInfo);
+                        newEntry.setOverrideHoverInfo(hoverInfo);
                     }
 
                     list.add(newEntry);
@@ -285,7 +285,7 @@ public abstract class WidgetFileBrowserBase extends WidgetListBase<DirectoryEntr
 
     protected String getEntryHoverInfoOverride(DirectoryEntry entry)
     {
-        return entry.getHoverText();
+        return "";
     }
 
     @Override

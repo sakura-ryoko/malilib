@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.util.input;
 import java.nio.ByteBuffer;
 import org.lwjgl.sdl.SDLKeyboard;
 import org.lwjgl.sdl.SDLKeycode;
+import org.lwjgl.sdl.SDLMouse;
 import org.lwjgl.sdl.SDLScancode;
 
 import com.mojang.blaze3d.platform.InputConstants;
@@ -88,6 +89,12 @@ public class InputUtils
 	{
 		ByteBuffer state = SDLKeyboard.SDL_GetKeyboardState();
 		return state != null && state.get(scanCode) != 0;
+	}
+
+	public static boolean isMouseHeld(final int scanCode)
+	{
+		int buttonMask = SDLMouse.SDL_GetMouseState(null, null);
+		return (buttonMask & (1 << (scanCode - 1))) != 0;
 	}
 
 	public static int getInputModifiers()
