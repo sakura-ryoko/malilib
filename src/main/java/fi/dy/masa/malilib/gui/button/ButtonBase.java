@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.interfaces.IHoverable;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
@@ -15,12 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.gui.widgets.WidgetBase;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.StringUtils;
-import fi.dy.masa.malilib.util.input.KeyCodes;
-import fi.dy.masa.malilib.util.input.ScanCodes;
 
-public abstract class ButtonBase extends WidgetBase
+public abstract class ButtonBase extends WidgetBase implements IHoverable
 {
     protected static final Identifier BUTTON_TEXTURE = Identifier.withDefaultNamespace("widget/button");
     protected static final Identifier BUTTON_DISABLE_TEXTURE = Identifier.withDefaultNamespace("widget/button_disabled");
@@ -33,7 +31,7 @@ public abstract class ButtonBase extends WidgetBase
     protected boolean visible = true;
     protected boolean hovered;
     protected boolean hoverInfoRequiresShift;
-    @Nullable protected IButtonActionListener actionListener;
+    @Nullable protected IButtonActionHandler actionListener;
 
     public ButtonBase(int x, int y, int width, int height)
     {
@@ -45,7 +43,7 @@ public abstract class ButtonBase extends WidgetBase
         this(x, y, width, height, text, null);
     }
 
-    public ButtonBase(int x, int y, int width, int height, String text, @Nullable IButtonActionListener actionListener)
+    public ButtonBase(int x, int y, int width, int height, String text, @Nullable IButtonActionHandler actionListener)
     {
         super(x, y, width, height);
 
@@ -58,7 +56,7 @@ public abstract class ButtonBase extends WidgetBase
         this.hoverHelp = ImmutableList.of(StringUtils.translate("malilib.gui.button.hover.hold_shift_for_info"));
     }
 
-    public ButtonBase setActionListener(@Nullable IButtonActionListener actionListener)
+    public ButtonBase setActionListener(@Nullable IButtonActionHandler actionListener)
     {
         this.actionListener = actionListener;
         return this;
@@ -82,21 +80,21 @@ public abstract class ButtonBase extends WidgetBase
     @Override
     protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
-        this.mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-
         if (this.actionListener != null)
         {
-            this.actionListener.actionPerformedWithButton(this, click.input());
+            boolean handled = this.actionListener.handleAction(this, click.input());
+            if (handled)
+            {
+                this.mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+                return true;
+            }
+            return false;
         }
-
-        return true;
-    }
-
-    @Override
-    public boolean onMouseScrolledImpl(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
-    {
-        int mouseButton = verticalAmount < ScanCodes.OFFSET_MOUSE_LEFT ? ScanCodes.OFFSET_MOUSE_RIGHT : ScanCodes.OFFSET_MOUSE_LEFT;
-        return this.onMouseClickedImpl(new MouseButtonEvent(mouseX, mouseY, new MouseButtonInfo(mouseButton, KeyCodes.KMOD_NONE)), false);
+        else
+        {
+            this.mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+            return true;
+        }
     }
 
     @Override
@@ -107,11 +105,6 @@ public abstract class ButtonBase extends WidgetBase
 
     public void updateDisplayString()
     {
-    }
-
-    public boolean hasHoverText()
-    {
-        return this.hoverStrings.isEmpty() == false;
     }
 
     public void setHoverInfoRequiresShift(boolean requireShift)
@@ -141,7 +134,14 @@ public abstract class ButtonBase extends WidgetBase
         }
     }
 
+    @Deprecated
     public List<String> getHoverStrings()
+    {
+        return getHoverStrings(0, 0);
+    }
+
+    @Override
+    public List<String> getHoverStrings(int mouseX, int mouseY)
     {
         if (this.hoverInfoRequiresShift && GuiBase.isShiftDown() == false)
         {
@@ -149,6 +149,11 @@ public abstract class ButtonBase extends WidgetBase
         }
 
         return this.hoverStrings;
+    }
+
+    @Override
+    public boolean hasHoverText(int mouseX, int mouseY) {
+        return this.hoverStrings.isEmpty() == false;
     }
 
     public void clearHoverStrings()
@@ -171,9 +176,9 @@ public abstract class ButtonBase extends WidgetBase
     {
         super.postRenderHovered(ctx, mouseX, mouseY, selected);
 
-        if (this.hasHoverText() && this.isMouseOver())
+        if (this.hasHoverText(mouseX, mouseY) && this.isMouseOver(mouseX, mouseY))
         {
-            RenderUtils.drawHoverText(ctx, mouseX, mouseY, this.getHoverStrings());
+            ctx.drawHoverText(mouseX, mouseY, this.getHoverStrings(mouseX, mouseY));
         }
     }
 }

@@ -4,15 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
+import fi.dy.masa.malilib.interfaces.IHoverable;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
 import fi.dy.masa.malilib.gui.button.ButtonBase;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.render.GuiContext;
 
-public abstract class WidgetContainer extends WidgetBase
+public abstract class WidgetContainer extends WidgetBase implements IHoverable
 {
     protected final List<WidgetBase> subWidgets = new ArrayList<>();
     @Nullable protected WidgetBase hoveredSubWidget = null;
@@ -29,7 +30,7 @@ public abstract class WidgetContainer extends WidgetBase
         return widget;
     }
 
-    protected <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)
+    protected <T extends ButtonBase> T addButton(T button, IButtonActionHandler listener)
     {
         button.setActionListener(listener);
         this.addWidget(button);
@@ -121,23 +122,18 @@ public abstract class WidgetContainer extends WidgetBase
     @Override
     public boolean onMouseDragged(MouseButtonEvent click, double dragXAmount, double dragYAmount)
     {
-        if (this.isMouseOver((int) click.x(), (int) click.y()))
+        if (this.subWidgets.isEmpty() == false)
         {
-            if (this.subWidgets.isEmpty() == false)
+            for (WidgetBase widget : this.subWidgets)
             {
-                for (WidgetBase widget : this.subWidgets)
+                if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
                 {
-                    if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
-
-            return this.onMouseDraggedImpl(click, dragXAmount, dragYAmount);
         }
 
-        return false;
+        return this.onMouseDraggedImpl(click, dragXAmount, dragYAmount);
     }
 
     @Override
@@ -228,5 +224,35 @@ public abstract class WidgetContainer extends WidgetBase
         {
             this.hoveredSubWidget.postRenderHovered(ctx, mouseX, mouseY, false);
         }
+    }
+
+    @Override
+    public List<String> getHoverStrings(int mouseX, int mouseY) {
+        for (var widget : this.subWidgets)
+        {
+            if (widget instanceof IHoverable hoverable)
+            {
+                if (hoverable.hasHoverText(mouseX, mouseY) && widget.isMouseOver(mouseX, mouseY))
+                {
+                    return hoverable.getHoverStrings(mouseX, mouseY);
+                }
+            }
+        }
+        return List.of();
+    }
+
+    @Override
+    public boolean hasHoverText(int mouseX, int mouseY) {
+        for (var widget : this.subWidgets)
+        {
+            if (widget instanceof IHoverable hoverable)
+            {
+                if (hoverable.hasHoverText(mouseX, mouseY) && widget.isMouseOver(mouseX, mouseY))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

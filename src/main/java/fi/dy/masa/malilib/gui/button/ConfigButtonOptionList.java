@@ -28,7 +28,18 @@ public class ConfigButtonOptionList extends ButtonGeneric
     @Override
     protected boolean onMouseClickedImpl(MouseButtonEvent click, boolean doubleClick)
     {
-        this.config.setOptionListValue(this.config.getOptionListValue().cycle(click.input() == ScanCodes.OFFSET_MOUSE_LEFT));
+        if (click.input() == ScanCodes.OFFSET_MOUSE_LEFT)
+        {
+            this.config.setOptionListValue(this.config.getOptionListValue().cycle(true));
+        }
+        else if (click.input() == ScanCodes.OFFSET_MOUSE_RIGHT)
+        {
+            this.config.setOptionListValue(this.config.getOptionListValue().cycle(false));
+        }
+        else if (click.input() == ScanCodes.OFFSET_MOUSE_MIDDLE)
+        {
+            this.config.setOptionListValue(this.config.getDefaultOptionListValue());
+        }
         this.updateDisplayString();
 
         return super.onMouseClickedImpl(click, doubleClick);

@@ -14,7 +14,7 @@ public record MaLiLibBlockStateGuiElement(
         int y0,
         int size,
         float scale,        // I don't recommend changing this from ~0.80F
-        float yOffset,      // Allows a coder to set the "Y-Offset" of the translation position of the Block in the GUI, which is additive to (0.50F)
+        float yOffset,      // Allows a coder to set the "Y-Offset" of the translation position of the Block in the GUI
         @Nullable ScreenRectangle scissorArea,
         @Nullable ScreenRectangle bounds
 )

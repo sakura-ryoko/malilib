@@ -38,12 +38,13 @@ public class MaLiLibBlockStateGuiElementRenderer extends PictureInPictureRendere
         if (state.state().getRenderShape() == RenderShape.MODEL)
         {
 	        matrices.pushPose();
-	        matrices.scale(state.size(), -state.size(), state.size());
+	        matrices.scale(state.size(), state.size(), state.size());
+            matrices.scale(state.scale(), state.scale(), state.scale());
 
-			// FIXME -- Transformation
-			matrices.rotate(state.rotation());
-	        matrices.scale(state.scale(), state.scale(), state.scale());
-	        matrices.translate(-0.5F, (0.5F + state.yOffset()), -0.5F);
+            matrices.translate(-0.5, -1.5 + state.yOffset(), 0);
+
+            // apply rotation around the center of the block
+            matrices.rotateAround(state.rotation(), 0.5f, 0.5F, 0.5f);
 
 	        this.submitBlockStateModel(state.state(), matrices, nodes);
 	        matrices.popPose();

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
+import fi.dy.masa.malilib.interfaces.IHoverable;
+import net.minecraft.client.input.PreeditEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
@@ -25,7 +29,6 @@ import net.minecraft.util.Util;
 import fi.dy.masa.malilib.config.IConfigBase;
 import fi.dy.masa.malilib.gui.Message.MessageType;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 import fi.dy.masa.malilib.gui.interfaces.IMessageConsumer;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldListener;
 import fi.dy.masa.malilib.gui.interfaces.ITextFieldMultiLineListener;
@@ -37,7 +40,6 @@ import fi.dy.masa.malilib.gui.wrappers.TextFieldWrapper;
 import fi.dy.masa.malilib.interfaces.IStringConsumer;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.render.MessageRenderer;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
 public abstract class GuiBase extends Screen implements IMessageConsumer, IStringConsumer
@@ -80,13 +82,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     public final Minecraft mc = Minecraft.getInstance();
     public final Font font = this.mc.font;
     public final int fontHeight = this.font.lineHeight;
-    private final List<ButtonBase> buttons = new ArrayList<>();
-    private final List<WidgetBase> widgets = new ArrayList<>();
-    private final List<TextFieldWrapper<? extends GuiTextFieldGeneric>> textFields = new ArrayList<>();
-    private final List<TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine>> textFieldsMultiLine = new ArrayList<>();
+    protected final List<WidgetBase> widgets = new ArrayList<>();
     private final MessageRenderer messageRenderer = new MessageRenderer(0xDD000000, COLOR_HORIZONTAL_BAR);
     private long openTime;
-    protected WidgetBase hoveredWidget = null;
+    @Nullable
+    protected WidgetBase focusedWidget = null;
     protected String title = "";
     protected boolean useTitleHierarchy = true;
     private int keyInputCount;
@@ -207,12 +207,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         // Draw base widgets
         this.drawWidgets(ctx, mouseX, mouseY);
-        this.drawButtons(ctx, mouseX, mouseY, partialTicks);
         this.drawContents(ctx, mouseX, mouseY, partialTicks);
-        this.drawTextFields(ctx, mouseX, mouseY);
-        this.drawTextFieldsMultiLine(ctx, mouseX, mouseY);
         this.drawHoveredWidget(ctx, mouseX, mouseY);
-        this.drawButtonHoverTexts(ctx, mouseX, mouseY, partialTicks);
+        this.drawHoverTexts(ctx, mouseX, mouseY, partialTicks);
         this.drawGuiMessages(ctx);
     }
 
@@ -225,6 +222,15 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
+        // Handle focussed widget first
+        if (this.focusedWidget != null )
+        {
+            if (this.focusedWidget.onMouseScrolled(mouseX,  mouseY, horizontalAmount, verticalAmount))
+            {
+                return true;
+            }
+        }
+
         if (this.mouseWheelHorizontalDeltaSum != 0.0 &&
             Math.signum(horizontalAmount) != Math.signum(this.mouseWheelHorizontalDeltaSum))
         {
@@ -334,34 +340,38 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return super.charTyped(input);
     }
 
+    @Override
+    public boolean preeditUpdated(PreeditEvent event) {
+        if (this.onPreeditUpdated(event))
+        {
+            return true;
+        }
+        return super.preeditUpdated(event);
+    }
+
     public boolean onMouseClicked(MouseButtonEvent click, boolean doubleClick)
     {
-        for (ButtonBase button : this.buttons)
+        // Handle focussed widget first
+        if (this.focusedWidget != null)
         {
-            if (button.onMouseClicked(click, doubleClick))
+            if (this.focusedWidget.onMouseClicked(click, doubleClick))
             {
-                // Don't call super if the button press got handled
                 return true;
             }
         }
 
         boolean handled = false;
 
-        for (TextFieldWrapper<?> entry : this.textFields)
-        {
-            if (entry.mouseClicked(click, doubleClick))
-            {
-                // Don't call super if the button press got handled
-                handled = true;
-            }
-        }
-
         if (handled == false)
         {
-            for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
+            for (WidgetBase widget : this.widgets.stream().toList())
             {
-                if (entry.mouseClicked(click, doubleClick))
+                if (widget.onMouseClicked(click, doubleClick))
                 {
+                    if (widget.isMouseOver((int) click.x(), (int) click.y()) && this.widgets.contains(widget))
+                    {
+                        this.focusedWidget = widget;
+                    }
                     // Don't call super if the button press got handled
                     handled = true;
                 }
@@ -370,15 +380,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
         if (handled == false)
         {
-            for (WidgetBase widget : this.widgets)
-            {
-                if (widget.isMouseOver((int) click.x(), (int) click.y()) && widget.onMouseClicked(click, doubleClick))
-                {
-                    // Don't call super if the button press got handled
-                    handled = true;
-                    break;
-                }
-            }
+            this.focusedWidget = null;
         }
 
         return handled;
@@ -386,7 +388,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public boolean onMouseReleased(MouseButtonEvent click)
     {
-		for (WidgetBase widget : this.widgets)
+		for (WidgetBase widget : this.widgets.stream().toList())
         {
             widget.onMouseReleased(click);
         }
@@ -396,38 +398,11 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
     {
-        for (ButtonBase button : this.buttons)
+        // Handle focussed widget first
+        if (this.focusedWidget != null)
         {
-            if (button.onMouseDragged(click, dragXAmount, dragYAmount))
+            if (this.focusedWidget.onMouseDragged(click, dragXAmount, dragYAmount))
             {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
-        {
-            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
-        {
-            if (entry.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (WidgetBase widget : this.widgets)
-        {
-            if (widget.onMouseDragged(click, dragXAmount, dragYAmount))
-            {
-                // Don't call super if the action got handled
                 return true;
             }
         }
@@ -442,34 +417,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
 
     public boolean onMouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount)
     {
-        for (ButtonBase button : this.buttons)
-        {
-            if (button.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldWrapper<? extends GuiTextFieldGeneric> entry : this.textFields)
-        {
-            if (entry.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
-        {
-            if (entry.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
-            {
-                // Don't call super if the button press got handled
-                return true;
-            }
-        }
-
-        for (WidgetBase widget : this.widgets)
+        for (WidgetBase widget : this.widgets.stream().toList())
         {
             if (widget.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
             {
@@ -484,57 +432,21 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     public boolean onKeyTyped(KeyEvent input)
     {
         boolean handled = false;
-        int selected = -1;
-        int selectedMultiLine = -1;
 
-        for (int i = 0; i < this.textFields.size(); ++i)
+        if (this.focusedWidget instanceof TextFieldWrapper<?> wrapper)
         {
-            TextFieldWrapper<?> entry = this.textFields.get(i);
-
-            if (entry.isFocused())
+            if (input.key() == ScanCodes.SCAN_TAB)
             {
-                if (input.key() == ScanCodes.SCAN_TAB)
-                {
-                    entry.setFocused(false);
-                    selected = i;
-                }
-                else
-                {
-                    entry.onKeyTyped(input);
-                }
-
-                handled = input.key() != ScanCodes.SCAN_ESCAPE;
-                break;
+                List<WidgetBase> textFields = this.widgets.stream().filter(it -> it instanceof TextFieldWrapper<?> || it instanceof TextFieldMultiLineWrapper<?>).toList();
+                int index = this.widgets.indexOf(wrapper);
+                int nextIndex = index + 1;
+                this.focusedWidget = textFields.get(nextIndex);
             }
         }
 
         if (handled == false)
         {
-            for (int i = 0; i < this.textFieldsMultiLine.size(); ++i)
-            {
-                TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry = this.textFieldsMultiLine.get(i);
-
-                if (entry.isFocused())
-                {
-                    if (input.key() == ScanCodes.SCAN_TAB)
-                    {
-                        entry.setFocused(false);
-                        selectedMultiLine = i;
-                    }
-                    else
-                    {
-                        entry.onKeyTyped(input);
-                    }
-
-                    handled = input.key() != ScanCodes.SCAN_ESCAPE;
-                    break;
-                }
-            }
-        }
-
-        if (handled == false)
-        {
-            for (WidgetBase widget : this.widgets)
+            for (WidgetBase widget : this.widgets.stream().toList())
             {
                 if (widget.onKeyTyped(input))
                 {
@@ -555,34 +467,6 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             }
         }
 
-        if (selected >= 0)
-        {
-            if (input.hasShiftDown())
-            {
-                selected = selected > 0 ? selected - 1 : this.textFields.size() - 1;
-            }
-            else
-            {
-                selected = (selected + 1) % this.textFields.size();
-            }
-
-            this.textFields.get(selected).setFocused(true);
-        }
-
-        if (selectedMultiLine >= 0)
-        {
-            if (input.hasShiftDown())
-            {
-                selectedMultiLine = selectedMultiLine > 0 ? selectedMultiLine - 1 : this.textFieldsMultiLine.size() - 1;
-            }
-            else
-            {
-                selectedMultiLine = (selectedMultiLine + 1) % this.textFieldsMultiLine.size();
-            }
-
-            this.textFieldsMultiLine.get(selectedMultiLine).setFocused(true);
-        }
-
         return handled;
     }
 
@@ -590,30 +474,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
         boolean handled = false;
 
-        for (TextFieldWrapper<?> entry : this.textFields)
-        {
-            if (entry.onCharTyped(input))
-            {
-                handled = true;
-                break;
-            }
-        }
-
         if (handled == false)
         {
-            for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
-            {
-                if (entry.onCharTyped(input))
-                {
-                    handled = true;
-                    break;
-                }
-            }
-        }
-
-        if (handled == false)
-        {
-            for (WidgetBase widget : this.widgets)
+            for (WidgetBase widget : this.widgets.stream().toList())
             {
                 if (widget.onCharTyped(input))
                 {
@@ -625,6 +488,17 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         }
 
         return handled;
+    }
+
+    public boolean onPreeditUpdated(PreeditEvent event) {
+        for (WidgetBase widget : this.widgets.stream().toList())
+        {
+            if (widget.onPreeditUpdated(event))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -660,11 +534,10 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.messageRenderer.drawMessages(ctx, this.width / 2, this.height / 2);
     }
 
-    public <T extends ButtonBase> T addButton(T button, IButtonActionListener listener)
+    public <T extends ButtonBase> T addButton(T button, IButtonActionHandler listener)
     {
         button.setActionListener(listener);
-        this.buttons.add(button);
-        return button;
+        return addWidget(button);
     }
 
     /**
@@ -685,15 +558,13 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     public <T extends GuiTextFieldGeneric> TextFieldWrapper<T> addTextField(T textField, @Nullable ITextFieldListener<T> listener, TextFieldType type)
     {
         TextFieldWrapper<T> wrapper = new TextFieldWrapper<>(textField, listener, type);
-        this.textFields.add(wrapper);
-        return wrapper;
+        return addWidget(wrapper);
     }
 
     public <T extends GuiTextFieldMultiLine> TextFieldMultiLineWrapper<T> addTextFieldMultiLine(T textField, int lines, @Nullable ITextFieldMultiLineListener<T> listener)
     {
         TextFieldMultiLineWrapper<T> wrapper = new TextFieldMultiLineWrapper<>(textField, lines, listener);
-        this.textFieldsMultiLine.add(wrapper);
-        return wrapper;
+        return this.addWidget(wrapper);
     }
 
     public <T extends WidgetBase> T addWidget(T widget)
@@ -728,6 +599,10 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         if (widget != null && this.widgets.contains(widget))
         {
             this.widgets.remove(widget);
+            if (widget == this.focusedWidget)
+            {
+                this.focusedWidget = null;
+            }
             return true;
         }
 
@@ -737,33 +612,17 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected void clearElements()
     {
         this.clearWidgets();
-        this.clearButtons();
-        this.clearTextFields();
-        this.clearTextFieldsMultiLine();
     }
 
+    @Override
     protected void clearWidgets()
     {
         this.widgets.clear();
-    }
-
-    protected void clearButtons()
-    {
-        this.buttons.clear();
-    }
-
-    protected void clearTextFields()
-    {
-        this.textFields.clear();
-    }
-
-    protected void clearTextFieldsMultiLine()
-    {
-        this.textFieldsMultiLine.clear();
+        this.focusedWidget = null;
     }
 
     /**
-     * Draw's an Screen Tooltip Background
+     * Draw a Screen Tooltip Background
      * @param ctx ()
      * @param mouseX ()
      * @param mouseY ()
@@ -771,7 +630,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     protected void drawScreenBackground(GuiContext ctx, int mouseX, int mouseY)
     {
         // Draw the dark background
-        RenderUtils.drawRect(ctx, 0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
+        ctx.drawRect(0, 0, this.width, this.height, TOOLTIP_BACKGROUND);
     }
 
     /**
@@ -805,60 +664,63 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     {
     }
 
+    /**
+     * @implSpec No longer used
+     */
+    @Deprecated
     protected void drawButtons(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
-        for (ButtonBase button : this.buttons)
+        for (WidgetBase widget : this.widgets.stream().toList())
         {
-            button.render(ctx, mouseX, mouseY, button.isMouseOver());
-        }
-    }
-
-    protected void drawTextFields(GuiContext ctx, int mouseX, int mouseY)
-    {
-        for (TextFieldWrapper<?> entry : this.textFields)
-        {
-            entry.draw(ctx, mouseX, mouseY);
-        }
-    }
-
-    protected void drawTextFieldsMultiLine(GuiContext ctx, int mouseX, int mouseY)
-    {
-        for (TextFieldMultiLineWrapper<? extends GuiTextFieldMultiLine> entry : this.textFieldsMultiLine)
-        {
-            entry.draw(ctx, mouseX, mouseY);
+            if (widget instanceof ButtonBase)
+            {
+                widget.render(ctx, mouseX, mouseY, widget.isMouseOver(mouseX, mouseY));
+            }
         }
     }
 
     protected void drawWidgets(GuiContext ctx, int mouseX, int mouseY)
     {
-        this.hoveredWidget = null;
-
         if (this.widgets.isEmpty() == false)
         {
-            for (WidgetBase widget : this.widgets)
+            for (WidgetBase widget : this.widgets.stream().toList())
             {
-                widget.render(ctx, mouseX, mouseY, false);
-
-                if (widget.isMouseOver(mouseX, mouseY))
-                {
-                    this.hoveredWidget = widget;
-                }
+                widget.render(ctx, mouseX, mouseY, isSelected(widget));
             }
         }
     }
 
-    protected void drawButtonHoverTexts(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
+    public boolean isSelected(WidgetBase widget)
+    {
+        return this.focusedWidget != null && this.focusedWidget.equals(widget);
+    }
+
+    protected void drawHoverTexts(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
         if (this.shouldRenderHoverStuff() == false)
         {
             return;
         }
 
-        for (ButtonBase button : this.buttons)
+        if (this.focusedWidget != null  && this.focusedWidget.isMouseOver(mouseX, mouseY))
         {
-            if (button.hasHoverText() && button.isMouseOver())
+            this.focusedWidget.render(ctx, mouseX, mouseY, true);
+            this.focusedWidget.postRenderHovered(ctx, mouseX, mouseY, true);
+        }
+
+        for (WidgetBase widget : this.widgets.stream().toList())
+        {
+            if (widget instanceof IHoverable hoverable)
             {
-                RenderUtils.drawHoverText(ctx, mouseX, mouseY, button.getHoverStrings());
+                if (hoverable.hasHoverText(mouseX, mouseY) && widget.isMouseOver(mouseX, mouseY))
+                {
+                    ctx.drawHoverText(mouseX, mouseY, hoverable.getHoverStrings(mouseX, mouseY));
+                }
+            }
+
+            if (widget.isMouseOver(mouseX, mouseY))
+            {
+                widget.postRenderHovered(ctx, mouseX, mouseY, widget == this.focusedWidget);
             }
         }
     }
@@ -875,9 +737,9 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
             return;
         }
 
-        if (this.hoveredWidget != null)
+        if (this.focusedWidget != null )
         {
-            this.hoveredWidget.postRenderHovered(ctx, mouseX, mouseY, false);
+            this.focusedWidget.postRenderHovered(ctx, mouseX, mouseY, false);
         }
     }
 

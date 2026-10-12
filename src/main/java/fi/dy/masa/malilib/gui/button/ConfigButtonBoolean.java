@@ -3,6 +3,7 @@ package fi.dy.masa.malilib.gui.button;
 import fi.dy.masa.malilib.config.IConfigBoolean;
 import fi.dy.masa.malilib.gui.GuiBase;
 import fi.dy.masa.malilib.util.StringUtils;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import net.minecraft.client.input.MouseButtonEvent;
 
 public class ConfigButtonBoolean extends ButtonGeneric
