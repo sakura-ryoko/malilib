@@ -72,14 +72,16 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric> extends WidgetBase
 		this.textField.setFocused(isFocused);
 	}
 
-	// Using the GuiContext here breaks the Hover Text from working
+	/// @deprecated Use render() instead
+	@Deprecated
 	public void draw(GuiContext ctx, int mouseX, int mouseY)
 	{
-		this.textField.extractRenderState(ctx.getGuiGraphics(), mouseX, mouseY, 0f);
+		this.textField.extractRenderState(ctx, mouseX, mouseY, 0f);
 	}
 
 	@Override
-	public boolean isMouseOver(int mouseX, int mouseY) {
+	public boolean isMouseOver(int mouseX, int mouseY)
+	{
 		return this.textField.isMouseOver(mouseX, mouseY);
 	}
 
@@ -157,6 +159,7 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric> extends WidgetBase
 			this.textField.setFocused(false);
 			return false;
 		}
+
 		if (this.textField.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount))
 		{
 			return true;
@@ -270,7 +273,8 @@ public class TextFieldWrapper<T extends GuiTextFieldGeneric> extends WidgetBase
 	}
 
 	@Override
-	public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected) {
+	public void render(GuiContext ctx, int mouseX, int mouseY, boolean selected)
+	{
 		this.textField.renderWrapper(ctx, mouseX, mouseY, 0);
 	}
 }
