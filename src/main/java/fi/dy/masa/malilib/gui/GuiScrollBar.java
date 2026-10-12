@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import fi.dy.masa.malilib.gui.interfaces.IGuiIcon;
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public class GuiScrollBar
 {
@@ -77,7 +76,7 @@ public class GuiScrollBar
     {
         if (this.renderScrollbarBackground)
         {
-            RenderUtils.drawRect(ctx, xPosition, yPosition, width, height, this.backgroundColor);
+            ctx.drawRect(xPosition, yPosition, width, height, this.backgroundColor);
         }
 
         if (totalHeight > 0)
@@ -95,12 +94,12 @@ public class GuiScrollBar
                 int w = this.barTexture.getWidth();
                 int h = this.barTexture.getHeight();
 
-                RenderUtils.drawTexturedRect(ctx, this.barTexture.getTexture(), xPosition + 1, barPosition                , u, v        , w, barHeight - 2);
-                RenderUtils.drawTexturedRect(ctx, this.barTexture.getTexture(), xPosition + 1, barPosition + barHeight - 2, u, v + h - 2, w, 2);
+                ctx.drawTexturedRect(this.barTexture.getTexture(), xPosition + 1, barPosition                , u, v        , w, barHeight - 2);
+                ctx.drawTexturedRect(this.barTexture.getTexture(), xPosition + 1, barPosition + barHeight - 2, u, v + h - 2, w, 2);
             }
             else
             {
-                RenderUtils.drawRect(ctx, xPosition + 1, barPosition, width - 2, barHeight, this.foregroundColor);
+                ctx.drawRect(xPosition + 1, barPosition, width - 2, barHeight, this.foregroundColor);
             }
 
             this.mouseOver = mouseX > xPosition && mouseX < xPosition + width && mouseY > barPosition && mouseY < barPosition + barHeight;

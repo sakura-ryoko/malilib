@@ -1,20 +1,24 @@
 package fi.dy.masa.malilib.config.gui;
 
 import javax.annotation.Nullable;
+
+import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
+import fi.dy.masa.malilib.util.input.ScanCodes;
 import net.minecraft.client.gui.components.EditBox;
 import fi.dy.masa.malilib.config.IConfigResettable;
 import fi.dy.masa.malilib.config.IStringRepresentable;
 import fi.dy.masa.malilib.gui.button.ButtonBase;
 import fi.dy.masa.malilib.gui.button.ButtonGeneric;
-import fi.dy.masa.malilib.gui.button.IButtonActionListener;
 
 public record ConfigOptionListenerResetConfig(IConfigResettable config, @Nullable ConfigResetterBase reset,
                                               ButtonGeneric buttonReset,
-                                              @Nullable ButtonPressDirtyListenerSimple dirtyListener) implements IButtonActionListener
+                                              @Nullable ButtonPressDirtyListenerSimple dirtyListener) implements IButtonActionHandler
 {
 	@Override
-	public void actionPerformedWithButton(ButtonBase button, int mouseButton)
+	public boolean handleAction(ButtonBase button, int mouseButton)
 	{
+		if (mouseButton != ScanCodes.OFFSET_MOUSE_LEFT) return false;
+
 		this.config.resetToDefault();
 		this.buttonReset.setEnabled(this.config.isModified());
 
@@ -25,8 +29,9 @@ public record ConfigOptionListenerResetConfig(IConfigResettable config, @Nullabl
 
 		if (this.dirtyListener != null)
 		{
-			this.dirtyListener.actionPerformedWithButton(button, mouseButton);
+			this.dirtyListener.handleAction(button, mouseButton);
 		}
+		return true;
 	}
 
 	public abstract static class ConfigResetterBase
