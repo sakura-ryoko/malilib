@@ -95,7 +95,8 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
     }
 
     @Override
-    public boolean onMouseDraggedImpl(MouseButtonEvent click, double dragXAmount, double dragYAmount) {
+    public boolean onMouseDraggedImpl(MouseButtonEvent click, double dragXAmount, double dragYAmount)
+    {
         if (super.onMouseDraggedImpl(click, dragXAmount, dragYAmount))
         {
             return true;
