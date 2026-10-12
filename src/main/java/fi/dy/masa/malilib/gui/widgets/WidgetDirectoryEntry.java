@@ -116,21 +116,26 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry> im
     }
 
     @Override
-    public List<String> getHoverStrings(int mouseX, int mouseY) {
+    public List<String> getHoverStrings(int mouseX, int mouseY)
+    {
         List<String> containerHover = super.getHoverStrings(mouseX, mouseY);
+
         if (containerHover.isEmpty())
         {
             String text = this.entry.getHoverText();
+
             if (text != null && !text.isEmpty())
             {
                 return List.of(text);
             }
         }
+
         return containerHover;
     }
 
     @Override
-    public boolean hasHoverText(int mouseX, int mouseY) {
+    public boolean hasHoverText(int mouseX, int mouseY)
+    {
         if (super.hasHoverText(mouseX, mouseY))
         {
             return true;
