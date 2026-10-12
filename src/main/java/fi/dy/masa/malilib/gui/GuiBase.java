@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.platform.cursor.CursorType;
 import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.interfaces.IHoverable;
 import net.minecraft.client.input.PreeditEvent;
@@ -211,6 +212,12 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         this.drawHoveredWidget(ctx, mouseX, mouseY);
         this.drawHoverTexts(ctx, mouseX, mouseY, partialTicks);
         this.drawGuiMessages(ctx);
+
+        if (drawContext.pendingCursor == CursorType.DEFAULT) drawContext.pendingCursor = ctx.pendingCursor;
+        if (drawContext.deferredTooltip == null) drawContext.deferredTooltip = ctx.deferredTooltip;
+        if (drawContext.hoveredTextStyle == null) drawContext.hoveredTextStyle = ctx.hoveredTextStyle;
+        if (drawContext.clickableTextStyle == null) drawContext.clickableTextStyle = ctx.clickableTextStyle;
+        if (drawContext.preeditOverlay == null) drawContext.preeditOverlay = ctx.preeditOverlay;
     }
 
     @Override
