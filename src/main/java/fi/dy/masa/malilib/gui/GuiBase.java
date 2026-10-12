@@ -341,7 +341,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     }
 
     @Override
-    public boolean preeditUpdated(PreeditEvent event) {
+    public boolean preeditUpdated(PreeditEvent event)
+    {
         if (this.onPreeditUpdated(event))
         {
             return true;
