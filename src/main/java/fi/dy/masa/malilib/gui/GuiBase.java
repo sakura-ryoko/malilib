@@ -347,6 +347,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         {
             return true;
         }
+
         return super.preeditUpdated(event);
     }
 
@@ -491,7 +492,8 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         return handled;
     }
 
-    public boolean onPreeditUpdated(PreeditEvent event) {
+    public boolean onPreeditUpdated(PreeditEvent event)
+    {
         for (WidgetBase widget : this.widgets.stream().toList())
         {
             if (widget.onPreeditUpdated(event))
@@ -499,6 +501,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
                 return true;
             }
         }
+
         return false;
     }
 
@@ -559,7 +562,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
     public <T extends GuiTextFieldGeneric> TextFieldWrapper<T> addTextField(T textField, @Nullable ITextFieldListener<T> listener, TextFieldType type)
     {
         TextFieldWrapper<T> wrapper = new TextFieldWrapper<>(textField, listener, type);
-        return addWidget(wrapper);
+        return this.addWidget(wrapper);
     }
 
     public <T extends GuiTextFieldMultiLine> TextFieldMultiLineWrapper<T> addTextFieldMultiLine(T textField, int lines, @Nullable ITextFieldMultiLineListener<T> listener)
@@ -600,6 +603,7 @@ public abstract class GuiBase extends Screen implements IMessageConsumer, IStrin
         if (widget != null && this.widgets.contains(widget))
         {
             this.widgets.remove(widget);
+
             if (widget == this.focusedWidget)
             {
                 this.focusedWidget = null;

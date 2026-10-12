@@ -10,6 +10,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Util;
 
 import fi.dy.masa.malilib.mixin.input.IMixinKeyBinding;
 
@@ -112,5 +113,22 @@ public class InputUtils
 		int scanCodeForQ = SDLKeyboard.nSDL_GetScancodeFromKey(SDLKeycode.SDLK_Q, SDLKeycode.SDL_KMOD_NONE);
 		int scanCodeForW = SDLKeyboard.nSDL_GetScancodeFromKey(SDLKeycode.SDLK_W, SDLKeycode.SDL_KMOD_NONE);
 		return scanCodeForQ == SDLScancode.SDL_SCANCODE_A && scanCodeForW == SDLScancode.SDL_SCANCODE_Z;
+	}
+
+	public static boolean isShiftDown()
+	{
+		return isKeyHeld(ScanCodes.SCAN_LEFT_SHIFT) || isKeyHeld(ScanCodes.SCAN_RIGHT_SHIFT);
+	}
+
+	public static boolean isCtrlDown()
+	{
+		return Util.getPlatform() == Util.OS.OSX
+		       ? isKeyHeld(ScanCodes.SCAN_LEFT_GUI) || isKeyHeld(ScanCodes.SCAN_RIGHT_GUI)
+		       : isKeyHeld(ScanCodes.SCAN_LEFT_CONTROL) || isKeyHeld(ScanCodes.SCAN_RIGHT_CONTROL);
+	}
+
+	public static boolean isAltDown()
+	{
+		return isKeyHeld(ScanCodes.SCAN_LEFT_ALT) || isKeyHeld(ScanCodes.SCAN_RIGHT_ALT);
 	}
 }

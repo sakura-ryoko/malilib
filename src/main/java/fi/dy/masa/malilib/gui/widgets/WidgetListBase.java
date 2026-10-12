@@ -13,7 +13,6 @@ import fi.dy.masa.malilib.gui.interfaces.ISelectionListener;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.MathUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
-import net.minecraft.client.input.PreeditEvent;
 
 public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>> extends GuiBase
 {
@@ -139,10 +138,8 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             {
                 this.offsetSelectionOrScrollbar(verticalAmount < 0 ? 3 : -3, false);
                 return true;
-            } else
-            {
-                return false;
             }
+            else { return false; }
         }
 
         return true;
@@ -191,10 +188,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             return true;
         }
 
-        if (input.key() == ScanCodes.SCAN_ESCAPE)
-        {
-            return false;
-        }
+        if (input.key() == ScanCodes.SCAN_ESCAPE) { return false; }
 
         return super.onKeyTyped(input);
     }
@@ -209,23 +203,24 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
         return true;
     }
 
-    @Override
-    public boolean preeditUpdated(PreeditEvent event) {
-        if (this.widgetSearchBar != null && this.widgetSearchBar.onPreeditUpdated(event))
-        {
-            return true;
-        }
-
-        for (var entry : this.listWidgets)
-        {
-            if (entry.onPreeditUpdated(event))
-            {
-                return true;
-            }
-        }
-
-        return super.preeditUpdated(event);
-    }
+//    @Override
+//    public boolean preeditUpdated(PreeditEvent event)
+//    {
+//        if (this.widgetSearchBar != null && this.widgetSearchBar.onPreeditUpdated(event))
+//        {
+//            return true;
+//        }
+//
+//        for (var entry : this.listWidgets)
+//        {
+//            if (entry.onPreeditUpdated(event))
+//            {
+//                return true;
+//            }
+//        }
+//
+//        return super.preeditUpdated(event);
+//    }
 
     protected boolean onKeyTypedSearchBar(KeyEvent input)
     {
@@ -349,10 +344,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
 
     protected boolean matchesFilter(String entryString, String filterText)
     {
-        if (filterText.isEmpty())
-        {
-            return true;
-        }
+        if (filterText.isEmpty()) { return true; }
 
         for (String filter : filterText.split("\\|"))
         {
@@ -428,7 +420,8 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     }
 
     @Override
-    public boolean isSelected(WidgetBase widget) {
+    public boolean isSelected(WidgetBase widget)
+    {
         if (widget instanceof WidgetListEntryBase<?> entry)
         {
 	        //noinspection SuspiciousMethodCalls

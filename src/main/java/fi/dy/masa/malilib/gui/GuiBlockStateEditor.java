@@ -62,7 +62,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 
 		this.title = GuiBase.TXT_BOLD + StringUtils.translate("malilib.gui.title.block_state_editor", this.configName) + GuiBase.TXT_RST;
 		this.titleWidth = this.getStringWidth(this.title);
-		this.elementHeight = 12;
+		this.elementHeight = 15;
 		this.modelSize = 64;
 		this.buttonHeight = 20;
 		this.maxLength = MathUtils.max(this.modelSize - 12, 128);
@@ -77,7 +77,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 		int leftPaneWidth = MathUtils.max(this.modelSize, this.maxLength) + 24;
 		int maxPropLabelWidth = 120;
 
-		// this is bad but I can't be asked to fix it... proper way would be to return the heights in each method
+		// this is bad, but I can't be asked to fix it... proper way would be to return the heights in each method
 		int propSize = this.blockState.getProperties().size();
 		int modelSizeLines = (this.modelSize + (this.elementHeight + 2) + (this.buttonHeight + 4));
 		int blockNameLines = ((this.elementHeight + 2) * 3) + (modelSizeLines + 6);

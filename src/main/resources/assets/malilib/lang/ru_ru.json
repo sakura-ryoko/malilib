@@ -230,7 +230,7 @@
     "malilib.gui.label.block_state_editor.block_display": "§bBlock Display§r",
     "malilib.gui.label.block_state_editor.block_name": "Block Name",
     "malilib.gui.label.block_state_editor.block_properties": "Block Properties",
-    "malilib.gui.label.block_state_editor.property.name": "§f[§b%02d§f] Property: §d%s§r",
+    "malilib.gui.label.block_state_editor.property.name": "§f[§b%02d§f]: §d%s§r",
     "malilib.gui.label.block_state_editor.property.potenial_values": "§7Potential values: §3%s§r",
     "malilib.gui.label.color_editor.current_color": "Текущий цвет:",
     "malilib.gui.label.duration_format.error.invalid": "Invalid Duration [%d]",

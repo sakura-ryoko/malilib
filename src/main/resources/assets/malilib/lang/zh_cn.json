@@ -230,7 +230,7 @@
     "malilib.gui.label.block_state_editor.block_display": "§b方块展示§r",
     "malilib.gui.label.block_state_editor.block_name": "方块名称",
     "malilib.gui.label.block_state_editor.block_properties": "方块属性",
-    "malilib.gui.label.block_state_editor.property.name": "§f[§b%02d§f]属性：§d%s§r",
+    "malilib.gui.label.block_state_editor.property.name": "§f[§b%02d§f]: §d%s§r",
     "malilib.gui.label.block_state_editor.property.potenial_values": "§7潜在数值：§3%s§r",
     "malilib.gui.label.color_editor.current_color": "当前颜色：",
     "malilib.gui.label.duration_format.error.invalid": "无效的持续时间[%d]",

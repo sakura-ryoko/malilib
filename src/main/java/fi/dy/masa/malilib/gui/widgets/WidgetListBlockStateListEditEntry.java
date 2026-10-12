@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import fi.dy.masa.malilib.gui.button.IButtonActionHandler;
 import fi.dy.masa.malilib.util.input.ScanCodes;
@@ -33,6 +34,9 @@ public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<Bl
 	protected final int listIndex;
 	protected final boolean isOdd;
 
+	protected BlockState currentValue;
+	protected String currentStringValue;
+
 	public WidgetListBlockStateListEditEntry(int x, int y, int width, int height, int listIndex, boolean isOdd,
 	                                         BlockState initialValue, BlockState defaultState,
 	                                         WidgetListBlockStateListEdit parent)
@@ -42,23 +46,30 @@ public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<Bl
 		this.listIndex = listIndex;
 		this.isOdd = isOdd;
 		this.defaultState = defaultState;
+		this.currentValue = initialValue;
 		this.defaultValueString = stateToString(defaultState);
 		this.initialStringValue = stateToString(initialValue);
+		this.currentStringValue = this.initialStringValue;
 		this.parent = parent;
 
-		int textFieldX = x + 20;
-		int textFieldWidth = width - 160 - 22;
+		this.createWidget();
+	}
+
+	private void createWidget()
+	{
+		int textFieldX = this.x + 20;
+		int textFieldWidth = this.width - 160 - 22;
 		int resetX = textFieldX + textFieldWidth + 2 + 22;
-		int by = y + 4;
+		int by = this.y + 4;
 		int bx = textFieldX;
 		int bOff = 18;
 
 		if (!this.isDummy())
 		{
-			this.addLabel(x + 2, y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", listIndex + 1));
-			bx = this.addTextField(textFieldX, y + 1, resetX, textFieldWidth, 20, this.initialStringValue);
+			this.addLabel(this.x + 2, this.y + 6, 20, 12, 0xC0C0C0C0, String.format("%3d:", this.listIndex + 1));
+			bx = this.addTextField(textFieldX, this.y + 1, resetX, textFieldWidth, 20, this.currentStringValue);
 
-			this.addWidget(new WidgetBlockStateIcon(textFieldX + textFieldWidth + 2, y + 1, 18, 18, String.format("%s_%d", this.parent.config.getName(), listIndex), initialValue, new ListenerConfigChange(this)));
+			this.addWidget(new WidgetBlockStateIcon(textFieldX + textFieldWidth + 2, this.y + 1, 18, 18, String.format("%s_%d", this.parent.config.getName(), this.listIndex), this.currentValue, new ListenerConfigChange(this)));
 
 			this.addListActionButton(bx, by, ButtonType.ADD);
 			bx += bOff;
@@ -82,6 +93,30 @@ public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<Bl
 		else
 		{
 			this.addListActionButton(bx, by, ButtonType.ADD);
+		}
+	}
+
+	private void reCreateWidget()
+	{
+		if (!this.isDummy())
+		{
+			if (this.lastAppliedValue != null && !this.lastAppliedValue.equals(this.initialStringValue))
+			{
+				Optional<BlockState> opt = BlockUtils.getBlockStateFromString(this.lastAppliedValue);
+
+				if (opt.isPresent())
+				{
+					this.currentStringValue = this.lastAppliedValue;
+					this.currentValue = opt.get();
+
+					if (!this.subWidgets.isEmpty())
+					{
+						this.subWidgets.clear();
+					}
+				}
+			}
+
+			this.createWidget();
 		}
 	}
 
@@ -130,24 +165,30 @@ public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<Bl
 	@Override
 	public boolean wasConfigModified()
 	{
-		return !this.isDummy() && !this.textField.textField().getValue().equals(this.initialStringValue);
+		return !this.isDummy() && (this.textField != null && !this.textField.textField().getValue().equals(this.initialStringValue));
 	}
 
 	@Override
 	public void applyNewValueToConfig()
 	{
 		BlockState value = this.entry;
+		boolean reCreate = false;
 
 		if (this.textField != null && !this.textField.textField().getValue().isEmpty())
 		{
 			final String textValue = this.textField.textField().getValue();
 			value = BlockUtils.getBlockStateFromString(textValue).orElse(this.defaultState);
+
+			if (!textValue.equals(this.initialStringValue))
+			{
+				reCreate = true;
+			}
 		}
 
-		this.applyNewValueToConfig(value);
+		this.applyNewValueToConfig(value, reCreate);
 	}
 
-	protected void applyNewValueToConfig(BlockState value)
+	protected void applyNewValueToConfig(BlockState value, boolean reCreate)
 	{
 		if (!this.isDummy())
 		{
@@ -158,6 +199,12 @@ public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<Bl
 			{
 				list.set(this.listIndex, value);
 				this.lastAppliedValue = stateToString(value);
+
+				if (reCreate)
+				{
+					this.reCreateWidget();
+				}
+
 				config.setBlockStates(list);
 				config.markDirty();
 				config.setModified();
@@ -277,12 +324,21 @@ public class WidgetListBlockStateListEditEntry extends WidgetConfigOptionBase<Bl
 		@Override
 		public void setState(BlockState state)
 		{
+			boolean reCreate = false;
+
 			if (this.parent.textField != null)
 			{
-				this.parent.textField.textField().setValue(stateToString(state));
+				final String result = stateToString(state);
+
+				if (!result.equals(this.parent.textField.textField().getValue()))
+				{
+					reCreate = true;
+				}
+
+				this.parent.textField.textField().setValue(result);
 			}
 
-			this.parent.applyNewValueToConfig(state);
+			this.parent.applyNewValueToConfig(state, reCreate);
 		}
 	}
 
