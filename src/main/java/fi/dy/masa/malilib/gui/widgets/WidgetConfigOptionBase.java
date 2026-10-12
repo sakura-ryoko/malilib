@@ -86,22 +86,27 @@ public abstract class WidgetConfigOptionBase<TYPE> extends WidgetListEntryBase<T
             return true;
         }
 
-        boolean ret = false;
+        if (this.textField != null)
+        {
+            return this.textField.textField().mouseClicked(click, doubleClick);
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onMouseDraggedImpl(MouseButtonEvent click, double dragXAmount, double dragYAmount) {
+        if (super.onMouseDraggedImpl(click, dragXAmount, dragYAmount))
+        {
+            return true;
+        }
 
         if (this.textField != null)
         {
-            ret |= this.textField.textField().mouseClicked(click, doubleClick);
+            return this.textField.textField().mouseDragged(click, dragXAmount, dragYAmount);
         }
 
-        if (this.subWidgets.isEmpty() == false)
-        {
-            for (WidgetBase widget : this.subWidgets)
-            {
-                ret |= widget.isMouseOver((int) click.x(), (int) click.y()) && widget.onMouseClicked(click, doubleClick);
-            }
-        }
-
-        return ret;
+        return false;
     }
 
     @Override
