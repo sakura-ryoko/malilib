@@ -2,6 +2,7 @@ package fi.dy.masa.malilib.gui.widgets;
 
 import java.util.List;
 
+import fi.dy.masa.malilib.interfaces.IHoverable;
 import net.minecraft.client.input.MouseButtonEvent;
 
 import fi.dy.masa.malilib.gui.interfaces.IDirectoryNavigator;
@@ -13,7 +14,7 @@ import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.FileNameUtils;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 
-public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
+public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry> implements IHoverable
 {
     protected final IDirectoryNavigator navigator;
     protected final DirectoryEntry entry;
@@ -74,16 +75,12 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
             ctx.drawRect(this.x, this.y, this.width, this.height, 0x38FFFFFF);
         }
 
-        IGuiIcon icon = null;
+        IGuiIcon icon;
 
         switch (this.entry.type())
         {
-            case DIRECTORY:
-                icon = this.iconProvider.getIconDirectory();
-                break;
-
-            default:
-                icon = this.iconProvider.getIconForFile(this.entry.getFullPath());
+            case DIRECTORY -> icon = this.iconProvider.getIconDirectory();
+            default -> icon = this.iconProvider.getIconForFile(this.entry.getFullPath());
         }
 
         int iconWidth = icon != null ? icon.getWidth() : 0;
@@ -104,16 +101,6 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         this.drawString(ctx, this.x + xOffset + 2, this.y + yOffset, 0xFFFFFFFF, this.getDisplayName());
 
         super.render(ctx, mouseX, mouseY, selected);
-
-        if (this.isMouseOver(mouseX, mouseY) && this.entry.displayHoverInfo())
-        {
-            String text = this.entry.getHoverText();
-
-            if (text != null && !text.isEmpty())
-            {
-                ctx.drawHoverText(mouseX + 10, mouseY, List.of(this.entry.getHoverText()));
-            }
-        }
     }
 
     protected String getDisplayName()
@@ -126,5 +113,29 @@ public class WidgetDirectoryEntry extends WidgetListEntryBase<DirectoryEntry>
         {
             return FileNameUtils.getFileNameWithoutExtension(this.entry.getDisplayName());
         }
+    }
+
+    @Override
+    public List<String> getHoverStrings(int mouseX, int mouseY) {
+        List<String> containerHover = super.getHoverStrings(mouseX, mouseY);
+        if (containerHover.isEmpty())
+        {
+            String text = this.entry.getHoverText();
+            if (text != null && !text.isEmpty())
+            {
+                return List.of(text);
+            }
+        }
+        return containerHover;
+    }
+
+    @Override
+    public boolean hasHoverText(int mouseX, int mouseY) {
+        if (super.hasHoverText(mouseX, mouseY))
+        {
+            return true;
+        }
+
+        return this.entry.displayHoverInfo() && this.entry.getHoverText() != null && !this.entry.getHoverText().isEmpty();
     }
 }
