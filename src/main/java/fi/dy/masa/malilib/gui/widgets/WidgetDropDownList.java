@@ -421,7 +421,7 @@ public class WidgetDropDownList<T> extends WidgetBase
 
         if (this.searchBar.textField().getValue().isEmpty() == false)
         {
-            this.searchBar.draw(ctx, mouseX, mouseY);
+            this.searchBar.render(ctx, mouseX, mouseY, false);
         }
 
 //        RenderUtils.drawOutline(ctx, this.x, this.y + this.height, this.width, visibleEntries * this.height + 2, 0xFFE0E0E0);
