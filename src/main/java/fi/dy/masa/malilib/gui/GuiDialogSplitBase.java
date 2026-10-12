@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.gui;
 
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 import fi.dy.masa.malilib.util.GuiUtils;
 import fi.dy.masa.malilib.util.MathUtils;
 
@@ -109,7 +108,7 @@ public class GuiDialogSplitBase extends GuiBase
     // Divider "T" Bars
     protected void drawDividerBars(GuiContext ctx, int mouseX, int mouseY)
     {
-        RenderUtils.drawRect(ctx, this.dialogLeft, this.dialogTop + 16, this.dialogTotalWidth, 1, COLOR_HORIZONTAL_BAR);
-        RenderUtils.drawRect(ctx, this.dialogCenter, this.dialogTop + 16, 1, this.dialogTotalHeight - 16, COLOR_HORIZONTAL_BAR);
+        ctx.drawRect(this.dialogLeft, this.dialogTop + 16, this.dialogTotalWidth, 1, COLOR_HORIZONTAL_BAR);
+        ctx.drawRect(this.dialogCenter, this.dialogTop + 16, 1, this.dialogTotalHeight - 16, COLOR_HORIZONTAL_BAR);
     }
 }

@@ -12,6 +12,7 @@ import fi.dy.masa.malilib.gui.widgets.WidgetListEntryBase;
 import fi.dy.masa.malilib.render.GuiContext;
 import fi.dy.masa.malilib.util.input.ScanCodes;
 import net.minecraft.client.input.PreeditEvent;
+import org.jspecify.annotations.NonNull;
 
 public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>, WIDGETLIST extends WidgetListBase<TYPE, WIDGET>> extends GuiBase
 {
@@ -65,7 +66,13 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
 
     protected void reCreateListWidget()
     {
+        // TODO?: test this more? but should be fine
+        var oldList = this.widget;
         this.widget = this.createListWidget(this.listX, this.listY);
+        if (oldList != null && this.widget != null)
+        {
+            this.widget.getScrollbar().setValue(oldList.getScrollbar().getValue());
+        }
     }
 
     @Override
@@ -122,6 +129,17 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
         }
 
         return this.getListWidget() != null && this.getListWidget().onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+    }
+
+    @Override
+    public boolean onMouseDragged(@NonNull MouseButtonEvent click, double dragXAmount, double dragYAmount)
+    {
+        if (super.onMouseDragged(click, dragXAmount, dragYAmount))
+        {
+            return true;
+        }
+
+        return this.getListWidget() != null && this.getListWidget().onMouseDragged(click, dragXAmount, dragYAmount);
     }
 
     @Override
@@ -198,7 +216,7 @@ public abstract class GuiListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>
         if (this.getListWidget() != null && this.shouldRenderHoverStuff())
         {
             this.getListWidget().drawHoveredWidget(ctx, mouseX, mouseY);
-            this.getListWidget().drawButtonHoverTexts(ctx, mouseX, mouseY, 0f);
+            this.getListWidget().drawHoverTexts(ctx, mouseX, mouseY, 0f);
         }
     }
 }

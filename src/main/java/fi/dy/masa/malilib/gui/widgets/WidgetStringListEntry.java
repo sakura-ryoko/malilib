@@ -1,7 +1,6 @@
 package fi.dy.masa.malilib.gui.widgets;
 
 import fi.dy.masa.malilib.render.GuiContext;
-import fi.dy.masa.malilib.render.RenderUtils;
 
 public class WidgetStringListEntry extends WidgetListEntryBase<String>
 {
@@ -22,21 +21,21 @@ public class WidgetStringListEntry extends WidgetListEntryBase<String>
         // Draw a lighter background for the hovered and the selected entry
         if (selected || this.isMouseOver(mouseX, mouseY))
         {
-            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0xA0707070);
+            ctx.drawRect(this.x, this.y, this.width, this.height, 0xA0707070);
         }
         else if (this.isOdd)
         {
-            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0xA0101010);
+            ctx.drawRect(this.x, this.y, this.width, this.height, 0xA0101010);
         }
         // Draw a slightly lighter background for even entries
         else
         {
-            RenderUtils.drawRect(ctx, this.x, this.y, this.width, this.height, 0xA0303030);
+            ctx.drawRect(this.x, this.y, this.width, this.height, 0xA0303030);
         }
 
         if (selected)
         {
-            RenderUtils.drawOutline(ctx, this.x, this.y, this.width, this.height, 0xFF90D0F0);
+            ctx.drawOutline(this.x, this.y, this.width, this.height, 0xFF90D0F0);
         }
 
         int yOffset = (this.height - this.fontHeight) / 2 + 1;

@@ -37,13 +37,13 @@ public class WidgetListTableEdit extends WidgetListConfigOptionsBase<TableRow, W
 	{
 		if (this.listContents.isEmpty())
 		{
-			this.listWidgets.clear();
+			this.clearWidgets();
 			this.maxVisibleBrowserEntries = 1;
 
 			int x = this.posX + 2;
 			int y = this.posY + 4 + this.browserEntriesOffsetY;
 
-			this.listWidgets.add(this.createListEntryWidget(x, y, -1, false, ConfigTable.getDummy(config.getTypes())));
+			this.addWidget(this.createListEntryWidget(x, y, -1, false, ConfigTable.getDummy(config.getTypes())));
 			this.scrollBar.setMaxValue(0);
 		}
 		else

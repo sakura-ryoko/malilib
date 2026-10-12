@@ -18,7 +18,6 @@ import net.minecraft.client.input.PreeditEvent;
 public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TYPE>> extends GuiBase
 {
     protected final List<TYPE> listContents = new ArrayList<>();
-    protected final List<WIDGET> listWidgets = new ArrayList<>();
     protected final GuiScrollBar scrollBar = new GuiScrollBar();
     protected final Set<TYPE> selectedEntries = new HashSet<>();
     protected final int posX;
@@ -77,36 +76,39 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             return true;
         }
 
-        if (this.onMouseClickedSearchBar(click, doubleClick))
-        {
-            return true;
-        }
-
         final int relativeY = (int) (click.y() - this.browserEntriesStartY - this.browserEntriesOffsetY);
 
         if (relativeY >= 0 &&
             click.x() >= this.browserEntriesStartX &&
             click.x() < this.browserEntriesStartX + this.browserEntryWidth)
         {
-            for (int i = 0; i < this.listWidgets.size(); ++i)
+            for (int i = 0; i < this.widgets.size(); ++i)
             {
-                WIDGET widget = this.listWidgets.get(i);
-
-                if (widget.isMouseOver((int) click.x(), (int) click.y()))
+                if (this.widgets.get(i) instanceof WidgetListEntryBase<?> widget)
                 {
-                    if (widget.canSelectAt(click))
+                    if (widget.isMouseOver((int) click.x(), (int) click.y()))
                     {
-                        int entryIndex = widget.getListIndex();
-
-                        if (entryIndex >= 0 && entryIndex < this.listContents.size())
+                        if (widget.canSelectAt(click))
                         {
-                            this.onEntryClicked(this.listContents.get(entryIndex), entryIndex);
-                        }
-                    }
+                            int entryIndex = widget.getListIndex();
 
-                    return widget.onMouseClicked(click, doubleClick);
+                            if (entryIndex >= 0 && entryIndex < this.listContents.size())
+                            {
+                                // IMPORTANT
+                                this.onEntryClicked(this.listContents.get(entryIndex), entryIndex);
+                            }
+                        }
+
+                        this.focusedWidget = widget;
+                        return widget.onMouseClicked(click, doubleClick);
+                    }
                 }
             }
+        }
+
+        if (this.onMouseClickedSearchBar(click, doubleClick))
+        {
+            return true;
         }
 
         return super.onMouseClicked(click, doubleClick);
@@ -120,11 +122,6 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             this.scrollBar.setIsDragging(false);
         }
 
-        for (int i = 0; i < this.listWidgets.size(); ++i)
-        {
-            this.listWidgets.get(i).onMouseReleased(click);
-        }
-
         return super.onMouseReleased(click);
     }
 
@@ -136,17 +133,19 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             return true;
         }
 
-        // The scroll event could be/should be distributed to the entry widgets here
-        // It's not done (for now?) to prevent accidentally messing up stuff when scrolling over lists that have buttons
-
-        if (mouseX >= this.posX && mouseX <= this.posX + this.browserWidth &&
-            mouseY >= this.posY && mouseY <= this.posY + this.browserHeight)
-        {
-            this.offsetSelectionOrScrollbar(verticalAmount < 0 ? 3 : -3, false);
-            return true;
+        if (super.onMouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount) == false) {
+            if (mouseX >= this.posX && mouseX <= this.posX + this.browserWidth &&
+                mouseY >= this.posY && mouseY <= this.posY + this.browserHeight)
+            {
+                this.offsetSelectionOrScrollbar(verticalAmount < 0 ? 3 : -3, false);
+                return true;
+            } else
+            {
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 
     protected boolean onMouseClickedSearchBar(MouseButtonEvent click, boolean doubleClick)
@@ -192,26 +191,22 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             return true;
         }
 
-        return false;
+        if (input.key() == ScanCodes.SCAN_ESCAPE)
+        {
+            return false;
+        }
+
+        return super.onKeyTyped(input);
     }
 
     @Override
     public boolean onCharTyped(CharacterEvent input)
     {
-        if (this.onCharTypedSearchBar(input))
+        if (super.onCharTyped(input) == false)
         {
-            return true;
+            return this.onCharTypedSearchBar(input);
         }
-
-        for (WIDGET widget : this.listWidgets)
-        {
-            if (widget.onCharTyped(input))
-            {
-                return true;
-            }
-        }
-
-        return super.onCharTyped(input);
+        return true;
     }
 
     @Override
@@ -403,7 +398,6 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
     @Override
     public void drawContents(GuiContext ctx, int mouseX, int mouseY, float partialTicks)
     {
-        WidgetBase hovered = null;
         int scrollbarHeight = this.browserHeight - this.browserEntriesOffsetY - 8;
         int totalHeight = 0;
 
@@ -425,30 +419,23 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
             this.reCreateListEntryWidgets();
         }
 
-        // Draw the currently visible directory entries
-        for (WIDGET widget : this.listWidgets)
-        {
-            TYPE entry = widget.getEntry();
-            boolean isSelected = this.allowMultiSelection ? this.selectedEntries.contains(entry) : entry != null && entry.equals(this.getLastSelectedEntry());
-            widget.render(ctx, mouseX, mouseY, isSelected);
-
-            if (widget.isMouseOver(mouseX, mouseY))
-            {
-                hovered = widget;
-            }
-        }
+        super.drawWidgets(ctx, mouseX, mouseY);
 
         if (this.widgetSearchBar != null)
         {
             this.widgetSearchBar.render(ctx, mouseX, mouseY, false);
         }
+    }
 
-        if (hovered == null && this.widgetSearchBar != null && this.widgetSearchBar.isMouseOver(mouseX, mouseY))
+    @Override
+    public boolean isSelected(WidgetBase widget) {
+        if (widget instanceof WidgetListEntryBase<?> entry)
         {
-            hovered = this.widgetSearchBar;
+	        //noinspection SuspiciousMethodCalls
+	        return this.allowMultiSelection ? this.selectedEntries.contains(entry) : entry.equals(this.getLastSelectedEntry());
         }
 
-        this.hoveredWidget = hovered;
+        return super.isSelected(widget);
     }
 
     public void setSize(int width, int height)
@@ -471,7 +458,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
 
     protected void reCreateListEntryWidgets()
     {
-        this.listWidgets.clear();
+        this.clearWidgets();
         this.maxVisibleBrowserEntries = 0;
 
         final int numEntries = this.listContents.size();
@@ -484,7 +471,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
 
         if (widget != null)
         {
-            this.listWidgets.add(widget);
+            this.addWidget(widget);
             //this.maxVisibleBrowserEntries++;
 
             usedHeight += widget.getHeight();
@@ -500,7 +487,7 @@ public abstract class WidgetListBase<TYPE, WIDGET extends WidgetListEntryBase<TY
                 break;
             }
 
-            this.listWidgets.add(widget);
+            this.addWidget(widget);
             this.maxVisibleBrowserEntries++;
 
             usedHeight += widget.getHeight();
