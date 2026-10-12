@@ -399,12 +399,12 @@ public class WidgetDropDownList<T> extends WidgetBase
             this.renderOpen(ctx, mouseX, mouseY, txtX, txtY);
 
             MaLiLibIcons i = MaLiLibIcons.ARROW_UP;
-            ctx.drawTexturedRect(MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            ctx.drawTexturedRect(MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 1, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
         else
         {
             MaLiLibIcons i = MaLiLibIcons.ARROW_DOWN;
-            ctx.drawTexturedRect(MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 2, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
+            ctx.drawTexturedRect(MaLiLibIcons.TEXTURE, this.x + this.width - 16, this.y + 1, i.getU() + i.getWidth(), i.getV(), i.getWidth(), i.getHeight());
         }
 
         matrixStack.popMatrix();
