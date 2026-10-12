@@ -62,7 +62,7 @@ public class GuiBlockStateEditor extends GuiDialogSplitBase
 
 		this.title = GuiBase.TXT_BOLD + StringUtils.translate("malilib.gui.title.block_state_editor", this.configName) + GuiBase.TXT_RST;
 		this.titleWidth = this.getStringWidth(this.title);
-		this.elementHeight = 15;
+		this.elementHeight = 12;
 		this.modelSize = 64;
 		this.buttonHeight = 20;
 		this.maxLength = MathUtils.max(this.modelSize - 12, 128);
