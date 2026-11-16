@@ -276,6 +276,12 @@ public class MaLiLibConfigs implements IConfigHandler
                 MaLiLib.LOGGER.error("loadFromFile(): Failed to parse config file '{}' as a JSON element.", configFile.toAbsolutePath());
             }
         }
+        else if (Files.notExists(configFile))
+        {
+            MaLiLib.debugLog(
+                    "loadFromFile(): Config file '{}' does not exist; keeping current settings.",
+                    configFile.toAbsolutePath());
+        }
         else
         {
             MaLiLib.LOGGER.error("loadFromFile(): Failed to load config file '{}'", configFile.toAbsolutePath());
